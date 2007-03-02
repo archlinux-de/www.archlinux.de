@@ -12,6 +12,7 @@ require (PATH.'modules/Functions.php');
 require (PATH.'modules/Io.php');
 require (PATH.'modules/DB.php');
 
+$Io = new Io();
 $Settings = new Settings();
 
 $DB = new DB($Settings->getValue('ll_user'),
@@ -140,11 +141,8 @@ function getDescription()
 		}
 	}
 
-header('Content-Type: text/html; charset=UTF-8');
-header('HTTP/1.1 200 OK');
-
-?>
-<?xml version="1.0" encoding="UTF-8" ?>
+$body =
+'<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1-strict.dtd ">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -181,7 +179,7 @@ header('HTTP/1.1 200 OK');
 				<div class="updates">
 					<h3>Aktuelle Themen</h3>
 					<table>
-						<?php echo getRecent(); ?>
+						'.getRecent().'
 					</table>
 				</div>
 				<h3>Community Links:</h3>
@@ -192,10 +190,10 @@ header('HTTP/1.1 200 OK');
 			<div class="left">
 				<div class="box">
 					<h2>Willkommen bei Arch Linux</h2>
-					<p><?php echo getDescription(); ?></p>
+					<p>'.getDescription().'</p>
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
-				<?php echo getNews(); ?>
+				'.getNews().'
 			</div>
 			<div class="foot">
 				<a href="http://wiki.archlinux.de/?title=Wiki:Datenschutz">Datenschutz</a> ::
@@ -203,4 +201,8 @@ header('HTTP/1.1 200 OK');
 			</div>
 		</div>
 	</body>
-</html>
+</html>';
+
+$Io->out($body);
+
+?>
