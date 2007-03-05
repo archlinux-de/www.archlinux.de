@@ -1,5 +1,7 @@
 <?php
 
+define('IN_LL', null);
+
 $board = 20;
 $forum = 257;
 
@@ -64,6 +66,8 @@ function getRecent()
 		$result .= '<tr><td><a href="http://www.laber-land.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a></td></tr>';
 		}
 
+	$stm->close();
+
 	return $result;
 	}
 
@@ -114,31 +118,9 @@ function getNews()
 			</table>';
 		}
 
+	$stm->close();
+
 	return $result;
-	}
-
-function getDescription()
-	{
-	global $DB, $board;
-
-	try
-		{
-		$stm = $DB->prepare
-			('
-			SELECT
-				description
-			FROM
-				boards
-			WHERE
-				id = ?'
-			);
-		$stm->bindInteger($board);
-		return $stm->getColumn();
-		}
-	catch(DBNoDataException $e)
-		{
-		return '';
-		}
 	}
 
 $body =
@@ -182,15 +164,14 @@ $body =
 						'.getRecent().'
 					</table>
 				</div>
-				<h3>Community Links:</h3>
-				<a href="http://blog.archlinux.org/">Blog</a><br />
+				<h3>Mailing-Listen:</h3>
 				<a href="http://www.archlinux.org/mailman/listinfo/arch/">Arch Mailing List</a><br />
 				<a href="http://www.archlinux.org/mailman/listinfo/tur-users/">AUR Mailing List</a><br />
 			</div>
 			<div class="left">
 				<div class="box">
 					<h2>Willkommen bei Arch Linux</h2>
-					<p>'.getDescription().'</p>
+					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86-64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://www.laber-land.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				'.getNews().'
