@@ -23,7 +23,7 @@ $DB = new DB($Settings->getValue('ll_user'),
 
 function getRecent()
 	{
-	global $DB, $board;
+	global $DB, $board, $archNewsForum, $linuxNewsForum;
 
 	try
 		{
@@ -42,6 +42,8 @@ function getRecent()
 			WHERE
 				t.deleted = 0
 				AND t.forumid = f.id
+				AND t.forumid <> ?
+				AND t.forumid <> ?
 				AND f.boardid = ?
 			ORDER BY
 				t.lastdate DESC
@@ -49,6 +51,8 @@ function getRecent()
 				4
 			');
 
+		$stm->bindInteger($archNewsForum);
+		$stm->bindInteger($linuxNewsForum);
 		$stm->bindInteger($board);
 		$threads = $stm->getRowSet();
 		}
