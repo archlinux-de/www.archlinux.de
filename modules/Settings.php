@@ -19,9 +19,9 @@ public function __construct()
 	$this->config['ll_user']		= 'root';
 	$this->config['ll_password']		= '';
 
-	if (file_exists(PATH.'LocalSettings.php'))
+	if (file_exists('LocalSettings.php'))
 		{
-		include (PATH.'LocalSettings.php');
+		include ('LocalSettings.php');
 		}
 
 	setlocale(LC_ALL, $this->config['locale']);

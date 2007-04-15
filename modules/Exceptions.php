@@ -6,6 +6,10 @@ set_error_handler('ErrorHandler');
 
 function ExceptionHandler(Exception $e)
 	{
+	require_once ('modules/Modul.php');
+	require_once ('modules/Settings.php');
+	$Settings = new Settings();
+
 	try
 		{
 		$screen = '<?xml version="1.0" encoding="UTF-8" ?>
@@ -27,7 +31,7 @@ function ExceptionHandler(Exception $e)
 			</body>
 			</html>';
 
-		if (Modul::__get('Settings')->getValue('debug'))
+		if ($Settings->getValue('debug'))
 			{
 			header('HTTP/1.1 500 Exception');
 			header('Content-Length: '.strlen($screen));
@@ -37,18 +41,18 @@ function ExceptionHandler(Exception $e)
 			}
 		else
 			{
-			if (Modul::__get('Settings')->getValue('log_dir') != '')
+			if ($Settings->getValue('log_dir') != '')
 				{
-				file_put_contents(Modul::__get('Settings')->getValue('log_dir').time().'.html', $screen);
+				file_put_contents($Settings->getValue('log_dir').time().'.html', $screen);
 				}
 
-			$mail = Modul::__get('Mail');
-
-			$mail->setTo('support@laber-land.de');
-			$mail->setFrom('support@laber-land.de');
-			$mail->setSubject('LL-Error');
-			$mail->setText($screen);
-			$mail->send();
+// 			$mail = Modul::__get('Mail');
+//
+// 			$mail->setTo('support@laber-land.de');
+// 			$mail->setFrom('support@laber-land.de');
+// 			$mail->setSubject('LL-Error');
+// 			$mail->setText($screen);
+// 			$mail->send();
 
 			$screen = '<?xml version="1.0" encoding="UTF-8" ?>
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "xhtml11.dtd">

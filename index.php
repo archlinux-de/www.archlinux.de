@@ -2,17 +2,16 @@
 
 define('IN_LL', null);
 
-$board = 20;
-$forum = 257;
+$board 			= 20;
+$archNewsForum 		= 257;
+$linuxNewsForum 	= 345;
 
-define('PATH', './');
-
-require (PATH.'modules/Modul.php');
-require (PATH.'modules/Settings.php');
-require (PATH.'modules/Exceptions.php');
-require (PATH.'modules/Functions.php');
-require (PATH.'modules/Io.php');
-require (PATH.'modules/DB.php');
+require ('modules/Modul.php');
+require ('modules/Settings.php');
+require ('modules/Exceptions.php');
+require ('modules/Functions.php');
+require ('modules/Io.php');
+require ('modules/DB.php');
 
 $Io = new Io();
 $Settings = new Settings();
@@ -71,9 +70,9 @@ function getRecent()
 	return $result;
 	}
 
-function getNews()
+function getArchNews()
 	{
-	global $DB, $forum, $board;
+	global $DB, $archNewsForum, $board;
 
 	try
 		{
@@ -94,7 +93,7 @@ function getNews()
 			LIMIT
 				10
 			');
-		$stm->bindInteger($forum);
+		$stm->bindInteger($archNewsForum);
 		$threads = $stm->getRowSet();
 		}
 	catch(DBNoDataException $e)
@@ -116,6 +115,53 @@ function getNews()
 				<td style="font-size:12px;border-top: 1px dotted #8faecd;padding-bottom:20px;" colspan="2">'.$thread['summary'].'</td>
 				</tr>
 			</table>';
+		}
+
+	$stm->close();
+
+	return $result;
+	}
+
+function getLinuxNews()
+	{
+	global $DB, $linuxNewsForum, $board;
+
+	try
+		{
+		$stm = $DB->prepare
+			('
+			SELECT
+				id,
+				name,
+				summary
+			FROM
+				threads
+			WHERE
+				forumid = ?
+				AND deleted = 0
+			ORDER BY
+				id DESC
+			LIMIT
+				30
+			');
+		$stm->bindInteger($linuxNewsForum);
+		$threads = $stm->getRowSet();
+		}
+	catch(DBNoDataException $e)
+		{
+		$threads = array();
+		}
+
+	$result = '';
+
+	foreach ($threads as $thread)
+		{
+		$thread['name'] = cutString($thread['name'], 54);
+
+		$result .= '<tr><td><a href="http://www.laber-land.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
+		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;" colspan="2">'.$thread['summary'].'</div>
+
+		</td></tr>';
 		}
 
 	$stm->close();
@@ -159,14 +205,17 @@ $body =
 		<div id="content">
 			<div class="right">
 				<div class="updates">
-					<h3>Aktuelle Themen</h3>
+					<h3>Neues aus der Linux-Welt</h3>
+					<table>
+						'.getLinuxNews().'
+					</table>
+				</div>
+				<div class="updates">
+					<h3>Aktuelle Themen im Forum</h3>
 					<table>
 						'.getRecent().'
 					</table>
 				</div>
-				<h3>Mailing-Listen:</h3>
-				<a href="http://www.archlinux.org/mailman/listinfo/arch/">Arch Mailing List</a><br />
-				<a href="http://www.archlinux.org/mailman/listinfo/tur-users/">AUR Mailing List</a><br />
 			</div>
 			<div class="left">
 				<div class="box">
@@ -174,7 +223,7 @@ $body =
 					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86-64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://www.laber-land.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
-				'.getNews().'
+				'.getArchNews().'
 			</div>
 			<div class="foot">
 				<a href="http://wiki.archlinux.de/?title=Wiki:Datenschutz">Datenschutz</a> ::
