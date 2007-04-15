@@ -142,7 +142,7 @@ function getLinuxNews()
 			ORDER BY
 				id DESC
 			LIMIT
-				30
+				10
 			');
 		$stm->bindInteger($linuxNewsForum);
 		$threads = $stm->getRowSet();
