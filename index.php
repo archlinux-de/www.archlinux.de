@@ -34,6 +34,7 @@ function getRecent()
 				t.name,
 				t.lastdate,
 				t.forumid,
+				t.summary,
 				f.name AS forum
 			FROM
 				threads t,
@@ -45,7 +46,7 @@ function getRecent()
 			ORDER BY
 				t.lastdate DESC
 			LIMIT
-				30
+				4
 			');
 
 		$stm->bindInteger($board);
@@ -62,7 +63,9 @@ function getRecent()
 		{
 		$thread['name'] = cutString($thread['name'], 54);
 
-		$result .= '<tr><td><a href="http://www.laber-land.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a></td></tr>';
+		$result .= '<tr><td><a href="http://www.laber-land.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
+		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;" colspan="2">'.$thread['summary'].'</div>
+		</td></tr>';
 		}
 
 	$stm->close();
@@ -91,7 +94,7 @@ function getArchNews()
 			ORDER BY
 				id DESC
 			LIMIT
-				10
+				5
 			');
 		$stm->bindInteger($archNewsForum);
 		$threads = $stm->getRowSet();
@@ -142,7 +145,7 @@ function getLinuxNews()
 			ORDER BY
 				id DESC
 			LIMIT
-				10
+				3
 			');
 		$stm->bindInteger($linuxNewsForum);
 		$threads = $stm->getRowSet();
@@ -209,12 +212,18 @@ $body =
 					<table>
 						'.getLinuxNews().'
 					</table>
+					<div style="text-align:right;">
+					<a href="http://www.laber-land.de/?page=Threads;id=20;forum='.$linuxNewsForum.'">&#187; Archiv</a>
+					</div>
 				</div>
 				<div class="updates">
 					<h3>Aktuelle Themen im Forum</h3>
 					<table>
 						'.getRecent().'
 					</table>
+					<div style="text-align:right;padding-top:10px;">
+					<a href="http://www.laber-land.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a>
+					</div>
 				</div>
 			</div>
 			<div class="left">
@@ -224,6 +233,9 @@ $body =
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				'.getArchNews().'
+				<div style="text-align:right;">
+					<a href="http://www.laber-land.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
+				</div>
 			</div>
 			<div class="foot">
 				<a href="http://wiki.archlinux.de/?title=Wiki:Datenschutz">Datenschutz</a> ::
