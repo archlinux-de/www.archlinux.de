@@ -67,7 +67,7 @@ function getRecent()
 		{
 		$thread['name'] = cutString($thread['name'], 54);
 
-		$result .= '<tr><td><a href="http://www.laber-land.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
+		$result .= '<tr><td><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
 		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;" colspan="2">'.$thread['summary'].'</div>
 		</td></tr>';
 		}
@@ -115,7 +115,7 @@ function getArchNews()
 		$result .=
 			'<table style="width:100%;">
 				<tr>
-				<td style="font-weight:bold;font-size:18px;vertical-align:bottom;"><a href="http://www.laber-land.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></td>
+				<td style="font-weight:bold;font-size:18px;vertical-align:bottom;"><a href="http://forum.archlinux.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></td>
 				<td style="text-align:right;font-size:8px;vertical-align:middle;">'.formatDate($thread['firstdate']).'</td>
 				</tr>
 				<tr>
@@ -165,7 +165,7 @@ function getLinuxNews()
 		{
 		$thread['name'] = cutString($thread['name'], 54);
 
-		$result .= '<tr><td><a href="http://www.laber-land.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
+		$result .= '<tr><td><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
 		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;" colspan="2">'.$thread['summary'].'</div>
 
 		</td></tr>';
@@ -204,7 +204,7 @@ $body =
 				<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 				<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
 				<li><a href="http://wiki.archlinux.de">Wiki</a></li>
-				<li><a href="http://www.laber-land.de/?page=Forums;id=20">Forum</a></li>
+				<li><a href="http://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
 				<li class="selected"><a href="#">Start</a></li>
 				</ul>
 			</div>
@@ -217,7 +217,7 @@ $body =
 						'.getLinuxNews().'
 					</table>
 					<div style="text-align:right;">
-					<a href="http://www.laber-land.de/?page=Threads;id=20;forum='.$linuxNewsForum.'">&#187; Archiv</a>
+					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$linuxNewsForum.'">&#187; Archiv</a>
 					</div>
 				</div>
 				<div class="updates">
@@ -226,19 +226,19 @@ $body =
 						'.getRecent().'
 					</table>
 					<div style="text-align:right;padding-top:10px;">
-					<a href="http://www.laber-land.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a>
+					<a href="http://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a>
 					</div>
 				</div>
 			</div>
 			<div class="left">
 				<div class="box">
 					<h2>Willkommen bei Arch Linux</h2>
-					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86-64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://www.laber-land.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
+					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86-64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://forum.archlinux.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				'.getArchNews().'
 				<div style="text-align:right;">
-					<a href="http://www.laber-land.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
+					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
 				</div>
 			</div>
 			<div class="foot">
