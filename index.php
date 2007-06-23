@@ -6,19 +6,21 @@ $board 			= 20;
 $archNewsForum 		= 257;
 $linuxNewsForum 	= 345;
 
-require ('modules/Modul.php');
-require ('modules/Settings.php');
-require ('modules/Exceptions.php');
-require ('modules/Functions.php');
-require ('modules/Io.php');
-require ('modules/DB.php');
+require('LLPath.php');
+
+require (LL_PATH.'modules/Settings.php');
+require (LL_PATH.'modules/Modul.php');
+require (LL_PATH.'modules/Exceptions.php');
+require (LL_PATH.'modules/Functions.php');
+require (LL_PATH.'modules/Io.php');
+require (LL_PATH.'modules/DB.php');
 
 $Io = new Io();
 $Settings = new Settings();
 
-$DB = new DB($Settings->getValue('ll_user'),
-		$Settings->getValue('ll_password'),
-		$Settings->getValue('ll_database')
+$DB = new DB($Settings->getValue('sql_user'),
+		$Settings->getValue('sql_password'),
+		$Settings->getValue('sql_database')
 		);
 
 function getRecent()
