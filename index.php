@@ -100,7 +100,7 @@ function getArchNews()
 			ORDER BY
 				id DESC
 			LIMIT
-				5
+				6
 			');
 		$stm->bindInteger($archNewsForum);
 		$threads = $stm->getRowSet();
