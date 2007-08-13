@@ -70,7 +70,7 @@ function getRecent()
 		$thread['name'] = cutString($thread['name'], 54);
 
 		$result .= '<tr><td><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
-		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;" colspan="2">'.$thread['summary'].'</div>
+		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;">'.$thread['summary'].'</div>
 		</td></tr>';
 		}
 
@@ -168,7 +168,7 @@ function getLinuxNews()
 		$thread['name'] = cutString($thread['name'], 54);
 
 		$result .= '<tr><td><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
-		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;" colspan="2">'.$thread['summary'].'</div>
+		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;">'.$thread['summary'].'</div>
 
 		</td></tr>';
 		}
@@ -180,12 +180,10 @@ function getLinuxNews()
 
 $body =
 '<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1-strict.dtd ">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
 	<head>
 		<title>archlinux.de</title>
-		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
 		<meta http-equiv="content-language" content="de" />
 		<meta http-equiv="expires" content="120" />
