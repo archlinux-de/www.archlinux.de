@@ -200,7 +200,7 @@ $body =
 			</div>
 			<div id="main_nav">
 				<ul>
-				<li><a href="http://wiki.archlinux.de/?title=Download">Dateien</a></li>
+				<li><a href="http://wiki.archlinux.de/?title=Download">ISOs</a></li>
 				<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 				<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
 				<li><a href="http://wiki.archlinux.de">Wiki</a></li>
