@@ -4,7 +4,7 @@ define('IN_LL', null);
 
 $board 			= 20;
 $archNewsForum 		= 257;
-$linuxNewsForum 	= 345;
+$importantTag		= 3;
 
 require('LLPath.php');
 
@@ -25,7 +25,7 @@ $DB = new DB($Settings->getValue('sql_user'),
 
 function getRecent()
 	{
-	global $DB, $board, $archNewsForum, $linuxNewsForum;
+	global $DB, $board, $archNewsForum;
 
 	try
 		{
@@ -45,7 +45,6 @@ function getRecent()
 				t.deleted = 0
 				AND t.forumid = f.id
 				AND t.forumid <> ?
-				AND t.forumid <> ?
 				AND f.boardid = ?
 			ORDER BY
 				t.lastdate DESC
@@ -54,7 +53,6 @@ function getRecent()
 			');
 
 		$stm->bindInteger($archNewsForum);
-		$stm->bindInteger($linuxNewsForum);
 		$stm->bindInteger($board);
 		$threads = $stm->getRowSet();
 		}
@@ -79,9 +77,9 @@ function getRecent()
 	return $result;
 	}
 
-function getArchNews()
+function getImportantNews()
 	{
-	global $DB, $archNewsForum, $board;
+	global $DB, $archNewsForum, $board, $importantTag;
 
 	try
 		{
@@ -97,12 +95,14 @@ function getArchNews()
 			WHERE
 				forumid = ?
 				AND deleted = 0
+				AND tag = ?
 			ORDER BY
 				id DESC
 			LIMIT
 				6
 			');
 		$stm->bindInteger($archNewsForum);
+		$stm->bindInteger($importantTag);
 		$threads = $stm->getRowSet();
 		}
 	catch(DBNoDataException $e)
@@ -117,7 +117,7 @@ function getArchNews()
 		$result .=
 			'<table style="width:100%;">
 				<tr>
-				<td style="font-weight:bold;font-size:18px;vertical-align:bottom;"><a href="http://forum.archlinux.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></td>
+				<td style="font-weight:bold;font-size:14px;vertical-align:bottom;"><a href="http://forum.archlinux.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></td>
 				<td style="text-align:right;font-size:8px;vertical-align:middle;">'.formatDate($thread['firstdate']).'</td>
 				</tr>
 				<tr>
@@ -131,9 +131,9 @@ function getArchNews()
 	return $result;
 	}
 
-function getLinuxNews()
+function getNews()
 	{
-	global $DB, $linuxNewsForum, $board;
+	global $DB, $archNewsForum, $board, $importantTag;
 
 	try
 		{
@@ -148,12 +148,14 @@ function getLinuxNews()
 			WHERE
 				forumid = ?
 				AND deleted = 0
+				AND tag <> ?
 			ORDER BY
 				id DESC
 			LIMIT
 				3
 			');
-		$stm->bindInteger($linuxNewsForum);
+		$stm->bindInteger($archNewsForum);
+		$stm->bindInteger($importantTag);
 		$threads = $stm->getRowSet();
 		}
 	catch(DBNoDataException $e)
@@ -212,12 +214,12 @@ $body =
 		<div id="content">
 			<div class="right">
 				<div class="updates">
-					<h3>Neues aus der Linux-Welt</h3>
+					<h3>Neues über Arch Linux</h3>
 					<table>
-						'.getLinuxNews().'
+						'.getNews().'
 					</table>
 					<div style="text-align:right;">
-					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$linuxNewsForum.'">&#187; Archiv</a>
+					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
 					</div>
 				</div>
 				<div class="updates">
@@ -233,11 +235,12 @@ $body =
 			<div class="left">
 				<div class="box">
 					<h2>Willkommen bei Arch Linux</h2>
-					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86-64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://forum.archlinux.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
+					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86_64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://forum.archlinux.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
-				'.getArchNews().'
-				<div style="text-align:right;">
+				<h2 class="title">Aktuelle Ankündigungen</h2>
+				'.getImportantNews().'
+				<div style="text-align:right;font-size:10px;">
 					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
 				</div>
 			</div>

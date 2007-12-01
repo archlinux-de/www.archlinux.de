@@ -73,14 +73,17 @@ body {
 }
 h2 {
 	margin-bottom: 10px;
-	font-size:18px;
+	font-size:16px;
+}
+h2.title {
+	border-bottom: 1px solid #46494d;
 }
 h1 {
 	margin: 20px 0 10px 0;
 	font-size:20px;
 }
 
-h3{font-size:16px;margin-bottom: 5px;}
+h3{font-size:14px;margin-bottom: 5px;}
 
 a {
 	color: #35526f;
