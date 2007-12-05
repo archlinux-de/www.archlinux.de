@@ -5,6 +5,7 @@ define('IN_LL', null);
 $board 			= 20;
 $archNewsForum 		= 257;
 $importantTag		= 3;
+$solvedTag		= 1;
 
 require('LLPath.php');
 
@@ -213,7 +214,7 @@ function getImportantNews()
 
 function getNews()
 	{
-	global $DB, $archNewsForum, $board, $importantTag;
+	global $DB, $archNewsForum, $board, $importantTag, $solvedTag;
 
 	try
 		{
@@ -228,7 +229,7 @@ function getNews()
 			WHERE
 				forumid = ?
 				AND deleted = 0
-				AND tag <> ?
+				AND tag NOT IN (?,?)
 			ORDER BY
 				id DESC
 			LIMIT
@@ -236,6 +237,7 @@ function getNews()
 			');
 		$stm->bindInteger($archNewsForum);
 		$stm->bindInteger($importantTag);
+		$stm->bindInteger($solvedTag);
 		$threads = $stm->getRowSet();
 		}
 	catch(DBNoDataException $e)
