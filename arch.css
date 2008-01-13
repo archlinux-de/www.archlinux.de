@@ -1,108 +1,221 @@
+* {
+	margin: 0;
+	padding: 0;
+}
 
-* { margin: 0; padding: 0; }
-* ul { padding: 20px; }
+* ul {
+	padding: 10px 20px;
+}
+
 body {
-	background: url("images/title_back.png") repeat-x top left #fbf8f1;
+	min-width: 600px;
+	background: url("images/titlebar.png") repeat-x top left transparent;
 	padding: 0 30px;
 	color: #46494d;
+	font-size: 14px;
 	font-family: sans-serif;
-	font-size:12px;
 }
-#head_container { height: 140px; }
-.right {
-	float: right;
-	width: 360px;
-	padding: 0 10px 10px 0;
+
+#head_container {
+	height: 220px;
 }
-.clear { clear: both; margin: 0; padding: 0; }
+
+#main_nav {
+	position: absolute;
+	top: 123px;
+	right: 30px;
+	width: 600px;
+	background: #333;
+}
+
 #main_nav ul {
 	list-style: none;
-	padding-right: 10px;
-	padding-top: 48px;
+	margin: 0;
+	padding: 0;
 }
-.right ul {
-	list-style: none;
-}
+
 #main_nav ul li {
 	display: block;
 	float: right;
-	width: 67px;
-	height: 20px;
-	padding-top: 2px;
-	margin-left: 3px;
-	background: url("images/tab.png") repeat-x bottom left #fbf8f1;
+	margin: 0 3px;
+	padding: 0;
 	text-align: center;
 	font-size: 13px;
+	line-height: 26px;
 }
-#main_nav ul li[class~=selected] {
-	background: #fbf8f1;
+
+#main_nav ul li.selected {
+	background: #1793d1;
 }
+
 #main_nav ul li a {
-	text-decoration: none;
-}
-
-.updates {
-	position: relative;
-	top: -30px;
-	background: #f6efe0;
-	border: 1px solid #eee4cb;
-	padding: 10px;
-	font-size:10px;
-	margin-bottom:20px;
-}
-
-.left {
-	padding: 10px;
-	margin: 0 400px 0 0;
-}
-.left p { text-align: justify; }
-#title {
-	height: 140px;
-	float: left;
-}
-#logo {
-	float: left;
-	width: 140px;
-	height: 140px;
-}
-.box {
-	padding: 10px;
-	margin-bottom:30px;
-	background: #e1e3e6;
-	border: 1px solid #8faecd;
-}
-h2 {
-	margin-bottom: 10px;
-	font-size:16px;
-}
-h2.title {
-	border-bottom: 1px solid #46494d;
-}
-h1 {
-	margin: 20px 0 10px 0;
-	font-size:20px;
-}
-
-h3{font-size:14px;margin-bottom: 5px;}
-
-a {
-	color: #35526f;
+	display: block;
+	padding: 0 8px;
+	color: #fff;
 	font-weight: bold;
 	text-decoration: none;
 }
 
-a:hover	{
-	text-decoration:underline;
+#main_nav ul li a:hover {
+	background: #1793d1;
 }
-img { border: none; }
+
+#updates {
+	font-size: small;
+	background: #f6efe0;
+	border: 1px solid #eee4cb;
+	padding: 10px;
+}
+
+#logo {
+	z-index: 1;
+	position: absolute;
+	top: 10px;
+	left: 25px;
+	width: 350px;
+	text-indent: -9999px;
+	background: transparent url("images/logo.png") top left no-repeat;
+	width: 350px;
+	height: 103px;
+}
+
+.clear {
+	clear: both;
+	margin: 0;
+	padding: 0;
+}
+
+.right {
+	float: right;
+	width: 320px;
+	padding: 0 10px 10px 0;
+}
+
+.left {
+	padding: 10px;
+	margin: 0 360px 0 0;
+}
+
+.left p {
+	padding-bottom: 10px;
+}
+
+.box {
+	padding: 10px;
+	background: #F0F0F0;
+	border: 1px solid #D9D9D9;
+}
+
+.greybox {
+	padding: 10px;
+	background: #D9D9D9;
+	border: 1px solid #C9C9C9;
+}
+
+div.listing {
+	padding-right: 10px;
+}
+
+.error {
+	color: #dd0000;
+	font-size: small;
+}
+
 .foot {
 	clear: both;
-	text-align: center;
-	font-size: 0.8em;
-	text-align:right;
+	padding: 2em 0;
+	text-align: right;
+	font-size: 0.75em;
+	line-height: 1.5em;
 }
-.community a {
+
+h2 {
+	margin: 20px 0 10px 0;
+}
+
+h2.title {
+	border-bottom: 1px solid #46494d;
+}
+
+h3 {
+	margin-bottom: 10px;
+}
+
+h3.title {
+	text-align: right;
+	border-bottom: 1px solid #46494d;
+}
+
+h4.title {
+	text-align: left;
+	border-bottom: 1px solid #46494d;
+}
+
+h4.news {
+	border-bottom: 1px dotted #0771a6;
+	margin-bottom: .25em;
+	padding-bottom: .2em;
+}
+
+h4.recent {
+	border-bottom: 1px dotted #0771a6;
+	margin-bottom: .25em;
+	padding-bottom: .2em;
+	font-size: x-small;
+}
+
+p {
+	padding-bottom: 20px;
+}
+
+p.news {
+	font-size: small;
+}
+
+p.recent {
+	font-size: x-small;
+}
+
+a {
+	color: #0771a6;
 	text-decoration: none;
 }
 
+a:hover {
+	color: #333;
+	text-decoration: underline;
+}
 
+#about {
+	position: relative;
+	top: -9px;
+}
+
+ol {
+	padding-left: 45px;
+}
+
+ul.small {
+	list-style: none;
+	font-size: x-small;
+}
+
+ul.links {
+	list-style: none;
+	font-size: small;
+	padding: 0px 0px 20px 20px;
+}
+
+img {
+	border: none;
+}
+
+hr {
+	border: none;
+	border-top: 1px solid #46494d;
+}
+
+table.center {
+	margin-left: auto;
+	margin-right: auto;
+}

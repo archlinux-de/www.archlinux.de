@@ -38,15 +38,12 @@ if (!($body = $Cache->getObject('www.archlinux.de/index.php')))
 		<meta http-equiv="expires" content="120" />
 		<meta name="robots" content="index,follow" />
 		<meta name="revisit-after" content="3 days" />
-		<link rel="shortcut icon" href="http://www.archlinux.de/favicon.ico" />
+		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" href="arch.css" />
 	</head>
 	<body>
 		<div id="head_container">
-			<div id="title">
-				<div id="logo"><img src="images/logo.png" alt="Arch logo" /></div>
-				<img src="images/title.png" alt="Arch linux" />
-			</div>
+			<div id="logo">Arch Linux</div>
 			<div id="main_nav">
 				<ul>
 				<li><a href="http://wiki.archlinux.de/?title=Download">ISOs</a></li>
@@ -60,36 +57,36 @@ if (!($body = $Cache->getObject('www.archlinux.de/index.php')))
 		</div>
 		<div id="content">
 			<div class="right">
-				<div class="updates">
+				<div class="greybox">
 					<h3>Neues über Arch Linux</h3>
-					<table>
-						'.getNews().'
-					</table>
-					<div style="text-align:right;">
+					'.getNews().'
+					<span style="float:right;font-size:x-small">
 					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
-					</div>
+					</span>
+					<br />
 				</div>
-				<div class="updates">
+				<br />
+				<div class="greybox">
 					<h3>Aktuelle Themen im Forum</h3>
-					<table>
-						'.getRecent().'
-					</table>
-					<div style="text-align:right;padding-top:10px;">
+					'.getRecent().'
+					<span style="float:right;font-size:x-small">
 					<a href="http://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a>
-					</div>
+					</span>
+					<br />
 				</div>
 			</div>
 			<div class="left">
-				<div class="box">
+				<div id="about" class="box">
 					<h2>Willkommen bei Arch Linux</h2>
 					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86_64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://forum.archlinux.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
 					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				<h2 class="title">Aktuelle Ankündigungen</h2>
 				'.getImportantNews().'
-				<div style="text-align:right;font-size:10px;">
+				<span style="float:right;font-size:x-small">
 					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
-				</div>
+				</span>
+				<br />
 			</div>
 			<div class="foot">
 				<a href="http://wiki.archlinux.de/?title=Wiki:Datenschutz">Datenschutz</a> ::
@@ -148,9 +145,11 @@ function getRecent()
 		{
 		$thread['name'] = cutString($thread['name'], 54);
 
-		$result .= '<tr><td><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
-		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;">'.$thread['summary'].'</div>
-		</td></tr>';
+		$result .=
+			'
+			<h4 class="recent"><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a></h4>
+			<p class="recent">'.$thread['summary'].'</p>
+			';
 		}
 
 	$stm->close();
@@ -196,15 +195,13 @@ function getImportantNews()
 	foreach ($threads as $thread)
 		{
 		$result .=
-			'<table style="width:100%;">
-				<tr>
-				<td style="font-weight:bold;font-size:14px;vertical-align:bottom;"><a href="http://forum.archlinux.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></td>
-				<td style="text-align:right;font-size:8px;vertical-align:middle;">'.formatDate($thread['firstdate']).'</td>
-				</tr>
-				<tr>
-				<td style="font-size:12px;border-top: 1px dotted #8faecd;padding-bottom:20px;" colspan="2">'.$thread['summary'].'</td>
-				</tr>
-			</table>';
+			'
+			<br />
+			<span style="float:right; font-size:x-small">'.formatDate($thread['firstdate']).'</span>
+			<h4 class="news"><a href="http://forum.archlinux.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h4>
+			<p class="news">'.$thread['summary'].'</p>
+			<br />
+			';
 		}
 
 	$stm->close();
@@ -251,10 +248,11 @@ function getNews()
 		{
 		$thread['name'] = cutString($thread['name'], 54);
 
-		$result .= '<tr><td><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a>
-		<div style="font-size:10px;border-top: 1px dotted #8faecd;padding-bottom:10px;padding-top:2px;">'.$thread['summary'].'</div>
-
-		</td></tr>';
+		$result .=
+			'
+			<h4 class="recent"><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$board.'">'.$thread['name'].'</a></h4>
+			<p class="recent">'.$thread['summary'].'</p>
+			';
 		}
 
 	$stm->close();
