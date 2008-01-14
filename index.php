@@ -42,44 +42,37 @@ if (!($body = $Cache->getObject('www.archlinux.de/index.php')))
 		<link rel="stylesheet" href="arch.css" />
 	</head>
 	<body>
-		<div id="head_container">
-			<div id="logo">Arch Linux</div>
-			<div id="main_nav">
-				<ul>
+		<h1 id="logo">Arch Linux</h1>
+		<div id="nav_bar">
+			<ul id="nav">
 				<li><a href="http://wiki.archlinux.de/?title=Download">ISOs</a></li>
 				<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 				<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
 				<li><a href="http://wiki.archlinux.de">Wiki</a></li>
 				<li><a href="http://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-				<li class="selected"><a href="#">Start</a></li>
-				</ul>
-			</div>
+				<li class="selected">Start</li>
+			</ul>
 		</div>
+		<div id="subnav_bar"></div>
 		<div id="content">
-			<div class="right">
+			<div id="right">
 				<div class="greybox">
 					<h3>Neues über Arch Linux</h3>
 					'.getNews().'
-					<span style="float:right;font-size:x-small">
-					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
-					</span>
-					<br />
+					<a style="float:right;font-size:x-small" href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$archNewsForum.'">&#187; Archiv</a>
 				</div>
 				<br />
 				<div class="greybox">
 					<h3>Aktuelle Themen im Forum</h3>
 					'.getRecent().'
-					<span style="float:right;font-size:x-small">
-					<a href="http://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a>
-					</span>
-					<br />
+					<a style="float:right;font-size:x-small" href="http://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a>
 				</div>
 			</div>
-			<div class="left">
-				<div id="about" class="box">
+			<div id="left">
+				<div id="box">
 					<h2>Willkommen bei Arch Linux</h2>
 					<p><strong>Arch Linux</strong> ist eine <em>kleine und flexible</em> Linux-Distribution, mit dem Ziel alles so einfach wie möglich zu halten.<br /><br />Zur Zeit bieten wir optimierte Pakete für <code>i686</code> und <code>x86_64</code> Architekturen. Diese Auswahl wird von einem <a href="http://wiki.archlinux.de/?title=AUR" class="link">Community-Repository</a> vervollständigt, welches täglich wächst und an Qualität zunimmt. <br /><br />Unsere starke Gemeinschaft ist vielfältig und hilfsbereit. Besuche unsere <a href="http://forum.archlinux.de/?page=Forums;id=20" class="link">Foren</a> und unser <a href="http://wiki.archlinux.de" class="link">Wiki</a>, wenn Du mehr erfahren möchtest.</p>
-					<div style="font-size:10px;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
+					<div style="font-size:x-small;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				<h2 class="title">Aktuelle Ankündigungen</h2>
 				'.getImportantNews().'
@@ -88,7 +81,7 @@ if (!($body = $Cache->getObject('www.archlinux.de/index.php')))
 				</span>
 				<br />
 			</div>
-			<div class="foot">
+			<div id="foot">
 				<a href="http://wiki.archlinux.de/?title=Wiki:Datenschutz">Datenschutz</a> ::
 				<a href="http://wiki.archlinux.de/?title=Wiki:Impressum">Impressum</a>
 			</div>
@@ -196,11 +189,9 @@ function getImportantNews()
 		{
 		$result .=
 			'
-			<br />
 			<span style="float:right; font-size:x-small">'.formatDate($thread['firstdate']).'</span>
 			<h4 class="news"><a href="http://forum.archlinux.de/?page=Postings;id='.$board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h4>
 			<p class="news">'.$thread['summary'].'</p>
-			<br />
 			';
 		}
 
