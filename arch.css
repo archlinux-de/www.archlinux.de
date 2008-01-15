@@ -18,6 +18,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+a:visited {
+	color: #0771a6;
+}
+
 #logo {
 	margin: 0;
 	padding: 0;
