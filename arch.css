@@ -13,13 +13,13 @@ a {
 	text-decoration: none;
 }
 
+a:visited {
+	color: #0771a6;
+}
+
 a:hover {
 	color: #333333;
 	text-decoration: underline;
-}
-
-a:visited {
-	color: #0771a6;
 }
 
 #logo {
