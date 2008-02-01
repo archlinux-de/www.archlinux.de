@@ -179,8 +179,8 @@ public function prepare()
 			$body .=
 			'<table id="packagedependencies">
 				<tr>
-					<th>Abhänigkeiten</th>
-					<th>Inverse Abhänigkeiten</th>
+					<th>Abhängigkeiten</th>
+					<th>Inverse Abhängigkeiten</th>
 					<th>Quellen</th>
 				</tr>
 				<tr>

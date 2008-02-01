@@ -38,7 +38,7 @@ public function prepare()
 		'
 			<div id="right">
 				<div class="greybox">
-					<h3>Aktuelle Pakete</h3>
+					<h3>Aktualisierte Pakete</h3>
 					'.$this->getRecentPackages().'
 					<div style="text-align:right;font-size:x-small"><a href="?page=Packages">&#187; Paket-Suche</a></div>
 				</div>

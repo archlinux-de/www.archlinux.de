@@ -61,7 +61,7 @@ public function prepare()
 	echo 'Client: Fetching updates...';
 	ini_set('max_execution_time', 0);
 
-	$tempFile = tempnam(ini_get('upload_tmp_dir').'/php-uploads', $this->getName());
+	$tempFile = tempnam(ini_get('upload_tmp_dir').'/', $this->getName());
 	$fh = fopen($tempFile, 'w');
 	flock($fh, LOCK_EX);
 	$curl = curl_init($this->Settings->getValue('update_url'));
