@@ -29,8 +29,7 @@ $targetHost		= '';
 $dbuser			= '';
 $dbpw			= '';
 
-$pwd = dirname(getenv('SCRIPT_NAME'));
-
+$pwd = dirname(getenv('_')).'/';
 require ($pwd.'LocalSettings.php');
 
 if (file_exists($pwd.'updateRunning.lock'))
@@ -106,7 +105,7 @@ $stm = $DB->prepare
 		AND UNIX_TIMESTAMP(last_update) > ?
 	');
 /** make sure to get all chagnes which were commited during the last run */
-$stm->bindInteger($lastrun-60);
+$stm->bindInteger($lastrun-360);
 
 $stm2 = $DB->prepare
 	('
@@ -155,7 +154,7 @@ catch (DBNoDataException $e)
 	echo 'No Updates available. Good Bye!', "\n";
 	$stm2->close();
 	$stm->close();
-	unlink('updateRunning.lock');
+	unlink($pwd.'updateRunning.lock');
 	exit(0);
 	}
 
