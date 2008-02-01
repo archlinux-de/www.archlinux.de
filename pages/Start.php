@@ -187,6 +187,8 @@ private function getRecentPackages()
 			SELECT
 				packages.id,
 				packages.pkgname,
+				packages.pkgver,
+				packages.pkgrel,
 				categories.name AS category
 			FROM
 				pkgdb.packages,
@@ -211,6 +213,7 @@ private function getRecentPackages()
 		$result .= '
 			<tr>
 				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
+				<td>'.$package['pkgver'].'-'.$package['pkgrel'].'</td>
 				<th>'.$package['category'].'</th>
 			</tr>
 			';
