@@ -20,6 +20,11 @@
 
 class GetUpdates extends Modul implements IOutput {
 
+private function getLockFile()
+	{
+	return ini_get('session.save_path').'/updateRunning.lock';
+	}
+
 public function prepare()
 	{
 	echo 'Client: Got request...', "\n";
@@ -44,19 +49,19 @@ public function prepare()
 		$this->showFailure('Client: Connection denied!');
 		}
 
-	if (file_exists('/tmp/php-sessions/updateRunning.lock'))
+	if (file_exists($this->getLockFile()))
 		{
 		$this->showFailure('Update allready in progress!');
 		}
 	else
 		{
-		touch('/tmp/php-sessions/updateRunning.lock');
+		touch($this->getLockFile());
 		}
 
 	echo 'Client: Fetching updates...';
 	ini_set('max_execution_time', 0);
 
-	$tempFile = tempnam('/tmp/php-uploads', $this->getName());
+	$tempFile = tempnam(ini_get('upload_tmp_dir').'/php-uploads', $this->getName());
 	$fh = fopen($tempFile, 'w');
 	flock($fh, LOCK_EX);
 	$curl = curl_init($this->Settings->getValue('update_url'));
@@ -84,7 +89,7 @@ public function prepare()
 	flock($fh, LOCK_UN);
 	fclose($fh);
 	unlink($tempFile);
-	unlink('/tmp/php-sessions/updateRunning.lock');
+	unlink($this->getLockFile());
 	}
 
 public function show()
@@ -94,7 +99,7 @@ public function show()
 
 private function showFailure($message)
 	{
-	unlink('/tmp/php-sessions/updateRunning.lock');
+	unlink($this->getLockFile());
 	die($message);
 	}
 

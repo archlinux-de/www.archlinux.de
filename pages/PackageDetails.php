@@ -28,7 +28,7 @@ protected function makeMenu()
 	return '
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=Download">ISOs</a></li>
-			<li class="selected">Pakete</li>
+			<li class="selected"><a href="?page=Packages">Pakete</a></li>
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
 			<li><a href="http://wiki.archlinux.de">Wiki</a></li>
