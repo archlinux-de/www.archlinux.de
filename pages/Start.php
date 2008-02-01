@@ -70,7 +70,7 @@ public function prepare()
 			</div>
 		';
 
-		$this->ObjectCache->addObject('AL:Start', $body, 60*60);
+		$this->ObjectCache->addObject('AL:Start::', $body, 60*60);
 		}
 
 	$this->setValue('body', $body);
