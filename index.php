@@ -18,8 +18,9 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 define('IN_LL', null);
-define('LL_PATH', '/home/pierre/public_html/ll/');
 
+// define('LL_PATH', '/home/pierre/public_html/ll/');
+require ('LLPath.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require (LL_PATH.'modules/Exceptions.php');
