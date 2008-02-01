@@ -17,44 +17,43 @@
 	You should have received a copy of the GNU General Public License
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
-define('IN_LL', null);
-define('LL_PATH', '/home/pierre/public_html/ll/');
+class Settings{
 
-require ('modules/Modul.php');
-require ('modules/Settings.php');
-require (LL_PATH.'modules/Exceptions.php');
-require (LL_PATH.'modules/Functions.php');
-require (LL_PATH.'modules/Io.php');
 
-Modul::__set('Settings', new Settings());
-$Io = Modul::__set('Io', new Io());
+private $config = array();
 
-function __autoload($class)
+
+public function __construct()
 	{
-	Modul::loadModul($class);
-	}
+	$this->config['locale']				= 'de_DE.utf8';
+	$this->config['timezone']			= 'Europe/Berlin';
 
-try
-	{
-	$page = $Io->getString('page');
-	}
-catch(IoRequestException $e)
-	{
-	$page = 'Start';
-	}
+	$this->config['sql_database'] 			= 'll';
+	$this->config['sql_user']			= '';
+	$this->config['sql_password']			= '';
 
-	try
+	$this->config['update_secret']			= '';
+	$this->config['update_host']			= 'localhost';
+	$this->config['update_url']			= '';
+
+	$this->config['debug']				= false;
+
+	if (file_exists('LocalSettings.php'))
 		{
-		Page::loadPage($page);
-		}
-	catch (RuntimeException $e)
-		{
-		$page = 'NotFound';
-		Page::loadPage($page);
+		include ('LocalSettings.php');
 		}
 
-	$class = new $page();
-	$class->prepare();
-	$class->show();
+	setlocale(LC_ALL, $this->config['locale']);
+	date_default_timezone_set($this->config['timezone']);
+	}
+
+
+public function getValue($key)
+	{
+	return $this->config[$key];
+	}
+
+
+}
 
 ?>

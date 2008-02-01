@@ -17,44 +17,17 @@
 	You should have received a copy of the GNU General Public License
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
-define('IN_LL', null);
-define('LL_PATH', '/home/pierre/public_html/ll/');
 
-require ('modules/Modul.php');
-require ('modules/Settings.php');
-require (LL_PATH.'modules/Exceptions.php');
-require (LL_PATH.'modules/Functions.php');
-require (LL_PATH.'modules/Io.php');
+class NotFound extends Page{
 
-Modul::__set('Settings', new Settings());
-$Io = Modul::__set('Io', new Io());
 
-function __autoload($class)
+public function prepare()
 	{
-	Modul::loadModul($class);
+	$this->Io->setStatus(Io::NOT_FOUND);
+	$this->setValue('title', 'Seite nicht gefunden');
+	$this->showFailure('Die Seite wurde nicht gefunden.');
 	}
 
-try
-	{
-	$page = $Io->getString('page');
-	}
-catch(IoRequestException $e)
-	{
-	$page = 'Start';
-	}
-
-	try
-		{
-		Page::loadPage($page);
-		}
-	catch (RuntimeException $e)
-		{
-		$page = 'NotFound';
-		Page::loadPage($page);
-		}
-
-	$class = new $page();
-	$class->prepare();
-	$class->show();
+}
 
 ?>

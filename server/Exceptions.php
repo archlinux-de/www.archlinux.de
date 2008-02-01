@@ -17,44 +17,29 @@
 	You should have received a copy of the GNU General Public License
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
-define('IN_LL', null);
-define('LL_PATH', '/home/pierre/public_html/ll/');
+ini_set('docref_root', 'http://www.php.net/');
+// set_exception_handler('ExceptionHandler');
+// set_error_handler('ErrorHandler');
 
-require ('modules/Modul.php');
-require ('modules/Settings.php');
-require (LL_PATH.'modules/Exceptions.php');
-require (LL_PATH.'modules/Functions.php');
-require (LL_PATH.'modules/Io.php');
-
-Modul::__set('Settings', new Settings());
-$Io = Modul::__set('Io', new Io());
-
-function __autoload($class)
+function ExceptionHandler(Exception $e)
 	{
-	Modul::loadModul($class);
+	die($e->getMessage());
 	}
 
-try
+function ErrorHandler($code, $string, $file, $line)
 	{
-	$page = $Io->getString('page');
-	}
-catch(IoRequestException $e)
-	{
-	$page = 'Start';
+	throw new InternalRuntimeException ($string, $code, $file, $line);
 	}
 
-	try
-		{
-		Page::loadPage($page);
-		}
-	catch (RuntimeException $e)
-		{
-		$page = 'NotFound';
-		Page::loadPage($page);
-		}
+class InternalRuntimeException extends RuntimeException{
 
-	$class = new $page();
-	$class->prepare();
-	$class->show();
+public function __construct($string, $code, $file, $line)
+	{
+	parent::__construct($string, $code);
+	$this->file = $file;
+	$this->line = $line;
+	}
+
+}
 
 ?>
