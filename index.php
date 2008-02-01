@@ -23,7 +23,7 @@ define('IN_LL', null);
 require ('LLPath.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
-require (LL_PATH.'modules/Exceptions.php');
+require ('modules/Exceptions.php');
 require (LL_PATH.'modules/Functions.php');
 require (LL_PATH.'modules/Io.php');
 

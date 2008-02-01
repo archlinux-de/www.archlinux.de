@@ -39,28 +39,29 @@ public function prepare()
 		$this->showFailure('Client: Authentication failed!');
 		}
 
-	if (gethostbyaddr(getenv('REMOTE_ADDR')) != $this->Settings->getValue('update_host'))
+	if (getenv('REMOTE_ADDR') != gethostbyname($this->Settings->getValue('update_host')))
 		{
 		$this->showFailure('Client: Connection denied!');
 		}
 
-	if (file_exists('/tmp/updateRunning.lock'))
+	if (file_exists('/tmp/php-sessions/updateRunning.lock'))
 		{
 		$this->showFailure('Update allready in progress!');
 		}
 	else
 		{
-		touch('/tmp/updateRunning.lock');
+		touch('/tmp/php-sessions/updateRunning.lock');
 		}
 
 	echo 'Client: Fetching updates...';
 	ini_set('max_execution_time', 0);
 
-	$tempFile = tempnam('/tmp', $this->getName());
+	$tempFile = tempnam('/tmp/php-uploads', $this->getName());
 	$fh = fopen($tempFile, 'w');
 	flock($fh, LOCK_EX);
 	$curl = curl_init($this->Settings->getValue('update_url'));
 	curl_setopt($curl, CURLOPT_FILE, $fh);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 	curl_exec($curl);
 	curl_close($curl);
 	flock($fh, LOCK_UN);
@@ -83,7 +84,7 @@ public function prepare()
 	flock($fh, LOCK_UN);
 	fclose($fh);
 	unlink($tempFile);
-	unlink('/tmp/updateRunning.lock');
+	unlink('/tmp/php-sessions/updateRunning.lock');
 	}
 
 public function show()
@@ -93,6 +94,7 @@ public function show()
 
 private function showFailure($message)
 	{
+	unlink('/tmp/php-sessions/updateRunning.lock');
 	die($message);
 	}
 
@@ -334,7 +336,7 @@ private function collectGarbage($packageIDList)
 		$delstm1 = $this->DB->prepare
 			('
 			DELETE FROM
-				packages
+				pkgdb.packages
 			WHERE
 				id = ?
 			');
@@ -342,7 +344,7 @@ private function collectGarbage($packageIDList)
 		$delstm2 = $this->DB->prepare
 			('
 			DELETE FROM
-				files
+				pkgdb.files
 			WHERE
 				package = ?
 			');
@@ -350,7 +352,7 @@ private function collectGarbage($packageIDList)
 		$delstm3 = $this->DB->prepare
 			('
 			DELETE FROM
-				sources
+				pkgdb.sources
 			WHERE
 				package = ?
 			');
@@ -358,7 +360,7 @@ private function collectGarbage($packageIDList)
 		$delstm4 = $this->DB->prepare
 			('
 			DELETE FROM
-				dependencies
+				pkgdb.dependencies
 			WHERE
 				package = ?
 				OR dependency = ?
