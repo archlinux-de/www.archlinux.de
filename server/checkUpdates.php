@@ -28,13 +28,16 @@ $pubPackagesFile 	= '';
 $targetHost		= '';
 $dbuser			= '';
 $dbpw			= '';
+$serverLog 		= '';
+$startTime		= time();
 
 $pwd = dirname(getenv('_')).'/';
+
 require ($pwd.'LocalSettings.php');
 
 if (file_exists($pwd.'updateRunning.lock'))
 	{
-	die(1);
+	die('update still in progress');
 	}
 else
 	{
@@ -43,12 +46,11 @@ else
 
 if (!file_exists($pwd.'lastrun.log'))
 	{
-	die(1);
+	die('lastrun.log not found!');
 	}
 else
 	{
 	$lastrun = trim(file_get_contents($pwd.'lastrun.log'));
-	file_put_contents($pwd.'lastrun.log', time());
 	}
 
 if (!extension_loaded('mysqli'))
@@ -72,7 +74,7 @@ try
 	}
 catch (DBException $e)
 	{
-	echo 'Server: Warning: Could not lock tables!';
+	$serverLog .=  'Server: Warning: Could not lock tables!';
 	}
 
 
@@ -124,7 +126,7 @@ try
 	flock($fh, LOCK_EX);
 	fwrite($fh, base64_encode(gzcompress(serialize($packageIDList)))."\n");
 
-	echo 'Server: Getting Updates...';
+	$serverLog .= 'Server: Getting Updates...';
 	foreach ($stm->getRowSet() as $package)
 		{
 		$stm2->bindInteger($package['id']);
@@ -146,12 +148,15 @@ try
 
 	flock($fh, LOCK_UN);
 	fclose($fh);
-	echo 'done', "\n";
+	$serverLog .= "done\n";
 	$sha1sum = sha1_file($pubPackagesFile);
 	}
 catch (DBNoDataException $e)
 	{
-	echo 'No Updates available. Good Bye!', "\n";
+	@flock($fh, LOCK_UN);
+	@fclose($fh);
+	@unlink($pubPackagesFile);
+	$serverLog .= "No Updates available. Good Bye!\n";
 	$stm2->close();
 	$stm->close();
 	unlink($pwd.'updateRunning.lock');
@@ -167,25 +172,34 @@ try
 	}
 catch (DBException $e)
 	{
-	echo 'Server: Warning: Could not unlock tables!';
+	$serverLog .= 'Server: Warning: Could not unlock tables!';
 	}
 
-echo 'Server: Sending request to client...', "\n";
+$serverLog .= "Server: Sending request to client...\n";
 /** notify archlinux.de to grab the updates via http */
 $seed = sha1(rand());
 $sum = sha1($seed.$secret);
 $curl = curl_init($targetHost);
 curl_setopt($curl, CURLOPT_POST, true);
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, false);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($curl, CURLOPT_POSTFIELDS, 'page=GetUpdates&sha1sum='.$sha1sum.'&seed='.$seed.'&sum='.$sum);
-curl_exec($curl);
-echo curl_error($curl);
+$serverLog .= curl_exec($curl);
+$serverLog .= curl_error($curl);
 curl_close($curl);
 
 unlink($pubPackagesFile);
 unlink($pwd.'updateRunning.lock');
 
-echo 'Server: done', "\n";
+$serverLog .= "Server: done\n";
+
+if (strpos($serverLog, 'Client: All done. Good Bye!') === false)
+	{
+	echo $serverLog;
+	}
+else
+	{
+	file_put_contents($pwd.'lastrun.log', $startTime);
+	}
 
 ?>

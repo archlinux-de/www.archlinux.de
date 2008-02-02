@@ -318,8 +318,8 @@ private function updatePackages($fh)
 
 	$this->updateDependencies();
 	$this->collectGarbage($packageIDList);
-	
-	$this->DB->execute('OPTIMIZE TABLE pkgdb.dependencies, pkgdb.files, pkgdb.packages, pkgdb.sources');
+
+// 	$this->DB->execute('OPTIMIZE TABLE pkgdb.dependencies, pkgdb.files, pkgdb.packages, pkgdb.sources');
 	echo 'done', "\n";
 	}
 
@@ -410,14 +410,21 @@ private function updateDependencies()
 			pkgdb.dependencies WRITE
 		');
 
-	$packages = $this->DB->getRowSet
-		('
-		SELECT
-			package,
-			depends
-		FROM
-			pkgdb.temp_depends
-		');
+	try
+		{
+		$packages = $this->DB->getRowSet
+			('
+			SELECT
+				package,
+				depends
+			FROM
+				pkgdb.temp_depends
+			');
+		}
+	catch (DBNoDataException $e)
+		{
+		$packages = array();
+		}
 
 	$cleanSTM = $this->DB->prepare
 		('
@@ -496,6 +503,7 @@ private function updateDependencies()
 	$stm->close();
 
 	$this->DB->execute('UNLOCK TABLES ');
+	echo 'done', "\n";
 	}
 
 }

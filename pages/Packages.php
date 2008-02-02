@@ -93,7 +93,7 @@ public function prepare()
 
 	try
 		{
-		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+ ]/', '', $this->Io->getString('search'))), 50);
+		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Io->getString('search'))), 50);
 		}
 	catch (IoRequestException $e)
 		{

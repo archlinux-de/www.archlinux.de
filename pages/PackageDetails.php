@@ -104,8 +104,18 @@ public function prepare()
 				AND packages.pkgname = ?
 			');
 		$stm->bindString($data['pkgname']);
-		$realrepo = $stm->getColumn();
+
+		try
+			{
+			$realrepo = $stm->getColumn();
+			}
+		catch (DBNoDataException $e)
+			{
+			/** wird evtl. stimmen ... */
+			$realrepo = 'Extra';
+			}
 		$stm->close();
+
 		$cvsLink = 'http://cvs.archlinux.org/cgi-bin/viewcvs.cgi/'.$data['category'].'/'.$data['pkgname'].'/?cvsroot='.$realrepo.'&amp;only_with_tag=TESTING';
 		}
 	else
@@ -180,7 +190,7 @@ public function prepare()
 			'<table id="packagedependencies">
 				<tr>
 					<th>Abhängigkeiten</th>
-					<th>Inverse Abhängigkeiten</th>
+					<th>Inverse&nbsp;Abhängigkeiten</th>
 					<th>Quellen</th>
 				</tr>
 				<tr>
@@ -251,6 +261,8 @@ private function getDependencies()
 					ON dependencies.dependency = packages.id
 			WHERE
 				dependencies.package = ?
+			ORDER BY
+				packages.pkgname
 			');
 		$stm->bindInteger($this->package);
 
@@ -287,6 +299,8 @@ private function getInverseDependencies()
 			WHERE
 				dependencies.dependency = ?
 				AND dependencies.package = packages.id
+			ORDER BY
+				packages.pkgname
 			');
 		$stm->bindInteger($this->package);
 

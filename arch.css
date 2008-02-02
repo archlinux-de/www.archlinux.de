@@ -230,11 +230,13 @@ a:hover {
 .packageline0 td {
 	font-size: 11px;
 	background-color: #F0F0F0;
+	vertical-align: top;
 }
 
 .packageline1 td {
 	font-size: 11px;
 	background-color: #D9D9D9;
+	vertical-align: top;
 }
 
 .pages {
