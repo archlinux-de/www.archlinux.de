@@ -406,6 +406,8 @@ private function updateDependencies()
 		('
 		LOCK TABLES
 			pkgdb.packages READ,
+			pkgdb.packages AS source READ,
+			pkgdb.packages AS target READ,
 			pkgdb.repositories READ,
 			pkgdb.dependencies WRITE
 		');
@@ -446,6 +448,19 @@ private function updateDependencies()
 
 	$stm2 = $this->DB->prepare
 		('
+		(
+		SELECT
+			target.id
+		FROM
+			pkgdb.packages AS source,
+			pkgdb.packages AS target
+		WHERE
+			target.pkgname = ?
+			AND target.repository = source.repository
+			AND source.id = ?
+		)
+		UNION
+		(
 		SELECT
 			id
 		FROM
@@ -453,6 +468,8 @@ private function updateDependencies()
 		WHERE
 			pkgname = ?
 			AND repository <> (SELECT id FROM pkgdb.repositories WHERE name = \'Testing\')
+		)
+		LIMIT 1
 		');
 
 	foreach ($packages as $package)
@@ -481,6 +498,8 @@ private function updateDependencies()
 
 			try
 				{
+				$stm2->bindString($depname);
+				$stm2->bindInteger($package['package']);
 				$stm2->bindString($depname);
 				$depid = $stm2->getColumn();
 
