@@ -309,6 +309,19 @@ a:hover {
 	border-bottom: 1px solid #46494d;
 }
 
+#search {
+	position: absolute;
+	top: -22px;
+	font-size: 11px;
+	right: 10px;
+	text-align: right;
+}
+
+#search input {
+	background-color: #D9D9D9;
+	border-color: #C9C9C9;
+}
+
 #searchbox {
 	padding: 5px;
 	margin: 0px;

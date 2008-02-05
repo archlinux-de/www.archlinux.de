@@ -36,6 +36,16 @@ public function prepare()
 		{
 		$body =
 		'
+			<div id="search">
+			<form method="post" action="?page=Packages">
+				<div>Paket-Suche:&nbsp;&nbsp;<input type="text" name="search" size="20" maxlength="200" id="searchfield" /></div>
+			</form>
+			<script type="text/javascript">
+				/* <![CDATA[ */
+				document.getElementById("searchfield").focus();
+				/* ]]> */
+			</script>
+			</div>
 			<div id="right">
 				<div class="greybox">
 					<h3>Aktualisierte Pakete</h3>
