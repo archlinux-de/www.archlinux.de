@@ -27,10 +27,11 @@ protected $variables = array();
 private static $availablePages = array
 	(
 	'Start' => 'pages/Start.php',
-	'NotFound' => 'pages/NotFound.php',
-	'Packages' => 'pages/Packages.php',
+	'GetUpdates' => 'pages/GetUpdates.php',
 	'PackageDetails' => 'pages/PackageDetails.php',
-	'GetUpdates' => 'pages/GetUpdates.php'
+	'Packages' => 'pages/Packages.php',
+	'GetFileFromMirror' => 'pages/GetFileFromMirror.php',
+	'NotFound' => 'pages/NotFound.php'
 	);
 
 public static function loadPage($name)
