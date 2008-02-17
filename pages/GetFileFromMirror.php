@@ -52,14 +52,14 @@ public function prepare()
 			$size = $this->Io->getRemoteFileSize($url);
 			if (empty($size) || $size < 1)
 				{
-				throw new IoException('e');
+				throw new IoException('Dateigröße ist: '.$size);
 				}
 			}
 		catch (Exception $e)
 			{
-			$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p>Alternative Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
-
 			$this->ObjectCache->addObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file), 'e', 60*60);
+
+			$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p><strong>'.$e->getMessage().'</strong></p><p>Alternative Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
 			}
 
 		$this->ObjectCache->addObject('AL:GetFileFromMirror::'.$mirror.':'.md5($file), $url, 60*60);
