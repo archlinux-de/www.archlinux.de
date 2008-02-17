@@ -49,9 +49,10 @@ public function prepare()
 
 		try
 			{
-			if ($this->Io->getRemoteFileSize($url) == 0)
+			$size = $this->Io->getRemoteFileSize($url);
+			if (empty($size) || $size < 1)
 				{
-				throw new IoException('Datei ist leer: '.$url);
+				throw new IoException('e');
 				}
 			}
 		catch (Exception $e)
