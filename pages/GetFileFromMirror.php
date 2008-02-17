@@ -41,9 +41,9 @@ public function prepare()
 		$this->showFailure('keine Spiegel gefunden!');
 		}
 
-	$mirror = $this->getRandomMirror();
+	$mirror = $this->getRandomMirror($file);
 
-	if (!($url = $this->ObjectCache->getObject('AL:GetFileFromMirror:'.$mirror.':'.$file)))
+	if (!($url = $this->ObjectCache->getObject('AL:GetFileFromMirror::'.$mirror.':'.md5($file))))
 		{
 		$url = $mirror.$file;
 
@@ -56,10 +56,12 @@ public function prepare()
 			}
 		catch (Exception $e)
 			{
-			$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p>Alternativen Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
+			$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p>Alternative Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
+
+			$this->ObjectCache->addObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file), 'e', 60*60);
 			}
 
-		$this->ObjectCache->addObject('AL:GetFileFromMirror:'.$mirror.':'.$file, $url, 60*60);
+		$this->ObjectCache->addObject('AL:GetFileFromMirror::'.$mirror.':'.md5($file), $url, 60*60);
 		}
 
 	$this->Io->redirectToUrl($url);
@@ -71,7 +73,7 @@ private function getAlternateMirrorList($url, $file)
 
 	foreach (array_keys($this->Settings->getValue('mirrors')) as $mirror)
 		{
-		if ($mirror.$file == $url)
+		if ($mirror.$file == $url || $this->ObjectCache->getObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file)) != false)
 			{
 			continue;
 			}
@@ -81,15 +83,18 @@ private function getAlternateMirrorList($url, $file)
 	return $list.'</ul>';
 	}
 
-private function getRandomMirror()
+private function getRandomMirror($file)
 	{
 	$tempMirrors = array();
 
 	foreach ($this->Settings->getValue('mirrors') as $mirror => $probability)
 		{
-		for ($i = 0; $i < $probability; $i++)
+		if ($this->ObjectCache->getObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file)) == false)
 			{
-			$tempMirrors[] = $mirror;
+			for ($i = 0; $i < $probability; $i++)
+				{
+				$tempMirrors[] = $mirror;
+				}
 			}
 		}
 
