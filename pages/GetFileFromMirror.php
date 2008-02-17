@@ -18,6 +18,9 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require (LL_PATH.'modules/ObjectCache.php');
+Modul::__set('ObjectCache', new ObjectCache());
+
 class GetFileFromMirror extends Page{
 
 public function prepare()
@@ -39,18 +42,24 @@ public function prepare()
 		}
 
 	$mirror = $this->getRandomMirror();
-	$url = $mirror.$file;
 
-	try
+	if (!($url = $this->ObjectCache->getObject('AL:GetFileFromMirror:'.$mirror.':'.$file)))
 		{
-		if ($this->Io->getRemoteFileSize($url) == 0)
+		$url = $mirror.$file;
+
+		try
 			{
-			throw new IoException('Datei ist leer: '.$url);
+			if ($this->Io->getRemoteFileSize($url) == 0)
+				{
+				throw new IoException('Datei ist leer: '.$url);
+				}
 			}
-		}
-	catch (Exception $e)
-		{
-		$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p>Alternativen Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
+		catch (Exception $e)
+			{
+			$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p>Alternativen Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
+			}
+
+		$this->ObjectCache->addObject('AL:GetFileFromMirror:'.$mirror.':'.$file, $url, 60*60);
 		}
 
 	$this->Io->redirectToUrl($url);
