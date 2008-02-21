@@ -356,9 +356,10 @@ private function showPackageList($packages)
 	foreach ($packages as $package)
 		{
 		$needupdate = $package['needupdate'] > 0 ? ' class="outdated"' : '';
+		$style = $package['repository'] == 'Testing' ? ' class="testingpackage"' : '';
 
 		$body .= '<tr class="packageline'.$line.'">
-				<td>'.$package['repository'].'</td><td>'.$package['category'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td><td'.$needupdate.'>'.$package['pkgver'].'-'.$package['pkgrel'].'</td><td>'.cutString($package['pkgdesc'], 70).'</td><td>'.formatDate($package['lastupdate']).'</td>
+				<td>'.$package['repository'].'</td><td>'.$package['category'].'</td><td><a'.$style.' href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td><td'.$needupdate.'>'.$package['pkgver'].'-'.$package['pkgrel'].'</td><td>'.cutString($package['pkgdesc'], 70).'</td><td>'.formatDate($package['lastupdate']).'</td>
 			</tr>';
 
 		$line = abs($line-1);

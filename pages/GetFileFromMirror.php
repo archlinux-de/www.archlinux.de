@@ -49,7 +49,7 @@ public function prepare()
 
 		try
 			{
-			$size = $this->Io->getRemoteFileSize($url);
+			$size = $this->getRemoteFileSize($url);
 			if (empty($size) || $size < 1)
 				{
 				throw new IoException('Dateigröße ist: '.$size);
@@ -64,8 +64,9 @@ public function prepare()
 
 		$this->ObjectCache->addObject('AL:GetFileFromMirror::'.$mirror.':'.md5($file), $url, 60*60);
 		}
-
-	$this->Io->redirectToUrl($url);
+print_r($size);exit;
+	$this->setValue('body', $size);
+// 	$this->Io->redirectToUrl($url);
 	}
 
 private function getAlternateMirrorList($url, $file)
@@ -102,6 +103,37 @@ private function getRandomMirror($file)
 	$randomIndex = array_rand($tempMirrors);
 
 	return $tempMirrors[$randomIndex];
+	}
+
+private function curlInit($url)
+	{
+	if (!preg_match('/^(https?|ftp):\/\//', $url))
+		{
+ 		throw new IoException('Nur http und ftp-Protokolle erlaubt');
+		}
+
+	$curl = curl_init($url);
+	curl_setopt($curl, CURLOPT_FAILONERROR, true);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
+	curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+	curl_setopt($curl, CURLOPT_ENCODING, '');
+	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:support@laber-land.de');
+
+	return $curl;
+	}
+
+public function getRemoteFileSize($url)
+	{
+	$curl = $this->curlInit($url);
+	curl_setopt($curl, CURLOPT_NOBODY, true);
+	 curl_exec($curl);
+	 $error = curl_getinfo($curl);
+// 	$size = curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+// 	$error = curl_errno($curl);
+	curl_close($curl);
+
+	return $error;
 	}
 
 }

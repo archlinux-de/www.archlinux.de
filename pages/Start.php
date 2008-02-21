@@ -199,12 +199,15 @@ private function getRecentPackages()
 				packages.pkgname,
 				packages.pkgver,
 				packages.pkgrel,
-				categories.name AS category
+				categories.name AS category,
+				repositories.name AS repository
 			FROM
 				pkgdb.packages,
-				pkgdb.categories
+				pkgdb.categories,
+				pkgdb.repositories
 			WHERE
 				packages.category = categories.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.lastupdate DESC
 			LIMIT
@@ -220,9 +223,10 @@ private function getRecentPackages()
 
 	foreach ($packages as $package)
 		{
+		$style = $package['repository'] == 'Testing' ? ' class="testingpackage"' : '';
 		$result .= '
 			<tr>
-				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
+				<td><a'.$style.' href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
 				<td>'.$package['pkgver'].'-'.$package['pkgrel'].'</td>
 				<th>'.$package['category'].'</th>
 			</tr>
