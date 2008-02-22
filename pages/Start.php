@@ -225,8 +225,8 @@ private function getRecentPackages()
 		{
 		$style = $package['repository'] == 'Testing' ? ' class="testingpackage"' : '';
 		$result .= '
-			<tr>
-				<td><a'.$style.' href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
+			<tr'.$style.'>
+				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
 				<td>'.$package['pkgver'].'-'.$package['pkgrel'].'</td>
 				<th>'.$package['category'].'</th>
 			</tr>

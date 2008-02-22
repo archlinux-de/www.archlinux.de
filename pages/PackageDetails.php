@@ -117,10 +117,14 @@ public function prepare()
 		$stm->close();
 
 		$cvsLink = 'http://cvs.archlinux.org/cgi-bin/viewcvs.cgi/'.$data['category'].'/'.$data['pkgname'].'/?cvsroot='.$realrepo.'&amp;only_with_tag=TESTING';
+
+		$style = ' class="testingpackage"';
 		}
 	else
 		{
 		$cvsLink = 'http://cvs.archlinux.org/cgi-bin/viewcvs.cgi/'.$data['category'].'/'.$data['pkgname'].'/?cvsroot='.$data['repository'].'&amp;only_with_tag=CURRENT';
+
+		$style = '';
 		}
 
 	$body = '<div id="box">
@@ -144,7 +148,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Repositorium</th>
-				<td>'.$data['repository'].'</td>
+				<td'.$style.'>'.$data['repository'].'</td>
 			</tr>
 			<tr>
 				<th>Kategorie</th>
