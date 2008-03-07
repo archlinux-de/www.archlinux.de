@@ -19,6 +19,7 @@
 */
 require (LL_PATH.'modules/DB.php');
 require (LL_PATH.'modules/IOutput.php');
+require (LL_PATH.'modules/ICache.php');
 
 abstract class Page extends Modul implements IOutput{
 

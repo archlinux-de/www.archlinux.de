@@ -19,7 +19,6 @@
 */
 define('IN_LL', null);
 
-// define('LL_PATH', '/home/pierre/public_html/ll/');
 require ('LLPath.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
