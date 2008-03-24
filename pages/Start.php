@@ -224,7 +224,7 @@ private function getRecentPackages()
 		$result .= '
 			<tr'.$style.'>
 				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
-				<td>'.$package['pkgver'].'-'.$package['pkgrel'].'</td>
+				<th>'.$package['pkgver'].'-'.$package['pkgrel'].'</th>
 			</tr>
 			';
 		}
