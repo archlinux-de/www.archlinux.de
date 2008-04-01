@@ -116,7 +116,7 @@ private function sendOutput()
 		<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
 		<meta http-equiv="content-language" content="de" />
 		<meta http-equiv="expires" content="120" />
-		<meta name="robots" content="index,follow" />
+		<meta name="robots" content="'.$this->getValue('meta.robots').'" />
 		<meta name="revisit-after" content="3 days" />
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" href="arch.css" />

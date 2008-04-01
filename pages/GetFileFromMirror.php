@@ -18,18 +18,15 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require (LL_PATH.'modules/ObjectCache.php');
-Modul::__set('ObjectCache', new ObjectCache());
-
 class GetFileFromMirror extends Page{
 
 public function prepare()
 	{
-	$this->setValue('title', 'Lade Datei von einem Spiegel');
+	$this->setValue('title', 'Lade Datei von einem Spiegel-Server');
 
 	try
 		{
-		$file = $this->Io->getString('file');
+		$file = htmlspecialchars($this->Io->getString('file'));
 		}
 	catch (IoRequestException $e)
 		{
@@ -38,34 +35,26 @@ public function prepare()
 
 	if (count($this->Settings->getValue('mirrors')) == 0)
 		{
-		$this->showFailure('keine Spiegel gefunden!');
+		$this->showFailure('keine Spiegel-Server gefunden!');
 		}
+
+	$this->setValue('title', basename($file));
 
 	$mirror = $this->getRandomMirror($file);
+	$url = $mirror.$file;
 
-	if (!($url = $this->ObjectCache->getObject('AL:GetFileFromMirror::'.$mirror.':'.md5($file))))
-		{
-		$url = $mirror.$file;
+	$body = '<div id="box">
+			<h2>'.basename($file).'</h2>
+			<p>Aktueller Server: <strong><a href="'.$url.'">'.$mirror.'</a></strong></p>
+			Alternative Server:'.$this->getAlternateMirrorList($url, $file).'
+		</div>
+		<script type="text/javascript">
+			/* <![CDATA[ */
+			setTimeout(\'location.href="'.$url.'"\', 4000);
+			/* ]]> */
+		</script>';
 
-		try
-			{
-			$size = $this->Io->getRemoteFileSize($url);
-			if (empty($size) || $size < 1)
-				{
-				throw new IoException('Dateigröße ist: '.$size);
-				}
-			}
-		catch (Exception $e)
-			{
-			$this->ObjectCache->addObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file), 'e', 60*60);
-
-			$this->showFailure('Fehler beim Laden der Datei:<br /><code>'.$file.'</code><br />von<br /><strong>'.$mirror.'</strong>.<p><strong>'.$e->getMessage().'</strong></p><p>Alternative Server:'.$this->getAlternateMirrorList($url, $file).'</p>');
-			}
-
-		$this->ObjectCache->addObject('AL:GetFileFromMirror::'.$mirror.':'.md5($file), $url, 60*60);
-		}
-
-	$this->Io->redirectToUrl($url);
+	$this->setValue('body', $body);
 	}
 
 private function getAlternateMirrorList($url, $file)
@@ -74,7 +63,7 @@ private function getAlternateMirrorList($url, $file)
 
 	foreach (array_keys($this->Settings->getValue('mirrors')) as $mirror)
 		{
-		if ($mirror.$file == $url || $this->ObjectCache->getObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file)) != false)
+		if ($mirror.$file == $url)
 			{
 			continue;
 			}
@@ -90,12 +79,9 @@ private function getRandomMirror($file)
 
 	foreach ($this->Settings->getValue('mirrors') as $mirror => $probability)
 		{
-		if ($this->ObjectCache->getObject('AL:GetFileFromMirror:BlackList:'.$mirror.':'.md5($file)) == false)
+		for ($i = 0; $i < $probability; $i++)
 			{
-			for ($i = 0; $i < $probability; $i++)
-				{
-				$tempMirrors[] = $mirror;
-				}
+			$tempMirrors[] = $mirror;
 			}
 		}
 
