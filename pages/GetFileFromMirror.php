@@ -61,9 +61,9 @@ private function getAlternateMirrorList($url, $file)
 	{
 	$list = '<ul>';
 
-	foreach (array_keys($this->Settings->getValue('mirrors')) as $mirror)
+	foreach (array_keys($this->Settings->getValue('mirrors')) as $mirror => $probability)
 		{
-		if ($mirror.$file == $url)
+		if ($probability == 0 || $mirror.$file == $url)
 			{
 			continue;
 			}
