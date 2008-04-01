@@ -61,7 +61,7 @@ private function getAlternateMirrorList($url, $file)
 	{
 	$list = '<ul>';
 	$mirrors = $this->Settings->getValue('mirrors');
-	asort($mirrors);
+	arsort($mirrors);
 
 	foreach ($mirrors as $mirror => $probability)
 		{
