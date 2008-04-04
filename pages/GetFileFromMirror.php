@@ -23,6 +23,7 @@ class GetFileFromMirror extends Page{
 public function prepare()
 	{
 	$this->setValue('title', 'Lade Datei von einem Spiegel-Server');
+	$this->setValue('meta.robots', 'noindex,nofollow');
 
 	try
 		{
@@ -50,7 +51,7 @@ public function prepare()
 		</div>
 		<script type="text/javascript">
 			/* <![CDATA[ */
-			setTimeout(\'location.href="'.$url.'"\', 4000);
+			setTimeout(\'location.href="'.$url.'"\', 2000);
 			/* ]]> */
 		</script>';
 
