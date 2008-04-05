@@ -131,8 +131,8 @@ private function sendOutput()
 		<div id="content">
 			'.$this->getValue('body').'
 			<div id="foot">
-				<a href="http://wiki.archlinux.de/?title=Wiki:Datenschutz">Datenschutz</a> ::
-				<a href="http://wiki.archlinux.de/?title=Wiki:Impressum">Impressum</a>
+				<a href="http://wiki.archlinux.de/?title=wiki.archlinux.de:Datenschutz">Datenschutz</a> ::
+				<a href="http://wiki.archlinux.de/?title=wiki.archlinux.de:Impressum">Impressum</a>
 			</div>
 		</div>
 	</body>
