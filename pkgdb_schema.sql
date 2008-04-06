@@ -16,19 +16,6 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- --------------------------------------------------------
 
 -- 
--- Tabellenstruktur für Tabelle `categories`
--- 
-
-CREATE TABLE `categories` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(255) collate latin1_general_ci NOT NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
-
--- --------------------------------------------------------
-
--- 
 -- Tabellenstruktur für Tabelle `dependencies`
 -- 
 
@@ -83,7 +70,6 @@ CREATE TABLE `packages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `origid` int(11) NOT NULL,
   `repository` int(11) unsigned NOT NULL,
-  `category` int(11) unsigned default NULL,
   `maintainer` int(11) unsigned default NULL,
   `needupdate` tinytext collate latin1_general_ci NOT NULL,
   `pkgname` varchar(255) collate latin1_general_ci NOT NULL,
@@ -96,7 +82,6 @@ CREATE TABLE `packages` (
   UNIQUE KEY `origid` (`origid`),
   UNIQUE KEY `repository` (`repository`,`pkgname`(20)),
   KEY `maintainer` (`maintainer`),
-  KEY `category` (`category`),
   KEY `lastupdate` (`lastupdate`),
   KEY `pkgname` (`pkgname`(20)),
   FULLTEXT KEY `pkgdesc` (`pkgdesc`)

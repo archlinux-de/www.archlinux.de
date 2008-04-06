@@ -70,7 +70,7 @@ $DB = new DB($dbuser, $dbpw, 'archlinux');
 
 try
 	{
-	$DB->execute('LOCK TABLES packages READ, packages_files READ, categories READ, auth_user READ, repos READ');
+	$DB->execute('LOCK TABLES packages READ, packages_files READ, auth_user READ, repos READ');
 	}
 catch (DBException $e)
 	{
@@ -86,7 +86,6 @@ $stm = $DB->prepare
 		packages.id,
 		repos.name AS repository,
 		auth_user.username AS maintainer,
-		categories.category,
 		packages.needupdate,
 		packages.pkgname,
 		packages.pkgver,
@@ -99,11 +98,9 @@ $stm = $DB->prepare
 	FROM
 		packages
 			LEFT JOIN auth_user ON packages.maintainer_id = auth_user.id,
-		categories,
 		repos
 	WHERE
-		packages.category_id = categories.id
-		AND packages.repo_id = repos.id
+		packages.repo_id = repos.id
 		AND UNIX_TIMESTAMP(last_update) > ?
 	');
 /** make sure to get all chagnes which were commited during the last run */

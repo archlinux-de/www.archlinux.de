@@ -64,17 +64,14 @@ public function prepare()
 				packages.needupdate,
 				packages.url,
 				packages.origid,
-				categories.name AS category,
 				repositories.name AS repository,
 				maintainers.realname AS maintainer
 			FROM
 				pkgdb.packages
 					LEFT JOIN pkgdb.maintainers ON packages.maintainer = maintainers.id,
-				pkgdb.categories,
 				pkgdb.repositories
 			WHERE
 				packages.id = ?
-				AND packages.category = categories.id
 				AND packages.repository = repositories.id
 			');
 		$stm->bindInteger($this->package);
@@ -92,47 +89,20 @@ public function prepare()
 
 	if ($data['repository'] == 'Testing')
 		{
-		$stm = $this->DB->prepare
-			('
-			SELECT
-				repositories.name
-			FROM
-				pkgdb.packages,
-				pkgdb.repositories
-			WHERE
-				packages.repository = repositories.id
-				AND repositories.name <> \'Testing\'
-				AND packages.pkgname = ?
-			');
-		$stm->bindString($data['pkgname']);
-
-		try
-			{
-			$realrepo = $stm->getColumn();
-			}
-		catch (DBNoDataException $e)
-			{
-			/** wird evtl. stimmen ... */
-			$realrepo = 'Extra';
-			}
-		$stm->close();
-
-		$cvsLink = 'http://cvs.archlinux.org/cgi-bin/viewcvs.cgi/'.$data['category'].'/'.$data['pkgname'].'/?cvsroot='.$realrepo.'&amp;only_with_tag=TESTING';
-
 		$style = ' class="testingpackage"';
 		}
 	else
 		{
-		$cvsLink = 'http://cvs.archlinux.org/cgi-bin/viewcvs.cgi/'.$data['category'].'/'.$data['pkgname'].'/?cvsroot='.$data['repository'].'&amp;only_with_tag=CURRENT';
-
 		$style = '';
 		}
+
+	$svnLink = 'http://svn.archlinux.org/'.$data['pkgname'].'/repos/'.strtolower($data['repository']).'-i686';
 
 	$body = '<div id="box">
 		<h1 id="packagename">'.$data['pkgname'].'</h1>
 		<div id="packagelinks">
 			<ul>
-				<li><a href="'.$cvsLink.'">CVS Eintrag</a></li>
+				<li><a href="'.$svnLink.'">SVN Eintrag</a></li>
 				<li>'.($this->Io->isRequest('view') ? '<a href="?page=PackageDetails;package='.$this->package.'">Details</a>' : '<a href="?page=PackageDetails;package='.$this->package.';view=FileList">Dateien</a>').'</li>
 				'.($data['needupdate'] > 0 ? '' : '<li><a href="http://www.archlinux.org/packages/flag/'.$data['origid'].'/" onclick="return !window.open(\'http://www.archlinux.org/packages/flag/'.$data['origid'].'/\',\'Flag Package Out-of-Date\',\'height=250,width=450,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no\');">Veraltetes Paket melden</a>
 				</li>').'
@@ -150,10 +120,6 @@ public function prepare()
 			<tr>
 				<th>Repositorium</th>
 				<td'.$style.'>'.$data['repository'].'</td>
-			</tr>
-			<tr>
-				<th>Kategorie</th>
-				<td>'.$data['category'].'</td>
 			</tr>
 			<tr>
 				<th>Beschreibung</th>

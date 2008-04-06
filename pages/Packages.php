@@ -25,7 +25,6 @@ private $maxPackages 	= 100;
 private $orderby 	= 'lastupdate';
 private $sort 		= 1;
 private $repository	= 0;
-private $category	= 0;
 private $search		= '';
 private $searchString	= '';
 private $searchField 	= 0;
@@ -51,7 +50,7 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('pkgname', 'lastupdate', 'category', 'repository')))
+		if (in_array($this->Io->getString('orderby'), array('pkgname', 'lastupdate', 'repository')))
 			{
 			$this->orderby = $this->Io->getString('orderby');
 			}
@@ -79,14 +78,6 @@ public function prepare()
 	try
 		{
 		$this->repository = $this->Io->getInt('repository');
-		}
-	catch (IoRequestException $e)
-		{
-		}
-
-	try
-		{
-		$this->category = $this->Io->getInt('category');
 		}
 	catch (IoRequestException $e)
 		{
@@ -123,17 +114,13 @@ public function prepare()
 					packages.pkgdesc,
 					packages.lastupdate,
 					packages.needupdate,
-					categories.name AS category,
 					repositories.name AS repository
 				FROM
 					pkgdb.packages,
-					pkgdb.categories,
 					pkgdb.repositories
 				WHERE
-					packages.category = categories.id
-					AND packages.repository = repositories.id
+					packages.repository = repositories.id
 					'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
-					'.($this->category > 0 ? 'AND packages.category = '.$this->category : '').'
 				ORDER BY
 					'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 				LIMIT
@@ -152,18 +139,14 @@ public function prepare()
 					packages.pkgdesc,
 					packages.lastupdate,
 					packages.needupdate,
-					categories.name AS category,
 					repositories.name AS repository
 				FROM
 					pkgdb.packages,
-					pkgdb.categories,
 					pkgdb.repositories
 					'.($this->searchField == 2 ? ',pkgdb.files' : '').'
 				WHERE
-					packages.category = categories.id
-					AND packages.repository = repositories.id
+					packages.repository = repositories.id
 					'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
-					'.($this->category > 0 ? 'AND packages.category = '.$this->category : '').'
 					'.$this->getSearchStatement().'
 				GROUP BY
 					packages.id
@@ -188,15 +171,11 @@ public function prepare()
 		<table width="100%">
 			<tr>
 				<th>Repositorium</th>
-				<th>Kategorie</th>
 				<th colspan="2">Schlüsselwörter</th>
 			</tr>
 			<tr>
 				<td>
 					'.$this->getRepositoryList().'
-				</td>
-				<td>
-					'.$this->getCategoryList().'
 				</td>
 				<td>
 					<input type="text" name="search" id="searchfield" value="'.$this->search.'" size="34" maxlength="50" />
@@ -291,47 +270,9 @@ private function getRepositoryList()
 	return $options.'</select>';
 	}
 
-private function getCategoryList()
-	{
-	$options = '<select name="category">';
-
-	try
-		{
-		$categories = $this->DB->getRowSet
-			('
-			SELECT 0 AS id, \'\' AS name
-			UNION
-			SELECT
-				id,
-				name
-			FROM
-				pkgdb.categories
-			');
-
-		foreach ($categories as $category)
-			{
-			if ($this->category == $category['id'])
-				{
-				$selected = ' selected="selected"';
-				}
-			else
-				{
-				$selected = '';
-				}
-
-			$options .= '<option value="'.$category['id'].'"'.$selected.'>'.$category['name'].'</option>';
-			}
-		}
-	catch (DBNoDataException $e)
-		{
-		}
-
-	return $options.'</select>';
-	}
-
 private function showPackageList($packages)
 	{
-	$link = '?page=Packages;package='.$this->package.';category='.$this->category.';repository='.$this->repository.';search='.urlencode($this->search).';searchfield='.$this->searchField;
+	$link = '?page=Packages;package='.$this->package.';repository='.$this->repository.';search='.urlencode($this->search).';searchfield='.$this->searchField;
 	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort;
 
 	$next = ' <a href="'.$curlink.';package='.($this->maxPackages+$this->package).'">&#187;</a>';
@@ -342,14 +283,13 @@ private function showPackageList($packages)
 	$body = '<table id="packages">
 			<tr>
 				<th><a href="'.$link.';orderby=repository;sort='.abs($this->sort-1).'">Repositorium</a></th>
-				<th><a href="'.$link.';orderby=category;sort='.abs($this->sort-1).'">Kategorie</a></th>
 				<th><a href="'.$link.';orderby=pkgname;sort='.abs($this->sort-1).'">Name</a></th>
 				<th>Version</th>
 				<th>Beschreibung</th>
 				<th><a href="'.$link.';orderby=lastupdate;sort='.abs($this->sort-1).'">Letzte&nbsp;Aktualisierung</a></th>
 			</tr>
 			<tr>
-				<td class="pages" colspan="6">'.$last.$next.'</td>
+				<td class="pages" colspan="5">'.$last.$next.'</td>
 			</tr>';
 
 	$line = 0;
@@ -360,7 +300,7 @@ private function showPackageList($packages)
 		$style = $package['repository'] == 'Testing' ? ' testingpackage' : '';
 
 		$body .= '<tr class="packageline'.$line.$style.'">
-				<td>'.$package['repository'].'</td><td>'.$package['category'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td><td'.$needupdate.'>'.$package['pkgver'].'-'.$package['pkgrel'].'</td><td>'.cutString($package['pkgdesc'], 70).'</td><td>'.formatDate($package['lastupdate']).'</td>
+				<td>'.$package['repository'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td><td'.$needupdate.'>'.$package['pkgver'].'-'.$package['pkgrel'].'</td><td>'.cutString($package['pkgdesc'], 70).'</td><td>'.formatDate($package['lastupdate']).'</td>
 			</tr>';
 
 		$line = abs($line-1);
@@ -368,7 +308,7 @@ private function showPackageList($packages)
 
 	$body .= '
 			<tr>
-				<td class="pages" colspan="6">'.$last.$next.'</td>
+				<td class="pages" colspan="5">'.$last.$next.'</td>
 			</tr>
 		</table>';
 

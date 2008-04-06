@@ -116,7 +116,6 @@ private function updatePackages($fh)
 		LOCK TABLES
 			pkgdb.packages WRITE,
 			pkgdb.repositories READ,
-			pkgdb.categories READ,
 			pkgdb.maintainers READ,
 			pkgdb.files WRITE,
 			pkgdb.sources WRITE
@@ -152,7 +151,6 @@ private function updatePackages($fh)
 			pkgdb.packages
 		SET
 			repository = (SELECT id FROM pkgdb.repositories WHERE name = ?),
-			category = (SELECT id FROM pkgdb.categories WHERE name = ?),
 			maintainer = (SELECT id FROM pkgdb.maintainers WHERE username = ?),
 			needupdate = ?,
 			pkgname = ?,
@@ -172,7 +170,6 @@ private function updatePackages($fh)
 			pkgdb.packages
 		SET
 			repository = (SELECT id FROM pkgdb.repositories WHERE name = ?),
-			category = (SELECT id FROM pkgdb.categories WHERE name = ?),
 			maintainer = (SELECT id FROM pkgdb.maintainers WHERE username = ?),
 			needupdate = ?,
 			pkgname = ?,
@@ -243,7 +240,6 @@ private function updatePackages($fh)
 			$packageID = $testSTM->getColumn();
 
 			$updateSTM->bindString(htmlspecialchars($package['repository']));
-			$updateSTM->bindString(htmlspecialchars($package['category']));
 			$updateSTM->bindString(htmlspecialchars($package['maintainer']));
 			$updateSTM->bindInteger($package['needupdate']);
 			$updateSTM->bindString(htmlspecialchars($package['pkgname']));
@@ -259,7 +255,6 @@ private function updatePackages($fh)
 		catch (DBNoDataException $e)
 			{
 			$insertSTM->bindString(htmlspecialchars($package['repository']));
-			$insertSTM->bindString(htmlspecialchars($package['category']));
 			$insertSTM->bindString(htmlspecialchars($package['maintainer']));
 			$insertSTM->bindInteger($package['needupdate']);
 			$insertSTM->bindString(htmlspecialchars($package['pkgname']));
