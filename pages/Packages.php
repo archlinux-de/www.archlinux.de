@@ -331,7 +331,7 @@ private function getCategoryList()
 private function showPackageList($packages)
 	{
 	$link = '?page=Packages;package='.$this->package.';category='.$this->category.';repository='.$this->repository.';search='.urlencode($this->search).';searchfield='.$this->searchField;
-	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort;
+	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort.';category='.$this->category.';repository='.$this->repository.';search='.urlencode($this->search).';searchfield='.$this->searchField;
 
 	$next = ' <a href="'.$curlink.';package='.($this->maxPackages+$this->package).'">&#187;</a>';
 	$last = ($this->package > 0
