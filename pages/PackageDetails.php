@@ -96,13 +96,11 @@ public function prepare()
 		$style = '';
 		}
 
-	$svnLink = 'http://svn.archlinux.org/'.$data['pkgname'].'/repos/'.strtolower($data['repository']).'-i686';
-
 	$body = '<div id="box">
 		<h1 id="packagename">'.$data['pkgname'].'</h1>
 		<div id="packagelinks">
 			<ul>
-				<!-- <li><a href="'.$svnLink.'">SVN Eintrag</a></li> -->
+				<li><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['pkgname'].'/repos/">SVN Eintrag</a></li>
 				<li>'.($this->Io->isRequest('view') ? '<a href="?page=PackageDetails;package='.$this->package.'">Details</a>' : '<a href="?page=PackageDetails;package='.$this->package.';view=FileList">Dateien</a>').'</li>
 				'.($data['needupdate'] > 0 ? '' : '<li><a href="http://www.archlinux.org/packages/flag/'.$data['origid'].'/" onclick="return !window.open(\'http://www.archlinux.org/packages/flag/'.$data['origid'].'/\',\'Flag Package Out-of-Date\',\'height=250,width=450,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no\');">Veraltetes Paket melden</a>
 				</li>').'
