@@ -20,7 +20,6 @@
 */
 
 require_once('Package.php');
-// require_once('Archive/Tar.php');
 
 class PackageDB {
 
@@ -60,18 +59,6 @@ private function update()
 	curl_close($curl);
 	flock($fh, LOCK_UN);
 	fclose($fh);
-
-// 	try
-// 		{
-// 		$errorlevel = error_reporting(0);
-// 		$targz = new Archive_Tar($this->DBtargz, 'gz');
-// 		$targz->setErrorHandling(PEAR_ERROR_RETURN);
-// 		$targz->extract($this->DBDir);
-// 		error_reporting($errorlevel);
-// 		}
-// 	catch (Exception $e)
-// 		{
-// 		}
 
 	exec('tar -xzf '.$this->DBtargz.' -C '.$this->DBDir);
 	unlink($this->DBtargz);
@@ -120,7 +107,8 @@ public function getUpdatedPackages($timestamp)
 			{
 			$packages[] = new Package(
 				file_get_contents($this->DBDir.'/'.$dir.'/desc'),
-				file_get_contents($this->DBDir.'/'.$dir.'/depends')
+				file_get_contents($this->DBDir.'/'.$dir.'/depends'),
+				filemtime($this->DBDir.'/'.$dir.'/desc')
 				);
 			}
 		}

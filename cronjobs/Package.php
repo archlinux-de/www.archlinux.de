@@ -23,10 +23,12 @@ class Package {
 
 private $desc 		= array();
 private $depends 	= array();
+private $filemtime	= 0;
 
 
-public function __construct($desc, $depends = '')
+public function __construct($desc, $depends = '', $filemtime = 0)
 	{
+	$this->filemtime = $filemtime;
 	$this->desc = $this->loadInfo($desc);
 	if (!empty($depends))
 		{
@@ -89,7 +91,7 @@ public function getCompressedSize()
 
 public function getInstalledSize()
 	{
-	return isset($this->desc['ISIZE'][0]) ? $this->desc['ISIZE'][0] : 0;
+	return isset($this->desc['ISIZE'][0]) ? $this->desc['ISIZE'][0] : $this->getCompressedSize();
 	}
 
 public function getMD5SUM()
@@ -114,7 +116,7 @@ public function getArchitecture()
 
 public function getBuildDate()
 	{
-	return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : 0;
+	return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : $this->filemtime;
 	}
 
 public function getPackager()
