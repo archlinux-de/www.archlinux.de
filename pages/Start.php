@@ -196,17 +196,18 @@ private function getRecentPackages()
 			('
 			SELECT
 				packages.id,
-				packages.pkgname,
-				packages.pkgver,
-				packages.pkgrel,
+				packages.name,
+				packages.version,
 				repositories.name AS repository
 			FROM
 				pkgdb.packages,
 				pkgdb.repositories
 			WHERE
 				packages.repository = repositories.id
+				AND repositories.name IN (\'core\', \'extra\', \'testing\')
+				AND packages.arch = (SELECT id FROM pkgdb.architectures WHERE name = \'i686\')
 			ORDER BY
-				packages.lastupdate DESC
+				packages.builddate DESC
 			LIMIT
 				15
 			');
@@ -220,11 +221,11 @@ private function getRecentPackages()
 
 	foreach ($packages as $package)
 		{
-		$style = $package['repository'] == 'Testing' ? ' class="testingpackage"' : '';
+		$style = $package['repository'] == 'testing' ? ' class="testingpackage"' : '';
 		$result .= '
 			<tr'.$style.'>
-				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td>
-				<th>'.$package['pkgver'].'-'.$package['pkgrel'].'</th>
+				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['name'].'</a></td>
+				<th>'.$package['version'].'</th>
 			</tr>
 			';
 		}

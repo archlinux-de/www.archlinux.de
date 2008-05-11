@@ -22,9 +22,11 @@ class Packages extends Page{
 
 private $package 	= 0;
 private $maxPackages 	= 100;
-private $orderby 	= 'lastupdate';
+private $orderby 	= 'builddate';
 private $sort 		= 1;
 private $repository	= 0;
+private $architecture	= 1;
+private $group		= 0;
 private $search		= '';
 private $searchString	= '';
 private $searchField 	= 0;
@@ -50,7 +52,7 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('pkgname', 'lastupdate', 'repository')))
+		if (in_array($this->Io->getString('orderby'), array('name', 'builddate', 'repository', 'architecture')))
 			{
 			$this->orderby = $this->Io->getString('orderby');
 			}
@@ -85,6 +87,22 @@ public function prepare()
 
 	try
 		{
+		$this->architecture = $this->Io->getInt('architecture');
+		}
+	catch (IoRequestException $e)
+		{
+		}
+
+	try
+		{
+		$this->group = $this->Io->getInt('group');
+		}
+	catch (IoRequestException $e)
+		{
+		}
+
+	try
+		{
 		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Io->getString('search'))), 50);
 		}
 	catch (IoRequestException $e)
@@ -108,19 +126,23 @@ public function prepare()
 				('
 				SELECT
 					packages.id,
-					packages.pkgname,
-					packages.pkgver,
-					packages.pkgrel,
-					packages.pkgdesc,
-					packages.lastupdate,
-					packages.needupdate,
+					packages.name,
+					packages.version,
+					packages.desc,
+					packages.builddate,
+					architectures.name AS architecture,
 					repositories.name AS repository
 				FROM
 					pkgdb.packages,
-					pkgdb.repositories
+					pkgdb.repositories,
+					pkgdb.architectures
+					'.($this->group > 0 ? ',pkgdb.package_group': '').'
 				WHERE
 					packages.repository = repositories.id
 					'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
+					AND packages.arch = architectures.id
+					'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
+					'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
 				ORDER BY
 					'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 				LIMIT
@@ -133,20 +155,24 @@ public function prepare()
 				('
 				SELECT
 					packages.id,
-					packages.pkgname,
-					packages.pkgver,
-					packages.pkgrel,
-					packages.pkgdesc,
-					packages.lastupdate,
-					packages.needupdate,
+					packages.name,
+					packages.version,
+					packages.desc,
+					packages.builddate,
+					architectures.name AS architecture,
 					repositories.name AS repository
 				FROM
 					pkgdb.packages,
-					pkgdb.repositories
+					pkgdb.repositories,
+					pkgdb.architectures
+					'.($this->group > 0 ? ',pkgdb.package_group': '').'
 					'.($this->searchField == 2 ? ',pkgdb.files' : '').'
 				WHERE
 					packages.repository = repositories.id
 					'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
+					AND packages.arch = architectures.id
+					'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
+					'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
 					'.$this->getSearchStatement().'
 				GROUP BY
 					packages.id
@@ -171,11 +197,19 @@ public function prepare()
 		<table width="100%">
 			<tr>
 				<th>Repositorium</th>
+				<th>Architektur</th>
+				<th>Gruppe</th>
 				<th colspan="2">Schlüsselwörter</th>
 			</tr>
 			<tr>
 				<td>
 					'.$this->getRepositoryList().'
+				</td>
+				<td>
+					'.$this->getArchitectureList().'
+				</td>
+				<td>
+					'.$this->getGroupList().'
 				</td>
 				<td>
 					<input type="text" name="search" id="searchfield" value="'.$this->search.'" size="34" maxlength="50" />
@@ -204,10 +238,10 @@ private function getSearchStatement()
 	{
 	switch ($this->searchField)
 		{
-		case 0: $this->searchString = $this->search.'%'; return 'AND packages.pkgname LIKE ?'; break;
-		case 1: $this->searchString = $this->search.'*'; return 'AND MATCH(packages.pkgdesc) AGAINST ( ? IN BOOLEAN MODE )'; break;
+		case 0: $this->searchString = $this->search.'%'; return 'AND packages.name LIKE ?'; break;
+		case 1: $this->searchString = $this->search.'*'; return 'AND MATCH(packages.desc) AGAINST ( ? IN BOOLEAN MODE )'; break;
 		case 2: $this->searchString = $this->search.'%'; return 'AND files.package = packages.id AND files.file LIKE ?'; break;
-		default: $this->searchString = $this->search.'%'; return 'AND packages.pkgname LIKE ?';
+		default: $this->searchString = $this->search.'%'; return 'AND packages.name LIKE ?';
 		}
 	}
 
@@ -270,10 +304,90 @@ private function getRepositoryList()
 	return $options.'</select>';
 	}
 
+private function getArchitectureList()
+	{
+	$options = '<select name="architecture">';
+
+	try
+		{
+		$architectures = $this->DB->getRowSet
+			('
+			SELECT 0 AS id, \'\' AS name
+			UNION
+			SELECT
+				id,
+				name
+			FROM
+				pkgdb.architectures
+			ORDER BY
+				name ASC
+			');
+
+		foreach ($architectures as $architecture)
+			{
+			if ($this->architecture == $architecture['id'])
+				{
+				$selected = ' selected="selected"';
+				}
+			else
+				{
+				$selected = '';
+				}
+
+			$options .= '<option value="'.$architecture['id'].'"'.$selected.'>'.$architecture['name'].'</option>';
+			}
+		}
+	catch (DBNoDataException $e)
+		{
+		}
+
+	return $options.'</select>';
+	}
+
+private function getGroupList()
+	{
+	$options = '<select name="group">';
+
+	try
+		{
+		$groups = $this->DB->getRowSet
+			('
+			SELECT 0 AS id, \'\' AS name
+			UNION
+			SELECT
+				id,
+				name
+			FROM
+				pkgdb.groups
+			ORDER BY
+				name ASC
+			');
+
+		foreach ($groups as $group)
+			{
+			if ($this->group == $group['id'])
+				{
+				$selected = ' selected="selected"';
+				}
+			else
+				{
+				$selected = '';
+				}
+
+			$options .= '<option value="'.$group['id'].'"'.$selected.'>'.$group['name'].'</option>';
+			}
+		}
+	catch (DBNoDataException $e)
+		{
+		}
+
+	return $options.'</select>';
+	}
+
 private function showPackageList($packages)
 	{
-	$link = '?page=Packages;package='.$this->package.';repository='.$this->repository.';search='.urlencode($this->search).';searchfield='.$this->searchField;
-	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort.';repository='.$this->repository.';search='.urlencode($this->search).';searchfield='.$this->searchField;
+	$link = '?page=Packages;package='.$this->package.';repository='.$this->repository.';architecture='.$this->architecture.';group='.$this->group.';search='.urlencode($this->search).';searchfield='.$this->searchField;
+	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort.';repository='.$this->repository.';architecture='.$this->architecture.';group='.$this->group.';search='.urlencode($this->search).';searchfield='.$this->searchField;
 
 	$next = ' <a href="'.$curlink.';package='.($this->maxPackages+$this->package).'">&#187;</a>';
 	$last = ($this->package > 0
@@ -283,24 +397,24 @@ private function showPackageList($packages)
 	$body = '<table id="packages">
 			<tr>
 				<th><a href="'.$link.';orderby=repository;sort='.abs($this->sort-1).'">Repositorium</a></th>
+				<th><a href="'.$link.';orderby=architecture;sort='.abs($this->sort-1).'">Architektur</a></th>
 				<th><a href="'.$link.';orderby=pkgname;sort='.abs($this->sort-1).'">Name</a></th>
 				<th>Version</th>
 				<th>Beschreibung</th>
 				<th><a href="'.$link.';orderby=lastupdate;sort='.abs($this->sort-1).'">Letzte&nbsp;Aktualisierung</a></th>
 			</tr>
 			<tr>
-				<td class="pages" colspan="5">'.$last.$next.'</td>
+				<td class="pages" colspan="6">'.$last.$next.'</td>
 			</tr>';
 
 	$line = 0;
 
 	foreach ($packages as $package)
 		{
-		$needupdate = $package['needupdate'] > 0 ? ' class="outdated"' : '';
-		$style = $package['repository'] == 'Testing' ? ' testingpackage' : '';
+		$style = $package['repository'] == 'testing' ? ' testingpackage' : '';
 
 		$body .= '<tr class="packageline'.$line.$style.'">
-				<td>'.$package['repository'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['pkgname'].'</a></td><td'.$needupdate.'>'.$package['pkgver'].'-'.$package['pkgrel'].'</td><td>'.cutString($package['pkgdesc'], 70).'</td><td>'.formatDate($package['lastupdate']).'</td>
+				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.formatDate($package['builddate']).'</td>
 			</tr>';
 
 		$line = abs($line-1);
@@ -308,7 +422,7 @@ private function showPackageList($packages)
 
 	$body .= '
 			<tr>
-				<td class="pages" colspan="5">'.$last.$next.'</td>
+				<td class="pages" colspan="6">'.$last.$next.'</td>
 			</tr>
 		</table>';
 

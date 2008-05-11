@@ -32,11 +32,12 @@ public function __construct()
 	$this->config['sql_user']			= '';
 	$this->config['sql_password']			= '';
 
-	$this->config['update_secret']			= '';
-	$this->config['update_host']			= 'localhost';
-	$this->config['update_url']			= '';
+	$this->config['pkgdb_mirror']			= 'ftp://ftp.archlinux.org/';
+	$this->config['pkgdb_repositories']		= array('core');
+	$this->config['pkgdb_architectures']		= array('i686');
 
 	$this->config['debug']				= false;
+	$this->config['log_dir']			= '';
 
 	$this->config['mirrors']			= array();
 

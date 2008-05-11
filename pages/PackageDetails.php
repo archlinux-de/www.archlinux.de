@@ -56,22 +56,27 @@ public function prepare()
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				packages.pkgname,
-				packages.pkgver,
-				packages.pkgrel,
-				packages.pkgdesc,
-				packages.lastupdate,
-				packages.needupdate,
+				packages.filename,
+				packages.name,
+				packages.version,
+				packages.desc,
+				packages.csize,
+				packages.isize,
+				packages.md5sum,
 				packages.url,
-				packages.origid,
+				packages.builddate,
+				architectures.name AS architecture,
 				repositories.name AS repository,
-				maintainers.realname AS maintainer
+				packagers.name AS packager,
+				packagers.email AS packageremail
 			FROM
 				pkgdb.packages
-					LEFT JOIN pkgdb.maintainers ON packages.maintainer = maintainers.id,
+					LEFT JOIN pkgdb.packagers ON packages.packager = packagers.id,
+				pkgdb.architectures,
 				pkgdb.repositories
 			WHERE
 				packages.id = ?
+				AND packages.arch = architectures.id
 				AND packages.repository = repositories.id
 			');
 		$stm->bindInteger($this->package);
@@ -85,9 +90,9 @@ public function prepare()
 		$this->showFailure('Paket nicht gefunden!');
 		}
 
-	$this->setValue('title', $data['pkgname']);
+	$this->setValue('title', $data['name']);
 
-	if ($data['repository'] == 'Testing')
+	if ($data['repository'] == 'testing')
 		{
 		$style = ' class="testingpackage"';
 		}
@@ -97,89 +102,206 @@ public function prepare()
 		}
 
 	$body = '<div id="box">
-		<h1 id="packagename">'.$data['pkgname'].'</h1>
-		<div id="packagelinks">
-			<ul>
-				<li><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['pkgname'].'/repos/">SVN Eintrag</a></li>
-				<li>'.($this->Io->isRequest('view') ? '<a href="?page=PackageDetails;package='.$this->package.'">Details</a>' : '<a href="?page=PackageDetails;package='.$this->package.';view=FileList">Dateien</a>').'</li>
-				'.($data['needupdate'] > 0 ? '' : '<li><a href="http://www.archlinux.org/packages/flag/'.$data['origid'].'/" onclick="return !window.open(\'http://www.archlinux.org/packages/flag/'.$data['origid'].'/\',\'Flag Package Out-of-Date\',\'height=250,width=450,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no\');">Veraltetes Paket melden</a>
-				</li>').'
-			</ul>
-		</div>
+		<h1 id="packagename">'.$data['name'].'</h1>
 		<table id="packagedetails">
 			<tr>
-				<th>Programm-Version</th>
-				<td'.($data['needupdate'] > 0 ? ' class="outdated"' : '').'>'.$data['pkgver'].'</td>
+				<th colspan="2" class="packagedetailshead">Programm-Details</th>
 			</tr>
 			<tr>
-				<th>Paket-Version</th>
-				<td>'.$data['pkgrel'].'</td>
+				<th>Name</th>
+				<td>'.$data['name'].'</td>
 			</tr>
 			<tr>
-				<th>Repositorium</th>
-				<td'.$style.'>'.$data['repository'].'</td>
+				<th>Version</th>
+				<td>'.$data['version'].'</td>
 			</tr>
 			<tr>
 				<th>Beschreibung</th>
-				<td>'.$data['pkgdesc'].'</td>
+				<td>'.$data['desc'].'</td>
 			</tr>
 			<tr>
 				<th>URL</th>
 				<td><a rel="nofollow" href="'.$data['url'].'">'.$data['url'].'</a></td>
 			</tr>
 			<tr>
-				<th>Betreuer</th>
-				<td>'.$data['maintainer'].'</td>
+				<th>Lizenzen</th>
+				<td>'.$this->getLicenses().'</td>
 			</tr>
 			<tr>
-				<th>Letzte&nbsp;Aktualisierung</th>
-				<td>'.formatDate($data['lastupdate']).'</td>
+				<th colspan="2" class="packagedetailshead">Paket-Details</th>
 			</tr>
-		</table>';
-
-		if ($this->Io->isRequest('view'))
-			{
-			$body .=
-			'<table id="packagedependencies">
-				<tr>
-					<th>Dateien</th>
-				</tr>
-				<tr>
-					<td>
-						'.$this->getFiles().'
-					</td>
-				</tr>
-			</table>
-			</div>
-			';
-			}
-		else
-			{
-			$body .=
-			'<table id="packagedependencies">
-				<tr>
-					<th>Abhängigkeiten</th>
-					<th>Inverse&nbsp;Abhängigkeiten</th>
-					<th>Quellen</th>
-				</tr>
-				<tr>
-					<td>
-						'.$this->getDependencies().'
-					</td>
-					<td>
-						'.$this->getInverseDependencies().'
-					</td>
-					<td>
-						'.$this->getSources().'
-					</td>
-				</tr>
-			</table>
-			</div>
-			';
-			}
-
+			<tr>
+				<th>Repositorium</th>
+				<td'.$style.'>'.$data['repository'].'</td>
+			</tr>
+			<tr>
+				<th>Architektur</th>
+				<td>'.$data['architecture'].'</td>
+			</tr>
+			<tr>
+				<th>Gruppen</th>
+				<td>'.$this->getGroups().'</td>
+			</tr>
+			<tr>
+				<th>Packer</th>
+				<td>'.$data['packager'].(!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:'.$data['packageremail'].'">@</a>' : '').'</td>
+			</tr>
+			<tr>
+				<th>Letzte Aktualisierung</th>
+				<td>'.formatDate($data['builddate']).'</td>
+			</tr>
+			<tr>
+				<th>Quellen</th>
+				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['name'].'/repos/">SVN Eintrag</a></td>
+			</tr>
+			<tr>
+				<th>Paket</th>
+				<td><a href="?page=GetFileFromMirror;file='.$data['repository'].'/os/'.$data['architecture'].'/'.$data['filename'].'">'.$data['filename'].'</a></td>
+			</tr>
+			<tr>
+				<th>MD5-Prüfsumme</th>
+				<td><code>'.$data['md5sum'].'</code></td>
+			</tr>
+			<tr>
+				<th>Paket-Größe</th>
+				<td>'.$this->formatBytes($data['csize']).'Byte</td>
+			</tr>
+			<tr>
+				<th>Installations-Größe</th>
+				<td>'.$this->formatBytes($data['isize']).'Byte</td>
+			</tr>
+		</table>
+		<table id="packagedependencies">
+			<tr>
+				<th colspan="5" class="packagedependencieshead">Abhängigkeiten</th>
+			</tr>
+			<tr>
+				<th>hängt ab von</th>
+				<th>wird benötigt von</th>
+				<th>stellt bereit</th>
+				<th>kollidiert mit</th>
+				<th>ersetzt</th>
+			</tr>
+			<tr>
+				<td>
+					'.$this->getDependencies().'
+				</td>
+				<td>
+					'.$this->getInverseDependencies().'
+				</td>
+				<td>
+					'.$this->getProvides().'
+				</td>
+				<td>
+					'.$this->getConflicts().'
+				</td>
+				<td>
+					'.$this->getReplaces().'
+				</td>
+			</tr>
+		</table>
+		<table id="packagedependencies">
+			<tr>
+				<th class="packagedependencieshead">Dateien</th>
+			</tr>
+			<tr>
+				<td>
+					'.$this->getFiles().'
+				</td>
+			</tr>
+		</table>
+		</div>
+		';
 
 	$this->setValue('body', $body);
+	}
+
+private function formatBytes($bytes)
+	{
+	$kb = 1024;
+	$mb = $kb * 1024;
+	$gb = $mb * 1024;
+
+	if ($bytes >= $gb)	// GB
+		{
+		return round($bytes / $gb, 2).' G';
+		}
+	elseif ($bytes >= $mb)	// MB
+		{
+		return round($bytes / $mb, 2).' M';
+		}
+	elseif ($bytes >= $kb)	// KB
+		{
+		return round($bytes / $kb, 2).' K';
+		}
+	else			//  B
+		{
+		return $bytes.' ';
+		}
+	}
+
+private function getLicenses()
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				licenses.name
+			FROM
+				pkgdb.licenses,
+				pkgdb.package_license
+			WHERE
+				package_license.license = licenses.id
+				AND package_license.package = ?
+			');
+		$stm->bindInteger($this->package);
+
+		foreach ($stm->getColumnSet() as $file)
+			{
+			$list[] = $file;
+			}
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$list = array();
+		}
+
+	return implode(', ', $list);
+	}
+
+private function getGroups()
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				groups.name
+			FROM
+				pkgdb.groups,
+				pkgdb.package_group
+			WHERE
+				package_group.group = groups.id
+				AND package_group.package = ?
+			');
+		$stm->bindInteger($this->package);
+
+		foreach ($stm->getColumnSet() as $file)
+			{
+			$list[] = $file;
+			}
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$list = array();
+		}
+
+	return implode(', ', $list);
 	}
 
 private function getFiles()
@@ -222,23 +344,23 @@ private function getDependencies()
 			('
 			SELECT
 				packages.id,
-				packages.pkgname,
-				dependencies.comment
+				packages.name,
+				depends.comment
 			FROM
-				pkgdb.dependencies
+				pkgdb.depends
 					LEFT JOIN pkgdb.packages
-					ON dependencies.dependency = packages.id
+					ON depends.depends = packages.id
 			WHERE
-				dependencies.package = ?
+				depends.package = ?
 			ORDER BY
-				packages.pkgname
+				packages.name
 			');
 		$stm->bindInteger($this->package);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['pkgname'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -260,23 +382,23 @@ private function getInverseDependencies()
 			('
 			SELECT
 				packages.id,
-				packages.pkgname,
-				dependencies.comment
+				packages.name,
+				depends.comment
 			FROM
 				pkgdb.packages,
-				pkgdb.dependencies
+				pkgdb.depends
 			WHERE
-				dependencies.dependency = ?
-				AND dependencies.package = packages.id
+				depends.depends = ?
+				AND depends.package = packages.id
 			ORDER BY
-				packages.pkgname
+				packages.name
 			');
 		$stm->bindInteger($this->package);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['pkgname'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -290,32 +412,107 @@ private function getInverseDependencies()
 	return $list;
 	}
 
-private function getSources()
+private function getProvides()
 	{
 	try
 		{
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				sources.url
+				packages.id,
+				packages.name,
+				provides.comment
 			FROM
-				pkgdb.sources
+				pkgdb.provides
+					LEFT JOIN pkgdb.packages
+					ON provides.provides = packages.id
 			WHERE
-				sources.package = ?
+				provides.package = ?
+			ORDER BY
+				packages.name
 			');
 		$stm->bindInteger($this->package);
 
 		$list = '<ul>';
-		foreach ($stm->getColumnSet() as $url)
+		foreach ($stm->getRowSet() as $dependency)
 			{
-			if (preg_match('#^(https?|ftp)://#', $url))
-				{
-				$list .= '<li><a rel="nofollow" href="'.$url.'">'.$url.'</a></li>';
-				}
-			else
-				{
-				$list .= '<li>'.$url.'</li>';
-				}
+			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			}
+		$list .= '</ul>';
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$list = '';
+		}
+
+	return $list;
+	}
+
+private function getConflicts()
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				conflicts.comment
+			FROM
+				pkgdb.conflicts
+					LEFT JOIN pkgdb.packages
+					ON conflicts.conflicts = packages.id
+			WHERE
+				conflicts.package = ?
+			ORDER BY
+				packages.name
+			');
+		$stm->bindInteger($this->package);
+
+		$list = '<ul>';
+		foreach ($stm->getRowSet() as $dependency)
+			{
+			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			}
+		$list .= '</ul>';
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$list = '';
+		}
+
+	return $list;
+	}
+
+private function getReplaces()
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				replaces.comment
+			FROM
+				pkgdb.replaces
+					LEFT JOIN pkgdb.packages
+					ON replaces.replaces = packages.id
+			WHERE
+				replaces.package = ?
+			ORDER BY
+				packages.name
+			');
+		$stm->bindInteger($this->package);
+
+		$list = '<ul>';
+		foreach ($stm->getRowSet() as $dependency)
+			{
+			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();

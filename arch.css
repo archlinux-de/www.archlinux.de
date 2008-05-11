@@ -219,10 +219,6 @@ a:hover {
 	padding-right:8px;
 }
 
-.outdated {
-	color: red;
-}
-
 .packageline0 td {
 	font-size: 11px;
 	background-color: #F0F0F0;
@@ -251,6 +247,10 @@ a:hover {
 	text-decoration: none;
 }
 
+#packagedetails {
+	width:100%;
+}
+
 #packagedetails th,td {
 	text-align:left;
 	font-size:12px;
@@ -258,10 +258,22 @@ a:hover {
 	padding-bottom:2px;
 	padding-left:8px;
 	padding-right:8px;
+	vertical-align:top;
+}
+
+#packagedetails th {
+	width:200px;
+}
+
+#packagedetails th.packagedetailshead {
+	color:#1793d1;
+	font-size:14px;
+	padding-top:15px;
+	padding-bottom:0px;
+	border-bottom: 1px solid #1793d1;
 }
 
 #packagedependencies {
-	margin-top:30px;
 	width:100%;
 }
 
@@ -278,27 +290,26 @@ a:hover {
 	vertical-align:top;
 }
 
+#packagedependencies th.packagedependencieshead {
+	color:#1793d1;
+	font-size:14px;
+	padding-top:15px;
+	padding-bottom:0px;
+	border-bottom: 1px solid #1793d1;
+}
+
 #packagedependencies  ul {
 	position: relative;
 	list-style-type: none;
 	top: -10px;
 	left:-40px;
+	overflow:auto;
+	max-height:300px;
 }
 
 #packagedependencies  li {
 	padding:0px;
 	margin:0px;
-}
-
-#packagelinks {
-	float:right;
-	font-size:10px;
-	padding:0px;
-	margin:0px;
-}
-
-#packagelinks ul {
-	list-style-type: none;
 }
 
 #packagename {
