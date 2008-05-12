@@ -27,12 +27,18 @@ private $board 			= 20;
 private $archNewsForum 		= 257;
 private $importantTag		= 3;
 private $solvedTag		= 1;
+private $arch 			= 1;
 
 public function prepare()
 	{
+	if ($this->Io->isRequest('architecture'))
+		{
+		$this->arch = $this->Io->getInt('architecture');
+		}
+
 	$this->setValue('title', 'Start');
 
-	if (!($body = $this->ObjectCache->getObject('AL:Start::')))
+	if (!($body = $this->ObjectCache->getObject('AL:Start:'.$this->arch.':')))
 		{
 		$body =
 		'
@@ -80,7 +86,7 @@ public function prepare()
 			</div>
 		';
 
-		$this->ObjectCache->addObject('AL:Start::', $body, 60*60);
+		$this->ObjectCache->addObject('AL:Start:'.$this->arch.':', $body, 60*60);
 		}
 
 	$this->setValue('body', $body);
@@ -192,52 +198,27 @@ private function getRecentPackages()
 	{
 	try
 		{
-		if ($this->Io->isRequest('architecture'))
-			{
-			$stm = $this->DB->prepare
-				('
-				SELECT
-					packages.id,
-					packages.name,
-					packages.version,
-					repositories.name AS repository
-				FROM
-					pkgdb.packages,
-					pkgdb.repositories
-				WHERE
-					packages.repository = repositories.id
-					AND repositories.name IN (\'core\', \'extra\', \'testing\')
-					AND packages.arch = ?
-				ORDER BY
-					packages.builddate DESC
-				LIMIT
-					15
-				');
-			$stm->bindInteger($this->Io->getInt('architecture'));
-			$packages = $stm->getRowSet();
-			}
-		else
-			{
-			$packages = $this->DB->getRowSet
-				('
-				SELECT
-					packages.id,
-					packages.name,
-					packages.version,
-					repositories.name AS repository
-				FROM
-					pkgdb.packages,
-					pkgdb.repositories
-				WHERE
-					packages.repository = repositories.id
-					AND repositories.name IN (\'core\', \'extra\', \'testing\')
-					AND packages.arch = (SELECT id FROM pkgdb.architectures WHERE name = \'i686\')
-				ORDER BY
-					packages.builddate DESC
-				LIMIT
-					15
-				');
-			}
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				packages.version,
+				repositories.name AS repository
+			FROM
+				pkgdb.packages,
+				pkgdb.repositories
+			WHERE
+				packages.repository = repositories.id
+				AND repositories.name IN (\'core\', \'extra\', \'testing\')
+				AND packages.arch = ?
+			ORDER BY
+				packages.builddate DESC
+			LIMIT
+				15
+			');
+		$stm->bindInteger($this->arch);
+		$packages = $stm->getRowSet();
 		}
 	catch(DBNoDataException $e)
 		{
