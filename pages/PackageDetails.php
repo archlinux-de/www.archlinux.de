@@ -152,7 +152,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Quellen</th>
-				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['name'].'/repos/">SVN Eintrag</a></td>
+				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['name'].'/repos/'.$data['repository'].'-'.$data['architecture'].'">SVN Eintrag</a></td>
 			</tr>
 			<tr>
 				<th>Paket</th>
