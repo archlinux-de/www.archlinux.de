@@ -1,0 +1,260 @@
+#!/usr/bin/php
+<?php
+
+/*
+	Copyright 2002-2007 Pierre Schmitz <pschmitz@laber-land.de>
+
+	This file is part of LL.
+
+	LL is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	LL is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with LL.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+ini_set('max_execution_time', 0);
+ini_set('memory_limit', -1);
+
+define('IN_LL', null);
+
+require ('../LLPath.php');
+require ('../modules/Modul.php');
+require ('../modules/Settings.php');
+require ('../modules/Exceptions.php');
+require (LL_PATH.'modules/DB.php');
+require ('PackageDB.php');
+
+
+class UpdateFileDB extends Modul {
+
+private $mirror 	= 'ftp://ftp.archlinux.org/';
+private $lastrun	= 0;
+
+
+public function __construct()
+	{
+	self::__set('Settings', new Settings());
+	self::__set('DB', new DB(
+		$this->Settings->getValue('sql_user'),
+		$this->Settings->getValue('sql_password'),
+		$this->Settings->getValue('sql_database')
+		));
+
+// 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
+	$this->mirror = 'http://dev.archlinux.org/~pierre/test-repo/';
+	}
+
+private function getLockFile()
+	{
+	return ini_get('session.save_path').'/updateFileRunning.lock';
+	}
+
+private function getLastRunFile()
+	{
+	return 'lastfilerun.log';
+	}
+
+private function showFailure($message)
+	{
+	unlink($this->getLockFile());
+	die($message);
+	}
+
+public function runUpdate()
+	{
+	$startTime = time();
+
+	if (file_exists($this->getLockFile()))
+		{
+		die('update still in progress');
+		}
+	else
+		{
+		touch($this->getLockFile());
+		chmod($this->getLockFile(), 0600);
+		}
+
+	if (!file_exists($this->getLastRunFile()))
+		{
+		file_put_contents($this->getLastRunFile(), 0);
+		}
+	else
+		{
+		$this->lastrun = trim(file_get_contents($this->getLastRunFile()));
+		}
+
+	echo 'Updating repos...', "\n";
+	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
+		{
+		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
+			{
+			echo "\t$repo - $arch\n";
+			$this->updateFiles($repo, $arch);
+			}
+		}
+
+	file_put_contents($this->getLastRunFile(), $startTime);
+	unlink($this->getLockFile());
+	echo 'done', "\n";
+	}
+
+private function updateFiles($repo, $arch)
+	{
+	$dbtargz = tempnam(ini_get('upload_tmp_dir').'/', $arch.'-'.$repo.'-files.db.tar.gz-');
+	$dbDir = tempnam(ini_get('upload_tmp_dir').'/', $arch.'-'.$repo.'-files.db-');
+	unlink($dbDir);
+	mkdir($dbDir, 0700);
+
+	$fh = fopen($dbtargz, 'w');
+	flock($fh, LOCK_EX);
+	$curl = curl_init($this->mirror.$repo.'/os/'.$arch.'/files.db.tar.gz');
+	curl_setopt($curl, CURLOPT_FILE, $fh);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	curl_exec($curl);
+	curl_close($curl);
+	flock($fh, LOCK_UN);
+	fclose($fh);
+
+	exec('tar -xzf '.$dbtargz.' -C '.$dbDir);
+	unlink($dbtargz);
+
+	$this->DB->execute
+		('
+		LOCK TABLES
+			pkgdb.packages READ,
+			pkgdb.files WRITE,
+			pkgdb.architectures READ,
+			pkgdb.repositories READ
+		');
+
+	$dh = opendir($dbDir);
+	while (false !== ($dir = readdir($dh)))
+		{
+		if (	$dir != '.' &&
+			$dir != '..' &&
+			file_exists($dbDir.'/'.$dir.'/files'))
+			{
+			$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files'));
+			}
+		}
+	closedir($dh);
+	$this->DB->execute('UNLOCK TABLES');
+
+	$this->rmrf($dbDir);
+	}
+
+private function insertFiles($repo, $arch, $package, $files)
+	{
+	try
+		{
+		$pkgid = $this->getPackageID($repo, $arch, $package);
+		$stm = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.files
+			WHERE
+				package = ?
+			');
+		$stm->bindInteger($pkgid);
+		$stm->execute();
+		$stm->close();
+
+		$stm = $this->DB->prepare
+			('
+			INSERT INTO
+				pkgdb.files
+			SET
+				package = ?,
+				path = ?,
+				file = ?
+			');
+
+		for ($file = 1; $file < count($files); $file++)
+			{
+			$stm->bindInteger($pkgid);
+			$stm->bindString(htmlspecialchars($files[$file]));
+			$stm->bindString(htmlspecialchars(basename($files[$file])));
+			$stm->execute();
+			}
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		}
+	catch (DBWarningException $e)
+		{
+		$stm->close();
+		}
+	}
+
+private function getPackageID($repo, $arch, $package)
+	{
+	$stm = $this->DB->prepare
+		('
+		SELECT
+			packages.id
+		FROM
+			pkgdb.packages,
+			pkgdb.architectures,
+			pkgdb.repositories
+		WHERE
+			packages.name = ?
+			AND repositories.name = ?
+			AND architectures.name = ?
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+			AND packages.builddate >= ?
+		');
+	$stm->bindString(htmlspecialchars(preg_replace('/^(.+)-.+?-.+?$/', '$1', $package)));
+	$stm->bindString(htmlspecialchars($repo));
+	$stm->bindString(htmlspecialchars($arch));
+	$stm->bindInteger($this->lastrun - 172800);	// 2 days
+
+	$id = $stm->getColumn();
+	$stm->close();
+
+	return $id;
+	}
+
+private function rmrf($dir)
+	{
+	if (is_dir($dir) && !is_link($dir))
+		{
+		$dh = opendir($dir);
+		while (false !== ($file = readdir($dh)))
+			{
+			if ($file != '.' && $file != '..')
+				{
+				if (!$this->rmrf($dir.'/'.$file))
+					{
+					trigger_error('Could not remove '.$dir.'/'.$file);
+					}
+				}
+			}
+		closedir($dh);
+
+		return rmdir($dir);
+		}
+	else
+		{
+		return unlink($dir);
+		}
+
+// 	exec('rm -rf '.$dir);
+	}
+
+}
+
+$upd = new UpdateFileDB();
+$upd->runUpdate();
+
+?>

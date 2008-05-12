@@ -160,12 +160,12 @@ public function runUpdate()
 	echo 'Updating replaces...', "\n";
 	$this->updateReplaces();
 
-	echo 'Removing unused entires...', "\n";
+	echo 'Removing unused entries...', "\n";
 	$this->removeUnusedEntries();
-	echo 'done', "\n";
 
 	file_put_contents($this->getLastRunFile(), $startTime);
 	unlink($this->getLockFile());
+	echo 'done', "\n";
 	}
 
 private function updateRepository($repo, $arch, $lastrun)

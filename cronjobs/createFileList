@@ -1,0 +1,59 @@
+#!/bin/bash
+
+repodir=/home/ftp/
+targetdir=/home/pierre/public_html/test-repo/
+
+if [ -f "/tmp/createFileList.lock" ]; then
+	echo "Error: createFileList allready in progress."
+	exit 1
+fi
+
+touch "/tmp/createFileList.lock" || exit 1
+TMPDIR=$(mktemp -d /tmp/createFileList.XXXXXX) || exit 1
+CACHEDIR=$(mktemp -d /tmp/createFileList.XXXXXX) || exit 1
+
+getpkgname() {
+	local tmp
+
+	tmp=${1##*/}
+	tmp=${tmp%.pkg.tar.gz}
+	tmp=${tmp%-i686}
+	tmp=${tmp%-x86_64}
+	tmp=${tmp%-any}
+	echo $tmp
+}
+
+cd $repodir
+for repo in {core,extra,unstable,testing,community}/os/{i686,x86_64}/; do
+	if [ -f ${targetdir}${repo}files.db.tar.gz ]; then
+		mkdir -p ${CACHEDIR}${repo}
+		tar -xzf ${targetdir}${repo}files.db.tar.gz -C ${CACHEDIR}${repo}
+	fi
+	for pkg in $repo*.pkg.tar.gz; do
+		basename=$(basename $pkg)
+		pkgname=$(getpkgname $basename)
+		tmppkgdir=${TMPDIR}${repo}${pkgname}/
+		mkdir -p $tmppkgdir
+
+		if [ -f ${CACHEDIR}${repo}${pkgname}/files ]; then
+# 			echo "Reading $pkgname from cache"
+			mv ${CACHEDIR}${repo}${pkgname}/files ${tmppkgdir}files
+		else
+			echo "Reading $pkgname in $repo"
+			echo '%FILES%' > ${tmppkgdir}files
+			tar --exclude=.* -tzf $pkg >> ${tmppkgdir}files
+		fi
+	done
+
+	pkgdir=${targetdir}${repo}
+	mkdir -p $pkgdir
+	cd ${TMPDIR}${repo}
+	tar --exclude=*.db.tar.gz -czf ${pkgdir}files.db.tar.gz *
+	cd $repodir
+done
+
+cd - >/dev/null
+rm -rf $TMPDIR || exit 1
+rm -rf $CACHEDIR || exit 1
+rm -f "/tmp/createFileList.lock" || exit 1
+echo 'done'

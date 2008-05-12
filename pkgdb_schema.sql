@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 11. Mai 2008 um 19:35
+-- Erstellungszeit: 12. Mai 2008 um 11:09
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -68,7 +68,7 @@ CREATE TABLE `files` (
   PRIMARY KEY  (`id`),
   KEY `pacakge` (`package`),
   KEY `file` (`file`(20))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
