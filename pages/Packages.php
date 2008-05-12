@@ -238,10 +238,10 @@ private function getSearchStatement()
 	{
 	switch ($this->searchField)
 		{
-		case 0: $this->searchString = $this->search.'%'; return 'AND packages.name LIKE ?'; break;
-		case 1: $this->searchString = $this->search.'*'; return 'AND MATCH(packages.desc) AGAINST ( ? IN BOOLEAN MODE )'; break;
+		case 0: $this->searchString = '%'.$this->search.'%'; return 'AND packages.name LIKE ?'; break;
+		case 1: $this->searchString = $this->search; return 'AND MATCH(packages.desc) AGAINST ( ? IN BOOLEAN MODE )'; break;
 		case 2: $this->searchString = $this->search.'%'; return 'AND files.package = packages.id AND files.file LIKE ?'; break;
-		default: $this->searchString = $this->search.'%'; return 'AND packages.name LIKE ?';
+		default: $this->searchString = '%'.$this->search.'%'; return 'AND packages.name LIKE ?';
 		}
 	}
 

@@ -150,10 +150,11 @@ public function prepare()
 				<th>Letzte Aktualisierung</th>
 				<td>'.formatDate($data['builddate']).'</td>
 			</tr>
+			'.($data['repository'] == 'community' ? '' : '
 			<tr>
 				<th>Quellen</th>
 				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['name'].'/repos/'.$data['repository'].'-'.$data['architecture'].'">SVN Eintrag</a></td>
-			</tr>
+			</tr>').'
 			<tr>
 				<th>Paket</th>
 				<td><a href="?page=GetFileFromMirror;file='.$data['repository'].'/os/'.$data['architecture'].'/'.$data['filename'].'">'.$data['filename'].'</a></td>
