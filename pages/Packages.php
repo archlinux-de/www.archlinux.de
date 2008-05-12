@@ -87,7 +87,20 @@ public function prepare()
 
 	try
 		{
-		$this->architecture = $this->Io->getInt('architecture');
+		if (isset($_GET['architecture']))
+			{
+			$this->architecture = intval($_GET['architecture']);
+			}
+		elseif (isset($_POST['architecture']))
+			{
+			$this->architecture = intval($_POST['architecture']);
+			}
+		else
+			{
+			$this->architecture = $this->Io->getInt('architecture');
+			}
+
+		$this->Io->setCookie('architecture', $this->architecture, (time() + 31536000));
 		}
 	catch (IoRequestException $e)
 		{
