@@ -130,16 +130,16 @@ private function updateFiles($repo, $arch)
 	exec('tar -xzf '.$dbtargz.' -C '.$dbDir);
 	unlink($dbtargz);
 
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages READ,
-			pkgdb.files WRITE,
-			pkgdb.file_index WRITE,
-			pkgdb.package_file_index WRITE,
-			pkgdb.architectures READ,
-			pkgdb.repositories READ
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages READ,
+// 			pkgdb.files WRITE,
+// 			pkgdb.file_index WRITE,
+// 			pkgdb.package_file_index WRITE,
+// 			pkgdb.architectures READ,
+// 			pkgdb.repositories READ
+// 		');
 
 	$dh = opendir($dbDir);
 	while (false !== ($dir = readdir($dh)))
@@ -152,7 +152,7 @@ private function updateFiles($repo, $arch)
 			}
 		}
 	closedir($dh);
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 
 	$this->rmrf($dbDir);
 	}
@@ -298,12 +298,12 @@ private function getPackageID($repo, $arch, $package)
 
 private function removeUnusedEntries()
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.package_file_index WRITE,
-			pkgdb.file_index WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.package_file_index WRITE,
+// 			pkgdb.file_index WRITE
+// 		');
 
 	$this->DB->execute
 		('
@@ -313,7 +313,7 @@ private function removeUnusedEntries()
 			id NOT IN (SELECT file_index FROM pkgdb.package_file_index)
 		');
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function rmrf($dir)

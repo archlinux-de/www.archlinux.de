@@ -179,18 +179,18 @@ private function updateRepository($repo, $arch, $lastrun)
 
 private function updatePackages($packages, $repo, $arch)
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages WRITE,
-			pkgdb.repositories WRITE,
-			pkgdb.architectures WRITE,
-			pkgdb.packagers WRITE,
-			pkgdb.groups WRITE,
-			pkgdb.package_group WRITE,
-			pkgdb.licenses WRITE,
-			pkgdb.package_license WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages WRITE,
+// 			pkgdb.repositories WRITE,
+// 			pkgdb.architectures WRITE,
+// 			pkgdb.packagers WRITE,
+// 			pkgdb.groups WRITE,
+// 			pkgdb.package_group WRITE,
+// 			pkgdb.licenses WRITE,
+// 			pkgdb.package_license WRITE
+// 		');
 
 	$testSTM = $this->DB->prepare
 		('
@@ -383,7 +383,7 @@ private function updatePackages($packages, $repo, $arch)
 	$testSTM->close();
 	$updateSTM->close();
 	$insertSTM->close();
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function addPackageToGroups($package, $groups)
@@ -687,21 +687,21 @@ private function getRepositoryID($repo)
 
 private function removeDeletedPackages($repo, $arch, $packages)
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages WRITE,
-			pkgdb.conflicts WRITE,
-			pkgdb.depends WRITE,
-			pkgdb.provides WRITE,
-			pkgdb.replaces WRITE,
-			pkgdb.files WRITE,
-			pkgdb.package_file_index WRITE,
-			pkgdb.package_group WRITE,
-			pkgdb.package_license WRITE,
-			pkgdb.architectures READ,
-			pkgdb.repositories READ
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages WRITE,
+// 			pkgdb.conflicts WRITE,
+// 			pkgdb.depends WRITE,
+// 			pkgdb.provides WRITE,
+// 			pkgdb.replaces WRITE,
+// 			pkgdb.files WRITE,
+// 			pkgdb.package_file_index WRITE,
+// 			pkgdb.package_group WRITE,
+// 			pkgdb.package_license WRITE,
+// 			pkgdb.architectures READ,
+// 			pkgdb.repositories READ
+// 		');
 
 	$delstm1 = $this->DB->prepare
 		('
@@ -851,23 +851,23 @@ private function removeDeletedPackages($repo, $arch, $packages)
 	$delstm8->close();
 	$stm->close();
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function removeUnusedEntries()
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages WRITE,
-			pkgdb.package_group WRITE,
-			pkgdb.package_license WRITE,
-			pkgdb.packagers WRITE,
-			pkgdb.groups WRITE,
-			pkgdb.licenses WRITE,
-			pkgdb.repositories WRITE,
-			pkgdb.architectures WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages WRITE,
+// 			pkgdb.package_group WRITE,
+// 			pkgdb.package_license WRITE,
+// 			pkgdb.packagers WRITE,
+// 			pkgdb.groups WRITE,
+// 			pkgdb.licenses WRITE,
+// 			pkgdb.repositories WRITE,
+// 			pkgdb.architectures WRITE
+// 		');
 
 	$this->DB->execute
 		('
@@ -909,22 +909,22 @@ private function removeUnusedEntries()
 			id NOT IN (SELECT repository FROM pkgdb.packages)
 		');
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateDependencies()
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages READ,
-			pkgdb.packages AS source READ,
-			pkgdb.packages AS target READ,
-			pkgdb.packages AS source2 READ,
-			pkgdb.packages AS target2 READ,
-			pkgdb.repositories READ,
-			pkgdb.depends WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages READ,
+// 			pkgdb.packages AS source READ,
+// 			pkgdb.packages AS target READ,
+// 			pkgdb.packages AS source2 READ,
+// 			pkgdb.packages AS target2 READ,
+// 			pkgdb.repositories READ,
+// 			pkgdb.depends WRITE
+// 		');
 
 	try
 		{
@@ -1039,22 +1039,22 @@ private function updateDependencies()
 	$stm2->close();
 	$stm->close();
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateProvides()
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages READ,
-			pkgdb.packages AS source READ,
-			pkgdb.packages AS target READ,
-			pkgdb.packages AS source2 READ,
-			pkgdb.packages AS target2 READ,
-			pkgdb.repositories READ,
-			pkgdb.provides WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages READ,
+// 			pkgdb.packages AS source READ,
+// 			pkgdb.packages AS target READ,
+// 			pkgdb.packages AS source2 READ,
+// 			pkgdb.packages AS target2 READ,
+// 			pkgdb.repositories READ,
+// 			pkgdb.provides WRITE
+// 		');
 
 	try
 		{
@@ -1169,22 +1169,22 @@ private function updateProvides()
 	$stm2->close();
 	$stm->close();
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateConflicts()
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages READ,
-			pkgdb.packages AS source READ,
-			pkgdb.packages AS target READ,
-			pkgdb.packages AS source2 READ,
-			pkgdb.packages AS target2 READ,
-			pkgdb.repositories READ,
-			pkgdb.conflicts WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages READ,
+// 			pkgdb.packages AS source READ,
+// 			pkgdb.packages AS target READ,
+// 			pkgdb.packages AS source2 READ,
+// 			pkgdb.packages AS target2 READ,
+// 			pkgdb.repositories READ,
+// 			pkgdb.conflicts WRITE
+// 		');
 
 	try
 		{
@@ -1299,22 +1299,22 @@ private function updateConflicts()
 	$stm2->close();
 	$stm->close();
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateReplaces()
 	{
-	$this->DB->execute
-		('
-		LOCK TABLES
-			pkgdb.packages READ,
-			pkgdb.packages AS source READ,
-			pkgdb.packages AS target READ,
-			pkgdb.packages AS source2 READ,
-			pkgdb.packages AS target2 READ,
-			pkgdb.repositories READ,
-			pkgdb.replaces WRITE
-		');
+// 	$this->DB->execute
+// 		('
+// 		LOCK TABLES
+// 			pkgdb.packages READ,
+// 			pkgdb.packages AS source READ,
+// 			pkgdb.packages AS target READ,
+// 			pkgdb.packages AS source2 READ,
+// 			pkgdb.packages AS target2 READ,
+// 			pkgdb.repositories READ,
+// 			pkgdb.replaces WRITE
+// 		');
 
 	try
 		{
@@ -1429,7 +1429,7 @@ private function updateReplaces()
 	$stm2->close();
 	$stm->close();
 
-	$this->DB->execute('UNLOCK TABLES');
+// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 
