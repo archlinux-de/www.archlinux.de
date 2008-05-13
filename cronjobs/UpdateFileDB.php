@@ -102,6 +102,9 @@ public function runUpdate()
 			}
 		}
 
+	echo 'Removing unused entries...', "\n";
+	$this->removeUnusedEntries();
+
 	file_put_contents($this->getLastRunFile(), $startTime);
 	unlink($this->getLockFile());
 	echo 'done', "\n";
@@ -132,6 +135,8 @@ private function updateFiles($repo, $arch)
 		LOCK TABLES
 			pkgdb.packages READ,
 			pkgdb.files WRITE,
+			pkgdb.file_index WRITE,
+			pkgdb.package_file_index WRITE,
 			pkgdb.architectures READ,
 			pkgdb.repositories READ
 		');
@@ -166,7 +171,7 @@ private function insertFiles($repo, $arch, $package, $files)
 		$stm = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.files
+				pkgdb.package_file_index
 			WHERE
 				package = ?
 			');
@@ -176,30 +181,90 @@ private function insertFiles($repo, $arch, $package, $files)
 
 		$stm = $this->DB->prepare
 			('
+			DELETE FROM
+				pkgdb.files
+			WHERE
+				package = ?
+			');
+		$stm->bindInteger($pkgid);
+		$stm->execute();
+		$stm->close();
+
+		$stm1 = $this->DB->prepare
+			('
 			INSERT INTO
 				pkgdb.files
 			SET
 				package = ?,
-				path = ?,
-				file = ?
+				path = ?
+			');
+
+		$stm2 = $this->DB->prepare
+			('
+			INSERT INTO
+				pkgdb.package_file_index
+			SET
+				package = ?,
+				file_index = ?
 			');
 
 		for ($file = 1; $file < count($files); $file++)
 			{
-			$stm->bindInteger($pkgid);
-			$stm->bindString(htmlspecialchars($files[$file]));
-			$stm->bindString(htmlspecialchars(basename($files[$file])));
-			$stm->execute();
+			$stm1->bindInteger($pkgid);
+			$stm1->bindString(mb_substr(htmlspecialchars($files[$file]), 0, 255, 'UTF-8'));
+			$stm1->execute();
+
+			$filename = mb_substr(htmlspecialchars(basename($files[$file])), 0, 100, 'UTF-8');
+			if (strlen($filename) > 1)
+				{
+				$stm2->bindInteger($pkgid);
+				$stm2->bindInteger($this->getFileIndexID($filename));
+				$stm2->execute();
+				}
 			}
-		$stm->close();
+		$stm1->close();
+		$stm2->close();
 		}
 	catch (DBNoDataException $e)
 		{
 		}
-	catch (DBWarningException $e)
+	}
+
+private function getFileIndexID($file)
+	{
+	try
 		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				id
+			FROM
+				pkgdb.file_index
+			WHERE
+				name = ?
+			');
+		$stm->bindString($file);
+		$id = $stm->getColumn();
 		$stm->close();
 		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+
+		$stm = $this->DB->prepare
+			('
+			INSERT INTO
+				pkgdb.file_index
+			SET
+				name = ?
+			');
+		$stm->bindString($file);
+		$stm->execute();
+		$id = $this->DB->getInsertId();
+		$stm->close();
+		}
+
+	return $id;
 	}
 
 private function getPackageID($repo, $arch, $package)
@@ -229,6 +294,26 @@ private function getPackageID($repo, $arch, $package)
 	$stm->close();
 
 	return $id;
+	}
+
+private function removeUnusedEntries()
+	{
+	$this->DB->execute
+		('
+		LOCK TABLES
+			pkgdb.package_file_index WRITE,
+			pkgdb.file_index WRITE
+		');
+
+	$this->DB->execute
+		('
+		DELETE FROM
+			pkgdb.file_index
+		WHERE
+			id NOT IN (SELECT file_index FROM pkgdb.package_file_index)
+		');
+
+	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function rmrf($dir)

@@ -148,7 +148,7 @@ public function prepare()
 				pkgdb.repositories,
 				pkgdb.architectures
 				'.($this->group > 0 ? ',pkgdb.package_group': '').'
-				'.($this->searchField == 2 ? ',pkgdb.files' : '').'
+				'.($this->searchField == 2 ? ',pkgdb.file_index, pkgdb.package_file_index' : '').'
 			WHERE
 				packages.repository = repositories.id
 				'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
@@ -220,8 +220,8 @@ private function getSearchStatement()
 	switch ($this->searchField)
 		{
 		case 0: $this->searchString = '%'.$this->search.'%'; return 'AND packages.name LIKE ?'; break;
-		case 1: $this->searchString = $this->search; return 'AND MATCH(packages.desc) AGAINST ( ? IN BOOLEAN MODE )'; break;
-		case 2: $this->searchString = $this->search.'%'; return 'AND files.package = packages.id AND files.file LIKE ?'; break;
+		case 1: $this->searchString = $this->search; return 'AND MATCH(packages.desc) AGAINST ( ? )'; break;
+		case 2: $this->searchString = $this->search.'%'; return 'AND package_file_index.package = packages.id AND file_index.id = package_file_index.file_index AND file_index.name LIKE ?'; break;
 		default: $this->searchString = '%'.$this->search.'%'; return 'AND packages.name LIKE ?';
 		}
 	}

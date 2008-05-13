@@ -207,7 +207,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<td>
-					'.$this->getFiles().'
+					'.($this->Io->isRequest('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;package='.$this->package.';showfiles">Dateien anzeigen</a>').'
 				</td>
 			</tr>
 		</table>

@@ -754,6 +754,14 @@ private function removeDeletedPackages($repo, $arch, $packages)
 			package = ?
 		');
 
+	$delstm6b = $this->DB->prepare
+		('
+		DELETE FROM
+			pkgdb.package_file_index
+		WHERE
+			package = ?
+		');
+
 	$delstm7 = $this->DB->prepare
 		('
 		DELETE FROM
@@ -816,6 +824,9 @@ private function removeDeletedPackages($repo, $arch, $packages)
 				$delstm6->bindInteger($pkg['id']);
 				$delstm6->execute();
 
+				$delstm6b->bindInteger($pkg['id']);
+				$delstm6b->execute();
+
 				$delstm7->bindInteger($pkg['id']);
 				$delstm7->execute();
 
@@ -834,6 +845,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 	$delstm4->close();
 	$delstm5->close();
 	$delstm6->close();
+	$delstm6b->close();
 	$delstm7->close();
 	$delstm8->close();
 	$stm->close();
