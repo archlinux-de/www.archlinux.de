@@ -55,7 +55,7 @@ public function __construct()
 
 private function getLockFile()
 	{
-	return ini_get('session.save_path').'/updateFileRunning.lock';
+	return ini_get('session.save_path').'/updateRunning.lock';
 	}
 
 private function getLastRunFile()
