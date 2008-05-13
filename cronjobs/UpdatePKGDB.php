@@ -172,7 +172,7 @@ private function updateRepository($repo, $arch, $lastrun)
 	{
 	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch);
 
-	$this->updatePackages($pkgdb->getUpdatedPackages($lastrun - 360), $repo, $arch);
+	$this->updatePackages($pkgdb->getUpdatedPackages($lastrun - 3600), $repo, $arch);
 
 	$this->removeDeletedPackages($repo, $arch, $pkgdb->getPackageNames());
 	}

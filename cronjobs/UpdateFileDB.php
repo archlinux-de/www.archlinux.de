@@ -288,7 +288,7 @@ private function getPackageID($repo, $arch, $package)
 	$stm->bindString(htmlspecialchars(preg_replace('/^(.+)-.+?-.+?$/', '$1', $package)));
 	$stm->bindString(htmlspecialchars($repo));
 	$stm->bindString(htmlspecialchars($arch));
-	$stm->bindInteger($this->lastrun - 172800);	// 2 days
+	$stm->bindInteger($this->lastrun - 36000);
 
 	$id = $stm->getColumn();
 	$stm->close();
