@@ -148,7 +148,7 @@ public function prepare()
 				pkgdb.repositories,
 				pkgdb.architectures
 				'.($this->group > 0 ? ',pkgdb.package_group': '').'
-				'.($this->searchField == 2 ? ',pkgdb.file_index, pkgdb.package_file_index' : '').'
+				'.(!empty($this->search) && $this->searchField == 2 ? ',pkgdb.file_index, pkgdb.package_file_index' : '').'
 			WHERE
 				packages.repository = repositories.id
 				'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
@@ -156,7 +156,7 @@ public function prepare()
 				'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
 				'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
 				'.(empty($this->search) ? '' : $this->getSearchStatement()).'
-			'.($this->searchField == 2 ? ' GROUP BY packages.id ' : ' ').'
+			'.(!empty($this->search) && $this->searchField == 2 ? ' GROUP BY packages.id ' : ' ').'
 			ORDER BY
 				'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 			LIMIT
