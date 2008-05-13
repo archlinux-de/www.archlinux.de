@@ -45,10 +45,10 @@ function ExceptionHandler(Exception $e)
 			</html>';
 
 		if (Modul::__get('Settings')->getValue('debug'))
-			{/*
+			{
 			header('HTTP/1.1 500 Exception');
 			header('Content-Length: '.strlen($screen));
-			header('Content-Type: text/html; charset=UTF-8');*/
+			header('Content-Type: text/html; charset=UTF-8');
 			echo $screen;
 			exit();
 			}

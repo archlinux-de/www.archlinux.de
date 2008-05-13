@@ -696,6 +696,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 			pkgdb.provides WRITE,
 			pkgdb.replaces WRITE,
 			pkgdb.files WRITE,
+			pkgdb.package_file_index WRITE,
 			pkgdb.package_group WRITE,
 			pkgdb.package_license WRITE,
 			pkgdb.architectures READ,
