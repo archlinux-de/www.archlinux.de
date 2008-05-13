@@ -31,7 +31,7 @@ private $arch 			= 1;
 
 public function prepare()
 	{
-	if ($this->Io->isRequest('architecture'))
+	if ($this->Io->isRequest('architecture') && $this->Io->getInt('architecture') > 0)
 		{
 		$this->arch = $this->Io->getInt('architecture');
 		}

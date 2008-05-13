@@ -133,70 +133,38 @@ public function prepare()
 
 	try
 		{
-		if (empty($this->search))
-			{
-			$packages = $this->DB->getRowSet
-				('
-				SELECT
-					packages.id,
-					packages.name,
-					packages.version,
-					packages.desc,
-					packages.builddate,
-					architectures.name AS architecture,
-					repositories.name AS repository
-				FROM
-					pkgdb.packages,
-					pkgdb.repositories,
-					pkgdb.architectures
-					'.($this->group > 0 ? ',pkgdb.package_group': '').'
-				WHERE
-					packages.repository = repositories.id
-					'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
-					AND packages.arch = architectures.id
-					'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
-					'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
-				ORDER BY
-					'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
-				LIMIT
-					'.$this->package.','.$this->maxPackages.'
-				');
-			}
-		else
-			{
-			$stm = $this->DB->prepare
-				('
-				SELECT
-					packages.id,
-					packages.name,
-					packages.version,
-					packages.desc,
-					packages.builddate,
-					architectures.name AS architecture,
-					repositories.name AS repository
-				FROM
-					pkgdb.packages,
-					pkgdb.repositories,
-					pkgdb.architectures
-					'.($this->group > 0 ? ',pkgdb.package_group': '').'
-					'.($this->searchField == 2 ? ',pkgdb.files' : '').'
-				WHERE
-					packages.repository = repositories.id
-					'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
-					AND packages.arch = architectures.id
-					'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
-					'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
-					'.$this->getSearchStatement().'
-				GROUP BY
-					packages.id
-				ORDER BY
-					'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
-				LIMIT
-					'.$this->package.','.$this->maxPackages.'
-				');
-			$stm->bindString($this->searchString);
-			$packages = $stm->getRowSet();
-			}
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				packages.version,
+				packages.desc,
+				packages.builddate,
+				architectures.name AS architecture,
+				repositories.name AS repository
+			FROM
+				pkgdb.packages,
+				pkgdb.repositories,
+				pkgdb.architectures
+				'.($this->group > 0 ? ',pkgdb.package_group': '').'
+				'.($this->searchField == 2 ? ',pkgdb.files' : '').'
+			WHERE
+				packages.repository = repositories.id
+				'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
+				AND packages.arch = architectures.id
+				'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
+				'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
+				'.(empty($this->search) ? '' : $this->getSearchStatement()).'
+			GROUP BY
+				packages.id
+			ORDER BY
+				'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
+			LIMIT
+				'.$this->package.','.$this->maxPackages.'
+			');
+		!empty($this->search) && $stm->bindString($this->searchString);
+		$packages = $stm->getRowSet();
 		}
 	catch (DBNoDataException $e)
 		{

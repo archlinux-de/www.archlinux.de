@@ -35,12 +35,18 @@ public function __construct($mirror, $repository, $architecture)
 	$this->mirror = $mirror;
 	$this->repository = $repository;
 	$this->architecture = $architecture;
-	$this->DBtargz = tempnam(ini_get('upload_tmp_dir').'/', $this->architecture.'-'.$this->repository.'-pkgdb.tar.gz-');
-	$this->DBDir = tempnam(ini_get('upload_tmp_dir').'/', $this->architecture.'-'.$this->repository.'-pkgdb-');
+	$this->DBtargz = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb.tar.gz-');
+	$this->DBDir = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb-');
 	unlink($this->DBDir);
 	mkdir($this->DBDir, 0700);
 
 	$this->update();
+	}
+
+private function getTmpDir()
+	{
+	$tmp = ini_get('upload_tmp_dir');
+	return empty($tmp) ? '/tmp' : $tmp;
 	}
 
 public function __destruct()

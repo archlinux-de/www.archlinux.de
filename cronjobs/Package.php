@@ -116,7 +116,7 @@ public function getArchitecture()
 
 public function getBuildDate()
 	{
-	return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : $this->filemtime;
+	return isset($this->desc['BUILDDATE'][0]) && $this->desc['BUILDDATE'][0] <= $this->filemtime ? $this->desc['BUILDDATE'][0] : $this->filemtime;
 	}
 
 public function getPackager()

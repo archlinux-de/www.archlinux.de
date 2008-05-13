@@ -109,8 +109,8 @@ public function runUpdate()
 
 private function updateFiles($repo, $arch)
 	{
-	$dbtargz = tempnam(ini_get('upload_tmp_dir').'/', $arch.'-'.$repo.'-files.db.tar.gz-');
-	$dbDir = tempnam(ini_get('upload_tmp_dir').'/', $arch.'-'.$repo.'-files.db-');
+	$dbtargz = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.db.tar.gz-');
+	$dbDir = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.db-');
 	unlink($dbDir);
 	mkdir($dbDir, 0700);
 
@@ -150,6 +150,12 @@ private function updateFiles($repo, $arch)
 	$this->DB->execute('UNLOCK TABLES');
 
 	$this->rmrf($dbDir);
+	}
+
+private function getTmpDir()
+	{
+	$tmp = ini_get('upload_tmp_dir');
+	return empty($tmp) ? '/tmp' : $tmp;
 	}
 
 private function insertFiles($repo, $arch, $package, $files)
