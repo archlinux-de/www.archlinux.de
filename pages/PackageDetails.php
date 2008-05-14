@@ -68,7 +68,10 @@ public function prepare()
 				packages.mtime,
 				architectures.name AS architecture,
 				repositories.name AS repository,
+				architectures.id AS architectureid,
+				repositories.id AS repositoryid,
 				packagers.name AS packager,
+				packagers.id AS packagerid,
 				packagers.email AS packageremail
 			FROM
 				pkgdb.packages
@@ -133,11 +136,11 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Repositorium</th>
-				<td'.$style.'>'.$data['repository'].'</td>
+				<td'.$style.'><a href="?page=Packages;repository='.$data['repositoryid'].'">'.$data['repository'].'</a></td>
 			</tr>
 			<tr>
 				<th>Architektur</th>
-				<td>'.$data['architecture'].'</td>
+				<td><a href="?page=Packages;architecture='.$data['architectureid'].'">'.$data['architecture'].'</a></td>
 			</tr>
 			<tr>
 				<th>Gruppen</th>
@@ -263,9 +266,9 @@ private function getLicenses()
 			');
 		$stm->bindInteger($this->package);
 
-		foreach ($stm->getColumnSet() as $file)
+		foreach ($stm->getColumnSet() as $license)
 			{
-			$list[] = $file;
+			$list[] = $license;
 			}
 		$stm->close();
 		}
@@ -285,6 +288,7 @@ private function getGroups()
 		$stm = $this->DB->prepare
 			('
 			SELECT
+				groups.id,
 				groups.name
 			FROM
 				pkgdb.groups,
@@ -295,9 +299,9 @@ private function getGroups()
 			');
 		$stm->bindInteger($this->package);
 
-		foreach ($stm->getColumnSet() as $file)
+		foreach ($stm->getRowSet() as $group)
 			{
-			$list[] = $file;
+			$list[] = '<a href="?page=Packages;group='.$group['id'].'">'.$group['name'].'</a>';
 			}
 		$stm->close();
 		}
