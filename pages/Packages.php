@@ -21,7 +21,7 @@
 class Packages extends Page{
 
 private $package 	= 0;
-private $maxPackages 	= 100;
+private $maxPackages 	= 50;
 private $orderby 	= 'builddate';
 private $sort 		= 1;
 private $repository	= 0;
@@ -117,6 +117,10 @@ public function prepare()
 	try
 		{
 		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Io->getString('search'))), 50);
+		if (strlen($this->search) < 3)
+			{
+			$this->search = '';
+			}
 		}
 	catch (IoRequestException $e)
 		{

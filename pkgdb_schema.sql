@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 13. Mai 2008 um 11:45
+-- Erstellungszeit: 14. Mai 2008 um 08:51
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -78,7 +78,7 @@ CREATE TABLE `file_index` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `name` (`name`(30))
+  KEY `name` (`name`(15))
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -148,7 +148,7 @@ CREATE TABLE `packages` (
   KEY `builddate` (`builddate`),
   KEY `arch` (`arch`),
   KEY `packager` (`packager`),
-  KEY `name` (`name`(20)),
+  KEY `name` (`name`(10)),
   FULLTEXT KEY `desc` (`desc`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
