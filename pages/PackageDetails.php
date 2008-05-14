@@ -65,6 +65,7 @@ public function prepare()
 				packages.md5sum,
 				packages.url,
 				packages.builddate,
+				packages.mtime,
 				architectures.name AS architecture,
 				repositories.name AS repository,
 				packagers.name AS packager,
@@ -147,8 +148,12 @@ public function prepare()
 				<td>'.$data['packager'].(!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:'.$data['packageremail'].'">@</a>' : '').'</td>
 			</tr>
 			<tr>
-				<th>Letzte Aktualisierung</th>
+				<th>Aktualisierung</th>
 				<td>'.formatDate($data['builddate']).'</td>
+			</tr>
+			<tr>
+				<th>Veröffentlichung</th>
+				<td>'.formatDate($data['mtime']).'</td>
 			</tr>
 			'.($data['repository'] == 'community' ? '' : '
 			<tr>

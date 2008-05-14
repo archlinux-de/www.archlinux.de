@@ -26,7 +26,7 @@ private $depends 	= array();
 private $filemtime	= 0;
 
 
-public function __construct($desc, $depends = '', $filemtime = 0)
+public function __construct($desc, $depends, $filemtime)
 	{
 	$this->filemtime = $filemtime;
 	$this->desc = $this->loadInfo($desc);
@@ -116,7 +116,13 @@ public function getArchitecture()
 
 public function getBuildDate()
 	{
-	return isset($this->desc['BUILDDATE'][0]) && $this->desc['BUILDDATE'][0] > 0 && $this->desc['BUILDDATE'][0] <= $this->filemtime ? $this->desc['BUILDDATE'][0] : $this->filemtime;
+	// use mtime if builddate is kind of "strange"
+	return isset($this->desc['BUILDDATE'][0]) && $this->desc['BUILDDATE'][0] > 0 && $this->desc['BUILDDATE'][0] <= $this->getMTime() ? $this->desc['BUILDDATE'][0] : $this->getMTime();
+	}
+
+public function getMTime()
+	{
+	return $this->filemtime;
 	}
 
 public function getPackager()

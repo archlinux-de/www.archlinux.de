@@ -59,11 +59,6 @@ private function getLockFile()
 	return ini_get('session.save_path').'/updateRunning.lock';
 	}
 
-private function getLastRunFile()
-	{
-	return 'lastrun.log';
-	}
-
 private function showFailure($message)
 	{
 	unlink($this->getLockFile());
@@ -72,9 +67,6 @@ private function showFailure($message)
 
 public function runUpdate()
 	{
-	$startTime = time();
-	$lastrun = 0;
-
 	if (file_exists($this->getLockFile()))
 		{
 		die('update still in progress');
@@ -83,15 +75,6 @@ public function runUpdate()
 		{
 		touch($this->getLockFile());
 		chmod($this->getLockFile(), 0600);
-		}
-
-	if (!file_exists($this->getLastRunFile()))
-		{
-		file_put_contents($this->getLastRunFile(), 0);
-		}
-	else
-		{
-		$lastrun = trim(file_get_contents($this->getLastRunFile()));
 		}
 
 	$this->DB->execute
@@ -138,41 +121,68 @@ public function runUpdate()
 			)
 		');
 
-	echo 'Updating repos...', "\n";
+// 	echo 'Updating repos...', "\n";
 	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
 		{
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
-			echo "\t$repo - $arch\n";
-			$this->updateRepository($repo, $arch, $lastrun);
+// 			echo "\t$repo - $arch\n";
+			$this->updateRepository($repo, $arch, $this->getRecentDate($repo, $arch));
 			}
 		}
 
-	echo 'Updating depends...', "\n";
+// 	echo 'Updating depends...', "\n";
 	$this->updateDependencies();
 
-	echo 'Updating provides...', "\n";
+// 	echo 'Updating provides...', "\n";
 	$this->updateProvides();
 
-	echo 'Updating conflicts...', "\n";
+// 	echo 'Updating conflicts...', "\n";
 	$this->updateConflicts();
 
-	echo 'Updating replaces...', "\n";
+// 	echo 'Updating replaces...', "\n";
 	$this->updateReplaces();
 
-	echo 'Removing unused entries...', "\n";
+// 	echo 'Removing unused entries...', "\n";
 	$this->removeUnusedEntries();
 
-	file_put_contents($this->getLastRunFile(), $startTime);
 	unlink($this->getLockFile());
-	echo 'done', "\n";
+// 	echo 'done', "\n";
+	}
+
+private function getRecentDate($repo, $arch)
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				MAX(mtime)
+			FROM
+				pkgdb.packages
+			WHERE
+				arch = ?
+				AND repository = ?
+			');
+		$stm->bindInteger($this->getArchitectureID($arch));
+		$stm->bindInteger($this->getRepositoryID($repo));
+		$date = $stm->getColumn();
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$date = 0;
+		$stm->close();
+		}
+
+	return $date;
 	}
 
 private function updateRepository($repo, $arch, $lastrun)
 	{
 	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch);
 
-	$this->updatePackages($pkgdb->getUpdatedPackages($lastrun - 3600), $repo, $arch);
+	$this->updatePackages($pkgdb->getUpdatedPackages($lastrun), $repo, $arch);
 
 	$this->removeDeletedPackages($repo, $arch, $pkgdb->getPackageNames());
 	}
@@ -223,6 +233,7 @@ private function updatePackages($packages, $repo, $arch)
 			url = ?,
 			arch = ?,
 			builddate = ?,
+			mtime = ?,
 			packager = ?,
 			`force` = ?,
 			repository = ?
@@ -245,6 +256,7 @@ private function updatePackages($packages, $repo, $arch)
 			url = ?,
 			arch = ?,
 			builddate = ?,
+			mtime = ?,
 			packager = ?,
 			`force` = ?,
 			repository = ?
@@ -305,6 +317,7 @@ private function updatePackages($packages, $repo, $arch)
 			$updateSTM->bindString(htmlspecialchars($package->getURL()));
 			$updateSTM->bindInteger($this->getArchitectureID($arch));
 			$updateSTM->bindInteger($package->getBuildDate());
+			$updateSTM->bindInteger($package->getMTime());
 			$updateSTM->bindInteger($this->getPackagerID($package->getPackager()));
 			$updateSTM->bindInteger(($package->isForced() ? 1 : 0));
 			$updateSTM->bindInteger($this->getRepositoryID($repo));
@@ -323,6 +336,7 @@ private function updatePackages($packages, $repo, $arch)
 			$insertSTM->bindString(htmlspecialchars($package->getURL()));
 			$insertSTM->bindInteger($this->getArchitectureID($arch));
 			$insertSTM->bindInteger($package->getBuildDate());
+			$insertSTM->bindInteger($package->getMTime());
 			$insertSTM->bindInteger($this->getPackagerID($package->getPackager()));
 			$insertSTM->bindInteger(($package->isForced() ? 1 : 0));
 			$insertSTM->bindInteger($this->getRepositoryID($repo));

@@ -385,7 +385,7 @@ private function showPackageList($packages)
 				<th><a href="'.$link.';orderby=pkgname;sort='.abs($this->sort-1).'">Name</a></th>
 				<th>Version</th>
 				<th>Beschreibung</th>
-				<th><a href="'.$link.';orderby=lastupdate;sort='.abs($this->sort-1).'">Letzte&nbsp;Aktualisierung</a></th>
+				<th><a href="'.$link.';orderby=lastupdate;sort='.abs($this->sort-1).'">Aktualisierung</a></th>
 			</tr>
 			<tr>
 				<td class="pages" colspan="6">'.$last.$next.'</td>

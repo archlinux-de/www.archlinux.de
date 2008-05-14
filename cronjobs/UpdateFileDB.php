@@ -37,8 +37,8 @@ require ('PackageDB.php');
 class UpdateFileDB extends Modul {
 
 private $mirror 	= 'ftp://ftp.archlinux.org/';
-private $lastrun	= 0;
-
+private $curmtime	= array();
+private $lastmtime	= array();
 
 public function __construct()
 	{
@@ -58,9 +58,9 @@ private function getLockFile()
 	return ini_get('session.save_path').'/updateRunning.lock';
 	}
 
-private function getLastRunFile()
+private function getLastRunFile($repo, $arch)
 	{
-	return 'lastfilerun.log';
+	return 'lastfilerun-'.$repo.'-'.$arch.'.log';
 	}
 
 private function showFailure($message)
@@ -71,8 +71,6 @@ private function showFailure($message)
 
 public function runUpdate()
 	{
-	$startTime = time();
-
 	if (file_exists($this->getLockFile()))
 		{
 		die('update still in progress');
@@ -83,31 +81,79 @@ public function runUpdate()
 		chmod($this->getLockFile(), 0600);
 		}
 
-	if (!file_exists($this->getLastRunFile()))
-		{
-		file_put_contents($this->getLastRunFile(), 0);
-		}
-	else
-		{
-		$this->lastrun = trim(file_get_contents($this->getLastRunFile()));
-		}
-
-	echo 'Updating repos...', "\n";
+// 	echo 'Updating repos...', "\n";
 	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
 		{
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
-			echo "\t$repo - $arch\n";
+// 			echo "\t$repo - $arch\n";
+
+			if (!file_exists($this->getLastRunFile($repo, $arch)))
+				{
+				file_put_contents($this->getLastRunFile($repo, $arch), $this->getCurMTime($repo, $arch));
+				}
+			else
+				{
+				$this->setLastMTime($repo, $arch, trim(file_get_contents($this->getLastRunFile($repo, $arch))));
+				}
 			$this->updateFiles($repo, $arch);
+			file_put_contents($this->getLastRunFile($repo, $arch), $this->getCurMTime($repo, $arch));
 			}
 		}
 
-	echo 'Removing unused entries...', "\n";
+// 	echo 'Removing unused entries...', "\n";
 	$this->removeUnusedEntries();
 
-	file_put_contents($this->getLastRunFile(), $startTime);
 	unlink($this->getLockFile());
-	echo 'done', "\n";
+// 	echo 'done', "\n";
+	}
+
+private function setCurMTime($repo, $arch, $mtime)
+	{
+	if (!isset($this->curmtime["$repo-$arch"]))
+		{
+		$this->curmtime["$repo-$arch"] = $mtime;
+		}
+	elseif ($mtime > $this->curmtime["$repo-$arch"])
+		{
+		$this->curmtime["$repo-$arch"] = $mtime;
+		}
+	}
+
+private function setLastMTime($repo, $arch, $mtime)
+	{
+	if (!isset($this->lastmtime["$repo-$arch"]))
+		{
+		$this->lastmtime["$repo-$arch"] = $mtime;
+		}
+	elseif ($mtime > $this->lastmtime["$repo-$arch"])
+		{
+		$this->lastmtime["$repo-$arch"] = $mtime;
+		}
+	}
+
+private function getCurMTime($repo, $arch)
+	{
+	if (isset($this->curmtime["$repo-$arch"]))
+		{
+		return $this->curmtime["$repo-$arch"];
+		}
+	else
+		{
+		return 0;
+		}
+	}
+
+private function getLastMTime($repo, $arch)
+	{
+	if (isset($this->lastmtime["$repo-$arch"]))
+		{
+		return $this->lastmtime["$repo-$arch"];
+		}
+	else
+		{
+		return 0;
+		}
 	}
 
 private function updateFiles($repo, $arch)
@@ -146,9 +192,12 @@ private function updateFiles($repo, $arch)
 		{
 		if (	$dir != '.' &&
 			$dir != '..' &&
-			file_exists($dbDir.'/'.$dir.'/files'))
+			file_exists($dbDir.'/'.$dir.'/files') &&
+			filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
+			)
 			{
 			$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files'));
+			$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
 			}
 		}
 	closedir($dh);
@@ -283,12 +332,10 @@ private function getPackageID($repo, $arch, $package)
 			AND architectures.name = ?
 			AND packages.arch = architectures.id
 			AND packages.repository = repositories.id
-			AND packages.builddate >= ?
 		');
 	$stm->bindString(htmlspecialchars(preg_replace('/^(.+)-.+?-.+?$/', '$1', $package)));
 	$stm->bindString(htmlspecialchars($repo));
 	$stm->bindString(htmlspecialchars($arch));
-	$stm->bindInteger($this->lastrun - 36000);
 
 	$id = $stm->getColumn();
 	$stm->close();

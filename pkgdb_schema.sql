@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 14. Mai 2008 um 08:51
+-- Erstellungszeit: 14. Mai 2008 um 11:18
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -140,6 +140,7 @@ CREATE TABLE `packages` (
   `url` varchar(255) NOT NULL,
   `arch` tinyint(1) unsigned NOT NULL,
   `builddate` int(10) unsigned NOT NULL,
+  `mtime` int(10) unsigned NOT NULL,
   `packager` int(11) unsigned NOT NULL,
   `force` tinyint(1) unsigned NOT NULL,
   `repository` tinyint(1) unsigned NOT NULL,
@@ -149,6 +150,7 @@ CREATE TABLE `packages` (
   KEY `arch` (`arch`),
   KEY `packager` (`packager`),
   KEY `name` (`name`(10)),
+  KEY `mtime` (`mtime`),
   FULLTEXT KEY `desc` (`desc`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
