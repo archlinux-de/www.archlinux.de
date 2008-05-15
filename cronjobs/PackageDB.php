@@ -29,6 +29,7 @@ private $architecture	= 'i686';
 private $DBtargz	= '/tmp/db.tar.gz';
 private $DBDir		= '/tmp/dbdir';
 private $mtime		= 0;
+private $updated	= false;
 
 
 public function __construct($mirror, $repository, $architecture, $lastmtime)
@@ -36,11 +37,6 @@ public function __construct($mirror, $repository, $architecture, $lastmtime)
 	$this->mirror = $mirror;
 	$this->repository = $repository;
 	$this->architecture = $architecture;
-	$this->DBtargz = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb.tar.gz-');
-	$this->DBDir = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb-');
-	unlink($this->DBDir);
-	mkdir($this->DBDir, 0700);
-
 	$this->update($lastmtime);
 	}
 
@@ -52,7 +48,10 @@ private function getTmpDir()
 
 public function __destruct()
 	{
-	$this->rmrf($this->DBDir);
+	if ($this->updated && is_dir($this->DBDir))
+		{
+		$this->rmrf($this->DBDir);
+		}
 	}
 
 public function getMTime()
@@ -73,6 +72,11 @@ private function update($lastmtime)
 
 	if ($this->mtime > $lastmtime)
 		{
+		$this->DBtargz = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb.tar.gz-');
+		$this->DBDir = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb-');
+		unlink($this->DBDir);
+		mkdir($this->DBDir, 0700);
+
 		$fh = fopen($this->DBtargz, 'w');
 		flock($fh, LOCK_EX);
 		$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
@@ -86,6 +90,7 @@ private function update($lastmtime)
 
 		exec('bsdtar -xf '.$this->DBtargz.' -C '.$this->DBDir);
 		unlink($this->DBtargz);
+		$this->updated = true;
 		}
 	}
 
@@ -120,25 +125,28 @@ public function getUpdatedPackages($timestamp)
 	{
 	$packages = array();
 
-	$dh = opendir($this->DBDir);
-
-	while (false !== ($dir = readdir($dh)))
+	if ($this->updated && is_dir($this->DBDir))
 		{
-		if (	$dir != '.' &&
-			$dir != '..' &&
-			file_exists($this->DBDir.'/'.$dir.'/desc') &&
-			file_exists($this->DBDir.'/'.$dir.'/depends') &&
-			filemtime($this->DBDir.'/'.$dir.'/desc') >= $timestamp)
-			{
-			$packages[] = new Package(
-				file_get_contents($this->DBDir.'/'.$dir.'/desc'),
-				file_get_contents($this->DBDir.'/'.$dir.'/depends'),
-				filemtime($this->DBDir.'/'.$dir.'/desc')
-				);
-			}
-		}
+		$dh = opendir($this->DBDir);
 
-	closedir($dh);
+		while (false !== ($dir = readdir($dh)))
+			{
+			if (	$dir != '.' &&
+				$dir != '..' &&
+				file_exists($this->DBDir.'/'.$dir.'/desc') &&
+				file_exists($this->DBDir.'/'.$dir.'/depends') &&
+				filemtime($this->DBDir.'/'.$dir.'/desc') >= $timestamp)
+				{
+				$packages[] = new Package(
+					file_get_contents($this->DBDir.'/'.$dir.'/desc'),
+					file_get_contents($this->DBDir.'/'.$dir.'/depends'),
+					filemtime($this->DBDir.'/'.$dir.'/desc')
+					);
+				}
+			}
+
+		closedir($dh);
+		}
 
 	return $packages;
 	}
@@ -147,17 +155,20 @@ public function getPackageNames()
 	{
 	$packages = array();
 
-	$dh = opendir($this->DBDir);
-
-	while (false !== ($dir = readdir($dh)))
+	if ($this->updated && is_dir($this->DBDir))
 		{
-		if (is_dir($this->DBDir.'/'.$dir) && $dir != '.' && $dir != '..')
-			{
-			$packages[] = preg_replace('/^(.+)-.+?-.+?$/', '$1', $dir);
-			}
-		}
+		$dh = opendir($this->DBDir);
 
-	closedir($dh);
+		while (false !== ($dir = readdir($dh)))
+			{
+			if (is_dir($this->DBDir.'/'.$dir) && $dir != '.' && $dir != '..')
+				{
+				$packages[] = preg_replace('/^(.+)-.+?-.+?$/', '$1', $dir);
+				}
+			}
+
+		closedir($dh);
+		}
 
 	return $packages;
 	}
