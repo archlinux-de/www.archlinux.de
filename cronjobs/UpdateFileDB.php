@@ -22,7 +22,6 @@
 
 
 ini_set('max_execution_time', 0);
-ini_set('memory_limit', -1);
 
 define('IN_LL', null);
 
@@ -58,17 +57,6 @@ private function getLockFile()
 	return ini_get('session.save_path').'/updateRunning.lock';
 	}
 
-private function getLastRunFile($repo, $arch)
-	{
-	return 'lastfilerun-'.$repo.'-'.$arch.'.log';
-	}
-
-private function showFailure($message)
-	{
-	unlink($this->getLockFile());
-	die($message);
-	}
-
 public function runUpdate()
 	{
 	if (file_exists($this->getLockFile()))
@@ -87,17 +75,7 @@ public function runUpdate()
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
 // 			echo "\t$repo - $arch\n";
-
-			if (!file_exists($this->getLastRunFile($repo, $arch)))
-				{
-				file_put_contents($this->getLastRunFile($repo, $arch), $this->getCurMTime($repo, $arch));
-				}
-			else
-				{
-				$this->setLastMTime($repo, $arch, trim(file_get_contents($this->getLastRunFile($repo, $arch))));
-				}
 			$this->updateFiles($repo, $arch);
-			file_put_contents($this->getLastRunFile($repo, $arch), $this->getCurMTime($repo, $arch));
 			}
 		}
 
@@ -106,6 +84,48 @@ public function runUpdate()
 
 	unlink($this->getLockFile());
 // 	echo 'done', "\n";
+	}
+
+private function setLogEntry($name, $time)
+	{
+	$stm = $this->DB->prepare
+		('
+		REPLACE INTO
+			pkgdb.log
+		SET
+			name = ?,
+			time = ?
+		');
+	$stm->bindString($name);
+	$stm->bindInteger($time);
+	$stm->execute();
+	$stm->close();
+	}
+
+private function getLogEntry($name)
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				time
+			FROM
+				pkgdb.log
+			WHERE
+				name = ?
+			');
+		$stm->bindString($name);
+		$time = $stm->GetColumn();
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$time = 0;
+		}
+
+	return $time;
 	}
 
 private function setCurMTime($repo, $arch, $mtime)
@@ -158,52 +178,68 @@ private function getLastMTime($repo, $arch)
 
 private function updateFiles($repo, $arch)
 	{
-	$dbtargz = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.db.tar.gz-');
-	$dbDir = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.db-');
-	unlink($dbDir);
-	mkdir($dbDir, 0700);
-
-	$fh = fopen($dbtargz, 'w');
-	flock($fh, LOCK_EX);
-	$curl = curl_init($this->mirror.$repo.'/os/'.$arch.'/files.db.tar.gz');
-	curl_setopt($curl, CURLOPT_FILE, $fh);
+	// get remote mtime
+	$curl = curl_init($this->mirror.$repo.'/os/'.$arch.'/'.$repo.'.files.tar.gz');
+	curl_setopt($curl, CURLOPT_NOBODY, true);
+	curl_setopt($curl, CURLOPT_FILETIME, true);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 	curl_exec($curl);
+	$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 	curl_close($curl);
-	flock($fh, LOCK_UN);
-	fclose($fh);
 
-	exec('tar -xzf '.$dbtargz.' -C '.$dbDir);
-	unlink($dbtargz);
-
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages READ,
-// 			pkgdb.files WRITE,
-// 			pkgdb.file_index WRITE,
-// 			pkgdb.package_file_index WRITE,
-// 			pkgdb.architectures READ,
-// 			pkgdb.repositories READ
-// 		');
-
-	$dh = opendir($dbDir);
-	while (false !== ($dir = readdir($dh)))
+	if ($mtime > $this->getLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch))
 		{
-		if (	$dir != '.' &&
-			$dir != '..' &&
-			file_exists($dbDir.'/'.$dir.'/files') &&
-			filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
-			)
-			{
-			$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files'));
-			$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
-			}
-		}
-	closedir($dh);
-// 	$this->DB->execute('UNLOCK TABLES');
+		$this->setLastMTime($repo, $arch, $this->getLogEntry('UpdateFileDB-'.$repo.'-'.$arch));
 
-	$this->rmrf($dbDir);
+		$dbtargz = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.tar.gz-');
+		$dbDir = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.db-');
+		unlink($dbDir);
+		mkdir($dbDir, 0700);
+
+		$fh = fopen($dbtargz, 'w');
+		flock($fh, LOCK_EX);
+		$curl = curl_init($this->mirror.$repo.'/os/'.$arch.'/'.$repo.'.files.tar.gz');
+		curl_setopt($curl, CURLOPT_FILE, $fh);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_exec($curl);
+		curl_close($curl);
+		flock($fh, LOCK_UN);
+		fclose($fh);
+
+		exec('bsdtar -xf '.$dbtargz.' -C '.$dbDir);
+		unlink($dbtargz);
+
+	// 	$this->DB->execute
+	// 		('
+	// 		LOCK TABLES
+	// 			pkgdb.packages READ,
+	// 			pkgdb.files WRITE,
+	// 			pkgdb.file_index WRITE,
+	// 			pkgdb.package_file_index WRITE,
+	// 			pkgdb.architectures READ,
+	// 			pkgdb.repositories READ
+	// 		');
+
+		$dh = opendir($dbDir);
+		while (false !== ($dir = readdir($dh)))
+			{
+			if (	$dir != '.' &&
+				$dir != '..' &&
+				file_exists($dbDir.'/'.$dir.'/files') &&
+				filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
+				)
+				{
+				$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+				$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
+				}
+			}
+		closedir($dh);
+	// 	$this->DB->execute('UNLOCK TABLES');
+
+		$this->rmrf($dbDir);
+		$this->setLogEntry('UpdateFileDB-'.$repo.'-'.$arch, $this->getCurMTime($repo, $arch));
+		$this->setLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch, $mtime);
+		}
 	}
 
 private function getTmpDir()
@@ -264,7 +300,7 @@ private function insertFiles($repo, $arch, $package, $files)
 			$stm1->execute();
 
 			$filename = mb_substr(htmlspecialchars(basename($files[$file])), 0, 100, 'UTF-8');
-			if (strlen($filename) > 1)
+			if (strlen($filename) > 2)
 				{
 				$stm2->bindInteger($pkgid);
 				$stm2->bindInteger($this->getFileIndexID($filename));

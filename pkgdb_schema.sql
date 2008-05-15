@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 14. Mai 2008 um 11:18
+-- Erstellungszeit: 15. Mai 2008 um 15:22
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -106,6 +106,18 @@ CREATE TABLE `licenses` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `log`
+-- 
+
+CREATE TABLE `log` (
+  `name` varchar(255) NOT NULL,
+  `time` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 

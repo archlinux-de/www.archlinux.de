@@ -28,9 +28,10 @@ private $repository	= 'core';
 private $architecture	= 'i686';
 private $DBtargz	= '/tmp/db.tar.gz';
 private $DBDir		= '/tmp/dbdir';
+private $mtime		= 0;
 
 
-public function __construct($mirror, $repository, $architecture)
+public function __construct($mirror, $repository, $architecture, $lastmtime)
 	{
 	$this->mirror = $mirror;
 	$this->repository = $repository;
@@ -40,7 +41,7 @@ public function __construct($mirror, $repository, $architecture)
 	unlink($this->DBDir);
 	mkdir($this->DBDir, 0700);
 
-	$this->update();
+	$this->update($lastmtime);
 	}
 
 private function getTmpDir()
@@ -54,20 +55,38 @@ public function __destruct()
 	$this->rmrf($this->DBDir);
 	}
 
-private function update()
+public function getMTime()
 	{
-	$fh = fopen($this->DBtargz, 'w');
-	flock($fh, LOCK_EX);
+	return $this->mtime;
+	}
+
+private function update($lastmtime)
+	{
+	// get remote mtime
 	$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
-	curl_setopt($curl, CURLOPT_FILE, $fh);
+	curl_setopt($curl, CURLOPT_NOBODY, true);
+	curl_setopt($curl, CURLOPT_FILETIME, true);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 	curl_exec($curl);
+	$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 	curl_close($curl);
-	flock($fh, LOCK_UN);
-	fclose($fh);
 
-	exec('tar -xzf '.$this->DBtargz.' -C '.$this->DBDir);
-	unlink($this->DBtargz);
+	if ($this->mtime > $lastmtime)
+		{
+		$fh = fopen($this->DBtargz, 'w');
+		flock($fh, LOCK_EX);
+		$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
+		curl_setopt($curl, CURLOPT_FILE, $fh);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_exec($curl);
+		$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
+		curl_close($curl);
+		flock($fh, LOCK_UN);
+		fclose($fh);
+
+		exec('bsdtar -xf '.$this->DBtargz.' -C '.$this->DBDir);
+		unlink($this->DBtargz);
+		}
 	}
 
 private function rmrf($dir)

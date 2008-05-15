@@ -51,7 +51,7 @@ private function loadInfo($file)
 				}
 			else
 				{
-				$data[$index][] = $line;
+				$data[$index][] = trim($line);
 				}
 			}
 		}
@@ -101,7 +101,21 @@ public function getMD5SUM()
 
 public function getURL()
 	{
-	return isset($this->desc['URL'][0]) ? $this->desc['URL'][0] : '';
+	if (isset($this->desc['URL'][0]))
+		{
+		if (!preg_match('#^(https?|ftp)://#', $this->desc['URL'][0]))
+			{
+			return 'http://'.$this->desc['URL'][0];
+			}
+		else
+			{
+			return $this->desc['URL'][0];
+			}
+		}
+	else
+		{
+		return '';
+		}
 	}
 
 public function getLicenses()
@@ -117,7 +131,16 @@ public function getArchitecture()
 public function getBuildDate()
 	{
 	// use mtime if builddate is kind of "strange"
-	return isset($this->desc['BUILDDATE'][0]) && $this->desc['BUILDDATE'][0] > 0 && $this->desc['BUILDDATE'][0] <= $this->getMTime() ? $this->desc['BUILDDATE'][0] : $this->getMTime();
+	if (isset($this->desc['BUILDDATE'][0]) &&
+		$this->desc['BUILDDATE'][0] > 0 &&
+		$this->desc['BUILDDATE'][0] <= $this->getMTime())
+		{
+		return $this->desc['BUILDDATE'][0];
+		}
+	else
+		{
+		return $this->getMTime();
+		}
 	}
 
 public function getMTime()

@@ -22,7 +22,6 @@
 
 
 ini_set('max_execution_time', 0);
-ini_set('memory_limit', -1);
 
 define('IN_LL', null);
 
@@ -57,12 +56,6 @@ public function __construct()
 private function getLockFile()
 	{
 	return ini_get('session.save_path').'/updateRunning.lock';
-	}
-
-private function showFailure($message)
-	{
-	unlink($this->getLockFile());
-	die($message);
 	}
 
 public function runUpdate()
@@ -127,7 +120,7 @@ public function runUpdate()
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
 // 			echo "\t$repo - $arch\n";
-			$this->updateRepository($repo, $arch, $this->getRecentDate($repo, $arch));
+			$this->updateRepository($repo, $arch);
 			}
 		}
 
@@ -178,13 +171,58 @@ private function getRecentDate($repo, $arch)
 	return $date;
 	}
 
-private function updateRepository($repo, $arch, $lastrun)
+private function updateRepository($repo, $arch)
 	{
-	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch);
+	$lastrun = $this->getRecentDate($repo, $arch);
+	$lastpkgdbmtime = $this->getPKGDBMTime($repo, $arch);
 
+	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch, $lastpkgdbmtime);
 	$this->updatePackages($pkgdb->getUpdatedPackages($lastrun), $repo, $arch);
+	$this->setPKGDBMTime($repo, $arch, $pkgdb->getMTime());
 
 	$this->removeDeletedPackages($repo, $arch, $pkgdb->getPackageNames());
+	}
+
+private function setPKGDBMTime($repo, $arch, $time)
+	{
+	$stm = $this->DB->prepare
+		('
+		REPLACE INTO
+			pkgdb.log
+		SET
+			name = ?,
+			time = ?
+		');
+	$stm->bindString('UpdatePKGDB-'.$repo.'-'.$arch);
+	$stm->bindInteger($time);
+	$stm->execute();
+	$stm->close();
+	}
+
+private function getPKGDBMTime($repo, $arch)
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				time
+			FROM
+				pkgdb.log
+			WHERE
+				name = ?
+			');
+		$stm->bindString('UpdatePKGDB-'.$repo.'-'.$arch);
+		$time = $stm->GetColumn();
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$time = 0;
+		}
+
+	return $time;
 	}
 
 private function updatePackages($packages, $repo, $arch)
@@ -701,171 +739,175 @@ private function getRepositoryID($repo)
 
 private function removeDeletedPackages($repo, $arch, $packages)
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages WRITE,
-// 			pkgdb.conflicts WRITE,
-// 			pkgdb.depends WRITE,
-// 			pkgdb.provides WRITE,
-// 			pkgdb.replaces WRITE,
-// 			pkgdb.files WRITE,
-// 			pkgdb.package_file_index WRITE,
-// 			pkgdb.package_group WRITE,
-// 			pkgdb.package_license WRITE,
-// 			pkgdb.architectures READ,
-// 			pkgdb.repositories READ
-// 		');
-
-	$delstm1 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.packages
-		WHERE
-			id = ?
-		');
-
-	$delstm2 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.conflicts
-		WHERE
-			package = ?
-			OR conflicts = ?
-		');
-
-	$delstm3 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.depends
-		WHERE
-			package = ?
-			OR depends = ?
-		');
-
-	$delstm4 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.provides
-		WHERE
-			package = ?
-			OR provides = ?
-		');
-
-	$delstm5 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.replaces
-		WHERE
-			package = ?
-			OR replaces = ?
-		');
-
-	$delstm6 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.files
-		WHERE
-			package = ?
-		');
-
-	$delstm6b = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.package_file_index
-		WHERE
-			package = ?
-		');
-
-	$delstm7 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.package_group
-		WHERE
-			package = ?
-		');
-
-	$delstm8 = $this->DB->prepare
-		('
-		DELETE FROM
-			pkgdb.package_license
-		WHERE
-			package = ?
-		');
-
-	$stm = $this->DB->prepare
-		('
-		SELECT
-			pkgdb.packages.id,
-			pkgdb.packages.name
-		FROM
-			pkgdb.packages,
-			pkgdb.architectures,
-			pkgdb.repositories
-		WHERE
-			pkgdb.packages.arch = pkgdb.architectures.id
-			AND pkgdb.packages.repository = pkgdb.repositories.id
-			AND pkgdb.architectures.name = ?
-			AND pkgdb.repositories.name = ?
-		');
-	$stm->bindString(htmlspecialchars($arch));
-	$stm->bindString(htmlspecialchars($repo));
-
-	try
+	// $packages is empty if there are no new packages!
+	if (count($packages) > 0)
 		{
-		foreach ($stm->getRowSet() as $pkg)
+	// 	$this->DB->execute
+	// 		('
+	// 		LOCK TABLES
+	// 			pkgdb.packages WRITE,
+	// 			pkgdb.conflicts WRITE,
+	// 			pkgdb.depends WRITE,
+	// 			pkgdb.provides WRITE,
+	// 			pkgdb.replaces WRITE,
+	// 			pkgdb.files WRITE,
+	// 			pkgdb.package_file_index WRITE,
+	// 			pkgdb.package_group WRITE,
+	// 			pkgdb.package_license WRITE,
+	// 			pkgdb.architectures READ,
+	// 			pkgdb.repositories READ
+	// 		');
+
+		$delstm1 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.packages
+			WHERE
+				id = ?
+			');
+
+		$delstm2 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.conflicts
+			WHERE
+				package = ?
+				OR conflicts = ?
+			');
+
+		$delstm3 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.depends
+			WHERE
+				package = ?
+				OR depends = ?
+			');
+
+		$delstm4 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.provides
+			WHERE
+				package = ?
+				OR provides = ?
+			');
+
+		$delstm5 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.replaces
+			WHERE
+				package = ?
+				OR replaces = ?
+			');
+
+		$delstm6 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.files
+			WHERE
+				package = ?
+			');
+
+		$delstm6b = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.package_file_index
+			WHERE
+				package = ?
+			');
+
+		$delstm7 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.package_group
+			WHERE
+				package = ?
+			');
+
+		$delstm8 = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.package_license
+			WHERE
+				package = ?
+			');
+
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				pkgdb.packages.id,
+				pkgdb.packages.name
+			FROM
+				pkgdb.packages,
+				pkgdb.architectures,
+				pkgdb.repositories
+			WHERE
+				pkgdb.packages.arch = pkgdb.architectures.id
+				AND pkgdb.packages.repository = pkgdb.repositories.id
+				AND pkgdb.architectures.name = ?
+				AND pkgdb.repositories.name = ?
+			');
+		$stm->bindString(htmlspecialchars($arch));
+		$stm->bindString(htmlspecialchars($repo));
+
+		try
 			{
-			if (!in_array($pkg['name'], $packages))
+			foreach ($stm->getRowSet() as $pkg)
 				{
-				$delstm1->bindInteger($pkg['id']);
-				$delstm1->execute();
+				if (!in_array($pkg['name'], $packages))
+					{
+					$delstm1->bindInteger($pkg['id']);
+					$delstm1->execute();
 
-				$delstm2->bindInteger($pkg['id']);
-				$delstm2->bindInteger($pkg['id']);
-				$delstm2->execute();
+					$delstm2->bindInteger($pkg['id']);
+					$delstm2->bindInteger($pkg['id']);
+					$delstm2->execute();
 
-				$delstm3->bindInteger($pkg['id']);
-				$delstm3->bindInteger($pkg['id']);
-				$delstm3->execute();
+					$delstm3->bindInteger($pkg['id']);
+					$delstm3->bindInteger($pkg['id']);
+					$delstm3->execute();
 
-				$delstm4->bindInteger($pkg['id']);
-				$delstm4->bindInteger($pkg['id']);
-				$delstm4->execute();
+					$delstm4->bindInteger($pkg['id']);
+					$delstm4->bindInteger($pkg['id']);
+					$delstm4->execute();
 
-				$delstm5->bindInteger($pkg['id']);
-				$delstm5->bindInteger($pkg['id']);
-				$delstm5->execute();
+					$delstm5->bindInteger($pkg['id']);
+					$delstm5->bindInteger($pkg['id']);
+					$delstm5->execute();
 
-				$delstm6->bindInteger($pkg['id']);
-				$delstm6->execute();
+					$delstm6->bindInteger($pkg['id']);
+					$delstm6->execute();
 
-				$delstm6b->bindInteger($pkg['id']);
-				$delstm6b->execute();
+					$delstm6b->bindInteger($pkg['id']);
+					$delstm6b->execute();
 
-				$delstm7->bindInteger($pkg['id']);
-				$delstm7->execute();
+					$delstm7->bindInteger($pkg['id']);
+					$delstm7->execute();
 
-				$delstm8->bindInteger($pkg['id']);
-				$delstm8->execute();
+					$delstm8->bindInteger($pkg['id']);
+					$delstm8->execute();
+					}
 				}
 			}
-		}
-	catch (DBNoDataException $e)
-		{
-		}
+		catch (DBNoDataException $e)
+			{
+			}
 
-	$delstm1->close();
-	$delstm2->close();
-	$delstm3->close();
-	$delstm4->close();
-	$delstm5->close();
-	$delstm6->close();
-	$delstm6b->close();
-	$delstm7->close();
-	$delstm8->close();
-	$stm->close();
+		$delstm1->close();
+		$delstm2->close();
+		$delstm3->close();
+		$delstm4->close();
+		$delstm5->close();
+		$delstm6->close();
+		$delstm6b->close();
+		$delstm7->close();
+		$delstm8->close();
+		$stm->close();
 
-// 	$this->DB->execute('UNLOCK TABLES');
+	// 	$this->DB->execute('UNLOCK TABLES');
+		}
 	}
 
 private function removeUnusedEntries()
