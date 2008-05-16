@@ -27,6 +27,7 @@ private $sort 		= 1;
 private $repository	= 0;
 private $architecture	= 1;
 private $group		= 0;
+private $packager	= 0;
 private $search		= '';
 private $searchString	= '';
 private $searchField 	= 0;
@@ -116,8 +117,16 @@ public function prepare()
 
 	try
 		{
+		$this->packager = $this->Io->getInt('packager');
+		}
+	catch (IoRequestException $e)
+		{
+		}
+
+	try
+		{
 		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Io->getString('search'))), 50);
-		if (strlen($this->search) < 3)
+		if (strlen($this->search) < 2)
 			{
 			$this->search = '';
 			}
@@ -160,7 +169,8 @@ public function prepare()
 				'.($this->architecture > 0 ? 'AND packages.arch = '.$this->architecture : '').'
 				'.($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = '.$this->group : '').'
 				'.(empty($this->search) ? '' : $this->getSearchStatement()).'
-			'.(!empty($this->search) && $this->searchField == 2 ? ' GROUP BY packages.id ' : ' ').'
+				'.(!empty($this->search) && $this->searchField == 2 ? ' GROUP BY packages.id ' : ' ').'
+				'.($this->packager > 0 ? ' AND packages.packager = '.$this->packager : '').'
 			ORDER BY
 				'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 			LIMIT
@@ -252,7 +262,7 @@ private function getSearchFields()
 
 private function getRepositoryList()
 	{
-	$options = '<select name="repository">';
+	$options = '<select name="repository" onchange="this.form.submit()">';
 
 	try
 		{
@@ -290,7 +300,7 @@ private function getRepositoryList()
 
 private function getArchitectureList()
 	{
-	$options = '<select name="architecture">';
+	$options = '<select name="architecture" onchange="this.form.submit()">';
 
 	try
 		{
@@ -330,7 +340,7 @@ private function getArchitectureList()
 
 private function getGroupList()
 	{
-	$options = '<select name="group">';
+	$options = '<select name="group" onchange="this.form.submit()">';
 
 	try
 		{
@@ -370,8 +380,8 @@ private function getGroupList()
 
 private function showPackageList($packages)
 	{
-	$link = '?page=Packages;package='.$this->package.';repository='.$this->repository.';architecture='.$this->architecture.';group='.$this->group.';search='.urlencode($this->search).';searchfield='.$this->searchField;
-	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort.';repository='.$this->repository.';architecture='.$this->architecture.';group='.$this->group.';search='.urlencode($this->search).';searchfield='.$this->searchField;
+	$link = '?page=Packages;package='.$this->package.';repository='.$this->repository.';architecture='.$this->architecture.';group='.$this->group.';packager='.$this->packager.';search='.urlencode($this->search).';searchfield='.$this->searchField;
+	$curlink = '?page=Packages;orderby='.$this->orderby.';sort='.$this->sort.';repository='.$this->repository.';architecture='.$this->architecture.';group='.$this->group.';packager='.$this->packager.';search='.urlencode($this->search).';searchfield='.$this->searchField;
 
 	$next = ' <a href="'.$curlink.';package='.($this->maxPackages+$this->package).'">&#187;</a>';
 	$last = ($this->package > 0

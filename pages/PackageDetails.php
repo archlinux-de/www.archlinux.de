@@ -148,7 +148,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Packer</th>
-				<td>'.$data['packager'].(!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:'.$data['packageremail'].'">@</a>' : '').'</td>
+				<td><a href="?page=Packages;packager='.$data['packagerid'].'">'.$data['packager'].'</a>'.(!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:'.$data['packageremail'].'">@</a>' : '').'</td>
 			</tr>
 			<tr>
 				<th>Aktualisierung</th>
