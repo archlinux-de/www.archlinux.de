@@ -183,11 +183,11 @@ public function prepare()
 			if ($this->compareVersions($package['iversion'], $package['xversion']) < 0)
 				{
 				$iold = ' style="color:red;"';
-				$xold = '"';
+				$xold = '';
 				}
 			else
 				{
-				$iold = '"';
+				$iold = '';
 				$xold = ' style="color:red;"';
 				}
 
