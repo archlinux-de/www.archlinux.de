@@ -28,8 +28,9 @@ protected $variables = array();
 private static $availablePages = array
 	(
 	'Start' => 'pages/Start.php',
-	'PackageDetails' => 'pages/PackageDetails.php',
 	'Packages' => 'pages/Packages.php',
+	'PackageDetails' => 'pages/PackageDetails.php',
+	'ArchitectureDifferences' => 'pages/ArchitectureDifferences.php',
 	'GetFileFromMirror' => 'pages/GetFileFromMirror.php',
 	'NotFound' => 'pages/NotFound.php'
 	);
