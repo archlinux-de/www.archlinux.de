@@ -326,15 +326,9 @@ private function getMostFiles()
 		SELECT
 			packages.id,
 			packages.name,
-			COUNT(files.id) AS files
+			(SELECT COUNT(*) FROM pkgdb.files WHERE files.package = packages.id) AS files
 		FROM
 			pkgdb.packages
-				JOIN
-					pkgdb.files
-				ON
-					files.package = packages.id
-		GROUP BY
-			packages.id
 		ORDER BY
 			files DESC
 		LIMIT
@@ -358,15 +352,9 @@ private function getLeastFiles()
 		SELECT
 			packages.id,
 			packages.name,
-			COUNT(files.id) AS files
+ 			(SELECT COUNT(*) FROM pkgdb.files WHERE files.package = packages.id) AS files
 		FROM
 			pkgdb.packages
-				JOIN
-					pkgdb.files
-				ON
-					files.package = packages.id
-		GROUP BY
-			packages.id
 		ORDER BY
 			files ASC
 		LIMIT
