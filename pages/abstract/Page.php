@@ -30,6 +30,7 @@ private static $availablePages = array
 	'Start' => 'pages/Start.php',
 	'Packages' => 'pages/Packages.php',
 	'PackageDetails' => 'pages/PackageDetails.php',
+	'PackageStatistics' => 'pages/PackageStatistics.php',
 	'ArchitectureDifferences' => 'pages/ArchitectureDifferences.php',
 	'GetFileFromMirror' => 'pages/GetFileFromMirror.php',
 	'NotFound' => 'pages/NotFound.php'
@@ -107,6 +108,11 @@ protected function makeMenu()
 		</ul>';
 	}
 
+protected function makeSubMenu()
+	{
+	return '';
+	}
+
 private function sendOutput()
 	{
 	$file = '<?xml version="1.0" encoding="UTF-8" ?>
@@ -127,7 +133,9 @@ private function sendOutput()
 		<div id="nav_bar">
 			'.$this->makeMenu().'
 		</div>
-		<div id="subnav_bar"></div>
+		<div id="subnav_bar">
+			'.$this->makeSubMenu().'
+		</div>
 		<div id="content">
 			'.$this->getValue('body').'
 			<div id="foot">

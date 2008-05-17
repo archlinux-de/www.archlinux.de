@@ -47,6 +47,16 @@ protected function makeMenu()
 		</ul>';
 	}
 
+protected function makeSubMenu()
+	{
+	return '
+		<ul id="nav">
+			<li><a href="?page=PackageStatistics">Statistiken</a></li>
+			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+			<li class="selected">Suche</li>
+		</ul>';
+	}
+
 public function prepare()
 	{
 	$this->setValue('title', 'Paket-Suche');
