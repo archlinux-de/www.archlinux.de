@@ -192,6 +192,10 @@ public function prepare()
 					<th>Pakete pro Packer</th>
 					<td>&empty; '.$this->formatNumber($data['avgpkgperpackager'], 2).'</td>
 				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Repositorien</th>
+				</tr>
+					'.$this->getPositoryStatistics().'
 			</table>
 			<table id="packagedependencies">
 				<tr>
@@ -219,6 +223,50 @@ public function prepare()
 	$this->setValue('body', $body);
 	}
 
+private function getPositoryStatistics()
+	{
+	$repolist = '';
+	$repos = $this->DB->getRowSet('SELECT id, name FROM pkgdb.repositories')->toArray();
+	$arches = $this->DB->getRowSet('SELECT id, name FROM pkgdb.architectures')->toArray();
+
+	$stm = $this->DB->prepare
+			('
+			SELECT
+				COUNT(id) AS packages,
+				SUM(csize) AS size
+			FROM
+				pkgdb.packages
+			WHERE
+				repository = ?
+				AND arch = ?
+			');
+
+	foreach ($repos as $repo)
+		{
+		$repolist .= '<tr><th><a href="?page=Packages;repository='.$repo['id'].'">['.$repo['name'].']</a></th><td style="padding:0px;"><table style="width:320px;padding:0px;">';
+
+		foreach ($arches as $arch)
+			{
+			$repolist .= '<tr><th style="width:50px;padding:0px;"><a href="?page=Packages;repository='.$repo['id'].';architecture='.$arch['id'].'">'.$arch['name'].'</a></th>';
+
+			$stm->bindInteger($repo['id']);
+			$stm->bindInteger($arch['id']);
+			$data = $stm->getRow();
+
+			$repolist .= '<td style="width:100px;text-align:right;padding:0px;">'.$this->formatNumber($data['packages']).' Pakete</td>
+			<td style="text-align:right;padding:0px;">'.$this->formatBytes($data['size']).'Byte</td>';
+
+			$repolist .= '</tr>';
+			}
+
+		$repolist .='</table></td></tr>';
+		}
+
+	$stm->close();
+
+	return $repolist;
+	}
+
 private function getLargestPackages()
 	{
 	$packages = $this->DB->getRowSet
@@ -239,7 +287,7 @@ private function getLargestPackages()
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td>'.$this->formatBytes($package['csize']).'Byte</td></tr>';
+		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatBytes($package['csize']).'Byte</td></tr>';
 		}
 
 	return $list.'</table>';
@@ -265,7 +313,7 @@ private function getSmallestPackages()
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td>'.$this->formatBytes($package['csize']).'Byte</td></tr>';
+		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatBytes($package['csize']).'Byte</td></tr>';
 		}
 
 	return $list.'</table>';
@@ -297,7 +345,7 @@ private function getMostFiles()
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td>'.$this->formatNumber($package['files']).'</td></tr>';
+		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatNumber($package['files']).'</td></tr>';
 		}
 
 	return $list.'</table>';
@@ -329,7 +377,7 @@ private function getLeastFiles()
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td>'.$this->formatNumber($package['files']).'</td></tr>';
+		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatNumber($package['files']).'</td></tr>';
 		}
 
 	return $list.'</table>';
@@ -343,20 +391,26 @@ private function formatBytes($bytes)
 
 	if ($bytes >= $gb)	// GB
 		{
-		return round($bytes / $gb, 2).' G';
+		$result = round($bytes / $gb, 2);
+		$postfix = ' G';
 		}
 	elseif ($bytes >= $mb)	// MB
 		{
-		return round($bytes / $mb, 2).' M';
+		$result =  round($bytes / $mb, 2);
+		$postfix = ' M';
 		}
 	elseif ($bytes >= $kb)	// KB
 		{
-		return round($bytes / $kb, 2).' K';
+		$result =  round($bytes / $kb, 2);
+		$postfix = ' K';
 		}
 	else			//  B
 		{
-		return $bytes.' ';
+		$result =  $bytes;
+		$postfix = ' ';
 		}
+
+	return $this->formatNumber($result, 2).$postfix;
 	}
 
 private function formatNumber($number, $decs=0)
