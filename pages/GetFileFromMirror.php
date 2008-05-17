@@ -41,6 +41,7 @@ protected function makeSubMenu()
 	return '
 		<ul id="nav">
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
+			<li><a href="?page=Packagers">Packer</a></li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li class="selected"><a href="?page=Packages">Suche</a></li>
 		</ul>';

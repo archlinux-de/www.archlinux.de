@@ -17,6 +17,7 @@
 	You should have received a copy of the GNU General Public License
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 require (LL_PATH.'modules/DB.php');
 require (LL_PATH.'modules/IOutput.php');
 require (LL_PATH.'modules/ICache.php');
@@ -27,13 +28,14 @@ protected $variables = array();
 
 private static $availablePages = array
 	(
-	'Start' => 'pages/Start.php',
-	'Packages' => 'pages/Packages.php',
-	'PackageDetails' => 'pages/PackageDetails.php',
-	'PackageStatistics' => 'pages/PackageStatistics.php',
 	'ArchitectureDifferences' => 'pages/ArchitectureDifferences.php',
 	'GetFileFromMirror' => 'pages/GetFileFromMirror.php',
-	'NotFound' => 'pages/NotFound.php'
+	'NotFound' => 'pages/NotFound.php',
+	'PackageDetails' => 'pages/PackageDetails.php',
+	'PackageStatistics' => 'pages/PackageStatistics.php',
+	'Packagers' => 'pages/Packagers.php',
+	'Packages' => 'pages/Packages.php',
+	'Start' => 'pages/Start.php'
 	);
 
 public static function loadPage($name)
