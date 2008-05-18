@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 18. Mai 2008 um 15:41
+-- Erstellungszeit: 18. Mai 2008 um 15:44
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -154,13 +154,13 @@ CREATE TABLE `mirrors` (
 -- 
 
 CREATE TABLE `mirror_log` (
-  `host` varchar(255) collate latin1_general_ci NOT NULL,
+  `host` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   `lastsync` int(10) unsigned default NULL,
-  `error` varchar(255) collate latin1_general_ci default NULL,
+  `error` varchar(255) default NULL,
   PRIMARY KEY  (`host`,`time`),
   KEY `lastsync` (`lastsync`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
