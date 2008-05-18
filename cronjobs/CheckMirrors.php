@@ -20,9 +20,7 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 ini_set('max_execution_time', 0);
-
 define('IN_LL', null);
 
 require ('../LLPath.php');
@@ -32,8 +30,6 @@ require ('../modules/Exceptions.php');
 require (LL_PATH.'modules/DB.php');
 
 class CheckMirrors extends Modul {
-
-private $curlHandles = array();
 
 
 public function __construct()
@@ -91,81 +87,47 @@ public function runUpdate()
 		$mirrors = array();
 		}
 
-	$mh = curl_multi_init();
-	
-	foreach (array_chunk($mirrors, 5) as $chunks)
-		{
 		$this->curlHandles = array();
 		
-		foreach ($chunks as $mirror)
+	foreach ($mirrors as $mirror)
+		{
+		$arch = isset($mirror['i686']) ? 'i686' : 'x86_64';
+		$repo = 'core';
+
+		if ($mirror['ftp'] == 1)
 			{
-			$arch = isset($mirror['i686']) ? 'i686' : 'x86_64';
-			$repo = 'core';
-
-			if ($mirror['ftp'] == 1)
-				{
-				$protocoll = 'ftp';
-				$path = $mirror['path_ftp'];
-				}
-			else
-				{
-				$protocoll = 'http';
-				$path = $mirror['path_http'];
-				}
-
-			$curlHandle = $this->getCurlHandle($protocoll.'://'.$mirror['host'].'/'.$path.'/'.$repo.'/os/'.$arch);
-
-			$this->curlHandles[$mirror['host']] = $curlHandle;
-			curl_multi_add_handle($mh, $curlHandle);
+			$protocoll = 'ftp';
+			$path = $mirror['path_ftp'];
+			}
+		else
+			{
+			$protocoll = 'http';
+			$path = $mirror['path_http'];
 			}
 
-		$active = false;
-
-		do
+		try
 			{
-			$mrc = curl_multi_exec($mh, $active);
+			$result = $this->getLastsyncFromMirror($protocoll.'://'.$mirror['host'].'/'.$path.'/'.$repo.'/os/'.$arch);
+			$this->insertLogEntry($mirror['host'], $result['lastsync'], $result['totaltime']);
 			}
-		while ($mrc == CURLM_CALL_MULTI_PERFORM);
-
-		while ($active && $mrc == CURLM_OK)
+		catch (RuntimeException $e)
 			{
-			if (curl_multi_select($mh) != -1)
-				{
-				do
-					{
-					$mrc = curl_multi_exec($mh, $active);
-					}
-				while ($mrc == CURLM_CALL_MULTI_PERFORM);
-				}
+			$this->insertErrorEntry($mirror['host'], $e->getMessage());
 			}
 
-		foreach ($this->curlHandles as $host => $curlHandle)
-			{
-			$lastsync = trim(curl_multi_getcontent($curlHandle));
-	
-			if (false === $lastsync)
-				{
-				$this->insertErrorEntry($host, htmlspecialchars(curl_error($curl)));
-				}
-			else
-				{
-				$totaltime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
-				$this->insertLogEntry($host, $lastsync, $totaltime);
-				}
-
-			curl_multi_remove_handle($mh, $curlHandle);
-			curl_close($curlHandle);
-			}
 		}
 
-	curl_multi_close($mh);
 
 	unlink($this->getLockFile());
 	}
 
-private function getCurlHandle($url)
+private function getLastsyncFromMirror($url)
 	{
-	$curl = curl_init($url.'/lastsync');
+	if (false === ($curl = curl_init($url.'/lastsync')))
+		{
+		throw new RuntimeException('faild to init curl: '.htmlspecialchars($url));
+		}
+
 	curl_setopt($curl, CURLOPT_FAILONERROR, true);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
@@ -174,7 +136,18 @@ private function getCurlHandle($url)
 	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:support@laber-land.de');
 	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
 
-	return $curl;
+	$content = curl_exec($curl);
+
+	if (false === $content)
+		{
+		throw new RuntimeException(htmlspecialchars(curl_error($curl)), curl_errno($curl));
+		}
+
+	$totaltime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
+
+	curl_close($curl);
+
+	return array('lastsync' => intval(trim($content)), 'totaltime' => $totaltime);
 	}
 
 private function insertLogEntry($host, $lastsync, $totaltime)
