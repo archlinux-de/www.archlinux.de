@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 18. Mai 2008 um 15:44
+-- Erstellungszeit: 18. Mai 2008 um 23:46
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -144,7 +144,7 @@ CREATE TABLE `mirrors` (
   `oldtickets` varchar(255) default NULL,
   `official` tinyint(1) NOT NULL default '1',
   `deleted` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`host`(10))
+  PRIMARY KEY  (`host`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -158,6 +158,7 @@ CREATE TABLE `mirror_log` (
   `time` int(10) unsigned NOT NULL,
   `lastsync` int(10) unsigned default NULL,
   `error` varchar(255) default NULL,
+  `totaltime` double unsigned default NULL,
   PRIMARY KEY  (`host`,`time`),
   KEY `lastsync` (`lastsync`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

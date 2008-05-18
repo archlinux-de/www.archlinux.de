@@ -33,6 +33,8 @@ require (LL_PATH.'modules/DB.php');
 
 class CheckMirrors extends Modul {
 
+private $curlHandles = array();
+
 
 public function __construct()
 	{
@@ -63,83 +65,119 @@ public function runUpdate()
 
 	$this->removeOldEntries();
 
-	$mirrors = $this->DB->getRowSet
-		('
-		SELECT
-			host,
-			ftp,
-			http,
-			path_ftp,
-			path_http,
-			i686,
-			x86_64
-		FROM
-			pkgdb.mirrors
-		WHERE
-			official = 1
-			AND deleted = 0
-			AND (ftp = 1 OR http = 1)
-			AND (i686 = 1 OR x86_64 = 1)
-		')->toArray();
-
-	foreach ($mirrors as $mirror)
+	try
 		{
-		$arch = isset($mirror['i686']) ? 'i686' : 'x86_64';
-		$repo = 'core';
-
-		if ($mirror['ftp'] == 1)
-			{
-			$protocoll = 'ftp';
-			$path = $mirror['path_ftp'];
-			}
-		else
-			{
-			$protocoll = 'http';
-			$path = $mirror['path_http'];
-			}
-
-		try
-			{
-			$lastsync = $this->getLastsyncFromMirror($protocoll.'://'.$mirror['host'].'/'.$path.'/'.$repo.'/os/'.$arch);
-			$this->insertLogEntry($mirror['host'], $lastsync);
-			}
-		catch (RuntimeException $e)
-			{
-			$this->insertErrorEntry($mirror['host'], $e->getMessage());
-			}
-
+		$mirrors = $this->DB->getRowSet
+			('
+			SELECT
+				host,
+				ftp,
+				http,
+				path_ftp,
+				path_http,
+				i686,
+				x86_64
+			FROM
+				pkgdb.mirrors
+			WHERE
+				official = 1
+				AND deleted = 0
+				AND (ftp = 1 OR http = 1)
+				AND (i686 = 1 OR x86_64 = 1)
+			')->toArray();
 		}
+	catch (DBNoDataException $e)
+		{
+		$mirrors = array();
+		}
+
+	$mh = curl_multi_init();
+	
+	foreach (array_chunk($mirrors, 5) as $chunks)
+		{
+		$this->curlHandles = array();
+		
+		foreach ($chunks as $mirror)
+			{
+			$arch = isset($mirror['i686']) ? 'i686' : 'x86_64';
+			$repo = 'core';
+
+			if ($mirror['ftp'] == 1)
+				{
+				$protocoll = 'ftp';
+				$path = $mirror['path_ftp'];
+				}
+			else
+				{
+				$protocoll = 'http';
+				$path = $mirror['path_http'];
+				}
+
+			$curlHandle = $this->getCurlHandle($protocoll.'://'.$mirror['host'].'/'.$path.'/'.$repo.'/os/'.$arch);
+
+			$this->curlHandles[$mirror['host']] = $curlHandle;
+			curl_multi_add_handle($mh, $curlHandle);
+			}
+
+		$active = false;
+
+		do
+			{
+			$mrc = curl_multi_exec($mh, $active);
+			}
+		while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+		while ($active && $mrc == CURLM_OK)
+			{
+			if (curl_multi_select($mh) != -1)
+				{
+				do
+					{
+					$mrc = curl_multi_exec($mh, $active);
+					}
+				while ($mrc == CURLM_CALL_MULTI_PERFORM);
+				}
+			}
+
+		foreach ($this->curlHandles as $host => $curlHandle)
+			{
+			$lastsync = trim(curl_multi_getcontent($curlHandle));
+	
+			if (false === $lastsync)
+				{
+				$this->insertErrorEntry($host, htmlspecialchars(curl_error($curl)));
+				}
+			else
+				{
+				$totaltime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
+				$this->insertLogEntry($host, $lastsync, $totaltime);
+				}
+
+			curl_multi_remove_handle($mh, $curlHandle);
+			curl_close($curlHandle);
+			}
+		}
+
+	curl_multi_close($mh);
 
 	unlink($this->getLockFile());
 	}
 
-private function getLastsyncFromMirror($url)
+private function getCurlHandle($url)
 	{
-	if (false === ($curl = curl_init($url.'/lastsync')))
-		{
-		throw new RuntimeException('faild to init curl: '.htmlspecialchars($url));
-		}
-
+	$curl = curl_init($url.'/lastsync');
 	curl_setopt($curl, CURLOPT_FAILONERROR, true);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
-	curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+	curl_setopt($curl, CURLOPT_TIMEOUT, 120);
 	curl_setopt($curl, CURLOPT_ENCODING, '');
 	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:support@laber-land.de');
+	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
 
-	$content = curl_exec($curl);
-
-	if (false === $content)
-		{
-		throw new RuntimeException(htmlspecialchars(curl_error($curl)), curl_errno($curl));
-		}
-
-	curl_close($curl);
-
-	return intval(trim($content));
+	return $curl;
 	}
 
-private function insertLogEntry($host, $lastsync)
+private function insertLogEntry($host, $lastsync, $totaltime)
 	{
 	$stm = $this->DB->prepare
 		('
@@ -148,11 +186,13 @@ private function insertLogEntry($host, $lastsync)
 		SET
 			host = ?,
 			time = ?,
-			lastsync = ?
+			lastsync = ?,
+			totaltime = ?
 		');
 	$stm->bindString($host);
 	$stm->bindInteger(time());
 	$stm->bindInteger($lastsync);
+	$stm->bindDouble($totaltime);
 	$stm->execute();
 	$stm->close();
 	}

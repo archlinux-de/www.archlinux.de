@@ -56,7 +56,7 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('host', 'country', 'lastsync')))
+		if (in_array($this->Io->getString('orderby'), array('host', 'country', 'lastsync', 'avgtime')))
 			{
 			$this->orderby = $this->Io->getString('orderby');
 			}
@@ -75,6 +75,10 @@ public function prepare()
 
 	try
 		{
+		$mintimes = $this->DB->getColumn('SELECT MIN(totaltime) FROM pkgdb.mirror_log');
+		$maxtimes = $this->DB->getColumn('SELECT MAX(totaltime) FROM pkgdb.mirror_log');
+		$avgtimes = $this->DB->getColumn('SELECT AVG(totaltime) FROM pkgdb.mirror_log');
+
 		$stm = $this->DB->prepare
 			('
 			 SELECT
@@ -86,7 +90,8 @@ public function prepare()
 				mirrors.path_http,
 				mirrors.path_rsync,
 				mirrors.country,
-				(SELECT MAX(lastsync) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS lastsync
+				(SELECT MAX(lastsync) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS lastsync,
+				(SELECT AVG(totaltime) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS avgtime
 			 FROM
 			 	pkgdb.mirrors
 			WHERE
@@ -111,6 +116,7 @@ public function prepare()
 				<th>FTP</th>
 				<th>HTTP</th>
 				<th>RSYNC</th>
+				<th><a href="?page=MirrorCheck;orderby=avgtime;sort='.abs($this->sort-1).'">&empty; Antwortzeit</a></th>
 				<th><a href="?page=MirrorCheck;orderby=lastsync;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
 			</tr>';
 
@@ -118,12 +124,16 @@ public function prepare()
 
 	foreach ($mirrors as $mirror)
 		{
+		$performance = round( (($mirror['avgtime']-$mintimes) / ($maxtimes-$mintimes)) * 200);
+		$color = $mirror['avgtime'] > $avgtimes ? 'darkred' : 'darkgreen';
+		
 		$body .= '<tr class="packageline'.$line.'">
 				<td>'.$mirror['host'].'</td>
 				<td>'.$mirror['country'].'</td>
 				<td>'.($mirror['ftp'] == 0 ? '' : '<a href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">/'.$mirror['path_ftp'].'</a>').'</td>
 				<td>'.($mirror['http'] == 0 ? '' : '<a href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">/'.$mirror['path_http'].'</a>').'</td>
 				<td>'.($mirror['rsync'] == 0 ? '' : '<a href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">/'.$mirror['path_rsync'].'</a>').'</td>
+				<td style="width:200px;"><div style="background-color:'.$color.';width:'.$performance.'px;">&nbsp;</div></td>
 				<td>'.formatDate($mirror['lastsync']).'</td>
 			</tr>';
 
