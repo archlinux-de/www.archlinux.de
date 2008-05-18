@@ -1,25 +1,25 @@
 -- phpMyAdmin SQL Dump
--- version 2.10.1
+-- version 2.11.6
 -- http://www.phpmyadmin.net
--- 
+--
 -- Host: localhost
--- Erstellungszeit: 15. Mai 2008 um 15:22
+-- Erstellungszeit: 18. Mai 2008 um 13:55
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
--- 
+--
 -- Datenbank: `pkgdb`
--- 
+--
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `architectures`
--- 
+--
 
-CREATE TABLE `architectures` (
+CREATE TABLE IF NOT EXISTS `architectures` (
   `id` tinyint(1) unsigned NOT NULL auto_increment,
   `name` varchar(10) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -28,11 +28,11 @@ CREATE TABLE `architectures` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `conflicts`
--- 
+--
 
-CREATE TABLE `conflicts` (
+CREATE TABLE IF NOT EXISTS `conflicts` (
   `package` int(11) unsigned NOT NULL,
   `conflicts` int(11) unsigned NOT NULL,
   `comment` varchar(255) NOT NULL,
@@ -42,11 +42,11 @@ CREATE TABLE `conflicts` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `depends`
--- 
+--
 
-CREATE TABLE `depends` (
+CREATE TABLE IF NOT EXISTS `depends` (
   `package` int(11) unsigned NOT NULL,
   `depends` int(11) unsigned NOT NULL,
   `comment` varchar(50) NOT NULL,
@@ -56,11 +56,11 @@ CREATE TABLE `depends` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `files`
--- 
+--
 
-CREATE TABLE `files` (
+CREATE TABLE IF NOT EXISTS `files` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `package` int(11) unsigned NOT NULL,
   `path` varchar(255) NOT NULL,
@@ -70,11 +70,11 @@ CREATE TABLE `files` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `file_index`
--- 
+--
 
-CREATE TABLE `file_index` (
+CREATE TABLE IF NOT EXISTS `file_index` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -83,11 +83,11 @@ CREATE TABLE `file_index` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `groups`
--- 
+--
 
-CREATE TABLE `groups` (
+CREATE TABLE IF NOT EXISTS `groups` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -96,11 +96,11 @@ CREATE TABLE `groups` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `licenses`
--- 
+--
 
-CREATE TABLE `licenses` (
+CREATE TABLE IF NOT EXISTS `licenses` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -109,11 +109,11 @@ CREATE TABLE `licenses` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `log`
--- 
+--
 
-CREATE TABLE `log` (
+CREATE TABLE IF NOT EXISTS `log` (
   `name` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`name`)
@@ -121,11 +121,39 @@ CREATE TABLE `log` (
 
 -- --------------------------------------------------------
 
--- 
--- Tabellenstruktur für Tabelle `packagers`
--- 
+--
+-- Tabellenstruktur für Tabelle `mirrors`
+--
 
-CREATE TABLE `packagers` (
+CREATE TABLE IF NOT EXISTS `mirrors` (
+  `host` varchar(255) NOT NULL,
+  `country` varchar(255) default NULL,
+  `ftp` tinyint(4) NOT NULL default '1',
+  `http` tinyint(4) NOT NULL default '0',
+  `rsync` tinyint(4) NOT NULL default '0',
+  `path_ftp` varchar(255) NOT NULL,
+  `path_http` varchar(255) NOT NULL,
+  `path_rsync` varchar(255) NOT NULL,
+  `i686` tinyint(4) NOT NULL default '1',
+  `x86_64` tinyint(4) NOT NULL default '1',
+  `contact` varchar(255) default NULL,
+  `added` date default NULL,
+  `removed` date default NULL,
+  `note` text,
+  `ticketnr` varchar(255) default NULL,
+  `oldtickets` varchar(255) default NULL,
+  `official` tinyint(1) NOT NULL default '1',
+  `deleted` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`host`(10))
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `packagers`
+--
+
+CREATE TABLE IF NOT EXISTS `packagers` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -136,11 +164,11 @@ CREATE TABLE `packagers` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `packages`
--- 
+--
 
-CREATE TABLE `packages` (
+CREATE TABLE IF NOT EXISTS `packages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `filename` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -168,11 +196,11 @@ CREATE TABLE `packages` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `package_file_index`
--- 
+--
 
-CREATE TABLE `package_file_index` (
+CREATE TABLE IF NOT EXISTS `package_file_index` (
   `package` int(11) unsigned NOT NULL,
   `file_index` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
@@ -181,11 +209,11 @@ CREATE TABLE `package_file_index` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `package_group`
--- 
+--
 
-CREATE TABLE `package_group` (
+CREATE TABLE IF NOT EXISTS `package_group` (
   `package` int(11) unsigned NOT NULL,
   `group` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
@@ -194,11 +222,11 @@ CREATE TABLE `package_group` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `package_license`
--- 
+--
 
-CREATE TABLE `package_license` (
+CREATE TABLE IF NOT EXISTS `package_license` (
   `package` int(11) unsigned NOT NULL,
   `license` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
@@ -207,11 +235,11 @@ CREATE TABLE `package_license` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `provides`
--- 
+--
 
-CREATE TABLE `provides` (
+CREATE TABLE IF NOT EXISTS `provides` (
   `package` int(11) unsigned NOT NULL,
   `provides` int(11) unsigned NOT NULL,
   `comment` varchar(50) NOT NULL,
@@ -221,11 +249,11 @@ CREATE TABLE `provides` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `replaces`
--- 
+--
 
-CREATE TABLE `replaces` (
+CREATE TABLE IF NOT EXISTS `replaces` (
   `package` int(11) unsigned NOT NULL,
   `replaces` int(11) unsigned NOT NULL,
   `comment` varchar(255) NOT NULL,
@@ -235,11 +263,11 @@ CREATE TABLE `replaces` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Tabellenstruktur für Tabelle `repositories`
--- 
+--
 
-CREATE TABLE `repositories` (
+CREATE TABLE IF NOT EXISTS `repositories` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY  (`id`),
