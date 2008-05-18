@@ -33,6 +33,7 @@ private static $availablePages = array
 	'GetOpenSearch' => 'pages/GetOpenSearch.php',
 	'GetRecentNews' => 'pages/GetRecentNews.php',
 	'GetRecentPackages' => 'pages/GetRecentPackages.php',
+	'MirrorCheck' => 'pages/MirrorCheck.php',
 	'NotFound' => 'pages/NotFound.php',
 	'PackageDetails' => 'pages/PackageDetails.php',
 	'PackageStatistics' => 'pages/PackageStatistics.php',

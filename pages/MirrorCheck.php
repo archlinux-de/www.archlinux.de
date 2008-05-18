@@ -18,9 +18,9 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Packagers extends Page{
+class MirrorCheck extends Page{
 
-private $orderby 	= 'name';
+private $orderby 	= 'country';
 private $sort 		= 0;
 
 protected function makeMenu()
@@ -43,8 +43,8 @@ protected function makeSubMenu()
 	return '
 		<ul id="nav">
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
-			<li class="selected">Packer</li>
+			<li class="selected">Server</li>
+			<li><a href="?page=Packagers">Packer</a></li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li><a href="?page=Packages">Suche</a></li>
 		</ul>';
@@ -52,11 +52,11 @@ protected function makeSubMenu()
 
 public function prepare()
 	{
-	$this->setValue('title', 'Packer');
+	$this->setValue('title', 'Server');
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('name', 'lastbuilddate', 'packages')))
+		if (in_array($this->Io->getString('orderby'), array('host', 'country', 'lastsync')))
 			{
 			$this->orderby = $this->Io->getString('orderby');
 			}
@@ -73,66 +73,55 @@ public function prepare()
 		{
 		}
 
-	$packages = $this->DB->getColumn('SELECT COUNT(*) FROM pkgdb.packages');
-
 	try
 		{
 		$stm = $this->DB->prepare
 			('
 			 SELECT
-			 	packagers.id,
-			 	packagers.name,
-			 	packagers.email,
-			 	(
-					SELECT
-						COUNT(packages.id)
-					FROM
-						pkgdb.packages
-					WHERE
-						packages.packager = packagers.id
-			 	) AS packages,
-			 	(
-					SELECT
-						MAX(packages.builddate)
-					FROM
-						pkgdb.packages
-					WHERE
-						packages.packager = packagers.id
-			 	) AS lastbuilddate
+				mirrors.host,
+				mirrors.ftp,
+				mirrors.http,
+				mirrors.rsync,
+				mirrors.path_ftp,
+				mirrors.path_http,
+				mirrors.path_rsync,
+				mirrors.country,
+				(SELECT MAX(lastsync) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS lastsync
 			 FROM
-			 	pkgdb.packagers
+			 	pkgdb.mirrors
 			 ORDER BY
 			 	'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 			');
 
-		$packagers = $stm->getRowSet();
+		$mirrors = $stm->getRowSet();
 		}
 	catch (DBNoDataException $e)
 		{
-		$packagers = array();
+		$mirrors = array();
 		}
 
 	$body = '
 		<table id="packages">
 			<tr>
-				<th><a href="?page=Packagers;orderby=name;sort='.abs($this->sort-1).'">Name</a></th>
-				<th>E-Mail</th>
-				<th colspan="2"><a href="?page=Packagers;orderby=packages;sort='.abs($this->sort-1).'">Pakete</a></th>
-				<th><a href="?page=Packagers;orderby=lastbuilddate;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
+				<th><a href="?page=MirrorCheck;orderby=host;sort='.abs($this->sort-1).'">Host</a></th>
+				<th><a href="?page=MirrorCheck;orderby=country;sort='.abs($this->sort-1).'">Land</a></th>
+				<th>FTP</th>
+				<th>HTTP</th>
+				<th>RSYNC</th>
+				<th><a href="?page=MirrorCheck;orderby=lastsync;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
 			</tr>';
 
 	$line = 0;
 
-	foreach ($packagers as $packager)
+	foreach ($mirrors as $mirror)
 		{
-		$percent = round(($packager['packages'] / $packages) * 100);
-
 		$body .= '<tr class="packageline'.$line.'">
-				<td>'.$packager['name'].'</td>
-				<td>'.(empty($packager['email']) ? '' : '<a href="mailto:'.$packager['email'].'">'.$packager['email'].'</a>').'</td>
-				<td style="text-align:right;"><a href="?page=Packages;packager='.$packager['id'].'">'.$packager['packages'].'</a></td>
-				<td style="width:100px;"><div style="background-color:#1793d1;width:'.$percent.'px;">&nbsp;</div></td>
-				<td>'.formatDate($packager['lastbuilddate']).'</td>
+				<td>'.$mirror['host'].'</td>
+				<td>'.$mirror['country'].'</td>
+				<td>'.($mirror['ftp'] == 0 ? '' : '<a href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">/'.$mirror['path_ftp'].'</a>').'</td>
+				<td>'.($mirror['http'] == 0 ? '' : '<a href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">/'.$mirror['path_http'].'</a>').'</td>
+				<td>'.($mirror['rsync'] == 0 ? '' : '<a href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">/'.$mirror['path_rsync'].'</a>').'</td>
+				<td>'.formatDate($mirror['lastsync']).'</td>
 			</tr>';
 
 		$line = abs($line-1);
