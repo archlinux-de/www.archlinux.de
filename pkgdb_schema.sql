@@ -1,25 +1,25 @@
 -- phpMyAdmin SQL Dump
--- version 2.11.6
+-- version 2.10.1
 -- http://www.phpmyadmin.net
---
+-- 
 -- Host: localhost
--- Erstellungszeit: 18. Mai 2008 um 13:55
+-- Erstellungszeit: 18. Mai 2008 um 15:41
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
---
+-- 
 -- Datenbank: `pkgdb`
---
+-- 
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `architectures`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `architectures` (
+CREATE TABLE `architectures` (
   `id` tinyint(1) unsigned NOT NULL auto_increment,
   `name` varchar(10) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -28,11 +28,11 @@ CREATE TABLE IF NOT EXISTS `architectures` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `conflicts`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `conflicts` (
+CREATE TABLE `conflicts` (
   `package` int(11) unsigned NOT NULL,
   `conflicts` int(11) unsigned NOT NULL,
   `comment` varchar(255) NOT NULL,
@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `conflicts` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `depends`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `depends` (
+CREATE TABLE `depends` (
   `package` int(11) unsigned NOT NULL,
   `depends` int(11) unsigned NOT NULL,
   `comment` varchar(50) NOT NULL,
@@ -56,11 +56,11 @@ CREATE TABLE IF NOT EXISTS `depends` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `files`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `files` (
+CREATE TABLE `files` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `package` int(11) unsigned NOT NULL,
   `path` varchar(255) NOT NULL,
@@ -70,11 +70,11 @@ CREATE TABLE IF NOT EXISTS `files` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `file_index`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `file_index` (
+CREATE TABLE `file_index` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -83,11 +83,11 @@ CREATE TABLE IF NOT EXISTS `file_index` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `groups`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `groups` (
+CREATE TABLE `groups` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -96,11 +96,11 @@ CREATE TABLE IF NOT EXISTS `groups` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `licenses`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `licenses` (
+CREATE TABLE `licenses` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
@@ -109,11 +109,11 @@ CREATE TABLE IF NOT EXISTS `licenses` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `log`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `log` (
+CREATE TABLE `log` (
   `name` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`name`)
@@ -121,11 +121,11 @@ CREATE TABLE IF NOT EXISTS `log` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `mirrors`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `mirrors` (
+CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
   `country` varchar(255) default NULL,
   `ftp` tinyint(4) NOT NULL default '1',
@@ -149,11 +149,26 @@ CREATE TABLE IF NOT EXISTS `mirrors` (
 
 -- --------------------------------------------------------
 
---
--- Tabellenstruktur für Tabelle `packagers`
---
+-- 
+-- Tabellenstruktur für Tabelle `mirror_log`
+-- 
 
-CREATE TABLE IF NOT EXISTS `packagers` (
+CREATE TABLE `mirror_log` (
+  `host` varchar(255) collate latin1_general_ci NOT NULL,
+  `time` int(10) unsigned NOT NULL,
+  `lastsync` int(10) unsigned default NULL,
+  `error` varchar(255) collate latin1_general_ci default NULL,
+  PRIMARY KEY  (`host`,`time`),
+  KEY `lastsync` (`lastsync`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+-- --------------------------------------------------------
+
+-- 
+-- Tabellenstruktur für Tabelle `packagers`
+-- 
+
+CREATE TABLE `packagers` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -164,11 +179,11 @@ CREATE TABLE IF NOT EXISTS `packagers` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `packages`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `packages` (
+CREATE TABLE `packages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `filename` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -196,11 +211,11 @@ CREATE TABLE IF NOT EXISTS `packages` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `package_file_index`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `package_file_index` (
+CREATE TABLE `package_file_index` (
   `package` int(11) unsigned NOT NULL,
   `file_index` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
@@ -209,11 +224,11 @@ CREATE TABLE IF NOT EXISTS `package_file_index` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `package_group`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `package_group` (
+CREATE TABLE `package_group` (
   `package` int(11) unsigned NOT NULL,
   `group` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
@@ -222,11 +237,11 @@ CREATE TABLE IF NOT EXISTS `package_group` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `package_license`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `package_license` (
+CREATE TABLE `package_license` (
   `package` int(11) unsigned NOT NULL,
   `license` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
@@ -235,11 +250,11 @@ CREATE TABLE IF NOT EXISTS `package_license` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `provides`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `provides` (
+CREATE TABLE `provides` (
   `package` int(11) unsigned NOT NULL,
   `provides` int(11) unsigned NOT NULL,
   `comment` varchar(50) NOT NULL,
@@ -249,11 +264,11 @@ CREATE TABLE IF NOT EXISTS `provides` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `replaces`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `replaces` (
+CREATE TABLE `replaces` (
   `package` int(11) unsigned NOT NULL,
   `replaces` int(11) unsigned NOT NULL,
   `comment` varchar(255) NOT NULL,
@@ -263,11 +278,11 @@ CREATE TABLE IF NOT EXISTS `replaces` (
 
 -- --------------------------------------------------------
 
---
+-- 
 -- Tabellenstruktur für Tabelle `repositories`
---
+-- 
 
-CREATE TABLE IF NOT EXISTS `repositories` (
+CREATE TABLE `repositories` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY  (`id`),

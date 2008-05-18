@@ -30,8 +30,6 @@ require ('../modules/Modul.php');
 require ('../modules/Settings.php');
 require ('../modules/Exceptions.php');
 require (LL_PATH.'modules/DB.php');
-require ('PackageDB.php');
-
 
 class UpdateFileDB extends Modul {
 
