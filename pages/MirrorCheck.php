@@ -89,6 +89,9 @@ public function prepare()
 				(SELECT MAX(lastsync) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS lastsync
 			 FROM
 			 	pkgdb.mirrors
+			WHERE
+				mirrors.official = 1
+				AND mirrors.deleted = 0
 			 ORDER BY
 			 	'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 			');
