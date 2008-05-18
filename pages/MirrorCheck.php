@@ -124,7 +124,15 @@ public function prepare()
 
 	foreach ($mirrors as $mirror)
 		{
-		$performance = round( (($mirror['avgtime']-$mintimes) / ($maxtimes-$mintimes)) * 200);
+		if ($maxtimes-$mintimes > 0)
+			{
+			$performance = round( (($mirror['avgtime']-$mintimes) / ($maxtimes-$mintimes)) * 200);
+			}
+		else
+			{
+			$performance = 200;
+			}
+
 		$color = $mirror['avgtime'] > $avgtimes ? 'darkred' : 'darkgreen';
 		
 		$body .= '<tr class="packageline'.$line.'">
