@@ -30,6 +30,9 @@ private static $availablePages = array
 	(
 	'ArchitectureDifferences' => 'pages/ArchitectureDifferences.php',
 	'GetFileFromMirror' => 'pages/GetFileFromMirror.php',
+	'GetOpenSearch' => 'pages/GetOpenSearch.php',
+	'GetRecentNews' => 'pages/GetRecentNews.php',
+	'GetRecentPackages' => 'pages/GetRecentPackages.php',
 	'NotFound' => 'pages/NotFound.php',
 	'PackageDetails' => 'pages/PackageDetails.php',
 	'PackageStatistics' => 'pages/PackageStatistics.php',
@@ -129,6 +132,10 @@ private function sendOutput()
 		<meta name="revisit-after" content="3 days" />
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" href="arch.css" />
+		<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="?page=GetRecentNews" />
+		<link rel="alternate" type="application/atom+xml" title="Aktualisierte Pakete" href="?page=GetRecentPackages" />
+		<link rel="alternate" type="application/atom+xml" title="Aktuelle Themen im Forum" href="http://forum.archlinux.de/?page=GetRecent;id=20" />
+		<link rel="search" type="application/opensearchdescription+xml" href="?page=GetOpenSearch" title="www.archlinux.de" />
 	</head>
 	<body>
 		<h1 id="logo">Arch Linux</h1>

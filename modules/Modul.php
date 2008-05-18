@@ -24,6 +24,8 @@ private static $loadedModules = array();
 private static $availableModules = array
 	(
 	'Page' => 'pages/abstract/Page.php',
+	'ObjectCache' => 'modules/ObjectCache.php',
+	'GetFile' => 'pages/abstract/GetFile.php',
 	'Settings' => 'modules/Settings.php',
 	);
 
@@ -31,7 +33,14 @@ public static function loadModul($name)
 	{
 	if (isset(self::$availableModules[$name]))
 		{
-		include_once(self::$availableModules[$name]);
+		if(file_exists(self::$availableModules[$name]))
+			{
+			include_once(self::$availableModules[$name]);
+			}
+		else
+			{
+			include_once(LL_PATH.self::$availableModules[$name]);
+			}
 		}
 	else
 		{

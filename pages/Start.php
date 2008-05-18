@@ -18,9 +18,6 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require (LL_PATH.'modules/ObjectCache.php');
-Modul::__set('ObjectCache', new ObjectCache());
-
 class Start extends Page{
 
 private $board 			= 20;

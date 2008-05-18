@@ -661,8 +661,8 @@ private function getPackagerID($packager)
 					name = ?
 					AND email = ?
 				');
-			$stm->bindString(htmlspecialchars($name));
-			$stm->bindString(htmlspecialchars($email));
+			$stm->bindString(htmlspecialchars(trim($name)));
+			$stm->bindString(htmlspecialchars(trim($email)));
 			$id = $stm->getColumn();
 			$stm->close();
 			}
@@ -678,8 +678,8 @@ private function getPackagerID($packager)
 					name = ?,
 					email = ?
 				');
-			$stm->bindString(htmlspecialchars($name));
-			$stm->bindString(htmlspecialchars($email));
+			$stm->bindString(htmlspecialchars(trim($name)));
+			$stm->bindString(htmlspecialchars(trim($email)));
 			$stm->execute();
 			$id = $this->DB->getInsertId();
 			$stm->close();
