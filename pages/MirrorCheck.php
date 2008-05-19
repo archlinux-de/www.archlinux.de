@@ -142,6 +142,7 @@ public function prepare()
 				mirrors.path_http,
 				mirrors.path_rsync,
 				mirrors.country,
+				mirrors.ticketnr,
 				MAX(lastsync) AS lastsync,
 				AVG(totaltime) AS avgtime
 			 FROM
@@ -217,7 +218,7 @@ public function prepare()
 		{
 		if ($int['maxtimes']-$int['mintimes'] > 0)
 			{
-			$performance = round( (($mirror['avgtime']-$int['mintimes']) / ($int['maxtimes']-$int['mintimes'])) * 200);
+			$performance = nat( (($mirror['avgtime']-$int['mintimes']) / ($int['maxtimes']-$int['mintimes'])) * 200);
 			}
 		else
 			{
@@ -225,15 +226,28 @@ public function prepare()
 			}
 
 		$color = $mirror['avgtime'] > $int['avgtimes'] ? 'darkred' : 'darkgreen';
+
+		if (time() - $mirror['lastsync'] > 60*60*24*3)
+			{
+			$outofsync = ' style="color:darkred"';
+			}
+		elseif (time() - $mirror['lastsync'] < 60*60*3)
+			{
+			$outofsync = ' style="color:darkgreen"';
+			}
+		else
+			{
+			$outofsync = '';
+			}
 		
 		$body .= '<tr class="packageline'.$line.'">
 				<td>'.$mirror['host'].'</td>
 				<td>'.$mirror['country'].'</td>
-				<td>'.($mirror['ftp'] == 0 ? '' : '<a href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">/'.$mirror['path_ftp'].'</a>').'</td>
-				<td>'.($mirror['http'] == 0 ? '' : '<a href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">/'.$mirror['path_http'].'</a>').'</td>
-				<td>'.($mirror['rsync'] == 0 ? '' : '<a href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">/'.$mirror['path_rsync'].'</a>').'</td>
+				<td>'.($mirror['ftp'] == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">/'.$mirror['path_ftp'].'</a>').'</td>
+				<td>'.($mirror['http'] == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">/'.$mirror['path_http'].'</a>').'</td>
+				<td>'.($mirror['rsync'] == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">/'.$mirror['path_rsync'].'</a>').'</td>
 				<td style="width:200px;" title="&empty; '.round($mirror['avgtime'], 2).'s"><div style="background-color:'.$color.';width:'.$performance.'px;">&nbsp;</div></td>
-				<td>'.formatDate($mirror['lastsync']).'</td>
+				<td'.$outofsync.'>'.formatDate($mirror['lastsync']).''.(!empty($mirror['ticketnr']) ? '<a rel="nofollow" href="http://bugs.archlinux.org/'.$mirror['ticketnr'].'">*</a>' : '').'</td>
 			</tr>';
 
 		$line = abs($line-1);

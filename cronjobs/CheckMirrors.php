@@ -200,6 +200,14 @@ private function removeOldEntries()
 	$stm->bindInteger(time() - 60*60*24*30*6);
 	$stm->execute();
 	$stm->close();
+
+	$this->DB->execute
+		('
+		DELETE FROM
+			pkgdb.mirror_log
+		WHERE
+			host NOT IN (SELECT host FROM pkgdb.mirrors WHERE official = 1 AND deleted = 0)
+		');
 	}
 
 }
