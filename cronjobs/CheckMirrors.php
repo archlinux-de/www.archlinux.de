@@ -143,7 +143,7 @@ private function getLastsyncFromMirror($url)
 		throw new RuntimeException(htmlspecialchars(curl_error($curl)), curl_errno($curl));
 		}
 
-	$totaltime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
+	$totaltime = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
 
 	curl_close($curl);
 

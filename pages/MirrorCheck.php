@@ -73,11 +73,63 @@ public function prepare()
 		{
 		}
 
+	$range = time() - 60*60*24*14;
+
 	try
 		{
-		$mintimes = $this->DB->getColumn('SELECT MIN(totaltime) FROM pkgdb.mirror_log');
-		$maxtimes = $this->DB->getColumn('SELECT MAX(totaltime) FROM pkgdb.mirror_log');
-		$avgtimes = $this->DB->getColumn('SELECT AVG(totaltime) FROM pkgdb.mirror_log');
+		$int = $this->DB->getRow
+			('
+			SELECT
+				MIN(totaltime) AS mintimes,
+				MAX(totaltime) AS maxtimes,
+				AVG(totaltime) AS avgtimes
+			FROM
+				pkgdb.mirrors,
+				pkgdb.mirror_log
+			WHERE
+				mirrors.official = 1
+				AND mirrors.deleted = 0
+				AND mirror_log.host = mirrors.host
+				AND mirror_log.time >= '.$range.'
+			');
+		$int['count'] = $this->DB->getcolumn
+			('
+			SELECT
+				COUNT(host) AS count
+			FROM
+				pkgdb.mirrors
+			WHERE
+				official = 1
+				AND deleted = 0
+			');
+
+		$de = $this->DB->getRow
+			('
+			SELECT
+				MIN(totaltime) AS mintimes,
+				MAX(totaltime) AS maxtimes,
+				AVG(totaltime) AS avgtimes
+			FROM
+				pkgdb.mirrors,
+				pkgdb.mirror_log
+			WHERE
+				mirrors.official = 1
+				AND mirrors.deleted = 0
+				AND mirrors.country LIKE \'Germany\'
+				AND mirror_log.host = mirrors.host
+				AND mirror_log.time >= '.$range.'
+			');
+		$de['count'] = $this->DB->getcolumn
+			('
+			SELECT
+				COUNT(host) AS count
+			FROM
+				pkgdb.mirrors
+			WHERE
+				official = 1
+				AND deleted = 0
+				AND country LIKE \'Germany\'
+			');
 
 		$stm = $this->DB->prepare
 			('
@@ -90,14 +142,19 @@ public function prepare()
 				mirrors.path_http,
 				mirrors.path_rsync,
 				mirrors.country,
-				(SELECT MAX(lastsync) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS lastsync,
-				(SELECT AVG(totaltime) FROM pkgdb.mirror_log WHERE mirror_log.host = mirrors.host) AS avgtime
+				MAX(lastsync) AS lastsync,
+				AVG(totaltime) AS avgtime
 			 FROM
-			 	pkgdb.mirrors
+			 	pkgdb.mirrors,
+				pkgdb.mirror_log
 			WHERE
 				mirrors.official = 1
 				AND mirrors.deleted = 0
-			 ORDER BY
+				AND mirror_log.host = mirrors.host
+				AND mirror_log.time >= '.$range.'
+			GROUP BY
+				mirrors.host
+			ORDER BY
 			 	'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 			');
 
@@ -108,7 +165,41 @@ public function prepare()
 		$mirrors = array();
 		}
 
-	$body = '
+	$body = '<div class="greybox" id="searchbox">
+			<h4 style="text-align: right">Server-Übersicht</h4>
+			<table>
+				<tr>
+					<th>&nbsp;</th>
+					<th>Deutschland</th>
+					<th>International</th>
+				</tr>
+
+							<tr>
+								<th>Anzahl der Server</th>
+								<td>'.$de['count'].'</td>
+								<td>'.$int['count'].'</td>
+							</tr>
+							<tr>
+								<th>Minimale Antwortzeit</th>
+								<td>'.round($de['mintimes'], 2).'s</td>
+								<td>'.round($int['mintimes'], 2).'s</td>
+							</tr>
+							<tr>
+								<th>Maximale Antwortzeit</th>
+								<td>'.round($de['maxtimes'], 2).'s</td>
+								<td>'.round($int['maxtimes'], 2).'s</td>
+							</tr>
+							<tr>
+								<th>Durchschnittliche Antwortzeit</th>
+								<td>'.round($de['avgtimes'], 2).'s</td>
+								<td>'.round($int['avgtimes'], 2).'s</td>
+							</tr>
+
+			</table>
+
+				
+			<p style="font-size:12px;"></p>
+		</div>
 		<table id="packages">
 			<tr>
 				<th><a href="?page=MirrorCheck;orderby=host;sort='.abs($this->sort-1).'">Host</a></th>
@@ -124,16 +215,16 @@ public function prepare()
 
 	foreach ($mirrors as $mirror)
 		{
-		if ($maxtimes-$mintimes > 0)
+		if ($int['maxtimes']-$int['mintimes'] > 0)
 			{
-			$performance = round( (($mirror['avgtime']-$mintimes) / ($maxtimes-$mintimes)) * 200);
+			$performance = round( (($mirror['avgtime']-$int['mintimes']) / ($int['maxtimes']-$int['mintimes'])) * 200);
 			}
 		else
 			{
 			$performance = 200;
 			}
 
-		$color = $mirror['avgtime'] > $avgtimes ? 'darkred' : 'darkgreen';
+		$color = $mirror['avgtime'] > $int['avgtimes'] ? 'darkred' : 'darkgreen';
 		
 		$body .= '<tr class="packageline'.$line.'">
 				<td>'.$mirror['host'].'</td>
