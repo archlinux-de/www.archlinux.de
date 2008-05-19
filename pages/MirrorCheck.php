@@ -56,7 +56,7 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('host', 'country', 'lastsync', 'avgtime')))
+		if (in_array($this->Io->getString('orderby'), array('host', 'country', 'lastsync', 'syncdelay', 'avgtime')))
 			{
 			$this->orderby = $this->Io->getString('orderby');
 			}
@@ -82,7 +82,10 @@ public function prepare()
 			SELECT
 				MIN(totaltime) AS mintimes,
 				MAX(totaltime) AS maxtimes,
-				AVG(totaltime) AS avgtimes
+				AVG(totaltime) AS avgtimes,
+				MAX(time-lastsync) AS maxsyncdelay,
+				MIN(time-lastsync) AS minsyncdelay,
+				AVG(time-lastsync) AS avgsyncdelay
 			FROM
 				pkgdb.mirrors,
 				pkgdb.mirror_log
@@ -108,7 +111,10 @@ public function prepare()
 			SELECT
 				MIN(totaltime) AS mintimes,
 				MAX(totaltime) AS maxtimes,
-				AVG(totaltime) AS avgtimes
+				AVG(totaltime) AS avgtimes,
+				MAX(time-lastsync) AS maxsyncdelay,
+				MIN(time-lastsync) AS minsyncdelay,
+				AVG(time-lastsync) AS avgsyncdelay
 			FROM
 				pkgdb.mirrors,
 				pkgdb.mirror_log
@@ -144,7 +150,8 @@ public function prepare()
 				mirrors.country,
 				mirrors.ticketnr,
 				MAX(lastsync) AS lastsync,
-				AVG(totaltime) AS avgtime
+				AVG(totaltime) AS avgtime,
+				AVG(time-lastsync) AS syncdelay
 			 FROM
 			 	pkgdb.mirrors,
 				pkgdb.mirror_log
@@ -174,41 +181,52 @@ public function prepare()
 					<th>Deutschland</th>
 					<th>International</th>
 				</tr>
-
-							<tr>
-								<th>Anzahl der Server</th>
-								<td>'.$de['count'].'</td>
-								<td>'.$int['count'].'</td>
-							</tr>
-							<tr>
-								<th>Minimale Antwortzeit</th>
-								<td>'.round($de['mintimes'], 2).'s</td>
-								<td>'.round($int['mintimes'], 2).'s</td>
-							</tr>
-							<tr>
-								<th>Maximale Antwortzeit</th>
-								<td>'.round($de['maxtimes'], 2).'s</td>
-								<td>'.round($int['maxtimes'], 2).'s</td>
-							</tr>
-							<tr>
-								<th>Durchschnittliche Antwortzeit</th>
-								<td>'.round($de['avgtimes'], 2).'s</td>
-								<td>'.round($int['avgtimes'], 2).'s</td>
-							</tr>
-
+				<tr>
+					<th>Anzahl der Server</th>
+					<td>'.$de['count'].'</td>
+					<td>'.$int['count'].'</td>
+				</tr>
+				<tr>
+					<th>Minimale Antwortzeit</th>
+					<td>'.$this->formatTime($de['mintimes']).'</td>
+					<td>'.$this->formatTime($int['mintimes']).'</td>
+				</tr>
+				<tr>
+					<th>Maximale Antwortzeit</th>
+					<td>'.$this->formatTime($de['maxtimes']).'</td>
+					<td>'.$this->formatTime($int['maxtimes']).'</td>
+				</tr>
+				<tr>
+					<th>Durchschnittliche Antwortzeit</th>
+					<td>'.$this->formatTime($de['avgtimes']).'</td>
+					<td>'.$this->formatTime($int['avgtimes']).'</td>
+				</tr>
+				<tr>
+					<th>Minimale Verzögerung</th>
+					<td>'.$this->formatTime($de['minsyncdelay']).'</td>
+					<td>'.$this->formatTime($int['minsyncdelay']).'</td>
+				</tr>
+				<tr>
+					<th>Maximale Verzögerung</th>
+					<td>'.$this->formatTime($de['maxsyncdelay']).'</td>
+					<td>'.$this->formatTime($int['maxsyncdelay']).'</td>
+				</tr>
+				<tr>
+					<th>Durchschnittliche Verzögerung</th>
+					<td>'.$this->formatTime($de['avgsyncdelay']).'</td>
+					<td>'.$this->formatTime($int['avgsyncdelay']).'</td>
+				</tr>
 			</table>
-
-				
-			<p style="font-size:12px;"></p>
 		</div>
 		<table id="packages">
 			<tr>
 				<th><a href="?page=MirrorCheck;orderby=host;sort='.abs($this->sort-1).'">Host</a></th>
 				<th><a href="?page=MirrorCheck;orderby=country;sort='.abs($this->sort-1).'">Land</a></th>
-				<th>FTP</th>
-				<th>HTTP</th>
-				<th>RSYNC</th>
-				<th><a href="?page=MirrorCheck;orderby=avgtime;sort='.abs($this->sort-1).'">&empty; Antwortzeit</a></th>
+				<th style="text-align:center;">FTP</th>
+				<th style="text-align:center;">HTTP</th>
+				<th style="text-align:center;">RSYNC</th>
+				<th><a href="?page=MirrorCheck;orderby=avgtime;sort='.abs($this->sort-1).'">&empty;&nbsp;Antwortzeit</a></th>
+				<th><a href="?page=MirrorCheck;orderby=syncdelay;sort='.abs($this->sort-1).'">&empty;&nbsp;Verzögerung</a></th>
 				<th><a href="?page=MirrorCheck;orderby=lastsync;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
 			</tr>';
 
@@ -216,16 +234,11 @@ public function prepare()
 
 	foreach ($mirrors as $mirror)
 		{
-		if ($int['maxtimes']-$int['mintimes'] > 0)
-			{
-			$performance = nat( (($mirror['avgtime']-$int['mintimes']) / ($int['maxtimes']-$int['mintimes'])) * 200);
-			}
-		else
-			{
-			$performance = 200;
-			}
+		$performance = $int['maxtimes'] > 0 ? round(($mirror['avgtime'] / $int['maxtimes']) * 100) : 100;
+		$perfcolor = $mirror['avgtime'] > $int['avgtimes'] ? 'darkred' : 'darkgreen';
 
-		$color = $mirror['avgtime'] > $int['avgtimes'] ? 'darkred' : 'darkgreen';
+		$syncdelay = $int['maxsyncdelay'] > 0 ? round(($mirror['syncdelay'] / $int['maxsyncdelay']) * 100) : 100;
+		$synccolor = $mirror['syncdelay'] > $int['avgsyncdelay'] ? 'darkred' : 'darkgreen';
 
 		if (time() - $mirror['lastsync'] > 60*60*24*3)
 			{
@@ -243,10 +256,11 @@ public function prepare()
 		$body .= '<tr class="packageline'.$line.'">
 				<td>'.$mirror['host'].'</td>
 				<td>'.$mirror['country'].'</td>
-				<td>'.($mirror['ftp'] == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">/'.$mirror['path_ftp'].'</a>').'</td>
-				<td>'.($mirror['http'] == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">/'.$mirror['path_http'].'</a>').'</td>
-				<td>'.($mirror['rsync'] == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">/'.$mirror['path_rsync'].'</a>').'</td>
-				<td style="width:200px;" title="&empty; '.round($mirror['avgtime'], 2).'s"><div style="background-color:'.$color.';width:'.$performance.'px;">&nbsp;</div></td>
+				<td style="text-align:center;">'.($mirror['ftp'] == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">&radic;</a>').'</td>
+				<td style="text-align:center;">'.($mirror['http'] == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">&radic;</a>').'</td>
+				<td style="text-align:center;">'.($mirror['rsync'] == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">&radic;</a>').'</td>
+				<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
+				<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
 				<td'.$outofsync.'>'.formatDate($mirror['lastsync']).''.(!empty($mirror['ticketnr']) ? '<a rel="nofollow" href="http://bugs.archlinux.org/'.$mirror['ticketnr'].'">*</a>' : '').'</td>
 			</tr>';
 
@@ -256,6 +270,54 @@ public function prepare()
 	$body .= '</table>';
 
 	$this->setValue('body', $body);
+	}
+
+private function formatTime($seconds)
+	{
+	$minutes 	= 60;
+	$hours 		= 60 * $minutes;
+	$days 		= 24 * $hours;
+	$weeks 		= 7 * $days;
+	$months 	= 4 * $weeks;
+	$years 		= 12 * $months;
+
+	if ($seconds >= $years)
+		{
+		$result = round($seconds / $years, 2);
+		$postfix = '&nbsp;Jahre';
+		}
+	elseif ($seconds >= $months)
+		{
+		$result =  round($seconds / $months, 2);
+		$postfix = '&nbsp;Monate';
+		}
+	elseif ($seconds >= $weeks)
+		{
+		$result =  round($seconds / $weeks, 2);
+		$postfix = '&nbsp;Wochen';
+		}
+	elseif ($seconds >= $days)
+		{
+		$result =  round($seconds / $days, 2);
+		$postfix = '&nbsp;Tage';
+		}
+	elseif ($seconds >= $hours)
+		{
+		$result =  round($seconds / $hours, 2);
+		$postfix = '&nbsp;Stunden';
+		}
+	elseif ($seconds >= $minutes)
+		{
+		$result =  round($seconds / $minutes, 2);
+		$postfix = '&nbsp;Minuten';
+		}
+	else
+		{
+		$result =  round($seconds, 2);
+		$postfix = '&nbsp;Sekunden';
+		}
+
+	return $result.$postfix;
 	}
 
 }

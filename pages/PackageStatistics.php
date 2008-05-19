@@ -396,22 +396,22 @@ private function formatBytes($bytes)
 	if ($bytes >= $gb)	// GB
 		{
 		$result = round($bytes / $gb, 2);
-		$postfix = ' G';
+		$postfix = '&nbsp;G';
 		}
 	elseif ($bytes >= $mb)	// MB
 		{
 		$result =  round($bytes / $mb, 2);
-		$postfix = ' M';
+		$postfix = '&nbsp;M';
 		}
 	elseif ($bytes >= $kb)	// KB
 		{
 		$result =  round($bytes / $kb, 2);
-		$postfix = ' K';
+		$postfix = '&nbsp;K';
 		}
 	else			//  B
 		{
 		$result =  $bytes;
-		$postfix = ' ';
+		$postfix = '&nbsp;';
 		}
 
 	return $this->formatNumber($result, 2).$postfix;
