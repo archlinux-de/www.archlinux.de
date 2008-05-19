@@ -232,7 +232,7 @@ public function prepare()
 				<td>'.($mirror['ftp'] == 0 ? '' : '<a href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">/'.$mirror['path_ftp'].'</a>').'</td>
 				<td>'.($mirror['http'] == 0 ? '' : '<a href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">/'.$mirror['path_http'].'</a>').'</td>
 				<td>'.($mirror['rsync'] == 0 ? '' : '<a href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">/'.$mirror['path_rsync'].'</a>').'</td>
-				<td style="width:200px;"><div style="background-color:'.$color.';width:'.$performance.'px;" title="&empty; '.round($mirror['avgtime'], 2).'s">&nbsp;</div></td>
+				<td style="width:200px;" title="&empty; '.round($mirror['avgtime'], 2).'s"><div style="background-color:'.$color.';width:'.$performance.'px;">&nbsp;</div></td>
 				<td>'.formatDate($mirror['lastsync']).'</td>
 			</tr>';
 
