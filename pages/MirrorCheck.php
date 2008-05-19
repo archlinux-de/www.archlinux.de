@@ -73,201 +73,206 @@ public function prepare()
 		{
 		}
 
-	$range = time() - 60*60*24*14;
-
-	try
+	if (!($body = $this->ObjectCache->getObject('AL:MirrorCheck:'.$this->sort.':'.$this->orderby)))
 		{
-		$int = $this->DB->getRow
-			('
-			SELECT
-				MIN(totaltime) AS mintimes,
-				MAX(totaltime) AS maxtimes,
-				AVG(totaltime) AS avgtimes,
-				MAX(time-lastsync) AS maxsyncdelay,
-				MIN(time-lastsync) AS minsyncdelay,
-				AVG(time-lastsync) AS avgsyncdelay
-			FROM
-				pkgdb.mirrors,
-				pkgdb.mirror_log
-			WHERE
-				mirrors.official = 1
-				AND mirrors.deleted = 0
-				AND mirror_log.host = mirrors.host
-				AND mirror_log.time >= '.$range.'
-			');
-		$int['count'] = $this->DB->getcolumn
-			('
-			SELECT
-				COUNT(host) AS count
-			FROM
-				pkgdb.mirrors
-			WHERE
-				official = 1
-				AND deleted = 0
-			');
+		$range = time() - 60*60*24*14;
 
-		$de = $this->DB->getRow
-			('
-			SELECT
-				MIN(totaltime) AS mintimes,
-				MAX(totaltime) AS maxtimes,
-				AVG(totaltime) AS avgtimes,
-				MAX(time-lastsync) AS maxsyncdelay,
-				MIN(time-lastsync) AS minsyncdelay,
-				AVG(time-lastsync) AS avgsyncdelay
-			FROM
-				pkgdb.mirrors,
-				pkgdb.mirror_log
-			WHERE
-				mirrors.official = 1
-				AND mirrors.deleted = 0
-				AND mirrors.country LIKE \'Germany\'
-				AND mirror_log.host = mirrors.host
-				AND mirror_log.time >= '.$range.'
-			');
-		$de['count'] = $this->DB->getcolumn
-			('
-			SELECT
-				COUNT(host) AS count
-			FROM
-				pkgdb.mirrors
-			WHERE
-				official = 1
-				AND deleted = 0
-				AND country LIKE \'Germany\'
-			');
-
-		$stm = $this->DB->prepare
-			('
-			 SELECT
-				mirrors.host,
-				mirrors.ftp,
-				mirrors.http,
-				mirrors.rsync,
-				mirrors.path_ftp,
-				mirrors.path_http,
-				mirrors.path_rsync,
-				mirrors.country,
-				mirrors.ticketnr,
-				MAX(lastsync) AS lastsync,
-				AVG(totaltime) AS avgtime,
-				AVG(time-lastsync) AS syncdelay
-			 FROM
-			 	pkgdb.mirrors,
-				pkgdb.mirror_log
-			WHERE
-				mirrors.official = 1
-				AND mirrors.deleted = 0
-				AND mirror_log.host = mirrors.host
-				AND mirror_log.time >= '.$range.'
-			GROUP BY
-				mirrors.host
-			ORDER BY
-			 	'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
-			');
-
-		$mirrors = $stm->getRowSet();
-		}
-	catch (DBNoDataException $e)
-		{
-		$mirrors = array();
-		}
-
-	$body = '<div class="greybox" id="searchbox">
-			<h4 style="text-align: right">Server-Übersicht</h4>
-			<table>
-				<tr>
-					<th>&nbsp;</th>
-					<th>Deutschland</th>
-					<th>International</th>
-				</tr>
-				<tr>
-					<th>Anzahl der Server</th>
-					<td>'.$de['count'].'</td>
-					<td>'.$int['count'].'</td>
-				</tr>
-				<tr>
-					<th>Minimale Antwortzeit</th>
-					<td>'.$this->formatTime($de['mintimes']).'</td>
-					<td>'.$this->formatTime($int['mintimes']).'</td>
-				</tr>
-				<tr>
-					<th>Maximale Antwortzeit</th>
-					<td>'.$this->formatTime($de['maxtimes']).'</td>
-					<td>'.$this->formatTime($int['maxtimes']).'</td>
-				</tr>
-				<tr>
-					<th>Durchschnittliche Antwortzeit</th>
-					<td>'.$this->formatTime($de['avgtimes']).'</td>
-					<td>'.$this->formatTime($int['avgtimes']).'</td>
-				</tr>
-				<tr>
-					<th>Minimale Verzögerung</th>
-					<td>'.$this->formatTime($de['minsyncdelay']).'</td>
-					<td>'.$this->formatTime($int['minsyncdelay']).'</td>
-				</tr>
-				<tr>
-					<th>Maximale Verzögerung</th>
-					<td>'.$this->formatTime($de['maxsyncdelay']).'</td>
-					<td>'.$this->formatTime($int['maxsyncdelay']).'</td>
-				</tr>
-				<tr>
-					<th>Durchschnittliche Verzögerung</th>
-					<td>'.$this->formatTime($de['avgsyncdelay']).'</td>
-					<td>'.$this->formatTime($int['avgsyncdelay']).'</td>
-				</tr>
-			</table>
-		</div>
-		<table id="packages">
-			<tr>
-				<th><a href="?page=MirrorCheck;orderby=host;sort='.abs($this->sort-1).'">Host</a></th>
-				<th><a href="?page=MirrorCheck;orderby=country;sort='.abs($this->sort-1).'">Land</a></th>
-				<th style="text-align:center;">FTP</th>
-				<th style="text-align:center;">HTTP</th>
-				<th style="text-align:center;">RSYNC</th>
-				<th><a href="?page=MirrorCheck;orderby=avgtime;sort='.abs($this->sort-1).'">&empty;&nbsp;Antwortzeit</a></th>
-				<th><a href="?page=MirrorCheck;orderby=syncdelay;sort='.abs($this->sort-1).'">&empty;&nbsp;Verzögerung</a></th>
-				<th><a href="?page=MirrorCheck;orderby=lastsync;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
-			</tr>';
-
-	$line = 0;
-
-	foreach ($mirrors as $mirror)
-		{
-		$performance = $int['maxtimes'] > 0 ? round(($mirror['avgtime'] / $int['maxtimes']) * 100) : 100;
-		$perfcolor = $mirror['avgtime'] > $int['avgtimes'] ? 'darkred' : 'darkgreen';
-
-		$syncdelay = $int['maxsyncdelay'] > 0 ? round(($mirror['syncdelay'] / $int['maxsyncdelay']) * 100) : 100;
-		$synccolor = $mirror['syncdelay'] > $int['avgsyncdelay'] ? 'darkred' : 'darkgreen';
-
-		if (time() - $mirror['lastsync'] > 60*60*24*3)
+		try
 			{
-			$outofsync = ' style="color:darkred"';
-			}
-		elseif (time() - $mirror['lastsync'] < 60*60*3)
-			{
-			$outofsync = ' style="color:darkgreen"';
-			}
-		else
-			{
-			$outofsync = '';
-			}
-		
-		$body .= '<tr class="packageline'.$line.'">
-				<td>'.$mirror['host'].'</td>
-				<td>'.$mirror['country'].'</td>
-				<td style="text-align:center;">'.($mirror['ftp'] == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">&radic;</a>').'</td>
-				<td style="text-align:center;">'.($mirror['http'] == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">&radic;</a>').'</td>
-				<td style="text-align:center;">'.($mirror['rsync'] == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">&radic;</a>').'</td>
-				<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
-				<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
-				<td'.$outofsync.'>'.formatDate($mirror['lastsync']).''.(!empty($mirror['ticketnr']) ? '<a rel="nofollow" href="http://bugs.archlinux.org/'.$mirror['ticketnr'].'">*</a>' : '').'</td>
-			</tr>';
+			$int = $this->DB->getRow
+				('
+				SELECT
+					MIN(totaltime) AS mintimes,
+					MAX(totaltime) AS maxtimes,
+					AVG(totaltime) AS avgtimes,
+					MAX(time-lastsync) AS maxsyncdelay,
+					MIN(time-lastsync) AS minsyncdelay,
+					AVG(time-lastsync) AS avgsyncdelay
+				FROM
+					pkgdb.mirrors,
+					pkgdb.mirror_log
+				WHERE
+					mirrors.official = 1
+					AND mirrors.deleted = 0
+					AND mirror_log.host = mirrors.host
+					AND mirror_log.time >= '.$range.'
+				');
+			$int['count'] = $this->DB->getcolumn
+				('
+				SELECT
+					COUNT(host) AS count
+				FROM
+					pkgdb.mirrors
+				WHERE
+					official = 1
+					AND deleted = 0
+				');
 
-		$line = abs($line-1);
+			$de = $this->DB->getRow
+				('
+				SELECT
+					MIN(totaltime) AS mintimes,
+					MAX(totaltime) AS maxtimes,
+					AVG(totaltime) AS avgtimes,
+					MAX(time-lastsync) AS maxsyncdelay,
+					MIN(time-lastsync) AS minsyncdelay,
+					AVG(time-lastsync) AS avgsyncdelay
+				FROM
+					pkgdb.mirrors,
+					pkgdb.mirror_log
+				WHERE
+					mirrors.official = 1
+					AND mirrors.deleted = 0
+					AND mirrors.country LIKE \'Germany\'
+					AND mirror_log.host = mirrors.host
+					AND mirror_log.time >= '.$range.'
+				');
+			$de['count'] = $this->DB->getcolumn
+				('
+				SELECT
+					COUNT(host) AS count
+				FROM
+					pkgdb.mirrors
+				WHERE
+					official = 1
+					AND deleted = 0
+					AND country LIKE \'Germany\'
+				');
+
+			$stm = $this->DB->prepare
+				('
+				SELECT
+					mirrors.host,
+					mirrors.ftp,
+					mirrors.http,
+					mirrors.rsync,
+					mirrors.path_ftp,
+					mirrors.path_http,
+					mirrors.path_rsync,
+					mirrors.country,
+					mirrors.ticketnr,
+					MAX(lastsync) AS lastsync,
+					AVG(totaltime) AS avgtime,
+					AVG(time-lastsync) AS syncdelay
+				FROM
+					pkgdb.mirrors,
+					pkgdb.mirror_log
+				WHERE
+					mirrors.official = 1
+					AND mirrors.deleted = 0
+					AND mirror_log.host = mirrors.host
+					AND mirror_log.time >= '.$range.'
+				GROUP BY
+					mirrors.host
+				ORDER BY
+					'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
+				');
+
+			$mirrors = $stm->getRowSet();
+			}
+		catch (DBNoDataException $e)
+			{
+			$mirrors = array();
+			}
+
+		$body = '<div class="greybox" id="searchbox">
+				<h4 style="text-align: right">Server-Übersicht</h4>
+				<table>
+					<tr>
+						<th>&nbsp;</th>
+						<th>Deutschland</th>
+						<th>International</th>
+					</tr>
+					<tr>
+						<th>Anzahl der Server</th>
+						<td>'.$de['count'].'</td>
+						<td>'.$int['count'].'</td>
+					</tr>
+					<tr>
+						<th>Minimale Antwortzeit</th>
+						<td>'.$this->formatTime($de['mintimes']).'</td>
+						<td>'.$this->formatTime($int['mintimes']).'</td>
+					</tr>
+					<tr>
+						<th>Maximale Antwortzeit</th>
+						<td>'.$this->formatTime($de['maxtimes']).'</td>
+						<td>'.$this->formatTime($int['maxtimes']).'</td>
+					</tr>
+					<tr>
+						<th>Durchschnittliche Antwortzeit</th>
+						<td>'.$this->formatTime($de['avgtimes']).'</td>
+						<td>'.$this->formatTime($int['avgtimes']).'</td>
+					</tr>
+					<tr>
+						<th>Minimale Verzögerung</th>
+						<td>'.$this->formatTime($de['minsyncdelay']).'</td>
+						<td>'.$this->formatTime($int['minsyncdelay']).'</td>
+					</tr>
+					<tr>
+						<th>Maximale Verzögerung</th>
+						<td>'.$this->formatTime($de['maxsyncdelay']).'</td>
+						<td>'.$this->formatTime($int['maxsyncdelay']).'</td>
+					</tr>
+					<tr>
+						<th>Durchschnittliche Verzögerung</th>
+						<td>'.$this->formatTime($de['avgsyncdelay']).'</td>
+						<td>'.$this->formatTime($int['avgsyncdelay']).'</td>
+					</tr>
+				</table>
+			</div>
+			<table id="packages">
+				<tr>
+					<th><a href="?page=MirrorCheck;orderby=host;sort='.abs($this->sort-1).'">Host</a></th>
+					<th><a href="?page=MirrorCheck;orderby=country;sort='.abs($this->sort-1).'">Land</a></th>
+					<th style="text-align:center;">FTP</th>
+					<th style="text-align:center;">HTTP</th>
+					<th style="text-align:center;">RSYNC</th>
+					<th><a href="?page=MirrorCheck;orderby=avgtime;sort='.abs($this->sort-1).'">&empty;&nbsp;Antwortzeit</a></th>
+					<th><a href="?page=MirrorCheck;orderby=syncdelay;sort='.abs($this->sort-1).'">&empty;&nbsp;Verzögerung</a></th>
+					<th><a href="?page=MirrorCheck;orderby=lastsync;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
+				</tr>';
+
+		$line = 0;
+
+		foreach ($mirrors as $mirror)
+			{
+			$performance = $int['maxtimes'] > 0 ? round(($mirror['avgtime'] / $int['maxtimes']) * 100) : 100;
+			$perfcolor = $mirror['avgtime'] > $int['avgtimes'] ? 'darkred' : 'darkgreen';
+
+			$syncdelay = $int['maxsyncdelay'] > 0 ? round(($mirror['syncdelay'] / $int['maxsyncdelay']) * 100) : 100;
+			$synccolor = $mirror['syncdelay'] > $int['avgsyncdelay'] ? 'darkred' : 'darkgreen';
+
+			if (time() - $mirror['lastsync'] > 60*60*24*3)
+				{
+				$outofsync = ' style="color:darkred"';
+				}
+			elseif (time() - $mirror['lastsync'] < 60*60*3)
+				{
+				$outofsync = ' style="color:darkgreen"';
+				}
+			else
+				{
+				$outofsync = '';
+				}
+			
+			$body .= '<tr class="packageline'.$line.'">
+					<td>'.$mirror['host'].'</td>
+					<td>'.$mirror['country'].'</td>
+					<td style="text-align:center;">'.($mirror['ftp'] == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">&radic;</a>').'</td>
+					<td style="text-align:center;">'.($mirror['http'] == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">&radic;</a>').'</td>
+					<td style="text-align:center;">'.($mirror['rsync'] == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">&radic;</a>').'</td>
+					<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
+					<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
+					<td'.$outofsync.'>'.formatDate($mirror['lastsync']).''.(!empty($mirror['ticketnr']) ? '<a rel="nofollow" href="http://bugs.archlinux.org/'.$mirror['ticketnr'].'">*</a>' : '').'</td>
+				</tr>';
+
+			$line = abs($line-1);
+			}
+
+		$body .= '</table>';
+
+		$this->ObjectCache->addObject('AL:MirrorCheck:'.$this->sort.':'.$this->orderby, $body, 60*60*2);
 		}
-
-	$body .= '</table>';
 
 	$this->setValue('body', $body);
 	}
