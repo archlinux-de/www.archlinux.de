@@ -194,7 +194,7 @@ public function prepare()
 				<tr>
 					<th colspan="2" class="packagedetailshead">Repositorien</th>
 				</tr>
-					'.$this->getPositoryStatistics().'
+					'.$this->getPositoryStatistics($data['packages'], $data['csize']).'
 			</table>
 			<table id="packagedependencies">
 				<tr>
@@ -222,7 +222,7 @@ public function prepare()
 	$this->setValue('body', $body);
 	}
 
-private function getPositoryStatistics()
+private function getPositoryStatistics($packages, $size)
 	{
 	$repolist = '';
 	$repos = $this->DB->getRowSet('SELECT id, name FROM pkgdb.repositories')->toArray();
@@ -242,7 +242,7 @@ private function getPositoryStatistics()
 
 	foreach ($repos as $repo)
 		{
-		$repolist .= '<tr><th><a href="?page=Packages;repository='.$repo['id'].'">['.$repo['name'].']</a></th><td style="padding:0px;"><table style="width:320px;padding:0px;">';
+		$repolist .= '<tr><th><a href="?page=Packages;repository='.$repo['id'].'">['.$repo['name'].']</a></th><td style="padding:0px;"><table style="padding:0px;">';
 
 		foreach ($arches as $arch)
 			{
@@ -252,8 +252,13 @@ private function getPositoryStatistics()
 			$stm->bindInteger($arch['id']);
 			$data = $stm->getRow();
 
+			$pkgpercent = round(($data['packages'] / $packages) * 200);
+			$sizepercent = round(($data['size'] / $size) * 200);
+
 			$repolist .= '<td style="width:100px;text-align:right;padding:0px;">'.$this->formatNumber($data['packages']).' Pakete</td>
-			<td style="text-align:right;padding:0px;">'.$this->formatBytes($data['size']).'Byte</td>';
+			<td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$pkgpercent.'px;">&nbsp;</div></td>
+			<td style="width:100px;text-align:right;padding:0px;">'.$this->formatBytes($data['size']).'Byte</td>
+			<td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$sizepercent.'px;">&nbsp;</div></td>';
 
 			$repolist .= '</tr>';
 			}
@@ -280,13 +285,16 @@ private function getLargestPackages()
 			csize DESC
 		LIMIT
 			50
-		');
+		')->toArray();
+	$max = $packages[1]['csize'];
 
 	$list = '<table>';
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatBytes($package['csize']).'Byte</td></tr>';
+		$percent = round(($package['csize'] / $max) * 100);
+
+		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatBytes($package['csize']).'Byte">&nbsp;</div></td></tr>';
 		}
 
 	return $list.'</table>';
@@ -306,13 +314,16 @@ private function getSmallestPackages()
 			csize ASC
 		LIMIT
 			50
-		');
+		')->toArray();
+	$max = $packages[count($packages)]['csize'];
 
 	$list = '<table>';
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatBytes($package['csize']).'Byte</td></tr>';
+		$percent = round(($package['csize'] / $max)*100);
+
+		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatBytes($package['csize']).'Byte">&nbsp;</div></td></tr>';
 		}
 
 	return $list.'</table>';
@@ -332,13 +343,16 @@ private function getMostFiles()
 			files DESC
 		LIMIT
 			50
-		');
+		')->toArray();
+	$max = $packages[1]['files'];
 
 	$list = '<table>';
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatNumber($package['files']).'</td></tr>';
+		$percent = round(($package['files'] / $max) * 100);
+
+		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatNumber($package['files']).'">&nbsp;</div></td></tr>';
 		}
 
 	return $list.'</table>';
@@ -358,13 +372,16 @@ private function getLeastFiles()
 			files ASC
 		LIMIT
 			50
-		');
+		')->toArray();
+	$max = $packages[count($packages)]['files'];
 
 	$list = '<table>';
 
 	foreach ($packages as $package)
 		{
-		$list .= '<tr><td><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="text-align:right;">'.$this->formatNumber($package['files']).'</td></tr>';
+		$percent = round(($package['files'] / $max)*100);
+
+		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatNumber($package['files']).'">&nbsp;</div></td></tr>';
 		}
 
 	return $list.'</table>';
