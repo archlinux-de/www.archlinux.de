@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 18. Mai 2008 um 23:46
+-- Erstellungszeit: 20. Mai 2008 um 13:05
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.6
 
@@ -127,24 +127,24 @@ CREATE TABLE `log` (
 
 CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
-  `country` varchar(255) default NULL,
-  `ftp` tinyint(4) NOT NULL default '1',
-  `http` tinyint(4) NOT NULL default '0',
-  `rsync` tinyint(4) NOT NULL default '0',
-  `path_ftp` varchar(255) NOT NULL,
-  `path_http` varchar(255) NOT NULL,
-  `path_rsync` varchar(255) NOT NULL,
+  `country` varchar(255) NOT NULL,
+  `ftp` varchar(255) NOT NULL,
+  `http` varchar(255) NOT NULL,
+  `rsync` varchar(255) NOT NULL,
   `i686` tinyint(4) NOT NULL default '1',
   `x86_64` tinyint(4) NOT NULL default '1',
-  `contact` varchar(255) default NULL,
+  `contact` varchar(255) NOT NULL,
   `added` date default NULL,
   `removed` date default NULL,
-  `note` text,
-  `ticketnr` varchar(255) default NULL,
-  `oldtickets` varchar(255) default NULL,
+  `note` text NOT NULL,
+  `ticketnr` varchar(255) NOT NULL,
+  `oldtickets` varchar(255) NOT NULL,
   `official` tinyint(1) NOT NULL default '1',
   `deleted` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`host`)
+  PRIMARY KEY  (`host`),
+  KEY `country` (`country`),
+  KEY `official` (`official`),
+  KEY `deleted` (`deleted`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -160,7 +160,9 @@ CREATE TABLE `mirror_log` (
   `error` varchar(255) default NULL,
   `totaltime` double unsigned default NULL,
   PRIMARY KEY  (`host`,`time`),
-  KEY `lastsync` (`lastsync`)
+  KEY `lastsync` (`lastsync`),
+  KEY `totaltime` (`totaltime`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

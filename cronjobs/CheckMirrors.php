@@ -69,8 +69,6 @@ public function runUpdate()
 				host,
 				ftp,
 				http,
-				path_ftp,
-				path_http,
 				i686,
 				x86_64
 			FROM
@@ -78,7 +76,7 @@ public function runUpdate()
 			WHERE
 				official = 1
 				AND deleted = 0
-				AND (ftp = 1 OR http = 1)
+				AND (LENGTH(ftp) > 0 OR LENGTH(http) > 0)
 				AND (i686 = 1 OR x86_64 = 1)
 			')->toArray();
 		}
@@ -91,23 +89,21 @@ public function runUpdate()
 		
 	foreach ($mirrors as $mirror)
 		{
-		$arch = isset($mirror['i686']) ? 'i686' : 'x86_64';
+		$arch = $mirror['i686'] > 0 ? 'i686' : 'x86_64';
 		$repo = 'core';
 
-		if ($mirror['ftp'] == 1)
+		if (strlen($mirror['ftp']) > 0)
 			{
-			$protocoll = 'ftp';
-			$path = $mirror['path_ftp'];
+			$url = 'ftp://'.$mirror['ftp'];
 			}
 		else
 			{
-			$protocoll = 'http';
-			$path = $mirror['path_http'];
+			$url = 'http://'.$mirror['ftp'];
 			}
 
 		try
 			{
-			$result = $this->getLastsyncFromMirror($protocoll.'://'.$mirror['host'].'/'.$path.'/'.$repo.'/os/'.$arch);
+			$result = $this->getLastsyncFromMirror($url.'/'.$repo.'/os/'.$arch);
 			$this->insertLogEntry($mirror['host'], $result['lastsync'], $result['totaltime']);
 			}
 		catch (RuntimeException $e)

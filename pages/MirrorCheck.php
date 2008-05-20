@@ -146,9 +146,6 @@ public function prepare()
 					mirrors.ftp,
 					mirrors.http,
 					mirrors.rsync,
-					mirrors.path_ftp,
-					mirrors.path_http,
-					mirrors.path_rsync,
 					mirrors.country,
 					mirrors.ticketnr,
 					MAX(lastsync) AS lastsync,
@@ -258,9 +255,9 @@ public function prepare()
 			$body .= '<tr class="packageline'.$line.'">
 					<td>'.$mirror['host'].'</td>
 					<td>'.$mirror['country'].'</td>
-					<td style="text-align:center;">'.($mirror['ftp'] == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['host'].'/'.$mirror['path_ftp'].'">&radic;</a>').'</td>
-					<td style="text-align:center;">'.($mirror['http'] == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['host'].'/'.$mirror['path_http'].'">&radic;</a>').'</td>
-					<td style="text-align:center;">'.($mirror['rsync'] == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['host'].'/'.$mirror['path_rsync'].'">&radic;</a>').'</td>
+					<td style="text-align:center;">'.(strlen($mirror['ftp']) == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['ftp'].'">&radic;</a>').'</td>
+					<td style="text-align:center;">'.(strlen($mirror['http']) == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['http'].'">&radic;</a>').'</td>
+					<td style="text-align:center;">'.(strlen($mirror['rsync']) == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['rsync'].'">&radic;</a>').'</td>
 					<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
 					<td style="width:100px;" title="&empty;&nbsp;'.$this->formatTime($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
 					<td'.$outofsync.'>'.formatDate($mirror['lastsync']).''.(!empty($mirror['ticketnr']) ? '<a rel="nofollow" href="http://bugs.archlinux.org/'.$mirror['ticketnr'].'">*</a>' : '').'</td>
@@ -271,7 +268,7 @@ public function prepare()
 
 		$body .= '</table>';
 
-		$this->ObjectCache->addObject('AL:MirrorCheck:'.$this->sort.':'.$this->orderby, $body, 60*60*2);
+		$this->ObjectCache->addObject('AL:MirrorCheck:'.$this->sort.':'.$this->orderby, $body, 60*60);
 		}
 
 	$this->setValue('body', $body);
