@@ -155,12 +155,23 @@ public function getPackager()
 
 public function getReplaces()
 	{
-	return isset($this->desc['REPLACES']) ? $this->desc['REPLACES'] : array();
+	if (isset($this->depends['REPLACES']))
+		{
+		return $this->depends['REPLACES'];
+		}
+	elseif (isset($this->desc['REPLACES']))
+		{
+		return isset($this->desc['REPLACES'];
+		}
+	else
+		{
+		return array();
+		}
 	}
 
 public function isForced()
 	{
-	return isset($this->desc['FORCE']);
+	return isset($this->depends['FORCE']) || isset($this->desc['FORCE']);
 	}
 
 public function getDepends()
