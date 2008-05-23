@@ -324,24 +324,31 @@ private function getCurrentProblems()
 	{
 	$range = time() - $this->range;
 
-	$problems = $this->DB->getRowSet
-		('
-		SELECT
-			host,
-			error,
-			min(time) as firsttime,
-			max(time) as lasttime,
-			count(host) as errorcount
-		FROM
-			pkgdb.mirror_log
-		WHERE
-			error IS NOT NULL
-			AND mirror_log.time >= '.$range.'
-		GROUP BY
-			host, error
-		ORDER BY
-			lasttime DESC
-		');
+	try
+		{
+		$problems = $this->DB->getRowSet
+			('
+			SELECT
+				host,
+				error,
+				min(time) as firsttime,
+				max(time) as lasttime,
+				count(host) as errorcount
+			FROM
+				pkgdb.mirror_log
+			WHERE
+				error IS NOT NULL
+				AND mirror_log.time >= '.$range.'
+			GROUP BY
+				host, error
+			ORDER BY
+				lasttime DESC
+			');
+		}
+	catch (DBNoDataException $e)
+		{
+		$problems = array();
+		}
 
 	$list = '<table id="packages">
 		<tr>
