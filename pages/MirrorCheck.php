@@ -22,6 +22,7 @@ class MirrorCheck extends Page{
 
 private $orderby 	= 'country';
 private $sort 		= 0;
+private $range		= 1209600; // two weeks
 
 protected function makeMenu()
 	{
@@ -73,7 +74,7 @@ public function prepare()
 		{
 		}
 
-	$range = time() - 60*60*24*14;
+	$range = time() - $this->range;
 
 	try
 		{
@@ -249,7 +250,7 @@ public function prepare()
 			{
 			$outofsync = '';
 			}
-		
+
 		$body .= '<tr class="packageline'.$line.'">
 				<td>'.$mirror['host'].'</td>
 				<td>'.$mirror['country'].'</td>
@@ -264,7 +265,9 @@ public function prepare()
 		$line = abs($line-1);
 		}
 
-	$body .= '</table>';
+	$body .= '</table>
+		<h4 style="text-align: right;border-bottom: 1px dotted #0771a6;margin-bottom: 4px;padding-bottom: 2px;font-size: 10px;">Aktuelle Probleme</h4>
+		'.$this->getCurrentProblems();
 
 	$this->setValue('body', $body);
 	}
@@ -315,6 +318,56 @@ private function formatTime($seconds)
 		}
 
 	return $result.$postfix;
+	}
+
+private function getCurrentProblems()
+	{
+	$range = time() - $this->range;
+
+	$problems = $this->DB->getRowSet
+		('
+		SELECT
+			host,
+			error,
+			min(time) as firsttime,
+			max(time) as lasttime,
+			count(host) as errorcount
+		FROM
+			pkgdb.mirror_log
+		WHERE
+			error IS NOT NULL
+			AND mirror_log.time >= '.$range.'
+		GROUP BY
+			host, error
+		ORDER BY
+			lasttime DESC
+		');
+
+	$list = '<table id="packages">
+		<tr>
+			<th>Host</th>
+			<th>Meldung</th>
+			<th>erstes Auftreten</th>
+			<th>Letztes Auftreten</th>
+			<th>Anzahl</th>
+		</tr>';
+	$line = 0;
+
+	foreach ($problems as $problem)
+		{
+		$list .=
+		'<tr class="packageline'.$line.'">
+			<td>'.$problem['host'].'</td>
+			<td>'.$problem['error'].'</td>
+			<td>'.formatDate($problem['firsttime']).'</td>
+			<td>'.formatDate($problem['lasttime']).'</td>
+			<td>'.$problem['errorcount'].'</td>
+		</tr>';
+
+		$line = abs($line-1);
+		}
+
+	return $list.'</table>';
 	}
 
 }
