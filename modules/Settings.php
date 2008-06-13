@@ -39,8 +39,6 @@ public function __construct()
 	$this->config['debug']				= false;
 	$this->config['log_dir']			= '';
 
-	$this->config['mirrors']			= array();
-
 	if (file_exists('LocalSettings.php'))
 		{
 		include ('LocalSettings.php');

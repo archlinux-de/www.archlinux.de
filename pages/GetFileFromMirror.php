@@ -20,6 +20,8 @@
 
 class GetFileFromMirror extends Page{
 
+private $mirrors	= array();
+private $range		= 1209600; // two weeks
 
 protected function makeMenu()
 	{
@@ -62,7 +64,9 @@ public function prepare()
 		$this->showFailure('keine Datei angegeben!');
 		}
 
-	if (count($this->Settings->getValue('mirrors')) == 0)
+	$this->mirrors = $this->getMirrors();
+
+	if (count($this->mirrors) == 0)
 		{
 		$this->showFailure('keine Spiegel-Server gefunden!');
 		}
@@ -79,17 +83,78 @@ public function prepare()
 		</div>
 		<script type="text/javascript">
 			/* <![CDATA[ */
-			setTimeout(\'location.href="'.$url.'"\', 2000);
+				setTimeout(\'location.href="'.$url.'"\', 2000);
 			/* ]]> */
 		</script>';
 
 	$this->setValue('body', $body);
 	}
 
+private function getMirrors()
+	{
+	$mirrors = array();
+
+	try
+		{
+		$stm = $this->DB->prepare
+				('
+				SELECT
+					mirrors.host,
+					mirrors.ftp,
+					mirrors.http,
+					mirrors.country,
+					MAX(lastsync) AS lastsync,
+					AVG(totaltime) AS avgtime
+				FROM
+					pkgdb.mirrors,
+					pkgdb.mirror_log
+				WHERE
+					mirrors.official = 1
+					AND mirrors.deleted = 0
+					AND mirror_log.host = mirrors.host
+					AND mirror_log.time >= ?
+				GROUP BY
+					mirrors.host
+				HAVING
+					lastsync >= 	(
+							SELECT
+								AVG(lastsync)
+							FROM
+								pkgdb.mirrors,
+								pkgdb.mirror_log
+							WHERE
+								mirrors.official = 1
+								AND mirrors.deleted = 0
+								AND mirror_log.host = mirrors.host
+								AND mirror_log.time >= ?
+							)
+				ORDER BY
+					avgtime ASC,
+					lastsync DESC
+				');
+		$stm->bindInteger(time() - $this->range);
+		$stm->bindInteger(time() - $this->range);
+
+		foreach ($stm->getRowSet() as $mirror)
+			{
+			$url = strlen($mirror['ftp']) > 0 ? 'ftp://'.$mirror['ftp'].'/' : 'http://'.$mirror['http'].'/';
+			$mirrors[$url] = round(3/$mirror['avgtime']);
+			}
+
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		}
+
+	return $mirrors;
+	}
+
 private function getAlternateMirrorList($url, $file)
 	{
 	$list = '<ul>';
-	$mirrors = $this->Settings->getValue('mirrors');
+	$mirrors = $this->mirrors;
 	arsort($mirrors);
 
 	foreach ($mirrors as $mirror => $probability)
@@ -108,7 +173,7 @@ private function getRandomMirror($file)
 	{
 	$tempMirrors = array();
 
-	foreach ($this->Settings->getValue('mirrors') as $mirror => $probability)
+	foreach ($this->mirrors as $mirror => $probability)
 		{
 		for ($i = 0; $i < $probability; $i++)
 			{
