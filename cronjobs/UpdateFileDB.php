@@ -46,8 +46,7 @@ public function __construct()
 		$this->Settings->getValue('sql_database')
 		));
 
-// 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
-	$this->mirror = 'http://dev.archlinux.org/~pierre/test-repo/';
+ 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
 	}
 
 private function getLockFile()
