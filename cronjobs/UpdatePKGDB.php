@@ -185,18 +185,21 @@ private function updateRepository($repo, $arch)
 
 private function setPKGDBMTime($repo, $arch, $time)
 	{
-	$stm = $this->DB->prepare
-		('
-		REPLACE INTO
-			pkgdb.log
-		SET
-			name = ?,
-			time = ?
-		');
-	$stm->bindString('UpdatePKGDB-'.$repo.'-'.$arch);
-	$stm->bindInteger($time);
-	$stm->execute();
-	$stm->close();
+	if ($time > 0)
+		{
+		$stm = $this->DB->prepare
+			('
+			REPLACE INTO
+				pkgdb.log
+			SET
+				name = ?,
+				time = ?
+			');
+		$stm->bindString('UpdatePKGDB-'.$repo.'-'.$arch);
+		$stm->bindInteger($time);
+		$stm->execute();
+		$stm->close();
+		}
 	}
 
 private function getPKGDBMTime($repo, $arch)
