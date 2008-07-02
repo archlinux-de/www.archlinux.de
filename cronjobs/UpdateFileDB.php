@@ -66,21 +66,17 @@ public function runUpdate()
 		chmod($this->getLockFile(), 0600);
 		}
 
-// 	echo 'Updating repos...', "\n";
 	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
 		{
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
-// 			echo "\t$repo - $arch\n";
 			$this->updateFiles($repo, $arch);
 			}
 		}
 
-// 	echo 'Removing unused entries...', "\n";
 	$this->removeUnusedEntries();
 
 	unlink($this->getLockFile());
-// 	echo 'done', "\n";
 	}
 
 private function setLogEntry($name, $time)
@@ -208,17 +204,6 @@ private function updateFiles($repo, $arch)
 
 		if ($return == 0)
 			{
-		// 	$this->DB->execute
-		// 		('
-		// 		LOCK TABLES
-		// 			pkgdb.packages READ,
-		// 			pkgdb.files WRITE,
-		// 			pkgdb.file_index WRITE,
-		// 			pkgdb.package_file_index WRITE,
-		// 			pkgdb.architectures READ,
-		// 			pkgdb.repositories READ
-		// 		');
-
 			$dh = opendir($dbDir);
 			while (false !== ($dir = readdir($dh)))
 				{
@@ -233,11 +218,14 @@ private function updateFiles($repo, $arch)
 					}
 				}
 			closedir($dh);
-		// 	$this->DB->execute('UNLOCK TABLES');
 
 			$this->rmrf($dbDir);
 			$this->setLogEntry('UpdateFileDB-'.$repo.'-'.$arch, $this->getCurMTime($repo, $arch));
 			$this->setLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch, $mtime);
+			}
+		else
+			{
+			$this->rmrf($dbDir);
 			}
 		}
 	}
@@ -381,13 +369,6 @@ private function getPackageID($repo, $arch, $package)
 
 private function removeUnusedEntries()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.package_file_index WRITE,
-// 			pkgdb.file_index WRITE
-// 		');
-
 	$this->DB->execute
 		('
 		DELETE FROM
@@ -395,8 +376,6 @@ private function removeUnusedEntries()
 		WHERE
 			id NOT IN (SELECT file_index FROM pkgdb.package_file_index)
 		');
-
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function rmrf($dir)
@@ -422,8 +401,6 @@ private function rmrf($dir)
 		{
 		return unlink($dir);
 		}
-
-// 	exec('rm -rf '.$dir);
 	}
 
 }

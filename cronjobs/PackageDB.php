@@ -94,6 +94,10 @@ private function update($lastmtime)
 			{
 			$this->updated = true;
 			}
+		else
+			{
+			$this->rmrf($this->DBDir);
+			}
 		}
 	}
 
@@ -120,8 +124,6 @@ private function rmrf($dir)
 		{
 		return unlink($dir);
 		}
-
-// 	exec('rm -rf '.$dir);
 	}
 
 public function getUpdatedPackages($timestamp)
