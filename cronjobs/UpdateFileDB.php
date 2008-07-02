@@ -203,39 +203,42 @@ private function updateFiles($repo, $arch)
 		flock($fh, LOCK_UN);
 		fclose($fh);
 
-		exec('bsdtar -xf '.$dbtargz.' -C '.$dbDir);
+		exec('bsdtar -xf '.$dbtargz.' -C '.$dbDir, $output, $return);
 		unlink($dbtargz);
 
-	// 	$this->DB->execute
-	// 		('
-	// 		LOCK TABLES
-	// 			pkgdb.packages READ,
-	// 			pkgdb.files WRITE,
-	// 			pkgdb.file_index WRITE,
-	// 			pkgdb.package_file_index WRITE,
-	// 			pkgdb.architectures READ,
-	// 			pkgdb.repositories READ
-	// 		');
-
-		$dh = opendir($dbDir);
-		while (false !== ($dir = readdir($dh)))
+		if ($return == 0)
 			{
-			if (	$dir != '.' &&
-				$dir != '..' &&
-				file_exists($dbDir.'/'.$dir.'/files') &&
-				filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
-				)
-				{
-				$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
-				$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
-				}
-			}
-		closedir($dh);
-	// 	$this->DB->execute('UNLOCK TABLES');
+		// 	$this->DB->execute
+		// 		('
+		// 		LOCK TABLES
+		// 			pkgdb.packages READ,
+		// 			pkgdb.files WRITE,
+		// 			pkgdb.file_index WRITE,
+		// 			pkgdb.package_file_index WRITE,
+		// 			pkgdb.architectures READ,
+		// 			pkgdb.repositories READ
+		// 		');
 
-		$this->rmrf($dbDir);
-		$this->setLogEntry('UpdateFileDB-'.$repo.'-'.$arch, $this->getCurMTime($repo, $arch));
-		$this->setLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch, $mtime);
+			$dh = opendir($dbDir);
+			while (false !== ($dir = readdir($dh)))
+				{
+				if (	$dir != '.' &&
+					$dir != '..' &&
+					file_exists($dbDir.'/'.$dir.'/files') &&
+					filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
+					)
+					{
+					$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+					$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
+					}
+				}
+			closedir($dh);
+		// 	$this->DB->execute('UNLOCK TABLES');
+
+			$this->rmrf($dbDir);
+			$this->setLogEntry('UpdateFileDB-'.$repo.'-'.$arch, $this->getCurMTime($repo, $arch));
+			$this->setLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch, $mtime);
+			}
 		}
 	}
 
