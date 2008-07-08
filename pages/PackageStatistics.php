@@ -53,8 +53,6 @@ public function prepare()
 	{
 	$this->setValue('title', 'Paket-Statistiken');
 
-	if (!($body = $this->ObjectCache->getObject('AL:PackageStatistics::')))
-		{
 		try
 			{
 			$data = $this->DB->getRow
@@ -196,28 +194,8 @@ public function prepare()
 				</tr>
 					'.$this->getPositoryStatistics($data['packages'], $data['csize']).'
 			</table>
-			<table id="packagedependencies">
-				<tr>
-					<th colspan="4" class="packagedependencieshead">Extrema</th>
-				</tr>
-				<tr>
-					<th>Große Pakete</th>
-					<th>Kleine Pakete</th>
-					<th>Viele Dateien</th>
-					<th>Wenige Dateien</th>
-				</tr>
-				<tr>
-					<td>'.$this->getLargestPackages().'</td>
-					<td>'.$this->getSmallestPackages().'</td>
-					<td>'.$this->getMostFiles().'</td>
-					<td>'.$this->getLeastFiles().'</td>
-				</tr>
-			</table>
 			</div>
 			';
-
-		$this->ObjectCache->addObject('AL:PackageStatistics::', $body, 60*60*24*7);
-		}
 
 	$this->setValue('body', $body);
 	}
@@ -269,122 +247,6 @@ private function getPositoryStatistics($packages, $size)
 	$stm->close();
 
 	return $repolist;
-	}
-
-private function getLargestPackages()
-	{
-	$packages = $this->DB->getRowSet
-		('
-		SELECT
-			id,
-			name,
-			csize
-		FROM
-			pkgdb.packages
-		ORDER BY
-			csize DESC
-		LIMIT
-			50
-		')->toArray();
-	$max = $packages[1]['csize'];
-
-	$list = '<table>';
-
-	foreach ($packages as $package)
-		{
-		$percent = round(($package['csize'] / $max) * 100);
-
-		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatBytes($package['csize']).'Byte">&nbsp;</div></td></tr>';
-		}
-
-	return $list.'</table>';
-	}
-
-private function getSmallestPackages()
-	{
-	$packages = $this->DB->getRowSet
-		('
-		SELECT
-			id,
-			name,
-			csize
-		FROM
-			pkgdb.packages
-		ORDER BY
-			csize ASC
-		LIMIT
-			50
-		')->toArray();
-	$max = $packages[count($packages)]['csize'];
-
-	$list = '<table>';
-
-	foreach ($packages as $package)
-		{
-		$percent = round(($package['csize'] / $max)*100);
-
-		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatBytes($package['csize']).'Byte">&nbsp;</div></td></tr>';
-		}
-
-	return $list.'</table>';
-	}
-
-private function getMostFiles()
-	{
-	$packages = $this->DB->getRowSet
-		('
-		SELECT
-			packages.id,
-			packages.name,
-			(SELECT COUNT(*) FROM pkgdb.files WHERE files.package = packages.id) AS files
-		FROM
-			pkgdb.packages
-		ORDER BY
-			files DESC
-		LIMIT
-			50
-		')->toArray();
-	$max = $packages[1]['files'];
-
-	$list = '<table>';
-
-	foreach ($packages as $package)
-		{
-		$percent = round(($package['files'] / $max) * 100);
-
-		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatNumber($package['files']).'">&nbsp;</div></td></tr>';
-		}
-
-	return $list.'</table>';
-	}
-
-private function getLeastFiles()
-	{
-	$packages = $this->DB->getRowSet
-		('
-		SELECT
-			packages.id,
-			packages.name,
- 			(SELECT COUNT(*) FROM pkgdb.files WHERE files.package = packages.id) AS files
-		FROM
-			pkgdb.packages
-		ORDER BY
-			files ASC
-		LIMIT
-			50
-		')->toArray();
-	$max = $packages[count($packages)]['files'];
-
-	$list = '<table>';
-
-	foreach ($packages as $package)
-		{
-		$percent = round(($package['files'] / $max)*100);
-
-		$list .= '<tr><td style="padding:0px;"><a href="?page=PackageDetails;package='.$package['id'].'">'.cutString($package['name'], 20).'</a></td><td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$percent.'px;" title="'.$this->formatNumber($package['files']).'">&nbsp;</div></td></tr>';
-		}
-
-	return $list.'</table>';
 	}
 
 private function formatBytes($bytes)
