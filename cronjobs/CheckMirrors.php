@@ -141,7 +141,14 @@ private function getLastsyncFromMirror($url)
 
 	curl_close($curl);
 
-	return array('lastsync' => intval(trim($content)), 'totaltime' => $totaltime);
+	$lastsync = intval(trim($content));
+
+	if (0 == $lastsync)
+		{
+		throw new RuntimeException('invalid lastsync time', 1);
+		}
+
+	return array('lastsync' => $lastsync, 'totaltime' => $totaltime);
 	}
 
 private function insertLogEntry($host, $lastsync, $totaltime)
