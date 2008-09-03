@@ -247,6 +247,14 @@ a:hover {
 	text-decoration: none;
 }
 
+#packages .packageline0:hover td {
+	background-color:#B9B9B9;
+}
+
+#packages .packageline1:hover td {
+	background-color:#B9B9B9;
+}
+
 #packagedetails {
 	width:100%;
 }
