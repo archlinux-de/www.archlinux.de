@@ -473,7 +473,7 @@ private function getOptionalDependencies()
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $optdependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>'.$optdependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>&nbsp;'.cutString($optdependency['comment'], 30).'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -511,7 +511,7 @@ private function getInverseOptionalDependencies()
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $optdependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>'.$optdependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>&nbsp;'.cutString($optdependency['comment'], 30).'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
