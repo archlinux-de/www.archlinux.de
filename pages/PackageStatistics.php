@@ -208,8 +208,23 @@ public function prepare()
 private function getPositoryStatistics($packages, $size)
 	{
 	$repolist = '';
-	$repos = $this->DB->getRowSet('SELECT id, name FROM pkgdb.repositories')->toArray();
-	$arches = $this->DB->getRowSet('SELECT id, name FROM pkgdb.architectures')->toArray();
+	try
+		{
+		$repos = $this->DB->getRowSet('SELECT id, name FROM pkgdb.repositories')->toArray();
+		}
+	catch (DBNoDataException $e)
+		{
+		$repos = array();
+		}
+
+	try
+		{
+		$arches = $this->DB->getRowSet('SELECT id, name FROM pkgdb.architectures')->toArray();
+		}
+	catch (DBNoDataException $e)
+		{
+		$arches = array();
+		}
 
 	$stm = $this->DB->prepare
 			('
