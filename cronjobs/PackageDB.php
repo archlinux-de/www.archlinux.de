@@ -88,9 +88,16 @@ private function update($lastmtime)
 		flock($fh, LOCK_UN);
 		fclose($fh);
 
-		exec('bsdtar -xf '.$this->DBtargz.' -C '.$this->DBDir);
+		exec('bsdtar -xf '.$this->DBtargz.' -C '.$this->DBDir, $output, $return);
 		unlink($this->DBtargz);
-		$this->updated = true;
+		if ($return == 0)
+			{
+			$this->updated = true;
+			}
+		else
+			{
+			$this->rmrf($this->DBDir);
+			}
 		}
 	}
 
@@ -117,8 +124,6 @@ private function rmrf($dir)
 		{
 		return unlink($dir);
 		}
-
-// 	exec('rm -rf '.$dir);
 	}
 
 public function getUpdatedPackages($timestamp)

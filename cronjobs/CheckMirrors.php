@@ -86,7 +86,7 @@ public function runUpdate()
 		}
 
 		$this->curlHandles = array();
-		
+
 	foreach ($mirrors as $mirror)
 		{
 		$arch = $mirror['i686'] > 0 ? 'i686' : 'x86_64';
@@ -98,7 +98,7 @@ public function runUpdate()
 			}
 		else
 			{
-			$url = 'http://'.$mirror['ftp'];
+			$url = 'http://'.$mirror['http'];
 			}
 
 		try
@@ -110,9 +110,7 @@ public function runUpdate()
 			{
 			$this->insertErrorEntry($mirror['host'], $e->getMessage());
 			}
-
 		}
-
 
 	unlink($this->getLockFile());
 	}
@@ -129,7 +127,7 @@ private function getLastsyncFromMirror($url)
 	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
 	curl_setopt($curl, CURLOPT_TIMEOUT, 120);
 	curl_setopt($curl, CURLOPT_ENCODING, '');
-	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:support@laber-land.de');
+	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
 	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
 
 	$content = curl_exec($curl);
@@ -143,7 +141,14 @@ private function getLastsyncFromMirror($url)
 
 	curl_close($curl);
 
-	return array('lastsync' => intval(trim($content)), 'totaltime' => $totaltime);
+	$lastsync = intval(trim($content));
+
+	if (0 == $lastsync)
+		{
+		throw new RuntimeException('invalid lastsync time', 1);
+		}
+
+	return array('lastsync' => $lastsync, 'totaltime' => $totaltime);
 	}
 
 private function insertLogEntry($host, $lastsync, $totaltime)

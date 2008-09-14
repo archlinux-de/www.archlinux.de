@@ -46,8 +46,7 @@ public function __construct()
 		$this->Settings->getValue('sql_database')
 		));
 
-// 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
-	$this->mirror = 'http://dev.archlinux.org/~pierre/test-repo/';
+ 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
 	}
 
 private function getLockFile()
@@ -67,21 +66,17 @@ public function runUpdate()
 		chmod($this->getLockFile(), 0600);
 		}
 
-// 	echo 'Updating repos...', "\n";
 	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
 		{
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
-// 			echo "\t$repo - $arch\n";
 			$this->updateFiles($repo, $arch);
 			}
 		}
 
-// 	echo 'Removing unused entries...', "\n";
 	$this->removeUnusedEntries();
 
 	unlink($this->getLockFile());
-// 	echo 'done', "\n";
 	}
 
 private function setLogEntry($name, $time)
@@ -204,39 +199,34 @@ private function updateFiles($repo, $arch)
 		flock($fh, LOCK_UN);
 		fclose($fh);
 
-		exec('bsdtar -xf '.$dbtargz.' -C '.$dbDir);
+		exec('bsdtar -xf '.$dbtargz.' -C '.$dbDir, $output, $return);
 		unlink($dbtargz);
 
-	// 	$this->DB->execute
-	// 		('
-	// 		LOCK TABLES
-	// 			pkgdb.packages READ,
-	// 			pkgdb.files WRITE,
-	// 			pkgdb.file_index WRITE,
-	// 			pkgdb.package_file_index WRITE,
-	// 			pkgdb.architectures READ,
-	// 			pkgdb.repositories READ
-	// 		');
-
-		$dh = opendir($dbDir);
-		while (false !== ($dir = readdir($dh)))
+		if ($return == 0)
 			{
-			if (	$dir != '.' &&
-				$dir != '..' &&
-				file_exists($dbDir.'/'.$dir.'/files') &&
-				filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
-				)
+			$dh = opendir($dbDir);
+			while (false !== ($dir = readdir($dh)))
 				{
-				$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
-				$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
+				if (	$dir != '.' &&
+					$dir != '..' &&
+					file_exists($dbDir.'/'.$dir.'/files') &&
+					filemtime($dbDir.'/'.$dir.'/files') >= $this->getLastMTime($repo, $arch)
+					)
+					{
+					$this->insertFiles($repo, $arch, $dir, file($dbDir.'/'.$dir.'/files', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+					$this->setCurMTime($repo, $arch, filemtime($dbDir.'/'.$dir.'/files'));
+					}
 				}
-			}
-		closedir($dh);
-	// 	$this->DB->execute('UNLOCK TABLES');
+			closedir($dh);
 
-		$this->rmrf($dbDir);
-		$this->setLogEntry('UpdateFileDB-'.$repo.'-'.$arch, $this->getCurMTime($repo, $arch));
-		$this->setLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch, $mtime);
+			$this->rmrf($dbDir);
+			$this->setLogEntry('UpdateFileDB-'.$repo.'-'.$arch, $this->getCurMTime($repo, $arch));
+			$this->setLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch, $mtime);
+			}
+		else
+			{
+			$this->rmrf($dbDir);
+			}
 		}
 	}
 
@@ -379,13 +369,6 @@ private function getPackageID($repo, $arch, $package)
 
 private function removeUnusedEntries()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.package_file_index WRITE,
-// 			pkgdb.file_index WRITE
-// 		');
-
 	$this->DB->execute
 		('
 		DELETE FROM
@@ -393,8 +376,6 @@ private function removeUnusedEntries()
 		WHERE
 			id NOT IN (SELECT file_index FROM pkgdb.package_file_index)
 		');
-
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function rmrf($dir)
@@ -420,8 +401,6 @@ private function rmrf($dir)
 		{
 		return unlink($dir);
 		}
-
-// 	exec('rm -rf '.$dir);
 	}
 
 }
