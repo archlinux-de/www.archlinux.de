@@ -68,6 +68,7 @@ public function prepare()
 					(SELECT COUNT(*) FROM pkgdb.groups) AS groups,
 					(SELECT COUNT(*) FROM pkgdb.licenses) AS licenses,
 					(SELECT COUNT(*) FROM pkgdb.depends) AS depends,
+					(SELECT COUNT(*) FROM pkgdb.optdepends) AS optdepends,
 					(SELECT COUNT(*) FROM pkgdb.conflicts) AS conflicts,
 					(SELECT COUNT(*) FROM pkgdb.replaces) AS replaces,
 					(SELECT COUNT(*) FROM pkgdb.provides) AS provides,
@@ -145,6 +146,10 @@ public function prepare()
 				<tr>
 					<th>Abhängigkeiten</th>
 					<td>'.$this->formatNumber($data['depends']).'</td>
+				</tr>
+				<tr>
+					<th>Optionale Abhängigkeiten</th>
+					<td>'.$this->formatNumber($data['optdepends']).'</td>
 				</tr>
 				<tr>
 					<th>Bereitstellungen</th>

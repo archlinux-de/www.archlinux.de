@@ -54,6 +54,21 @@ CREATE TABLE `depends` (
   KEY `depends` (`depends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `optdepends`
+--
+
+CREATE TABLE `optdepends` (
+  `package` int(11) unsigned NOT NULL,
+  `optdepends` int(11) unsigned NOT NULL,
+  `comment` varchar(50) NOT NULL,
+  KEY `package` (`package`),
+  KEY `optdepends` (`optdepends`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 -- --------------------------------------------------------
 
 --

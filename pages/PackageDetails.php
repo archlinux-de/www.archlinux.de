@@ -221,6 +221,20 @@ public function prepare()
 					'.$this->getReplaces().'
 				</td>
 			</tr>
+			<tr>
+				<th>hängt optional ab von</th>
+				<th>wird optional benötigt von</th>
+				<th colspan="3">&nbsp;</th>
+			</tr>
+			<tr>
+				<td>
+					'.$this->getOptionalDependencies().'
+				</td>
+				<td>
+					'.$this->getInverseOptionalDependencies().'
+				</td>
+				<td colspan="3">&nbsp;</td>
+			</tr>
 		</table>
 		<table id="packagedependencies">
 			<tr>
@@ -422,6 +436,82 @@ private function getInverseDependencies()
 		foreach ($stm->getRowSet() as $dependency)
 			{
 			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			}
+		$list .= '</ul>';
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$list = '';
+		}
+
+	return $list;
+	}
+
+private function getOptionalDependencies()
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				optdepends.comment
+			FROM
+				pkgdb.optdepends
+					LEFT JOIN pkgdb.packages
+					ON optdepends.optdepends = packages.id
+			WHERE
+				optdepends.package = ?
+			ORDER BY
+				packages.name
+			');
+		$stm->bindInteger($this->package);
+
+		$list = '<ul>';
+		foreach ($stm->getRowSet() as $optdependency)
+			{
+			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>'.$optdependency['comment'].'</li>';
+			}
+		$list .= '</ul>';
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		$list = '';
+		}
+
+	return $list;
+	}
+
+private function getInverseOptionalDependencies()
+	{
+	try
+		{
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				optdepends.comment
+			FROM
+				pkgdb.packages,
+				pkgdb.optdepends
+			WHERE
+				optdepends.optdepends = ?
+				AND optdepends.package = packages.id
+			ORDER BY
+				packages.name
+			');
+		$stm->bindInteger($this->package);
+
+		$list = '<ul>';
+		foreach ($stm->getRowSet() as $optdependency)
+			{
+			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>'.$optdependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();

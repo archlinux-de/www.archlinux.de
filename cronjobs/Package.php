@@ -179,6 +179,11 @@ public function getDepends()
 	return isset($this->depends['DEPENDS']) ? $this->depends['DEPENDS'] : array();
 	}
 
+public function getOptDepends()
+	{
+	return isset($this->depends['OPTDEPENDS']) ? $this->depends['OPTDEPENDS'] : array();
+	}
+
 public function getConflicts()
 	{
 	return isset($this->depends['CONFLICTS']) ? $this->depends['CONFLICTS'] : array();

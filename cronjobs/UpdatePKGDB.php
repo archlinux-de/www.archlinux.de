@@ -20,7 +20,6 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 ini_set('max_execution_time', 0);
 
 define('IN_LL', null);
@@ -84,6 +83,17 @@ public function runUpdate()
 	$this->DB->execute
 		('
 		CREATE TEMPORARY TABLE
+			pkgdb.temp_optdepends
+			(
+			package INT( 11 ) UNSIGNED NOT NULL,
+			optdepends LONGTEXT NOT NULL,
+			PRIMARY KEY (package)
+			)
+		');
+
+	$this->DB->execute
+		('
+		CREATE TEMPORARY TABLE
 			pkgdb.temp_provides
 			(
 			package INT( 11 ) UNSIGNED NOT NULL,
@@ -114,33 +124,22 @@ public function runUpdate()
 			)
 		');
 
-// 	echo 'Updating repos...', "\n";
 	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
 		{
 		foreach ($this->Settings->getValue('pkgdb_architectures') as $arch)
 			{
-// 			echo "\t$repo - $arch\n";
 			$this->updateRepository($repo, $arch);
 			}
 		}
 
-// 	echo 'Updating depends...', "\n";
 	$this->updateDependencies();
-
-// 	echo 'Updating provides...', "\n";
+	$this->updateOptionalDependencies();
 	$this->updateProvides();
-
-// 	echo 'Updating conflicts...', "\n";
 	$this->updateConflicts();
-
-// 	echo 'Updating replaces...', "\n";
 	$this->updateReplaces();
-
-// 	echo 'Removing unused entries...', "\n";
 	$this->removeUnusedEntries();
 
 	unlink($this->getLockFile());
-// 	echo 'done', "\n";
 	}
 
 private function getRecentDate($repo, $arch)
@@ -230,19 +229,6 @@ private function getPKGDBMTime($repo, $arch)
 
 private function updatePackages($packages, $repo, $arch)
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages WRITE,
-// 			pkgdb.repositories WRITE,
-// 			pkgdb.architectures WRITE,
-// 			pkgdb.packagers WRITE,
-// 			pkgdb.groups WRITE,
-// 			pkgdb.package_group WRITE,
-// 			pkgdb.licenses WRITE,
-// 			pkgdb.package_license WRITE
-// 		');
-
 	$testSTM = $this->DB->prepare
 		('
 		SELECT
@@ -310,6 +296,15 @@ private function updatePackages($packages, $repo, $arch)
 		SET
 			package = ?,
 			depends = ?
+		');
+
+	$optdependsSTM = $this->DB->prepare
+		('
+		INSERT INTO
+			pkgdb.temp_optdepends
+		SET
+			package = ?,
+			optdepends = ?
 		');
 
 	$providesSTM = $this->DB->prepare
@@ -394,6 +389,14 @@ private function updatePackages($packages, $repo, $arch)
 			$dependsSTM->execute();
 			}
 
+		// optdepends
+		if (count($package->getOptDepends()) > 0)
+			{
+			$optdependsSTM->bindInteger($packageID);
+			$optdependsSTM->bindString(implode(' ', $package->getOptDepends()));
+			$optdependsSTM->execute();
+			}
+
 		// provides
 		if (count($package->getProvides()) > 0)
 			{
@@ -432,13 +435,13 @@ private function updatePackages($packages, $repo, $arch)
 		}
 
 	$dependsSTM->close();
+	$optdependsSTM->close();
 	$providesSTM->close();
 	$conflictsSTM->close();
 	$replacesSTM->close();
 	$testSTM->close();
 	$updateSTM->close();
 	$insertSTM->close();
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function addPackageToGroups($package, $groups)
@@ -745,22 +748,6 @@ private function removeDeletedPackages($repo, $arch, $packages)
 	// $packages is empty if there are no new packages!
 	if (count($packages) > 0)
 		{
-	// 	$this->DB->execute
-	// 		('
-	// 		LOCK TABLES
-	// 			pkgdb.packages WRITE,
-	// 			pkgdb.conflicts WRITE,
-	// 			pkgdb.depends WRITE,
-	// 			pkgdb.provides WRITE,
-	// 			pkgdb.replaces WRITE,
-	// 			pkgdb.files WRITE,
-	// 			pkgdb.package_file_index WRITE,
-	// 			pkgdb.package_group WRITE,
-	// 			pkgdb.package_license WRITE,
-	// 			pkgdb.architectures READ,
-	// 			pkgdb.repositories READ
-	// 		');
-
 		$delstm1 = $this->DB->prepare
 			('
 			DELETE FROM
@@ -785,6 +772,15 @@ private function removeDeletedPackages($repo, $arch, $packages)
 			WHERE
 				package = ?
 				OR depends = ?
+			');
+
+		$delstm3a = $this->DB->prepare
+			('
+			DELETE FROM
+				pkgdb.optdepends
+			WHERE
+				package = ?
+				OR optdepends = ?
 			');
 
 		$delstm4 = $this->DB->prepare
@@ -872,6 +868,10 @@ private function removeDeletedPackages($repo, $arch, $packages)
 					$delstm3->bindInteger($pkg['id']);
 					$delstm3->execute();
 
+					$delstm3a->bindInteger($pkg['id']);
+					$delstm3a->bindInteger($pkg['id']);
+					$delstm3a->execute();
+
 					$delstm4->bindInteger($pkg['id']);
 					$delstm4->bindInteger($pkg['id']);
 					$delstm4->execute();
@@ -908,26 +908,11 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm7->close();
 		$delstm8->close();
 		$stm->close();
-
-	// 	$this->DB->execute('UNLOCK TABLES');
 		}
 	}
 
 private function removeUnusedEntries()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages WRITE,
-// 			pkgdb.package_group WRITE,
-// 			pkgdb.package_license WRITE,
-// 			pkgdb.packagers WRITE,
-// 			pkgdb.groups WRITE,
-// 			pkgdb.licenses WRITE,
-// 			pkgdb.repositories WRITE,
-// 			pkgdb.architectures WRITE
-// 		');
-
 	$this->DB->execute
 		('
 		DELETE FROM
@@ -967,24 +952,10 @@ private function removeUnusedEntries()
 		WHERE
 			id NOT IN (SELECT repository FROM pkgdb.packages)
 		');
-
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateDependencies()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages READ,
-// 			pkgdb.packages AS source READ,
-// 			pkgdb.packages AS target READ,
-// 			pkgdb.packages AS source2 READ,
-// 			pkgdb.packages AS target2 READ,
-// 			pkgdb.repositories READ,
-// 			pkgdb.depends WRITE
-// 		');
-
 	try
 		{
 		$packages = $this->DB->getRowSet
@@ -1097,24 +1068,126 @@ private function updateDependencies()
 	$cleanSTM->close();
 	$stm2->close();
 	$stm->close();
+	}
 
-// 	$this->DB->execute('UNLOCK TABLES');
+private function updateOptionalDependencies()
+	{
+	try
+		{
+		$packages = $this->DB->getRowSet
+			('
+			SELECT
+				package,
+				optdepends
+			FROM
+				pkgdb.temp_optdepends
+			');
+		}
+	catch (DBNoDataException $e)
+		{
+		$packages = array();
+		}
+
+	$cleanSTM = $this->DB->prepare
+		('
+		DELETE FROM
+			pkgdb.optdepends
+		WHERE
+			package = ?
+		');
+
+	$stm = $this->DB->prepare
+		('
+		INSERT INTO
+			pkgdb.optdepends
+		SET
+			package = ?,
+			optdepends = ?,
+			comment = ?
+		');
+
+	$stm2 = $this->DB->prepare
+		('
+		(
+		SELECT
+			target.id
+		FROM
+			pkgdb.packages AS source,
+			pkgdb.packages AS target
+		WHERE
+			target.name = ?
+			AND target.repository = source.repository
+			AND target.arch = source.arch
+			AND source.id = ?
+		)
+		UNION
+		(
+		SELECT
+			target2.id
+		FROM
+			pkgdb.packages AS source2,
+			pkgdb.packages AS target2
+		WHERE
+			target2.name = ?
+			AND target2.arch = source2.arch
+			AND source2.id = ?
+		)
+		LIMIT 1
+		');
+
+	foreach ($packages as $package)
+		{
+		$cleanSTM->bindInteger($package['package']);
+		$cleanSTM->execute();
+
+		foreach (explode(' ', $package['optdepends']) as $optdepends)
+			{
+			$optdepends = trim($optdepends);
+			if (empty($optdepends))
+				{
+				continue;
+				}
+
+			if (preg_match('/(:+.*)/', $optdepends, $matches))
+				{
+				$optdepname = preg_replace('/\s*(:+.*)/', '', $optdepends);
+				$optdepcomment = $matches[1];
+				}
+			else
+				{
+				$optdepname = $optdepends;
+				$optdepcomment = '';
+				}
+
+			try
+				{
+				$stm2->bindString(htmlspecialchars($optdepname));
+				$stm2->bindInteger($package['package']);
+				$stm2->bindString(htmlspecialchars($optdepname));
+				$stm2->bindInteger($package['package']);
+				$optdepid = $stm2->getColumn();
+
+				$stm->bindInteger($package['package']);
+				$stm->bindInteger($optdepid);
+				$stm->bindString(htmlspecialchars($optdepcomment));
+				}
+			catch (DBNoDataException $e)
+				{
+				$stm->bindInteger($package['package']);
+				$stm->bindInteger(0);
+				$stm->bindString(htmlspecialchars($optdepends));
+				}
+			$stm->execute();
+			}
+		}
+
+	$cleanSTM->close();
+	$stm2->close();
+	$stm->close();
 	}
 
 private function updateProvides()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages READ,
-// 			pkgdb.packages AS source READ,
-// 			pkgdb.packages AS target READ,
-// 			pkgdb.packages AS source2 READ,
-// 			pkgdb.packages AS target2 READ,
-// 			pkgdb.repositories READ,
-// 			pkgdb.provides WRITE
-// 		');
-
 	try
 		{
 		$packages = $this->DB->getRowSet
@@ -1227,24 +1300,10 @@ private function updateProvides()
 	$cleanSTM->close();
 	$stm2->close();
 	$stm->close();
-
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateConflicts()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages READ,
-// 			pkgdb.packages AS source READ,
-// 			pkgdb.packages AS target READ,
-// 			pkgdb.packages AS source2 READ,
-// 			pkgdb.packages AS target2 READ,
-// 			pkgdb.repositories READ,
-// 			pkgdb.conflicts WRITE
-// 		');
-
 	try
 		{
 		$packages = $this->DB->getRowSet
@@ -1357,24 +1416,10 @@ private function updateConflicts()
 	$cleanSTM->close();
 	$stm2->close();
 	$stm->close();
-
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 private function updateReplaces()
 	{
-// 	$this->DB->execute
-// 		('
-// 		LOCK TABLES
-// 			pkgdb.packages READ,
-// 			pkgdb.packages AS source READ,
-// 			pkgdb.packages AS target READ,
-// 			pkgdb.packages AS source2 READ,
-// 			pkgdb.packages AS target2 READ,
-// 			pkgdb.repositories READ,
-// 			pkgdb.replaces WRITE
-// 		');
-
 	try
 		{
 		$packages = $this->DB->getRowSet
@@ -1487,8 +1532,6 @@ private function updateReplaces()
 	$cleanSTM->close();
 	$stm2->close();
 	$stm->close();
-
-// 	$this->DB->execute('UNLOCK TABLES');
 	}
 
 
