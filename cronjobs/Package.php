@@ -161,7 +161,7 @@ public function getReplaces()
 		}
 	elseif (isset($this->desc['REPLACES']))
 		{
-		return isset($this->desc['REPLACES'];
+		return $this->desc['REPLACES'];
 		}
 	else
 		{
