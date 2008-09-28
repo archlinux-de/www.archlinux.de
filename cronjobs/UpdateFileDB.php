@@ -51,7 +51,7 @@ public function __construct()
 
 private function getLockFile()
 	{
-	return ini_get('session.save_path').'/updateRunning.lock';
+	return $this->getTmpDir().'/updateRunning.lock';
 	}
 
 public function runUpdate()

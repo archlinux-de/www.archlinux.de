@@ -42,9 +42,15 @@ public function __construct()
 		));
 	}
 
+private function getTmpDir()
+	{
+	$tmp = ini_get('upload_tmp_dir');
+	return empty($tmp) ? '/tmp' : $tmp;
+	}
+
 private function getLockFile()
 	{
-	return ini_get('session.save_path').'/MirrorCheckRunning.lock';
+	return $this->getTmpDir().'/MirrorCheckRunning.lock';
 	}
 
 public function runUpdate()

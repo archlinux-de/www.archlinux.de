@@ -52,9 +52,15 @@ public function __construct()
 		));
 	}
 
+private function getTmpDir()
+	{
+	$tmp = ini_get('upload_tmp_dir');
+	return empty($tmp) ? '/tmp' : $tmp;
+	}
+
 private function getLockFile()
 	{
-	return ini_get('session.save_path').'/updateRunning.lock';
+	return $this->getTmpDir().'/updateRunning.lock';
 	}
 
 public function runUpdate()
