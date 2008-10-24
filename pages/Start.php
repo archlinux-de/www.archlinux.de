@@ -150,18 +150,21 @@ private function getImportantNews()
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				id,
-				name,
-				firstdate,
-				summary
+				t.id,
+				t.name,
+				p.dat,
+				p.text
 			FROM
-				threads
+				threads t,
+				posts p
 			WHERE
-				forumid = ?
-				AND deleted = 0
-				AND tag = ?
+				t.forumid = ?
+				AND t.deleted = 0
+				AND t.tag = ?
+				AND p.threadid = t.id
+				AND p.counter = 0
 			ORDER BY
-				id DESC
+				t.id DESC
 			LIMIT
 				6
 			');
@@ -180,9 +183,9 @@ private function getImportantNews()
 		{
 		$result .=
 			'
-			<span style="float:right; font-size:x-small;padding-top:14px">'.formatDate($thread['firstdate']).'</span>
+			<span style="float:right; font-size:x-small;padding-top:14px">'.formatDate($thread['dat']).'</span>
 			<h3><a href="http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h3>
-			<p>'.$thread['summary'].'</p>
+			<p>'.$thread['text'].'</p>
 			';
 		}
 

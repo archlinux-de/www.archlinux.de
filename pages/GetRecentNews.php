@@ -38,20 +38,24 @@ public function show()
 			$stm = $this->DB->prepare
 				('
 				SELECT
-					id,
-					name,
-					firstdate,
-					summary,
-					firstusername,
-					firstuserid
+					t.id,
+					t.name,
+					t.summary,
+					p.dat,
+					p.text,
+					p.username,
+					p.userid
 				FROM
-					threads
+					threads t,
+					posts p
 				WHERE
-					forumid = ?
-					AND deleted = 0
-					AND tag = ?
+					t.forumid = ?
+					AND t.deleted = 0
+					AND t.tag = ?
+					AND p.threadid = t.id
+					AND p.counter = 0
 				ORDER BY
-					id DESC
+					t.id DESC
 				LIMIT
 					25
 				');
@@ -64,9 +68,9 @@ public function show()
 	
 			foreach($threads as $thread)
 				{
-				if ($thread['firstdate'] > $lastdate)
+				if ($thread['dat'] > $lastdate)
 					{
-					$lastdate = $thread['firstdate'];
+					$lastdate = $thread['dat'];
 					}
 	
 				$entries .=
@@ -74,13 +78,14 @@ public function show()
 				<entry>
 					<id>http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'</id>
 					<title>'.$thread['name'].'</title>
-					<link rel="alternate" type="text/html" href="http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].';post=-1" />
-					<updated>'.date('c', $thread['firstdate']).'</updated>
+					<link rel="alternate" type="text/html" href="http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'" />
+					<updated>'.date('c', $thread['dat']).'</updated>
 					<summary>'.$thread['summary'].'</summary>
 					<author>
-						<name>'.$thread['firstusername'].'</name>
-						<uri>http://forum.archlinux.de/?page=ShowUser;id='.$this->board.';user='.$thread['firstuserid'].'</uri>
+						<name>'.$thread['username'].'</name>
+						<uri>http://forum.archlinux.de/?page=ShowUser;id='.$this->board.';user='.$thread['userid'].'</uri>
 					</author>
+					<content type="html">'.htmlspecialchars($thread['text']).'</content>
 				</entry>
 				';
 				}
