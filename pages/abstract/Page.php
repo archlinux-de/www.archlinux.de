@@ -18,9 +18,9 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require (LL_PATH.'modules/DB.php');
-require (LL_PATH.'modules/IOutput.php');
-require (LL_PATH.'modules/ICache.php');
+require ('modules/DB.php');
+require ('modules/IOutput.php');
+require ('modules/ICache.php');
 
 abstract class Page extends Modul implements IOutput{
 
@@ -156,7 +156,7 @@ private function sendOutput()
 		</div>
 	</body>
 </html>';
-	$this->Io->out($file);
+	$this->Output->writeOutput($file);
 	}
 
 public function show()

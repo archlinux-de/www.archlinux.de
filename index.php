@@ -20,14 +20,18 @@
 define('IN_LL', null);
 
 require ('LLPath.php');
+ini_set('include_path', ini_get('include_path').':'.LL_PATH);
+
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require (LL_PATH.'modules/Functions.php');
-require (LL_PATH.'modules/Io.php');
+require ('modules/Functions.php');
+require ('modules/Input.php');
+require ('modules/Output.php');
 
 Modul::__set('Settings', new Settings());
-$Io = Modul::__set('Io', new Io());
+$Input = Modul::__set('Input', new Input());
+$Output = Modul::__set('Output', new Output());
 
 function __autoload($class)
 	{
@@ -36,9 +40,9 @@ function __autoload($class)
 
 try
 	{
-	$page = $Io->getString('page');
+	$page = $Input->Request->getString('page');
 	}
-catch(IoRequestException $e)
+catch (RequestException $e)
 	{
 	$page = 'Start';
 	}

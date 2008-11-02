@@ -105,7 +105,7 @@ public function prepare()
 			}
 		catch (DBNoDataException $e)
 			{
-			$this->Io->setStatus(Io::NOT_FOUND);
+			$this->Output->setStatus(Output::NOT_FOUND);
 			$this->showFailure('Paket-Statistiken nicht gefunden!');
 			}
 

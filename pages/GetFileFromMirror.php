@@ -57,9 +57,9 @@ public function prepare()
 
 	try
 		{
-		$file = htmlspecialchars($this->Io->getString('file'));
+		$file = htmlspecialchars($this->Input->Request->getString('file'));
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		$this->showFailure('keine Datei angegeben!');
 		}

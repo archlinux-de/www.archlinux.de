@@ -36,8 +36,8 @@ public function show()
 <Url type="text/html" method="get" template="http://www.archlinux.de/?page=Packages;submit=;search={searchTerms}"/>
 </OpenSearchDescription>';
 
-	$this->Io->setContentType('Content-Type: application/opensearchdescription+xml; charset=UTF-8');
-	$this->Io->out($xml);
+	$this->Output->setContentType('Content-Type: application/opensearchdescription+xml; charset=UTF-8');
+	$this->Output->writeOutput($xml);
 	}
 
 }

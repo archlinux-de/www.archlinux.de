@@ -65,93 +65,93 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('name', 'builddate', 'repository', 'architecture')))
+		if (in_array($this->Input->Request->getString('orderby'), array('name', 'builddate', 'repository', 'architecture')))
 			{
-			$this->orderby = $this->Io->getString('orderby');
+			$this->orderby = $this->Input->Request->getString('orderby');
 			}
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->sort = $this->Io->getInt('sort') > 0 ? 1 : 0;
+		$this->sort = $this->Input->Request->getInt('sort') > 0 ? 1 : 0;
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->package = $this->Io->getInt('package');
+		$this->package = $this->Input->Request->getInt('package');
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->repository = $this->Io->getInt('repository');
+		$this->repository = $this->Input->Request->getInt('repository');
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		if (isset($_GET['architecture']))
+		if ($this->Input->Get->isValid('architecture'))
 			{
-			$this->architecture = intval($_GET['architecture']);
+			$this->architecture = $this->Input->Get->getInt('architecture');
 			}
-		elseif (isset($_POST['architecture']))
+		elseif ($this->Input->Post->isValid('architecture'))
 			{
-			$this->architecture = intval($_POST['architecture']);
+			$this->architecture = $this->Input->Post->getInt('architecture');
 			}
 		else
 			{
-			$this->architecture = $this->Io->getInt('architecture');
+			$this->architecture = $this->Input->Cookie->getInt('architecture');
 			}
 
-		$this->Io->setCookie('architecture', $this->architecture, (time() + 31536000));
+		$this->Output->setCookie('architecture', $this->architecture, (time() + 31536000));
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->group = $this->Io->getInt('group');
+		$this->group = $this->Input->Request->getInt('group');
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->packager = $this->Io->getInt('packager');
+		$this->packager = $this->Input->Request->getInt('packager');
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Io->getString('search'))), 50);
+		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Input->Request->getString('search'))), 50);
 		if (strlen($this->search) < 2)
 			{
 			$this->search = '';
 			}
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->searchField = $this->Io->getInt('searchfield');
+		$this->searchField = $this->Input->Request->getInt('searchfield');
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 

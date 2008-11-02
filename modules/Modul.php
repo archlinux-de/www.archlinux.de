@@ -33,14 +33,7 @@ public static function loadModul($name)
 	{
 	if (isset(self::$availableModules[$name]))
 		{
-		if(file_exists(self::$availableModules[$name]))
-			{
-			include_once(self::$availableModules[$name]);
-			}
-		else
-			{
-			include_once(LL_PATH.self::$availableModules[$name]);
-			}
+		include_once(self::$availableModules[$name]);
 		}
 	else
 		{

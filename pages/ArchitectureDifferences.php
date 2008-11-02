@@ -53,7 +53,7 @@ protected function makeSubMenu()
 public function prepare()
 	{
 	$this->setValue('title', 'Architektur-Unterschiede');
-	$this->showminor = $this->Io->isRequest('showminor');
+	$this->showminor = $this->Input->Request->isValid('showminor');
 
 	try
 		{
@@ -163,7 +163,7 @@ public function prepare()
 			<p style="font-size:12px;">Diese Tabelle zeigt Unterschiede in den Paket-Versionen zu den beiden Architekturen <em>i686</em> und <em>x86_64</em>.</p>
 			<p style="font-size:12px;">Versionsunterschiede im Nachkommabereich deuten an, daß die entsprechende Aktualisierung nur eine Architektur betraf. Diese Unterschiede werden daher standardmäßig ausgeblendet.</p>
 			<div style="font-size:10px; text-align:right;padding-bottom:10px;">
-			'.($this->Io->isRequest('showminor') ? '<a href="?page=ArchitectureDifferences">Architekturspezifische Änderungen ausblenden</a>' : '<a href="?page=ArchitectureDifferences;showminor">Architekturspezifische Änderungen anzeigen</a>').'
+			'.($this->Input->Request->isValid('showminor') ? '<a href="?page=ArchitectureDifferences">Architekturspezifische Änderungen ausblenden</a>' : '<a href="?page=ArchitectureDifferences;showminor">Architekturspezifische Änderungen anzeigen</a>').'
 			</div>
 		</div>
 		<table id="packages">

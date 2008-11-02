@@ -28,9 +28,9 @@ private $arch 			= 1;
 
 public function prepare()
 	{
-	if ($this->Io->isRequest('architecture') && $this->Io->getInt('architecture') > 0)
+	if ($this->Input->Cookie->isValid('architecture') && $this->Input->Cookie->getInt('architecture') > 0)
 		{
-		$this->arch = $this->Io->getInt('architecture');
+		$this->arch = $this->Input->Cookie->getInt('architecture');
 		}
 
 	$this->setValue('title', 'Start');

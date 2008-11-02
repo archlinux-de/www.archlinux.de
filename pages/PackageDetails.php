@@ -57,9 +57,9 @@ public function prepare()
 
 	try
 		{
-		$this->package = $this->Io->getInt('package');
+		$this->package = $this->Input->Request->getInt('package');
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		$this->showFailure('Kein Paket angegeben!');
 		}
@@ -103,7 +103,7 @@ public function prepare()
 	catch (DBNoDataException $e)
 		{
 		$stm->close();
-		$this->Io->setStatus(Io::NOT_FOUND);
+		$this->Output->setStatus(Output::NOT_FOUND);
 		$this->showFailure('Paket nicht gefunden!');
 		}
 
@@ -242,7 +242,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<td>
-					'.($this->Io->isRequest('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;package='.$this->package.';showfiles">Dateien anzeigen</a>').'
+					'.($this->Input->Request->isValid('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;package='.$this->package.';showfiles">Dateien anzeigen</a>').'
 				</td>
 			</tr>
 		</table>

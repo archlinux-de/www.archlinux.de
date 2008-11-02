@@ -57,20 +57,20 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Io->getString('orderby'), array('host', 'country', 'lastsync', 'syncdelay', 'avgtime')))
+		if (in_array($this->Input->Request->getString('orderby'), array('host', 'country', 'lastsync', 'syncdelay', 'avgtime')))
 			{
-			$this->orderby = $this->Io->getString('orderby');
+			$this->orderby = $this->Input->Request->getString('orderby');
 			}
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
 	try
 		{
-		$this->sort = $this->Io->getInt('sort') > 0 ? 1 : 0;
+		$this->sort = $this->Input->Request->getInt('sort') > 0 ? 1 : 0;
 		}
-	catch (IoRequestException $e)
+	catch (RequestException $e)
 		{
 		}
 
