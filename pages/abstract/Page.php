@@ -104,10 +104,7 @@ protected function makeMenu()
 	return '
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=Download">ISOs</a></li>
 			<li><a href="?page=Packages">Pakete</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
 			<li><a href="http://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="http://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
 			<li class="selected">Start</li>

@@ -26,6 +26,17 @@ private $importantTag		= 3;
 private $solvedTag		= 1;
 private $arch 			= 1;
 
+protected function makeSubMenu()
+	{
+	return '
+		<ul id="nav">
+			<li><a href="http://planet.archlinux.de">Planet</a></li>
+			<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
+			<li><a href="http://wiki.archlinux.de/?title=Download">Herunterladen</a></li>
+			<li class="selected">Aktuelles</li>
+		</ul>';
+	}
+
 public function prepare()
 	{
 	if ($this->Input->Cookie->isValid('architecture') && $this->Input->Cookie->getInt('architecture') > 0)

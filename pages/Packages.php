@@ -37,10 +37,7 @@ protected function makeMenu()
 	return '
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=Download">ISOs</a></li>
 			<li class="selected">Pakete</li>
-			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
 			<li><a href="http://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="http://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
 			<li><a href="?page=Start">Start</a></li>
@@ -51,6 +48,7 @@ protected function makeSubMenu()
 	{
 	return '
 		<ul id="nav">
+			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
 			<li><a href="?page=MirrorCheck">Server</a></li>
 			<li><a href="?page=Packagers">Packer</a></li>
