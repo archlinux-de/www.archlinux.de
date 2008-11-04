@@ -86,7 +86,7 @@ private function setLogEntry($name, $time)
 	$stm = $this->DB->prepare
 		('
 		REPLACE INTO
-			pkgdb.log
+			log
 		SET
 			name = ?,
 			time = ?
@@ -106,7 +106,7 @@ private function getLogEntry($name)
 			SELECT
 				time
 			FROM
-				pkgdb.log
+				log
 			WHERE
 				name = ?
 			');
@@ -246,7 +246,7 @@ private function insertFiles($repo, $arch, $package, $files)
 		$stm = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.package_file_index
+				package_file_index
 			WHERE
 				package = ?
 			');
@@ -257,7 +257,7 @@ private function insertFiles($repo, $arch, $package, $files)
 		$stm = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.files
+				files
 			WHERE
 				package = ?
 			');
@@ -268,7 +268,7 @@ private function insertFiles($repo, $arch, $package, $files)
 		$stm1 = $this->DB->prepare
 			('
 			INSERT INTO
-				pkgdb.files
+				files
 			SET
 				package = ?,
 				path = ?
@@ -277,7 +277,7 @@ private function insertFiles($repo, $arch, $package, $files)
 		$stm2 = $this->DB->prepare
 			('
 			INSERT INTO
-				pkgdb.package_file_index
+				package_file_index
 			SET
 				package = ?,
 				file_index = ?
@@ -314,7 +314,7 @@ private function getFileIndexID($file)
 			SELECT
 				id
 			FROM
-				pkgdb.file_index
+				file_index
 			WHERE
 				name = ?
 			');
@@ -329,7 +329,7 @@ private function getFileIndexID($file)
 		$stm = $this->DB->prepare
 			('
 			INSERT INTO
-				pkgdb.file_index
+				file_index
 			SET
 				name = ?
 			');
@@ -349,9 +349,9 @@ private function getPackageID($repo, $arch, $package)
 		SELECT
 			packages.id
 		FROM
-			pkgdb.packages,
-			pkgdb.architectures,
-			pkgdb.repositories
+			packages,
+			architectures,
+			repositories
 		WHERE
 			packages.name = ?
 			AND repositories.name = ?
@@ -374,9 +374,9 @@ private function removeUnusedEntries()
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.file_index
+			file_index
 		WHERE
-			id NOT IN (SELECT file_index FROM pkgdb.package_file_index)
+			id NOT IN (SELECT file_index FROM package_file_index)
 		');
 	}
 

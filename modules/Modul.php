@@ -17,14 +17,17 @@
 	You should have received a copy of the GNU General Public License
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 abstract class Modul{
 
 private static $loadedModules = array();
 
 private static $availableModules = array
 	(
+	'IDBCachable' => 'modules/IDBCachable.php',
 	'Page' => 'pages/abstract/Page.php',
 	'ObjectCache' => 'modules/ObjectCache.php',
+	'PersistentCache' => 'modules/PersistentCache.php',
 	'GetFile' => 'pages/abstract/GetFile.php',
 	'Settings' => 'modules/Settings.php',
 	);

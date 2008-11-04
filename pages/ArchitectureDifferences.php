@@ -18,9 +18,7 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class ArchitectureDifferences extends Page{
-
-private $showminor = false;
+class ArchitectureDifferences extends Page implements IDBCachable {
 
 
 protected function makeMenu()
@@ -51,11 +49,44 @@ protected function makeSubMenu()
 public function prepare()
 	{
 	$this->setValue('title', 'Architektur-Unterschiede');
-	$this->showminor = $this->Input->Request->isValid('showminor');
 
+	if (!($body = $this->PersistentCache->getObject('ArchitectureDifferences:'.($this->Input->Request->isValid('showminor') ? 1 : 0))))
+		{
+		$this->Output->setStatus(Output::NOT_FOUND);
+		$this->showFailure('Keine Daten vorhanden!');
+		}
+
+	$this->setValue('body', $body);
+	}
+
+private static function isMinorPackageRelease($ver1, $ver2)
+	{
+	return self::getPackageVersion($ver1) == self::getPackageVersion($ver2) && floor(self::getPackageRelease($ver1)) == floor(self::getPackageRelease($ver2));
+	}
+
+private static function getPackageVersion($version)
+	{
+	$temp = explode('-', $version);
+	array_pop($temp);
+	return implode('-', $temp);
+	}
+
+private static function getPackageRelease($version)
+	{
+	$temp = explode('-', $version);
+	return array_pop($temp);
+	}
+
+private static function compareVersions($ver1, $ver2)
+	{
+	return version_compare($ver1, $ver2);
+	}
+
+public static function updateDBCache(DB $db, PersistentCache $cache)
+	{
 	try
 		{
-		$packages = $this->DB->getRowSet
+		$packages = $db->getRowSet
 			('
 			(
 			SELECT
@@ -68,9 +99,9 @@ public function prepare()
 				repositories.name AS reponame,
 				GREATEST(i.builddate, x.builddate) AS builddate
 			FROM
-				pkgdb.packages i
+				packages i
 					JOIN
-						pkgdb.packages x
+						packages x
 					ON
 						i.id <> x.id
 						AND i.name = x.name
@@ -79,7 +110,7 @@ public function prepare()
 						AND i.arch = 1
 						AND x.arch = 2
 					JOIN
-						pkgdb.repositories
+						repositories
 					ON
 						i.repository = repositories.id
 			)
@@ -95,9 +126,9 @@ public function prepare()
 				repositories.name AS reponame,
 				i.builddate AS builddate
 			FROM
-				pkgdb.packages i
+				packages i
 					JOIN
-						pkgdb.repositories
+						repositories
 					ON
 						i.repository = repositories.id
 			WHERE
@@ -107,7 +138,7 @@ public function prepare()
 					SELECT
 						id
 					FROM
-						pkgdb.packages x
+						packages x
 					WHERE
 						i.name = x.name
 						AND i.repository = x.repository
@@ -126,9 +157,9 @@ public function prepare()
 				repositories.name AS reponame,
 				x.builddate AS builddate
 			FROM
-				pkgdb.packages x
+				packages x
 					JOIN
-						pkgdb.repositories
+						repositories
 					ON
 						x.repository = repositories.id
 			WHERE
@@ -138,7 +169,7 @@ public function prepare()
 					SELECT
 						id
 					FROM
-						pkgdb.packages i
+						packages i
 					WHERE
 						i.name = x.name
 						AND i.repository = x.repository
@@ -148,97 +179,77 @@ public function prepare()
 			ORDER BY
 				repoid ASC,
 				builddate DESC
-			');
+			')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
 		$packages = array();
 		}
 
-	$body = '
-		<div class="greybox" id="searchbox">
-			<h4 style="text-align: right">Architektur-Unterschiede</h4>
-			<p style="font-size:12px;">Diese Tabelle zeigt Unterschiede in den Paket-Versionen zu den beiden Architekturen <em>i686</em> und <em>x86_64</em>.</p>
-			<p style="font-size:12px;">Versionsunterschiede im Nachkommabereich deuten an, daß die entsprechende Aktualisierung nur eine Architektur betraf. Diese Unterschiede werden daher standardmäßig ausgeblendet.</p>
-			<div style="font-size:10px; text-align:right;padding-bottom:10px;">
-			'.($this->Input->Request->isValid('showminor') ? '<a href="?page=ArchitectureDifferences">Architekturspezifische Änderungen ausblenden</a>' : '<a href="?page=ArchitectureDifferences;showminor">Architekturspezifische Änderungen anzeigen</a>').'
-			</div>
-		</div>
-		<table id="packages">
-			<tr>
-				<th>Name</th>
-				<th>i686</th>
-				<th>x86_64</th>
-				<th>Aktualisierung</th>
-			</tr>';
-
-	$line = 0;
-	$repo = 0;
-
-	foreach ($packages as $package)
+	foreach (array(true, false) as $showminor)
 		{
-		if ($this->isMinorPackageRelease($package['iversion'], $package['xversion']) && !$this->showminor)
-			{
-			continue;
-			}
-
-		$style = $package['reponame'] == 'testing' ? ' testingpackage' : '';
-		if ($repo != $package['repoid'])
-			{
-			$body .= '<tr>
-					<th colspan="4" class="pages" style="background-color:#1793d1;text-align:center;">['.$package['reponame'].']</th>
+		$body = '
+			<div class="greybox" id="searchbox">
+				<h4 style="text-align: right">Architektur-Unterschiede</h4>
+				<p style="font-size:12px;">Diese Tabelle zeigt Unterschiede in den Paket-Versionen zu den beiden Architekturen <em>i686</em> und <em>x86_64</em>.</p>
+				<p style="font-size:12px;">Versionsunterschiede im Nachkommabereich deuten an, daß die entsprechende Aktualisierung nur eine Architektur betraf. Diese Unterschiede werden daher standardmäßig ausgeblendet.</p>
+				<div style="font-size:10px; text-align:right;padding-bottom:10px;">
+				'.($showminor ? '<a href="?page=ArchitectureDifferences">Architekturspezifische Änderungen ausblenden</a>' : '<a href="?page=ArchitectureDifferences;showminor">Architekturspezifische Änderungen anzeigen</a>').'
+				</div>
+			</div>
+			<table id="packages">
+				<tr>
+					<th>Name</th>
+					<th>i686</th>
+					<th>x86_64</th>
+					<th>Aktualisierung</th>
 				</tr>';
-			}
-		$minor = $this->showminor && $this->isMinorPackageRelease($package['iversion'], $package['xversion']) ? ' style="color:green;"' : '';
 
-		if ($this->compareVersions($package['iversion'], $package['xversion']) < 0)
+		$line = 0;
+		$repo = 0;
+
+		foreach ($packages as $package)
 			{
-			$iold = ' style="color:red;"';
-			$xold = '';
-			}
-		else
-			{
-			$iold = '';
-			$xold = ' style="color:red;"';
+			if (self::isMinorPackageRelease($package['iversion'], $package['xversion']) && !$showminor)
+				{
+				continue;
+				}
+
+			$style = $package['reponame'] == 'testing' ? ' testingpackage' : '';
+			if ($repo != $package['repoid'])
+				{
+				$body .= '<tr>
+						<th colspan="4" class="pages" style="background-color:#1793d1;text-align:center;">['.$package['reponame'].']</th>
+					</tr>';
+				}
+			$minor = $showminor && self::isMinorPackageRelease($package['iversion'], $package['xversion']) ? ' style="color:green;"' : '';
+
+			if (self::compareVersions($package['iversion'], $package['xversion']) < 0)
+				{
+				$iold = ' style="color:red;"';
+				$xold = '';
+				}
+			else
+				{
+				$iold = '';
+				$xold = ' style="color:red;"';
+				}
+
+			$body .= '<tr class="packageline'.$line.$style.'"'.$minor.'>
+					<td>'.$package['name'].'</td>
+					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;package='.$package['iid'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
+					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;package='.$package['xid'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
+					<td>'.formatDate($package['builddate']).'</td>
+				</tr>';
+
+			$line = abs($line-1);
+			$repo = $package['repoid'];
 			}
 
-		$body .= '<tr class="packageline'.$line.$style.'"'.$minor.'>
-				<td>'.$package['name'].'</td>
-				<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;package='.$package['iid'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
-				<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;package='.$package['xid'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
-				<td>'.formatDate($package['builddate']).'</td>
-			</tr>';
+		$body .= '</table>';
 
-		$line = abs($line-1);
-		$repo = $package['repoid'];
+		$cache->addObject('ArchitectureDifferences:'.($showminor ? 1 : 0), $body);
 		}
-
-	$body .= '</table>';
-
-	$this->setValue('body', $body);
-	}
-
-private function isMinorPackageRelease($ver1, $ver2)
-	{
-	return $this->getPackageVersion($ver1) == $this->getPackageVersion($ver2) && floor($this->getPackageRelease($ver1)) == floor($this->getPackageRelease($ver2));
-	}
-
-private function getPackageVersion($version)
-	{
-	$temp = explode('-', $version);
-	array_pop($temp);
-	return implode('-', $temp);
-	}
-
-private function getPackageRelease($version)
-	{
-	$temp = explode('-', $version);
-	return array_pop($temp);
-	}
-
-private function compareVersions($ver1, $ver2)
-	{
-	return version_compare($ver1, $ver2);
 	}
 
 }

@@ -114,8 +114,8 @@ private function getRecentThreads()
 				t.summary,
 				f.name AS forum
 			FROM
-				threads t,
-				forums f
+				current.threads t,
+				current.forums f
 			WHERE
 				t.deleted = 0
 				AND t.forumid = f.id
@@ -166,8 +166,8 @@ private function getImportantNews()
 				p.dat,
 				p.text
 			FROM
-				threads t,
-				posts p
+				current.threads t,
+				current.posts p
 			WHERE
 				t.forumid = ?
 				AND t.deleted = 0
@@ -217,8 +217,8 @@ private function getRecentPackages()
 				packages.version,
 				repositories.name AS repository
 			FROM
-				pkgdb.packages,
-				pkgdb.repositories
+				packages,
+				repositories
 			WHERE
 				packages.repository = repositories.id
 				AND repositories.name IN (\'core\', \'extra\', \'testing\')

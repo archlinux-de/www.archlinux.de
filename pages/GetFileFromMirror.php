@@ -18,10 +18,10 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetFileFromMirror extends Page{
+class GetFileFromMirror extends Page implements IDBCachable {
 
 private $mirrors	= array();
-private $range		= 1209600; // two weeks
+private static $range	= 1209600; // two weeks
 
 protected function makeMenu()
 	{
@@ -66,6 +66,7 @@ public function prepare()
 
 	if (count($this->mirrors) == 0)
 		{
+		$this->Output->setStatus(Output::NOT_FOUND);
 		$this->showFailure('keine Spiegel-Server gefunden!');
 		}
 
@@ -90,60 +91,9 @@ public function prepare()
 
 private function getMirrors()
 	{
-	$mirrors = array();
-
-	try
+	if (!($mirrors = $this->PersistentCache->getObject('GetFileFromMirror')))
 		{
-		$stm = $this->DB->prepare
-				('
-				SELECT
-					mirrors.host,
-					mirrors.ftp,
-					mirrors.http,
-					mirrors.country,
-					MAX(lastsync) AS lastsync,
-					AVG(totaltime) AS avgtime
-				FROM
-					pkgdb.mirrors,
-					pkgdb.mirror_log
-				WHERE
-					mirrors.official = 1
-					AND mirrors.deleted = 0
-					AND mirror_log.host = mirrors.host
-					AND mirror_log.time >= ?
-				GROUP BY
-					mirrors.host
-				HAVING
-					lastsync >= 	(
-							SELECT
-								AVG(lastsync)
-							FROM
-								pkgdb.mirrors,
-								pkgdb.mirror_log
-							WHERE
-								mirrors.official = 1
-								AND mirrors.deleted = 0
-								AND mirror_log.host = mirrors.host
-								AND mirror_log.time >= ?
-							)
-				ORDER BY
-					avgtime ASC,
-					lastsync DESC
-				');
-		$stm->bindInteger(time() - $this->range);
-		$stm->bindInteger(time() - $this->range);
-
-		foreach ($stm->getRowSet() as $mirror)
-			{
-			$url = strlen($mirror['ftp']) > 0 ? 'ftp://'.$mirror['ftp'].'/' : 'http://'.$mirror['http'].'/';
-			$mirrors[$url] = round(3/$mirror['avgtime']);
-			}
-
-		$stm->close();
-		}
-	catch (DBNoDataException $e)
-		{
-		$stm->close();
+		$mirrors = array();
 		}
 
 	return $mirrors;
@@ -182,6 +132,66 @@ private function getRandomMirror($file)
 	$randomIndex = array_rand($tempMirrors);
 
 	return $tempMirrors[$randomIndex];
+	}
+
+public static function updateDBCache(DB $db, PersistentCache $cache)
+	{
+	try
+		{
+		$stm = $db->prepare
+			('
+			SELECT
+				mirrors.host,
+				mirrors.ftp,
+				mirrors.http,
+				mirrors.country,
+				MAX(lastsync) AS lastsync,
+				AVG(totaltime) AS avgtime
+			FROM
+				mirrors,
+				mirror_log
+			WHERE
+				mirrors.official = 1
+				AND mirrors.deleted = 0
+				AND mirror_log.host = mirrors.host
+				AND mirror_log.time >= ?
+			GROUP BY
+				mirrors.host
+			HAVING
+				lastsync >= 	(
+						SELECT
+							AVG(lastsync)
+						FROM
+							mirrors,
+							mirror_log
+						WHERE
+							mirrors.official = 1
+							AND mirrors.deleted = 0
+							AND mirror_log.host = mirrors.host
+							AND mirror_log.time >= ?
+						)
+			ORDER BY
+				avgtime ASC,
+				lastsync DESC
+			');
+		$stm->bindInteger(time() - self::$range);
+		$stm->bindInteger(time() - self::$range);
+
+		$mirrors = array();
+
+		foreach ($stm->getRowSet() as $mirror)
+			{
+			$url = strlen($mirror['ftp']) > 0 ? 'ftp://'.$mirror['ftp'].'/' : 'http://'.$mirror['http'].'/';
+			$mirrors[$url] = round(3/$mirror['avgtime']);
+			}
+
+		$stm->close();
+		$cache->addObject('GetFileFromMirror', $mirrors);
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		}
 	}
 
 }

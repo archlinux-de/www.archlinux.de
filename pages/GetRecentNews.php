@@ -46,8 +46,8 @@ public function show()
 					p.username,
 					p.userid
 				FROM
-					threads t,
-					posts p
+					current.threads t,
+					current.posts p
 				WHERE
 					t.forumid = ?
 					AND t.deleted = 0
@@ -65,14 +65,14 @@ public function show()
 
 			$lastdate = 0;
 			$entries = '';
-	
+
 			foreach($threads as $thread)
 				{
 				if ($thread['dat'] > $lastdate)
 					{
 					$lastdate = $thread['dat'];
 					}
-	
+
 				$entries .=
 				'
 				<entry>
@@ -93,7 +93,7 @@ public function show()
 		catch (DBNoDataException $e)
 			{
 			}
-	
+
 		if (isset($stm))
 			{
 			$stm->close();

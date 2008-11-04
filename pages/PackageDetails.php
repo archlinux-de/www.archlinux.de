@@ -85,10 +85,10 @@ public function prepare()
 				packagers.id AS packagerid,
 				packagers.email AS packageremail
 			FROM
-				pkgdb.packages
-					LEFT JOIN pkgdb.packagers ON packages.packager = packagers.id,
-				pkgdb.architectures,
-				pkgdb.repositories
+				packages
+					LEFT JOIN packagers ON packages.packager = packagers.id,
+				architectures,
+				repositories
 			WHERE
 				packages.id = ?
 				AND packages.arch = architectures.id
@@ -283,8 +283,8 @@ private function getLicenses()
 			SELECT
 				licenses.name
 			FROM
-				pkgdb.licenses,
-				pkgdb.package_license
+				licenses,
+				package_license
 			WHERE
 				package_license.license = licenses.id
 				AND package_license.package = ?
@@ -316,8 +316,8 @@ private function getGroups()
 				groups.id,
 				groups.name
 			FROM
-				pkgdb.groups,
-				pkgdb.package_group
+				groups,
+				package_group
 			WHERE
 				package_group.group = groups.id
 				AND package_group.package = ?
@@ -348,7 +348,7 @@ private function getFiles()
 			SELECT
 				path
 			FROM
-				pkgdb.files
+				files
 			WHERE
 				package = ?
 			');
@@ -382,8 +382,8 @@ private function getDependencies()
 				packages.name,
 				depends.comment
 			FROM
-				pkgdb.depends
-					LEFT JOIN pkgdb.packages
+				depends
+					LEFT JOIN packages
 					ON depends.depends = packages.id
 			WHERE
 				depends.package = ?
@@ -420,8 +420,8 @@ private function getInverseDependencies()
 				packages.name,
 				depends.comment
 			FROM
-				pkgdb.packages,
-				pkgdb.depends
+				packages,
+				depends
 			WHERE
 				depends.depends = ?
 				AND depends.package = packages.id
@@ -458,8 +458,8 @@ private function getOptionalDependencies()
 				packages.name,
 				optdepends.comment
 			FROM
-				pkgdb.optdepends
-					LEFT JOIN pkgdb.packages
+				optdepends
+					LEFT JOIN packages
 					ON optdepends.optdepends = packages.id
 			WHERE
 				optdepends.package = ?
@@ -496,8 +496,8 @@ private function getInverseOptionalDependencies()
 				packages.name,
 				optdepends.comment
 			FROM
-				pkgdb.packages,
-				pkgdb.optdepends
+				packages,
+				optdepends
 			WHERE
 				optdepends.optdepends = ?
 				AND optdepends.package = packages.id
@@ -534,8 +534,8 @@ private function getProvides()
 				packages.name,
 				provides.comment
 			FROM
-				pkgdb.provides
-					LEFT JOIN pkgdb.packages
+				provides
+					LEFT JOIN packages
 					ON provides.provides = packages.id
 			WHERE
 				provides.package = ?
@@ -572,8 +572,8 @@ private function getConflicts()
 				packages.name,
 				conflicts.comment
 			FROM
-				pkgdb.conflicts
-					LEFT JOIN pkgdb.packages
+				conflicts
+					LEFT JOIN packages
 					ON conflicts.conflicts = packages.id
 			WHERE
 				conflicts.package = ?
@@ -610,8 +610,8 @@ private function getReplaces()
 				packages.name,
 				replaces.comment
 			FROM
-				pkgdb.replaces
-					LEFT JOIN pkgdb.packages
+				replaces
+					LEFT JOIN packages
 					ON replaces.replaces = packages.id
 			WHERE
 				replaces.package = ?

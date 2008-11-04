@@ -26,10 +26,14 @@ define('IN_LL', null);
 require ('../LLPath.php');
 ini_set('include_path', ini_get('include_path').':'.LL_PATH.':../');
 
+require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/DB.php');
+require ('modules/IDBCachable.php');
+require ('pages/abstract/Page.php');
+require ('pages/GetFileFromMirror.php');
+require ('pages/MirrorCheck.php');
 
 class CheckMirrors extends Modul {
 
@@ -80,7 +84,7 @@ public function runUpdate()
 				i686,
 				x86_64
 			FROM
-				pkgdb.mirrors
+				mirrors
 			WHERE
 				official = 1
 				AND deleted = 0
@@ -119,6 +123,9 @@ public function runUpdate()
 			$this->insertErrorEntry($mirror['host'], $e->getMessage());
 			}
 		}
+
+	GetFileFromMirror::updateDBCache($this->DB, $this->PersistentCache);
+	MirrorCheck::updateDBCache($this->DB, $this->PersistentCache);
 
 	unlink($this->getLockFile());
 	}
@@ -164,7 +171,7 @@ private function insertLogEntry($host, $lastsync, $totaltime)
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.mirror_log
+			mirror_log
 		SET
 			host = ?,
 			time = ?,
@@ -184,7 +191,7 @@ private function insertErrorEntry($host, $error)
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.mirror_log
+			mirror_log
 		SET
 			host = ?,
 			time = ?,
@@ -202,7 +209,7 @@ private function removeOldEntries()
 	$stm = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.mirror_log
+			mirror_log
 		WHERE
 			time < ?
 		');
@@ -213,7 +220,7 @@ private function removeOldEntries()
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.mirror_log
+			mirror_log
 		WHERE
 			host NOT IN (SELECT host FROM pkgdb.mirrors WHERE official = 1 AND deleted = 0)
 		');

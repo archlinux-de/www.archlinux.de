@@ -18,7 +18,7 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class PackageStatistics extends Page{
+class PackageStatistics extends Page implements IDBCachable {
 
 
 protected function makeMenu()
@@ -51,164 +51,21 @@ public function prepare()
 	{
 	$this->setValue('title', 'Paket-Statistiken');
 
-		try
-			{
-			$data = $this->DB->getRow
-				('
-				SELECT
-					(SELECT COUNT(*) FROM pkgdb.architectures) AS architectures,
-					(SELECT COUNT(*) FROM pkgdb.repositories) AS repositories,
-					(SELECT COUNT(*) FROM pkgdb.packages) AS packages,
-					(SELECT COUNT(*) FROM pkgdb.files) AS files,
-					(SELECT SUM(csize) FROM pkgdb.packages) AS csize,
-					(SELECT SUM(isize) FROM pkgdb.packages) AS isize,
-					(SELECT COUNT(*) FROM pkgdb.packagers) AS packagers,
-					(SELECT COUNT(*) FROM pkgdb.groups) AS groups,
-					(SELECT COUNT(*) FROM pkgdb.licenses) AS licenses,
-					(SELECT COUNT(*) FROM pkgdb.depends) AS depends,
-					(SELECT COUNT(*) FROM pkgdb.optdepends) AS optdepends,
-					(SELECT COUNT(*) FROM pkgdb.conflicts) AS conflicts,
-					(SELECT COUNT(*) FROM pkgdb.replaces) AS replaces,
-					(SELECT COUNT(*) FROM pkgdb.provides) AS provides,
-					(SELECT COUNT(*) FROM pkgdb.file_index) AS file_index,
-					(SELECT AVG(csize) FROM pkgdb.packages) AS avgcsize,
-					(SELECT AVG(isize) FROM pkgdb.packages) AS avgisize,
-					(SELECT
-						AVG(pkgs)
-					FROM
-						(
-						SELECT
-							COUNT(packages.id) AS pkgs
-						FROM
-							pkgdb.packages
-								JOIN
-									pkgdb.packagers
-								ON
-									packages.packager = packagers.id
-						GROUP BY packagers.id
-						) AS temp
-					) AS avgpkgperpackager,
-					(SELECT
-						AVG(pkgfiles)
-					FROM
-						(
-						SELECT
-							COUNT(id) AS pkgfiles
-						FROM
-							pkgdb.files
-						GROUP BY package
-						) AS temp2
-					) AS avgfiles
-				');
-			}
-		catch (DBNoDataException $e)
-			{
-			$this->Output->setStatus(Output::NOT_FOUND);
-			$this->showFailure('Paket-Statistiken nicht gefunden!');
-			}
-
-		$body = '<div id="box">
-			<h1 id="packagename">Paket-Statistiken</h1>
-			<table id="packagedetails">
-				<tr>
-					<th colspan="2" class="packagedetailshead">Umfang</th>
-				</tr>
-				<tr>
-					<th>Architekturen</th>
-					<td>'.$data['architectures'].'</td>
-				</tr>
-				<tr>
-					<th>Repositorien</th>
-					<td>'.$data['repositories'].'</td>
-				</tr>
-				<tr>
-					<th>Gruppen</th>
-					<td>'.$this->formatNumber($data['groups']).'</td>
-				</tr>
-				<tr>
-					<th>Pakete</th>
-					<td>'.$this->formatNumber($data['packages']).'</td>
-				</tr>
-				<tr>
-					<th>Dateien</th>
-					<td>'.$this->formatNumber($data['files']).'</td>
-				</tr>
-				<tr>
-					<th>Größe des Datei-Index</th>
-					<td>'.$this->formatNumber($data['file_index']).'</td>
-				</tr>
-				<tr>
-					<th>Lizenzen</th>
-					<td>'.$this->formatNumber($data['licenses']).'</td>
-				</tr>
-				<tr>
-					<th>Abhängigkeiten</th>
-					<td>'.$this->formatNumber($data['depends']).'</td>
-				</tr>
-				<tr>
-					<th>Optionale Abhängigkeiten</th>
-					<td>'.$this->formatNumber($data['optdepends']).'</td>
-				</tr>
-				<tr>
-					<th>Bereitstellungen</th>
-					<td>'.$this->formatNumber($data['provides']).'</td>
-				</tr>
-				<tr>
-					<th>Konflikte</th>
-					<td>'.$this->formatNumber($data['conflicts']).'</td>
-				</tr>
-				<tr>
-					<th>Ersetzungen</th>
-					<td>'.$this->formatNumber($data['replaces']).'</td>
-				</tr>
-				<tr>
-					<th>Größe der Repositorien</th>
-					<td>'.$this->formatBytes($data['csize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Größe der Dateien</th>
-					<td>'.$this->formatBytes($data['isize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Packer</th>
-					<td>'.$data['packagers'].'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">Durchschnitte</th>
-				</tr>
-				<tr>
-					<th>Größe der Pakete</th>
-					<td>&empty; '.$this->formatBytes($data['avgcsize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Größe der Dateien</th>
-					<td>&empty; '.$this->formatBytes($data['avgisize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Dateien pro Paket</th>
-					<td>&empty; '.$this->formatNumber($data['avgfiles'], 2).'</td>
-				</tr>
-				<tr>
-					<th>Pakete pro Packer</th>
-					<td>&empty; '.$this->formatNumber($data['avgpkgperpackager'], 2).'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">Repositorien</th>
-				</tr>
-					'.$this->getPositoryStatistics($data['packages'], $data['csize']).'
-			</table>
-			</div>
-			';
+	if (!($body = $this->PersistentCache->getObject('PackageStatistics:')))
+		{
+		$this->Output->setStatus(Output::NOT_FOUND);
+		$this->showFailure('Keine Daten vorhanden!');
+		}
 
 	$this->setValue('body', $body);
 	}
 
-private function getPositoryStatistics($packages, $size)
+private static function getPositoryStatistics($db, $packages, $size)
 	{
 	$repolist = '';
 	try
 		{
-		$repos = $this->DB->getRowSet('SELECT id, name FROM pkgdb.repositories')->toArray();
+		$repos = $db->getRowSet('SELECT id, name FROM repositories')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
@@ -217,20 +74,20 @@ private function getPositoryStatistics($packages, $size)
 
 	try
 		{
-		$arches = $this->DB->getRowSet('SELECT id, name FROM pkgdb.architectures')->toArray();
+		$arches = $db->getRowSet('SELECT id, name FROM architectures')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
 		$arches = array();
 		}
 
-	$stm = $this->DB->prepare
+	$stm = $db->prepare
 			('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
-				pkgdb.packages
+				packages
 			WHERE
 				repository = ?
 				AND arch = ?
@@ -251,9 +108,9 @@ private function getPositoryStatistics($packages, $size)
 			$pkgpercent = round(($data['packages'] / $packages) * 200);
 			$sizepercent = round(($data['size'] / $size) * 200);
 
-			$repolist .= '<td style="width:100px;text-align:right;padding:0px;">'.$this->formatNumber($data['packages']).' Pakete</td>
+			$repolist .= '<td style="width:100px;text-align:right;padding:0px;">'.self::formatNumber($data['packages']).' Pakete</td>
 			<td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$pkgpercent.'px;">&nbsp;</div></td>
-			<td style="width:100px;text-align:right;padding:0px;">'.$this->formatBytes($data['size']).'Byte</td>
+			<td style="width:100px;text-align:right;padding:0px;">'.self::formatBytes($data['size']).'Byte</td>
 			<td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$sizepercent.'px;">&nbsp;</div></td>';
 
 			$repolist .= '</tr>';
@@ -267,7 +124,7 @@ private function getPositoryStatistics($packages, $size)
 	return $repolist;
 	}
 
-private function formatBytes($bytes)
+private static function formatBytes($bytes)
 	{
 	$kb = 1024;
 	$mb = $kb * 1024;
@@ -294,12 +151,164 @@ private function formatBytes($bytes)
 		$postfix = '&nbsp;';
 		}
 
-	return $this->formatNumber($result, 2).$postfix;
+	return self::formatNumber($result, 2).$postfix;
 	}
 
-private function formatNumber($number, $decs=0)
+private static function formatNumber($number, $decs=0)
 	{
 	return number_format($number, $decs, ',', '.');
+	}
+
+public static function updateDBCache(DB $db, PersistentCache $cache)
+	{
+	try
+		{
+		$data = $db->getRow
+			('
+			SELECT
+				(SELECT COUNT(*) FROM architectures) AS architectures,
+				(SELECT COUNT(*) FROM repositories) AS repositories,
+				(SELECT COUNT(*) FROM packages) AS packages,
+				(SELECT COUNT(*) FROM files) AS files,
+				(SELECT SUM(csize) FROM packages) AS csize,
+				(SELECT SUM(isize) FROM packages) AS isize,
+				(SELECT COUNT(*) FROM packagers) AS packagers,
+				(SELECT COUNT(*) FROM groups) AS groups,
+				(SELECT COUNT(*) FROM licenses) AS licenses,
+				(SELECT COUNT(*) FROM depends) AS depends,
+				(SELECT COUNT(*) FROM optdepends) AS optdepends,
+				(SELECT COUNT(*) FROM conflicts) AS conflicts,
+				(SELECT COUNT(*) FROM replaces) AS replaces,
+				(SELECT COUNT(*) FROM provides) AS provides,
+				(SELECT COUNT(*) FROM file_index) AS file_index,
+				(SELECT AVG(csize) FROM packages) AS avgcsize,
+				(SELECT AVG(isize) FROM packages) AS avgisize,
+				(SELECT
+					AVG(pkgs)
+				FROM
+					(
+					SELECT
+						COUNT(packages.id) AS pkgs
+					FROM
+						packages
+							JOIN
+								packagers
+							ON
+								packages.packager = packagers.id
+					GROUP BY packagers.id
+					) AS temp
+				) AS avgpkgperpackager,
+				(SELECT
+					AVG(pkgfiles)
+				FROM
+					(
+					SELECT
+						COUNT(id) AS pkgfiles
+					FROM
+						files
+					GROUP BY package
+					) AS temp2
+				) AS avgfiles
+			');
+
+		$body = '<div id="box">
+			<h1 id="packagename">Paket-Statistiken</h1>
+			<table id="packagedetails">
+				<tr>
+					<th colspan="2" class="packagedetailshead">Umfang</th>
+				</tr>
+				<tr>
+					<th>Architekturen</th>
+					<td>'.$data['architectures'].'</td>
+				</tr>
+				<tr>
+					<th>Repositorien</th>
+					<td>'.$data['repositories'].'</td>
+				</tr>
+				<tr>
+					<th>Gruppen</th>
+					<td>'.self::formatNumber($data['groups']).'</td>
+				</tr>
+				<tr>
+					<th>Pakete</th>
+					<td>'.self::formatNumber($data['packages']).'</td>
+				</tr>
+				<tr>
+					<th>Dateien</th>
+					<td>'.self::formatNumber($data['files']).'</td>
+				</tr>
+				<tr>
+					<th>Größe des Datei-Index</th>
+					<td>'.self::formatNumber($data['file_index']).'</td>
+				</tr>
+				<tr>
+					<th>Lizenzen</th>
+					<td>'.self::formatNumber($data['licenses']).'</td>
+				</tr>
+				<tr>
+					<th>Abhängigkeiten</th>
+					<td>'.self::formatNumber($data['depends']).'</td>
+				</tr>
+				<tr>
+					<th>Optionale Abhängigkeiten</th>
+					<td>'.self::formatNumber($data['optdepends']).'</td>
+				</tr>
+				<tr>
+					<th>Bereitstellungen</th>
+					<td>'.self::formatNumber($data['provides']).'</td>
+				</tr>
+				<tr>
+					<th>Konflikte</th>
+					<td>'.self::formatNumber($data['conflicts']).'</td>
+				</tr>
+				<tr>
+					<th>Ersetzungen</th>
+					<td>'.self::formatNumber($data['replaces']).'</td>
+				</tr>
+				<tr>
+					<th>Größe der Repositorien</th>
+					<td>'.self::formatBytes($data['csize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>Größe der Dateien</th>
+					<td>'.self::formatBytes($data['isize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>Packer</th>
+					<td>'.$data['packagers'].'</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Durchschnitte</th>
+				</tr>
+				<tr>
+					<th>Größe der Pakete</th>
+					<td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>Größe der Dateien</th>
+					<td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>Dateien pro Paket</th>
+					<td>&empty; '.self::formatNumber($data['avgfiles'], 2).'</td>
+				</tr>
+				<tr>
+					<th>Pakete pro Packer</th>
+					<td>&empty; '.self::formatNumber($data['avgpkgperpackager'], 2).'</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Repositorien</th>
+				</tr>
+					'.self::getPositoryStatistics($db, $data['packages'], $data['csize']).'
+			</table>
+			</div>
+			';
+
+		$cache->addObject('PackageStatistics:', $body);
+		}
+	catch (DBNoDataException $e)
+		{
+		}
 	}
 
 }

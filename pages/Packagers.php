@@ -71,7 +71,7 @@ public function prepare()
 		{
 		}
 
-	$packages = $this->DB->getColumn('SELECT COUNT(*) FROM pkgdb.packages');
+	$packages = $this->DB->getColumn('SELECT COUNT(*) FROM packages');
 
 	try
 		{
@@ -85,7 +85,7 @@ public function prepare()
 					SELECT
 						COUNT(packages.id)
 					FROM
-						pkgdb.packages
+						packages
 					WHERE
 						packages.packager = packagers.id
 			 	) AS packages,
@@ -93,12 +93,12 @@ public function prepare()
 					SELECT
 						MAX(packages.builddate)
 					FROM
-						pkgdb.packages
+						packages
 					WHERE
 						packages.packager = packagers.id
 			 	) AS lastbuilddate
 			 FROM
-			 	pkgdb.packagers
+			 	packagers
 			 ORDER BY
 			 	'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
 			');

@@ -27,11 +27,15 @@ define('IN_LL', null);
 require ('../LLPath.php');
 ini_set('include_path', ini_get('include_path').':'.LL_PATH.':../');
 
+require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/DB.php');
+require ('modules/IDBCachable.php');
 require ('PackageDB.php');
+require ('pages/abstract/Page.php');
+require ('pages/ArchitectureDifferences.php');
+require ('pages/PackageStatistics.php');
 
 
 class UpdatePKGDB extends Modul {
@@ -42,6 +46,8 @@ private $packagers 	= array();
 private $repos 		= array();
 private $groups 	= array();
 private $licenses 	= array();
+
+private $changed	= false;
 
 
 public function __construct()
@@ -80,7 +86,7 @@ public function runUpdate()
 	$this->DB->execute
 		('
 		CREATE TEMPORARY TABLE
-			pkgdb.temp_depends
+			temp_depends
 			(
 			package INT( 11 ) UNSIGNED NOT NULL,
 			depends LONGTEXT NOT NULL,
@@ -91,7 +97,7 @@ public function runUpdate()
 	$this->DB->execute
 		('
 		CREATE TEMPORARY TABLE
-			pkgdb.temp_optdepends
+			temp_optdepends
 			(
 			package INT( 11 ) UNSIGNED NOT NULL,
 			optdepends LONGTEXT NOT NULL,
@@ -102,7 +108,7 @@ public function runUpdate()
 	$this->DB->execute
 		('
 		CREATE TEMPORARY TABLE
-			pkgdb.temp_provides
+			temp_provides
 			(
 			package INT( 11 ) UNSIGNED NOT NULL,
 			provides LONGTEXT NOT NULL,
@@ -113,7 +119,7 @@ public function runUpdate()
 	$this->DB->execute
 		('
 		CREATE TEMPORARY TABLE
-			pkgdb.temp_conflicts
+			temp_conflicts
 			(
 			package INT( 11 ) UNSIGNED NOT NULL,
 			conflicts LONGTEXT NOT NULL,
@@ -124,7 +130,7 @@ public function runUpdate()
 	$this->DB->execute
 		('
 		CREATE TEMPORARY TABLE
-			pkgdb.temp_replaces
+			temp_replaces
 			(
 			package INT( 11 ) UNSIGNED NOT NULL,
 			replaces LONGTEXT NOT NULL,
@@ -140,12 +146,18 @@ public function runUpdate()
 			}
 		}
 
-	$this->updateDependencies();
-	$this->updateOptionalDependencies();
-	$this->updateProvides();
-	$this->updateConflicts();
-	$this->updateReplaces();
-	$this->removeUnusedEntries();
+	if ($this->changed)
+		{
+		$this->updateDependencies();
+		$this->updateOptionalDependencies();
+		$this->updateProvides();
+		$this->updateConflicts();
+		$this->updateReplaces();
+		$this->removeUnusedEntries();
+
+		ArchitectureDifferences::updateDBCache($this->DB, $this->PersistentCache);
+		PackageStatistics::updateDBCache($this->DB, $this->PersistentCache);
+		}
 
 	unlink($this->getLockFile());
 	}
@@ -159,7 +171,7 @@ private function getRecentDate($repo, $arch)
 			SELECT
 				MAX(mtime)
 			FROM
-				pkgdb.packages
+				packages
 			WHERE
 				arch = ?
 				AND repository = ?
@@ -184,10 +196,15 @@ private function updateRepository($repo, $arch)
 	$lastpkgdbmtime = $this->getPKGDBMTime($repo, $arch);
 
 	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch, $lastpkgdbmtime);
-	$this->updatePackages($pkgdb->getUpdatedPackages($lastrun), $repo, $arch);
-	$this->setPKGDBMTime($repo, $arch, $pkgdb->getMTime());
+	$mtime = $pkgdb->getMTime();
+	if ($mtime > $lastpkgdbmtime)
+		{
+		$this->changed = true;
+		$this->updatePackages($pkgdb->getUpdatedPackages($lastrun), $repo, $arch);
+		$this->setPKGDBMTime($repo, $arch, $mtime);
 
-	$this->removeDeletedPackages($repo, $arch, $pkgdb->getPackageNames());
+		$this->removeDeletedPackages($repo, $arch, $pkgdb->getPackageNames());
+		}
 	}
 
 private function setPKGDBMTime($repo, $arch, $time)
@@ -197,7 +214,7 @@ private function setPKGDBMTime($repo, $arch, $time)
 		$stm = $this->DB->prepare
 			('
 			REPLACE INTO
-				pkgdb.log
+				log
 			SET
 				name = ?,
 				time = ?
@@ -218,7 +235,7 @@ private function getPKGDBMTime($repo, $arch)
 			SELECT
 				time
 			FROM
-				pkgdb.log
+				log
 			WHERE
 				name = ?
 			');
@@ -242,9 +259,9 @@ private function updatePackages($packages, $repo, $arch)
 		SELECT
 			packages.id
 		FROM
-			pkgdb.packages,
-			pkgdb.repositories,
-			pkgdb.architectures
+			packages,
+			repositories,
+			architectures
 		WHERE
 			packages.repository = repositories.id
 			AND packages.arch = architectures.id
@@ -256,7 +273,7 @@ private function updatePackages($packages, $repo, $arch)
 	$updateSTM = $this->DB->prepare
 		('
 		UPDATE
-			pkgdb.packages
+			packages
 		SET
 			filename = ?,
 			name = ?,
@@ -279,7 +296,7 @@ private function updatePackages($packages, $repo, $arch)
 	$insertSTM = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.packages
+			packages
 		SET
 			filename = ?,
 			name = ?,
@@ -300,7 +317,7 @@ private function updatePackages($packages, $repo, $arch)
 	$dependsSTM = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.temp_depends
+			temp_depends
 		SET
 			package = ?,
 			depends = ?
@@ -309,7 +326,7 @@ private function updatePackages($packages, $repo, $arch)
 	$optdependsSTM = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.temp_optdepends
+			temp_optdepends
 		SET
 			package = ?,
 			optdepends = ?
@@ -318,7 +335,7 @@ private function updatePackages($packages, $repo, $arch)
 	$providesSTM = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.temp_provides
+			temp_provides
 		SET
 			package = ?,
 			provides = ?
@@ -327,7 +344,7 @@ private function updatePackages($packages, $repo, $arch)
 	$conflictsSTM = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.temp_conflicts
+			temp_conflicts
 		SET
 			package = ?,
 			conflicts = ?
@@ -336,7 +353,7 @@ private function updatePackages($packages, $repo, $arch)
 	$replacesSTM = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.temp_replaces
+			temp_replaces
 		SET
 			package = ?,
 			replaces = ?
@@ -457,7 +474,7 @@ private function addPackageToGroups($package, $groups)
 	$stm = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.package_group
+			package_group
 		WHERE
 			package = ?
 		');
@@ -468,7 +485,7 @@ private function addPackageToGroups($package, $groups)
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.package_group
+			package_group
 		SET
 			package = ?,
 			`group` = ?
@@ -497,7 +514,7 @@ private function getGroupID($group)
 				SELECT
 					id
 				FROM
-					pkgdb.groups
+					groups
 				WHERE
 					name = ?
 				');
@@ -512,7 +529,7 @@ private function getGroupID($group)
 			$stm = $this->DB->prepare
 				('
 				INSERT INTO
-					pkgdb.groups
+					groups
 				SET
 					name = ?
 				');
@@ -533,7 +550,7 @@ private function addPackageToLicenses($package, $licenses)
 	$stm = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.package_license
+			package_license
 		WHERE
 			package = ?
 		');
@@ -544,7 +561,7 @@ private function addPackageToLicenses($package, $licenses)
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.package_license
+			package_license
 		SET
 			package = ?,
 			license = ?
@@ -573,7 +590,7 @@ private function getLicenseID($license)
 				SELECT
 					id
 				FROM
-					pkgdb.licenses
+					licenses
 				WHERE
 					name = ?
 				');
@@ -588,7 +605,7 @@ private function getLicenseID($license)
 			$stm = $this->DB->prepare
 				('
 				INSERT INTO
-					pkgdb.licenses
+					licenses
 				SET
 					name = ?
 				');
@@ -619,7 +636,7 @@ private function getArchitectureID($arch)
 				SELECT
 					id
 				FROM
-					pkgdb.architectures
+					architectures
 				WHERE
 					name = ?
 				');
@@ -634,7 +651,7 @@ private function getArchitectureID($arch)
 			$stm = $this->DB->prepare
 				('
 				INSERT INTO
-					pkgdb.architectures
+					architectures
 				SET
 					name = ?
 				');
@@ -670,7 +687,7 @@ private function getPackagerID($packager)
 				SELECT
 					id
 				FROM
-					pkgdb.packagers
+					packagers
 				WHERE
 					name = ?
 					AND email = ?
@@ -687,7 +704,7 @@ private function getPackagerID($packager)
 			$stm = $this->DB->prepare
 				('
 				INSERT INTO
-					pkgdb.packagers
+					packagers
 				SET
 					name = ?,
 					email = ?
@@ -720,7 +737,7 @@ private function getRepositoryID($repo)
 				SELECT
 					id
 				FROM
-					pkgdb.repositories
+					repositories
 				WHERE
 					name = ?
 				');
@@ -735,7 +752,7 @@ private function getRepositoryID($repo)
 			$stm = $this->DB->prepare
 				('
 				INSERT INTO
-					pkgdb.repositories
+					repositories
 				SET
 					name = ?
 				');
@@ -759,7 +776,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm1 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.packages
+				packages
 			WHERE
 				id = ?
 			');
@@ -767,7 +784,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm2 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.conflicts
+				conflicts
 			WHERE
 				package = ?
 				OR conflicts = ?
@@ -776,7 +793,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm3 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.depends
+				depends
 			WHERE
 				package = ?
 				OR depends = ?
@@ -785,7 +802,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm3a = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.optdepends
+				optdepends
 			WHERE
 				package = ?
 				OR optdepends = ?
@@ -794,7 +811,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm4 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.provides
+				provides
 			WHERE
 				package = ?
 				OR provides = ?
@@ -803,7 +820,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm5 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.replaces
+				replaces
 			WHERE
 				package = ?
 				OR replaces = ?
@@ -812,7 +829,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm6 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.files
+				files
 			WHERE
 				package = ?
 			');
@@ -820,7 +837,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm6b = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.package_file_index
+				package_file_index
 			WHERE
 				package = ?
 			');
@@ -828,7 +845,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm7 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.package_group
+				package_group
 			WHERE
 				package = ?
 			');
@@ -836,7 +853,7 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$delstm8 = $this->DB->prepare
 			('
 			DELETE FROM
-				pkgdb.package_license
+				package_license
 			WHERE
 				package = ?
 			');
@@ -844,17 +861,17 @@ private function removeDeletedPackages($repo, $arch, $packages)
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				pkgdb.packages.id,
-				pkgdb.packages.name
+				packages.id,
+				packages.name
 			FROM
-				pkgdb.packages,
-				pkgdb.architectures,
-				pkgdb.repositories
+				packages,
+				architectures,
+				repositories
 			WHERE
-				pkgdb.packages.arch = pkgdb.architectures.id
-				AND pkgdb.packages.repository = pkgdb.repositories.id
-				AND pkgdb.architectures.name = ?
-				AND pkgdb.repositories.name = ?
+				packages.arch = architectures.id
+				AND packages.repository = repositories.id
+				AND architectures.name = ?
+				AND repositories.name = ?
 			');
 		$stm->bindString(htmlspecialchars($arch));
 		$stm->bindString(htmlspecialchars($repo));
@@ -924,41 +941,41 @@ private function removeUnusedEntries()
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.groups
+			groups
 		WHERE
-			id NOT IN (SELECT pkgdb.package_group.group FROM pkgdb.package_group)
+			id NOT IN (SELECT package_group.group FROM package_group)
 		');
 
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.licenses
+			licenses
 		WHERE
-			id NOT IN (SELECT license FROM pkgdb.package_license)
+			id NOT IN (SELECT license FROM package_license)
 		');
 
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.packagers
+			packagers
 		WHERE
-			id NOT IN (SELECT packager FROM pkgdb.packages)
+			id NOT IN (SELECT packager FROM packages)
 		');
 
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.architectures
+			architectures
 		WHERE
-			id NOT IN (SELECT arch FROM pkgdb.packages)
+			id NOT IN (SELECT arch FROM packages)
 		');
 
 	$this->DB->execute
 		('
 		DELETE FROM
-			pkgdb.repositories
+			repositories
 		WHERE
-			id NOT IN (SELECT repository FROM pkgdb.packages)
+			id NOT IN (SELECT repository FROM packages)
 		');
 	}
 
@@ -972,7 +989,7 @@ private function updateDependencies()
 				package,
 				depends
 			FROM
-				pkgdb.temp_depends
+				temp_depends
 			');
 		}
 	catch (DBNoDataException $e)
@@ -983,7 +1000,7 @@ private function updateDependencies()
 	$cleanSTM = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.depends
+			depends
 		WHERE
 			package = ?
 		');
@@ -991,7 +1008,7 @@ private function updateDependencies()
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.depends
+			depends
 		SET
 			package = ?,
 			depends = ?,
@@ -1004,8 +1021,8 @@ private function updateDependencies()
 		SELECT
 			target.id
 		FROM
-			pkgdb.packages AS source,
-			pkgdb.packages AS target
+			packages AS source,
+			packages AS target
 		WHERE
 			target.name = ?
 			AND target.repository = source.repository
@@ -1017,8 +1034,8 @@ private function updateDependencies()
 		SELECT
 			target2.id
 		FROM
-			pkgdb.packages AS source2,
-			pkgdb.packages AS target2
+			packages AS source2,
+			packages AS target2
 		WHERE
 			target2.name = ?
 			AND target2.arch = source2.arch
@@ -1088,7 +1105,7 @@ private function updateOptionalDependencies()
 				package,
 				optdepends
 			FROM
-				pkgdb.temp_optdepends
+				temp_optdepends
 			');
 		}
 	catch (DBNoDataException $e)
@@ -1099,7 +1116,7 @@ private function updateOptionalDependencies()
 	$cleanSTM = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.optdepends
+			optdepends
 		WHERE
 			package = ?
 		');
@@ -1107,7 +1124,7 @@ private function updateOptionalDependencies()
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.optdepends
+			optdepends
 		SET
 			package = ?,
 			optdepends = ?,
@@ -1120,8 +1137,8 @@ private function updateOptionalDependencies()
 		SELECT
 			target.id
 		FROM
-			pkgdb.packages AS source,
-			pkgdb.packages AS target
+			packages AS source,
+			packages AS target
 		WHERE
 			target.name = ?
 			AND target.repository = source.repository
@@ -1133,8 +1150,8 @@ private function updateOptionalDependencies()
 		SELECT
 			target2.id
 		FROM
-			pkgdb.packages AS source2,
-			pkgdb.packages AS target2
+			packages AS source2,
+			packages AS target2
 		WHERE
 			target2.name = ?
 			AND target2.arch = source2.arch
@@ -1204,7 +1221,7 @@ private function updateProvides()
 				package,
 				provides
 			FROM
-				pkgdb.temp_provides
+				temp_provides
 			');
 		}
 	catch (DBNoDataException $e)
@@ -1215,7 +1232,7 @@ private function updateProvides()
 	$cleanSTM = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.provides
+			provides
 		WHERE
 			package = ?
 		');
@@ -1223,7 +1240,7 @@ private function updateProvides()
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.provides
+			provides
 		SET
 			package = ?,
 			provides = ?,
@@ -1236,8 +1253,8 @@ private function updateProvides()
 		SELECT
 			target.id
 		FROM
-			pkgdb.packages AS source,
-			pkgdb.packages AS target
+			packages AS source,
+			packages AS target
 		WHERE
 			target.name = ?
 			AND target.repository = source.repository
@@ -1249,8 +1266,8 @@ private function updateProvides()
 		SELECT
 			target2.id
 		FROM
-			pkgdb.packages AS source2,
-			pkgdb.packages AS target2
+			packages AS source2,
+			packages AS target2
 		WHERE
 			target2.name = ?
 			AND target2.arch = source2.arch
@@ -1320,7 +1337,7 @@ private function updateConflicts()
 				package,
 				conflicts
 			FROM
-				pkgdb.temp_conflicts
+				temp_conflicts
 			');
 		}
 	catch (DBNoDataException $e)
@@ -1331,7 +1348,7 @@ private function updateConflicts()
 	$cleanSTM = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.conflicts
+			conflicts
 		WHERE
 			package = ?
 		');
@@ -1339,7 +1356,7 @@ private function updateConflicts()
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.conflicts
+			conflicts
 		SET
 			package = ?,
 			conflicts = ?,
@@ -1352,8 +1369,8 @@ private function updateConflicts()
 		SELECT
 			target.id
 		FROM
-			pkgdb.packages AS source,
-			pkgdb.packages AS target
+			packages AS source,
+			packages AS target
 		WHERE
 			target.name = ?
 			AND target.repository = source.repository
@@ -1365,8 +1382,8 @@ private function updateConflicts()
 		SELECT
 			target2.id
 		FROM
-			pkgdb.packages AS source2,
-			pkgdb.packages AS target2
+			packages AS source2,
+			packages AS target2
 		WHERE
 			target2.name = ?
 			AND target2.arch = source2.arch
@@ -1436,7 +1453,7 @@ private function updateReplaces()
 				package,
 				replaces
 			FROM
-				pkgdb.temp_replaces
+				temp_replaces
 			');
 		}
 	catch (DBNoDataException $e)
@@ -1447,7 +1464,7 @@ private function updateReplaces()
 	$cleanSTM = $this->DB->prepare
 		('
 		DELETE FROM
-			pkgdb.replaces
+			replaces
 		WHERE
 			package = ?
 		');
@@ -1455,7 +1472,7 @@ private function updateReplaces()
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			pkgdb.replaces
+			replaces
 		SET
 			package = ?,
 			replaces = ?,
@@ -1468,8 +1485,8 @@ private function updateReplaces()
 		SELECT
 			target.id
 		FROM
-			pkgdb.packages AS source,
-			pkgdb.packages AS target
+			packages AS source,
+			packages AS target
 		WHERE
 			target.name = ?
 			AND target.repository = source.repository
@@ -1481,8 +1498,8 @@ private function updateReplaces()
 		SELECT
 			target2.id
 		FROM
-			pkgdb.packages AS source2,
-			pkgdb.packages AS target2
+			packages AS source2,
+			packages AS target2
 		WHERE
 			target2.name = ?
 			AND target2.arch = source2.arch

@@ -167,11 +167,11 @@ public function prepare()
 				architectures.name AS architecture,
 				repositories.name AS repository
 			FROM
-				pkgdb.packages,
-				pkgdb.repositories,
-				pkgdb.architectures
-				'.($this->group > 0 ? ',pkgdb.package_group': '').'
-				'.(!empty($this->search) && $this->searchField == 2 ? ',pkgdb.file_index, pkgdb.package_file_index' : '').'
+				packages,
+				repositories,
+				architectures
+				'.($this->group > 0 ? ',package_group': '').'
+				'.(!empty($this->search) && $this->searchField == 2 ? ',file_index, package_file_index' : '').'
 			WHERE
 				packages.repository = repositories.id
 				'.($this->repository > 0 ? 'AND packages.repository = '.$this->repository : '').'
@@ -285,7 +285,7 @@ private function getRepositoryList()
 				id,
 				name
 			FROM
-				pkgdb.repositories
+				repositories
 			');
 
 		foreach ($repositories as $repository)
@@ -323,7 +323,7 @@ private function getArchitectureList()
 				id,
 				name
 			FROM
-				pkgdb.architectures
+				architectures
 			ORDER BY
 				name ASC
 			');
@@ -363,7 +363,7 @@ private function getGroupList()
 				id,
 				name
 			FROM
-				pkgdb.groups
+				groups
 			ORDER BY
 				name ASC
 			');

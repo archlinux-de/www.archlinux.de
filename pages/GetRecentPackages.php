@@ -44,13 +44,13 @@ public function show()
 					packagers.name AS packager,
 					architectures.name AS architecture
 				FROM
-					pkgdb.packages
+					packages
 						JOIN
-							pkgdb.packagers
+							packagers
 						ON
 							packages.packager = packagers.id
 						JOIN
-							pkgdb.architectures
+							architectures
 						ON
 							packages.arch = architectures.id
 				ORDER BY
@@ -61,14 +61,14 @@ public function show()
 
 			$lastdate = 0;
 			$entries = '';
-	
+
 			foreach($packages as $package)
 				{
 				if ($package['builddate'] > $lastdate)
 					{
 					$lastdate = $package['builddate'];
 					}
-	
+
 				$entries .=
 				'
 				<entry>
@@ -88,7 +88,7 @@ public function show()
 		catch (DBNoDataException $e)
 			{
 			}
-	
+
 		if (isset($stm))
 			{
 			$stm->close();
