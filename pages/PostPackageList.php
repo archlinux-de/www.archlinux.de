@@ -37,7 +37,7 @@ public function prepare()
 		}
 	catch (RequestException $e)
 		{
-		$this->showFailure('No Data received');
+		$this->showFailure('No data received');
 		}
 
 	$this->checkIfAllreadySubmitted();
@@ -59,11 +59,11 @@ public function prepare()
 		}
 	catch (DBNoDataException $e)
 		{
-		$this->showFailure('Your architecture is unknown!');
+		$this->showFailure('Unknown architecture: '.htmlspecialchars($arch));
 		}
 	catch (DBException $e)
 		{
-		$this->showFailure('Something really weird happend!');
+		$this->showFailure('Allan broke it!');
 		}
 
 	foreach (explode("\n", $packages) as $package)
@@ -85,7 +85,7 @@ protected function showFailure($text)
 
 public function show()
 	{
-	echo 'Thanks for your submission'."\n";
+	echo 'Thanks for your submission. :-)'."\n";
 	}
 
 private function checkIfAllreadySubmitted()
@@ -159,11 +159,11 @@ private function insertPackage($package, $arch, $archID)
 		}
 	catch (DBNoDataException $e)
 		{
-		$this->showWarning('Unkown package: '.$package);
+		// $this->showWarning('Unknown package: '.$package);
 		}
 	catch (DBException $e)
 		{
-		$this->showFailure('An error occured when inserting your data!');
+		$this->showFailure('Allan broke it!');
 		}
 	}
 
@@ -172,19 +172,16 @@ private function getScript()
 	$script =
 '#!/bin/bash
 
-targetURL="'.$this->Input->getURL().'/?page=PostPackageList"
-
-TMPDIR=$(mktemp -d /tmp/postPackageList.sh.XXXXXX) || exit 1
-
-pacman -Qq > ${TMPDIR}/packages || echo "You fail!"
+pkglist=$(mktemp --tmpdir pkglist.XXXXXX)
+pacman -Qq > ${pkglist}
 
 curl -f -H "Expect: " \
-	--data-urlencode "packages@${TMPDIR}/packages" \
+	--data-urlencode "packages@${pkglist}" \
 	--data-urlencode "arch=$(uname -m)" \
-	"${targetURL}" \
+	"'.$this->Input->getURL().'/?page='.$this->getName().'" \
 	|| echo "Sending data failed. Please come back tomorrow!"
 
-rm -rf ${TMPDIR}
+rm -f ${pkglist}
 ';
 
 	header('HTTP/1.1 200 OK');
