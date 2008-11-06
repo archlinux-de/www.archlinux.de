@@ -139,8 +139,10 @@ private function getLastsyncFromMirror($url)
 
 	curl_setopt($curl, CURLOPT_FAILONERROR, true);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
 	curl_setopt($curl, CURLOPT_TIMEOUT, 120);
+	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
 	curl_setopt($curl, CURLOPT_ENCODING, '');
 	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
 	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);

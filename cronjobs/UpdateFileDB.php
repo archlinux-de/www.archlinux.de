@@ -38,6 +38,7 @@ class UpdateFileDB extends Modul {
 private $mirror 	= 'ftp://ftp.archlinux.org/';
 private $curmtime	= array();
 private $lastmtime	= array();
+private $changed	= false;
 
 public function __construct()
 	{
@@ -76,7 +77,10 @@ public function runUpdate()
 			}
 		}
 
-	$this->removeUnusedEntries();
+	if ($this->changed)
+		{
+		$this->removeUnusedEntries();
+		}
 
 	unlink($this->getLockFile());
 	}
@@ -178,6 +182,13 @@ private function updateFiles($repo, $arch)
 	curl_setopt($curl, CURLOPT_NOBODY, true);
 	curl_setopt($curl, CURLOPT_FILETIME, true);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl, CURLOPT_FAILONERROR, true);
+	curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
+	curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+	curl_setopt($curl, CURLOPT_ENCODING, '');
+	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
+	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
 	curl_exec($curl);
 	$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 	curl_close($curl);
@@ -185,6 +196,7 @@ private function updateFiles($repo, $arch)
 	if ($mtime > $this->getLogEntry('UpdateFileDB-mtime-'.$repo.'-'.$arch))
 		{
 		$this->setLastMTime($repo, $arch, $this->getLogEntry('UpdateFileDB-'.$repo.'-'.$arch));
+		$this->changed = true;
 
 		$dbtargz = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.tar.gz-');
 		$dbDir = tempnam($this->getTmpDir().'/', $arch.'-'.$repo.'-files.db-');
@@ -196,6 +208,13 @@ private function updateFiles($repo, $arch)
 		$curl = curl_init($this->mirror.$repo.'/os/'.$arch.'/'.$repo.'.files.tar.gz');
 		curl_setopt($curl, CURLOPT_FILE, $fh);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_FAILONERROR, true);
+		curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 120);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_ENCODING, '');
+		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
+		curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
 		curl_exec($curl);
 		curl_close($curl);
 		flock($fh, LOCK_UN);
