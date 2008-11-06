@@ -25,19 +25,20 @@ private static $delay = 86400;	// 24 hours
 
 public function prepare()
 	{
-	if ($this->Input->Get->isValid('getScript'))
-		{
-		$this->getScript();
-		}
-
 	try
 		{
 		$packages = $this->Input->Post->getString('packages');
 		$arch = $this->Input->Post->getString('arch');
+		$pkgstatsver = $this->Input->Post->getString('pkgstatsver');
 		}
 	catch (RequestException $e)
 		{
 		$this->showFailure('No data received');
+		}
+
+	if ($pkgstatsver != '1.0')
+		{
+		$this->showFailure('Sorry, your version of pkgstats is not supported.');
 		}
 
 	$this->checkIfAllreadySubmitted();
@@ -165,33 +166,6 @@ private function insertPackage($package, $arch, $archID)
 		{
 		$this->showFailure('Allan broke it!');
 		}
-	}
-
-private function getScript()
-	{
-	$script =
-'#!/bin/bash
-
-pacman -Qq curl >/dev/null 2>&1 || (echo "Please install curl" && exit 1)
-
-pkglist=$(mktemp --tmpdir pkglist.XXXXXX)
-pacman -Qq > ${pkglist}
-
-curl -f -H "Expect: " \
-	--data-urlencode "packages@${pkglist}" \
-	--data-urlencode "arch=$(uname -m)" \
-	"'.$this->Input->getURL().'/?page='.$this->getName().'" \
-	|| echo "Sending data failed. Please come back tomorrow!"
-
-rm -f ${pkglist}
-';
-
-	header('HTTP/1.1 200 OK');
-	header('Content-Type: text/plain; charset=UTF-8');
-	header('Content-Length: '.strlen($script));
-	header('Content-Disposition: attachement; filename="postPackageList.sh"');
-	echo $script;
-	exit;
 	}
 
 }
