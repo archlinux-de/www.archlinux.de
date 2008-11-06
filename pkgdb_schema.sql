@@ -288,11 +288,11 @@ CREATE TABLE `package_license` (
 --
 
 CREATE TABLE `package_statistics` (
-  `name` varchar(255) collate latin1_general_ci NOT NULL,
-  `arch` varchar(10) collate latin1_general_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `arch` varchar(10) NOT NULL,
   `count` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`name`,`arch`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -301,11 +301,11 @@ CREATE TABLE `package_statistics` (
 --
 
 CREATE TABLE `package_statistics_log` (
-  `ip` char(15) collate latin1_general_ci NOT NULL,
+  `ip` char(15) NOT NULL,
   `visited` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`ip`),
   KEY `visited` (`visited`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
