@@ -172,6 +172,8 @@ private function getScript()
 	$script =
 '#!/bin/bash
 
+pacman -Qq curl >/dev/null 2>&1 || (echo "Please install curl" && exit 1)
+
 pkglist=$(mktemp --tmpdir pkglist.XXXXXX)
 pacman -Qq > ${pkglist}
 
