@@ -37,8 +37,10 @@ private static $availablePages = array
 	'NotFound' => 'pages/NotFound.php',
 	'PackageDetails' => 'pages/PackageDetails.php',
 	'PackageStatistics' => 'pages/PackageStatistics.php',
+	'PackageListStatistics' => 'pages/PackageListStatistics.php',
 	'Packagers' => 'pages/Packagers.php',
 	'Packages' => 'pages/Packages.php',
+	'PostPackageList' => 'pages/PostPackageList.php',
 	'Start' => 'pages/Start.php'
 	);
 

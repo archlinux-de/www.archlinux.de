@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 2.11.6
+-- version 2.10.1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 23. Mai 2008 um 11:12
--- Server Version: 5.0.51
+-- Erstellungszeit: 06. November 2008 um 19:02
+-- Server Version: 5.0.68
 -- PHP-Version: 5.2.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -25,6 +25,20 @@ CREATE TABLE `architectures` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `cache`
+--
+
+CREATE TABLE `cache` (
+  `key` varchar(255) NOT NULL,
+  `value` mediumblob NOT NULL,
+  `expires` int(11) default NULL,
+  PRIMARY KEY  (`key`(100)),
+  KEY `expires` (`expires`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -52,21 +66,6 @@ CREATE TABLE `depends` (
   `comment` varchar(50) NOT NULL,
   KEY `package` (`package`),
   KEY `depends` (`depends`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `optdepends`
---
-
-CREATE TABLE `optdepends` (
-  `package` int(11) unsigned NOT NULL,
-  `optdepends` int(11) unsigned NOT NULL,
-  `comment` varchar(50) NOT NULL,
-  KEY `package` (`package`),
-  KEY `optdepends` (`optdepends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -185,6 +184,20 @@ CREATE TABLE `mirror_log` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `optdepends`
+--
+
+CREATE TABLE `optdepends` (
+  `package` int(11) unsigned NOT NULL,
+  `optdepends` int(11) unsigned NOT NULL,
+  `comment` varchar(50) NOT NULL,
+  KEY `package` (`package`),
+  KEY `optdepends` (`optdepends`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `packagers`
 --
 
@@ -271,6 +284,32 @@ CREATE TABLE `package_license` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `package_statistics`
+--
+
+CREATE TABLE `package_statistics` (
+  `name` varchar(255) collate latin1_general_ci NOT NULL,
+  `arch` varchar(10) collate latin1_general_ci NOT NULL,
+  `count` int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`name`,`arch`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `package_statistics_log`
+--
+
+CREATE TABLE `package_statistics_log` (
+  `ip` char(15) collate latin1_general_ci NOT NULL,
+  `visited` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`ip`),
+  KEY `visited` (`visited`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `provides`
 --
 
@@ -308,17 +347,3 @@ CREATE TABLE `repositories` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `cache`
---
-
-CREATE TABLE `cache` (
-  `key` varchar(255) NOT NULL,
-  `value` mediumblob NOT NULL,
-  `expires` int(11) NULL,
-  PRIMARY KEY  (`key`(100)),
-  KEY `expires` (`expires`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
