@@ -36,6 +36,7 @@ require ('PackageDB.php');
 require ('pages/abstract/Page.php');
 require ('pages/ArchitectureDifferences.php');
 require ('pages/PackageStatistics.php');
+require ('pages/PackageUsageStatistics.php');
 
 
 class UpdatePKGDB extends Modul {
@@ -157,6 +158,7 @@ public function runUpdate()
 
 		ArchitectureDifferences::updateDBCache($this->DB, $this->PersistentCache);
 		PackageStatistics::updateDBCache($this->DB, $this->PersistentCache);
+		PackageUsageStatistics::updateDBCache($this->DB, $this->PersistentCache);
 		}
 
 	unlink($this->getLockFile());

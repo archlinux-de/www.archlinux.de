@@ -60,7 +60,7 @@ public function prepare()
 	$this->setValue('body', $body);
 	}
 
-private static function getPositoryStatistics($db, $packages, $size)
+private static function getRepositoryStatistics(DB $db, $packages, $size)
 	{
 	$repolist = '';
 	try
@@ -299,7 +299,7 @@ public static function updateDBCache(DB $db, PersistentCache $cache)
 				<tr>
 					<th colspan="2" class="packagedetailshead">Repositorien</th>
 				</tr>
-					'.self::getPositoryStatistics($db, $data['packages'], $data['csize']).'
+					'.self::getRepositoryStatistics($db, $data['packages'], $data['csize']).'
 			</table>
 			</div>
 			';
