@@ -301,7 +301,7 @@ CREATE TABLE `package_statistics` (
 --
 
 CREATE TABLE `package_statistics_log` (
-  `ip` char(15) NOT NULL,
+  `ip` char(40) NOT NULL,
   `visited` int(10) unsigned NOT NULL,
   `arch` varchar(10) NOT NULL,
   `count` int(11) unsigned NOT NULL,

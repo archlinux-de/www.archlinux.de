@@ -106,11 +106,11 @@ private function checkIfAlreadySubmitted()
 				AND ip = ?
 			');
 		$stm->bindInteger(time() - self::$delay);
-		$stm->bindString($this->Input->Server->getString('REMOTE_ADDR'));
+		$stm->bindString(sha1($this->Input->Server->getString('REMOTE_ADDR')));
 		$lastVisit = $stm->getRow();
 		$stm->close();
 
-		$this->showFailure('You already submitted your package list via '.$lastVisit['ip'].' at '.date('r', $lastVisit['visited']).".\n         You are blocked until ".date('r', $lastVisit['visited'] + self::$delay));
+		$this->showFailure('You already submitted your package list via '.$this->Input->Server->getString('REMOTE_ADDR').' at '.date('r', $lastVisit['visited']).".\n         You are blocked until ".date('r', $lastVisit['visited'] + self::$delay));
 		}
 	catch (DBNoDataException $e)
 		{
@@ -130,7 +130,7 @@ private function insertLogEntry($arch, $packageCount)
 			arch = ?,
 			count = ?
 		');
-	$stm->bindString($this->Input->Server->getString('REMOTE_ADDR'));
+	$stm->bindString(sha1($this->Input->Server->getString('REMOTE_ADDR')));
 	$stm->bindInteger(time());
 	$stm->bindString(htmlspecialchars($arch));
 	$stm->bindInteger($packageCount);
