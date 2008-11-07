@@ -41,7 +41,7 @@ public function prepare()
 		$this->showFailure('Sorry, your version of pkgstats is not supported.');
 		}
 
-	$this->checkIfAllreadySubmitted();
+	$this->checkIfAlreadySubmitted();
 
 	try
 		{
@@ -90,7 +90,7 @@ public function show()
 	echo 'Thanks for your submission. :-)'."\n";
 	}
 
-private function checkIfAllreadySubmitted()
+private function checkIfAlreadySubmitted()
 	{
 	try
 		{
@@ -110,7 +110,7 @@ private function checkIfAllreadySubmitted()
 		$lastVisit = $stm->getRow();
 		$stm->close();
 
-		$this->showFailure('You allready submitted your package list via '.$lastVisit['ip'].' at '.date('r', $lastVisit['visited']).".\n         You are blocked until ".date('r', $lastVisit['visited'] + self::$delay));
+		$this->showFailure('You already submitted your package list via '.$lastVisit['ip'].' at '.date('r', $lastVisit['visited']).".\n         You are blocked until ".date('r', $lastVisit['visited'] + self::$delay));
 		}
 	catch (DBNoDataException $e)
 		{
