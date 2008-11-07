@@ -27,7 +27,7 @@ public function prepare()
 	{
 	try
 		{
-		$packages = $this->Input->Post->getString('packages');
+		$packages = explode("\n", $this->Input->Post->getString('packages'));
 		$arch = $this->Input->Post->getString('arch');
 		$pkgstatsver = $this->Input->Post->getString('pkgstatsver');
 		}
@@ -45,31 +45,32 @@ public function prepare()
 
 	try
 		{
+		$this->insertLogEntry($arch, count($packages));
+
 		$stm = $this->DB->prepare
 			('
-			SELECT
-				id
-			FROM
-				architectures
-			WHERE
-				name = ?
+			INSERT INTO
+				package_statistics
+			SET
+				name = ?,
+				arch = ?,
+				count = 1
+			ON DUPLICATE KEY UPDATE
+				count = count + 1
 			');
-		$stm->bindString($arch);
-		$archID = $stm->getColumn();
+
+		foreach ($packages as $package)
+			{
+			$stm->bindString(htmlspecialchars($package));
+			$stm->bindString(htmlspecialchars($arch));
+			$stm->execute();
+			}
+
 		$stm->close();
-		}
-	catch (DBNoDataException $e)
-		{
-		$this->showFailure('Unknown architecture: '.htmlspecialchars($arch));
 		}
 	catch (DBException $e)
 		{
 		$this->showFailure('Allan broke it!');
-		}
-
-	foreach (explode("\n", $packages) as $package)
-		{
-		$this->insertPackage($package, $arch, $archID);
 		}
 	}
 
@@ -95,77 +96,46 @@ private function checkIfAllreadySubmitted()
 		{
 		$stm = $this->DB->prepare
 			('
-			DELETE FROM
+			SELECT
+				ip,
+				visited
+			FROM
 				package_statistics_log
 			WHERE
-				visited < ?
+				visited >= ?
+				AND ip = ?
 			');
 		$stm->bindInteger(time() - self::$delay);
-		$stm->execute();
-		$stm->close();
-
-		$stm = $this->DB->prepare
-			('
-			INSERT INTO
-				package_statistics_log
-			SET
-				ip = ?,
-				visited = ?
-			');
 		$stm->bindString($this->Input->Server->getString('REMOTE_ADDR'));
-		$stm->bindInteger(time());
-		$stm->execute();
-		$stm->close();
-		}
-	catch (DBException $e)
-		{
-		$this->showFailure('You allready submitted your package list!');
-		}
-	}
-
-private function insertPackage($package, $arch, $archID)
-	{
-	try
-		{
-		$stm = $this->DB->prepare
-			('
-			SELECT
-				id
-			FROM
-				packages
-			WHERE
-				name = ?
-				AND arch = ?
-			');
-		$stm->bindString(htmlspecialchars($package));
-		$stm->bindInteger($archID);
-		$stm->getColumn();
+		$lastVisit = $stm->getRow();
 		$stm->close();
 
-		$stm = $this->DB->prepare
-			('
-			INSERT INTO
-				package_statistics
-			SET
-				name = ?,
-				arch = ?,
-				count = 1
-			ON DUPLICATE KEY UPDATE
-				count = count + 1
-			');
-		$stm->bindString(htmlspecialchars($package));
-		$stm->bindString($arch);
-		$stm->execute();
-		$stm->close();
+		$this->showFailure('You allready submitted your package list via '.$lastVisit['ip'].' at '.date('r', $lastVisit['visited']).".\n         You are blocked until ".date('r', $lastVisit['visited'] + self::$delay));
 		}
 	catch (DBNoDataException $e)
 		{
-		// $this->showWarning('Unknown package: '.$package);
+		$stm->close();
 		}
-	catch (DBException $e)
-		{
-		$this->showFailure('Allan broke it!');
-		}
+	}
+
+private function insertLogEntry($arch, $packageCount)
+	{
+	$stm = $this->DB->prepare
+		('
+		INSERT INTO
+			package_statistics_log
+		SET
+			ip = ?,
+			visited = ?,
+			arch = ?,
+			count = ?
+		');
+	$stm->bindString($this->Input->Server->getString('REMOTE_ADDR'));
+	$stm->bindInteger(time());
+	$stm->bindString(htmlspecialchars($arch));
+	$stm->bindInteger($packageCount);
+	$stm->execute();
+	$stm->close();
 	}
 
 }

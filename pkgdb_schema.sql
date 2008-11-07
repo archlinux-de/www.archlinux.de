@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 06. November 2008 um 19:02
+-- Erstellungszeit: 07. November 2008 um 02:34
 -- Server Version: 5.0.68
 -- PHP-Version: 5.2.6
 
@@ -303,8 +303,9 @@ CREATE TABLE `package_statistics` (
 CREATE TABLE `package_statistics_log` (
   `ip` char(15) NOT NULL,
   `visited` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`ip`),
-  KEY `visited` (`visited`)
+  `arch` varchar(10) NOT NULL,
+  `count` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`ip`,`visited`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
