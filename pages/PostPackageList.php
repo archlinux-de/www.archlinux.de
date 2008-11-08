@@ -54,15 +54,19 @@ public function prepare()
 			SET
 				name = ?,
 				arch = ?,
-				count = 1
+				count = 1,
+				lastupdate = ?
 			ON DUPLICATE KEY UPDATE
-				count = count + 1
+				count = count + 1,
+				lastupdate = ?
 			');
 
 		foreach ($packages as $package)
 			{
 			$stm->bindString(htmlspecialchars($package));
 			$stm->bindString(htmlspecialchars($arch));
+			$stm->bindInteger(time());
+			$stm->bindInteger(time());
 			$stm->execute();
 			}
 

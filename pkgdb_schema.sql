@@ -291,6 +291,7 @@ CREATE TABLE `package_statistics` (
   `name` varchar(255) NOT NULL,
   `arch` varchar(10) NOT NULL,
   `count` int(11) unsigned NOT NULL default '0',
+  `lastupdate` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`name`,`arch`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
