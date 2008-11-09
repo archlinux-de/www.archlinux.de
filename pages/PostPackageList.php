@@ -27,7 +27,7 @@ public function prepare()
 	{
 	try
 		{
-		$packages = explode("\n", $this->Input->Post->getString('packages'));
+		$packages = array_unique(explode("\n", $this->Input->Post->getString('packages')));
 		$arch = $this->Input->Post->getString('arch');
 		$pkgstatsver = $this->Input->Post->getString('pkgstatsver');
 		}
