@@ -194,7 +194,7 @@ private function getImportantNews()
 		{
 		$result .=
 			'
-			<span style="float:right; font-size:x-small;padding-top:14px">'.formatDate($thread['dat']).'</span>
+			<span style="float:right; font-size:x-small;padding-top:14px">'.$this->L10n->getDateTime($thread['dat']).'</span>
 			<h3><a href="http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h3>
 			<p>'.$thread['text'].'</p>
 			';

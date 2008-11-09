@@ -39,49 +39,296 @@ protected function makeSubMenu()
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li class="selected">Statistiken</li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
 			<li><a href="?page=Packagers">Packer</a></li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li><a href="?page=Packages">Suche</a></li>
 		</ul>';
 	}
 
-
 public function prepare()
 	{
-	$this->setValue('title', 'Paket-Statistiken');
+	$this->setValue('title', $this->L10n->getText('Package statistics'));
 
-	if (!($body = $this->PersistentCache->getObject('PackageStatistics:')))
+	if (!($body = $this->PersistentCache->getObject('PackageStatistics:'.$this->L10n->getLocale())))
 		{
 		$this->Output->setStatus(Output::NOT_FOUND);
-		$this->showFailure('Keine Daten vorhanden!');
+		$this->showFailure($this->L10n->getText('No data found!'));
 		}
 
 	$this->setValue('body', $body);
 	}
 
-private static function getRepositoryStatistics(DB $db, $packages, $size)
+public static function updateDBCache()
 	{
-	$repolist = '';
 	try
 		{
-		$repos = $db->getRowSet('SELECT id, name FROM repositories')->toArray();
+		$data = self::getCommonRepositoryStatistics();
+		$log = self::getCommonPackageUsageStatistics();
+
+		$body = '<div id="box">
+			<table id="packagedetails">
+				<tr>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::__get('L10n')->getText('Repositories').'</h1></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Overview').'</th>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Architectures').'</th>
+					<td>'.$data['architectures'].'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Repositories').'</th>
+					<td>'.$data['repositories'].'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Groups').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['groups']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Packages').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['packages']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Files').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['files']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Size of file index').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['file_index']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Licenses').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['licenses']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Dependencies').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['depends']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Optional dependencies').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['optdepends']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Provides').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['provides']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Conflicts').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['conflicts']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Replaces').'</th>
+					<td>'.self::__get('L10n')->getNumber($data['replaces']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Total size of repositories').'</th>
+					<td>'.self::formatBytes($data['csize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Total size of files').'</th>
+					<td>'.self::formatBytes($data['isize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Packager').'</th>
+					<td>'.$data['packagers'].'</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Averages').'</th>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Size of packages').'</th>
+					<td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Size of files').'</th>
+					<td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Files per package').'</th>
+					<td>&empty; '.self::__get('L10n')->getNumber($data['avgfiles'], 2).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Packages per packager').'</th>
+					<td>&empty; '.self::__get('L10n')->getNumber($data['avgpkgperpackager'], 2).'</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Repositories').'</th>
+				</tr>
+					'.self::getRepositoryStatistics().'
+				<tr>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::__get('L10n')->getText('Package usage').'</h1></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Common statistics').'</th>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Submissions').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['submissions']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Different IPs').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['differentips']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('First entry').'</th>
+					<td>'.self::__get('L10n')->getDateTime($log['minvisited']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Last entry').'</th>
+					<td>'.self::__get('L10n')->getDateTime($log['maxvisited']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Sum of submitted packages').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['sumcount']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Number of different packages').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['diffcount']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Lowest number of installed packages').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['mincount']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Highest number of installed packages').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['maxcount']).'</td>
+				</tr>
+				<tr>
+					<th>'.self::__get('L10n')->getText('Average number of installed packages').'</th>
+					<td>'.self::__get('L10n')->getNumber($log['avgcount']).'</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Submissions per architectures').'</th>
+				</tr>
+				'.self::getSubmissionsPerArchitecture().'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Installed packages per repository').'</th>
+				</tr>
+				'.self::getPackagesPerRepository().'
+				'.self::getNumberOfUnofficialPackages().'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Number of unused packages per repository').'</th>
+				</tr>
+				'.self::getNumberOfUnusedPackagesPerRepository().'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Unused packages per repository').'</th>
+				</tr>
+				'.self::getUnusedPackagesPerRepository().'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Popular packages per repository').'</th>
+				</tr>
+				'.self::getPopularPackagesPerRepository('DESC').'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Unpopular packages per repository').'</th>
+				</tr>
+				'.self::getPopularPackagesPerRepository('ASC').'
+
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Popular unofficial packages').'</th>
+				</tr>
+				'.self::getPopularUnofficialPackages().'
+			</table>
+			</div>
+			';
+
+		self::__get('PersistentCache')->addObject('PackageStatistics:'.self::__get('L10n')->getLocale(), $body);
+		}
+	catch (DBNoDataException $e)
+		{
+		}
+	}
+
+private static function getCommonRepositoryStatistics()
+	{
+	return self::__get('DB')->getRow
+		('
+		SELECT
+			(SELECT COUNT(*) FROM architectures) AS architectures,
+			(SELECT COUNT(*) FROM repositories) AS repositories,
+			(SELECT COUNT(*) FROM packages) AS packages,
+			(SELECT COUNT(*) FROM files) AS files,
+			(SELECT SUM(csize) FROM packages) AS csize,
+			(SELECT SUM(isize) FROM packages) AS isize,
+			(SELECT COUNT(*) FROM packagers) AS packagers,
+			(SELECT COUNT(*) FROM groups) AS groups,
+			(SELECT COUNT(*) FROM licenses) AS licenses,
+			(SELECT COUNT(*) FROM depends) AS depends,
+			(SELECT COUNT(*) FROM optdepends) AS optdepends,
+			(SELECT COUNT(*) FROM conflicts) AS conflicts,
+			(SELECT COUNT(*) FROM replaces) AS replaces,
+			(SELECT COUNT(*) FROM provides) AS provides,
+			(SELECT COUNT(*) FROM file_index) AS file_index,
+			(SELECT AVG(csize) FROM packages) AS avgcsize,
+			(SELECT AVG(isize) FROM packages) AS avgisize,
+			(SELECT
+				AVG(pkgs)
+			FROM
+				(
+				SELECT
+					COUNT(packages.id) AS pkgs
+				FROM
+					packages
+						JOIN
+							packagers
+						ON
+							packages.packager = packagers.id
+				GROUP BY packagers.id
+				) AS temp
+			) AS avgpkgperpackager,
+			(SELECT
+				AVG(pkgfiles)
+			FROM
+				(
+				SELECT
+					COUNT(id) AS pkgfiles
+				FROM
+					files
+				GROUP BY package
+				) AS temp2
+			) AS avgfiles
+		');
+	}
+
+private static function getCommonPackageUsageStatistics()
+	{
+	return self::__get('DB')->getRow
+		('
+		SELECT
+			(SELECT COUNT(*) FROM package_statistics_log) AS submissions,
+			(SELECT COUNT(*) FROM (SELECT * FROM package_statistics_log GROUP BY ip) AS temp) AS differentips,
+			(SELECT MIN(visited) FROM package_statistics_log) AS minvisited,
+			(SELECT MAX(visited) FROM package_statistics_log) AS maxvisited,
+			(SELECT SUM(count) FROM package_statistics_log) AS sumcount,
+			(SELECT COUNT(*) FROM package_statistics) AS diffcount,
+			(SELECT MIN(count) FROM package_statistics_log) AS mincount,
+			(SELECT MAX(count) FROM package_statistics_log) AS maxcount,
+			(SELECT AVG(count) FROM package_statistics_log) AS avgcount
+		');
+	}
+
+private static function getRepositoryStatistics()
+	{
+	try
+		{
+		$repos = self::__get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
 		$repos = array();
 		}
 
-	try
-		{
-		$arches = $db->getRowSet('SELECT id, name FROM architectures')->toArray();
-		}
-	catch (DBNoDataException $e)
-		{
-		$arches = array();
-		}
+	$total = self::__get('DB')->getRow
+			('
+			SELECT
+				COUNT(id) AS packages,
+				SUM(csize) AS size
+			FROM
+				packages
+			');
 
-	$stm = $db->prepare
+	$stm = self::__get('DB')->prepare
 			('
 			SELECT
 				COUNT(id) AS packages,
@@ -90,38 +337,43 @@ private static function getRepositoryStatistics(DB $db, $packages, $size)
 				packages
 			WHERE
 				repository = ?
-				AND arch = ?
 			');
+
+	$list = '';
 
 	foreach ($repos as $repo)
 		{
-		$repolist .= '<tr><th><a href="?page=Packages;repository='.$repo['id'].'">['.$repo['name'].']</a></th><td style="padding:0px;"><table style="padding:0px;">';
-
-		foreach ($arches as $arch)
+		try
 			{
-			$repolist .= '<tr><th style="width:50px;padding:0px;"><a href="?page=Packages;repository='.$repo['id'].';architecture='.$arch['id'].'">'.$arch['name'].'</a></th>';
-
 			$stm->bindInteger($repo['id']);
-			$stm->bindInteger($arch['id']);
 			$data = $stm->getRow();
 
-			$pkgpercent = round(($data['packages'] / $packages) * 200);
-			$sizepercent = round(($data['size'] / $size) * 200);
-
-			$repolist .= '<td style="width:100px;text-align:right;padding:0px;">'.self::formatNumber($data['packages']).' Pakete</td>
-			<td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$pkgpercent.'px;">&nbsp;</div></td>
-			<td style="width:100px;text-align:right;padding:0px;">'.self::formatBytes($data['size']).'Byte</td>
-			<td style="width:100px;padding:0px;"><div style="background-color:#1793d1;width:'.$sizepercent.'px;">&nbsp;</div></td>';
-
-			$repolist .= '</tr>';
+			$list .= '<tr>
+					<th>'.$repo['name'].'</th>
+					<td style="padding:0px;margin:0px;">
+						<div style="overflow:auto; max-height: 400px;">
+						<table id="packages" style="border:none;">
+						<tr>
+							<td style="width: 50px;">'.self::__get('L10n')->getText('Packages').'</td>
+							<td>'.self::getBar($data['packages'], $total['packages']).'</td>
+						</tr>
+						<tr>
+							<td style="width: 50px;">'.self::__get('L10n')->getText('Size').'</td>
+							<td>'.self::getBar($data['size'], $total['size']).'</td>
+						</tr>
+						</table>
+						</div>
+					</td>
+				</tr>';
 			}
-
-		$repolist .='</table></td></tr>';
+		catch (DBNoDataException $e)
+			{
+			}
 		}
 
 	$stm->close();
 
-	return $repolist;
+	return $list;
 	}
 
 private static function formatBytes($bytes)
@@ -151,164 +403,351 @@ private static function formatBytes($bytes)
 		$postfix = '&nbsp;';
 		}
 
-	return self::formatNumber($result, 2).$postfix;
+	return self::__get('L10n')->getNumber($result, 2).$postfix;
 	}
 
-private static function formatNumber($number, $decs=0)
+private static function getBar($value, $total)
 	{
-	return number_format($number, $decs, ',', '.');
+	if ($total <= 0)
+		{
+		return '';
+		}
+
+	$percent = ($value / $total) * 100;
+
+	return '<table style="width:100%;">
+			<tr>
+				<td style="padding:0px;margin:0px;">
+					<div style="background-color:#1793d1;width:'.round($percent).'%;"
+		title="'.self::__get('L10n')->getNumber($value).' '.self::__get('L10n')->getText('of').' '.self::__get('L10n')->getNumber($total).'">
+			&nbsp;
+				</div>
+				</td>
+				<td style="padding:0px;margin:0px;width:80px;text-align:right;">
+					'.self::__get('L10n')->getNumber($percent, 2).'&nbsp;%
+				</td>
+			</tr>
+		</table>';
 	}
 
-public static function updateDBCache(DB $db, PersistentCache $cache)
+private static function getSubmissionsPerArchitecture()
 	{
+	$total = self::__get('DB')->getColumn
+		('
+		SELECT
+			COUNT(arch)
+		FROM
+			package_statistics_log
+		');
+
+	$arches = self::__get('DB')->getRowSet
+		('
+		SELECT
+			COUNT(arch) AS count,
+			arch AS name
+		FROM
+			package_statistics_log
+		GROUP BY
+			arch
+		');
+
+	$list = '';
+
+	foreach ($arches as $arch)
+		{
+		$list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar($arch['count'], $total).'</td></tr>';
+		}
+
+	return $list;
+	}
+
+private static function getPackagesPerRepository()
+	{
+	$total = self::__get('DB')->getColumn
+		('
+		SELECT
+			SUM(package_statistics.count)
+		FROM
+			package_statistics
+		');
+
+	$repos = self::__get('DB')->getRowSet
+		('
+		SELECT
+			SUM(package_statistics.count) AS count,
+			repositories.name
+		FROM
+			package_statistics,
+			packages,
+			repositories,
+			architectures
+		WHERE
+			package_statistics.name = packages.name
+			AND package_statistics.arch = architectures.name
+			AND packages.repository = repositories.id
+			AND repositories.name <> "testing"
+			AND packages.arch = architectures.id
+		GROUP BY
+			repositories.id
+		');
+
+	$list = '';
+
+	foreach ($repos as $repo)
+		{
+		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($repo['count'], $total).'</td></tr>';
+		}
+
+	return $list;
+	}
+
+private static function getNumberOfUnusedPackagesPerRepository()
+	{
+	$total = self::__get('DB')->getColumn
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			packages
+		');
+
+	$repos = self::__get('DB')->getRowSet
+		('
+		SELECT
+			COUNT(packages.id) AS count,
+			repositories.name
+		FROM
+			packages,
+			repositories
+		WHERE
+			packages.repository = repositories.id
+			AND repositories.name <> "testing"
+			AND packages.name NOT IN (SELECT name FROM package_statistics)
+		GROUP BY
+			repositories.id
+		');
+
+	$list = '';
+
+	foreach ($repos as $repo)
+		{
+		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($repo['count'], $total).'</td></tr>';
+		}
+
+	return $list;
+	}
+
+private static function getUnusedPackagesPerRepository()
+	{
+	$repos = self::__get('DB')->getRowSet
+		('
+		SELECT
+			name,
+			id
+		FROM
+			repositories
+		WHERE
+			name <> "testing"
+		');
+
+	$stm = self::__get('DB')->prepare
+		('
+		SELECT DISTINCT
+			name
+		FROM
+			packages
+		WHERE
+			repository = ?
+			AND name NOT IN (SELECT name FROM package_statistics)
+		ORDER BY
+			name
+		');
+
+	$list = '';
+	$repoid = 0;
+	$line = 0;
+
+	foreach ($repos as $repo)
+		{
+		try
+			{
+			$stm->bindInteger($repo['id']);
+			$packages = $stm->getColumnSet();
+
+			if ($repoid != $repo['id'])
+				{
+				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 400px;"><table id="packages" style="border:none;">';
+				}
+
+			foreach ($packages as $package)
+				{
+				$list .= '<tr class="packageline'.$line.'"><td>'.$package.'</td></tr>';
+				$line = abs($line-1);
+				}
+
+			$list .= '</table></div></td></tr>';
+			$repoid = $repo['id'];
+			}
+		catch (DBNoDataException $e)
+			{
+			}
+		}
+
+	$stm->close();
+
+	return $list;
+	}
+
+private static function getPopularPackagesPerRepository($sort = 'DESC')
+	{
+	$total = self::__get('DB')->getColumn
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			package_statistics_log
+		');
+
+	$repos = self::__get('DB')->getRowSet
+		('
+		SELECT
+			name,
+			id
+		FROM
+			repositories
+		WHERE
+			name <> "testing"
+		');
+
+	$stm = self::__get('DB')->prepare
+		('
+		SELECT
+			packages.name,
+			SUM(package_statistics.count) AS count
+		FROM
+			packages,
+			package_statistics,
+			architectures
+		WHERE
+			packages.repository = ?
+			AND packages.name = package_statistics.name
+			AND package_statistics.arch = architectures.name
+			AND packages.arch = architectures.id
+		GROUP BY
+			package_statistics.name
+		ORDER BY
+			count '.$sort.',
+			name ASC
+		LIMIT
+			1000
+		');
+
+	$list = '';
+	$repoid = 0;
+	$line = 0;
+
+	foreach ($repos as $repo)
+		{
+		try
+			{
+			$stm->bindInteger($repo['id']);
+			$packages = $stm->getRowSet();
+
+			if ($repoid != $repo['id'])
+				{
+				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 400px;"><table id="packages" style="border:none;">';
+				}
+
+			foreach ($packages as $package)
+				{
+				$list .= '<tr class="packageline'.$line.'"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
+				$line = abs($line-1);
+				}
+
+			$list .= '</table></div></td></tr>';
+			$repoid = $repo['id'];
+			}
+		catch (DBNoDataException $e)
+			{
+			}
+		}
+
+	$stm->close();
+
+	return $list;
+	}
+
+private static function getNumberOfUnofficialPackages()
+	{
+	$total = self::__get('DB')->getColumn
+		('
+		SELECT
+			SUM(package_statistics.count)
+		FROM
+			package_statistics
+		');
+
+	$packages = self::__get('DB')->getColumn
+		('
+		SELECT
+			SUM(package_statistics.count)
+		FROM
+			package_statistics
+		WHERE
+			package_statistics.name NOT IN (SELECT name FROM packages)
+		');
+
+	return '<tr><th>'.self::__get('L10n')->getText('Unofficial repositories').'</th><td>'.self::getBar($packages, $total).'</td></tr>';
+	}
+
+private static function getPopularUnofficialPackages()
+	{
+	$total = self::__get('DB')->getColumn
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			package_statistics_log
+		');
+
+	$packages = self::__get('DB')->getRowSet
+		('
+		SELECT
+			package_statistics.name,
+			SUM(package_statistics.count) AS count
+		FROM
+			package_statistics
+		WHERE
+			package_statistics.name NOT IN (SELECT name FROM packages)
+		GROUP BY
+			package_statistics.name
+		ORDER BY
+			count DESC,
+			name ASC
+		LIMIT
+			1000
+		');
+
+	$list = '';
+	$line = 0;
+
 	try
 		{
-		$data = $db->getRow
-			('
-			SELECT
-				(SELECT COUNT(*) FROM architectures) AS architectures,
-				(SELECT COUNT(*) FROM repositories) AS repositories,
-				(SELECT COUNT(*) FROM packages) AS packages,
-				(SELECT COUNT(*) FROM files) AS files,
-				(SELECT SUM(csize) FROM packages) AS csize,
-				(SELECT SUM(isize) FROM packages) AS isize,
-				(SELECT COUNT(*) FROM packagers) AS packagers,
-				(SELECT COUNT(*) FROM groups) AS groups,
-				(SELECT COUNT(*) FROM licenses) AS licenses,
-				(SELECT COUNT(*) FROM depends) AS depends,
-				(SELECT COUNT(*) FROM optdepends) AS optdepends,
-				(SELECT COUNT(*) FROM conflicts) AS conflicts,
-				(SELECT COUNT(*) FROM replaces) AS replaces,
-				(SELECT COUNT(*) FROM provides) AS provides,
-				(SELECT COUNT(*) FROM file_index) AS file_index,
-				(SELECT AVG(csize) FROM packages) AS avgcsize,
-				(SELECT AVG(isize) FROM packages) AS avgisize,
-				(SELECT
-					AVG(pkgs)
-				FROM
-					(
-					SELECT
-						COUNT(packages.id) AS pkgs
-					FROM
-						packages
-							JOIN
-								packagers
-							ON
-								packages.packager = packagers.id
-					GROUP BY packagers.id
-					) AS temp
-				) AS avgpkgperpackager,
-				(SELECT
-					AVG(pkgfiles)
-				FROM
-					(
-					SELECT
-						COUNT(id) AS pkgfiles
-					FROM
-						files
-					GROUP BY package
-					) AS temp2
-				) AS avgfiles
-			');
+		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 400px;"><table id="packages" style="border:none;">';
 
-		$body = '<div id="box">
-			<h1 id="packagename">Paket-Statistiken</h1>
-			<table id="packagedetails">
-				<tr>
-					<th colspan="2" class="packagedetailshead">Umfang</th>
-				</tr>
-				<tr>
-					<th>Architekturen</th>
-					<td>'.$data['architectures'].'</td>
-				</tr>
-				<tr>
-					<th>Repositorien</th>
-					<td>'.$data['repositories'].'</td>
-				</tr>
-				<tr>
-					<th>Gruppen</th>
-					<td>'.self::formatNumber($data['groups']).'</td>
-				</tr>
-				<tr>
-					<th>Pakete</th>
-					<td>'.self::formatNumber($data['packages']).'</td>
-				</tr>
-				<tr>
-					<th>Dateien</th>
-					<td>'.self::formatNumber($data['files']).'</td>
-				</tr>
-				<tr>
-					<th>Größe des Datei-Index</th>
-					<td>'.self::formatNumber($data['file_index']).'</td>
-				</tr>
-				<tr>
-					<th>Lizenzen</th>
-					<td>'.self::formatNumber($data['licenses']).'</td>
-				</tr>
-				<tr>
-					<th>Abhängigkeiten</th>
-					<td>'.self::formatNumber($data['depends']).'</td>
-				</tr>
-				<tr>
-					<th>Optionale Abhängigkeiten</th>
-					<td>'.self::formatNumber($data['optdepends']).'</td>
-				</tr>
-				<tr>
-					<th>Bereitstellungen</th>
-					<td>'.self::formatNumber($data['provides']).'</td>
-				</tr>
-				<tr>
-					<th>Konflikte</th>
-					<td>'.self::formatNumber($data['conflicts']).'</td>
-				</tr>
-				<tr>
-					<th>Ersetzungen</th>
-					<td>'.self::formatNumber($data['replaces']).'</td>
-				</tr>
-				<tr>
-					<th>Größe der Repositorien</th>
-					<td>'.self::formatBytes($data['csize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Größe der Dateien</th>
-					<td>'.self::formatBytes($data['isize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Packer</th>
-					<td>'.$data['packagers'].'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">Durchschnitte</th>
-				</tr>
-				<tr>
-					<th>Größe der Pakete</th>
-					<td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Größe der Dateien</th>
-					<td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>Dateien pro Paket</th>
-					<td>&empty; '.self::formatNumber($data['avgfiles'], 2).'</td>
-				</tr>
-				<tr>
-					<th>Pakete pro Packer</th>
-					<td>&empty; '.self::formatNumber($data['avgpkgperpackager'], 2).'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">Repositorien</th>
-				</tr>
-					'.self::getRepositoryStatistics($db, $data['packages'], $data['csize']).'
-			</table>
-			</div>
-			';
+		foreach ($packages as $package)
+			{
+			$list .= '<tr class="packageline'.$line.'"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
+			$line = abs($line-1);
+			}
 
-		$cache->addObject('PackageStatistics:', $body);
+		$list .= '</table></div></td></tr>';
 		}
 	catch (DBNoDataException $e)
 		{
 		}
+
+	return $list;
 	}
 
 }

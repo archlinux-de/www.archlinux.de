@@ -33,7 +33,7 @@ require ('modules/Exceptions.php');
 require ('modules/IDBCachable.php');
 require ('pages/abstract/Page.php');
 require ('pages/GetFileFromMirror.php');
-require ('pages/MirrorCheck.php');
+require ('pages/MirrorStatus.php');
 
 class CheckMirrors extends Modul {
 
@@ -124,8 +124,13 @@ public function runUpdate()
 			}
 		}
 
-	GetFileFromMirror::updateDBCache($this->DB, $this->PersistentCache);
-	MirrorCheck::updateDBCache($this->DB, $this->PersistentCache);
+	GetFileFromMirror::updateDBCache();
+
+	foreach ($this->Settings->getValue('locales') as $locale)
+		{
+		$this->L10n->setLocale($locale);
+		MirrorStatus::updateDBCache();
+		}
 
 	unlink($this->getLockFile());
 	}

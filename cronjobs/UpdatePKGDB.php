@@ -36,7 +36,6 @@ require ('PackageDB.php');
 require ('pages/abstract/Page.php');
 require ('pages/ArchitectureDifferences.php');
 require ('pages/PackageStatistics.php');
-require ('pages/PackageUsageStatistics.php');
 
 
 class UpdatePKGDB extends Modul {
@@ -156,9 +155,12 @@ public function runUpdate()
 		$this->updateReplaces();
 		$this->removeUnusedEntries();
 
-		ArchitectureDifferences::updateDBCache($this->DB, $this->PersistentCache);
-		PackageStatistics::updateDBCache($this->DB, $this->PersistentCache);
-		PackageUsageStatistics::updateDBCache($this->DB, $this->PersistentCache);
+		foreach ($this->Settings->getValue('locales') as $locale)
+			{
+			$this->L10n->setLocale($locale);
+			ArchitectureDifferences::updateDBCache();
+			PackageStatistics::updateDBCache();
+			}
 		}
 
 	unlink($this->getLockFile());

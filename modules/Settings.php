@@ -25,7 +25,8 @@ private $config = array();
 
 public function __construct()
 	{
-	$this->config['locale']				= 'de_DE.utf8';
+	$this->config['locales']			= array('de' => 'de_DE.utf8',
+							        'en' => 'en_US.utf8');
 	$this->config['timezone']			= 'Europe/Berlin';
 
 	$this->config['sql_database'] 			= 'll';
@@ -43,9 +44,6 @@ public function __construct()
 		{
 		include ('LocalSettings.php');
 		}
-
-	setlocale(LC_ALL, $this->config['locale']);
-	date_default_timezone_set($this->config['timezone']);
 	}
 
 

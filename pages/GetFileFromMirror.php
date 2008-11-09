@@ -41,7 +41,7 @@ protected function makeSubMenu()
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
 			<li><a href="?page=Packagers">Packer</a></li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li class="selected"><a href="?page=Packages">Suche</a></li>
@@ -134,11 +134,11 @@ private function getRandomMirror($file)
 	return $tempMirrors[$randomIndex];
 	}
 
-public static function updateDBCache(DB $db, PersistentCache $cache)
+public static function updateDBCache()
 	{
 	try
 		{
-		$stm = $db->prepare
+		$stm = self::__get('DB')->prepare
 			('
 			SELECT
 				mirrors.host,
@@ -186,7 +186,7 @@ public static function updateDBCache(DB $db, PersistentCache $cache)
 			}
 
 		$stm->close();
-		$cache->addObject('GetFileFromMirror', $mirrors);
+		self::__get('PersistentCache')->addObject('GetFileFromMirror', $mirrors);
 		}
 	catch (DBNoDataException $e)
 		{

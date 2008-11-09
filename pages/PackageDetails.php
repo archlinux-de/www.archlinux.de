@@ -41,7 +41,7 @@ protected function makeSubMenu()
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
 			<li><a href="?page=Packagers">Packer</a></li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li class="selected"><a href="?page=Packages">Suche</a></li>
@@ -163,11 +163,11 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Aktualisierung</th>
-				<td>'.formatDate($data['builddate']).'</td>
+				<td>'.$this->L10n->getDateTime($data['builddate']).'</td>
 			</tr>
 			<tr>
 				<th>Veröffentlichung</th>
-				<td>'.formatDate($data['mtime']).'</td>
+				<td>'.$this->L10n->getDateTime($data['mtime']).'</td>
 			</tr>
 			'.($data['repository'] == 'community' ? '' : '
 			<tr>

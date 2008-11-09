@@ -39,7 +39,7 @@ protected function makeSubMenu()
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
 			<li><a href="?page=Packagers">Packer</a></li>
 			<li class="selected">Architekturen</li>
 			<li><a href="?page=Packages">Suche</a></li>
@@ -48,12 +48,12 @@ protected function makeSubMenu()
 
 public function prepare()
 	{
-	$this->setValue('title', 'Architektur-Unterschiede');
+	$this->setValue('title', $this->L10n->getText('Architecture differences'));
 
-	if (!($body = $this->PersistentCache->getObject('ArchitectureDifferences:'.($this->Input->Request->isValid('showminor') ? 1 : 0))))
+	if (!($body = $this->PersistentCache->getObject('ArchitectureDifferences:'.($this->Input->Request->isValid('showminor') ? 1 : 0).':'.$this->L10n->getLocale())))
 		{
 		$this->Output->setStatus(Output::NOT_FOUND);
-		$this->showFailure('Keine Daten vorhanden!');
+		$this->showFailure($this->L10n->getText('No data found!'));
 		}
 
 	$this->setValue('body', $body);
@@ -82,11 +82,11 @@ private static function compareVersions($ver1, $ver2)
 	return version_compare($ver1, $ver2);
 	}
 
-public static function updateDBCache(DB $db, PersistentCache $cache)
+public static function updateDBCache()
 	{
 	try
 		{
-		$packages = $db->getRowSet
+		$packages = self::__get('DB')->getRowSet
 			('
 			(
 			SELECT
@@ -190,19 +190,17 @@ public static function updateDBCache(DB $db, PersistentCache $cache)
 		{
 		$body = '
 			<div class="greybox" id="searchbox">
-				<h4 style="text-align: right">Architektur-Unterschiede</h4>
-				<p style="font-size:12px;">Diese Tabelle zeigt Unterschiede in den Paket-Versionen zu den beiden Architekturen <em>i686</em> und <em>x86_64</em>.</p>
-				<p style="font-size:12px;">Versionsunterschiede im Nachkommabereich deuten an, daß die entsprechende Aktualisierung nur eine Architektur betraf. Diese Unterschiede werden daher standardmäßig ausgeblendet.</p>
+				<h4 style="text-align: right">'.self::__get('L10n')->getText('Architecture differences').'</h4>
 				<div style="font-size:10px; text-align:right;padding-bottom:10px;">
-				'.($showminor ? '<a href="?page=ArchitectureDifferences">Architekturspezifische Änderungen ausblenden</a>' : '<a href="?page=ArchitectureDifferences;showminor">Architekturspezifische Änderungen anzeigen</a>').'
+				'.($showminor ? '<a href="?page=ArchitectureDifferences">'.self::__get('L10n')->getText('Hide architecture specific differences').'</a>' : '<a href="?page=ArchitectureDifferences;showminor">'.self::__get('L10n')->getText('Show architecture specific differences').'</a>').'
 				</div>
 			</div>
 			<table id="packages">
 				<tr>
-					<th>Name</th>
+					<th>'.self::__get('L10n')->getText('Package name').'</th>
 					<th>i686</th>
 					<th>x86_64</th>
-					<th>Aktualisierung</th>
+					<th>'.self::__get('L10n')->getText('Last update').'</th>
 				</tr>';
 
 		$line = 0;
@@ -239,7 +237,7 @@ public static function updateDBCache(DB $db, PersistentCache $cache)
 					<td>'.$package['name'].'</td>
 					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;package='.$package['iid'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
 					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;package='.$package['xid'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
-					<td>'.formatDate($package['builddate']).'</td>
+					<td>'.self::__get('L10n')->getDateTime($package['builddate']).'</td>
 				</tr>';
 
 			$line = abs($line-1);
@@ -248,7 +246,7 @@ public static function updateDBCache(DB $db, PersistentCache $cache)
 
 		$body .= '</table>';
 
-		$cache->addObject('ArchitectureDifferences:'.($showminor ? 1 : 0), $body);
+		self::__get('PersistentCache')->addObject('ArchitectureDifferences:'.($showminor ? 1 : 0).':'.self::__get('L10n')->getLocale(), $body);
 		}
 	}
 

@@ -50,7 +50,7 @@ protected function makeSubMenu()
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
 			<li><a href="?page=Packagers">Packer</a></li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li class="selected">Suche</li>
@@ -419,7 +419,7 @@ private function showPackageList($packages)
 		$style = $package['repository'] == 'testing' ? ' testingpackage' : '';
 
 		$body .= '<tr class="packageline'.$line.$style.'">
-				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.formatDate($package['builddate']).'</td>
+				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.$this->L10n->getDateTime($package['builddate']).'</td>
 			</tr>';
 
 		$line = abs($line-1);

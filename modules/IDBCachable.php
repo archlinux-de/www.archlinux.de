@@ -20,7 +20,7 @@
 
 interface IDBCachable {
 
-public static function updateDBCache(DB $db, PersistentCache $cache);
+public static function updateDBCache();
 
 }
 

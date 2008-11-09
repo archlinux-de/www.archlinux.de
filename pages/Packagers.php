@@ -41,7 +41,7 @@ protected function makeSubMenu()
 		<ul id="nav">
 			<li><a href="http://wiki.archlinux.de/?title=AUR">AUR</a></li>
 			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorCheck">Server</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
 			<li class="selected">Packer</li>
 			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
 			<li><a href="?page=Packages">Suche</a></li>
@@ -130,7 +130,7 @@ public function prepare()
 				<td>'.(empty($packager['email']) ? '' : '<a href="mailto:'.$packager['email'].'">'.$packager['email'].'</a>').'</td>
 				<td style="text-align:right;"><a href="?page=Packages;packager='.$packager['id'].'">'.$packager['packages'].'</a></td>
 				<td style="width:100px;"><div style="background-color:#1793d1;width:'.$percent.'px;">&nbsp;</div></td>
-				<td>'.formatDate($packager['lastbuilddate']).'</td>
+				<td>'.$this->L10n->getDateTime($packager['lastbuilddate']).'</td>
 			</tr>';
 
 		$line = abs($line-1);

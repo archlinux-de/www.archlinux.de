@@ -25,6 +25,7 @@ private static $loadedModules = array();
 private static $availableModules = array
 	(
 	'IDBCachable' => 'modules/IDBCachable.php',
+	'L10n' => 'modules/L10n.php',
 	'Page' => 'pages/abstract/Page.php',
 	'ObjectCache' => 'modules/ObjectCache.php',
 	'PersistentCache' => 'modules/PersistentCache.php',
