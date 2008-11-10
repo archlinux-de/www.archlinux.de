@@ -20,6 +20,9 @@
 
 class PackageStatistics extends Page implements IDBCachable {
 
+private static $popularThreshold = 25;
+private static $unpopularThreshold = 5;
+
 
 protected function makeMenu()
 	{
@@ -209,22 +212,9 @@ public static function updateDBCache()
 				'.self::getPackagesPerRepository().'
 				'.self::getNumberOfUnofficialPackages().'
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Number of unused packages per repository').'</th>
-				</tr>
-				'.self::getNumberOfUnusedPackagesPerRepository().'
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Unused packages per repository').'</th>
-				</tr>
-				'.self::getUnusedPackagesPerRepository().'
-				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Popular packages per repository').'</th>
 				</tr>
-				'.self::getPopularPackagesPerRepository('DESC').'
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Unpopular packages per repository').'</th>
-				</tr>
-				'.self::getPopularPackagesPerRepository('ASC').'
-
+				'.self::getPopularPackagesPerRepository().'
 				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Popular unofficial packages').'</th>
 				</tr>
@@ -351,7 +341,7 @@ private static function getRepositoryStatistics()
 			$list .= '<tr>
 					<th>'.$repo['name'].'</th>
 					<td style="padding:0px;margin:0px;">
-						<div style="overflow:auto; max-height: 400px;">
+						<div style="overflow:auto; max-height: 800px;">
 						<table id="packages" style="border:none;">
 						<tr>
 							<td style="width: 50px;">'.self::__get('L10n')->getText('Packages').'</td>
@@ -415,15 +405,28 @@ private static function getBar($value, $total)
 
 	$percent = ($value / $total) * 100;
 
+	if ($percent >= self::$popularThreshold)
+		{
+		$color = 'darkgreen';
+		}
+	elseif ($percent <= self::$unpopularThreshold)
+		{
+		$color = 'darkred';
+		}
+	else
+		{
+		$color = 'darkorange';
+		}
+
 	return '<table style="width:100%;">
 			<tr>
 				<td style="padding:0px;margin:0px;">
-					<div style="background-color:#1793d1;width:'.round($percent).'%;"
+					<div style="background-color:'.$color.';width:'.round($percent).'%;"
 		title="'.self::__get('L10n')->getNumber($value).' '.self::__get('L10n')->getText('of').' '.self::__get('L10n')->getNumber($total).'">
 			&nbsp;
 				</div>
 				</td>
-				<td style="padding:0px;margin:0px;width:80px;text-align:right;">
+				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:'.$color.'">
 					'.self::__get('L10n')->getNumber($percent, 2).'&nbsp;%
 				</td>
 			</tr>
@@ -501,104 +504,7 @@ private static function getPackagesPerRepository()
 	return $list;
 	}
 
-private static function getNumberOfUnusedPackagesPerRepository()
-	{
-	$total = self::__get('DB')->getColumn
-		('
-		SELECT
-			COUNT(*)
-		FROM
-			packages
-		');
-
-	$repos = self::__get('DB')->getRowSet
-		('
-		SELECT
-			COUNT(packages.id) AS count,
-			repositories.name
-		FROM
-			packages,
-			repositories
-		WHERE
-			packages.repository = repositories.id
-			AND repositories.name <> "testing"
-			AND packages.name NOT IN (SELECT name FROM package_statistics)
-		GROUP BY
-			repositories.id
-		');
-
-	$list = '';
-
-	foreach ($repos as $repo)
-		{
-		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($repo['count'], $total).'</td></tr>';
-		}
-
-	return $list;
-	}
-
-private static function getUnusedPackagesPerRepository()
-	{
-	$repos = self::__get('DB')->getRowSet
-		('
-		SELECT
-			name,
-			id
-		FROM
-			repositories
-		WHERE
-			name <> "testing"
-		');
-
-	$stm = self::__get('DB')->prepare
-		('
-		SELECT DISTINCT
-			name
-		FROM
-			packages
-		WHERE
-			repository = ?
-			AND name NOT IN (SELECT name FROM package_statistics)
-		ORDER BY
-			name
-		');
-
-	$list = '';
-	$repoid = 0;
-	$line = 0;
-
-	foreach ($repos as $repo)
-		{
-		try
-			{
-			$stm->bindInteger($repo['id']);
-			$packages = $stm->getColumnSet();
-
-			if ($repoid != $repo['id'])
-				{
-				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 400px;"><table id="packages" style="border:none;">';
-				}
-
-			foreach ($packages as $package)
-				{
-				$list .= '<tr class="packageline'.$line.'"><td>'.$package.'</td></tr>';
-				$line = abs($line-1);
-				}
-
-			$list .= '</table></div></td></tr>';
-			$repoid = $repo['id'];
-			}
-		catch (DBNoDataException $e)
-			{
-			}
-		}
-
-	$stm->close();
-
-	return $list;
-	}
-
-private static function getPopularPackagesPerRepository($sort = 'DESC')
+private static function getPopularPackagesPerRepository()
 	{
 	$total = self::__get('DB')->getColumn
 		('
@@ -622,24 +528,41 @@ private static function getPopularPackagesPerRepository($sort = 'DESC')
 	$stm = self::__get('DB')->prepare
 		('
 		SELECT
-			packages.name,
-			SUM(package_statistics.count) AS count
+			name,
+			SUM(count) AS count
 		FROM
-			packages,
-			package_statistics,
-			architectures
-		WHERE
-			packages.repository = ?
-			AND packages.name = package_statistics.name
-			AND package_statistics.arch = architectures.name
-			AND packages.arch = architectures.id
+		(
+			(
+			SELECT
+				packages.name,
+				package_statistics.count
+			FROM
+				packages,
+				package_statistics,
+				architectures
+			WHERE
+				packages.repository = ?
+				AND packages.name = package_statistics.name
+				AND package_statistics.arch = architectures.name
+				AND packages.arch = architectures.id
+			)
+			UNION
+			(
+			SELECT
+				name,
+				0
+			FROM
+				packages
+			WHERE
+				repository = ?
+				AND name NOT IN (SELECT name FROM package_statistics)
+			)
+		) AS temp
 		GROUP BY
-			package_statistics.name
+			name
 		ORDER BY
-			count '.$sort.',
+			count DESC,
 			name ASC
-		LIMIT
-			1000
 		');
 
 	$list = '';
@@ -651,11 +574,12 @@ private static function getPopularPackagesPerRepository($sort = 'DESC')
 		try
 			{
 			$stm->bindInteger($repo['id']);
+			$stm->bindInteger($repo['id']);
 			$packages = $stm->getRowSet();
 
 			if ($repoid != $repo['id'])
 				{
-				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 400px;"><table id="packages" style="border:none;">';
+				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 800px;"><table id="packages" style="border:none;">';
 				}
 
 			foreach ($packages as $package)
@@ -733,7 +657,7 @@ private static function getPopularUnofficialPackages()
 
 	try
 		{
-		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 400px;"><table id="packages" style="border:none;">';
+		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table id="packages" style="border:none;">';
 
 		foreach ($packages as $package)
 			{

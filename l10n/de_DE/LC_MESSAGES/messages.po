@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: archlinux.de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-09 15:36+0100\n"
+"POT-Creation-Date: 2008-11-11 00:46+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Pierre Schmitz <pschmitz@laber-land.de>\n"
 "Language-Team: Pierre Schmitz <pierre@archlinux.de>\n"
@@ -41,179 +41,166 @@ msgstr "Paket-Name"
 msgid "Last update"
 msgstr "Letzte Aktualisierung"
 
-#: ../../../pages/PackageStatistics.php:51
+#: ../../../pages/PackageStatistics.php:54
 msgid "Package statistics"
 msgstr "Paket-Statistiken"
 
-#: ../../../pages/PackageStatistics.php:72
-#: ../../../pages/PackageStatistics.php:82
-#: ../../../pages/PackageStatistics.php:157
-#: ../../../cronjobs/UpdatePKGDB.php:161
+#: ../../../pages/PackageStatistics.php:75
+#: ../../../pages/PackageStatistics.php:85
+#: ../../../pages/PackageStatistics.php:160
 msgid "Repositories"
 msgstr "Repositorien"
 
-#: ../../../pages/PackageStatistics.php:75
+#: ../../../pages/PackageStatistics.php:78
 msgid "Overview"
 msgstr "Übersicht"
 
-#: ../../../pages/PackageStatistics.php:78
+#: ../../../pages/PackageStatistics.php:81
 msgid "Architectures"
 msgstr "Architekturen"
 
-#: ../../../pages/PackageStatistics.php:86
+#: ../../../pages/PackageStatistics.php:89
 msgid "Groups"
 msgstr "Gruppen"
 
-#: ../../../pages/PackageStatistics.php:90
-#: ../../../pages/PackageStatistics.php:357
+#: ../../../pages/PackageStatistics.php:93
+#: ../../../pages/PackageStatistics.php:347
 msgid "Packages"
 msgstr "Pakete"
 
-#: ../../../pages/PackageStatistics.php:94
+#: ../../../pages/PackageStatistics.php:97
 msgid "Files"
 msgstr "Dateien"
 
-#: ../../../pages/PackageStatistics.php:98
+#: ../../../pages/PackageStatistics.php:101
 msgid "Size of file index"
 msgstr "Größe des Datei-Index"
 
-#: ../../../pages/PackageStatistics.php:102
+#: ../../../pages/PackageStatistics.php:105
 msgid "Licenses"
 msgstr "Lizenzen"
 
-#: ../../../pages/PackageStatistics.php:106
+#: ../../../pages/PackageStatistics.php:109
 msgid "Dependencies"
 msgstr "Abhängigkeiten"
 
-#: ../../../pages/PackageStatistics.php:110
+#: ../../../pages/PackageStatistics.php:113
 msgid "Optional dependencies"
 msgstr "Optionale Abhängigkeiten"
 
-#: ../../../pages/PackageStatistics.php:114
+#: ../../../pages/PackageStatistics.php:117
 msgid "Provides"
 msgstr "Bereitstellungen"
 
-#: ../../../pages/PackageStatistics.php:118
+#: ../../../pages/PackageStatistics.php:121
 msgid "Conflicts"
 msgstr "Konflikte"
 
-#: ../../../pages/PackageStatistics.php:122
+#: ../../../pages/PackageStatistics.php:125
 msgid "Replaces"
 msgstr "Ersetzungen"
 
-#: ../../../pages/PackageStatistics.php:126
+#: ../../../pages/PackageStatistics.php:129
 msgid "Total size of repositories"
 msgstr "Gesamtgröße der Repositorien"
 
-#: ../../../pages/PackageStatistics.php:130
+#: ../../../pages/PackageStatistics.php:133
 msgid "Total size of files"
 msgstr "Gesamtgröße der Dateien"
 
-#: ../../../pages/PackageStatistics.php:134
+#: ../../../pages/PackageStatistics.php:137
 msgid "Packager"
 msgstr "Packer"
 
-#: ../../../pages/PackageStatistics.php:138
+#: ../../../pages/PackageStatistics.php:141
 msgid "Averages"
 msgstr "Durchschnitte"
 
-#: ../../../pages/PackageStatistics.php:141
+#: ../../../pages/PackageStatistics.php:144
 msgid "Size of packages"
 msgstr "Größe der Pakete"
 
-#: ../../../pages/PackageStatistics.php:145
+#: ../../../pages/PackageStatistics.php:148
 msgid "Size of files"
 msgstr "Größe der Dateien"
 
-#: ../../../pages/PackageStatistics.php:149
+#: ../../../pages/PackageStatistics.php:152
 msgid "Files per package"
 msgstr "Dateien pro Paket"
 
-#: ../../../pages/PackageStatistics.php:153
+#: ../../../pages/PackageStatistics.php:156
 msgid "Packages per packager"
 msgstr "Pakete pro Packer"
 
-#: ../../../pages/PackageStatistics.php:161
+#: ../../../pages/PackageStatistics.php:164
 msgid "Package usage"
 msgstr "Paket-Nutzung"
 
-#: ../../../pages/PackageStatistics.php:164
+#: ../../../pages/PackageStatistics.php:167
 msgid "Common statistics"
 msgstr "Allgemeine Statistiken"
 
-#: ../../../pages/PackageStatistics.php:167
+#: ../../../pages/PackageStatistics.php:170
 msgid "Submissions"
 msgstr "Einsendungen"
 
-#: ../../../pages/PackageStatistics.php:171
+#: ../../../pages/PackageStatistics.php:174
 msgid "Different IPs"
 msgstr "Unterschiedliche IPs"
 
-#: ../../../pages/PackageStatistics.php:175
+#: ../../../pages/PackageStatistics.php:178
 msgid "First entry"
 msgstr "Erster Eintrag"
 
-#: ../../../pages/PackageStatistics.php:179
+#: ../../../pages/PackageStatistics.php:182
 msgid "Last entry"
 msgstr "Letzter Eintrag"
 
-#: ../../../pages/PackageStatistics.php:183
+#: ../../../pages/PackageStatistics.php:186
 msgid "Sum of submitted packages"
 msgstr "Summe der eingereichten Pakete"
 
-#: ../../../pages/PackageStatistics.php:187
+#: ../../../pages/PackageStatistics.php:190
 msgid "Number of different packages"
 msgstr "Zahl der unterschiedlichen Pakete"
 
-#: ../../../pages/PackageStatistics.php:191
+#: ../../../pages/PackageStatistics.php:194
 msgid "Lowest number of installed packages"
 msgstr "Kleinste Zahl an installierten Paketen"
 
-#: ../../../pages/PackageStatistics.php:195
+#: ../../../pages/PackageStatistics.php:198
 msgid "Highest number of installed packages"
 msgstr "Größte Zahl an installierten Paketen"
 
-#: ../../../pages/PackageStatistics.php:199
+#: ../../../pages/PackageStatistics.php:202
 msgid "Average number of installed packages"
 msgstr "Durchschnittliche Zahl an installierten Paketen"
 
-#: ../../../pages/PackageStatistics.php:203
+#: ../../../pages/PackageStatistics.php:206
 msgid "Submissions per architectures"
 msgstr "Einsendungen pro Architektur"
 
-#: ../../../pages/PackageStatistics.php:207
+#: ../../../pages/PackageStatistics.php:210
 msgid "Installed packages per repository"
 msgstr "Installierte Pakete pro Repositorium"
 
-#: ../../../pages/PackageStatistics.php:212
-msgid "Number of unused packages per repository"
-msgstr "Anzahl der ungenutzten Pakete pro Repositorium"
-
-#: ../../../pages/PackageStatistics.php:216
-msgid "Unused packages per repository"
-msgstr "Ungenutzte Pakete pro Repositorium"
-
-#: ../../../pages/PackageStatistics.php:220
+#: ../../../pages/PackageStatistics.php:215
 msgid "Popular packages per repository"
 msgstr "Beliebte Pakete pro Repositorium"
 
-#: ../../../pages/PackageStatistics.php:224
-msgid "Unpopular packages per repository"
-msgstr "Unbeliebte Pakete pro Repositorium"
-
-#: ../../../pages/PackageStatistics.php:229
+#: ../../../pages/PackageStatistics.php:219
 msgid "Popular unofficial packages"
 msgstr "Beliebte inoffizielle Pakete"
 
-#: ../../../pages/PackageStatistics.php:361
+#: ../../../pages/PackageStatistics.php:351
 msgid "Size"
 msgstr "Größe"
 
-#: ../../../pages/PackageStatistics.php:422
+#: ../../../pages/PackageStatistics.php:425
 msgid "of"
 msgstr "von"
 
-#: ../../../pages/PackageStatistics.php:700
+#: ../../../pages/PackageStatistics.php:624
 msgid "Unofficial repositories"
 msgstr "Inoffizielle Repositorien"
 
@@ -294,4 +281,11 @@ msgstr "Verzögerung"
 #: ../../../pages/MirrorStatus.php:348
 msgid "Current problems"
 msgstr "Aktuelle Probleme"
+
+#~ msgid "Number of unused packages per repository"
+#~ msgstr "Anzahl der ungenutzten Pakete pro Repositorium"
+#~ msgid "Unused packages per repository"
+#~ msgstr "Ungenutzte Pakete pro Repositorium"
+#~ msgid "Unpopular packages per repository"
+#~ msgstr "Unbeliebte Pakete pro Repositorium"
 
