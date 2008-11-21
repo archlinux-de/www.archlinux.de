@@ -31,7 +31,7 @@ require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/IDBCachable.php');
+require ('pages/abstract/IDBCachable.php');
 require ('PackageDB.php');
 require ('pages/abstract/Page.php');
 require ('pages/ArchitectureDifferences.php');
@@ -52,12 +52,10 @@ private $changed	= false;
 
 public function __construct()
 	{
-	self::__set('Settings', new Settings());
-	self::__set('DB', new DB(
+	$this->DB->connect(
 		$this->Settings->getValue('sql_user'),
 		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database')
-		));
+		$this->Settings->getValue('sql_database'));
 	}
 
 private function getTmpDir()
@@ -414,7 +412,7 @@ private function updatePackages($packages, $repo, $arch)
 		if (count($package->getDepends()) > 0)
 			{
 			$dependsSTM->bindInteger($packageID);
-			$dependsSTM->bindString(implode(' ', $package->getDepends()));
+			$dependsSTM->bindString(implode("\n", $package->getDepends()));
 			$dependsSTM->execute();
 			}
 
@@ -422,7 +420,7 @@ private function updatePackages($packages, $repo, $arch)
 		if (count($package->getOptDepends()) > 0)
 			{
 			$optdependsSTM->bindInteger($packageID);
-			$optdependsSTM->bindString(implode(' ', $package->getOptDepends()));
+			$optdependsSTM->bindString(implode("\n", $package->getOptDepends()));
 			$optdependsSTM->execute();
 			}
 
@@ -430,7 +428,7 @@ private function updatePackages($packages, $repo, $arch)
 		if (count($package->getProvides()) > 0)
 			{
 			$providesSTM->bindInteger($packageID);
-			$providesSTM->bindString(implode(' ', $package->getProvides()));
+			$providesSTM->bindString(implode("\n", $package->getProvides()));
 			$providesSTM->execute();
 			}
 
@@ -438,7 +436,7 @@ private function updatePackages($packages, $repo, $arch)
 		if (count($package->getConflicts()) > 0)
 			{
 			$conflictsSTM->bindInteger($packageID);
-			$conflictsSTM->bindString(implode(' ', $package->getConflicts()));
+			$conflictsSTM->bindString(implode("\n", $package->getConflicts()));
 			$conflictsSTM->execute();
 			}
 
@@ -446,7 +444,7 @@ private function updatePackages($packages, $repo, $arch)
 		if (count($package->getReplaces()) > 0)
 			{
 			$replacesSTM->bindInteger($packageID);
-			$replacesSTM->bindString(implode(' ', $package->getReplaces()));
+			$replacesSTM->bindString(implode("\n", $package->getReplaces()));
 			$replacesSTM->execute();
 			}
 
@@ -1053,7 +1051,7 @@ private function updateDependencies()
 		$cleanSTM->bindInteger($package['package']);
 		$cleanSTM->execute();
 
-		foreach (explode(' ', $package['depends']) as $depends)
+		foreach (explode("\n", $package['depends']) as $depends)
 			{
 			$depends = trim($depends);
 			if (empty($depends))
@@ -1169,7 +1167,7 @@ private function updateOptionalDependencies()
 		$cleanSTM->bindInteger($package['package']);
 		$cleanSTM->execute();
 
-		foreach (explode(' ', $package['optdepends']) as $optdepends)
+		foreach (explode("\n", $package['optdepends']) as $optdepends)
 			{
 			$optdepends = trim($optdepends);
 			if (empty($optdepends))
@@ -1177,7 +1175,7 @@ private function updateOptionalDependencies()
 				continue;
 				}
 
-			if (preg_match('/(:+.*)/', $optdepends, $matches))
+			if (preg_match('/(?::+(.*))/', $optdepends, $matches))
 				{
 				$optdepname = preg_replace('/\s*(:+.*)/', '', $optdepends);
 				$optdepcomment = $matches[1];
@@ -1285,7 +1283,7 @@ private function updateProvides()
 		$cleanSTM->bindInteger($package['package']);
 		$cleanSTM->execute();
 
-		foreach (explode(' ', $package['provides']) as $provides)
+		foreach (explode("\n", $package['provides']) as $provides)
 			{
 			$provides = trim($provides);
 			if (empty($provides))
@@ -1401,7 +1399,7 @@ private function updateConflicts()
 		$cleanSTM->bindInteger($package['package']);
 		$cleanSTM->execute();
 
-		foreach (explode(' ', $package['conflicts']) as $depends)
+		foreach (explode("\n", $package['conflicts']) as $depends)
 			{
 			$depends = trim($depends);
 			if (empty($depends))
@@ -1517,7 +1515,7 @@ private function updateReplaces()
 		$cleanSTM->bindInteger($package['package']);
 		$cleanSTM->execute();
 
-		foreach (explode(' ', $package['replaces']) as $depends)
+		foreach (explode("\n", $package['replaces']) as $depends)
 			{
 			$depends = trim($depends);
 			if (empty($depends))

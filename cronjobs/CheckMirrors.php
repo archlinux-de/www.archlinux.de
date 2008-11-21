@@ -30,7 +30,7 @@ require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/IDBCachable.php');
+require ('pages/abstract/IDBCachable.php');
 require ('pages/abstract/Page.php');
 require ('pages/GetFileFromMirror.php');
 require ('pages/MirrorStatus.php');
@@ -40,12 +40,10 @@ class CheckMirrors extends Modul {
 
 public function __construct()
 	{
-	self::__set('Settings', new Settings());
-	self::__set('DB', new DB(
+	$this->DB->connect(
 		$this->Settings->getValue('sql_user'),
 		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database')
-		));
+		$this->Settings->getValue('sql_database'));
 	}
 
 private function getTmpDir()
@@ -142,15 +140,12 @@ private function getLastsyncFromMirror($url)
 		throw new RuntimeException('faild to init curl: '.htmlspecialchars($url));
 		}
 
-	curl_setopt($curl, CURLOPT_FAILONERROR, true);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
+	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
 	curl_setopt($curl, CURLOPT_TIMEOUT, 120);
-	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-	curl_setopt($curl, CURLOPT_ENCODING, '');
+	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
 	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
-	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
 
 	$content = curl_exec($curl);
 

@@ -23,7 +23,7 @@ require_once('Package.php');
 
 class PackageDB {
 
-private $mirror 	= 'ftp://ftp.archlinux.org/';
+private $mirror 	= 'http://ftp.archlinux.org/';
 private $repository	= 'core';
 private $architecture	= 'i686';
 private $DBtargz	= '/tmp/db.tar.gz';
@@ -65,14 +65,10 @@ private function update($lastmtime)
 	$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
 	curl_setopt($curl, CURLOPT_NOBODY, true);
 	curl_setopt($curl, CURLOPT_FILETIME, true);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-#	curl_setopt($curl, CURLOPT_FAILONERROR, true);
-#	curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
-#	curl_setopt($curl, CURLOPT_TIMEOUT, 20);
-#	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-#	curl_setopt($curl, CURLOPT_ENCODING, '');
-#	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
-#	curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
+	curl_setopt($curl, CURLOPT_FAILONERROR, false);
+	curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
 	curl_exec($curl);
 	$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 	curl_close($curl);
@@ -88,16 +84,10 @@ private function update($lastmtime)
 		flock($fh, LOCK_EX);
 		$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
 		curl_setopt($curl, CURLOPT_FILE, $fh);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-#		curl_setopt($curl, CURLOPT_FAILONERROR, true);
-#		curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
-#		curl_setopt($curl, CURLOPT_TIMEOUT, 120);
-#		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-#		curl_setopt($curl, CURLOPT_ENCODING, '');
-#		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
-#		curl_setopt($curl, CURLOPT_FTP_USE_EPSV, false);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
 		curl_exec($curl);
-		$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 		curl_close($curl);
 		flock($fh, LOCK_UN);
 		fclose($fh);
