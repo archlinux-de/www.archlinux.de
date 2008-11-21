@@ -190,7 +190,7 @@ CREATE TABLE `mirror_log` (
 CREATE TABLE `optdepends` (
   `package` int(11) unsigned NOT NULL,
   `optdepends` int(11) unsigned NOT NULL,
-  `comment` varchar(50) NOT NULL,
+  `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `optdepends` (`optdepends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
