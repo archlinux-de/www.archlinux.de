@@ -63,7 +63,7 @@ CREATE TABLE `conflicts` (
 CREATE TABLE `depends` (
   `package` int(11) unsigned NOT NULL,
   `depends` int(11) unsigned NOT NULL,
-  `comment` varchar(50) NOT NULL,
+  `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `depends` (`depends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -190,7 +190,7 @@ CREATE TABLE `mirror_log` (
 CREATE TABLE `optdepends` (
   `package` int(11) unsigned NOT NULL,
   `optdepends` int(11) unsigned NOT NULL,
-  `comment` varchar(50) NOT NULL,
+  `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `optdepends` (`optdepends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -318,7 +318,7 @@ CREATE TABLE `package_statistics_log` (
 CREATE TABLE `provides` (
   `package` int(11) unsigned NOT NULL,
   `provides` int(11) unsigned NOT NULL,
-  `comment` varchar(50) NOT NULL,
+  `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `provides` (`provides`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
