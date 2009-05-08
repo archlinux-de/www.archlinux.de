@@ -194,8 +194,8 @@ private function getRecentDate($repo, $arch)
 
 private function updateRepository($repo, $arch)
 	{
-	$lastrun = $this->getRecentDate($repo, $arch) - $this->Settings->getValue('time_tolerance');
-	$lastpkgdbmtime = $this->getPKGDBMTime($repo, $arch) - $this->Settings->getValue('time_tolerance');
+	$lastrun = $this->getRecentDate($repo, $arch);
+	$lastpkgdbmtime = $this->getPKGDBMTime($repo, $arch);
 
 	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch, $lastpkgdbmtime);
 	$mtime = $pkgdb->getMTime();

@@ -40,8 +40,6 @@ public function __construct()
 	$this->config['debug']				= false;
 	$this->config['log_dir']			= '';
 
-	$this->config['time_tolerance']			= 0;
-
 	if (file_exists('LocalSettings.php'))
 		{
 		include ('LocalSettings.php');
