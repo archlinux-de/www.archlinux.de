@@ -102,6 +102,8 @@ private static function getCurrentProblems($range)
 				AND mirror_log.time >= '.$range.'
 			GROUP BY
 				host, error
+			HAVING
+				errorcount > 1
 			ORDER BY
 				lasttime DESC
 			');
