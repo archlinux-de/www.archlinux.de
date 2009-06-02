@@ -311,7 +311,7 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 			}
 
 		$body .= '<tr class="packageline'.$line.'">
-				<td>'.$mirror['host'].'</td>
+				<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
 				<td>'.$mirror['country'].'</td>
 				<td title="&empty;&nbsp;'.self::__get('L10n')->getEpoch($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
 				<td title="&empty;&nbsp;'.self::__get('L10n')->getEpoch($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
