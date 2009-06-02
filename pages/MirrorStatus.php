@@ -125,7 +125,7 @@ private static function getCurrentProblems($range)
 		{
 		$list .=
 		'<tr class="packageline'.$line.'">
-			<td>'.$problem['host'].'</td>
+			<td><a href="'.$problem['host'].'" rel="nofollow">'.$problem['host'].'</a></td>
 			<td>'.$problem['error'].'</td>
 			<td>'.self::__get('L10n')->getDateTime($problem['firsttime']).'</td>
 			<td>'.self::__get('L10n')->getDateTime($problem['lasttime']).'</td>
