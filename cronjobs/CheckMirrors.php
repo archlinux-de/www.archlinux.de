@@ -69,25 +69,25 @@ public function runUpdate()
 		chmod($this->getLockFile(), 0600);
 		}
 
+	try
+		{
+		$this->updateMirrorlist();
+		}
+	catch (RuntimeException $e)
+		{
+		echo('Warning: updateMirrorlist failed: '.$e->getMessage());
+		}
+
 	$this->removeOldEntries();
 
 	try
 		{
-		$mirrors = $this->DB->getRowSet
+		$mirrors = $this->DB->getColumnSet
 			('
 			SELECT
-				host,
-				ftp,
-				http,
-				i686,
-				x86_64
+				host
 			FROM
 				mirrors
-			WHERE
-				official = 1
-				AND deleted = 0
-				AND (LENGTH(ftp) > 0 OR LENGTH(http) > 0)
-				AND (i686 = 1 OR x86_64 = 1)
 			')->toArray();
 		}
 	catch (DBNoDataException $e)
@@ -95,30 +95,16 @@ public function runUpdate()
 		$mirrors = array();
 		}
 
-		$this->curlHandles = array();
-
-	foreach ($mirrors as $mirror)
+	foreach ($mirrors as $host)
 		{
-		$arch = $mirror['i686'] > 0 ? 'i686' : 'x86_64';
-		$repo = 'core';
-
-		if (strlen($mirror['ftp']) > 0)
-			{
-			$url = 'ftp://'.$mirror['ftp'];
-			}
-		else
-			{
-			$url = 'http://'.$mirror['http'];
-			}
-
 		try
 			{
-			$result = $this->getLastsyncFromMirror($url.'/'.$repo.'/os/'.$arch);
-			$this->insertLogEntry($mirror['host'], $result['lastsync'], $result['totaltime']);
+			$result = $this->getLastsyncFromMirror($host.'core/os/i686');
+			$this->insertLogEntry($host, $result['lastsync'], $result['totaltime']);
 			}
 		catch (RuntimeException $e)
 			{
-			$this->insertErrorEntry($mirror['host'], $e->getMessage());
+			$this->insertErrorEntry($host, $e->getMessage());
 			}
 		}
 
@@ -133,11 +119,86 @@ public function runUpdate()
 	unlink($this->getLockFile());
 	}
 
+private function updateMirrorlist()
+	{
+	$mirrors = $this->getMirrorlist();
+
+	// remove everything and insert again
+	// more efficient than expensive update
+	$this->DB->execute('TRUNCATE mirrors');
+
+	$stm = $this->DB->prepare
+		('
+		INSERT INTO
+			mirrors
+		SET
+			host = ?,
+			country = ?
+		');
+
+	foreach ($mirrors as $mirror => $country)
+		{
+		$stm->bindString($mirror);
+		$stm->bindString($country);
+		$stm->execute();
+		}
+
+	$stm->close();
+	}
+
+private function getMirrorlist()
+	{
+	if (false === ($curl = curl_init($this->Settings->getValue('mirrorlist_url'))))
+		{
+		throw new RuntimeException('failed to init curl: '.htmlspecialchars($url));
+		}
+
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
+	curl_setopt($curl, CURLOPT_TIMEOUT, 120);
+	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
+	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
+	$content = curl_exec($curl);
+
+	if (false === $content)
+		{
+		throw new RuntimeException(htmlspecialchars(curl_error($curl)), curl_errno($curl));
+		}
+	elseif (empty($content))
+		{
+		throw new RuntimeException('empty mirrorlist', 1);
+		}
+
+	curl_close($curl);
+
+	$mirrorlist = explode("\n", $content);
+
+	#preg_match('/(\d{4})-(\d{2})-(\d{2})/', $mirrorlist[2], $matches);
+	#$date = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
+
+	$mirrorarray = array();
+
+	for ($line = 4; $line < count($mirrorlist); $line++)
+		{
+		if (preg_match('/^# ([\w ]+)$/', $mirrorlist[$line], $matches))
+			{
+			$country = $matches[1];
+			}
+		elseif (preg_match('/^#Server = (.+)\$repo\/os\/@carch@$/', $mirrorlist[$line], $matches))
+			{
+			$mirrorarray[$matches[1]] = $country;
+			}
+		}
+
+	return $mirrorarray;
+	}
+
 private function getLastsyncFromMirror($url)
 	{
 	if (false === ($curl = curl_init($url.'/lastsync')))
 		{
-		throw new RuntimeException('faild to init curl: '.htmlspecialchars($url));
+		throw new RuntimeException('failed to init curl: '.htmlspecialchars($url));
 		}
 
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -224,7 +285,7 @@ private function removeOldEntries()
 		DELETE FROM
 			mirror_log
 		WHERE
-			host NOT IN (SELECT host FROM pkgdb.mirrors WHERE official = 1 AND deleted = 0)
+			host NOT IN (SELECT host FROM mirrors)
 		');
 	}
 

@@ -142,23 +142,8 @@ CREATE TABLE `log` (
 CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
   `country` varchar(255) default NULL,
-  `ftp` varchar(255) NOT NULL,
-  `http` varchar(255) NOT NULL,
-  `rsync` varchar(255) NOT NULL,
-  `i686` tinyint(4) NOT NULL default '1',
-  `x86_64` tinyint(4) NOT NULL default '1',
-  `contact` varchar(255) default NULL,
-  `added` date default NULL,
-  `removed` date default NULL,
-  `note` text,
-  `ticketnr` varchar(255) default NULL,
-  `oldtickets` varchar(255) default NULL,
-  `official` tinyint(1) NOT NULL default '1',
-  `deleted` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`host`),
-  KEY `country` (`country`),
-  KEY `official` (`official`),
-  KEY `deleted` (`deleted`)
+  KEY `country` (`country`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

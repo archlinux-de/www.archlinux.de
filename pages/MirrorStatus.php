@@ -154,13 +154,9 @@ public static function updateDBCache()
 				MIN(time-lastsync) AS minsyncdelay,
 				AVG(time-lastsync) AS avgsyncdelay
 			FROM
-				mirrors,
 				mirror_log
 			WHERE
-				mirrors.official = 1
-				AND mirrors.deleted = 0
-				AND mirror_log.host = mirrors.host
-				AND mirror_log.time >= '.$range.'
+				time >= '.$range.'
 			');
 		$int['count'] = self::__get('DB')->getColumn
 			('
@@ -168,9 +164,6 @@ public static function updateDBCache()
 				COUNT(host) AS count
 			FROM
 				mirrors
-			WHERE
-				official = 1
-				AND deleted = 0
 			');
 
 		$de = self::__get('DB')->getRow
@@ -186,9 +179,7 @@ public static function updateDBCache()
 				mirrors,
 				mirror_log
 			WHERE
-				mirrors.official = 1
-				AND mirrors.deleted = 0
-				AND mirrors.country LIKE \'Germany\'
+				mirrors.country LIKE \'Germany\'
 				AND mirror_log.host = mirrors.host
 				AND mirror_log.time >= '.$range.'
 			');
@@ -199,9 +190,7 @@ public static function updateDBCache()
 			FROM
 				mirrors
 			WHERE
-				official = 1
-				AND deleted = 0
-				AND country LIKE \'Germany\'
+				country LIKE \'Germany\'
 			');
 
 		$problems = self::getCurrentProblems($range);
@@ -214,11 +203,7 @@ public static function updateDBCache()
 					('
 					SELECT
 						mirrors.host,
-						mirrors.ftp,
-						mirrors.http,
-						mirrors.rsync,
 						mirrors.country,
-						mirrors.ticketnr,
 						MAX(lastsync) AS lastsync,
 						AVG(totaltime) AS avgtime,
 						AVG(time-lastsync) AS syncdelay
@@ -226,9 +211,7 @@ public static function updateDBCache()
 						mirrors,
 						mirror_log
 					WHERE
-						mirrors.official = 1
-						AND mirrors.deleted = 0
-						AND mirror_log.host = mirrors.host
+						mirror_log.host = mirrors.host
 						AND mirror_log.time >= '.$range.'
 					GROUP BY
 						mirrors.host
@@ -299,11 +282,8 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 			<tr>
 				<th><a href="?page=MirrorStatus;orderby=host;sort='.abs($sortint-1).'">'.self::__get('L10n')->getText('Host').'</a></th>
 				<th><a href="?page=MirrorStatus;orderby=country;sort='.abs($sortint-1).'">'.self::__get('L10n')->getText('Country').'</a></th>
-				<th style="text-align:center;">FTP</th>
-				<th style="text-align:center;">HTTP</th>
-				<th style="text-align:center;">RSYNC</th>
-				<th style="width:120px;"><a href="?page=MirrorStatus;orderby=avgtime;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::__get('L10n')->getText('Response time').'</a></th>
-				<th style="width:120px;"><a href="?page=MirrorStatus;orderby=syncdelay;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::__get('L10n')->getText('Delay').'</a></th>
+				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=avgtime;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::__get('L10n')->getText('Response time').'</a></th>
+				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=syncdelay;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::__get('L10n')->getText('Delay').'</a></th>
 				<th><a href="?page=MirrorStatus;orderby=lastsync;sort='.abs($sortint-1).'">'.self::__get('L10n')->getText('Last update').'</a></th>
 			</tr>';
 
@@ -333,12 +313,9 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 		$body .= '<tr class="packageline'.$line.'">
 				<td>'.$mirror['host'].'</td>
 				<td>'.$mirror['country'].'</td>
-				<td style="text-align:center;">'.(strlen($mirror['ftp']) == 0 ? '' : '<a rel="nofollow" href="ftp://'.$mirror['ftp'].'">&radic;</a>').'</td>
-				<td style="text-align:center;">'.(strlen($mirror['http']) == 0 ? '' : '<a rel="nofollow" href="http://'.$mirror['http'].'">&radic;</a>').'</td>
-				<td style="text-align:center;">'.(strlen($mirror['rsync']) == 0 ? '' : '<a rel="nofollow" href="rsync://'.$mirror['rsync'].'">&radic;</a>').'</td>
 				<td title="&empty;&nbsp;'.self::__get('L10n')->getEpoch($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
 				<td title="&empty;&nbsp;'.self::__get('L10n')->getEpoch($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
-				<td'.$outofsync.'>'.self::__get('L10n')->getDateTime($mirror['lastsync']).''.(!empty($mirror['ticketnr']) ? '<a rel="nofollow" href="http://bugs.archlinux.org/'.$mirror['ticketnr'].'">*</a>' : '').'</td>
+				<td'.$outofsync.'>'.self::__get('L10n')->getDateTime($mirror['lastsync']).'</td>
 			</tr>';
 
 		$line = abs($line-1);

@@ -142,8 +142,6 @@ public static function updateDBCache()
 			('
 			SELECT
 				mirrors.host,
-				mirrors.ftp,
-				mirrors.http,
 				mirrors.country,
 				MAX(lastsync) AS lastsync,
 				AVG(totaltime) AS avgtime
@@ -151,9 +149,7 @@ public static function updateDBCache()
 				mirrors,
 				mirror_log
 			WHERE
-				mirrors.official = 1
-				AND mirrors.deleted = 0
-				AND mirror_log.host = mirrors.host
+				mirror_log.host = mirrors.host
 				AND mirror_log.time >= ?
 			GROUP BY
 				mirrors.host
@@ -165,9 +161,7 @@ public static function updateDBCache()
 							mirrors,
 							mirror_log
 						WHERE
-							mirrors.official = 1
-							AND mirrors.deleted = 0
-							AND mirror_log.host = mirrors.host
+							mirror_log.host = mirrors.host
 							AND mirror_log.time >= ?
 						)
 			ORDER BY
@@ -181,8 +175,7 @@ public static function updateDBCache()
 
 		foreach ($stm->getRowSet() as $mirror)
 			{
-			$url = strlen($mirror['ftp']) > 0 ? 'ftp://'.$mirror['ftp'].'/' : 'http://'.$mirror['http'].'/';
-			$mirrors[$url] = round(3/$mirror['avgtime']);
+			$mirrors[$mirror['host']] = round(3/$mirror['avgtime']);
 			}
 
 		$stm->close();

@@ -37,6 +37,8 @@ public function __construct()
 	$this->config['pkgdb_repositories']		= array('core');
 	$this->config['pkgdb_architectures']		= array('i686');
 
+	$this->config['mirrorlist_url']			= 'http://repos.archlinux.org/viewvc.cgi/pacman-mirrorlist/trunk/mirrorlist?view=co';
+
 	$this->config['debug']				= false;
 	$this->config['log_dir']			= '';
 
