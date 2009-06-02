@@ -105,7 +105,8 @@ private static function getCurrentProblems($range)
 			HAVING
 				errorcount > 1
 			ORDER BY
-				lasttime DESC
+				lasttime DESC,
+				host
 			');
 		}
 	catch (DBNoDataException $e)
@@ -218,7 +219,8 @@ public static function updateDBCache()
 					GROUP BY
 						mirrors.host
 					ORDER BY
-						'.$order.' '.$sort.'
+						'.$order.' '.$sort.',
+						host
 					');
 
 				$mirrors = $stm->getRowSet();

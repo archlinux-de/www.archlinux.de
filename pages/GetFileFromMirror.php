@@ -166,7 +166,8 @@ public static function updateDBCache()
 						)
 			ORDER BY
 				avgtime ASC,
-				lastsync DESC
+				lastsync DESC,
+				host
 			');
 		$stm->bindInteger(time() - self::$range);
 		$stm->bindInteger(time() - self::$range);
