@@ -142,7 +142,6 @@ public static function updateDBCache()
 			('
 			SELECT
 				mirrors.host,
-				mirrors.country,
 				MAX(lastsync) AS lastsync,
 				AVG(totaltime) AS avgtime
 			FROM
@@ -154,22 +153,12 @@ public static function updateDBCache()
 			GROUP BY
 				mirrors.host
 			HAVING
-				lastsync >= 	(
-						SELECT
-							AVG(lastsync)
-						FROM
-							mirrors,
-							mirror_log
-						WHERE
-							mirror_log.host = mirrors.host
-							AND mirror_log.time >= ?
-						)
+				lastsync > 0
 			ORDER BY
 				avgtime ASC,
 				lastsync DESC,
 				host
 			');
-		$stm->bindInteger(time() - self::$range);
 		$stm->bindInteger(time() - self::$range);
 
 		$mirrors = array();

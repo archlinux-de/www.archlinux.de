@@ -218,6 +218,8 @@ public static function updateDBCache()
 						AND mirror_log.time >= '.$range.'
 					GROUP BY
 						mirrors.host
+					HAVING
+						lastsync > 0
 					ORDER BY
 						'.$order.' '.$sort.',
 						host
