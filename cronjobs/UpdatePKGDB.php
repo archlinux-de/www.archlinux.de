@@ -25,13 +25,13 @@ ini_set('max_execution_time', 0);
 define('IN_LL', null);
 
 require ('../LLPath.php');
-ini_set('include_path', ini_get('include_path').':'.LL_PATH.':../');
+ini_set('include_path', ini_get('include_path').':../:'.LL_PATH);
 
 require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('pages/abstract/IDBCachable.php');
+#require ('pages/abstract/IDBCachable.php');
 require ('PackageDB.php');
 require ('pages/abstract/Page.php');
 require ('pages/ArchitectureDifferences.php');
