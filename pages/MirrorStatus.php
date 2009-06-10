@@ -103,7 +103,7 @@ private static function getCurrentProblems($range)
 			GROUP BY
 				host, error
 			HAVING
-				errorcount > 1
+				errorcount > 6
 			ORDER BY
 				lasttime DESC,
 				host
