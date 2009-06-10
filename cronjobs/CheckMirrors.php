@@ -185,7 +185,7 @@ private function getMirrorlist()
 			{
 			$country = $matches[1];
 			}
-		elseif (preg_match('/^#Server = (.+)\$repo\/os\/@carch@$/', $mirrorlist[$line], $matches))
+		elseif (preg_match('/^#Server = (.+)\$repo\/os\/i686$/', $mirrorlist[$line], $matches))
 			{
 			$mirrorarray[$matches[1]] = $country;
 			}
