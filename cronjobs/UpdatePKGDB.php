@@ -50,14 +50,6 @@ private $licenses 	= array();
 private $changed	= false;
 
 
-public function __construct()
-	{
-	$this->DB->connect(
-		$this->Settings->getValue('sql_user'),
-		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database'));
-	}
-
 private function getTmpDir()
 	{
 	$tmp = ini_get('upload_tmp_dir');
@@ -80,6 +72,11 @@ public function runUpdate()
 		touch($this->getLockFile());
 		chmod($this->getLockFile(), 0600);
 		}
+
+	$this->DB->connect(
+		$this->Settings->getValue('sql_user'),
+		$this->Settings->getValue('sql_password'),
+		$this->Settings->getValue('sql_database'));
 
 	$this->DB->execute
 		('
@@ -194,7 +191,6 @@ private function getRecentDate($repo, $arch)
 
 private function updateRepository($repo, $arch)
 	{
-	$lastrun = $this->getRecentDate($repo, $arch);
 	$lastpkgdbmtime = $this->getPKGDBMTime($repo, $arch);
 
 	$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror'), $repo, $arch, $lastpkgdbmtime);
@@ -202,6 +198,7 @@ private function updateRepository($repo, $arch)
 	if ($mtime > $lastpkgdbmtime)
 		{
 		$this->changed = true;
+		$lastrun = $this->getRecentDate($repo, $arch);
 		$this->updatePackages($pkgdb->getUpdatedPackages($lastrun), $repo, $arch);
 		$this->setPKGDBMTime($repo, $arch, $mtime);
 

@@ -73,158 +73,158 @@ public static function updateDBCache()
 		$body = '<div id="box">
 			<table id="packagedetails">
 				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::__get('L10n')->getText('Repositories').'</h1></th>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Repositories').'</h1></th>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Overview').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Overview').'</th>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Architectures').'</th>
+					<th>'.self::get('L10n')->getText('Architectures').'</th>
 					<td>'.$data['architectures'].'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Repositories').'</th>
+					<th>'.self::get('L10n')->getText('Repositories').'</th>
 					<td>'.$data['repositories'].'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Groups').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['groups']).'</td>
+					<th>'.self::get('L10n')->getText('Groups').'</th>
+					<td>'.self::get('L10n')->getNumber($data['groups']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Packages').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['packages']).'</td>
+					<th>'.self::get('L10n')->getText('Packages').'</th>
+					<td>'.self::get('L10n')->getNumber($data['packages']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Files').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['files']).'</td>
+					<th>'.self::get('L10n')->getText('Files').'</th>
+					<td>'.self::get('L10n')->getNumber($data['files']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Size of file index').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['file_index']).'</td>
+					<th>'.self::get('L10n')->getText('Size of file index').'</th>
+					<td>'.self::get('L10n')->getNumber($data['file_index']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Licenses').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['licenses']).'</td>
+					<th>'.self::get('L10n')->getText('Licenses').'</th>
+					<td>'.self::get('L10n')->getNumber($data['licenses']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Dependencies').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['depends']).'</td>
+					<th>'.self::get('L10n')->getText('Dependencies').'</th>
+					<td>'.self::get('L10n')->getNumber($data['depends']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Optional dependencies').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['optdepends']).'</td>
+					<th>'.self::get('L10n')->getText('Optional dependencies').'</th>
+					<td>'.self::get('L10n')->getNumber($data['optdepends']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Provides').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['provides']).'</td>
+					<th>'.self::get('L10n')->getText('Provides').'</th>
+					<td>'.self::get('L10n')->getNumber($data['provides']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Conflicts').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['conflicts']).'</td>
+					<th>'.self::get('L10n')->getText('Conflicts').'</th>
+					<td>'.self::get('L10n')->getNumber($data['conflicts']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Replaces').'</th>
-					<td>'.self::__get('L10n')->getNumber($data['replaces']).'</td>
+					<th>'.self::get('L10n')->getText('Replaces').'</th>
+					<td>'.self::get('L10n')->getNumber($data['replaces']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Total size of repositories').'</th>
+					<th>'.self::get('L10n')->getText('Total size of repositories').'</th>
 					<td>'.self::formatBytes($data['csize']).'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Total size of files').'</th>
+					<th>'.self::get('L10n')->getText('Total size of files').'</th>
 					<td>'.self::formatBytes($data['isize']).'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Packager').'</th>
+					<th>'.self::get('L10n')->getText('Packager').'</th>
 					<td>'.$data['packagers'].'</td>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Averages').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Averages').'</th>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Size of packages').'</th>
+					<th>'.self::get('L10n')->getText('Size of packages').'</th>
 					<td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Size of files').'</th>
+					<th>'.self::get('L10n')->getText('Size of files').'</th>
 					<td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Files per package').'</th>
-					<td>&empty; '.self::__get('L10n')->getNumber($data['avgfiles'], 2).'</td>
+					<th>'.self::get('L10n')->getText('Files per package').'</th>
+					<td>&empty; '.self::get('L10n')->getNumber($data['avgfiles'], 2).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Packages per packager').'</th>
-					<td>&empty; '.self::__get('L10n')->getNumber($data['avgpkgperpackager'], 2).'</td>
+					<th>'.self::get('L10n')->getText('Packages per packager').'</th>
+					<td>&empty; '.self::get('L10n')->getNumber($data['avgpkgperpackager'], 2).'</td>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Repositories').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Repositories').'</th>
 				</tr>
 					'.self::getRepositoryStatistics().'
 				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::__get('L10n')->getText('Package usage').'</h1></th>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Package usage').'</h1></th>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Common statistics').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Common statistics').'</th>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Submissions').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['submissions']).'</td>
+					<th>'.self::get('L10n')->getText('Submissions').'</th>
+					<td>'.self::get('L10n')->getNumber($log['submissions']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Different IPs').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['differentips']).'</td>
+					<th>'.self::get('L10n')->getText('Different IPs').'</th>
+					<td>'.self::get('L10n')->getNumber($log['differentips']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('First entry').'</th>
-					<td>'.self::__get('L10n')->getDateTime($log['minvisited']).'</td>
+					<th>'.self::get('L10n')->getText('First entry').'</th>
+					<td>'.self::get('L10n')->getDateTime($log['minvisited']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Last entry').'</th>
-					<td>'.self::__get('L10n')->getDateTime($log['maxvisited']).'</td>
+					<th>'.self::get('L10n')->getText('Last entry').'</th>
+					<td>'.self::get('L10n')->getDateTime($log['maxvisited']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Sum of submitted packages').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['sumcount']).'</td>
+					<th>'.self::get('L10n')->getText('Sum of submitted packages').'</th>
+					<td>'.self::get('L10n')->getNumber($log['sumcount']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Number of different packages').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['diffcount']).'</td>
+					<th>'.self::get('L10n')->getText('Number of different packages').'</th>
+					<td>'.self::get('L10n')->getNumber($log['diffcount']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Lowest number of installed packages').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['mincount']).'</td>
+					<th>'.self::get('L10n')->getText('Lowest number of installed packages').'</th>
+					<td>'.self::get('L10n')->getNumber($log['mincount']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Highest number of installed packages').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['maxcount']).'</td>
+					<th>'.self::get('L10n')->getText('Highest number of installed packages').'</th>
+					<td>'.self::get('L10n')->getNumber($log['maxcount']).'</td>
 				</tr>
 				<tr>
-					<th>'.self::__get('L10n')->getText('Average number of installed packages').'</th>
-					<td>'.self::__get('L10n')->getNumber($log['avgcount']).'</td>
+					<th>'.self::get('L10n')->getText('Average number of installed packages').'</th>
+					<td>'.self::get('L10n')->getNumber($log['avgcount']).'</td>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Submissions per architectures').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Submissions per architectures').'</th>
 				</tr>
 				'.self::getSubmissionsPerArchitecture().'
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Installed packages per repository').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Installed packages per repository').'</th>
 				</tr>
 				'.self::getPackagesPerRepository().'
 				'.self::getNumberOfUnofficialPackages().'
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Popular packages per repository').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Popular packages per repository').'</th>
 				</tr>
 				'.self::getPopularPackagesPerRepository().'
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::__get('L10n')->getText('Popular unofficial packages').'</th>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Popular unofficial packages').'</th>
 				</tr>
 				'.self::getPopularUnofficialPackages().'
 			</table>
 			</div>
 			';
 
-		self::__get('PersistentCache')->addObject('PackageStatistics:'.self::__get('L10n')->getLocale(), $body);
+		self::get('PersistentCache')->addObject('PackageStatistics:'.self::get('L10n')->getLocale(), $body);
 		}
 	catch (DBNoDataException $e)
 		{
@@ -233,7 +233,7 @@ public static function updateDBCache()
 
 private static function getCommonRepositoryStatistics()
 	{
-	return self::__get('DB')->getRow
+	return self::get('DB')->getRow
 		('
 		SELECT
 			(SELECT COUNT(*) FROM architectures) AS architectures,
@@ -284,7 +284,7 @@ private static function getCommonRepositoryStatistics()
 
 private static function getCommonPackageUsageStatistics()
 	{
-	return self::__get('DB')->getRow
+	return self::get('DB')->getRow
 		('
 		SELECT
 			(SELECT COUNT(*) FROM package_statistics_log) AS submissions,
@@ -303,14 +303,14 @@ private static function getRepositoryStatistics()
 	{
 	try
 		{
-		$repos = self::__get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
+		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
 		$repos = array();
 		}
 
-	$total = self::__get('DB')->getRow
+	$total = self::get('DB')->getRow
 			('
 			SELECT
 				COUNT(id) AS packages,
@@ -319,7 +319,7 @@ private static function getRepositoryStatistics()
 				packages
 			');
 
-	$stm = self::__get('DB')->prepare
+	$stm = self::get('DB')->prepare
 			('
 			SELECT
 				COUNT(id) AS packages,
@@ -345,11 +345,11 @@ private static function getRepositoryStatistics()
 						<div style="overflow:auto; max-height: 800px;">
 						<table id="packages" style="border:none;">
 						<tr>
-							<td style="width: 50px;">'.self::__get('L10n')->getText('Packages').'</td>
+							<td style="width: 50px;">'.self::get('L10n')->getText('Packages').'</td>
 							<td>'.self::getBar($data['packages'], $total['packages']).'</td>
 						</tr>
 						<tr>
-							<td style="width: 50px;">'.self::__get('L10n')->getText('Size').'</td>
+							<td style="width: 50px;">'.self::get('L10n')->getText('Size').'</td>
 							<td>'.self::getBar($data['size'], $total['size']).'</td>
 						</tr>
 						</table>
@@ -394,7 +394,7 @@ private static function formatBytes($bytes)
 		$postfix = '&nbsp;';
 		}
 
-	return self::__get('L10n')->getNumber($result, 2).$postfix;
+	return self::get('L10n')->getNumber($result, 2).$postfix;
 	}
 
 private static function getBar($value, $total)
@@ -412,12 +412,12 @@ private static function getBar($value, $total)
 			<tr>
 				<td style="padding:0px;margin:0px;">
 					<div style="background-color:#'.$color.';width:'.round($percent).'%;"
-		title="'.self::__get('L10n')->getNumber($value).' '.self::__get('L10n')->getText('of').' '.self::__get('L10n')->getNumber($total).'">
+		title="'.self::get('L10n')->getNumber($value).' '.self::get('L10n')->getText('of').' '.self::get('L10n')->getNumber($total).'">
 			&nbsp;
 				</div>
 				</td>
 				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#'.$color.'">
-					'.self::__get('L10n')->getNumber($percent, 2).'&nbsp;%
+					'.self::get('L10n')->getNumber($percent, 2).'&nbsp;%
 				</td>
 			</tr>
 		</table>';
@@ -490,7 +490,7 @@ private static function MultiColorFade($hexarray)
 
 private static function getSubmissionsPerArchitecture()
 	{
-	$total = self::__get('DB')->getColumn
+	$total = self::get('DB')->getColumn
 		('
 		SELECT
 			COUNT(arch)
@@ -498,7 +498,7 @@ private static function getSubmissionsPerArchitecture()
 			package_statistics_log
 		');
 
-	$arches = self::__get('DB')->getRowSet
+	$arches = self::get('DB')->getRowSet
 		('
 		SELECT
 			COUNT(arch) AS count,
@@ -521,7 +521,7 @@ private static function getSubmissionsPerArchitecture()
 
 private static function getPackagesPerRepository()
 	{
-	$total = self::__get('DB')->getColumn
+	$total = self::get('DB')->getColumn
 		('
 		SELECT
 			SUM(package_statistics.count)
@@ -529,7 +529,7 @@ private static function getPackagesPerRepository()
 			package_statistics
 		');
 
-	$repos = self::__get('DB')->getRowSet
+	$repos = self::get('DB')->getRowSet
 		('
 		SELECT
 			SUM(package_statistics.count) AS count,
@@ -561,7 +561,7 @@ private static function getPackagesPerRepository()
 
 private static function getPopularPackagesPerRepository()
 	{
-	$total = self::__get('DB')->getColumn
+	$total = self::get('DB')->getColumn
 		('
 		SELECT
 			COUNT(*)
@@ -569,7 +569,7 @@ private static function getPopularPackagesPerRepository()
 			package_statistics_log
 		');
 
-	$repos = self::__get('DB')->getRowSet
+	$repos = self::get('DB')->getRowSet
 		('
 		SELECT
 			name,
@@ -580,7 +580,7 @@ private static function getPopularPackagesPerRepository()
 			name <> "testing"
 		');
 
-	$stm = self::__get('DB')->prepare
+	$stm = self::get('DB')->prepare
 		('
 		SELECT
 			name,
@@ -658,7 +658,7 @@ private static function getPopularPackagesPerRepository()
 
 private static function getNumberOfUnofficialPackages()
 	{
-	$total = self::__get('DB')->getColumn
+	$total = self::get('DB')->getColumn
 		('
 		SELECT
 			SUM(package_statistics.count)
@@ -666,7 +666,7 @@ private static function getNumberOfUnofficialPackages()
 			package_statistics
 		');
 
-	$packages = self::__get('DB')->getColumn
+	$packages = self::get('DB')->getColumn
 		('
 		SELECT
 			SUM(package_statistics.count)
@@ -676,12 +676,12 @@ private static function getNumberOfUnofficialPackages()
 			package_statistics.name NOT IN (SELECT name FROM packages)
 		');
 
-	return '<tr><th>'.self::__get('L10n')->getText('Unofficial repositories').'</th><td>'.self::getBar($packages, $total).'</td></tr>';
+	return '<tr><th>'.self::get('L10n')->getText('Unofficial repositories').'</th><td>'.self::getBar($packages, $total).'</td></tr>';
 	}
 
 private static function getPopularUnofficialPackages()
 	{
-	$total = self::__get('DB')->getColumn
+	$total = self::get('DB')->getColumn
 		('
 		SELECT
 			COUNT(*)
@@ -689,7 +689,7 @@ private static function getPopularUnofficialPackages()
 			package_statistics_log
 		');
 
-	$packages = self::__get('DB')->getRowSet
+	$packages = self::get('DB')->getRowSet
 		('
 		SELECT
 			package_statistics.name,

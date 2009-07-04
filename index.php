@@ -30,10 +30,10 @@ require ('modules/Input.php');
 require ('modules/Output.php');
 require ('modules/L10n.php');
 
-Modul::__set('Settings', new Settings());
-$Input = Modul::__set('Input', new Input());
-Modul::__set('L10n', new L10n());
-$Output = Modul::__set('Output', new Output());
+Modul::set('Settings', new Settings());
+$Input = Modul::set('Input', new Input());
+Modul::set('L10n', new L10n());
+$Output = Modul::set('Output', new Output());
 
 function __autoload($class)
 	{

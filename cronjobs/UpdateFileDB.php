@@ -40,15 +40,6 @@ private $curmtime	= array();
 private $lastmtime	= array();
 private $changed	= false;
 
-public function __construct()
-	{
-	$this->DB->connect(
-		$this->Settings->getValue('sql_user'),
-		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database'));
-
- 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
-	}
 
 private function getLockFile()
 	{
@@ -66,6 +57,13 @@ public function runUpdate()
 		touch($this->getLockFile());
 		chmod($this->getLockFile(), 0600);
 		}
+
+	$this->DB->connect(
+		$this->Settings->getValue('sql_user'),
+		$this->Settings->getValue('sql_password'),
+		$this->Settings->getValue('sql_database'));
+
+ 	$this->mirror = $this->Settings->getValue('pkgdb_mirror');
 
 	foreach ($this->Settings->getValue('pkgdb_repositories') as $repo)
 		{

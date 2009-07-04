@@ -38,14 +38,6 @@ require ('pages/MirrorStatus.php');
 class CheckMirrors extends Modul {
 
 
-public function __construct()
-	{
-	$this->DB->connect(
-		$this->Settings->getValue('sql_user'),
-		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database'));
-	}
-
 private function getTmpDir()
 	{
 	$tmp = ini_get('upload_tmp_dir');
@@ -68,6 +60,11 @@ public function runUpdate()
 		touch($this->getLockFile());
 		chmod($this->getLockFile(), 0600);
 		}
+
+	$this->DB->connect(
+		$this->Settings->getValue('sql_user'),
+		$this->Settings->getValue('sql_password'),
+		$this->Settings->getValue('sql_database'));
 
 	try
 		{

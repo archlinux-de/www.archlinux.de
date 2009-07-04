@@ -86,7 +86,7 @@ public static function updateDBCache()
 	{
 	try
 		{
-		$packages = self::__get('DB')->getRowSet
+		$packages = self::get('DB')->getRowSet
 			('
 			(
 			SELECT
@@ -190,17 +190,17 @@ public static function updateDBCache()
 		{
 		$body = '
 			<div class="greybox" id="searchbox">
-				<h4 style="text-align: right">'.self::__get('L10n')->getText('Architecture differences').'</h4>
+				<h4 style="text-align: right">'.self::get('L10n')->getText('Architecture differences').'</h4>
 				<div style="font-size:10px; text-align:right;padding-bottom:10px;">
-				'.($showminor ? '<a href="?page=ArchitectureDifferences">'.self::__get('L10n')->getText('Hide architecture specific differences').'</a>' : '<a href="?page=ArchitectureDifferences;showminor">'.self::__get('L10n')->getText('Show architecture specific differences').'</a>').'
+				'.($showminor ? '<a href="?page=ArchitectureDifferences">'.self::get('L10n')->getText('Hide architecture specific differences').'</a>' : '<a href="?page=ArchitectureDifferences;showminor">'.self::get('L10n')->getText('Show architecture specific differences').'</a>').'
 				</div>
 			</div>
 			<table id="packages">
 				<tr>
-					<th>'.self::__get('L10n')->getText('Package name').'</th>
+					<th>'.self::get('L10n')->getText('Package name').'</th>
 					<th>i686</th>
 					<th>x86_64</th>
-					<th>'.self::__get('L10n')->getText('Last update').'</th>
+					<th>'.self::get('L10n')->getText('Last update').'</th>
 				</tr>';
 
 		$line = 0;
@@ -237,7 +237,7 @@ public static function updateDBCache()
 					<td>'.$package['name'].'</td>
 					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;package='.$package['iid'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
 					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;package='.$package['xid'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
-					<td>'.self::__get('L10n')->getDateTime($package['builddate']).'</td>
+					<td>'.self::get('L10n')->getDateTime($package['builddate']).'</td>
 				</tr>';
 
 			$line = abs($line-1);
@@ -246,7 +246,7 @@ public static function updateDBCache()
 
 		$body .= '</table>';
 
-		self::__get('PersistentCache')->addObject('ArchitectureDifferences:'.($showminor ? 1 : 0).':'.self::__get('L10n')->getLocale(), $body);
+		self::get('PersistentCache')->addObject('ArchitectureDifferences:'.($showminor ? 1 : 0).':'.self::get('L10n')->getLocale(), $body);
 		}
 	}
 

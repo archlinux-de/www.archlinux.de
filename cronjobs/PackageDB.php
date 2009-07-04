@@ -92,7 +92,7 @@ private function update($lastmtime)
 		flock($fh, LOCK_UN);
 		fclose($fh);
 
-		exec('bsdtar -xf '.$this->DBtargz.' -C '.$this->DBDir, $output, $return);
+		system('bsdtar -xf '.$this->DBtargz.' -C '.$this->DBDir, $return);
 		unlink($this->DBtargz);
 		if ($return == 0)
 			{
@@ -100,6 +100,8 @@ private function update($lastmtime)
 			}
 		else
 			{
+			$this->mtime = 0;
+			$this->updated = false;
 			$this->rmrf($this->DBDir);
 			}
 		}

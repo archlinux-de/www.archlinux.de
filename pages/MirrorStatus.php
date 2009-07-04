@@ -87,7 +87,7 @@ private static function getCurrentProblems($range)
 	{
 	try
 		{
-		$problems = self::__get('DB')->getRowSet
+		$problems = self::get('DB')->getRowSet
 			('
 			SELECT
 				host,
@@ -116,11 +116,11 @@ private static function getCurrentProblems($range)
 
 	$list = '<table id="packages">
 		<tr>
-			<th>'.self::__get('L10n')->getText('Host').'</th>
-			<th>'.self::__get('L10n')->getText('Message').'</th>
-			<th>'.self::__get('L10n')->getText('First occurrence').'</th>
-			<th>'.self::__get('L10n')->getText('Last occurrence').'</th>
-			<th>'.self::__get('L10n')->getText('Number').'</th>
+			<th>'.self::get('L10n')->getText('Host').'</th>
+			<th>'.self::get('L10n')->getText('Message').'</th>
+			<th>'.self::get('L10n')->getText('First occurrence').'</th>
+			<th>'.self::get('L10n')->getText('Last occurrence').'</th>
+			<th>'.self::get('L10n')->getText('Number').'</th>
 		</tr>';
 	$line = 0;
 
@@ -130,8 +130,8 @@ private static function getCurrentProblems($range)
 		'<tr class="packageline'.$line.'">
 			<td><a href="'.$problem['host'].'" rel="nofollow">'.$problem['host'].'</a></td>
 			<td>'.$problem['error'].'</td>
-			<td>'.self::__get('L10n')->getDateTime($problem['firsttime']).'</td>
-			<td>'.self::__get('L10n')->getDateTime($problem['lasttime']).'</td>
+			<td>'.self::get('L10n')->getDateTime($problem['firsttime']).'</td>
+			<td>'.self::get('L10n')->getDateTime($problem['lasttime']).'</td>
 			<td>'.$problem['errorcount'].'</td>
 		</tr>';
 
@@ -147,7 +147,7 @@ public static function updateDBCache()
 
 	try
 		{
-		$int = self::__get('DB')->getRow
+		$int = self::get('DB')->getRow
 			('
 			SELECT
 				MIN(totaltime) AS mintimes,
@@ -161,7 +161,7 @@ public static function updateDBCache()
 			WHERE
 				time >= '.$range.'
 			');
-		$int['count'] = self::__get('DB')->getColumn
+		$int['count'] = self::get('DB')->getColumn
 			('
 			SELECT
 				COUNT(host) AS count
@@ -169,7 +169,7 @@ public static function updateDBCache()
 				mirrors
 			');
 
-		$de = self::__get('DB')->getRow
+		$de = self::get('DB')->getRow
 			('
 			SELECT
 				MIN(totaltime) AS mintimes,
@@ -186,7 +186,7 @@ public static function updateDBCache()
 				AND mirror_log.host = mirrors.host
 				AND mirror_log.time >= '.$range.'
 			');
-		$de['count'] = self::__get('DB')->getColumn
+		$de['count'] = self::get('DB')->getColumn
 			('
 			SELECT
 				COUNT(host) AS count
@@ -202,7 +202,7 @@ public static function updateDBCache()
 			{
 			foreach (self::$sorts as $sort)
 				{
-				$stm = self::__get('DB')->prepare
+				$stm = self::get('DB')->prepare
 					('
 					SELECT
 						mirrors.host,
@@ -240,57 +240,57 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 	$sortint = ($sort == 'DESC' ? 1 : 0);
 
 	$body = '<div class="greybox" id="searchbox">
-		<h4 style="text-align: right">'.self::__get('L10n')->getText('Mirror status').'</h4>
+		<h4 style="text-align: right">'.self::get('L10n')->getText('Mirror status').'</h4>
 		<table>
 			<tr>
 				<th>&nbsp;</th>
-				<th>'.self::__get('L10n')->getText('Germany').'</th>
-				<th>'.self::__get('L10n')->getText('International').'</th>
+				<th>'.self::get('L10n')->getText('Germany').'</th>
+				<th>'.self::get('L10n')->getText('International').'</th>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Number of mirrors').'</th>
+				<th>'.self::get('L10n')->getText('Number of mirrors').'</th>
 				<td>'.$de['count'].'</td>
 				<td>'.$int['count'].'</td>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Lowest response time').'</th>
-				<td>'.self::__get('L10n')->getEpoch($de['mintimes']).'</td>
-				<td>'.self::__get('L10n')->getEpoch($int['mintimes']).'</td>
+				<th>'.self::get('L10n')->getText('Lowest response time').'</th>
+				<td>'.self::get('L10n')->getEpoch($de['mintimes']).'</td>
+				<td>'.self::get('L10n')->getEpoch($int['mintimes']).'</td>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Highest response time').'</th>
-				<td>'.self::__get('L10n')->getEpoch($de['maxtimes']).'</td>
-				<td>'.self::__get('L10n')->getEpoch($int['maxtimes']).'</td>
+				<th>'.self::get('L10n')->getText('Highest response time').'</th>
+				<td>'.self::get('L10n')->getEpoch($de['maxtimes']).'</td>
+				<td>'.self::get('L10n')->getEpoch($int['maxtimes']).'</td>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Average response time').'</th>
-				<td>'.self::__get('L10n')->getEpoch($de['avgtimes']).'</td>
-				<td>'.self::__get('L10n')->getEpoch($int['avgtimes']).'</td>
+				<th>'.self::get('L10n')->getText('Average response time').'</th>
+				<td>'.self::get('L10n')->getEpoch($de['avgtimes']).'</td>
+				<td>'.self::get('L10n')->getEpoch($int['avgtimes']).'</td>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Lowest delay').'</th>
-				<td>'.self::__get('L10n')->getEpoch($de['minsyncdelay']).'</td>
-				<td>'.self::__get('L10n')->getEpoch($int['minsyncdelay']).'</td>
+				<th>'.self::get('L10n')->getText('Lowest delay').'</th>
+				<td>'.self::get('L10n')->getEpoch($de['minsyncdelay']).'</td>
+				<td>'.self::get('L10n')->getEpoch($int['minsyncdelay']).'</td>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Highest delay').'</th>
-				<td>'.self::__get('L10n')->getEpoch($de['maxsyncdelay']).'</td>
-				<td>'.self::__get('L10n')->getEpoch($int['maxsyncdelay']).'</td>
+				<th>'.self::get('L10n')->getText('Highest delay').'</th>
+				<td>'.self::get('L10n')->getEpoch($de['maxsyncdelay']).'</td>
+				<td>'.self::get('L10n')->getEpoch($int['maxsyncdelay']).'</td>
 			</tr>
 			<tr>
-				<th>'.self::__get('L10n')->getText('Average delay').'</th>
-				<td>'.self::__get('L10n')->getEpoch($de['avgsyncdelay']).'</td>
-				<td>'.self::__get('L10n')->getEpoch($int['avgsyncdelay']).'</td>
+				<th>'.self::get('L10n')->getText('Average delay').'</th>
+				<td>'.self::get('L10n')->getEpoch($de['avgsyncdelay']).'</td>
+				<td>'.self::get('L10n')->getEpoch($int['avgsyncdelay']).'</td>
 			</tr>
 		</table>
 		</div>
 		<table id="packages">
 			<tr>
-				<th><a href="?page=MirrorStatus;orderby=host;sort='.abs($sortint-1).'">'.self::__get('L10n')->getText('Host').'</a></th>
-				<th><a href="?page=MirrorStatus;orderby=country;sort='.abs($sortint-1).'">'.self::__get('L10n')->getText('Country').'</a></th>
-				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=avgtime;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::__get('L10n')->getText('Response time').'</a></th>
-				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=syncdelay;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::__get('L10n')->getText('Delay').'</a></th>
-				<th><a href="?page=MirrorStatus;orderby=lastsync;sort='.abs($sortint-1).'">'.self::__get('L10n')->getText('Last update').'</a></th>
+				<th><a href="?page=MirrorStatus;orderby=host;sort='.abs($sortint-1).'">'.self::get('L10n')->getText('Host').'</a></th>
+				<th><a href="?page=MirrorStatus;orderby=country;sort='.abs($sortint-1).'">'.self::get('L10n')->getText('Country').'</a></th>
+				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=avgtime;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::get('L10n')->getText('Response time').'</a></th>
+				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=syncdelay;sort='.abs($sortint-1).'">&empty;&nbsp;'.self::get('L10n')->getText('Delay').'</a></th>
+				<th><a href="?page=MirrorStatus;orderby=lastsync;sort='.abs($sortint-1).'">'.self::get('L10n')->getText('Last update').'</a></th>
 			</tr>';
 
 	$line = 0;
@@ -319,19 +319,19 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 		$body .= '<tr class="packageline'.$line.'">
 				<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
 				<td>'.$mirror['country'].'</td>
-				<td title="&empty;&nbsp;'.self::__get('L10n')->getEpoch($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
-				<td title="&empty;&nbsp;'.self::__get('L10n')->getEpoch($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
-				<td'.$outofsync.'>'.self::__get('L10n')->getDateTime($mirror['lastsync']).'</td>
+				<td title="&empty;&nbsp;'.self::get('L10n')->getEpoch($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
+				<td title="&empty;&nbsp;'.self::get('L10n')->getEpoch($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
+				<td'.$outofsync.'>'.self::get('L10n')->getDateTime($mirror['lastsync']).'</td>
 			</tr>';
 
 		$line = abs($line-1);
 		}
 
 	$body .= '</table>
-		<h4 style="text-align: right;border-bottom: 1px dotted #0771a6;margin-bottom: 4px;padding-bottom: 2px;font-size: 10px;">'.self::__get('L10n')->getText('Current problems').'</h4>
+		<h4 style="text-align: right;border-bottom: 1px dotted #0771a6;margin-bottom: 4px;padding-bottom: 2px;font-size: 10px;">'.self::get('L10n')->getText('Current problems').'</h4>
 		'.$problems;
 
-	self::__get('PersistentCache')->addObject('MirrorStatus:'.$order.':'.$sort.':'.self::__get('L10n')->getLocale(), $body);
+	self::get('PersistentCache')->addObject('MirrorStatus:'.$order.':'.$sort.':'.self::get('L10n')->getLocale(), $body);
 	}
 
 }
