@@ -138,7 +138,7 @@ public static function updateDBCache()
 	{
 	try
 		{
-		$stm = self::__get('DB')->prepare
+		$stm = self::get('DB')->prepare
 			('
 			SELECT
 				mirrors.host,
@@ -169,7 +169,7 @@ public static function updateDBCache()
 			}
 
 		$stm->close();
-		self::__get('PersistentCache')->addObject('GetFileFromMirror', $mirrors);
+		self::get('PersistentCache')->addObject('GetFileFromMirror', $mirrors);
 		}
 	catch (DBNoDataException $e)
 		{
