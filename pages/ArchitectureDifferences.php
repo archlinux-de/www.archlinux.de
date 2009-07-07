@@ -213,6 +213,12 @@ public static function updateDBCache()
 				continue;
 				}
 
+			# hide lib32 packages in [community]
+			if (!$showminor && $package['reponame'] == 'community' && empty($package['iid']) && strpos($package['name'], 'lib32-') === 0)
+				{
+				continue;
+				}
+
 			$style = $package['reponame'] == 'testing' ? ' testingpackage' : '';
 			if ($repo != $package['repoid'])
 				{
