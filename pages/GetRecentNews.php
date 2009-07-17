@@ -46,8 +46,8 @@ public function show()
 					p.username,
 					p.userid
 				FROM
-					current.threads t,
-					current.posts p
+					ll.threads t,
+					ll.posts p
 				WHERE
 					t.forumid = ?
 					AND t.deleted = 0
