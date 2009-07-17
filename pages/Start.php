@@ -114,8 +114,8 @@ private function getRecentThreads()
 				t.summary,
 				f.name AS forum
 			FROM
-				current.threads t,
-				current.forums f
+				ll.threads t,
+				ll.forums f
 			WHERE
 				t.deleted = 0
 				AND t.forumid = f.id
@@ -166,8 +166,8 @@ private function getImportantNews()
 				p.dat,
 				p.text
 			FROM
-				current.threads t,
-				current.posts p
+				ll.threads t,
+				ll.posts p
 			WHERE
 				t.forumid = ?
 				AND t.deleted = 0
