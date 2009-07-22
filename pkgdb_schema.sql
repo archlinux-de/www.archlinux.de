@@ -205,6 +205,7 @@ CREATE TABLE `packages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `filename` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `base` varchar(255) NOT NULL,
   `version` varchar(100) NOT NULL,
   `desc` text NOT NULL,
   `csize` int(11) unsigned NOT NULL,

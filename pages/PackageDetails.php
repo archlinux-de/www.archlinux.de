@@ -69,6 +69,7 @@ public function prepare()
 			SELECT
 				packages.filename,
 				packages.name,
+				packages.base,
 				packages.version,
 				packages.desc,
 				packages.csize,
@@ -172,7 +173,7 @@ public function prepare()
 			'.($data['repository'] == 'community' ? '' : '
 			<tr>
 				<th>Quellen</th>
-				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['name'].'/repos/'.$data['repository'].'-'.$data['architecture'].'">SVN Eintrag</a></td>
+				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['base'].'/repos/'.$data['repository'].'-'.$data['architecture'].'">SVN Eintrag</a></td>
 			</tr>').'
 			<tr>
 				<th>Paket</th>

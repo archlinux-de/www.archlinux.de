@@ -276,6 +276,7 @@ private function updatePackages($packages, $repo, $arch)
 		SET
 			filename = ?,
 			name = ?,
+			base = ?,
 			`version` = ?,
 			`desc` = ?,
 			csize = ?,
@@ -299,6 +300,7 @@ private function updatePackages($packages, $repo, $arch)
 		SET
 			filename = ?,
 			name = ?,
+			base = ?,
 			`version` = ?,
 			`desc` = ?,
 			csize = ?,
@@ -369,6 +371,7 @@ private function updatePackages($packages, $repo, $arch)
 
 			$updateSTM->bindString(htmlspecialchars($package->getFileName()));
 			$updateSTM->bindString(htmlspecialchars($package->getName()));
+			$updateSTM->bindString(htmlspecialchars($package->getBase()));
 			$updateSTM->bindString(htmlspecialchars($package->getVersion()));
 			$updateSTM->bindString(htmlspecialchars($package->getDescription()));
 			$updateSTM->bindInteger($package->getCompressedSize());
@@ -388,6 +391,7 @@ private function updatePackages($packages, $repo, $arch)
 			{
 			$insertSTM->bindString(htmlspecialchars($package->getFileName()));
 			$insertSTM->bindString(htmlspecialchars($package->getName()));
+			$insertSTM->bindString(htmlspecialchars($package->getBase()));
 			$insertSTM->bindString(htmlspecialchars($package->getVersion()));
 			$insertSTM->bindString(htmlspecialchars($package->getDescription()));
 			$insertSTM->bindInteger($package->getCompressedSize());

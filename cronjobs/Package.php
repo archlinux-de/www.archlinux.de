@@ -69,6 +69,11 @@ public function getName()
 	return $this->desc['NAME'][0];
 	}
 
+public function getBase()
+	{
+	return isset($this->desc['BASE'][0]) ? $this->desc['BASE'][0] : $this->getName();
+	}
+
 public function getVersion()
 	{
 	return $this->desc['VERSION'][0];
