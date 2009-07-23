@@ -29,6 +29,8 @@ public function show()
 	{
 	if (!($content = $this->ObjectCache->getObject('AL:GetRecentPackages:Atom:')))
 		{
+		$lastdate = 0;
+		$entries = '';
 		$this->initDB();
 		try
 			{
@@ -58,9 +60,6 @@ public function show()
 				LIMIT
 					25
 				');
-
-			$lastdate = 0;
-			$entries = '';
 
 			foreach($packages as $package)
 				{
