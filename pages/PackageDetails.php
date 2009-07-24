@@ -176,6 +176,10 @@ public function prepare()
 				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['base'].'/repos/'.$data['repository'].'-'.$data['architecture'].'">SVN Eintrag</a></td>
 			</tr>').'
 			<tr>
+				<th>Fehler</th>
+				<td><a href="http://bugs.archlinux.org/index.php?string=%5B'.$data['name'].'%5D">Bug Tracker</a></td>
+			</tr>
+			<tr>
 				<th>Paket</th>
 				<td><a href="?page=GetFileFromMirror;file='.$data['repository'].'/os/'.$data['architecture'].'/'.$data['filename'].'">'.$data['filename'].'</a></td>
 			</tr>
