@@ -37,6 +37,8 @@ public function __construct()
 	$this->config['pkgdb_repositories']		= array('core');
 	$this->config['pkgdb_architectures']		= array('i686');
 
+	$this->config['file_refresh']			= 60*60; //1 hour
+
 	$this->config['mirrorlist_url']			= 'http://www.archlinux.org/mirrorlist/i686/';
 
 	$this->config['debug']				= false;
