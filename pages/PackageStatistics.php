@@ -544,6 +544,7 @@ private static function getPackagesPerRepository()
 			AND package_statistics.arch = architectures.name
 			AND packages.repository = repositories.id
 			AND repositories.name <> "testing"
+			AND repositories.name <> "community-testing"
 			AND packages.arch = architectures.id
 		GROUP BY
 			repositories.id
@@ -578,6 +579,7 @@ private static function getPopularPackagesPerRepository()
 			repositories
 		WHERE
 			name <> "testing"
+			AND name <> "community-testing"
 		');
 
 	$stm = self::get('DB')->prepare
