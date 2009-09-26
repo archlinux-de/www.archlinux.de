@@ -22,7 +22,6 @@ class GetRecentNews extends GetFile {
 
 private $board 			= 20;
 private $archNewsForum 		= 257;
-private $importantTag		= 3;
 
 public function prepare()
 	{
@@ -51,7 +50,6 @@ public function show()
 				WHERE
 					t.forumid = ?
 					AND t.deleted = 0
-					AND t.tag = ?
 					AND p.threadid = t.id
 					AND p.counter = 0
 				ORDER BY
@@ -60,7 +58,6 @@ public function show()
 					25
 				');
 			$stm->bindInteger($this->archNewsForum);
-			$stm->bindInteger($this->importantTag);
 			$threads = $stm->getRowSet();
 
 			$lastdate = 0;
