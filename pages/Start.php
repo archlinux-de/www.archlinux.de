@@ -22,8 +22,6 @@ class Start extends Page{
 
 private $board 			= 20;
 private $archNewsForum 		= 257;
-private $importantTag		= 3;
-private $solvedTag		= 1;
 private $arch 			= 1;
 
 protected function makeSubMenu()
@@ -87,7 +85,7 @@ public function prepare()
 					<div style="font-size:x-small;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				<h2>Aktuelle Ankündigungen</h2>
-				'.$this->getImportantNews().'
+				'.$this->getNews().'
 				<div style="text-align:right;font-size:x-small">
 					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$this->archNewsForum.'">&#187; Archiv</a>
 				</div>
@@ -154,7 +152,7 @@ private function getRecentThreads()
 	return $result;
 	}
 
-private function getImportantNews()
+private function getNews()
 	{
 	try
 		{
@@ -171,7 +169,6 @@ private function getImportantNews()
 			WHERE
 				t.forumid = ?
 				AND t.deleted = 0
-				AND t.tag = ?
 				AND p.threadid = t.id
 				AND p.counter = 0
 			ORDER BY
@@ -180,7 +177,6 @@ private function getImportantNews()
 				6
 			');
 		$stm->bindInteger($this->archNewsForum);
-		$stm->bindInteger($this->importantTag);
 		$threads = $stm->getRowSet();
 		}
 	catch(DBNoDataException $e)
