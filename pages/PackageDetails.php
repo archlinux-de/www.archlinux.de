@@ -245,7 +245,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<td>
-					'.($this->Input->Request->isValid('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;package='.$this->package.';showfiles">Dateien anzeigen</a>').'
+					'.($this->Input->Get->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;package='.$this->package.';showfiles=1">Dateien anzeigen</a>').'
 				</td>
 			</tr>
 		</table>
