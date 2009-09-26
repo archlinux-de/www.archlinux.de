@@ -54,22 +54,16 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Input->Request->getString('orderby'), array('name', 'lastbuilddate', 'packages')))
+		if (in_array($this->Input->Get->getString('orderby'), array('name', 'lastbuilddate', 'packages')))
 			{
-			$this->orderby = $this->Input->Request->getString('orderby');
+			$this->orderby = $this->Input->Get->getString('orderby');
 			}
 		}
 	catch (RequestException $e)
 		{
 		}
 
-	try
-		{
-		$this->sort = $this->Input->Request->getInt('sort') > 0 ? 1 : 0;
-		}
-	catch (RequestException $e)
-		{
-		}
+	$this->sort = $this->Input->Get->getInt('sort', 0) > 0 ? 1 : 0;
 
 	$packages = $this->DB->getColumn('SELECT COUNT(*) FROM packages');
 

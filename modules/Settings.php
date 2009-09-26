@@ -29,6 +29,7 @@ public function __construct()
 							        'en' => 'en_US.utf8');
 	$this->config['timezone']			= 'Europe/Berlin';
 
+	$this->config['sql_host'] 			= 'localhost';
 	$this->config['sql_database'] 			= 'pkgdb';
 	$this->config['sql_user']			= '';
 	$this->config['sql_password']			= '';

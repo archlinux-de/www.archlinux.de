@@ -55,7 +55,7 @@ public function prepare()
 
 	try
 		{
-		$this->package = $this->Input->Request->getInt('package');
+		$this->package = $this->Input->Get->getInt('package');
 		}
 	catch (RequestException $e)
 		{

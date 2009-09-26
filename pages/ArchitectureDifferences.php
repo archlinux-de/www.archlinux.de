@@ -50,7 +50,7 @@ public function prepare()
 	{
 	$this->setValue('title', $this->L10n->getText('Architecture differences'));
 
-	if (!($body = $this->PersistentCache->getObject('ArchitectureDifferences:'.($this->Input->Request->isValid('showminor') ? 1 : 0).':'.$this->L10n->getLocale())))
+	if (!($body = $this->PersistentCache->getObject('ArchitectureDifferences:'.($this->Input->Get->isInt('showminor') ? 1 : 0).':'.$this->L10n->getLocale())))
 		{
 		$this->Output->setStatus(Output::NOT_FOUND);
 		$this->showFailure($this->L10n->getText('No data found!'));
@@ -192,7 +192,7 @@ public static function updateDBCache()
 			<div class="greybox" id="searchbox">
 				<h4 style="text-align: right">'.self::get('L10n')->getText('Architecture differences').'</h4>
 				<div style="font-size:10px; text-align:right;padding-bottom:10px;">
-				'.($showminor ? '<a href="?page=ArchitectureDifferences">'.self::get('L10n')->getText('Hide architecture specific differences').'</a>' : '<a href="?page=ArchitectureDifferences;showminor">'.self::get('L10n')->getText('Show architecture specific differences').'</a>').'
+				'.($showminor ? '<a href="?page=ArchitectureDifferences">'.self::get('L10n')->getText('Hide architecture specific differences').'</a>' : '<a href="?page=ArchitectureDifferences;showminor=1">'.self::get('L10n')->getText('Show architecture specific differences').'</a>').'
 				</div>
 			</div>
 			<table id="packages">

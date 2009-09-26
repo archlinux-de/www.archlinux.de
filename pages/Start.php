@@ -39,7 +39,7 @@ protected function makeSubMenu()
 
 public function prepare()
 	{
-	if ($this->Input->Cookie->isValid('architecture') && $this->Input->Cookie->getInt('architecture') > 0)
+	if ($this->Input->Cookie->isInt('architecture') && $this->Input->Cookie->getInt('architecture') > 0)
 		{
 		$this->arch = $this->Input->Cookie->getInt('architecture');
 		}

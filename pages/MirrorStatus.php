@@ -57,22 +57,16 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Input->Request->getString('orderby'), self::$orders))
+		if (in_array($this->Input->Get->getString('orderby'), self::$orders))
 			{
-			$this->orderby = $this->Input->Request->getString('orderby');
+			$this->orderby = $this->Input->Get->getString('orderby');
 			}
 		}
 	catch (RequestException $e)
 		{
 		}
 
-	try
-		{
-		$this->sort = $this->Input->Request->getInt('sort') > 0 ? 1 : 0;
-		}
-	catch (RequestException $e)
-		{
-		}
+	$this->sort = $this->Input->Get->getInt('sort', 0) > 0 ? 1 : 0;
 
 	if (!($body = $this->PersistentCache->getObject('MirrorStatus:'.$this->orderby.':'.($this->sort > 0 ? 'DESC' : 'ASC').':'.$this->L10n->getLocale())))
 		{

@@ -22,6 +22,8 @@ require ('modules/DB.php');
 require ('modules/IOutput.php');
 require ('modules/ICache.php');
 require ('pages/abstract/IDBCachable.php');
+require ('modules/PersistentCache.php');
+Modul::set('PersistentCache', new PersistentCache());
 
 abstract class Page extends Modul implements IOutput{
 
@@ -60,6 +62,7 @@ public static function loadPage($name)
 public function __construct()
 	{
 	$this->DB->connect(
+		$this->Settings->getValue('sql_host'),
 		$this->Settings->getValue('sql_user'),
 		$this->Settings->getValue('sql_password'),
 		$this->Settings->getValue('sql_database'));

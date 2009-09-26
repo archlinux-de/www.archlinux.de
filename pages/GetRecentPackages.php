@@ -107,7 +107,7 @@ public function show()
 		$this->ObjectCache->addObject('AL:GetRecentPackages:Atom:', $content, 60*60);
 		}
 
-	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'recent.xml', strlen($content), $content);
+	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'recent.xml', $content);
 	}
 
 }

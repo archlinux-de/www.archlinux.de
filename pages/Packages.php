@@ -63,46 +63,26 @@ public function prepare()
 
 	try
 		{
-		if (in_array($this->Input->Request->getString('orderby'), array('name', 'builddate', 'repository', 'architecture')))
+		if (in_array($this->Input->Get->getString('orderby'), array('name', 'builddate', 'repository', 'architecture')))
 			{
-			$this->orderby = $this->Input->Request->getString('orderby');
+			$this->orderby = $this->Input->Get->getString('orderby');
 			}
 		}
 	catch (RequestException $e)
 		{
 		}
 
-	try
-		{
-		$this->sort = $this->Input->Request->getInt('sort') > 0 ? 1 : 0;
-		}
-	catch (RequestException $e)
-		{
-		}
+	$this->sort = $this->Input->Get->getInt('sort', 1) > 0 ? 1 : 0;
+	$this->package = $this->Input->Get->getInt('package', 0);
+	$this->repository = $this->Input->Post->getInt('repository', $this->Input->Get->getInt('repository', 0));
 
 	try
 		{
-		$this->package = $this->Input->Request->getInt('package');
-		}
-	catch (RequestException $e)
-		{
-		}
-
-	try
-		{
-		$this->repository = $this->Input->Request->getInt('repository');
-		}
-	catch (RequestException $e)
-		{
-		}
-
-	try
-		{
-		if ($this->Input->Get->isValid('architecture'))
+		if ($this->Input->Get->isInt('architecture'))
 			{
 			$this->architecture = $this->Input->Get->getInt('architecture');
 			}
-		elseif ($this->Input->Post->isValid('architecture'))
+		elseif ($this->Input->Post->isInt('architecture'))
 			{
 			$this->architecture = $this->Input->Post->getInt('architecture');
 			}
@@ -117,42 +97,18 @@ public function prepare()
 		{
 		}
 
-	try
+	$this->group = $this->Input->Post->getInt('group', $this->Input->Get->getInt('group', 0));
+	$this->packager = $this->Input->Get->getInt('packager', 0);
+
+	$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', 
+	$this->Input->Post->getString('search', $this->Input->Get->getString('search', ''))
+	)), 50);
+	if (strlen($this->search) < 2)
 		{
-		$this->group = $this->Input->Request->getInt('group');
-		}
-	catch (RequestException $e)
-		{
+		$this->search = '';
 		}
 
-	try
-		{
-		$this->packager = $this->Input->Request->getInt('packager');
-		}
-	catch (RequestException $e)
-		{
-		}
-
-	try
-		{
-		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Input->Request->getString('search'))), 50);
-		if (strlen($this->search) < 2)
-			{
-			$this->search = '';
-			}
-		}
-	catch (RequestException $e)
-		{
-		}
-
-	try
-		{
-		$this->searchField = $this->Input->Request->getInt('searchfield');
-		}
-	catch (RequestException $e)
-		{
-		}
-
+	$this->searchField = $this->Input->Post->getInt('searchfield', $this->Input->Get->getInt('searchfield', 0));
 
 	try
 		{

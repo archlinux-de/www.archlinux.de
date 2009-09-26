@@ -55,7 +55,7 @@ public function prepare()
 
 	try
 		{
-		$file = htmlspecialchars($this->Input->Request->getString('file'));
+		$file = htmlspecialchars($this->Input->Get->getString('file'));
 		}
 	catch (RequestException $e)
 		{
