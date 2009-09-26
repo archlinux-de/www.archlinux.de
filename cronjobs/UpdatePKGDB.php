@@ -74,6 +74,7 @@ public function runUpdate()
 		}
 
 	$this->DB->connect(
+		$this->Settings->getValue('sql_host'),
 		$this->Settings->getValue('sql_user'),
 		$this->Settings->getValue('sql_password'),
 		$this->Settings->getValue('sql_database'));
