@@ -32,8 +32,8 @@ public function show()
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
 <ShortName>archlinux.de :: Paketsuche</ShortName>
 <Description>Suche nach Paketen für Arch Linux</Description>
-<Image height="16" width="16" type="image/x-icon">http://www.archlinux.de/favicon.ico</Image>
-<Url type="text/html" method="get" template="http://www.archlinux.de/?page=Packages;submit=;search={searchTerms}"/>
+<Image height="16" width="16" type="image/x-icon">https://www.archlinux.de/favicon.ico</Image>
+<Url type="text/html" method="get" template="https://www.archlinux.de/?page=Packages;submit=;search={searchTerms}"/>
 </OpenSearchDescription>';
 
 	$this->Output->setContentType('Content-Type: application/opensearchdescription+xml; charset=UTF-8');

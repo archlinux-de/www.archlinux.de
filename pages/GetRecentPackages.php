@@ -71,14 +71,14 @@ public function show()
 				$entries .=
 				'
 				<entry>
-					<id>http://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'</id>
+					<id>https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'</id>
 					<title>'.$package['name'].' '.$package['version'].' ('.$package['architecture'].')</title>
-					<link rel="alternate" type="text/html" href="http://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'" />
+					<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'" />
 					<updated>'.date('c', $package['builddate']).'</updated>
 					<summary>'.$package['desc'].'</summary>
 					<author>
 						<name>'.$package['packager'].'</name>
-						<uri>http://www.archlinux.de/?page=Packages;packager='.$package['packagerid'].'</uri>
+						<uri>https://www.archlinux.de/?page=Packages;packager='.$package['packagerid'].'</uri>
 					</author>
 				</entry>
 				';
@@ -96,10 +96,10 @@ public function show()
 		$content =
 '<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
-	<id>http://www.archlinux.de/?page=Packages</id>
+	<id>https://www.archlinux.de/?page=Packages</id>
 	<title>archlinux.de :: Aktualisierte Pakete</title>
-	<link rel="self" type="application/atom+xml" href="http://www.archlinux.de/?page=Packages" />
-	<link rel="alternate" type="text/html" href="http://www.archlinux.de/" />
+	<link rel="self" type="application/atom+xml" href="https://www.archlinux.de/?page=Packages" />
+	<link rel="alternate" type="text/html" href="https://www.archlinux.de/" />
 	<updated>'.date('c', $lastdate).'</updated>
 	'.$entries.'
 </feed>';

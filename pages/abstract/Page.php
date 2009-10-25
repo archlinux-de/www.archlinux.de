@@ -108,10 +108,10 @@ protected function makeMenu()
 	{
 	return '
 		<ul id="nav">
-			<li><a href="http://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
+			<li><a href="https://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
 			<li><a href="?page=Packages">Pakete</a></li>
-			<li><a href="http://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="http://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
+			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
+			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
 			<li class="selected">Start</li>
 		</ul>';
 	}
@@ -138,7 +138,7 @@ private function sendOutput()
 		<link rel="stylesheet" href="arch.css" />
 		<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="?page=GetRecentNews" />
 		<link rel="alternate" type="application/atom+xml" title="Aktualisierte Pakete" href="?page=GetRecentPackages" />
-		<link rel="alternate" type="application/atom+xml" title="Aktuelle Themen im Forum" href="http://forum.archlinux.de/?page=GetRecent;id=20" />
+		<link rel="alternate" type="application/atom+xml" title="Aktuelle Themen im Forum" href="https://forum.archlinux.de/?page=GetRecent;id=20" />
 		<link rel="search" type="application/opensearchdescription+xml" href="?page=GetOpenSearch" title="www.archlinux.de" />
 	</head>
 	<body>
@@ -152,8 +152,8 @@ private function sendOutput()
 		<div id="content">
 			'.$this->getValue('body').'
 			<div id="foot">
-				<a href="http://wiki.archlinux.de/?title=wiki.archlinux.de:Datenschutz">Datenschutz</a> ::
-				<a href="http://wiki.archlinux.de/?title=wiki.archlinux.de:Impressum">Impressum</a>
+				<a href="https://wiki.archlinux.de/?title=wiki.archlinux.de:Datenschutz">Datenschutz</a> ::
+				<a href="https://wiki.archlinux.de/?title=wiki.archlinux.de:Impressum">Impressum</a>
 			</div>
 		</div>
 	</body>

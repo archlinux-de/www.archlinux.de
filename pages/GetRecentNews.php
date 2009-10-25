@@ -73,14 +73,14 @@ public function show()
 				$entries .=
 				'
 				<entry>
-					<id>http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'</id>
+					<id>https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'</id>
 					<title>'.$thread['name'].'</title>
-					<link rel="alternate" type="text/html" href="http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'" />
+					<link rel="alternate" type="text/html" href="https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'" />
 					<updated>'.date('c', $thread['dat']).'</updated>
 					<summary>'.$thread['summary'].'</summary>
 					<author>
 						<name>'.$thread['username'].'</name>
-						<uri>http://forum.archlinux.de/?page=ShowUser;id='.$this->board.';user='.$thread['userid'].'</uri>
+						<uri>https://forum.archlinux.de/?page=ShowUser;id='.$this->board.';user='.$thread['userid'].'</uri>
 					</author>
 					<content type="html">'.htmlspecialchars($thread['text']).'</content>
 				</entry>
@@ -99,10 +99,10 @@ public function show()
 		$content =
 '<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
-	<id>http://forum.archlinux.de/?page=Threads;id='.$this->board.';forum='.$this->archNewsForum.'</id>
+	<id>https://forum.archlinux.de/?page=Threads;id='.$this->board.';forum='.$this->archNewsForum.'</id>
 	<title>archlinux.de :: Aktuelle Ankündigungen</title>
-	<link rel="self" type="application/atom+xml" href="http://forum.archlinux.de/?page=Threads;id='.$this->board.';forum='.$this->archNewsForum.'" />
-	<link rel="alternate" type="text/html" href="http://www.archlinux.de/" />
+	<link rel="self" type="application/atom+xml" href="https://forum.archlinux.de/?page=Threads;id='.$this->board.';forum='.$this->archNewsForum.'" />
+	<link rel="alternate" type="text/html" href="https://www.archlinux.de/" />
 	<updated>'.date('c', $lastdate).'</updated>
 	'.$entries.'
 </feed>';

@@ -28,9 +28,9 @@ protected function makeSubMenu()
 	{
 	return '
 		<ul id="nav">
-			<li><a href="http://planet.archlinux.de">Planet</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
-			<li><a href="http://wiki.archlinux.de/?title=Download">Herunterladen</a></li>
+			<li><a href="https://planet.archlinux.de">Planet</a></li>
+			<li><a href="https://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
+			<li><a href="https://wiki.archlinux.de/?title=Download">Herunterladen</a></li>
 			<li class="selected">Aktuelles</li>
 		</ul>';
 	}
@@ -67,7 +67,7 @@ public function prepare()
 				<div class="greybox">
 					<h3>Aktuelle Themen im Forum</h3>
 					'.$this->getRecentThreads().'
-					<div style="text-align:right;font-size:x-small"><a href="http://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a></div>
+					<div style="text-align:right;font-size:x-small"><a href="https://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a></div>
 				</div>
 			</div>
 			<div id="left">
@@ -82,12 +82,12 @@ public function prepare()
 					<p>
 					Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es werden wollen...
 					</p>
-					<div style="font-size:x-small;text-align:right;"><a href="http://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
+					<div style="font-size:x-small;text-align:right;"><a href="https://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 				</div>
 				<h2>Aktuelle Ankündigungen</h2>
 				'.$this->getNews().'
 				<div style="text-align:right;font-size:x-small">
-					<a href="http://forum.archlinux.de/?page=Threads;id=20;forum='.$this->archNewsForum.'">&#187; Archiv</a>
+					<a href="https://forum.archlinux.de/?page=Threads;id=20;forum='.$this->archNewsForum.'">&#187; Archiv</a>
 				</div>
 			</div>
 		';
@@ -142,7 +142,7 @@ private function getRecentThreads()
 
 		$result .=
 			'
-			<h4><a href="http://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$this->board.'">'.$thread['name'].'</a></h4>
+			<h4><a href="https://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$this->board.'">'.$thread['name'].'</a></h4>
 			<p>'.$thread['summary'].'</p>
 			';
 		}
@@ -191,7 +191,7 @@ private function getNews()
 		$result .=
 			'
 			<span style="float:right; font-size:x-small;padding-top:14px">'.$this->L10n->getDateTime($thread['dat']).'</span>
-			<h3><a href="http://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h3>
+			<h3><a href="https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h3>
 			<p>'.$thread['text'].'</p>
 			';
 		}
