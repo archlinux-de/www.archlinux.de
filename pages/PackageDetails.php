@@ -170,11 +170,10 @@ public function prepare()
 				<th>Veröffentlichung</th>
 				<td>'.$this->L10n->getDateTime($data['mtime']).'</td>
 			</tr>
-			'.($data['repository'] == 'community' ? '' : '
 			<tr>
 				<th>Quellen</th>
-				<td><a href="http://repos.archlinux.org/viewvc.cgi/'.$data['base'].'/">Versions-Verwaltung</a></td>
-			</tr>').'
+				<td><a href="http://repos.archlinux.org/wsvn/'.($data['repository'] == 'community' ? 'community' : 'packages').'/'.$data['base'].'/">Versions-Verwaltung</a></td>
+			</tr>
 			<tr>
 				<th>Fehler</th>
 				<td><a href="http://bugs.archlinux.org/index.php?string=%5B'.$data['name'].'%5D">Bug Tracker</a></td>
