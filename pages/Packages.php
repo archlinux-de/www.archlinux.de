@@ -375,7 +375,7 @@ private function showPackageList($packages)
 		$style = $package['repository'] == 'testing' ? ' testingpackage' : '';
 
 		$body .= '<tr class="packageline'.$line.$style.'">
-				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.$this->L10n->getDateTime($package['builddate']).'</td>
+				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.$this->L10n->getDateTime($package['builddate']).'</td>
 			</tr>';
 
 		$line = abs($line-1);

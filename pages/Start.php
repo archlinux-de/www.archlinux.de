@@ -206,13 +206,16 @@ private function getRecentPackages()
 				packages.id,
 				packages.name,
 				packages.version,
-				repositories.name AS repository
+				repositories.name AS repository,
+				architectures.name AS architecture
 			FROM
 				packages,
-				repositories
+				repositories,
+				architectures
 			WHERE
 				packages.repository = repositories.id
 				AND repositories.name IN (\'core\', \'extra\', \'testing\')
+				AND packages.arch = architectures.id
 				AND packages.arch = ?
 			ORDER BY
 				packages.builddate DESC
@@ -234,7 +237,7 @@ private function getRecentPackages()
 		$style = $package['repository'] == 'testing' ? ' class="testingpackage"' : '';
 		$result .= '
 			<tr'.$style.'>
-				<td><a href="?page=PackageDetails;package='.$package['id'].'">'.$package['name'].'</a></td>
+				<td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td>
 				<th>'.$package['version'].'</th>
 			</tr>
 			';

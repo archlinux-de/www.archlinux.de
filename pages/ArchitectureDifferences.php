@@ -244,8 +244,8 @@ public static function updateDBCache()
 
 			$body .= '<tr class="packageline'.$line.$style.'"'.$minor.'>
 					<td>'.$package['name'].'</td>
-					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;package='.$package['iid'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
-					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;package='.$package['xid'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
+					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=i686;pkgname='.$package['name'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
+					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=x86_64;pkgname='.$package['name'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
 					<td>'.self::get('L10n')->getDateTime($package['builddate']).'</td>
 				</tr>';
 

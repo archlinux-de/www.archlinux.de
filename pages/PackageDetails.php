@@ -20,7 +20,10 @@
 
 class PackageDetails extends Page{
 
-private $package = 0;
+private $pkgid = 0;
+private $repo = '';
+private $arch = '';
+private $pkgname = '';
 
 
 protected function makeMenu()
@@ -55,7 +58,9 @@ public function prepare()
 
 	try
 		{
-		$this->package = $this->Input->Get->getInt('package');
+		$this->repo = $this->Input->Get->getString('repo');
+		$this->arch = $this->Input->Get->getString('arch');
+		$this->pkgname = $this->Input->Get->getString('pkgname');
 		}
 	catch (RequestException $e)
 		{
@@ -67,6 +72,7 @@ public function prepare()
 		$stm = $this->DB->prepare
 			('
 			SELECT
+				packages.id,
 				packages.filename,
 				packages.name,
 				packages.base,
@@ -91,11 +97,15 @@ public function prepare()
 				architectures,
 				repositories
 			WHERE
-				packages.id = ?
+				repositories.name = ?
+				AND architectures.name = ?
+				AND packages.name = ?
 				AND packages.arch = architectures.id
 				AND packages.repository = repositories.id
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindString($this->repo);
+		$stm->bindString($this->arch);
+		$stm->bindString($this->pkgname);
 		$data = $stm->getRow();
 		$stm->close();
 		}
@@ -106,6 +116,7 @@ public function prepare()
 		$this->showFailure('Paket nicht gefunden!');
 		}
 
+	$this->pkgid = $data['id'];
 	$this->setValue('title', $data['name']);
 
 	if ($data['repository'] == 'testing')
@@ -244,7 +255,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<td>
-					'.($this->Input->Get->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;package='.$this->package.';showfiles=1">Dateien anzeigen</a>').'
+					'.($this->Input->Get->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo='.$this->repo.';arch='.$this->arch.';pkgname='.$this->pkgname.';showfiles=1">Dateien anzeigen</a>').'
 				</td>
 			</tr>
 		</table>
@@ -293,7 +304,7 @@ private function getLicenses()
 				package_license.license = licenses.id
 				AND package_license.package = ?
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		foreach ($stm->getColumnSet() as $license)
 			{
@@ -326,7 +337,7 @@ private function getGroups()
 				package_group.group = groups.id
 				AND package_group.package = ?
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		foreach ($stm->getRowSet() as $group)
 			{
@@ -356,7 +367,7 @@ private function getFiles()
 			WHERE
 				package = ?
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getColumnSet() as $file)
@@ -384,22 +395,28 @@ private function getDependencies()
 			SELECT
 				packages.id,
 				packages.name,
-				depends.comment
+				depends.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				depends
 					LEFT JOIN packages
-					ON depends.depends = packages.id
+					ON depends.depends = packages.id,
+				architectures,
+				repositories
 			WHERE
 				depends.package = ?
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.$dependency['name'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -422,22 +439,28 @@ private function getInverseDependencies()
 			SELECT
 				packages.id,
 				packages.name,
-				depends.comment
+				depends.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				packages,
-				depends
+				depends,
+				architectures,
+				repositories
 			WHERE
 				depends.depends = ?
 				AND depends.package = packages.id
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.$dependency['name'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -460,22 +483,28 @@ private function getOptionalDependencies()
 			SELECT
 				packages.id,
 				packages.name,
-				optdepends.comment
+				optdepends.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				optdepends
 					LEFT JOIN packages
-					ON optdepends.optdepends = packages.id
+					ON optdepends.optdepends = packages.id,
+				architectures,
+				repositories
 			WHERE
 				optdepends.package = ?
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $optdependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>&nbsp;'.cutString($optdependency['comment'], 30).'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$optdependency['repo'].';arch='.$optdependency['arch'].';pkgname='.$optdependency['name'].'">'.$optdependency['name'].'</a>&nbsp;'.cutString($optdependency['comment'], 30).'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -498,22 +527,28 @@ private function getInverseOptionalDependencies()
 			SELECT
 				packages.id,
 				packages.name,
-				optdepends.comment
+				optdepends.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				packages,
-				optdepends
+				optdepends,
+				architectures,
+				repositories
 			WHERE
 				optdepends.optdepends = ?
 				AND optdepends.package = packages.id
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $optdependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$optdependency['id'].'">'.$optdependency['name'].'</a>&nbsp;'.cutString($optdependency['comment'], 30).'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$optdependency['repo'].';arch='.$optdependency['arch'].';pkgname='.$optdependency['name'].'">'.$optdependency['name'].'</a>&nbsp;'.cutString($optdependency['comment'], 30).'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -536,22 +571,28 @@ private function getProvides()
 			SELECT
 				packages.id,
 				packages.name,
-				provides.comment
+				provides.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				provides
 					LEFT JOIN packages
-					ON provides.provides = packages.id
+					ON provides.provides = packages.id,
+				architectures,
+				repositories
 			WHERE
 				provides.package = ?
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.$dependency['name'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -574,22 +615,28 @@ private function getConflicts()
 			SELECT
 				packages.id,
 				packages.name,
-				conflicts.comment
+				conflicts.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				conflicts
 					LEFT JOIN packages
-					ON conflicts.conflicts = packages.id
+					ON conflicts.conflicts = packages.id,
+				architectures,
+				repositories
 			WHERE
 				conflicts.package = ?
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.$dependency['name'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();
@@ -612,22 +659,28 @@ private function getReplaces()
 			SELECT
 				packages.id,
 				packages.name,
-				replaces.comment
+				replaces.comment,
+				architectures.name AS arch,
+				repositories.name AS repo
 			FROM
 				replaces
 					LEFT JOIN packages
-					ON replaces.replaces = packages.id
+					ON replaces.replaces = packages.id,
+				architectures,
+				repositories
 			WHERE
 				replaces.package = ?
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 			ORDER BY
 				packages.name
 			');
-		$stm->bindInteger($this->package);
+		$stm->bindInteger($this->pkgid);
 
 		$list = '<ul>';
 		foreach ($stm->getRowSet() as $dependency)
 			{
-			$list .= '<li><a href="?page=PackageDetails;package='.$dependency['id'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
+			$list .= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.$dependency['name'].'">'.$dependency['name'].'</a>'.$dependency['comment'].'</li>';
 			}
 		$list .= '</ul>';
 		$stm->close();

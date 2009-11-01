@@ -37,7 +37,8 @@ public function show()
 				packages.desc,
 				packagers.id AS packagerid,
 				packagers.name AS packager,
-				architectures.name AS architecture
+				architectures.name AS architecture,
+				repositories.name AS repository
 			FROM
 				packages
 					JOIN
@@ -48,6 +49,10 @@ public function show()
 						architectures
 					ON
 						packages.arch = architectures.id
+					JOIN
+						repositories
+					ON
+						packages.repository = repositories.id
 			ORDER BY
 				packages.builddate DESC
 			LIMIT
@@ -64,9 +69,9 @@ public function show()
 			$entries .=
 			'
 			<entry>
-				<id>https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'</id>
+				<id>https://www.archlinux.de/?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'</id>
 				<title>'.$package['name'].' '.$package['version'].' ('.$package['architecture'].')</title>
-				<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'" />
+				<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'" />
 				<updated>'.date('c', $package['builddate']).'</updated>
 				<summary>'.$package['desc'].'</summary>
 				<author>
