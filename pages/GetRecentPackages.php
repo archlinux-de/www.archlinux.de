@@ -21,79 +21,67 @@
 class GetRecentPackages extends GetFile {
 
 
-public function prepare()
-	{
-	}
-
 public function show()
 	{
-	if (!($content = $this->ObjectCache->getObject('AL:GetRecentPackages:Atom:')))
+	$lastdate = 0;
+	$entries = '';
+	try
 		{
-		$lastdate = 0;
-		$entries = '';
-		$this->initDB();
-		try
-			{
-			$packages = $this->DB->getRowSet
-				('
-				SELECT
-					packages.id,
-					packages.name,
-					packages.builddate,
-					packages.version,
-					packages.desc,
-					packagers.id AS packagerid,
-					packagers.name AS packager,
-					architectures.name AS architecture
-				FROM
-					packages
-						JOIN
-							packagers
-						ON
-							packages.packager = packagers.id
-						JOIN
-							architectures
-						ON
-							packages.arch = architectures.id
-				ORDER BY
-					packages.builddate DESC
-				LIMIT
-					25
-				');
+		$packages = $this->DB->getRowSet
+			('
+			SELECT
+				packages.id,
+				packages.name,
+				packages.builddate,
+				packages.version,
+				packages.desc,
+				packagers.id AS packagerid,
+				packagers.name AS packager,
+				architectures.name AS architecture
+			FROM
+				packages
+					JOIN
+						packagers
+					ON
+						packages.packager = packagers.id
+					JOIN
+						architectures
+					ON
+						packages.arch = architectures.id
+			ORDER BY
+				packages.builddate DESC
+			LIMIT
+				25
+			');
 
-			foreach($packages as $package)
+		foreach($packages as $package)
+			{
+			if ($package['builddate'] > $lastdate)
 				{
-				if ($package['builddate'] > $lastdate)
-					{
-					$lastdate = $package['builddate'];
-					}
-
-				$entries .=
-				'
-				<entry>
-					<id>https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'</id>
-					<title>'.$package['name'].' '.$package['version'].' ('.$package['architecture'].')</title>
-					<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'" />
-					<updated>'.date('c', $package['builddate']).'</updated>
-					<summary>'.$package['desc'].'</summary>
-					<author>
-						<name>'.$package['packager'].'</name>
-						<uri>https://www.archlinux.de/?page=Packages;packager='.$package['packagerid'].'</uri>
-					</author>
-				</entry>
-				';
+				$lastdate = $package['builddate'];
 				}
-			}
-		catch (DBNoDataException $e)
-			{
-			}
 
-		if (isset($stm))
-			{
-			$stm->close();
+			$entries .=
+			'
+			<entry>
+				<id>https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'</id>
+				<title>'.$package['name'].' '.$package['version'].' ('.$package['architecture'].')</title>
+				<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;package='.$package['id'].'" />
+				<updated>'.date('c', $package['builddate']).'</updated>
+				<summary>'.$package['desc'].'</summary>
+				<author>
+					<name>'.$package['packager'].'</name>
+					<uri>https://www.archlinux.de/?page=Packages;packager='.$package['packagerid'].'</uri>
+				</author>
+			</entry>
+			';
 			}
+		}
+	catch (DBNoDataException $e)
+		{
+		}
 
-		$content =
+	$content =
 '<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
 	<id>https://www.archlinux.de/?page=Packages</id>
@@ -104,10 +92,7 @@ public function show()
 	'.$entries.'
 </feed>';
 
-		$this->ObjectCache->addObject('AL:GetRecentPackages:Atom:', $content, 60*60);
-		}
-
-	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'recent.xml', $content);
+	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'packages.xml', $content);
 	}
 
 }

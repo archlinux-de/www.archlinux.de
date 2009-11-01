@@ -23,80 +23,71 @@ class GetRecentNews extends GetFile {
 private $board 			= 20;
 private $archNewsForum 		= 257;
 
-public function prepare()
-	{
-	}
 
 public function show()
 	{
-	if (!($content = $this->ObjectCache->getObject('AL:GetRecentNews:Atom:')))
+	try
 		{
-		$this->initDB();
-		try
+		$stm = $this->DB->prepare
+			('
+			SELECT
+				t.id,
+				t.name,
+				t.summary,
+				p.dat,
+				p.text,
+				p.username,
+				p.userid
+			FROM
+				ll.threads t,
+				ll.posts p
+			WHERE
+				t.forumid = ?
+				AND t.deleted = 0
+				AND p.threadid = t.id
+				AND p.counter = 0
+			ORDER BY
+				t.id DESC
+			LIMIT
+				25
+			');
+		$stm->bindInteger($this->archNewsForum);
+		$threads = $stm->getRowSet();
+
+		$lastdate = 0;
+		$entries = '';
+
+		foreach($threads as $thread)
 			{
-			$stm = $this->DB->prepare
-				('
-				SELECT
-					t.id,
-					t.name,
-					t.summary,
-					p.dat,
-					p.text,
-					p.username,
-					p.userid
-				FROM
-					ll.threads t,
-					ll.posts p
-				WHERE
-					t.forumid = ?
-					AND t.deleted = 0
-					AND p.threadid = t.id
-					AND p.counter = 0
-				ORDER BY
-					t.id DESC
-				LIMIT
-					25
-				');
-			$stm->bindInteger($this->archNewsForum);
-			$threads = $stm->getRowSet();
-
-			$lastdate = 0;
-			$entries = '';
-
-			foreach($threads as $thread)
+			if ($thread['dat'] > $lastdate)
 				{
-				if ($thread['dat'] > $lastdate)
-					{
-					$lastdate = $thread['dat'];
-					}
-
-				$entries .=
-				'
-				<entry>
-					<id>https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'</id>
-					<title>'.$thread['name'].'</title>
-					<link rel="alternate" type="text/html" href="https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'" />
-					<updated>'.date('c', $thread['dat']).'</updated>
-					<summary>'.$thread['summary'].'</summary>
-					<author>
-						<name>'.$thread['username'].'</name>
-						<uri>https://forum.archlinux.de/?page=ShowUser;id='.$this->board.';user='.$thread['userid'].'</uri>
-					</author>
-					<content type="html">'.htmlspecialchars($thread['text']).'</content>
-				</entry>
-				';
+				$lastdate = $thread['dat'];
 				}
-			}
-		catch (DBNoDataException $e)
-			{
-			}
 
-		if (isset($stm))
-			{
-			$stm->close();
+			$entries .=
+			'
+			<entry>
+				<id>https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'</id>
+				<title>'.$thread['name'].'</title>
+				<link rel="alternate" type="text/html" href="https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'" />
+				<updated>'.date('c', $thread['dat']).'</updated>
+				<summary>'.$thread['summary'].'</summary>
+				<author>
+					<name>'.$thread['username'].'</name>
+					<uri>https://forum.archlinux.de/?page=ShowUser;id='.$this->board.';user='.$thread['userid'].'</uri>
+				</author>
+				<content type="html">'.htmlspecialchars($thread['text']).'</content>
+			</entry>
+			';
 			}
+		$stm->close();
+		}
+	catch (DBNoDataException $e)
+		{
+		$stm->close();
+		}
 
-		$content =
+	$content =
 '<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
 	<id>https://forum.archlinux.de/?page=Threads;id='.$this->board.';forum='.$this->archNewsForum.'</id>
@@ -107,10 +98,7 @@ public function show()
 	'.$entries.'
 </feed>';
 
-		$this->ObjectCache->addObject('AL:GetRecentNews:Atom:', $content, 60*60);
-		}
-
-	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'recent.xml', $content);
+	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'news.xml', $content);
 	}
 
 }

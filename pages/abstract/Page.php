@@ -20,7 +20,6 @@
 
 require ('modules/DB.php');
 require ('modules/IOutput.php');
-require ('modules/ICache.php');
 require ('pages/abstract/IDBCachable.php');
 require ('modules/PersistentCache.php');
 Modul::set('PersistentCache', new PersistentCache());

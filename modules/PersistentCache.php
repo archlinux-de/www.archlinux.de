@@ -18,7 +18,7 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class PersistentCache extends Modul implements ICache{
+class PersistentCache extends Modul {
 
 private $time = 0;
 

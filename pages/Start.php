@@ -18,7 +18,7 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Start extends Page{
+class Start extends Page {
 
 private $board 			= 20;
 private $archNewsForum 		= 257;
@@ -44,56 +44,51 @@ public function prepare()
 
 	$this->setValue('title', 'Start');
 
-	if (!($body = $this->ObjectCache->getObject('AL:Start:'.$this->arch.':')))
-		{
-		$body =
-		'
-			<div id="search">
-			<form method="post" action="?page=Packages">
-				<div>Paket-Suche:&nbsp;&nbsp;<input type="text" name="search" size="20" maxlength="200" id="searchfield" /></div>
-			</form>
-			<script type="text/javascript">
-				/* <![CDATA[ */
-				document.getElementById("searchfield").focus();
-				/* ]]> */
-			</script>
+	$body =
+	'
+		<div id="search">
+		<form method="post" action="?page=Packages">
+			<div>Paket-Suche:&nbsp;&nbsp;<input type="text" name="search" size="20" maxlength="200" id="searchfield" /></div>
+		</form>
+		<script type="text/javascript">
+			/* <![CDATA[ */
+			document.getElementById("searchfield").focus();
+			/* ]]> */
+		</script>
+		</div>
+		<div id="right">
+			<div class="greybox">
+				<h3>Aktualisierte Pakete</h3>
+				'.$this->getRecentPackages().'
+				<div style="text-align:right;font-size:x-small"><a href="?page=Packages">&#187; Paket-Suche</a></div>
 			</div>
-			<div id="right">
-				<div class="greybox">
-					<h3>Aktualisierte Pakete</h3>
-					'.$this->getRecentPackages().'
-					<div style="text-align:right;font-size:x-small"><a href="?page=Packages">&#187; Paket-Suche</a></div>
-				</div>
-				<div class="greybox">
-					<h3>Aktuelle Themen im Forum</h3>
-					'.$this->getRecentThreads().'
-					<div style="text-align:right;font-size:x-small"><a href="https://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a></div>
-				</div>
+			<div class="greybox">
+				<h3>Aktuelle Themen im Forum</h3>
+				'.$this->getRecentThreads().'
+				<div style="text-align:right;font-size:x-small"><a href="https://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a></div>
 			</div>
-			<div id="left">
-				<div id="box">
-					<h2>Willkommen bei Arch Linux</h2>
-					<p>
-					<strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em> Distribution für jeden erdenklichen Einsatz-Zweck. Ein einfaches Grundsystem kann nach den Bedürfnissen des jeweiligen Nutzers nahezu beliebig erweitert werden.
-					</p>
-					<p>
-					Nach einem gleitenden Release-System bieten wir zur Zeit vorkompilierte Pakete für die <code>i686</code>- und <code>x86_64</code>-Architekturen an. Zusätzliche Werkzeuge ermöglichen zudem den schnellen Eigenbau von Paketen.
-					</p>
-					<p>
-					Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es werden wollen...
-					</p>
-					<div style="font-size:x-small;text-align:right;"><a href="https://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
-				</div>
-				<h2>Aktuelle Ankündigungen</h2>
-				'.$this->getNews().'
-				<div style="text-align:right;font-size:x-small">
-					<a href="https://forum.archlinux.de/?page=Threads;id=20;forum='.$this->archNewsForum.'">&#187; Archiv</a>
-				</div>
+		</div>
+		<div id="left">
+			<div id="box">
+				<h2>Willkommen bei Arch Linux</h2>
+				<p>
+				<strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em> Distribution für jeden erdenklichen Einsatz-Zweck. Ein einfaches Grundsystem kann nach den Bedürfnissen des jeweiligen Nutzers nahezu beliebig erweitert werden.
+				</p>
+				<p>
+				Nach einem gleitenden Release-System bieten wir zur Zeit vorkompilierte Pakete für die <code>i686</code>- und <code>x86_64</code>-Architekturen an. Zusätzliche Werkzeuge ermöglichen zudem den schnellen Eigenbau von Paketen.
+				</p>
+				<p>
+				Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es werden wollen...
+				</p>
+				<div style="font-size:x-small;text-align:right;"><a href="https://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
 			</div>
-		';
-
-		$this->ObjectCache->addObject('AL:Start:'.$this->arch.':', $body, 60*60);
-		}
+			<h2>Aktuelle Ankündigungen</h2>
+			'.$this->getNews().'
+			<div style="text-align:right;font-size:x-small">
+				<a href="https://forum.archlinux.de/?page=Threads;id=20;forum='.$this->archNewsForum.'">&#187; Archiv</a>
+			</div>
+		</div>
+	';
 
 	$this->setValue('body', $body);
 	}

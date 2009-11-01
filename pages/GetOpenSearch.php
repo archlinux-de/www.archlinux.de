@@ -18,13 +18,8 @@
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetOpenSearch extends GetFile{
+class GetOpenSearch extends GetFile {
 
-public function prepare()
-	{
-	$this->exitIfCached();
-	$this->initDB();
-	}
 
 public function show()
 	{
@@ -36,8 +31,8 @@ public function show()
 <Url type="text/html" method="get" template="https://www.archlinux.de/?page=Packages;submit=;search={searchTerms}"/>
 </OpenSearchDescription>';
 
-	$this->Output->setContentType('Content-Type: application/opensearchdescription+xml; charset=UTF-8');
-	$this->Output->writeOutput($xml);
+	$this->compression = true;
+	$this->sendInlineFile('application/opensearchdescription+xml; charset=UTF-8', 'search.xml', $xml);
 	}
 
 }
