@@ -34,6 +34,7 @@ require ('modules/Exceptions.php');
 require ('pages/abstract/Page.php');
 require ('pages/GetFileFromMirror.php');
 require ('pages/MirrorStatus.php');
+require ('pages/MirrorStatusReflector.php');
 
 class CheckMirrors extends Modul {
 
@@ -113,6 +114,8 @@ public function runUpdate()
 		$this->L10n->setLocale($locale);
 		MirrorStatus::updateDBCache();
 		}
+
+	MirrorStatusReflector::updateDBCache();
 
 	unlink($this->getLockFile());
 	}
