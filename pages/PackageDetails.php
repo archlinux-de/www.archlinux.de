@@ -119,7 +119,7 @@ public function prepare()
 	$this->pkgid = $data['id'];
 	$this->setValue('title', $data['name']);
 
-	if ($data['repository'] == 'testing')
+	if ($data['repository'] == 'testing' || $data['repository'] == 'community-testing')
 		{
 		$style = ' class="testingpackage"';
 		}

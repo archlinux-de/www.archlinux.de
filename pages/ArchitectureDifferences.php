@@ -222,7 +222,7 @@ public static function updateDBCache()
 				continue;
 				}
 
-			$style = $package['reponame'] == 'testing' ? ' testingpackage' : '';
+			$style = ($package['reponame'] == 'testing' || $package['reponame'] == 'community-testing') ? ' testingpackage' : '';
 			if ($repo != $package['repoid'])
 				{
 				$body .= '<tr>
