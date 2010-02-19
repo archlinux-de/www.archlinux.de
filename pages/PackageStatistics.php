@@ -25,9 +25,8 @@ private static $barColorArray = array('8B0000','FF8800','006400');
 
 protected function makeMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
+	return '<ul>
+			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
 			<li class="selected">Pakete</li>
 			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
@@ -37,14 +36,13 @@ protected function makeMenu()
 
 protected function makeSubMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=AUR">AUR</a></li>
-			<li class="selected">Statistiken</li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+	return '<ul>
 			<li><a href="?page=Packages">Suche</a></li>
+			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+			<li><a href="?page=Packagers">Packer</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
+			<li class="selected">Statistiken</li>
+			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
 		</ul>';
 	}
 
@@ -624,7 +622,6 @@ private static function getPopularPackagesPerRepository()
 
 	$list = '';
 	$repoid = 0;
-	$line = 0;
 
 	foreach ($repos as $repo)
 		{
@@ -641,8 +638,7 @@ private static function getPopularPackagesPerRepository()
 
 			foreach ($packages as $package)
 				{
-				$list .= '<tr class="packageline'.$line.'"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
-				$line = abs($line-1);
+				$list .= '<tr class="packageline"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
 				}
 
 			$list .= '</table></div></td></tr>';
@@ -710,7 +706,6 @@ private static function getPopularUnofficialPackages()
 		');
 
 	$list = '';
-	$line = 0;
 
 	try
 		{
@@ -718,8 +713,7 @@ private static function getPopularUnofficialPackages()
 
 		foreach ($packages as $package)
 			{
-			$list .= '<tr class="packageline'.$line.'"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
-			$line = abs($line-1);
+			$list .= '<tr class="packageline"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
 			}
 
 		$list .= '</table></div></td></tr>';

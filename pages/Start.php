@@ -26,12 +26,11 @@ private $arch 			= 1;
 
 protected function makeSubMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://planet.archlinux.de">Planet</a></li>
-			<li><a href="https://wiki.archlinux.de/?title=Bugs">Bugs</a></li>
-			<li><a href="https://wiki.archlinux.de/?title=Download">Herunterladen</a></li>
+	return '<ul>
 			<li class="selected">Aktuelles</li>
+			<li><a href="https://wiki.archlinux.de/title/Download">Herunterladen</a></li>
+			<li><a href="https://wiki.archlinux.de/title/Bugs">Bugs</a></li>
+			<li><a href="https://planet.archlinux.de">Planet</a></li>
 		</ul>';
 	}
 
@@ -46,17 +45,18 @@ public function prepare()
 
 	$body =
 	'
-		<div id="search">
-		<form method="post" action="?page=Packages">
-			<div>Paket-Suche:&nbsp;&nbsp;<input type="text" name="search" size="20" maxlength="200" id="searchfield" /></div>
-		</form>
-		<script type="text/javascript">
-			/* <![CDATA[ */
-			document.getElementById("searchfield").focus();
-			/* ]]> */
-		</script>
-		</div>
 		<div id="right">
+			<div class="greybox">
+				<form method="post" action="?page=Packages">
+					<label for="searchfield">Paket-Suche:</label>
+					<input type="text" name="search" size="20" maxlength="200" id="searchfield" style="width:230px" />
+				</form>
+				<script type="text/javascript">
+					/* <![CDATA[ */
+					document.getElementById("searchfield").focus();
+					/* ]]> */
+				</script>
+			</div>
 			<div class="greybox">
 				<h3>Aktualisierte Pakete</h3>
 				'.$this->getRecentPackages().'
@@ -80,7 +80,7 @@ public function prepare()
 				<p>
 				Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es werden wollen...
 				</p>
-				<div style="font-size:x-small;text-align:right;"><a href="https://wiki.archlinux.de/?title=%C3%9Cber_ArchLinux" class="link">mehr über Arch Linux</a></div>
+				<div style="font-size:x-small;text-align:right;"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux" class="link">mehr über Arch Linux</a></div>
 			</div>
 			<h2>Aktuelle Ankündigungen</h2>
 			'.$this->getNews().'
@@ -117,7 +117,7 @@ private function getRecentThreads()
 			ORDER BY
 				t.lastdate DESC
 			LIMIT
-				4
+				5
 			');
 
 		$stm->bindInteger($this->archNewsForum);
@@ -220,7 +220,7 @@ private function getRecentPackages()
 			ORDER BY
 				packages.builddate DESC
 			LIMIT
-				15
+				20
 			');
 		$stm->bindInteger($this->arch);
 		$packages = $stm->getRowSet();

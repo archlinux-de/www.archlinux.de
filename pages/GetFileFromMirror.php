@@ -25,9 +25,8 @@ private static $range	= 1209600; // two weeks
 
 protected function makeMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
+	return '<ul>
+			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
 			<li class="selected">Pakete</li>
 			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
@@ -37,14 +36,13 @@ protected function makeMenu()
 
 protected function makeSubMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=AUR">AUR</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+	return '<ul>
 			<li class="selected"><a href="?page=Packages">Suche</a></li>
+			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+			<li><a href="?page=Packagers">Packer</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
+			<li><a href="?page=PackageStatistics">Statistiken</a></li>
+			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
 		</ul>';
 	}
 

@@ -23,9 +23,8 @@ class ArchitectureDifferences extends Page implements IDBCachable {
 
 protected function makeMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
+	return '<ul>
+			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
 			<li class="selected">Pakete</li>
 			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
@@ -35,14 +34,13 @@ protected function makeMenu()
 
 protected function makeSubMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=AUR">AUR</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li class="selected">Architekturen</li>
+	return '<ul>
 			<li><a href="?page=Packages">Suche</a></li>
+			<li class="selected">Architekturen</li>
+			<li><a href="?page=Packagers">Packer</a></li>
+			<li><a href="?page=MirrorStatus">Server</a></li>
+			<li><a href="?page=PackageStatistics">Statistiken</a></li>
+			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
 		</ul>';
 	}
 
@@ -203,7 +201,6 @@ public static function updateDBCache()
 					<th>'.self::get('L10n')->getText('Last update').'</th>
 				</tr>';
 
-		$line = 0;
 		$repo = 0;
 
 		foreach ($packages as $package)
@@ -242,14 +239,13 @@ public static function updateDBCache()
 				$xold = ' style="color:red;"';
 				}
 
-			$body .= '<tr class="packageline'.$line.$style.'"'.$minor.'>
+			$body .= '<tr class="packageline'.$style.'"'.$minor.'>
 					<td>'.$package['name'].'</td>
 					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=i686;pkgname='.$package['name'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
 					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=x86_64;pkgname='.$package['name'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
 					<td>'.self::get('L10n')->getDateTime($package['builddate']).'</td>
 				</tr>';
 
-			$line = abs($line-1);
 			$repo = $package['repoid'];
 			}
 

@@ -28,9 +28,8 @@ private static $sorts	= array('ASC', 'DESC');
 
 protected function makeMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
+	return '<ul>
+			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
 			<li class="selected">Pakete</li>
 			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
@@ -40,14 +39,13 @@ protected function makeMenu()
 
 protected function makeSubMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=AUR">AUR</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li class="selected">Server</li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+	return '<ul>
 			<li><a href="?page=Packages">Suche</a></li>
+			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
+			<li><a href="?page=Packagers">Packer</a></li>
+			<li class="selected">Server</li>
+			<li><a href="?page=PackageStatistics">Statistiken</a></li>
+			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
 		</ul>';
 	}
 
@@ -116,20 +114,17 @@ private static function getCurrentProblems($range)
 			<th>'.self::get('L10n')->getText('Last occurrence').'</th>
 			<th>'.self::get('L10n')->getText('Number').'</th>
 		</tr>';
-	$line = 0;
 
 	foreach ($problems as $problem)
 		{
 		$list .=
-		'<tr class="packageline'.$line.'">
+		'<tr class="packageline">
 			<td><a href="'.$problem['host'].'" rel="nofollow">'.$problem['host'].'</a></td>
 			<td>'.$problem['error'].'</td>
 			<td>'.self::get('L10n')->getDateTime($problem['firsttime']).'</td>
 			<td>'.self::get('L10n')->getDateTime($problem['lasttime']).'</td>
 			<td>'.$problem['errorcount'].'</td>
 		</tr>';
-
-		$line = abs($line-1);
 		}
 
 	return $list.'</table>';
@@ -287,8 +282,6 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 				<th><a href="?page=MirrorStatus;orderby=lastsync;sort='.abs($sortint-1).'">'.self::get('L10n')->getText('Last update').'</a></th>
 			</tr>';
 
-	$line = 0;
-
 	foreach ($mirrors as $mirror)
 		{
 		$performance = $int['maxtimes'] > 0 ? round(($mirror['avgtime'] / $int['maxtimes']) * 100) : 100;
@@ -310,15 +303,13 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 			$outofsync = '';
 			}
 
-		$body .= '<tr class="packageline'.$line.'">
+		$body .= '<tr class="packageline">
 				<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
 				<td>'.$mirror['country'].'</td>
 				<td title="&empty;&nbsp;'.self::get('L10n')->getEpoch($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
 				<td title="&empty;&nbsp;'.self::get('L10n')->getEpoch($mirror['syncdelay']).'"><div style="background-color:'.$synccolor.';width:'.$syncdelay.'px;">&nbsp;</div></td>
 				<td'.$outofsync.'>'.self::get('L10n')->getDateTime($mirror['lastsync']).'</td>
 			</tr>';
-
-		$line = abs($line-1);
 		}
 
 	$body .= '</table>

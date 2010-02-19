@@ -106,9 +106,8 @@ public function prepare()
 
 protected function makeMenu()
 	{
-	return '
-		<ul id="nav">
-			<li><a href="https://wiki.archlinux.de/?title=Spenden">Spenden</a></li>
+	return '<ul>
+			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
 			<li><a href="?page=Packages">Pakete</a></li>
 			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
 			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
@@ -123,41 +122,36 @@ protected function makeSubMenu()
 
 private function sendOutput()
 	{
-	$file = '<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
-	<head>
-		<title>archlinux.de :: '.$this->getValue('title').'</title>
-		<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-		<meta http-equiv="content-language" content="de" />
-		<meta http-equiv="expires" content="120" />
-		<meta name="robots" content="'.$this->getValue('meta.robots').'" />
-		<meta name="revisit-after" content="3 days" />
-		<link rel="shortcut icon" href="favicon.ico" />
-		<link rel="stylesheet" href="arch.css" />
-		<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="?page=GetRecentNews" />
-		<link rel="alternate" type="application/atom+xml" title="Aktualisierte Pakete" href="?page=GetRecentPackages" />
-		<link rel="alternate" type="application/atom+xml" title="Aktuelle Themen im Forum" href="https://forum.archlinux.de/?page=GetRecent;id=20" />
-		<link rel="search" type="application/opensearchdescription+xml" href="?page=GetOpenSearch" title="www.archlinux.de" />
-	</head>
-	<body>
-		<h1 id="logo">Arch Linux</h1>
-		<div id="nav_bar">
-			'.$this->makeMenu().'
+	$file = '<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="robots" content="'.$this->getValue('meta.robots').'" />
+	<title>archlinux.de - '.$this->getValue('title').'</title>
+	<link rel="stylesheet" media="screen" href="arch.css" />
+	<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="?page=GetRecentNews" />
+	<link rel="alternate" type="application/atom+xml" title="Aktualisierte Pakete" href="?page=GetRecentPackages" />
+	<link rel="alternate" type="application/atom+xml" title="Aktuelle Themen im Forum" href="https://forum.archlinux.de/?page=GetRecent;id=20" />
+	<link rel="search" type="application/opensearchdescription+xml" href="?page=GetOpenSearch" title="www.archlinux.de" />
+	<link rel="shortcut icon" href="favicon.ico" />
+</head>
+<body>
+	<img id="logo" src="images/logo.png" alt ="Arch Linux" />
+	<div id="site-menu">
+		'.$this->makeMenu().'
+	</div>
+	<div id="main-menu">
+		'.$this->makeSubMenu().'
+	</div>
+	<div id="content">
+		'.$this->getValue('body').'
+		<div id="foot">
+			<a href="https://wiki.archlinux.de/title/wiki.archlinux.de:Datenschutz">Datenschutz</a> &ndash;
+			<a href="https://wiki.archlinux.de/title/wiki.archlinux.de:Impressum">Impressum</a>
 		</div>
-		<div id="subnav_bar">
-			'.$this->makeSubMenu().'
-		</div>
-		<div id="content">
-			'.$this->getValue('body').'
-			<div id="foot">
-				<a href="https://wiki.archlinux.de/?title=wiki.archlinux.de:Datenschutz">Datenschutz</a> ::
-				<a href="https://wiki.archlinux.de/?title=wiki.archlinux.de:Impressum">Impressum</a>
-			</div>
-		</div>
-	</body>
-</html>';
+	</div>
+</body>
+</html>
+';
 	$this->Output->writeOutput($file);
 	}
 
