@@ -157,7 +157,7 @@ public function prepare()
 				<th>Repositorium</th>
 				<th>Architektur</th>
 				<th>Gruppe</th>
-				<th colspan="2">Schlüsselwörter</th>
+				<th>Schlüsselwörter</th>
 			</tr>
 			<tr>
 				<td>
@@ -172,9 +172,6 @@ public function prepare()
 				<td>
 					<input type="text" name="search" id="searchfield" value="'.$this->search.'" size="34" maxlength="50" />
 					<div style="padding-top: 5px;">'.$this->getSearchFields().'</div>
-				</td>
-				<td>
-					<input type="submit" value="Suchen" />
 					<input type="hidden" name="packager" value="'.$this->packager.'" />
 				</td>
 			</tr>
