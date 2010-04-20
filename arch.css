@@ -42,7 +42,6 @@ a:hover {
 	text-align: center;
 	font-size: 13px;
 	line-height: 26px;
-	padding: 0 12px;
 	font-weight: bold;
 	color: #ffffff;
 	display: block;
@@ -50,6 +49,8 @@ a:hover {
 }
 #site-menu ul li a,
 #site-menu ul li.selected {
+	display: block;
+	padding: 0 12px;
 	color: #ffffff;
 	text-decoration: none;
 }
