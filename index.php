@@ -17,10 +17,6 @@
 	You should have received a copy of the GNU General Public License
 	along with LL.  If not, see <http://www.gnu.org/licenses/>.
 */
-define('IN_LL', null);
-
-require ('LLPath.php');
-ini_set('include_path', ini_get('include_path').':./:'.LL_PATH);
 
 require ('modules/Modul.php');
 require ('modules/Settings.php');
