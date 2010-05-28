@@ -1,9 +1,9 @@
 <?php
 
 /*
-	Copyright 2002-2007 Pierre Schmitz <pschmitz@laber-land.de>
+	Copyright 2002-2010 Pierre Schmitz <pierre@archlinux.de>
 
-	This file is part of LL.
+	This file is part of archlinux.de.
 
 	LL is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
 	GNU Affero General Public License for more details.
 
 	You should have received a copy of the GNU Affero General Public License
-	along with LL.  If not, see <http://www.gnu.org/licenses/>.
+	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class Request {
