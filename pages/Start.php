@@ -20,8 +20,6 @@
 
 class Start extends Page {
 
-private $board 			= 20;
-private $archNewsForum 		= 257;
 private $arch 			= 1;
 
 protected function makeSubMenu()
@@ -65,7 +63,6 @@ public function prepare()
 			<div class="greybox">
 				<h3>Aktuelle Themen im Forum</h3>
 				'.$this->getRecentThreads().'
-				<div style="text-align:right;font-size:x-small"><a href="https://forum.archlinux.de/?page=Recent;id=20;">&#187; alle aktuellen Themen</a></div>
 			</div>
 		</div>
 		<div id="left">
@@ -84,9 +81,6 @@ public function prepare()
 			</div>
 			<h2>Aktuelle Ankündigungen</h2>
 			'.$this->getNews().'
-			<div style="text-align:right;font-size:x-small">
-				<a href="https://forum.archlinux.de/?page=Threads;id=20;forum='.$this->archNewsForum.'">&#187; Archiv</a>
-			</div>
 		</div>
 	';
 
@@ -95,103 +89,59 @@ public function prepare()
 
 private function getRecentThreads()
 	{
-	try
-		{
-		$stm = $this->DB->prepare
-			('
-			SELECT
-				t.id,
-				t.name,
-				t.lastdate,
-				t.forumid,
-				t.summary,
-				f.name AS forum
-			FROM
-				ll.threads t,
-				ll.forums f
-			WHERE
-				t.deleted = 0
-				AND t.forumid = f.id
-				AND t.forumid <> ?
-				AND f.boardid = ?
-			ORDER BY
-				t.lastdate DESC
-			LIMIT
-				5
-			');
-
-		$stm->bindInteger($this->archNewsForum);
-		$stm->bindInteger($this->board);
-		$threads = $stm->getRowSet();
-		}
-	catch(DBNoDataException $e)
-		{
-		$threads = array();
-		}
-
 	$result = '';
 
-	foreach ($threads as $thread)
+	if (! ($result = $this->PersistentCache->getObject('bbs_feed')))
 		{
-		$thread['name'] = cutString($thread['name'], 54);
+		try
+			{
+			$file = new RemoteFile($this->Settings->getValue('bbs_feed'));
+			$feed = new SimpleXMLElement($file->getFileContent());
 
-		$result .=
-			'
-			<h4><a href="https://forum.archlinux.de/?page=Postings;thread='.$thread['id'].';post=-1;id='.$this->board.'">'.$thread['name'].'</a></h4>
-			<p>'.$thread['summary'].'</p>
-			';
+			foreach ($feed->entry as $entry)
+				{
+				$result .=
+					'
+					<h4><a href="'.$entry->link->attributes()->href.'">'.cutString($entry->title, 54).'</a></h4>
+					<p>'.cutString(strip_tags($entry->summary), 400).'</p>
+					';
+				}
+			$this->PersistentCache->addObject('bbs_feed', $result, 600);
+			}
+		catch(FileException $e)
+			{
+			}
 		}
-
-	$stm->close();
 
 	return $result;
 	}
 
 private function getNews()
 	{
-	try
-		{
-		$stm = $this->DB->prepare
-			('
-			SELECT
-				t.id,
-				t.name,
-				p.dat,
-				p.text
-			FROM
-				ll.threads t,
-				ll.posts p
-			WHERE
-				t.forumid = ?
-				AND t.deleted = 0
-				AND p.threadid = t.id
-				AND p.counter = 0
-			ORDER BY
-				t.id DESC
-			LIMIT
-				6
-			');
-		$stm->bindInteger($this->archNewsForum);
-		$threads = $stm->getRowSet();
-		}
-	catch(DBNoDataException $e)
-		{
-		$threads = array();
-		}
-
 	$result = '';
 
-	foreach ($threads as $thread)
+	if (! ($result = $this->PersistentCache->getObject('news_feed')))
 		{
-		$result .=
-			'
-			<span style="float:right; font-size:x-small;padding-top:14px">'.$this->L10n->getDateTime($thread['dat']).'</span>
-			<h3><a href="https://forum.archlinux.de/?page=Postings;id='.$this->board.';thread='.$thread['id'].'">'.$thread['name'].'</a></h3>
-			<p>'.$thread['text'].'</p>
-			';
-		}
+		try
+			{
+			$file = new RemoteFile($this->Settings->getValue('news_feed'));
+			$feed = new SimpleXMLElement($file->getFileContent());
 
-	$stm->close();
+			foreach ($feed->entry as $entry)
+				{
+				$result .=
+					'
+					<span style="float:right; font-size:x-small;padding-top:14px">'.$this->L10n->getDateTime(strtotime($entry->updated)).'</span>
+					<h3><a href="'.$entry->link->attributes()->href.'">'.$entry->title.'</a></h3>
+					'.$entry->summary.'
+					';
+				}
+			$this->PersistentCache->addObject('news_feed', $result, 1800);
+			}
+		catch(FileException $e)
+			{
+			}
+		}
 
 	return $result;
 	}

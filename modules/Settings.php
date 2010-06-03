@@ -28,18 +28,23 @@ public function __construct()
 	$this->config['locales']			= array('de' => 'de_DE.utf8',
 							        'en' => 'en_US.utf8');
 	$this->config['timezone']			= 'Europe/Berlin';
+	$this->config['email']				= 'root@localhost';
 
 	$this->config['sql_host'] 			= 'localhost';
 	$this->config['sql_database'] 			= 'pkgdb';
 	$this->config['sql_user']			= '';
 	$this->config['sql_password']			= '';
 
-	$this->config['pkgdb_mirror']			= 'ftp://ftp.archlinux.org/';
-	$this->config['pkgdb_repositories']		= array('core');
-	$this->config['pkgdb_architectures']		= array('i686');
+	$this->config['pkgdb_mirror']			= 'http://mirrors.kernel.org/archlinux/';
+	$this->config['pkgdb_repositories']		= array('core', 'extra', 'testing', 'community', 'community-testing');
+	$this->config['pkgdb_architectures']		= array('i686', 'x86_64');
+
+	$this->config['news_feed']			= '';
+	$this->config['bbs_feed']			= '';
 
 	$this->config['file_refresh']			= 60*60; //1 hour
-
+	$this->config['allowed_mime_types']		= array('text/plain', 'text/xml', 'application/xml',
+								'application/x-gzip', 'application/x-xz');
 	$this->config['mirrorlist_url']			= 'http://www.archlinux.org/mirrorlist/i686/';
 
 	$this->config['debug']				= false;
