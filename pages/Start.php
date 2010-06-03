@@ -76,7 +76,7 @@ public function prepare()
 					<li><a href="https://wiki.archlinux.de/">Wiki</a></li>
 					<li><a href="https://wiki.archlinux.de/title/Offizielle_Arch_Linux_Installations-Anleitung">Offizielle Arch Linux Installations-Anleitung</a></li>
 				</ul>
-				<h4>Gemeinschat</h4>
+				<h4>Gemeinschaft</h4>
 				<ul>
 					<li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
 					<li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
