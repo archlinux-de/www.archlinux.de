@@ -33,7 +33,7 @@ h5 { font-size: 1em; margin-top: 1em; }
 
 #pkgsearch { padding: 1em 0.75em; background: #3ad; color: #fff; border: 1px solid #08b; } 
 #pkgsearch label { margin: 0; padding: 0; font-weight: bold; text-align: right; }
-#pkgsearch input { vertical-align: bottom; width: 12em; padding: 0.15em; font-size: 1em; background: #fff; border: 1px solid #09c; }
+#pkgsearch input { vertical-align: bottom; width: 12em; padding: 0.15em; }
 
 #pkgrecent {margin-top: 1.5em;}
 #pkgrecent h3 { margin: 0 0 0.3em;}
