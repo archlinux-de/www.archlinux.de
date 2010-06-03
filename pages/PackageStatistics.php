@@ -23,28 +23,6 @@ class PackageStatistics extends Page implements IDBCachable {
 private static $barColors = array();
 private static $barColorArray = array('8B0000','FF8800','006400');
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li><a href="?page=Packages">Suche</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li class="selected">Statistiken</li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
 
 public function prepare()
 	{
@@ -68,7 +46,7 @@ public static function updateDBCache()
 		$data = self::getCommonRepositoryStatistics();
 		$log = self::getCommonPackageUsageStatistics();
 
-		$body = '<div id="box">
+		$body = '<div class="box">
 			<table id="packagedetails">
 				<tr>
 					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Repositories').'</h1></th>
@@ -341,7 +319,7 @@ private static function getRepositoryStatistics()
 					<th>'.$repo['name'].'</th>
 					<td style="padding:0px;margin:0px;">
 						<div style="overflow:auto; max-height: 800px;">
-						<table id="packages" style="border:none;">
+						<table class="pretty-table" style="border:none;">
 						<tr>
 							<td style="width: 50px;">'.self::get('L10n')->getText('Packages').'</td>
 							<td>'.self::getBar($data['packages'], $total['packages']).'</td>
@@ -638,7 +616,7 @@ private static function getPopularPackagesPerRepository()
 
 			foreach ($packages as $package)
 				{
-				$list .= '<tr class="packageline"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
+				$list .= '<tr><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
 				}
 
 			$list .= '</table></div></td></tr>';
@@ -709,11 +687,11 @@ private static function getPopularUnofficialPackages()
 
 	try
 		{
-		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table id="packages" style="border:none;">';
+		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
 
 		foreach ($packages as $package)
 			{
-			$list .= '<tr class="packageline"><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
+			$list .= '<tr><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
 			}
 
 		$list .= '</table></div></td></tr>';

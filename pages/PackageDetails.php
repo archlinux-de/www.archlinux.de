@@ -26,30 +26,6 @@ private $arch = '';
 private $pkgname = '';
 
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li class="selected"><a href="?page=Packages">Suche</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
-
-
 public function prepare()
 	{
 	$this->setValue('title', 'Paket-Details');
@@ -117,17 +93,8 @@ public function prepare()
 	$this->pkgid = $data['id'];
 	$this->setValue('title', $data['name']);
 
-	if ($data['repository'] == 'testing' || $data['repository'] == 'community-testing')
-		{
-		$style = ' class="testingpackage"';
-		}
-	else
-		{
-		$style = '';
-		}
-
-	$body = '<div id="box">
-		<h1 id="packagename">'.$data['name'].'</h1>
+	$body = '<div class="box">
+		<h2>'.$data['name'].'</h2>
 		<table id="packagedetails">
 			<tr>
 				<th colspan="2" class="packagedetailshead">Programm-Details</th>
@@ -157,7 +124,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Repositorium</th>
-				<td'.$style.'><a href="?page=Packages;repository='.$data['repositoryid'].'">'.$data['repository'].'</a></td>
+				<td><a href="?page=Packages;repository='.$data['repositoryid'].'">'.$data['repository'].'</a></td>
 			</tr>
 			<tr>
 				<th>Architektur</th>

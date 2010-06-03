@@ -32,28 +32,6 @@ private $search		= '';
 private $searchString	= '';
 private $searchField 	= 0;
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li class="selected">Suche</li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
 
 public function prepare()
 	{
@@ -149,10 +127,10 @@ public function prepare()
 		}
 
 	$body = '
-		<div class="greybox" id="searchbox">
-		<h4 style="text-align: right">Paket-Suche</h4>
+		<div class="box">
+		<h2>Paket-Suche</h2>
 		<form method="post" action="?page=Packages">
-		<table width="100%">
+		<table id="searchbox">
 			<tr>
 				<th>Repositorium</th>
 				<th>Architektur</th>
@@ -350,7 +328,7 @@ private function showPackageList($packages)
 		? '<a href="'.$curlink.';package='.nat($this->package-$this->maxPackages).'">&#171;</a>'
 		: '');
 
-	$body = '<table id="packages">
+	$body = '<table class="pretty-table">
 			<tr>
 				<th><a href="'.$link.';orderby=repository;sort='.abs($this->sort-1).'">Repositorium</a></th>
 				<th><a href="'.$link.';orderby=architecture;sort='.abs($this->sort-1).'">Architektur</a></th>
@@ -365,9 +343,9 @@ private function showPackageList($packages)
 
 	foreach ($packages as $package)
 		{
-		$style = ($package['repository'] == 'testing' || $package['repository'] == 'community-testing') ? ' testingpackage' : '';
+		$style = ($package['repository'] == 'testing' || $package['repository'] == 'community-testing') ? ' class="less"' : '';
 
-		$body .= '<tr class="packageline'.$style.'">
+		$body .= '<tr'.$style.'>
 				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.$this->L10n->getDateTime($package['builddate']).'</td>
 			</tr>';
 		}

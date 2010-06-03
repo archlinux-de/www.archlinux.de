@@ -23,28 +23,6 @@ class Packagers extends Page{
 private $orderby 	= 'name';
 private $sort 		= 0;
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li><a href="?page=Packages">Suche</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
-			<li class="selected">Packer</li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
 
 public function prepare()
 	{
@@ -103,7 +81,7 @@ public function prepare()
 		}
 
 	$body = '
-		<table id="packages">
+		<table class="pretty-table">
 			<tr>
 				<th><a href="?page=Packagers;orderby=name;sort='.abs($this->sort-1).'">Name</a></th>
 				<th>E-Mail</th>
@@ -115,7 +93,7 @@ public function prepare()
 		{
 		$percent = round(($packager['packages'] / $packages) * 100);
 
-		$body .= '<tr class="packageline">
+		$body .= '<tr>
 				<td>'.$packager['name'].'</td>
 				<td>'.(empty($packager['email']) ? '' : '<a href="mailto:'.$packager['email'].'">'.$packager['email'].'</a>').'</td>
 				<td style="text-align:right;"><a href="?page=Packages;packager='.$packager['id'].'">'.$packager['packages'].'</a></td>

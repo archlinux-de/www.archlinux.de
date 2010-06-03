@@ -26,28 +26,6 @@ private static $range	= 1209600; // two weeks
 private static $orders	= array('host', 'country', 'lastsync', 'syncdelay', 'avgtime');
 private static $sorts	= array('ASC', 'DESC');
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li><a href="?page=Packages">Suche</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li class="selected">Server</li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
 
 public function prepare()
 	{
@@ -106,7 +84,7 @@ private static function getCurrentProblems($range)
 		$problems = array();
 		}
 
-	$list = '<table id="packages">
+	$list = '<table class="pretty-table">
 		<tr>
 			<th>'.self::get('L10n')->getText('Host').'</th>
 			<th>'.self::get('L10n')->getText('Message').'</th>
@@ -118,7 +96,7 @@ private static function getCurrentProblems($range)
 	foreach ($problems as $problem)
 		{
 		$list .=
-		'<tr class="packageline">
+		'<tr>
 			<td><a href="'.$problem['host'].'" rel="nofollow">'.$problem['host'].'</a></td>
 			<td>'.$problem['error'].'</td>
 			<td>'.self::get('L10n')->getDateTime($problem['firsttime']).'</td>
@@ -139,11 +117,9 @@ public static function updateDBCache()
 		$int = self::get('DB')->getRow
 			('
 			SELECT
-				MIN(totaltime) AS mintimes,
 				MAX(totaltime) AS maxtimes,
 				AVG(totaltime) AS avgtimes,
 				MAX(time-lastsync) AS maxsyncdelay,
-				MIN(time-lastsync) AS minsyncdelay,
 				AVG(time-lastsync) AS avgsyncdelay
 			FROM
 				mirror_log
@@ -156,33 +132,6 @@ public static function updateDBCache()
 				COUNT(host) AS count
 			FROM
 				mirrors
-			');
-
-		$de = self::get('DB')->getRow
-			('
-			SELECT
-				MIN(totaltime) AS mintimes,
-				MAX(totaltime) AS maxtimes,
-				AVG(totaltime) AS avgtimes,
-				MAX(time-lastsync) AS maxsyncdelay,
-				MIN(time-lastsync) AS minsyncdelay,
-				AVG(time-lastsync) AS avgsyncdelay
-			FROM
-				mirrors,
-				mirror_log
-			WHERE
-				mirrors.country LIKE \'Germany\'
-				AND mirror_log.host = mirrors.host
-				AND mirror_log.time >= '.$range.'
-			');
-		$de['count'] = self::get('DB')->getColumn
-			('
-			SELECT
-				COUNT(host) AS count
-			FROM
-				mirrors
-			WHERE
-				country LIKE \'Germany\'
 			');
 
 		$problems = self::getCurrentProblems($range);
@@ -215,7 +164,7 @@ public static function updateDBCache()
 					');
 
 				$mirrors = $stm->getRowSet();
-				self::createBody($de, $int, $mirrors, $order, $sort, $problems);
+				self::createBody($int, $mirrors, $order, $sort, $problems);
 				}
 			}
 		}
@@ -224,56 +173,14 @@ public static function updateDBCache()
 		}
 	}
 
-private static function createBody($de, $int, $mirrors, $order, $sort, $problems)
+private static function createBody($int, $mirrors, $order, $sort, $problems)
 	{
 	$sortint = ($sort == 'DESC' ? 1 : 0);
 
-	$body = '<div class="greybox" id="searchbox">
-		<h4 style="text-align: right">'.self::get('L10n')->getText('Mirror status').'</h4>
-		<table>
-			<tr>
-				<th>&nbsp;</th>
-				<th>'.self::get('L10n')->getText('Germany').'</th>
-				<th>'.self::get('L10n')->getText('International').'</th>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Number of mirrors').'</th>
-				<td>'.$de['count'].'</td>
-				<td>'.$int['count'].'</td>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Lowest response time').'</th>
-				<td>'.self::get('L10n')->getEpoch($de['mintimes']).'</td>
-				<td>'.self::get('L10n')->getEpoch($int['mintimes']).'</td>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Highest response time').'</th>
-				<td>'.self::get('L10n')->getEpoch($de['maxtimes']).'</td>
-				<td>'.self::get('L10n')->getEpoch($int['maxtimes']).'</td>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Average response time').'</th>
-				<td>'.self::get('L10n')->getEpoch($de['avgtimes']).'</td>
-				<td>'.self::get('L10n')->getEpoch($int['avgtimes']).'</td>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Lowest delay').'</th>
-				<td>'.self::get('L10n')->getEpoch($de['minsyncdelay']).'</td>
-				<td>'.self::get('L10n')->getEpoch($int['minsyncdelay']).'</td>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Highest delay').'</th>
-				<td>'.self::get('L10n')->getEpoch($de['maxsyncdelay']).'</td>
-				<td>'.self::get('L10n')->getEpoch($int['maxsyncdelay']).'</td>
-			</tr>
-			<tr>
-				<th>'.self::get('L10n')->getText('Average delay').'</th>
-				<td>'.self::get('L10n')->getEpoch($de['avgsyncdelay']).'</td>
-				<td>'.self::get('L10n')->getEpoch($int['avgsyncdelay']).'</td>
-			</tr>
-		</table>
+	$body = '<div class="box">
+		<h2>'.self::get('L10n')->getText('Mirror status').'</h2>
 		</div>
-		<table id="packages">
+		<table class="pretty-table">
 			<tr>
 				<th><a href="?page=MirrorStatus;orderby=host;sort='.abs($sortint-1).'">'.self::get('L10n')->getText('Host').'</a></th>
 				<th><a href="?page=MirrorStatus;orderby=country;sort='.abs($sortint-1).'">'.self::get('L10n')->getText('Country').'</a></th>
@@ -303,7 +210,7 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 			$outofsync = '';
 			}
 
-		$body .= '<tr class="packageline">
+		$body .= '<tr>
 				<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
 				<td>'.$mirror['country'].'</td>
 				<td title="&empty;&nbsp;'.self::get('L10n')->getEpoch($mirror['avgtime']).'"><div style="background-color:'.$perfcolor.';width:'.$performance.'px;">&nbsp;</div></td>
@@ -313,7 +220,7 @@ private static function createBody($de, $int, $mirrors, $order, $sort, $problems
 		}
 
 	$body .= '</table>
-		<h4 style="text-align: right;border-bottom: 1px dotted #0771a6;margin-bottom: 4px;padding-bottom: 2px;font-size: 10px;">'.self::get('L10n')->getText('Current problems').'</h4>
+		<div class="box" style="margin-top:2em;"><h3>'.self::get('L10n')->getText('Current problems').'</h3></div>
 		'.$problems;
 
 	self::get('PersistentCache')->addObject('MirrorStatus:'.$order.':'.$sort.':'.self::get('L10n')->getLocale(), $body);

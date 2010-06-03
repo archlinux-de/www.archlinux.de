@@ -21,29 +21,6 @@
 class ArchitectureDifferences extends Page implements IDBCachable {
 
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li><a href="?page=Packages">Suche</a></li>
-			<li class="selected">Architekturen</li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
-
 public function prepare()
 	{
 	$this->setValue('title', $this->L10n->getText('Architecture differences'));
@@ -187,13 +164,13 @@ public static function updateDBCache()
 	foreach (array(true, false) as $showminor)
 		{
 		$body = '
-			<div class="greybox" id="searchbox">
-				<h4 style="text-align: right">'.self::get('L10n')->getText('Architecture differences').'</h4>
-				<div style="font-size:10px; text-align:right;padding-bottom:10px;">
+			<div class="box">
+				<h4>'.self::get('L10n')->getText('Architecture differences').'</h4>
+				<p>
 				'.($showminor ? '<a href="?page=ArchitectureDifferences">'.self::get('L10n')->getText('Hide architecture specific differences').'</a>' : '<a href="?page=ArchitectureDifferences;showminor=1">'.self::get('L10n')->getText('Show architecture specific differences').'</a>').'
-				</div>
+				</p>
 			</div>
-			<table id="packages">
+			<table class="pretty-table">
 				<tr>
 					<th>'.self::get('L10n')->getText('Package name').'</th>
 					<th>i686</th>
@@ -223,26 +200,26 @@ public static function updateDBCache()
 			if ($repo != $package['repoid'])
 				{
 				$body .= '<tr>
-						<th colspan="4" class="pages" style="background-color:#1793d1;text-align:center;">['.$package['reponame'].']</th>
+						<th colspan="4" class="heading">['.$package['reponame'].']</th>
 					</tr>';
 				}
-			$minor = $showminor && self::isMinorPackageRelease($package['iversion'], $package['xversion']) ? ' style="color:green;"' : '';
+			$minor = $showminor && self::isMinorPackageRelease($package['iversion'], $package['xversion']) ? ' class="less"' : '';
 
 			if (self::compareVersions($package['iversion'], $package['xversion']) < 0)
 				{
-				$iold = ' style="color:red;"';
+				$iold = ' class="more"';
 				$xold = '';
 				}
 			else
 				{
 				$iold = '';
-				$xold = ' style="color:red;"';
+				$xold = ' class="more"';
 				}
 
-			$body .= '<tr class="packageline'.$style.'"'.$minor.'>
+			$body .= '<tr'.$minor.'>
 					<td>'.$package['name'].'</td>
-					<td>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=i686;pkgname='.$package['name'].'"'.$iold.'>'.$package['iversion'].'</a>').'</td>
-					<td>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=x86_64;pkgname='.$package['name'].'"'.$xold.'>'.$package['xversion'].'</a>').'</td>
+					<td'.$iold.'>'.(empty($package['iid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=i686;pkgname='.$package['name'].'">'.$package['iversion'].'</a>').'</td>
+					<td'.$xold.'>'.(empty($package['xid']) ? '' : '<a href="?page=PackageDetails;repo='.$package['reponame'].';arch=x86_64;pkgname='.$package['name'].'">'.$package['xversion'].'</a>').'</td>
 					<td>'.self::get('L10n')->getDateTime($package['builddate']).'</td>
 				</tr>';
 

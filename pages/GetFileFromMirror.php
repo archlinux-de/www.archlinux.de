@@ -23,28 +23,6 @@ class GetFileFromMirror extends Page implements IDBCachable {
 private $mirrors	= array();
 private static $range	= 1209600; // two weeks
 
-protected function makeMenu()
-	{
-	return '<ul>
-			<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
-			<li class="selected">Pakete</li>
-			<li><a href="https://wiki.archlinux.de">Wiki</a></li>
-			<li><a href="https://forum.archlinux.de/?page=Forums;id=20">Forum</a></li>
-			<li><a href="?page=Start">Start</a></li>
-		</ul>';
-	}
-
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li class="selected"><a href="?page=Packages">Suche</a></li>
-			<li><a href="?page=ArchitectureDifferences">Architekturen</a></li>
-			<li><a href="?page=Packagers">Packer</a></li>
-			<li><a href="?page=MirrorStatus">Server</a></li>
-			<li><a href="?page=PackageStatistics">Statistiken</a></li>
-			<li><a href="https://wiki.archlinux.de/title/AUR">AUR</a></li>
-		</ul>';
-	}
 
 public function prepare()
 	{
@@ -73,10 +51,12 @@ public function prepare()
 	$mirror = $this->getRandomMirror($file);
 	$url = $mirror.$file;
 
-	$body = '<div id="box">
+	$body = '<div class="box">
 			<h2>'.basename($file).'</h2>
-			<p>Aktueller Server: <strong><a href="'.$url.'">'.$mirror.'</a></strong></p>
-			Alternative Server:'.$this->getAlternateMirrorList($url, $file).'
+			<h3>Aktueller Server:</h3>
+			<p><ul><li><a href="'.$url.'">'.$mirror.'</a></li></ul></p>
+			<h3>Alternative Server:</h3>
+			<p>'.$this->getAlternateMirrorList($url, $file).'</p>
 		</div>
 		<script type="text/javascript">
 			/* <![CDATA[ */

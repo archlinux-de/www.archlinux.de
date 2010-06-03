@@ -20,17 +20,8 @@
 
 class Start extends Page {
 
-private $arch 			= 1;
+private $arch = 1;
 
-protected function makeSubMenu()
-	{
-	return '<ul>
-			<li class="selected">Aktuelles</li>
-			<li><a href="https://wiki.archlinux.de/title/Download">Herunterladen</a></li>
-			<li><a href="https://wiki.archlinux.de/title/Bugs">Bugs</a></li>
-			<li><a href="https://planet.archlinux.de">Planet</a></li>
-		</ul>';
-	}
 
 public function prepare()
 	{
@@ -42,31 +33,9 @@ public function prepare()
 	$this->setValue('title', 'Start');
 
 	$body =
-	'
-		<div id="right">
-			<div class="greybox">
-				<form method="post" action="?page=Packages">
-					<label for="searchfield">Paket-Suche:</label>
-					<input type="text" name="search" size="20" maxlength="200" id="searchfield" style="width:230px" />
-				</form>
-				<script type="text/javascript">
-					/* <![CDATA[ */
-					document.getElementById("searchfield").focus();
-					/* ]]> */
-				</script>
-			</div>
-			<div class="greybox">
-				<h3>Aktualisierte Pakete</h3>
-				'.$this->getRecentPackages().'
-				<div style="text-align:right;font-size:x-small"><a href="?page=Packages">&#187; Paket-Suche</a></div>
-			</div>
-			<div class="greybox">
-				<h3>Aktuelle Themen im Forum</h3>
-				'.$this->getRecentThreads().'
-			</div>
-		</div>
+	'<div id="left-wrapper">
 		<div id="left">
-			<div id="box">
+			<div id="intro" class="box">
 				<h2>Willkommen bei Arch Linux</h2>
 				<p>
 				<strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em> Distribution für jeden erdenklichen Einsatz-Zweck. Ein einfaches Grundsystem kann nach den Bedürfnissen des jeweiligen Nutzers nahezu beliebig erweitert werden.
@@ -77,43 +46,75 @@ public function prepare()
 				<p>
 				Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es werden wollen...
 				</p>
-				<div style="font-size:x-small;text-align:right;"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux" class="link">mehr über Arch Linux</a></div>
+				<p class="readmore"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">mehr über Arch Linux</a></p>
 			</div>
-			<h2>Aktuelle Ankündigungen</h2>
+			<div id="news">
+			<h3>Aktuelle Ankündigungen</h3>
 			'.$this->getNews().'
+			</div>
+		</div>
+	</div>
+		<div id="right">
+			<div id="pkgsearch">
+				<form method="post" action="?page=Packages">
+					<label for="searchfield">Paket-Suche:</label>
+					<input type="text" name="search" size="20" maxlength="200" id="searchfield" />
+				</form>
+				<script type="text/javascript">
+					/* <![CDATA[ */
+					document.getElementById("searchfield").focus();
+					/* ]]> */
+				</script>
+			</div>
+			<div id="pkgrecent" class="box">
+				<h3>Aktualisierte Pakete</h3>
+				'.$this->getRecentPackages().'
+			</div>
+			<div id="sidebar">
+				<h4>Dokumentation</h4>
+				<ul>
+					<li><a href="https://wiki.archlinux.de/">Wiki</a></li>
+					<li><a href="https://wiki.archlinux.de/title/Offizielle_Arch_Linux_Installations-Anleitung">Offizielle Arch Linux Installations-Anleitung</a></li>
+				</ul>
+				<h4>Gemeinschat</h4>
+				<ul>
+					<li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
+					<li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
+					<li><a href="https://wiki.archlinux.org/index.php/International_Communities">Internationale Gemeinschaft</a></li>
+				</ul>
+				<h4>Unterstützung</h4>
+				<ul>
+					<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden (archlinux.de)</a></li>
+					<li><a href="https://www.archlinux.org/donate/">Spenden (international)</a></li>
+				</ul>
+				<h4>Entwicklung</h4>
+				<ul>
+					<li><a href="?page=Packages">Pakete</a></li>
+					<li><a href="?page=ArchitectureDifferences">Architektur-Unterschiede</a></li>
+					<li><a href="http://aur.archlinux.org/index.php?setlang=de">AUR</a></li>
+					<li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
+					<li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
+					<li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>
+					<li><a href="https://git.archlinux.de/">archlinux.de in Git</a></li>
+					<li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki">Entwickler-Wiki</a></li>
+				</ul>
+				<h4>Informationen</h4>
+				<ul>
+					<li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
+					<li><a href="https://wiki.archlinux.de/title/Download">Arch herunterladen</a></li>
+					<li><a href="https://wiki.archlinux.de/title/Arch_in_den_Medien">Arch in den Medien</a></li>
+					<li><a href="https://www.archlinux.org/art/">Logos</a></li>
+					<li><a href="https://www.archlinux.org/developers/">Entwickler</a></li>
+					<li><a href="https://www.archlinux.org/trustedusers/">Trusted Users</a></li>
+					<li><a href="https://www.archlinux.org/fellows/">Ehemalige</a></li>
+					<li><a href="?page=MirrorStatus">Mirror-Status</a></li>
+					<li><a href="?page=PackageStatistics">Statistiken</a></li>
+				</ul>
+			</div>
 		</div>
 	';
 
 	$this->setValue('body', $body);
-	}
-
-private function getRecentThreads()
-	{
-	$result = '';
-
-	if (! ($result = $this->PersistentCache->getObject('bbs_feed')))
-		{
-		try
-			{
-			$file = new RemoteFile($this->Settings->getValue('bbs_feed'));
-			$feed = new SimpleXMLElement($file->getFileContent());
-
-			foreach ($feed->entry as $entry)
-				{
-				$result .=
-					'
-					<h4><a href="'.$entry->link->attributes()->href.'">'.cutString($entry->title, 54).'</a></h4>
-					<p>'.cutString(strip_tags($entry->summary), 400).'</p>
-					';
-				}
-			$this->PersistentCache->addObject('bbs_feed', $result, 600);
-			}
-		catch(FileException $e)
-			{
-			}
-		}
-
-	return $result;
 	}
 
 private function getNews()
@@ -131,8 +132,8 @@ private function getNews()
 				{
 				$result .=
 					'
-					<span style="float:right; font-size:x-small;padding-top:14px">'.$this->L10n->getDateTime(strtotime($entry->updated)).'</span>
-					<h3><a href="'.$entry->link->attributes()->href.'">'.$entry->title.'</a></h3>
+					<h4><a href="'.$entry->link->attributes()->href.'">'.$entry->title.'</a></h4>
+					<p class="date">'.$this->L10n->getDate(strtotime($entry->updated)).'</p>
 					'.$entry->summary.'
 					';
 				}
@@ -164,7 +165,6 @@ private function getRecentPackages()
 				architectures
 			WHERE
 				packages.repository = repositories.id
-				AND repositories.name IN (\'core\', \'extra\', \'testing\')
 				AND packages.arch = architectures.id
 				AND packages.arch = ?
 			ORDER BY
@@ -180,15 +180,14 @@ private function getRecentPackages()
 		$packages = array();
 		}
 
-	$result = '<table id="recentupdates">';
+	$result = '<table>';
 
 	foreach ($packages as $package)
 		{
-		$style = $package['repository'] == 'testing' ? ' class="testingpackage"' : '';
 		$result .= '
-			<tr'.$style.'>
-				<td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td>
-				<th>'.$package['version'].'</th>
+			<tr class="'.$package['repository'].'">
+				<td class="pkgname"><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td>
+				<td class="pkgver">'.$package['version'].'</td>
 			</tr>
 			';
 		}
