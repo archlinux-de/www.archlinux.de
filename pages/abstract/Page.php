@@ -124,7 +124,7 @@ private function sendOutput()
 		<div id="archnavbarmenu">
 		<ul id="archnavbarlist">
 			<li id="anb-start"><a href="?page=Start">Start</a></li>
-			<li id="anb-pakete"><a href="?page=Packages">Pakete</a></li>
+			<li id="anb-packages"><a href="?page=Packages">Pakete</a></li>
 			<li id="anb-forum"><a href="https://bbs.archlinux.de/">Forum</a></li>
 			<li id="anb-wiki"><a href="https://wiki.archlinux.de/">Wiki</a></li>
 			<li id="anb-download"><a href="https://wiki.archlinux.de/title/Download">Download</a></li>

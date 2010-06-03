@@ -43,7 +43,7 @@ h5 { font-size: 1em; margin-top: 1em; }
 #sidebar ul { list-style: none; margin: 0.5em 0 0.5em 1em; padding: 0; }
 
 #archnavbar.anb-start ul li#anb-start a { color: white !important; }
-#archnavbar.anb-pakete ul li#anb-pakete a { color: white !important; }
+#archnavbar.anb-packages ul li#anb-packages a, #archnavbar.anb-packagedetails ul li#anb-packages a{ color: white !important; }
 
 .pretty-table {	width: 100%; border: 1px solid #bcd; border-collapse:collapse; }
 .pretty-table th { font-size:12px; background-color:#fff; text-align:left; padding: 4px; }
