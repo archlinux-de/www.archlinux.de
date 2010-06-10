@@ -21,7 +21,7 @@
 class GetFileFromMirror extends Page implements IDBCachable {
 
 private $mirrors	= array();
-private static $range	= 1209600; // two weeks
+private static $range	= 172800; // 2 days
 
 
 public function prepare()
@@ -38,9 +38,7 @@ public function prepare()
 		$this->showFailure('keine Datei angegeben!');
 		}
 
-	$this->mirrors = $this->getMirrors();
-
-	if (count($this->mirrors) == 0)
+	if (!($this->mirrors = $this->PersistentCache->getObject('GetFileFromMirror')))
 		{
 		$this->Output->setStatus(Output::NOT_FOUND);
 		$this->showFailure('keine Spiegel-Server gefunden!');
@@ -48,13 +46,13 @@ public function prepare()
 
 	$this->setValue('title', basename($file));
 
-	$mirror = $this->getRandomMirror($file);
-	$url = $mirror.$file;
+	$mirror = $this->mirrors[array_rand($this->mirrors)];
+	$url = $mirror['host'].$file;
 
 	$body = '<div class="box">
 			<h2>'.basename($file).'</h2>
 			<h3>Aktueller Server:</h3>
-			<p><ul><li><a href="'.$url.'">'.$mirror.'</a></li></ul></p>
+			<p><ul><li>'.$mirror['country'].'<ul><li><a href="'.$url.'">'.$mirror['host'].'</a> <em>('.$this->L10n->getDateTime($mirror['lastsync']).')</em></li></ul></ul></p>
 			<h3>Alternative Server:</h3>
 			<p>'.$this->getAlternateMirrorList($url, $file).'</p>
 		</div>
@@ -67,49 +65,28 @@ public function prepare()
 	$this->setValue('body', $body);
 	}
 
-private function getMirrors()
-	{
-	if (!($mirrors = $this->PersistentCache->getObject('GetFileFromMirror')))
-		{
-		$mirrors = array();
-		}
-
-	return $mirrors;
-	}
-
 private function getAlternateMirrorList($url, $file)
 	{
 	$list = '<ul>';
 	$mirrors = $this->mirrors;
-	arsort($mirrors);
+	$country = '';
 
-	foreach ($mirrors as $mirror => $probability)
+	foreach ($mirrors as $mirror)
 		{
-		if ($probability == 0 || $mirror.$file == $url)
+		if ($country != $mirror['country'])
 			{
-			continue;
+			if ($country != '')
+				{
+				$list .= '</ul>';
+				}
+			$list .= '<li>'.$mirror['country'].'<ul>';
 			}
-		$list .= '<li><a href="'.$mirror.$file.'">'.$mirror.'</a></li>';
+		$country = $mirror['country'];
+
+		$list .= '<li><a href="'.$mirror['host'].$file.'">'.$mirror['host'].'</a></li>';
 		}
 
-	return $list.'</ul>';
-	}
-
-private function getRandomMirror($file)
-	{
-	$tempMirrors = array();
-
-	foreach ($this->mirrors as $mirror => $probability)
-		{
-		for ($i = 0; $i < $probability; $i++)
-			{
-			$tempMirrors[] = $mirror;
-			}
-		}
-
-	$randomIndex = array_rand($tempMirrors);
-
-	return $tempMirrors[$randomIndex];
+	return $list.'</ul></ul>';
 	}
 
 public static function updateDBCache()
@@ -120,20 +97,18 @@ public static function updateDBCache()
 			('
 			SELECT
 				mirrors.host,
-				MAX(lastsync) AS lastsync,
-				AVG(totaltime) AS avgtime
+				mirrors.country,
+				MAX(mirror_log.lastsync) AS lastsync
 			FROM
 				mirrors,
 				mirror_log
 			WHERE
 				mirror_log.host = mirrors.host
-				AND mirror_log.time >= ?
+				AND mirror_log.lastsync >= ?
 			GROUP BY
 				mirrors.host
-			HAVING
-				lastsync > 0
 			ORDER BY
-				avgtime ASC,
+				country ASC,
 				lastsync DESC,
 				host
 			');
@@ -143,7 +118,7 @@ public static function updateDBCache()
 
 		foreach ($stm->getRowSet() as $mirror)
 			{
-			$mirrors[$mirror['host']] = round(3/$mirror['avgtime']);
+			$mirrors[] = array('host' => $mirror['host'], 'country' => $mirror['country'], 'lastsync' => $mirror['lastsync']);
 			}
 
 		$stm->close();
