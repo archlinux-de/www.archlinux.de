@@ -111,8 +111,8 @@ private function sendOutput()
 <head>
 	<meta name="robots" content="'.$this->getValue('meta.robots').'" />
 	<title>archlinux.de - '.$this->getValue('title').'</title>
-	<link rel="stylesheet" media="screen" href="arch.css?v=3" />
-	<link rel="stylesheet" media="screen" href="archnavbar.css?v=1" />
+	<link rel="stylesheet" media="screen" href="arch.css?v=4" />
+	<link rel="stylesheet" media="screen" href="archnavbar.css?v=2" />
 	<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="'.$this->Settings->getValue('news_feed').'" />
 	<link rel="alternate" type="application/atom+xml" title="Aktualisierte Pakete" href="?page=GetRecentPackages" />
 	<link rel="search" type="application/opensearchdescription+xml" href="?page=GetOpenSearch" title="www.archlinux.de" />
