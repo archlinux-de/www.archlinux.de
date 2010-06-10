@@ -49,7 +49,6 @@ public function prepare()
 				<p class="readmore"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">mehr über Arch Linux</a></p>
 			</div>
 			<div id="news">
-			<h3>Aktuelle Ankündigungen</h3>
 			'.$this->getNews().'
 			</div>
 		</div>
@@ -62,7 +61,6 @@ public function prepare()
 				</form>
 			</div>
 			<div id="pkgrecent" class="box">
-				<h3>Aktualisierte Pakete</h3>
 				'.$this->getRecentPackages().'
 			</div>
 			<div id="sidebar">
@@ -123,6 +121,8 @@ private function getNews()
 			$file = new RemoteFile($this->Settings->getValue('news_feed'));
 			$feed = new SimpleXMLElement($file->getFileContent());
 
+			$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="'.$this->Settings->getValue('news_archive').'">mehr</a>)</span></h3><a href="'.$this->Settings->getValue('news_feed').'" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a>';
+
 			foreach ($feed->entry as $entry)
 				{
 				$result .=
@@ -175,7 +175,7 @@ private function getRecentPackages()
 		$packages = array();
 		}
 
-	$result = '<table>';
+	$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a><table>';
 
 	foreach ($packages as $package)
 		{

@@ -1,5 +1,6 @@
 * { margin: 0; padding: 0; }
 body {background: #f6f9fc; color: #222; font-family: sans-serif; }
+img { border: none; }
 
 a { text-decoration:none; color:#07b; outline: none; }
 #news p a, #news li a { font-weight: bold; }
@@ -41,6 +42,9 @@ h5 { font-size: 1em; margin-top: 1em; }
 #pkgrecent h3 { margin: 0 0 0.3em;}
 #pkgrecent td.pkgver { text-align: right; }
 #pkgrecent .testing, #pkgrecent .community-testing { font-style: italic; }
+
+#news .more, #pkgrecent .more { font-weight: normal; }
+#news .rss-icon, #pkgrecent  .rss-icon{ float: right; margin: -2em 0.4em 0 0; }
 
 #sidebar ul { list-style: none; margin: 0.5em 0 0.5em 1em; padding: 0; }
 

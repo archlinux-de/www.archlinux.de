@@ -40,6 +40,7 @@ public function __construct()
 	$this->config['pkgdb_architectures']		= array('i686', 'x86_64');
 
 	$this->config['news_feed']			= '';
+	$this->config['news_archive']			= '';
 
 	$this->config['file_refresh']			= 60*60; //1 hour
 	$this->config['allowed_mime_types']		= array('text/plain', 'text/xml', 'application/xml',
