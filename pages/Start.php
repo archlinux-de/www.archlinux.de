@@ -60,11 +60,6 @@ public function prepare()
 					<label for="searchfield">Paket-Suche:</label>
 					<input type="text" name="search" size="20" maxlength="200" id="searchfield" />
 				</form>
-				<script type="text/javascript">
-					/* <![CDATA[ */
-					document.getElementById("searchfield").focus();
-					/* ]]> */
-				</script>
 			</div>
 			<div id="pkgrecent" class="box">
 				<h3>Aktualisierte Pakete</h3>

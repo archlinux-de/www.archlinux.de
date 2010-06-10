@@ -155,11 +155,6 @@ public function prepare()
 			</tr>
 		</table>
 		</form>
-		<script type="text/javascript">
-			/* <![CDATA[ */
-			document.getElementById("searchfield").focus();
-			/* ]]> */
-		</script>
 		</div>';
 
 	$body .= $this->showPackageList($packages);
