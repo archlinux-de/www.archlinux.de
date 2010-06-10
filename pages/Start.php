@@ -101,7 +101,6 @@ public function prepare()
 					<li><a href="https://www.archlinux.org/trustedusers/">Trusted Users</a></li>
 					<li><a href="https://www.archlinux.org/fellows/">Ehemalige</a></li>
 					<li><a href="?page=MirrorStatus">Mirror-Status</a></li>
-					<li><a href="?page=PackageStatistics">Statistiken</a></li>
 				</ul>
 			</div>
 		</div>

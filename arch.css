@@ -52,11 +52,12 @@ h5 { font-size: 1em; margin-top: 1em; }
 #archnavbar.anb-packages ul li#anb-packages a, #archnavbar.anb-packagedetails ul li#anb-packages a{ color: white !important; }
 
 .pretty-table {	width: 100%; border: 1px solid #bcd; border-collapse:collapse; }
-.pretty-table th { font-size:12px; background-color:#fff; text-align:left; padding: 4px; }
+.pretty-table th { font-size:12px; background-color:#fff; text-align:left; padding: 4px; border-bottom: 1px solid #888; }
 .pretty-table td { padding: 4px; }
 .pretty-table tr:nth-child(odd) td { font-size: 11px; background-color: #fff; vertical-align: top; }
 .pretty-table tr:nth-child(even) td { font-size: 11px; background-color: #e4eeff; vertical-align: top; }
-.pretty-table tr:hover td { background-color:#eee; }
+.pretty-table tr:hover td { background-color:#efefef; }
+.pretty-table .pages { background-color:#fff !important; }
 .pretty-table .less { font-style: italic; }
 .pretty-table .more { font-weight: bolder; }
 .pretty-table th.heading { background: #3ad; color: #fff; border: 1px solid #08b; text-align:center; }
@@ -69,7 +70,7 @@ h5 { font-size: 1em; margin-top: 1em; }
 #packagedependencies th { text-align:left; font-size:12px; padding-top:2px; padding-bottom:2px; padding-left:8px; padding-right:8px; }
 #packagedependencies td { vertical-align:top; }
 #packagedependencies th.packagedependencieshead { text-align:right; margin: 0; padding: 0; border-bottom: 1px dotted #bbb; margin-bottom: 4px; padding-bottom: 2px; font-size: 10px; }
-#packagedependencies ul { position: relative; list-style-type: none; top: -10px; left:-40px; overflow:auto; max-height:300px; padding-left: 4em; padding-top: 1em; }
+#packagedependencies ul { position: relative; list-style-type: none; vertical-align:top; left:-40px; overflow:auto; max-height:300px; padding-left: 4em; padding-top: 1em; }
 #packagedependencies  li { padding:0px; margin:0px; }
 
 #searchbox { width:100%; }

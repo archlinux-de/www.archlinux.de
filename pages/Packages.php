@@ -189,7 +189,7 @@ private function getSearchFields()
 			$selected = '';
 			}
 
-		$options .= '<input type="radio" name="searchfield" value="'.$key.'"'.$selected.' />'.$value;
+		$options .= ' <input type="radio" name="searchfield" value="'.$key.'"'.$selected.' />'.$value;
 		}
 
 	return $options;
@@ -325,15 +325,15 @@ private function showPackageList($packages)
 
 	$body = '<table class="pretty-table">
 			<tr>
+				<td class="pages" colspan="6">'.$last.$next.'</td>
+			</tr>
+			<tr>
 				<th><a href="'.$link.';orderby=repository;sort='.abs($this->sort-1).'">Repositorium</a></th>
 				<th><a href="'.$link.';orderby=architecture;sort='.abs($this->sort-1).'">Architektur</a></th>
 				<th><a href="'.$link.';orderby=pkgname;sort='.abs($this->sort-1).'">Name</a></th>
 				<th>Version</th>
 				<th>Beschreibung</th>
 				<th><a href="'.$link.';orderby=lastupdate;sort='.abs($this->sort-1).'">Aktualisierung</a></th>
-			</tr>
-			<tr>
-				<td class="pages" colspan="6">'.$last.$next.'</td>
 			</tr>';
 
 	foreach ($packages as $package)
