@@ -22,7 +22,7 @@ class GetFileFromMirror extends Modul implements IOutput {
 
 private $mirror = '';
 private $file = '';
-private $range = 1728000; // 2 days
+private $range = 86400; // 1 day
 
 
 public function prepare()
