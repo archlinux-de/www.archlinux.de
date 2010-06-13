@@ -64,13 +64,13 @@ public function getMirror()
 		$country = geoip_country_name_by_name($ip);
 		if ($country === false)
 			{
-			$country = 'Any';
+			$country = 'Germany';
 			}
 		set_error_handler('ErrorHandler');
 		}
 	else
 		{
-		$country = 'Any';
+		$country = 'Germany';
 		}
 
 	$this->DB->connect(
