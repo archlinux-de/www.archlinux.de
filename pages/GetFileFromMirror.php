@@ -85,18 +85,14 @@ public function getMirror()
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				mirrors.host
+				host
 			FROM
-				mirrors,
-				mirror_log
+				mirrors
 			WHERE
-				mirror_log.host = mirrors.host
-				AND mirror_log.lastsync >= ?
-				AND (mirrors.country = ? OR mirrors.country = \'Any\')
-			GROUP BY
-				mirrors.host
+				lastsync >= ?
+				AND (country = ? OR country = \'Any\')
 			');
-		$stm->bindInteger(time() - $this->range);
+		$stm->bindInteger($this->Input->getTime() - $this->range);
 		$stm->bindString($country);
 
 		$mirrors = $stm->getColumnSet()->toArray();
