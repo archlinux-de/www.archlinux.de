@@ -18,9 +18,9 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class MirrorStatusReflector extends Page implements IDBCachable {
+class MirrorStatusReflector extends Page {
 
-private static $range	= 1209600; // two weeks
+private $range	= 604800; // 1 week
 private $page = '';
 
 
@@ -44,49 +44,27 @@ protected function showFailure($text)
 
 public function prepare()
 	{
-	if (!($this->page = $this->PersistentCache->getObject('MirrorStatusReflector')))
-		{
-		$this->Output->setStatus(Output::NOT_FOUND);
-		$this->showFailure('No data found!');
-		}
-	}
-
-public static function updateDBCache()
-	{
-	$range = time() - self::$range;
-
 	try
 		{
-		$mirrors = self::get('DB')->getRowSet
+		$mirrors = $this->DB->getRowSet
 			('
 			SELECT
-				MAX(lastsync) AS lastsync,
-				mirrors.host
+				host,
+				lastsync
 			FROM
-				mirrors,
-				mirror_log
+				mirrors
 			WHERE
-				mirror_log.host = mirrors.host
-				AND mirror_log.time >= '.$range.'
-				AND mirror_log.lastsync >= '.$range.'
-			GROUP BY
-				mirrors.host
-			ORDER BY
-				lastsync DESC,
-				host ASC
+				lastsync >= '.($this->Input->getTime() - $this->range).'
 			');
-
-		$page = '';
 
 		foreach($mirrors as $mirror)
 			{
-			$page .= gmdate('Y-m-d H:i', $mirror['lastsync']).' '.$mirror['host']."\n";
+			$this->page .= gmdate('Y-m-d H:i', $mirror['lastsync']).' '.$mirror['host']."\n";
 			}
-		
-		self::get('PersistentCache')->addObject('MirrorStatusReflector', $page);
 		}
 	catch (DBNoDataException $e)
 		{
+		$this->showFailure('No mirrors found');
 		}
 	}
 

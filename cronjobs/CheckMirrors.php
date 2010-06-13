@@ -27,11 +27,11 @@ require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('pages/abstract/Page.php');
-require ('pages/MirrorStatus.php');
-require ('pages/MirrorStatusReflector.php');
 
 class CheckMirrors extends Modul {
+
+
+private $range	= 2419200; // 4 weeks
 
 
 private function getTmpDir()
@@ -63,6 +63,8 @@ public function runUpdate()
 		$this->Settings->getValue('sql_password'),
 		$this->Settings->getValue('sql_database'));
 
+	$this->DB->execute('CREATE TEMPORARY TABLE tmirrors LIKE mirrors');
+
 	try
 		{
 		$this->updateMirrorlist();
@@ -81,7 +83,7 @@ public function runUpdate()
 			SELECT
 				host
 			FROM
-				mirrors
+				tmirrors
 			');
 		}
 	catch (DBNoDataException $e)
@@ -102,13 +104,10 @@ public function runUpdate()
 			}
 		}
 
-	foreach ($this->Settings->getValue('locales') as $locale)
-		{
-		$this->L10n->setLocale($locale);
-		MirrorStatus::updateDBCache();
-		}
-
-	MirrorStatusReflector::updateDBCache();
+	$this->updateCache();
+	$this->DB->execute('TRUNCATE mirrors');
+	$this->DB->execute('INSERT INTO mirrors SELECT * FROM tmirrors');
+	$this->DB->execute('DROP TEMPORARY TABLE tmirrors');
 
 	unlink($this->getLockFile());
 	}
@@ -117,14 +116,10 @@ private function updateMirrorlist()
 	{
 	$mirrors = $this->getMirrorlist();
 
-	// remove everything and insert again
-	// more efficient than expensive update
-	$this->DB->execute('TRUNCATE mirrors');
-
 	$stm = $this->DB->prepare
 		('
 		INSERT INTO
-			mirrors
+			tmirrors
 		SET
 			host = ?,
 			country = ?
@@ -280,6 +275,21 @@ private function removeOldEntries()
 			mirror_log
 		WHERE
 			host NOT IN (SELECT host FROM mirrors)
+		');
+	}
+
+private function updateCache()
+	{
+	$range = time() - $this->range;
+
+	$stm = self::get('DB')->execute
+		('
+		UPDATE
+			tmirrors
+		SET
+			lastsync = (SELECT MAX(mirror_log.lastsync) FROM mirror_log WHERE mirror_log.host = tmirrors.host AND mirror_log.time >= '.$range.'),
+			time = (SELECT AVG(mirror_log.totaltime) FROM mirror_log WHERE mirror_log.host = tmirrors.host AND mirror_log.time >= '.$range.'),
+			delay = (SELECT AVG(mirror_log.time-mirror_log.lastsync) FROM mirror_log WHERE mirror_log.host = tmirrors.host AND mirror_log.time >= '.$range.')
 		');
 	}
 
