@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 2.10.1
+-- version 3.3.3
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 07. November 2008 um 02:34
--- Server Version: 5.0.68
--- PHP-Version: 5.2.6
+-- Erstellungszeit: 13. Juni 2010 um 18:40
+-- Server Version: 5.1.47
+-- PHP-Version: 5.3.2
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -20,9 +20,9 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 
 CREATE TABLE `architectures` (
-  `id` tinyint(1) unsigned NOT NULL auto_increment,
+  `id` tinyint(1) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(10) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -35,8 +35,8 @@ CREATE TABLE `architectures` (
 CREATE TABLE `cache` (
   `key` varchar(255) NOT NULL,
   `value` mediumblob NOT NULL,
-  `expires` int(11) default NULL,
-  PRIMARY KEY  (`key`(100)),
+  `expires` int(11) DEFAULT NULL,
+  PRIMARY KEY (`key`(100)),
   KEY `expires` (`expires`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -75,10 +75,10 @@ CREATE TABLE `depends` (
 --
 
 CREATE TABLE `files` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `package` int(11) unsigned NOT NULL,
   `path` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `pacakge` (`package`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -89,9 +89,9 @@ CREATE TABLE `files` (
 --
 
 CREATE TABLE `file_index` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `name` (`name`(15))
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -102,9 +102,9 @@ CREATE TABLE `file_index` (
 --
 
 CREATE TABLE `groups` (
-  `id` int(10) unsigned NOT NULL auto_increment,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -115,9 +115,9 @@ CREATE TABLE `groups` (
 --
 
 CREATE TABLE `licenses` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -130,7 +130,7 @@ CREATE TABLE `licenses` (
 CREATE TABLE `log` (
   `name` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`name`)
+  PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -141,9 +141,13 @@ CREATE TABLE `log` (
 
 CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
-  `country` varchar(255) default NULL,
-  PRIMARY KEY  (`host`),
-  KEY `country` (`country`)
+  `country` varchar(255) DEFAULT NULL,
+  `lastsync` int(10) unsigned DEFAULT NULL,
+  `delay` int(10) unsigned DEFAULT NULL,
+  `time` double unsigned DEFAULT NULL,
+  PRIMARY KEY (`host`),
+  KEY `country` (`country`),
+  KEY `lastsync` (`lastsync`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -155,10 +159,10 @@ CREATE TABLE `mirrors` (
 CREATE TABLE `mirror_log` (
   `host` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
-  `lastsync` int(10) unsigned default NULL,
-  `error` varchar(255) default NULL,
-  `totaltime` double unsigned default NULL,
-  PRIMARY KEY  (`host`,`time`),
+  `lastsync` int(10) unsigned DEFAULT NULL,
+  `error` varchar(255) DEFAULT NULL,
+  `totaltime` double unsigned DEFAULT NULL,
+  PRIMARY KEY (`host`,`time`),
   KEY `lastsync` (`lastsync`),
   KEY `host` (`host`),
   KEY `time` (`time`),
@@ -187,10 +191,10 @@ CREATE TABLE `optdepends` (
 --
 
 CREATE TABLE `packagers` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `email` (`email`),
   KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -202,7 +206,7 @@ CREATE TABLE `packagers` (
 --
 
 CREATE TABLE `packages` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `base` varchar(255) NOT NULL,
@@ -218,7 +222,7 @@ CREATE TABLE `packages` (
   `packager` int(11) unsigned NOT NULL,
   `force` tinyint(1) unsigned NOT NULL,
   `repository` tinyint(1) unsigned NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `repository` (`repository`),
   KEY `builddate` (`builddate`),
   KEY `arch` (`arch`),
@@ -276,9 +280,9 @@ CREATE TABLE `package_license` (
 CREATE TABLE `package_statistics` (
   `name` varchar(255) NOT NULL,
   `arch` varchar(10) NOT NULL,
-  `count` int(11) unsigned NOT NULL default '0',
+  `count` int(11) unsigned NOT NULL DEFAULT '0',
   `lastupdate` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`name`,`arch`)
+  PRIMARY KEY (`name`,`arch`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -292,7 +296,8 @@ CREATE TABLE `package_statistics_log` (
   `visited` int(10) unsigned NOT NULL,
   `arch` varchar(10) NOT NULL,
   `count` int(11) unsigned NOT NULL,
-  PRIMARY KEY  (`ip`,`visited`)
+  PRIMARY KEY (`ip`,`visited`),
+  KEY `visited` (`visited`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -330,8 +335,8 @@ CREATE TABLE `replaces` (
 --
 
 CREATE TABLE `repositories` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
