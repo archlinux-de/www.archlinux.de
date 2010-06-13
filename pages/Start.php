@@ -113,7 +113,7 @@ private function getNews()
 	{
 	$result = '';
 
-	if (! ($result = $this->PersistentCache->getObject('news_feed')))
+	if (! ($result = $this->ObjectCache->getObject('news_feed')))
 		{
 		try
 			{
@@ -131,7 +131,7 @@ private function getNews()
 					'.$entry->summary.'
 					';
 				}
-			$this->PersistentCache->addObject('news_feed', $result, 1800);
+			$this->ObjectCache->addObject('news_feed', $result, 1800);
 			}
 		catch(FileException $e)
 			{

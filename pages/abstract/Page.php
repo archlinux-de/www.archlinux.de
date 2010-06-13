@@ -20,9 +20,6 @@
 
 require ('modules/DB.php');
 require ('modules/IOutput.php');
-require ('pages/abstract/IDBCachable.php');
-require ('modules/PersistentCache.php');
-Modul::set('PersistentCache', new PersistentCache());
 
 abstract class Page extends Modul implements IOutput{
 

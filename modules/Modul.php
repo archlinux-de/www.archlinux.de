@@ -31,6 +31,8 @@ private static $availableModules = array
 	'Input' => 'modules/Input.php',
 	'L10n' => 'modules/L10n.php',
 	'Modul' => 'modules/Modul.php',
+	'ObjectCache' => 'modules/ObjectCache.php',
+	'PersistentCache' => 'modules/ObjectCache.php',
 	'Ouput' => 'modules/Output.php',
 	'Settings' => 'modules/Settings.php'
 	);
