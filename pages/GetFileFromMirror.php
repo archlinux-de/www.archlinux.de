@@ -18,116 +18,95 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetFileFromMirror extends Page implements IDBCachable {
+class GetFileFromMirror extends Modul implements IOutput {
 
-private $mirrors	= array();
-private static $range	= 172800; // 2 days
+private $mirror = '';
+private $file = '';
+private $range = 1728000; // 2 days
 
 
 public function prepare()
 	{
-	$this->setValue('title', 'Lade Datei von einem Spiegel-Server');
-	$this->setValue('meta.robots', 'noindex,nofollow');
-
 	try
 		{
-		$file = htmlspecialchars($this->Input->Get->getString('file'));
+		$this->file = htmlspecialchars($this->Input->Get->getString('file'));
+
+		if (!($this->mirror = $this->getMirror()))
+			{
+			header(Output::NOT_FOUND);
+			echo '404 NOT FOUND';
+			exit();
+			}
 		}
 	catch (RequestException $e)
 		{
-		$this->showFailure('keine Datei angegeben!');
+		header(Output::NOT_FOUND);
+		echo '404 NOT FOUND';
+		exit();
 		}
-
-	if (!($this->mirrors = $this->PersistentCache->getObject('GetFileFromMirror')))
-		{
-		$this->Output->setStatus(Output::NOT_FOUND);
-		$this->showFailure('keine Spiegel-Server gefunden!');
-		}
-
-	$this->setValue('title', basename($file));
-
-	$mirror = $this->mirrors[array_rand($this->mirrors)];
-	$url = $mirror['host'].$file;
-
-	$body = '<div class="box">
-			<h2>'.basename($file).'</h2>
-			<h3>Aktueller Server:</h3>
-			<p><ul><li>'.$mirror['country'].'<ul><li><a href="'.$url.'">'.$mirror['host'].'</a> <em>('.$this->L10n->getDateTime($mirror['lastsync']).')</em></li></ul></ul></p>
-			<h3>Alternative Server:</h3>
-			<p>'.$this->getAlternateMirrorList($url, $file).'</p>
-		</div>
-		<script type="text/javascript">
-			/* <![CDATA[ */
-				setTimeout(\'location.href="'.$url.'"\', 2000);
-			/* ]]> */
-		</script>';
-
-	$this->setValue('body', $body);
 	}
 
-private function getAlternateMirrorList($url, $file)
+public function show()
 	{
-	$list = '<ul>';
-	$mirrors = $this->mirrors;
-	$country = '';
+	$this->Output->redirectToUrl($this->mirror.$this->file);
+	}
 
-	foreach ($mirrors as $mirror)
+public function getMirror()
+	{
+	$mirror = false;
+
+	if (function_exists('geoip_country_name_by_name'))
 		{
-		if ($country != $mirror['country'])
+		// let's ignore any lookup errors
+		restore_error_handler();
+		if (!( $country = @geoip_country_name_by_name($this->Input->Server->getString('REMOTE_ADDR', ''))))
 			{
-			if ($country != '')
-				{
-				$list .= '</ul>';
-				}
-			$list .= '<li>'.$mirror['country'].'<ul>';
+			$country = 'Any';
 			}
-		$country = $mirror['country'];
-
-		$list .= '<li><a href="'.$mirror['host'].$file.'">'.$mirror['host'].'</a></li>';
+		set_error_handler('ErrorHandler');
+		}
+	else
+		{
+		$country = 'Any';
 		}
 
-	return $list.'</ul></ul>';
-	}
+	$this->DB->connect(
+		$this->Settings->getValue('sql_host'),
+		$this->Settings->getValue('sql_user'),
+		$this->Settings->getValue('sql_password'),
+		$this->Settings->getValue('sql_database')
+		);
 
-public static function updateDBCache()
-	{
 	try
 		{
-		$stm = self::get('DB')->prepare
+		$stm = $this->DB->prepare
 			('
 			SELECT
-				mirrors.host,
-				mirrors.country,
-				MAX(mirror_log.lastsync) AS lastsync
+				mirrors.host
 			FROM
 				mirrors,
 				mirror_log
 			WHERE
 				mirror_log.host = mirrors.host
 				AND mirror_log.lastsync >= ?
+				AND (mirrors.country = ? OR mirrors.country = \'Any\')
 			GROUP BY
 				mirrors.host
-			ORDER BY
-				country ASC,
-				lastsync DESC,
-				host
 			');
-		$stm->bindInteger(time() - self::$range);
+		$stm->bindInteger(time() - $this->range);
+		$stm->bindString(time() - $country);
 
-		$mirrors = array();
-
-		foreach ($stm->getRowSet() as $mirror)
-			{
-			$mirrors[] = array('host' => $mirror['host'], 'country' => $mirror['country'], 'lastsync' => $mirror['lastsync']);
-			}
+		$mirrors = $stm->getColumnSet()->toArray();
+		$mirror = $mirrors[array_rand($mirrors)];
 
 		$stm->close();
-		self::get('PersistentCache')->addObject('GetFileFromMirror', $mirrors);
 		}
 	catch (DBNoDataException $e)
 		{
 		$stm->close();
 		}
+
+	return $mirror;
 	}
 
 }

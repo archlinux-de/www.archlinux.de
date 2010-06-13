@@ -28,7 +28,6 @@ require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
 require ('pages/abstract/Page.php');
-require ('pages/GetFileFromMirror.php');
 require ('pages/MirrorStatus.php');
 require ('pages/MirrorStatusReflector.php');
 
@@ -102,8 +101,6 @@ public function runUpdate()
 			$this->insertErrorEntry($host, $e->getMessage());
 			}
 		}
-
-	GetFileFromMirror::updateDBCache();
 
 	foreach ($this->Settings->getValue('locales') as $locale)
 		{
