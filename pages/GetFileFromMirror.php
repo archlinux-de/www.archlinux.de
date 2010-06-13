@@ -59,7 +59,10 @@ public function getMirror()
 		{
 		// let's ignore any lookup errors
 		restore_error_handler();
-		if (!( $country = @geoip_country_name_by_name($this->Input->Server->getString('REMOTE_ADDR', ''))))
+		// remove ipv6 prefix
+		$ip = ltrim($this->Input->Server->getString('REMOTE_ADDR', ''), ':a-f');
+		$country = geoip_country_name_by_name($ip);
+		if ($country === false)
 			{
 			$country = 'Any';
 			}
@@ -94,7 +97,7 @@ public function getMirror()
 				mirrors.host
 			');
 		$stm->bindInteger(time() - $this->range);
-		$stm->bindString(time() - $country);
+		$stm->bindString($country);
 
 		$mirrors = $stm->getColumnSet()->toArray();
 		$mirror = $mirrors[array_rand($mirrors)];
