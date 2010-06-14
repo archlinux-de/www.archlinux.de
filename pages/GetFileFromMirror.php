@@ -18,67 +18,38 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetFileFromMirror extends Modul implements IOutput {
+class GetFileFromMirror extends Page {
 
-private $mirror = '';
-private $file = '';
 private $range = 86400; // 1 day
 
 
 public function prepare()
 	{
-	try
-		{
-		$this->file = htmlspecialchars($this->Input->Get->getString('file'));
-
-		if (!($this->mirror = $this->getMirror()))
-			{
-			header(Output::NOT_FOUND);
-			echo '404 NOT FOUND';
-			exit();
-			}
-		}
-	catch (RequestException $e)
-		{
-		header(Output::NOT_FOUND);
-		echo '404 NOT FOUND';
-		exit();
-		}
+	$this->Output->redirectToUrl(
+		$this->getMirror().
+		$this->Input->Get->getString('file', '')
+		);
 	}
 
-public function show()
+private function getMirror()
 	{
-	$this->Output->redirectToUrl($this->mirror.$this->file);
-	}
+	$country = '';
+	$mirror = '';
+	// remove ipv6 prefix
+	$ip = ltrim($this->Input->Server->getString('REMOTE_ADDR', ''), ':a-f');
 
-public function getMirror()
-	{
-	$mirror = false;
-
-	if (function_exists('geoip_country_name_by_name'))
+	if (function_exists('geoip_country_name_by_name') && !empty($ip))
 		{
 		// let's ignore any lookup errors
 		restore_error_handler();
-		// remove ipv6 prefix
-		$ip = ltrim($this->Input->Server->getString('REMOTE_ADDR', ''), ':a-f');
 		$country = geoip_country_name_by_name($ip);
-		if ($country === false)
-			{
-			$country = 'Germany';
-			}
 		set_error_handler('ErrorHandler');
 		}
-	else
-		{
-		$country = 'Germany';
-		}
 
-	$this->DB->connect(
-		$this->Settings->getValue('sql_host'),
-		$this->Settings->getValue('sql_user'),
-		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database')
-		);
+	if (empty($country))
+		{
+		$country = $this->Settings->getValue('country');
+		}
 
 	try
 		{
@@ -91,18 +62,23 @@ public function getMirror()
 			WHERE
 				lastsync >= ?
 				AND (country = ? OR country = \'Any\')
+			ORDER BY RAND() LIMIT 1
 			');
 		$stm->bindInteger($this->Input->getTime() - $this->range);
 		$stm->bindString($country);
 
-		$mirrors = $stm->getColumnSet()->toArray();
-		$mirror = $mirrors[array_rand($mirrors)];
+		$mirror = $stm->getColumn();
 
 		$stm->close();
 		}
 	catch (DBNoDataException $e)
 		{
 		$stm->close();
+		}
+
+	if (empty($mirror))
+		{
+		$mirror = $this->Settings->getValue('mirror');
 		}
 
 	return $mirror;
