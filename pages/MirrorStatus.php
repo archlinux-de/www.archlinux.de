@@ -22,7 +22,7 @@ class MirrorStatus extends Page {
 
 private $orderby 	= 'country';
 private $sort 		= 'asc';
-private static $range	= 2419200; // 4 weeks
+private $range	= 604800; // 1 week
 private $orders		= array('host', 'country', 'lastsync', 'delay', 'time');
 private $sorts		= array('asc', 'desc');
 
@@ -80,7 +80,7 @@ public function prepare()
 			FROM
 				mirrors
 			WHERE
-				lastsync >= '.($this->Input->getTime() - self::$range).'
+				lastsync >= '.($this->Input->getTime() - $this->range).'
 			ORDER BY
 				'.$this->orderby.' '.$this->sort.'
 			');

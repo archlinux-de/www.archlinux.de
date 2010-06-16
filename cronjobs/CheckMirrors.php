@@ -31,7 +31,7 @@ require ('modules/Exceptions.php');
 class CheckMirrors extends Modul {
 
 
-private $range	= 2419200; // 4 weeks
+private $range	= 604800; // 1 week
 
 
 private function getTmpDir()
@@ -263,7 +263,7 @@ private function removeOldEntries()
 		WHERE
 			time < ?
 		');
-	$stm->bindInteger(time() - 60*60*24*30*6);
+	$stm->bindInteger(time() - 2419200); // 4 weeks
 	$stm->execute();
 	$stm->close();
 
