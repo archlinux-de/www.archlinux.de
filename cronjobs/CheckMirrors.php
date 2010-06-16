@@ -65,15 +65,7 @@ public function runUpdate()
 
 	$this->DB->execute('CREATE TEMPORARY TABLE tmirrors LIKE mirrors');
 
-	try
-		{
-		$this->updateMirrorlist();
-		}
-	catch (RuntimeException $e)
-		{
-		echo('Warning: updateMirrorlist failed: '.$e->getMessage());
-		}
-
+	$this->updateMirrorlist();
 	$this->removeOldEntries();
 
 	try
@@ -114,25 +106,31 @@ public function runUpdate()
 
 private function updateMirrorlist()
 	{
-	$mirrors = $this->getMirrorlist();
-
-	$stm = $this->DB->prepare
-		('
-		INSERT INTO
-			tmirrors
-		SET
-			host = ?,
-			country = ?
-		');
-
-	foreach ($mirrors as $mirror => $country)
+	try
 		{
-		$stm->bindString($mirror);
-		$stm->bindString($country);
-		$stm->execute();
-		}
+		$stm = $this->DB->prepare
+			('
+			INSERT INTO
+				tmirrors
+			SET
+				host = ?,
+				country = ?
+			');
 
-	$stm->close();
+		foreach ($this->getMirrorlist() as $mirror => $country)
+			{
+			$stm->bindString($mirror);
+			$stm->bindString($country);
+			$stm->execute();
+			}
+
+		$stm->close();
+		}
+	catch (RuntimeException $e)
+		{
+		echo('Warning: updateMirrorlist failed: '.$e->getMessage());
+		$this->DB->execute('INSERT INTO tmirrors SELECT * FROM mirrors');
+		}
 	}
 
 private function getMirrorlist()
