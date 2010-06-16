@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require ('pages/abstract/IDBCachable.php');
+require_once ('pages/abstract/IDBCachable.php');
 
 class PackageStatistics extends Page implements IDBCachable {
 
