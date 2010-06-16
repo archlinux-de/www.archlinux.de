@@ -20,9 +20,9 @@
 
 class MirrorStatus extends Page {
 
-private $orderby 	= 'country';
-private $sort 		= 'asc';
-private $range	= 604800; // 1 week
+private $orderby 	= 'lastsync';
+private $sort 		= 'desc';
+private $range		= 604800; // 1 week
 private $orders		= array('host', 'country', 'lastsync', 'delay', 'time');
 private $sorts		= array('asc', 'desc');
 

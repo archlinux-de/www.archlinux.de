@@ -55,6 +55,8 @@ public function prepare()
 				mirrors
 			WHERE
 				lastsync >= '.($this->Input->getTime() - $this->range).'
+			ORDER BY
+				lastsync DESC
 			');
 
 		foreach($mirrors as $mirror)
