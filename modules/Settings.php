@@ -39,7 +39,7 @@ public function __construct()
 	$this->config['pkgdb_repositories']		= array('core', 'extra', 'testing', 'community', 'community-testing');
 	$this->config['pkgdb_architectures']		= array('i686', 'x86_64')
 ;
-	$this->config['mirrorlist_url']			= 'http://www.archlinux.org/mirrorlist/i686/';
+	$this->config['mirrorlist_url']			= 'http://www.archlinux.org/mirrorlist/all/';
 	$this->config['mirror']				= 'http://mirrors.kernel.org/archlinux/';
 	$this->config['country']			= 'Germany';
 

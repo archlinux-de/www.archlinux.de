@@ -172,10 +172,15 @@ private function getMirrorlist()
 			{
 			$country = $matches[1];
 			}
-		elseif (preg_match('/^#Server = (.+)\$repo\/os\/i686$/', $mirrorlist[$line], $matches))
+		elseif (preg_match('/^#Server = (.+)\$repo\/os\/\$arch$/', $mirrorlist[$line], $matches))
 			{
 			$mirrorarray[$matches[1]] = $country;
 			}
+		}
+
+	if (count($mirrorarray) == 0)
+		{
+		throw new RuntimeException('empty mirrorlist', 1);
 		}
 
 	return $mirrorarray;
