@@ -34,6 +34,7 @@ private static $availablePages = array
 	'GetRecentPackages' => 'pages/GetRecentPackages.php',
 	'MirrorStatus' => 'pages/MirrorStatus.php',
 	'MirrorStatusReflector' => 'pages/MirrorStatusReflector.php',
+	'MirrorProblems' => 'pages/MirrorProblems.php',
 	'NotFound' => 'pages/NotFound.php',
 	'PackageDetails' => 'pages/PackageDetails.php',
 	'PackageStatistics' => 'pages/PackageStatistics.php',
