@@ -32,9 +32,9 @@ public function prepare()
 		<table class="pretty-table">
 			<tr>
 				<th>'.$this->L10n->getText('Host').'</th>
-				<th style="width:140px;">&empty;&nbsp;'.$this->L10n->getText('Response time').'</th>
-				<th style="width:140px;">&empty;&nbsp;'.$this->L10n->getText('Delay').'</th>
-				<th>'.$this->L10n->getText('Last update').'</th>
+				<th title="Average time to downlaod a certain file" style="width:140px;">&empty;&nbsp;'.$this->L10n->getText('Response time').'</th>
+				<th title="Average difference between time of probe and last sychronization" style="width:140px;">&empty;&nbsp;'.$this->L10n->getText('Delay').'</th>
+				<th title="Date of last synchronization (Y-m-d) (GMT)">'.$this->L10n->getText('Last update').'</th>
 			</tr>
 			<tr><th colspan="4">Not synced for more than '.$this->L10n->getEpoch($this->maxdelay).'</th></tr>
 			'.$this->getOutdatedMirrors().'
@@ -78,7 +78,7 @@ private function getOutdatedMirrors()
 					<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
 					<td>'.($mirror['time'] > 0 ? $this->L10n->getEpoch($mirror['time']) : '<em>unknown</em>').'</td>
 					<td>'.($mirror['delay'] > 0 ? $this->L10n->getEpoch($mirror['delay']) : '<em>unknown</em>').'</td>
-					<td>'.($mirror['lastsync'] > 0 ? $this->L10n->getDateTime($mirror['lastsync']) : '<em>unknown</em>').'</td>
+					<td>'.($mirror['lastsync'] > 0 ? $this->L10n->getGmDateTime($mirror['lastsync']) : '<em>unknown</em>').'</td>
 				</tr>';
 			}
 		}
@@ -117,7 +117,7 @@ private function getUptodateMirrors()
 					<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
 					<td>'.$this->L10n->getEpoch($mirror['time']).'</td>
 					<td>'.$this->L10n->getEpoch($mirror['delay']).'</td>
-					<td>'.$this->L10n->getDateTime($mirror['lastsync']).'</td>
+					<td>'.$this->L10n->getGmDateTime($mirror['lastsync']).'</td>
 				</tr>';
 			}
 		}
@@ -162,8 +162,8 @@ private function getErrors()
 		<tr>
 			<th>'.$this->L10n->getText('Host').'</th>
 			<th>'.$this->L10n->getText('Message').'</th>
-			<th>'.$this->L10n->getText('First occurrence').'</th>
-			<th>'.$this->L10n->getText('Last occurrence').'</th>
+			<th title="(Y-m-d) (GMT)">'.$this->L10n->getText('First occurrence').'</th>
+			<th title="(Y-m-d) (GMT)">'.$this->L10n->getText('Last occurrence').'</th>
 			<th>'.$this->L10n->getText('Number').'</th>
 		</tr>';
 
@@ -173,8 +173,8 @@ private function getErrors()
 		'<tr>
 			<td><a href="'.$problem['host'].'" rel="nofollow">'.$problem['host'].'</a></td>
 			<td>'.$problem['error'].'</td>
-			<td>'.$this->L10n->getDateTime($problem['firsttime']).'</td>
-			<td>'.$this->L10n->getDateTime($problem['lasttime']).'</td>
+			<td>'.$this->L10n->getGmDateTime($problem['firsttime']).'</td>
+			<td>'.$this->L10n->getGmDateTime($problem['lasttime']).'</td>
 			<td>'.$problem['errorcount'].'</td>
 		</tr>';
 		}

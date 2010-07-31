@@ -107,6 +107,16 @@ public function getDateTime($timestamp = null)
 	return strftime($this->getText('%c'), $timestamp);
 	}
 
+public function getGmDate($timestamp = null)
+	{
+	return gmdate('Y-m-d', $timestamp);
+	}
+
+public function getGmDateTime($timestamp = null)
+	{
+	return gmdate('Y-m-d H:i', $timestamp);
+	}
+
 // @TODO: add singular
 public function getEpoch($seconds)
 	{

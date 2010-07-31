@@ -62,9 +62,9 @@ public function prepare()
 			<tr>
 				<th><a href="?page=MirrorStatus;orderby=host;sort='.$reverseSort.'">'.$this->L10n->getText('Host').'</a></th>
 				<th><a href="?page=MirrorStatus;orderby=country;sort='.$reverseSort.'">'.$this->L10n->getText('Country').'</a></th>
-				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort='.$reverseSort.'">&empty;&nbsp;'.$this->L10n->getText('Response time').'</a></th>
-				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort='.$reverseSort.'">&empty;&nbsp;'.$this->L10n->getText('Delay').'</a></th>
-				<th><a href="?page=MirrorStatus;orderby=lastsync;sort='.$reverseSort.'">'.$this->L10n->getText('Last update').'</a></th>
+				<th title="Average time to downlaod a certain file" style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort='.$reverseSort.'">&empty;&nbsp;'.$this->L10n->getText('Response time').'</a></th>
+				<th title="Average difference between time of probe and last sychronization" style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort='.$reverseSort.'">&empty;&nbsp;'.$this->L10n->getText('Delay').'</a></th>
+				<th title="Date of last synchronization (Y-m-d) (GMT)"><a href="?page=MirrorStatus;orderby=lastsync;sort='.$reverseSort.'">'.$this->L10n->getText('Last update').'</a></th>
 			</tr>';
 
 	try
@@ -92,7 +92,7 @@ public function prepare()
 					<td>'.$mirror['country'].'</td>
 					<td>'.$this->L10n->getEpoch($mirror['time']).'</td>
 					<td>'.$this->L10n->getEpoch($mirror['delay']).'</td>
-					<td>'.$this->L10n->getDateTime($mirror['lastsync']).'</td>
+					<td>'.$this->L10n->getGmDateTime($mirror['lastsync']).'</td>
 				</tr>';
 			}
 		}
