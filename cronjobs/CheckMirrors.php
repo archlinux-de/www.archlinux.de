@@ -87,7 +87,7 @@ public function runUpdate()
 		{
 		try
 			{
-			$result = $this->getLastsyncFromMirror($host.'core/os/i686');
+			$result = $this->getLastsyncFromMirror($host);
 			$this->insertLogEntry($host, $result['lastsync'], $result['totaltime']);
 			}
 		catch (RuntimeException $e)
