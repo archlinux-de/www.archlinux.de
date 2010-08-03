@@ -32,7 +32,9 @@ class CheckMirrors extends Modul {
 
 
 private $range	= 604800; // 1 week
-
+private $maxLogAge = 2419200; // 4 weeks
+private $minDate = 1015801200; // 11.3.2002
+private $maxFuture = 86400; // 1 day
 
 private function getTmpDir()
 	{
@@ -148,12 +150,15 @@ private function getMirrorlist()
 	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
 	$content = curl_exec($curl);
 
-	if (false === $content)
+	if (curl_errno($curl) > 0 || false === $content)
 		{
-		throw new RuntimeException(htmlspecialchars(curl_error($curl)), curl_errno($curl));
+		$error = htmlspecialchars(curl_error($curl));
+		curl_close($curl);
+		throw new RuntimeException($error, 1);
 		}
 	elseif (empty($content))
 		{
+		curl_close($curl);
 		throw new RuntimeException('empty mirrorlist', 1);
 		}
 
@@ -161,8 +166,13 @@ private function getMirrorlist()
 
 	$mirrorlist = explode("\n", $content);
 
-	#preg_match('/(\d{4})-(\d{2})-(\d{2})/', $mirrorlist[2], $matches);
-	#$date = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
+	preg_match('/(\d{4})-(\d{2})-(\d{2})/', $mirrorlist[2], $matches);
+	$date = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
+
+	if ($date < $this->minDate || $date > ($this->Input->getTime() + $this->maxFuture))
+		{
+		throw new RuntimeException('invalid mirrorlist date: '.htmlspecialchars($mirrorlist[2]), 1);
+		}
 
 	$mirrorarray = array();
 
@@ -202,20 +212,33 @@ private function getLastsyncFromMirror($url)
 
 	$content = curl_exec($curl);
 
-	if (false === $content)
+	if (curl_errno($curl) > 0 || false === $content)
 		{
-		throw new RuntimeException(htmlspecialchars(curl_error($curl)), curl_errno($curl));
+		$error = htmlspecialchars(curl_error($curl));
+		curl_close($curl);
+		throw new RuntimeException($error, 1);
+		}
+
+	if (strpos($url, 'http') !== false)
+		{
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+		if (substr($httpCode, 0, 1) != 2)
+			{
+			curl_close($curl);
+			throw new RuntimeException('HTTP error: '.htmlspecialchars($httpCode), 1);
+			}
 		}
 
 	$totaltime = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
 
 	curl_close($curl);
 
-	$lastsync = intval(trim($content));
+	$lastsync = trim($content);
 
-	if (0 == $lastsync)
+	if (!preg_match('/^\d{10}$/', $lastsync) || $lastsync < $this->minDate || $lastsync > ($this->Input->getTime() + $this->maxFuture))
 		{
-		throw new RuntimeException('invalid lastsync time', 1);
+		throw new RuntimeException('invalid lastsync time: '.htmlspecialchars($lastsync), 1);
 		}
 
 	return array('lastsync' => $lastsync, 'totaltime' => $totaltime);
@@ -234,7 +257,7 @@ private function insertLogEntry($host, $lastsync, $totaltime)
 			totaltime = ?
 		');
 	$stm->bindString($host);
-	$stm->bindInteger(time());
+	$stm->bindInteger($this->Input->getTime());
 	$stm->bindInteger($lastsync);
 	$stm->bindDouble($totaltime);
 	$stm->execute();
@@ -253,8 +276,8 @@ private function insertErrorEntry($host, $error)
 			error = ?
 		');
 	$stm->bindString($host);
-	$stm->bindInteger(time());
-	$stm->bindString($error);
+	$stm->bindInteger($this->Input->getTime());
+	$stm->bindString(cutString($error, 150));
 	$stm->execute();
 	$stm->close();
 	}
@@ -268,7 +291,7 @@ private function removeOldEntries()
 		WHERE
 			time < ?
 		');
-	$stm->bindInteger(time() - 2419200); // 4 weeks
+	$stm->bindInteger($this->Input->getTime() - $this->maxLogAge);
 	$stm->execute();
 	$stm->close();
 
@@ -283,7 +306,7 @@ private function removeOldEntries()
 
 private function updateCache()
 	{
-	$range = time() - $this->range;
+	$range = $this->Input->getTime() - $this->range;
 
 	$stm = self::get('DB')->execute
 		('

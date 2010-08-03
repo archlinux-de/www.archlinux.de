@@ -146,8 +146,6 @@ private function getErrors()
 				error IS NOT NULL
 			GROUP BY
 				host, error
-			HAVING
-				errorcount > 6
 			ORDER BY
 				lasttime DESC,
 				host ASC
