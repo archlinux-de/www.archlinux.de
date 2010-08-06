@@ -33,6 +33,7 @@ private static $availablePages = array
 	'GetRecentNews' => 'pages/GetRecentNews.php',
 	'GetRecentPackages' => 'pages/GetRecentPackages.php',
 	'MirrorStatus' => 'pages/MirrorStatus.php',
+	'MirrorStatusJSON' => 'pages/MirrorStatusJSON.php',
 	'MirrorStatusReflector' => 'pages/MirrorStatusReflector.php',
 	'MirrorProblems' => 'pages/MirrorProblems.php',
 	'NotFound' => 'pages/NotFound.php',
