@@ -32,12 +32,14 @@ public function show()
 
 protected function showWarning($text)
 	{
+	$this->Output->setStatus('HTTP/1.1 500 Warning');
 	$this->page = 'Warning: '.$text;
 	$this->show();
 	}
 
 protected function showFailure($text)
 	{
+	$this->Output->setStatus('HTTP/1.1 500 Error');
 	$this->page = 'Error: '.$text;
 	$this->show();
 	}

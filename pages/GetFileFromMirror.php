@@ -33,20 +33,7 @@ public function prepare()
 
 private function getMirror()
 	{
-	$country = '';
-	$mirror = '';
-	// remove ipv6 prefix
-	$ip = ltrim($this->Input->Server->getString('REMOTE_ADDR', ''), ':a-f');
-
-	if (function_exists('geoip_country_name_by_name') && !empty($ip))
-		{
-		// let's ignore any lookup errors
-		$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
-		restore_error_handler();
-		$country = geoip_country_name_by_name($ip);
-		set_error_handler('ErrorHandler');
-		error_reporting($errorReporting);
-		}
+	$country = $this->Input->getClientCountryName();
 
 	if (empty($country))
 		{

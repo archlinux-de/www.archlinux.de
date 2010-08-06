@@ -36,7 +36,7 @@ private $time	= 0;
 
 public function __construct()
 	{
-	$this->time = time();
+	$this->time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
 
 	$this->Get 	= new Request($_GET);
 	$this->Post 	= new Request($_POST);
@@ -53,6 +53,33 @@ public function getTime()
 public function getHost()
 	{
 	return $this->Server->getString('HTTP_HOST');
+	}
+
+public function getClientIP()
+	{
+	return $this->Input->Server->getString('REMOTE_ADDR', '127.0.0.1');
+	}
+
+public function getClientCountryName()
+	{
+	$country = '';
+	if (function_exists('geoip_country_name_by_name'))
+		{
+		// remove ipv6 prefix
+		$ip = ltrim($this->getClientIP(), ':a-f');
+
+		if (!empty($ip))
+			{
+			// let's ignore any lookup errors
+			$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
+			restore_error_handler();
+			$country = geoip_country_name_by_name($ip) ?: '';
+			set_error_handler('ErrorHandler');
+			error_reporting($errorReporting);
+			}
+		}
+
+	return $country;
 	}
 
 public function getPath()
