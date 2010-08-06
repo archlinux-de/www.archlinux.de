@@ -65,7 +65,7 @@ public function prepare()
 		foreach($mirrors as $mirror)
 			{
 			$json['servers'][] = array(
-				'url' =>  urlencode($mirror['host']),
+				'url' => $mirror['host'],
 				'location' => $mirror['country'],
 				'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
 				'average delay' => $mirror['delay'] ?: '',
