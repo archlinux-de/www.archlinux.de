@@ -615,7 +615,7 @@ private static function getPopularPackagesPerRepository()
 
 			if ($repoid != $repo['id'])
 				{
-				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 800px;"><table id="packages" style="border:none;">';
+				$list .= '<tr><th>'.$repo['name'].'</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
 				}
 
 			foreach ($packages as $package)
