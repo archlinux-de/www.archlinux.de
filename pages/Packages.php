@@ -338,7 +338,7 @@ private function showPackageList($packages)
 
 	foreach ($packages as $package)
 		{
-		$style = ($package['repository'] == 'testing' || $package['repository'] == 'community-testing') ? ' class="less"' : '';
+		$style = (in_array($package['repository'], array('testing', 'community-testing', 'staging')) ? ' class="less"' : '');
 
 		$body .= '<tr'.$style.'>
 				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.cutString($package['desc'], 70).'</td><td>'.$this->L10n->getDateTime($package['builddate']).'</td>
