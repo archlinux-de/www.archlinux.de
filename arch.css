@@ -41,7 +41,7 @@ h5 { font-size: 1em; margin-top: 1em; }
 #pkgrecent {margin-top: 1.5em;}
 #pkgrecent h3 { margin: 0 0 0.3em;}
 #pkgrecent td.pkgver { text-align: right; }
-#pkgrecent .testing, #pkgrecent .community-testing { font-style: italic; }
+#pkgrecent .testing, #pkgrecent .community-testing, #pkgrecent .staging { font-style: italic; }
 
 #news .more, #pkgrecent .more { font-weight: normal; }
 #news .rss-icon, #pkgrecent  .rss-icon{ float: right; margin: -2em 0.4em 0 0; }

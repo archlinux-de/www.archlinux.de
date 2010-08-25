@@ -189,11 +189,8 @@ public static function updateDBCache()
 				continue;
 				}
 
-			# hide lib32 packages in [community] and [community-testing]
-			if (!$showminor 
-				&& ( $package['reponame'] == 'community' || $package['reponame'] == 'community-testing' )
-				&& empty($package['iid']) 
-				&& strpos($package['name'], 'lib32-') === 0)
+			# hide multilib packages
+			if (!$showminor && $package['reponame'] == 'multilib')
 				{
 				continue;
 				}

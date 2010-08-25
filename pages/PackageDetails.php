@@ -148,7 +148,7 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Quellen</th>
-				<td><a href="http://repos.archlinux.org/wsvn/'.($data['repository'] == 'community' ? 'community' : 'packages').'/'.$data['base'].'/">Versions-Verwaltung</a></td>
+				<td><a href="http://repos.archlinux.org/wsvn/'.(in_array($data['repository'], array('community', 'community-testing', 'multilib')) ? 'community' : 'packages').'/'.$data['base'].'/">Versions-Verwaltung</a></td>
 			</tr>
 			<tr>
 				<th>Fehler</th>
