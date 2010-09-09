@@ -83,7 +83,7 @@ public function prepare()
 				<h4>Entwicklung</h4>
 				<ul>
 					<li><a href="?page=Packages">Pakete</a></li>
-					<li><a href="?page=ArchitectureDifferences">Architektur-Unterschiede</a></li>
+					<li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
 					<li><a href="http://aur.archlinux.org/index.php?setlang=de">AUR</a></li>
 					<li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
 					<li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>

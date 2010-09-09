@@ -29,7 +29,6 @@ require ('modules/Settings.php');
 require ('modules/Exceptions.php');
 require ('PackageDB.php');
 require ('pages/abstract/Page.php');
-require ('pages/ArchitectureDifferences.php');
 require ('pages/PackageStatistics.php');
 
 
@@ -149,7 +148,6 @@ public function runUpdate()
 		foreach ($this->Settings->getValue('locales') as $locale)
 			{
 			$this->L10n->setLocale($locale);
-			ArchitectureDifferences::updateDBCache();
 			PackageStatistics::updateDBCache();
 			}
 		}
