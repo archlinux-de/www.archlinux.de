@@ -66,6 +66,11 @@ public function prepare()
 		$this->showFailure('Your package list is empty.');
 		}
 
+	if (count($packages) > 10000)
+		{
+		$this->showFailure('So, you have installed more than 10,000 packages?');
+		}
+
 	foreach ($packages as $package)
 		{
 		if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package)))
