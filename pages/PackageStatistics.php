@@ -342,15 +342,33 @@ private static function getMirrorStatistics()
 			pkgstats_users
 		GROUP BY
 			mirror
-		ORDER BY
-			count DESC
 		');
+
+	$hosts = array();
+	foreach ($mirrors as $mirror)
+		{
+		$host = parse_url($mirror['name'], PHP_URL_HOST);
+		if ($host === false || empty($host))
+			{
+			$host = 'unknown';
+			}
+
+		if (isset($hosts[$host]))
+			{
+			$hosts[$host] += $mirror['count'];
+			}
+		else
+			{
+			$hosts[$host] = $mirror['count'];
+			}
+		}
+	arsort($hosts);
 
 	$list = '';
 
-	foreach ($mirrors as $mirror)
+	foreach ($hosts as $host => $count)
 		{
-		$list .= '<tr><th>'.$mirror['name'].'</th><td>'.self::getBar($mirror['count'], $total).'</td></tr>';
+		$list .= '<tr><th>'.$host.'</th><td>'.self::getBar($count, $total).'</td></tr>';
 		}
 
 	return $list;
