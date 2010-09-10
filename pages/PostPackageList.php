@@ -21,6 +21,7 @@
 class PostPackageList extends Page {
 
 private $delay = 86400;	// 24 hours
+private $count = 10;
 
 
 public function prepare()
@@ -81,6 +82,8 @@ public function prepare()
 
 	$this->checkIfAlreadySubmitted();
 
+	$country = $this->Input->getClientCountryName();
+
 	try
 		{
 		$stm = $this->DB->prepare
@@ -91,16 +94,14 @@ public function prepare()
 				ip = ?,
 				time = ?,
 				arch = ?,
-				country = CASE WHEN CHAR_LENGTH(?) = 0 THEN NULL ELSE ? END,
-				mirror = CASE WHEN CHAR_LENGTH(?) = 0 THEN NULL ELSE ? END
+				country = '.(!empty($country) ? '?' : 'NULL').',
+				mirror = '.(!empty($mirror) ? '?' : 'NULL').'
 			');
 		$stm->bindString(sha1($this->Input->getClientIP()));
 		$stm->bindInteger($this->Input->getTime());
 		$stm->bindString(htmlspecialchars($arch));
-		$stm->bindString(htmlspecialchars($this->Input->getClientCountryName()));
-		$stm->bindString(htmlspecialchars($this->Input->getClientCountryName()));
-		$stm->bindString(htmlspecialchars($mirror));
-		$stm->bindString(htmlspecialchars($mirror));
+		!empty($country) && $stm->bindString(htmlspecialchars($country));
+		!empty($mirror) && $stm->bindString(htmlspecialchars($mirror));
 		$stm->execute();
 		$stm->close();
 
@@ -148,21 +149,31 @@ private function checkIfAlreadySubmitted()
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				time
+				COUNT(*) AS count,
+				MIN(time) AS mintime
 			FROM
 				pkgstats_users
 			WHERE
 				time >= ?
 				AND ip = ?
+			GROUP BY
+				ip
 			');
 		$stm->bindInteger($this->Input->getTime() - $this->delay);
 		$stm->bindString(sha1($this->Input->getClientIP()));
-		$lastVisit = $stm->getColumn();
+		$log = $stm->getRow();
 		$stm->close();
 
-		$this->showFailure('You already submitted your data via '.$this->Input->getClientIP()
-			.' at '.$this->L10n->getGmDateTime($lastVisit)
-			.".\n         You are blocked until ".$this->L10n->getGmDateTime($lastVisit + $this->delay));
+
+		if ($log['count'] > $this->count)
+			{
+			$this->showFailure('You already submitted your data '
+				.$this->count.' times since '
+				.$this->L10n->getGmDateTime($log['mintime'])
+				.' using the IP '.$this->Input->getClientIP()
+				.".\n         You are blocked until "
+				.$this->L10n->getGmDateTime($log['mintime'] + $this->delay));
+			}
 		}
 	catch (DBNoDataException $e)
 		{
