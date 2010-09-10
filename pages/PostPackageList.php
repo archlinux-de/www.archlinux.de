@@ -50,7 +50,7 @@ public function prepare()
 		{
 		$mirror = '';
 		}
-	elseif ($this->Input->getHtmlLength('mirror') > 255)
+	elseif ($this->Input->Post->getHtmlLength('mirror') > 255)
 		{
 		$this->showWarning(htmlspecialchars($mirror).' is too long.');
 		$mirror = '';
