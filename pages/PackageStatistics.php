@@ -601,7 +601,8 @@ private static function getPackagesPerRepository()
 			AND repositories.name <> "community-staging"
 			AND packages.arch = architectures.id
 		GROUP BY
-			repositories.id
+			repositories.id,
+			pkgstats_packages.pkgname
 		');
 
 	$list = '';
