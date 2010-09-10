@@ -20,61 +20,101 @@
 
 class PostPackageList extends Page {
 
-private static $delay = 86400;	// 24 hours
+private $delay = 86400;	// 24 hours
 
 
 public function prepare()
 	{
 	try
 		{
-		$packages = array_unique(explode("\n", $this->Input->Post->getString('packages')));
+		$packages = array_unique(explode("\n", trim($this->Input->Post->getString('packages'))));
 		$arch = $this->Input->Post->getString('arch');
 		$pkgstatsver = $this->Input->Post->getString('pkgstatsver');
+		$mirror = $this->Input->Post->getString('mirror', '');
 		}
 	catch (RequestException $e)
 		{
 		$this->showFailure('No data received');
 		}
 
-	if ($pkgstatsver != '1.0')
+	if ($pkgstatsver == '1.0')
+		{
+		$this->showWarning('Please update pkgstats.');
+		}
+	elseif ($pkgstatsver != '2.0')
 		{
 		$this->showFailure('Sorry, your version of pkgstats is not supported.');
+		}
+
+	if (!empty($mirror) && !preg_match('#^(https?|ftp)://\S+/#', $mirror))
+		{
+		$mirror = '';
+		}
+	elseif ($this->Input->getHtmlLength('mirror') > 255)
+		{
+		$this->showWarning(htmlspecialchars($mirror).' is too long.');
+		$mirror = '';
+		}
+
+	if (!in_array($arch, array('i686', 'x86_64')))
+		{
+		$this->showFailure(htmlspecialchars($arch).' is not a known architecture.');
+		}
+
+	if (empty($packages))
+		{
+		$this->showFailure('Your package list is empty.');
+		}
+
+	foreach ($packages as $package)
+		{
+		if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package)))
+			{
+			$this->showFailure(htmlspecialchars($package).' does not look like a valid package');
+			}
 		}
 
 	$this->checkIfAlreadySubmitted();
 
 	try
 		{
-		$this->insertLogEntry($arch, count($packages));
+		$stm = $this->DB->prepare
+			('
+			INSERT INTO
+				pkgstats_users
+			SET
+				ip = ?,
+				time = ?,
+				arch = ?,
+				country = NULLIF(CHAR_LENGTH(?), 0),
+				mirror = NULLIF(CHAR_LENGTH(?), 0)
+			');
+		$stm->bindString(sha1($this->Input->getClientIP()));
+		$stm->bindInteger($this->Input->getTime());
+		$stm->bindString(htmlspecialchars($arch));
+		$stm->bindString(htmlspecialchars($this->Input->getClientCountryName()));
+		$stm->bindString(htmlspecialchars($mirror));
+		$stm->execute();
+		$stm->close();
 
 		$stm = $this->DB->prepare
 			('
 			INSERT INTO
-				package_statistics
+				pkgstats_packages
 			SET
-				name = ?,
-				arch = ?,
-				count = 1,
-				lastupdate = ?
-			ON DUPLICATE KEY UPDATE
-				count = count + 1,
-				lastupdate = ?
+				user_id = LAST_INSERT_ID(),
+				pkgname = ?
 			');
-
 		foreach ($packages as $package)
 			{
 			$stm->bindString(htmlspecialchars($package));
-			$stm->bindString(htmlspecialchars($arch));
-			$stm->bindInteger(time());
-			$stm->bindInteger(time());
 			$stm->execute();
 			}
-
 		$stm->close();
 		}
 	catch (DBException $e)
 		{
-		$this->showFailure('Allan broke it!');
+		$this->showFailure($e->getMessage());
 		}
 	}
 
@@ -101,45 +141,26 @@ private function checkIfAlreadySubmitted()
 		$stm = $this->DB->prepare
 			('
 			SELECT
-				ip,
-				visited
+				time
 			FROM
-				package_statistics_log
+				pkgstats_users
 			WHERE
-				visited >= ?
+				time >= ?
 				AND ip = ?
 			');
-		$stm->bindInteger(time() - self::$delay);
+		$stm->bindInteger($this->Input->getTime() - $this->delay);
 		$stm->bindString(sha1($this->Input->getClientIP()));
-		$lastVisit = $stm->getRow();
+		$lastVisit = $stm->getColumn();
 		$stm->close();
 
-		$this->showFailure('You already submitted your package list via '.$this->Input->getClientIP().' at '.date('r', $lastVisit['visited']).".\n         You are blocked until ".date('r', $lastVisit['visited'] + self::$delay));
+		$this->showFailure('You already submitted your data via '.$this->Input->getClientIP()
+			.' at '.$this->L10n->getGmDateTime($lastVisit)
+			.".\n         You are blocked until ".$this->L10n->getGmDateTime($lastVisit + $this->delay));
 		}
 	catch (DBNoDataException $e)
 		{
 		$stm->close();
 		}
-	}
-
-private function insertLogEntry($arch, $packageCount)
-	{
-	$stm = $this->DB->prepare
-		('
-		INSERT INTO
-			package_statistics_log
-		SET
-			ip = ?,
-			visited = ?,
-			arch = ?,
-			count = ?
-		');
-	$stm->bindString(sha1($this->Input->getClientIP()));
-	$stm->bindInteger(time());
-	$stm->bindString(htmlspecialchars($arch));
-	$stm->bindInteger($packageCount);
-	$stm->execute();
-	$stm->close();
 	}
 
 }

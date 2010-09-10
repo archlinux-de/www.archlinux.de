@@ -140,7 +140,7 @@ public static function updateDBCache()
 				</tr>
 					'.self::getRepositoryStatistics().'
 				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Package usage').'</h1></th>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('User statistics').'</h1></th>
 				</tr>
 				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Common statistics').'</th>
@@ -155,11 +155,25 @@ public static function updateDBCache()
 				</tr>
 				<tr>
 					<th>'.self::get('L10n')->getText('First entry').'</th>
-					<td>'.self::get('L10n')->getDateTime($log['minvisited']).'</td>
+					<td>'.self::get('L10n')->getGMDateTime($log['minvisited']).'</td>
 				</tr>
 				<tr>
 					<th>'.self::get('L10n')->getText('Last entry').'</th>
-					<td>'.self::get('L10n')->getDateTime($log['maxvisited']).'</td>
+					<td>'.self::get('L10n')->getGMDateTime($log['maxvisited']).'</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Countries').'</th>
+				</tr>
+					'.self::getCountryStatistics().'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Mirrors').'</th>
+				</tr>
+					'.self::getMirrorStatistics().'
+				<tr>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Package usage').'</h1></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Common statistics').'</th>
 				</tr>
 				<tr>
 					<th>'.self::get('L10n')->getText('Sum of submitted packages').'</th>
@@ -189,7 +203,6 @@ public static function updateDBCache()
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Installed packages per repository').'</th>
 				</tr>
 				'.self::getPackagesPerRepository().'
-				'.self::getNumberOfUnofficialPackages().'
 				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Popular packages per repository').'</th>
 				</tr>
@@ -265,16 +278,82 @@ private static function getCommonPackageUsageStatistics()
 	return self::get('DB')->getRow
 		('
 		SELECT
-			(SELECT COUNT(*) FROM package_statistics_log) AS submissions,
-			(SELECT COUNT(*) FROM (SELECT * FROM package_statistics_log GROUP BY ip) AS temp) AS differentips,
-			(SELECT MIN(visited) FROM package_statistics_log) AS minvisited,
-			(SELECT MAX(visited) FROM package_statistics_log) AS maxvisited,
-			(SELECT SUM(count) FROM package_statistics_log) AS sumcount,
-			(SELECT COUNT(*) FROM package_statistics) AS diffcount,
-			(SELECT MIN(count) FROM package_statistics_log) AS mincount,
-			(SELECT MAX(count) FROM package_statistics_log) AS maxcount,
-			(SELECT AVG(count) FROM package_statistics_log) AS avgcount
+			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
+			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
+			(SELECT MIN(time) FROM pkgstats_users) AS minvisited,
+			(SELECT MAX(time) FROM pkgstats_users) AS maxvisited,
+			(SELECT COUNT(*) FROM pkgstats_packages) AS sumcount,
+			(SELECT COUNT(*) FROM pkgstats_packages) AS diffcount,
+			(SELECT MIN(acount) FROM (SELECT COUNT(*) AS acount FROM pkgstats_packages GROUP BY user_id) AS a) AS mincount,
+			(SELECT MAX(bcount) FROM (SELECT COUNT(*) AS bcount FROM pkgstats_packages GROUP BY user_id) AS b) AS maxcount,
+			(SELECT AVG(ccount) FROM (SELECT COUNT(*) AS ccount FROM pkgstats_packages GROUP BY user_id)AS c) AS avgcount
 		');
+	}
+
+private static function getCountryStatistics()
+	{
+	$total = self::get('DB')->getColumn
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			pkgstats_users
+		');
+
+	$countries = self::get('DB')->getRowSet
+		('
+		SELECT
+			country AS name,
+			COUNT(*) AS count
+		FROM
+			pkgstats_users
+		GROUP BY
+			country
+		ORDER BY
+			count DESC
+		');
+
+	$list = '';
+
+	foreach ($countries as $country)
+		{
+		$list .= '<tr><th>'.$country['name'].'</th><td>'.self::getBar($country['count'], $total).'</td></tr>';
+		}
+
+	return $list;
+	}
+
+private static function getMirrorStatistics()
+	{
+	$total = self::get('DB')->getColumn
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			pkgstats_users
+		');
+
+	$mirrors = self::get('DB')->getRowSet
+		('
+		SELECT
+			mirror AS name,
+			COUNT(*) AS count
+		FROM
+			pkgstats_users
+		GROUP BY
+			mirror
+		ORDER BY
+			count DESC
+		');
+
+	$list = '';
+
+	foreach ($mirrors as $mirror)
+		{
+		$list .= '<tr><th>'.$mirror['name'].'</th><td>'.self::getBar($mirror['count'], $total).'</td></tr>';
+		}
+
+	return $list;
 	}
 
 private static function getRepositoryStatistics()
@@ -471,18 +550,18 @@ private static function getSubmissionsPerArchitecture()
 	$total = self::get('DB')->getColumn
 		('
 		SELECT
-			COUNT(arch)
+			COUNT(*)
 		FROM
-			package_statistics_log
+			pkgstats_users
 		');
 
 	$arches = self::get('DB')->getRowSet
 		('
 		SELECT
-			COUNT(arch) AS count,
+			COUNT(*) AS count,
 			arch AS name
 		FROM
-			package_statistics_log
+			pkgstats_users
 		GROUP BY
 			arch
 		');
@@ -499,31 +578,27 @@ private static function getSubmissionsPerArchitecture()
 
 private static function getPackagesPerRepository()
 	{
-	$total = self::get('DB')->getColumn
-		('
-		SELECT
-			SUM(package_statistics.count)
-		FROM
-			package_statistics
-		');
-
 	$repos = self::get('DB')->getRowSet
 		('
 		SELECT
-			SUM(package_statistics.count) AS count,
+			COUNT(pkgstats_packages.pkgname) AS count,
+			(SELECT COUNT(*) FROM packages WHERE packages.arch = architectures.id AND packages.repository = repositories.id) AS total,
 			repositories.name
 		FROM
-			package_statistics,
+			pkgstats_packages,
+			pkgstats_users,
 			packages,
 			repositories,
 			architectures
 		WHERE
-			package_statistics.name = packages.name
-			AND package_statistics.arch = architectures.name
+			pkgstats_packages.pkgname = packages.name
+			AND pkgstats_packages.user_id = pkgstats_users.id
+			AND pkgstats_users.arch = architectures.name
 			AND packages.repository = repositories.id
 			AND repositories.name <> "testing"
 			AND repositories.name <> "community-testing"
 			AND repositories.name <> "staging"
+			AND repositories.name <> "community-staging"
 			AND packages.arch = architectures.id
 		GROUP BY
 			repositories.id
@@ -533,7 +608,7 @@ private static function getPackagesPerRepository()
 
 	foreach ($repos as $repo)
 		{
-		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($repo['count'], $total).'</td></tr>';
+		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($repo['count'], $repo['total']).'</td></tr>';
 		}
 
 	return $list;
@@ -546,7 +621,7 @@ private static function getPopularPackagesPerRepository()
 		SELECT
 			COUNT(*)
 		FROM
-			package_statistics_log
+			pkgstats_users
 		');
 
 	$repos = self::get('DB')->getRowSet
@@ -560,6 +635,7 @@ private static function getPopularPackagesPerRepository()
 			name <> "testing"
 			AND name <> "community-testing"
 			AND name <> "staging"
+			AND name <> "community-staging"
 		');
 
 	$stm = self::get('DB')->prepare
@@ -572,16 +648,20 @@ private static function getPopularPackagesPerRepository()
 			(
 			SELECT
 				packages.name,
-				package_statistics.count
+				COUNT(pkgstats_packages.pkgname) AS count
 			FROM
 				packages,
-				package_statistics,
+				pkgstats_packages,
+				pkgstats_users,
 				architectures
 			WHERE
 				packages.repository = ?
-				AND packages.name = package_statistics.name
-				AND package_statistics.arch = architectures.name
+				AND packages.name = pkgstats_packages.pkgname
+				AND pkgstats_packages.user_id = pkgstats_users.id
+				AND pkgstats_users.arch = architectures.name
 				AND packages.arch = architectures.id
+			GROUP BY
+				pkgstats_packages.pkgname
 			)
 			UNION
 			(
@@ -592,7 +672,7 @@ private static function getPopularPackagesPerRepository()
 				packages
 			WHERE
 				repository = ?
-				AND name NOT IN (SELECT name FROM package_statistics)
+				AND name NOT IN (SELECT pkgname FROM pkgstats_packages)
 			)
 		) AS temp
 		GROUP BY
@@ -636,29 +716,6 @@ private static function getPopularPackagesPerRepository()
 	return $list;
 	}
 
-private static function getNumberOfUnofficialPackages()
-	{
-	$total = self::get('DB')->getColumn
-		('
-		SELECT
-			SUM(package_statistics.count)
-		FROM
-			package_statistics
-		');
-
-	$packages = self::get('DB')->getColumn
-		('
-		SELECT
-			SUM(package_statistics.count)
-		FROM
-			package_statistics
-		WHERE
-			package_statistics.name NOT IN (SELECT name FROM packages)
-		');
-
-	return '<tr><th>'.self::get('L10n')->getText('Unofficial repositories').'</th><td>'.self::getBar($packages, $total).'</td></tr>';
-	}
-
 private static function getPopularUnofficialPackages()
 	{
 	$total = self::get('DB')->getColumn
@@ -666,23 +723,23 @@ private static function getPopularUnofficialPackages()
 		SELECT
 			COUNT(*)
 		FROM
-			package_statistics_log
+			pkgstats_users
 		');
 
 	$packages = self::get('DB')->getRowSet
 		('
 		SELECT
-			package_statistics.name,
-			SUM(package_statistics.count) AS count
+			pkgstats_packages.pkgname,
+			COUNT(pkgstats_packages.pkgname) AS count
 		FROM
-			package_statistics
+			pkgstats_packages
 		WHERE
-			package_statistics.name NOT IN (SELECT name FROM packages)
+			pkgstats_packages.pkgname NOT IN (SELECT name FROM packages)
 		GROUP BY
-			package_statistics.name
+			pkgstats_packages.pkgname
 		ORDER BY
 			count DESC,
-			name ASC
+			pkgname ASC
 		LIMIT
 			1000
 		');
@@ -695,7 +752,7 @@ private static function getPopularUnofficialPackages()
 
 		foreach ($packages as $package)
 			{
-			$list .= '<tr><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
+			$list .= '<tr><td style="width: 200px;">'.$package['pkgname'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
 			}
 
 		$list .= '</table></div></td></tr>';
