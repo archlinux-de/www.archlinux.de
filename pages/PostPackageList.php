@@ -86,13 +86,15 @@ public function prepare()
 				ip = ?,
 				time = ?,
 				arch = ?,
-				country = NULLIF(CHAR_LENGTH(?), 0),
-				mirror = NULLIF(CHAR_LENGTH(?), 0)
+				country = CASE WHEN CHAR_LENGTH(?) = 0 THEN NULL ELSE ? END,
+				mirror = CASE WHEN CHAR_LENGTH(?) = 0 THEN NULL ELSE ? END
 			');
 		$stm->bindString(sha1($this->Input->getClientIP()));
 		$stm->bindInteger($this->Input->getTime());
 		$stm->bindString(htmlspecialchars($arch));
 		$stm->bindString(htmlspecialchars($this->Input->getClientCountryName()));
+		$stm->bindString(htmlspecialchars($this->Input->getClientCountryName()));
+		$stm->bindString(htmlspecialchars($mirror));
 		$stm->bindString(htmlspecialchars($mirror));
 		$stm->execute();
 		$stm->close();
