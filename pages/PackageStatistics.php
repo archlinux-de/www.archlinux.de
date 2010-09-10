@@ -283,7 +283,7 @@ private static function getCommonPackageUsageStatistics()
 			(SELECT MIN(time) FROM pkgstats_users) AS minvisited,
 			(SELECT MAX(time) FROM pkgstats_users) AS maxvisited,
 			(SELECT COUNT(*) FROM pkgstats_packages) AS sumcount,
-			(SELECT COUNT(*) FROM pkgstats_packages) AS diffcount,
+			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages) AS diffpkgs) AS diffcount,
 			(SELECT MIN(acount) FROM (SELECT COUNT(*) AS acount FROM pkgstats_packages GROUP BY user_id) AS a) AS mincount,
 			(SELECT MAX(bcount) FROM (SELECT COUNT(*) AS bcount FROM pkgstats_packages GROUP BY user_id) AS b) AS maxcount,
 			(SELECT AVG(ccount) FROM (SELECT COUNT(*) AS ccount FROM pkgstats_packages GROUP BY user_id)AS c) AS avgcount
@@ -303,7 +303,7 @@ private static function getCountryStatistics()
 	$countries = self::get('DB')->getRowSet
 		('
 		SELECT
-			country AS name,
+			COALESCE(country, \'unknown\') AS name,
 			COUNT(*) AS count
 		FROM
 			pkgstats_users
@@ -336,7 +336,7 @@ private static function getMirrorStatistics()
 	$mirrors = self::get('DB')->getRowSet
 		('
 		SELECT
-			mirror AS name,
+			COALESCE(mirror, \'unknown\') AS name,
 			COUNT(*) AS count
 		FROM
 			pkgstats_users
@@ -578,39 +578,67 @@ private static function getSubmissionsPerArchitecture()
 
 private static function getPackagesPerRepository()
 	{
-	$repos = self::get('DB')->getRowSet
+	try
+		{
+		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'staging\', \'community-staging\')')->toArray();
+		}
+	catch (DBNoDataException $e)
+		{
+		$repos = array();
+		}
+
+	$countStm = self::get('DB')->prepare
 		('
 		SELECT
-			COUNT(pkgstats_packages.pkgname) AS count,
-			(SELECT COUNT(*) FROM packages WHERE packages.arch = architectures.id AND packages.repository = repositories.id) AS total,
-			repositories.name
+			COUNT(*)
 		FROM
-			pkgstats_packages,
-			pkgstats_users,
-			packages,
-			repositories,
-			architectures
-		WHERE
-			pkgstats_packages.pkgname = packages.name
-			AND pkgstats_packages.user_id = pkgstats_users.id
-			AND pkgstats_users.arch = architectures.name
-			AND packages.repository = repositories.id
-			AND repositories.name <> "testing"
-			AND repositories.name <> "community-testing"
-			AND repositories.name <> "staging"
-			AND repositories.name <> "community-staging"
-			AND packages.arch = architectures.id
-		GROUP BY
-			repositories.id,
-			pkgstats_packages.pkgname
+			(
+			SELECT DISTINCT
+				name
+			FROM
+				packages
+			WHERE
+				repository = ?
+			) AS total
+			JOIN
+			(
+			SELECT DISTINCT
+				pkgname
+			FROM
+				pkgstats_packages
+			) AS used
+			ON total.name = used.pkgname
+		');
+
+	$totalStm = self::get('DB')->prepare
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			(
+			SELECT DISTINCT
+				name
+			FROM
+				packages
+			WHERE
+				repository = ?
+			) AS total
 		');
 
 	$list = '';
-
 	foreach ($repos as $repo)
 		{
-		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($repo['count'], $repo['total']).'</td></tr>';
+		$countStm->bindInteger($repo['id']);
+		$count = $countStm->getColumn();
+
+		$totalStm->bindInteger($repo['id']);
+		$total = $totalStm->getColumn();
+
+		$list .= '<tr><th>'.$repo['name'].'</th><td>'.self::getBar($count, $total).'</td></tr>';
 		}
+
+	$countStm->close();
+	$totalStm->close();
 
 	return $list;
 	}
