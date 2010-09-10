@@ -29,7 +29,6 @@ require ('modules/Settings.php');
 require ('modules/Exceptions.php');
 require ('PackageDB.php');
 require ('pages/abstract/Page.php');
-require ('pages/PackageStatistics.php');
 
 
 class UpdatePKGDB extends Modul {
@@ -144,12 +143,6 @@ public function runUpdate()
 		$this->updateConflicts();
 		$this->updateReplaces();
 		$this->removeUnusedEntries();
-
-		foreach ($this->Settings->getValue('locales') as $locale)
-			{
-			$this->L10n->setLocale($locale);
-			PackageStatistics::updateDBCache();
-			}
 		}
 
 	unlink($this->getLockFile());
