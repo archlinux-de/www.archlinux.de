@@ -28,7 +28,6 @@ require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
 require ('PackageDB.php');
-require ('pages/abstract/Page.php');
 
 
 class UpdatePKGDB extends Modul {

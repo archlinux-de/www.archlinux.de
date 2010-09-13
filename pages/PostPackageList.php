@@ -169,7 +169,7 @@ public function show()
 	else
 		{
 		$text = 'Thanks for your submission. :-)'."\n";
-		$text .= 'See results at '.$this->Output->createURL('PackageStatistics', array(), true, false)."\n";
+		$text .= 'See results at '.$this->Output->createURL('Statistics', array(), true, false)."\n";
 		}
 	$this->Output->writeOutput($text);
 	}

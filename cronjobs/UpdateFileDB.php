@@ -27,7 +27,8 @@ ini_set('include_path', ini_get('include_path').':../');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/DB.php');
+require ('pages/abstract/Page.php');
+require ('pages/RepositoryStatistics.php');
 
 class UpdateFileDB extends Modul {
 
@@ -73,6 +74,12 @@ public function runUpdate()
 	if ($this->changed)
 		{
 		$this->removeUnusedEntries();
+
+		foreach ($this->Settings->getValue('locales') as $locale)
+			{
+			$this->L10n->setLocale($locale);
+			RepositoryStatistics::updateDBCache();
+			}
 		}
 
 	unlink($this->getLockFile());

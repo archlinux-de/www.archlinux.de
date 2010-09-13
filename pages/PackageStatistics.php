@@ -45,134 +45,10 @@ public static function updateDBCache()
 
 	try
 		{
-		$data = self::getCommonRepositoryStatistics();
 		$log = self::getCommonPackageUsageStatistics();
 
 		$body = '<div class="box">
 			<table id="packagedetails">
-				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Repositories').'</h1></th>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Overview').'</th>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Architectures').'</th>
-					<td>'.$data['architectures'].'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Repositories').'</th>
-					<td>'.$data['repositories'].'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Groups').'</th>
-					<td>'.self::get('L10n')->getNumber($data['groups']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Packages').'</th>
-					<td>'.self::get('L10n')->getNumber($data['packages']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Files').'</th>
-					<td>'.self::get('L10n')->getNumber($data['files']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Size of file index').'</th>
-					<td>'.self::get('L10n')->getNumber($data['file_index']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Licenses').'</th>
-					<td>'.self::get('L10n')->getNumber($data['licenses']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Dependencies').'</th>
-					<td>'.self::get('L10n')->getNumber($data['depends']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Optional dependencies').'</th>
-					<td>'.self::get('L10n')->getNumber($data['optdepends']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Provides').'</th>
-					<td>'.self::get('L10n')->getNumber($data['provides']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Conflicts').'</th>
-					<td>'.self::get('L10n')->getNumber($data['conflicts']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Replaces').'</th>
-					<td>'.self::get('L10n')->getNumber($data['replaces']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Total size of repositories').'</th>
-					<td>'.self::formatBytes($data['csize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Total size of files').'</th>
-					<td>'.self::formatBytes($data['isize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Packager').'</th>
-					<td>'.$data['packagers'].'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Averages').'</th>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Size of packages').'</th>
-					<td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Size of files').'</th>
-					<td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Files per package').'</th>
-					<td>&empty; '.self::get('L10n')->getNumber($data['avgfiles'], 2).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Packages per packager').'</th>
-					<td>&empty; '.self::get('L10n')->getNumber($data['avgpkgperpackager'], 2).'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Repositories').'</th>
-				</tr>
-					'.self::getRepositoryStatistics().'
-				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('User statistics').'</h1></th>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Common statistics').'</th>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Submissions').'</th>
-					<td>'.self::get('L10n')->getNumber($log['submissions']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Different IPs').'</th>
-					<td>'.self::get('L10n')->getNumber($log['differentips']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('First entry').'</th>
-					<td>'.self::get('L10n')->getGMDateTime($log['minvisited']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Last entry').'</th>
-					<td>'.self::get('L10n')->getGMDateTime($log['maxvisited']).'</td>
-				</tr>
-				<tr>
-					<th>'.self::get('L10n')->getText('Last update').'</th>
-					<td>'.self::get('L10n')->getGMDateTime(self::get('Input')->getTime()).'</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Countries').'</th>
-				</tr>
-					'.self::getCountryStatistics().'
-				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Mirrors').'</th>
-				</tr>
-					'.self::getMirrorStatistics().'
 				<tr>
 					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Package usage').'</h1></th>
 				</tr>
@@ -226,57 +102,6 @@ public static function updateDBCache()
 		}
 	}
 
-private static function getCommonRepositoryStatistics()
-	{
-	return self::get('DB')->getRow
-		('
-		SELECT
-			(SELECT COUNT(*) FROM architectures) AS architectures,
-			(SELECT COUNT(*) FROM repositories) AS repositories,
-			(SELECT COUNT(*) FROM packages) AS packages,
-			(SELECT COUNT(*) FROM files) AS files,
-			(SELECT SUM(csize) FROM packages) AS csize,
-			(SELECT SUM(isize) FROM packages) AS isize,
-			(SELECT COUNT(*) FROM packagers) AS packagers,
-			(SELECT COUNT(*) FROM groups) AS groups,
-			(SELECT COUNT(*) FROM licenses) AS licenses,
-			(SELECT COUNT(*) FROM depends) AS depends,
-			(SELECT COUNT(*) FROM optdepends) AS optdepends,
-			(SELECT COUNT(*) FROM conflicts) AS conflicts,
-			(SELECT COUNT(*) FROM replaces) AS replaces,
-			(SELECT COUNT(*) FROM provides) AS provides,
-			(SELECT COUNT(*) FROM file_index) AS file_index,
-			(SELECT AVG(csize) FROM packages) AS avgcsize,
-			(SELECT AVG(isize) FROM packages) AS avgisize,
-			(SELECT
-				AVG(pkgs)
-			FROM
-				(
-				SELECT
-					COUNT(packages.id) AS pkgs
-				FROM
-					packages
-						JOIN
-							packagers
-						ON
-							packages.packager = packagers.id
-				GROUP BY packagers.id
-				) AS temp
-			) AS avgpkgperpackager,
-			(SELECT
-				AVG(pkgfiles)
-			FROM
-				(
-				SELECT
-					COUNT(id) AS pkgfiles
-				FROM
-					files
-				GROUP BY package
-				) AS temp2
-			) AS avgfiles
-		');
-	}
-
 private static function getCommonPackageUsageStatistics()
 	{
 	return self::get('DB')->getRow
@@ -292,90 +117,6 @@ private static function getCommonPackageUsageStatistics()
 			(SELECT MAX(bcount) FROM (SELECT COUNT(*) AS bcount FROM pkgstats_packages GROUP BY user_id) AS b) AS maxcount,
 			(SELECT AVG(ccount) FROM (SELECT COUNT(*) AS ccount FROM pkgstats_packages GROUP BY user_id)AS c) AS avgcount
 		');
-	}
-
-private static function getCountryStatistics()
-	{
-	$total = self::get('DB')->getColumn
-		('
-		SELECT
-			COUNT(*)
-		FROM
-			pkgstats_users
-		');
-
-	$countries = self::get('DB')->getRowSet
-		('
-		SELECT
-			COALESCE(country, \'unknown\') AS name,
-			COUNT(*) AS count
-		FROM
-			pkgstats_users
-		GROUP BY
-			country
-		ORDER BY
-			count DESC
-		');
-
-	$list = '';
-
-	foreach ($countries as $country)
-		{
-		$list .= '<tr><th>'.$country['name'].'</th><td>'.self::getBar($country['count'], $total).'</td></tr>';
-		}
-
-	return $list;
-	}
-
-private static function getMirrorStatistics()
-	{
-	$total = self::get('DB')->getColumn
-		('
-		SELECT
-			COUNT(*)
-		FROM
-			pkgstats_users
-		');
-
-	$mirrors = self::get('DB')->getRowSet
-		('
-		SELECT
-			COALESCE(mirror, \'unknown\') AS name,
-			COUNT(*) AS count
-		FROM
-			pkgstats_users
-		GROUP BY
-			mirror
-		');
-
-	$hosts = array();
-	foreach ($mirrors as $mirror)
-		{
-		$host = parse_url($mirror['name'], PHP_URL_HOST);
-		if ($host === false || empty($host))
-			{
-			$host = 'unknown';
-			}
-
-		if (isset($hosts[$host]))
-			{
-			$hosts[$host] += $mirror['count'];
-			}
-		else
-			{
-			$hosts[$host] = $mirror['count'];
-			}
-		}
-	arsort($hosts);
-
-	$list = '';
-
-	foreach ($hosts as $host => $count)
-		{
-		$list .= '<tr><th>'.$host.'</th><td>'.self::getBar($count, $total).'</td></tr>';
-		}
-
-	return $list;
 	}
 
 private static function getRepositoryStatistics()
@@ -725,6 +466,8 @@ private static function getPopularPackagesPerRepository()
 		) AS temp
 		GROUP BY
 			name
+		HAVING
+			count >= '.(floor($total / 100)).'
 		ORDER BY
 			count DESC,
 			name ASC
@@ -785,11 +528,11 @@ private static function getPopularUnofficialPackages()
 			pkgstats_packages.pkgname NOT IN (SELECT name FROM packages)
 		GROUP BY
 			pkgstats_packages.pkgname
+		HAVING
+			count >= '.(floor($total / 100)).'
 		ORDER BY
 			count DESC,
 			pkgname ASC
-		LIMIT
-			1000
 		');
 
 	$list = '';

@@ -29,6 +29,7 @@ require ('modules/Settings.php');
 require ('modules/Exceptions.php');
 require ('pages/abstract/Page.php');
 require ('pages/PackageStatistics.php');
+require ('pages/UserStatistics.php');
 
 
 class UpdatePkgstats extends Modul {
@@ -67,6 +68,7 @@ public function runUpdate()
 		{
 		$this->L10n->setLocale($locale);
 		PackageStatistics::updateDBCache();
+		UserStatistics::updateDBCache();
 		}
 
 	unlink($this->getLockFile());
