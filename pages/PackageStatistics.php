@@ -598,7 +598,7 @@ private static function getPackagesPerRepository()
 	{
 	try
 		{
-		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'staging\', \'community-staging\')')->toArray();
+		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
@@ -679,10 +679,7 @@ private static function getPopularPackagesPerRepository()
 		FROM
 			repositories
 		WHERE
-			name <> "testing"
-			AND name <> "community-testing"
-			AND name <> "staging"
-			AND name <> "community-staging"
+			name NOT IN (\'testing\', \'community-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')
 		');
 
 	$stm = self::get('DB')->prepare
