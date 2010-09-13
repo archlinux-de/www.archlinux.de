@@ -88,14 +88,6 @@ function ExceptionHandler(Exception $e)
 				file_put_contents(Modul::get('Settings')->getValue('log_dir').time().'.html', $screen);
 				}
 
-			$mail = Modul::get('Mail');
-
-			$mail->setTo(Modul::get('Settings')->getValue('email'));
-			$mail->setFrom(Modul::get('Settings')->getValue('email'));
-			$mail->setSubject('archlinux.de-Error');
-			$mail->setText(strip_tags(unhtmlspecialchars($screen)));
-			$mail->send();
-
 			$screen = '<?xml version="1.0" encoding="UTF-8" ?>
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "xhtml11.dtd">
 			<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">

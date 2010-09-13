@@ -30,6 +30,8 @@ private $outputSeparatorHtml = '&amp;';
 const NOT_FOUND	= 'HTTP/1.1 404 Not Found';
 const OK = 'HTTP/1.1 200 OK';
 const FOUND = 'HTTP/1.1 302 Found';
+const BAD_REQUEST = 'HTTP/1.1 400 Bad Request';
+const INTERNAL_SERVER_ERROR = 'HTTP/1.1 500 Internal Server Error';
 
 
 function __construct()
@@ -128,13 +130,13 @@ public function redirectToUrl($url)
 public function createUrl($page, $options = array(), $absolute = false, $html = true)
 	{
 	$separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
-	$params = '';
+	$params = array();
 	foreach (array_merge(array('page' => $page), $options) as $key => $value)
 		{
-		$params .= $separator.$key.'='.urlencode($value);
+		$params[] = $key.'='.urlencode($value);
 		}
 
-	return ($absolute ? $this->Input->getPath() : '').'?id='.$this->Board->getId().$params;
+	return ($absolute ? $this->Input->getPath() : '').'?'.implode(';', $params);
 	}
 
 }

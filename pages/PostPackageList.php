@@ -22,28 +22,43 @@ class PostPackageList extends Page {
 
 private $delay = 86400;	// 24 hours
 private $count = 10;
+private $quiet = false;
 
 
 public function prepare()
 	{
+	$this->Output->setContentType('text/plain; charset=UTF-8');
+	$this->Output->setCompression(false);
+
+	try
+		{
+		# Can be rewritten once 2.0 is no longer in use
+		$pkgstatsver = $this->Input->Post->getString('pkgstatsver', str_replace('pkgstats/', '', $this->Input->Server->getString('HTTP_USER_AGENT')));
+		}
+	catch (RequestException $e)
+		{
+		$this->Output->setStatus(Output::BAD_REQUEST);
+		$this->showFailure('Please make sure to use pkgstats to submit your data.');
+		}
+
 	try
 		{
 		$packages = array_unique(explode("\n", trim($this->Input->Post->getString('packages'))));
 		$arch = $this->Input->Post->getString('arch');
-		$pkgstatsver = $this->Input->Post->getString('pkgstatsver');
+		# Can be rewritten once 1.0 is no longer in use
 		$mirror = $this->Input->Post->getString('mirror', '');
+		# Can be rewritten once 2.0 is no longer in use
+		$this->quiet = ($this->Input->Post->getString('quiet', 'false') == 'true');
 		}
 	catch (RequestException $e)
 		{
-		$this->showFailure('No data received');
+		$this->Output->setStatus(Output::BAD_REQUEST);
+		$this->showFailure($e->getMessage());
 		}
 
-	if ($pkgstatsver == '1.0')
+	if (!in_array($pkgstatsver, array('1.0', '2.0', '2.1')))
 		{
-		$this->showWarning('Please update pkgstats.');
-		}
-	elseif ($pkgstatsver != '2.0')
-		{
+		$this->Output->setStatus(Output::BAD_REQUEST);
 		$this->showFailure('Sorry, your version of pkgstats is not supported.');
 		}
 
@@ -51,24 +66,28 @@ public function prepare()
 		{
 		$mirror = '';
 		}
-	elseif ($this->Input->Post->getHtmlLength('mirror') > 255)
+	elseif (!empty($mirror) && $this->Input->Post->getHtmlLength('mirror') > 255)
 		{
-		$this->showWarning(htmlspecialchars($mirror).' is too long.');
+		$this->Output->setStatus(Output::BAD_REQUEST);
+		$this->showFailure(htmlspecialchars($mirror).' is too long.');
 		$mirror = '';
 		}
 
 	if (!in_array($arch, array('i686', 'x86_64')))
 		{
+		$this->Output->setStatus(Output::BAD_REQUEST);
 		$this->showFailure(htmlspecialchars($arch).' is not a known architecture.');
 		}
 
 	if (empty($packages))
 		{
+		$this->Output->setStatus(Output::BAD_REQUEST);
 		$this->showFailure('Your package list is empty.');
 		}
 
 	if (count($packages) > 10000)
 		{
+		$this->Output->setStatus(Output::BAD_REQUEST);
 		$this->showFailure('So, you have installed more than 10,000 packages?');
 		}
 
@@ -76,6 +95,7 @@ public function prepare()
 		{
 		if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package)))
 			{
+			$this->Output->setStatus(Output::BAD_REQUEST);
 			$this->showFailure(htmlspecialchars($package).' does not look like a valid package');
 			}
 		}
@@ -122,24 +142,36 @@ public function prepare()
 		}
 	catch (DBException $e)
 		{
+		$this->Output->setStatus(Output::INTERNAL_SERVER_ERROR);
 		$this->showFailure($e->getMessage());
 		}
 	}
 
 protected function showWarning($text)
 	{
-	echo 'Warning: '.$text."\n";
+	$text = 'Warning: '.$text."\n";
+	$this->Output->writeOutput($text);
 	}
 
 protected function showFailure($text)
 	{
-	echo 'Failure: '.$text."\n";
+	$text = 'Failure: '.$text."\n";
+	$this->Output->writeOutput($text);
 	exit;
 	}
 
 public function show()
 	{
-	echo 'Thanks for your submission. :-)'."\n";
+	if ($this->quiet)
+		{
+		$text = '';
+		}
+	else
+		{
+		$text = 'Thanks for your submission. :-)'."\n";
+		$text .= 'See results at '.$this->Output->createURL('PackageStatistics', array(), true, false)."\n";
+		}
+	$this->Output->writeOutput($text);
 	}
 
 private function checkIfAlreadySubmitted()
@@ -167,6 +199,7 @@ private function checkIfAlreadySubmitted()
 
 		if ($log['count'] > $this->count)
 			{
+			$this->Output->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('You already submitted your data '
 				.$this->count.' times since '
 				.$this->L10n->getGmDateTime($log['mintime'])
