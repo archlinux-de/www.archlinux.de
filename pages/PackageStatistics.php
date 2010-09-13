@@ -162,6 +162,10 @@ public static function updateDBCache()
 					<td>'.self::get('L10n')->getGMDateTime($log['maxvisited']).'</td>
 				</tr>
 				<tr>
+					<th>'.self::get('L10n')->getText('Last update').'</th>
+					<td>'.self::get('L10n')->getGMDateTime(self::get('Input')->getTime()).'</td>
+				</tr>
+				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Countries').'</th>
 				</tr>
 					'.self::getCountryStatistics().'
