@@ -130,11 +130,11 @@ private static function getCommonPackageUsageStatistics()
 			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
 			(SELECT MIN(time) FROM pkgstats_users) AS minvisited,
 			(SELECT MAX(time) FROM pkgstats_users) AS maxvisited,
-			(SELECT COUNT(*) FROM pkgstats_packages) AS sumcount,
+			(SELECT SUM(count) FROM pkgstats_packages) AS sumcount,
 			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages) AS diffpkgs) AS diffcount,
-			(SELECT MIN(acount) FROM (SELECT COUNT(*) AS acount FROM pkgstats_packages GROUP BY user_id) AS a) AS mincount,
-			(SELECT MAX(bcount) FROM (SELECT COUNT(*) AS bcount FROM pkgstats_packages GROUP BY user_id) AS b) AS maxcount,
-			(SELECT AVG(ccount) FROM (SELECT COUNT(*) AS ccount FROM pkgstats_packages GROUP BY user_id)AS c) AS avgcount
+			(SELECT MIN(packages) FROM pkgstats_users) AS mincount,
+			(SELECT MAX(packages) FROM pkgstats_users) AS maxcount,
+			(SELECT AVG(packages) FROM pkgstats_users) AS avgcount
 		');
 	}
 

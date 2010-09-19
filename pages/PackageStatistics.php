@@ -111,11 +111,11 @@ private static function getCommonPackageUsageStatistics()
 			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
 			(SELECT MIN(time) FROM pkgstats_users) AS minvisited,
 			(SELECT MAX(time) FROM pkgstats_users) AS maxvisited,
-			(SELECT COUNT(*) FROM pkgstats_packages) AS sumcount,
+			(SELECT SUM(count) FROM pkgstats_packages) AS sumcount,
 			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages) AS diffpkgs) AS diffcount,
-			(SELECT MIN(acount) FROM (SELECT COUNT(*) AS acount FROM pkgstats_packages GROUP BY user_id) AS a) AS mincount,
-			(SELECT MAX(bcount) FROM (SELECT COUNT(*) AS bcount FROM pkgstats_packages GROUP BY user_id) AS b) AS maxcount,
-			(SELECT AVG(ccount) FROM (SELECT COUNT(*) AS ccount FROM pkgstats_packages GROUP BY user_id)AS c) AS avgcount
+			(SELECT MIN(packages) FROM pkgstats_users) AS mincount,
+			(SELECT MAX(packages) FROM pkgstats_users) AS maxcount,
+			(SELECT AVG(packages) FROM pkgstats_users) AS avgcount
 		');
 	}
 
@@ -343,12 +343,20 @@ private static function getPackagesPerRepository()
 	{
 	try
 		{
-		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')')->toArray();
+		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')')->toArray();
 		}
 	catch (DBNoDataException $e)
 		{
 		$repos = array();
 		}
+
+	$total = self::get('DB')->getColumn
+		('
+		SELECT
+			COUNT(*)
+		FROM
+			pkgstats_users
+		');
 
 	$countStm = self::get('DB')->prepare
 		('
@@ -369,6 +377,8 @@ private static function getPackagesPerRepository()
 				pkgname
 			FROM
 				pkgstats_packages
+			WHERE
+				count >= '.(floor($total / 100)).'
 			) AS used
 			ON total.name = used.pkgname
 		');
@@ -424,53 +434,25 @@ private static function getPopularPackagesPerRepository()
 		FROM
 			repositories
 		WHERE
-			name NOT IN (\'testing\', \'community-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')
+			name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')
 		');
 
 	$stm = self::get('DB')->prepare
 		('
 		SELECT
-			name,
+			pkgname,
 			SUM(count) AS count
 		FROM
-		(
-			(
-			SELECT
-				packages.name,
-				COUNT(pkgstats_packages.pkgname) AS count
-			FROM
-				packages,
-				pkgstats_packages,
-				pkgstats_users,
-				architectures
-			WHERE
-				packages.repository = ?
-				AND packages.name = pkgstats_packages.pkgname
-				AND pkgstats_packages.user_id = pkgstats_users.id
-				AND pkgstats_users.arch = architectures.name
-				AND packages.arch = architectures.id
-			GROUP BY
-				pkgstats_packages.pkgname
-			)
-			UNION
-			(
-			SELECT
-				name,
-				0
-			FROM
-				packages
-			WHERE
-				repository = ?
-				AND name NOT IN (SELECT pkgname FROM pkgstats_packages)
-			)
-		) AS temp
+			pkgstats_packages
+		WHERE
+			pkgname IN (SELECT name FROM packages WHERE repository = ?)
 		GROUP BY
-			name
+			pkgname
 		HAVING
 			count >= '.(floor($total / 100)).'
 		ORDER BY
 			count DESC,
-			name ASC
+			pkgname ASC
 		');
 
 	$list = '';
@@ -481,7 +463,6 @@ private static function getPopularPackagesPerRepository()
 		try
 			{
 			$stm->bindInteger($repo['id']);
-			$stm->bindInteger($repo['id']);
 			$packages = $stm->getRowSet();
 
 			if ($repoid != $repo['id'])
@@ -491,7 +472,7 @@ private static function getPopularPackagesPerRepository()
 
 			foreach ($packages as $package)
 				{
-				$list .= '<tr><td style="width: 200px;">'.$package['name'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
+				$list .= '<tr><td style="width: 200px;">'.$package['pkgname'].'</td><td>'.self::getBar($package['count'], $total).'</td></tr>';
 				}
 
 			$list .= '</table></div></td></tr>';
@@ -520,14 +501,14 @@ private static function getPopularUnofficialPackages()
 	$packages = self::get('DB')->getRowSet
 		('
 		SELECT
-			pkgstats_packages.pkgname,
-			COUNT(pkgstats_packages.pkgname) AS count
+			pkgname,
+			SUM(count) AS count
 		FROM
 			pkgstats_packages
 		WHERE
-			pkgstats_packages.pkgname NOT IN (SELECT name FROM packages)
+			pkgname NOT IN (SELECT name FROM packages)
 		GROUP BY
-			pkgstats_packages.pkgname
+			pkgname
 		HAVING
 			count >= '.(floor($total / 100)).'
 		ORDER BY
