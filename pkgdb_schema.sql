@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 10. September 2010 um 11:25
+-- Erstellungszeit: 19. September 2010 um 17:10
 -- Server Version: 5.1.50
 -- PHP-Version: 5.3.3
 
@@ -280,43 +280,14 @@ CREATE TABLE `package_license` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `package_statistics`
---
-
-CREATE TABLE `package_statistics` (
-  `name` varchar(255) NOT NULL,
-  `arch` varchar(10) NOT NULL,
-  `count` int(11) unsigned NOT NULL DEFAULT '0',
-  `lastupdate` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`name`,`arch`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `package_statistics_log`
---
-
-CREATE TABLE `package_statistics_log` (
-  `ip` char(40) NOT NULL,
-  `visited` int(10) unsigned NOT NULL,
-  `arch` varchar(10) NOT NULL,
-  `count` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`ip`,`visited`),
-  KEY `visited` (`visited`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `pkgstats_packages`
 --
 
 CREATE TABLE `pkgstats_packages` (
-  `user_id` int(11) unsigned NOT NULL,
   `pkgname` varchar(255) NOT NULL,
-  KEY `user_id` (`user_id`),
-  KEY `pkgname` (`pkgname`(30))
+  `month` mediumint(6) unsigned NOT NULL,
+  `count` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`pkgname`,`month`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -326,17 +297,16 @@ CREATE TABLE `pkgstats_packages` (
 --
 
 CREATE TABLE `pkgstats_users` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ip` char(40) NOT NULL,
   `time` int(10) unsigned NOT NULL,
-  `arch` varchar(10) NOT NULL,
+  `arch` enum('i686','x86_64') NOT NULL,
   `country` varchar(255) DEFAULT NULL,
   `mirror` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
+  `packages` smallint(5) unsigned NOT NULL,
   KEY `mirror` (`mirror`(20)),
   KEY `country` (`country`(10)),
   KEY `ip` (`ip`(20),`time`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 

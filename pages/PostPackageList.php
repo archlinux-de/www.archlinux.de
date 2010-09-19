@@ -44,6 +44,7 @@ public function prepare()
 	try
 		{
 		$packages = array_unique(explode("\n", trim($this->Input->Post->getString('packages'))));
+		$packageCount = count($packages);
 		$arch = $this->Input->Post->getString('arch');
 		# Can be rewritten once 1.0 is no longer in use
 		$mirror = $this->Input->Post->getString('mirror', '');
@@ -79,13 +80,13 @@ public function prepare()
 		$this->showFailure(htmlspecialchars($arch).' is not a known architecture.');
 		}
 
-	if (empty($packages))
+	if ($packageCount == 0)
 		{
 		$this->Output->setStatus(Output::BAD_REQUEST);
 		$this->showFailure('Your package list is empty.');
 		}
 
-	if (count($packages) > 10000)
+	if ($packageCount > 10000)
 		{
 		$this->Output->setStatus(Output::BAD_REQUEST);
 		$this->showFailure('So, you have installed more than 10,000 packages?');
@@ -115,13 +116,15 @@ public function prepare()
 				time = ?,
 				arch = ?,
 				country = '.(!empty($country) ? '?' : 'NULL').',
-				mirror = '.(!empty($mirror) ? '?' : 'NULL').'
+				mirror = '.(!empty($mirror) ? '?' : 'NULL').',
+				packages = ?
 			');
 		$stm->bindString(sha1($this->Input->getClientIP()));
 		$stm->bindInteger($this->Input->getTime());
 		$stm->bindString(htmlspecialchars($arch));
 		!empty($country) && $stm->bindString(htmlspecialchars($country));
 		!empty($mirror) && $stm->bindString(htmlspecialchars($mirror));
+		$stm->bindInteger($packageCount);
 		$stm->execute();
 		$stm->close();
 
@@ -130,12 +133,16 @@ public function prepare()
 			INSERT INTO
 				pkgstats_packages
 			SET
-				user_id = LAST_INSERT_ID(),
-				pkgname = ?
+				pkgname = ?,
+				month = ?,
+				count = 1
+			ON DUPLICATE KEY UPDATE
+				count = count + 1
 			');
 		foreach ($packages as $package)
 			{
 			$stm->bindString(htmlspecialchars($package));
+			$stm->bindInteger(date('Ym', $this->Input->getTime()));
 			$stm->execute();
 			}
 		$stm->close();
@@ -197,7 +204,7 @@ private function checkIfAlreadySubmitted()
 		$stm->close();
 
 
-		if ($log['count'] > $this->count)
+		if ($log['count'] >= $this->count)
 			{
 			$this->Output->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('You already submitted your data '
