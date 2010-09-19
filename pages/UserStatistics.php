@@ -143,7 +143,7 @@ private static function getCountryStatistics()
 	$total = self::get('DB')->getColumn
 		('
 		SELECT
-			COUNT(*)
+			COUNT(country)
 		FROM
 			pkgstats_users
 		');
@@ -151,8 +151,8 @@ private static function getCountryStatistics()
 	$countries = self::get('DB')->getRowSet
 		('
 		SELECT
-			COALESCE(country, \'unknown\') AS name,
-			COUNT(*) AS count
+			country,
+			COUNT(country) AS count
 		FROM
 			pkgstats_users
 		GROUP BY
@@ -167,7 +167,7 @@ private static function getCountryStatistics()
 
 	foreach ($countries as $country)
 		{
-		$list .= '<tr><th>'.$country['name'].'</th><td>'.self::getBar($country['count'], $total).'</td></tr>';
+		$list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar($country['count'], $total).'</td></tr>';
 		}
 
 	return $list;
@@ -178,7 +178,7 @@ private static function getMirrorStatistics()
 	$total = self::get('DB')->getColumn
 		('
 		SELECT
-			COUNT(*)
+			COUNT(mirror)
 		FROM
 			pkgstats_users
 		');
@@ -186,8 +186,8 @@ private static function getMirrorStatistics()
 	$mirrors = self::get('DB')->getRowSet
 		('
 		SELECT
-			COALESCE(mirror, \'unknown\') AS name,
-			COUNT(*) AS count
+			mirror,
+			COUNT(mirror) AS count
 		FROM
 			pkgstats_users
 		GROUP BY
@@ -199,7 +199,7 @@ private static function getMirrorStatistics()
 	$hosts = array();
 	foreach ($mirrors as $mirror)
 		{
-		$host = parse_url($mirror['name'], PHP_URL_HOST);
+		$host = parse_url($mirror['mirror'], PHP_URL_HOST);
 		if ($host === false || empty($host))
 			{
 			$host = 'unknown';
@@ -234,7 +234,7 @@ private static function getBar($value, $total)
 		}
 
 	$percent = ($value / $total) * 100;
-	
+
 	$color = self::$barColors[round($percent)];
 
 	return '<table style="width:100%;">
