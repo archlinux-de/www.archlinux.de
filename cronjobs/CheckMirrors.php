@@ -175,10 +175,11 @@ private function getMirrorlist()
 		}
 
 	$mirrorarray = array();
+	$country = '';
 
 	for ($line = 4; $line < count($mirrorlist); $line++)
 		{
-		if (preg_match('/^# ([\w ]+)$/', $mirrorlist[$line], $matches))
+		if (preg_match('/^## ([\w ]+)$/', $mirrorlist[$line], $matches))
 			{
 			$country = $matches[1];
 			}
@@ -186,6 +187,11 @@ private function getMirrorlist()
 			{
 			$mirrorarray[$matches[1]] = $country;
 			}
+		}
+
+	if (empty($country))
+		{
+		throw new RuntimeException('could not read country from mirrorlist', 1);
 		}
 
 	if (count($mirrorarray) == 0)
