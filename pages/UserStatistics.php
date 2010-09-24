@@ -80,9 +80,17 @@ public static function updateDBCache()
 				</tr>
 					'.self::getCountryStatistics().'
 				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Countries (relative to population)').'</th>
+				</tr>
+					'.self::getRelativeCountryStatistics().'
+				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Mirrors').'</th>
 				</tr>
 					'.self::getMirrorStatistics().'
+				<tr>
+					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Mirror protocolls').'</th>
+				</tr>
+					'.self::getMirrorProtocollStatistics().'
 				<tr>
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Submissions per architectures').'</th>
 				</tr>
@@ -173,6 +181,110 @@ private static function getCountryStatistics()
 	return $list;
 	}
 
+private static function getRelativeCountryStatistics()
+	{
+	$relativeCountries = array();
+
+	$total = self::get('DB')->getColumn
+		('
+		SELECT
+			COUNT(country)
+		FROM
+			pkgstats_users
+		');
+
+	$countries = self::get('DB')->getRowSet
+		('
+		SELECT
+			country,
+			COUNT(country) AS count
+		FROM
+			pkgstats_users
+		GROUP BY
+			country
+		');
+
+	$population = self::getPopulationPerCountry();
+	$totalPopulation = array_sum($population);
+
+	foreach ($countries as $country)
+		{
+		if (isset($population[$country['country']]))
+			{
+			$density = $country['count'] / ($population[$country['country']] / $totalPopulation);
+			if ($density > (floor($total / 100) / ($population[$country['country']] / $totalPopulation)))
+				{
+				$relativeCountries[$country['country']] = $density;
+				}
+			}
+		}
+
+	arsort($relativeCountries);
+
+	$list = '';
+
+	foreach ($relativeCountries as $countryName => $density)
+		{
+		$list .= '<tr><th>'.$countryName.'</th><td>'.self::getBar($density, array_sum($relativeCountries)).'</td></tr>';
+		}
+
+	return $list;
+	}
+
+private static function getPopulationPerCountry()
+	{
+	if (!($countryarray = self::get('PersistentCache')->getObject('UserStatistics:PopulationPerCountry')))
+		{
+		if (false === ($curl = curl_init('https://www.cia.gov/library/publications/the-world-factbook/rankorder/rawdata_2119.text')))
+			{
+			throw new RuntimeException('failed to init curl: '.htmlspecialchars($url));
+			}
+
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 120);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
+		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
+		$content = curl_exec($curl);
+
+		if (curl_errno($curl) > 0 || false === $content)
+			{
+			$error = htmlspecialchars(curl_error($curl));
+			curl_close($curl);
+			throw new RuntimeException($error, 1);
+			}
+		elseif (empty($content))
+			{
+			curl_close($curl);
+			throw new RuntimeException('empty country list', 1);
+			}
+
+		curl_close($curl);
+
+		$countrylist = explode("\r", $content);
+		$countryarray = array();
+
+		foreach ($countrylist as $country)
+			{
+			preg_match("/^\d+\t([\w, \(\)]+)\t\s*([\d,]+)$/", $country, $matches);
+			if (!empty($matches[1]) && !empty($matches[2]))
+				{
+				$countryarray[$matches[1]] = str_replace(',', '', $matches[2]);
+				}
+			}
+
+		if (count($countryarray) == 0)
+			{
+			throw new RuntimeException('empty country list', 1);
+			}
+
+		self::get('PersistentCache')->addObject('UserStatistics:PopulationPerCountry', $countryarray, (60*60*24*30));
+		}
+
+	return $countryarray;
+	}
+
 private static function getMirrorStatistics()
 	{
 	$total = self::get('DB')->getColumn
@@ -221,6 +333,43 @@ private static function getMirrorStatistics()
 	foreach ($hosts as $host => $count)
 		{
 		$list .= '<tr><th>'.$host.'</th><td>'.self::getBar($count, $total).'</td></tr>';
+		}
+
+	return $list;
+	}
+
+private static function getMirrorProtocollStatistics()
+	{
+	$protocolls = array('http' => 0, 'ftp' => 0);
+
+	$total = self::get('DB')->getColumn
+		('
+		SELECT
+			COUNT(mirror)
+		FROM
+			pkgstats_users
+		');
+
+	foreach ($protocolls as $protocoll => $count)
+		{
+		$protocolls[$protocoll] = self::get('DB')->getColumn
+			('
+			SELECT
+				COUNT(mirror)
+			FROM
+				pkgstats_users
+			WHERE
+				mirror LIKE \''.$protocoll.'%\'
+			');
+		}
+
+	arsort($protocolls);
+
+	$list = '';
+
+	foreach ($protocolls as $protocoll => $count)
+		{
+		$list .= '<tr><th>'.$protocoll.'</th><td>'.self::getBar($count, $total).'</td></tr>';
 		}
 
 	return $list;
@@ -336,6 +485,8 @@ private static function getSubmissionsPerArchitecture()
 			pkgstats_users
 		GROUP BY
 			arch
+		ORDER BY
+			count DESC
 		');
 
 	$list = '';
