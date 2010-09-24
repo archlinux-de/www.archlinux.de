@@ -32,6 +32,7 @@ public function prepare()
 				<li><a href="'.$this->Output->createUrl('RepositoryStatistics').'">'.$this->L10n->getText('Repository statistics').'</a></li>
 				<li><a href="'.$this->Output->createUrl('UserStatistics').'">'.$this->L10n->getText('User statistics').'</a></li>
 				<li><a href="'.$this->Output->createUrl('PackageStatistics').'">'.$this->L10n->getText('Package statistics').'</a></li>
+				<li><a href="'.$this->Output->createUrl('FunStatistics').'">'.$this->L10n->getText('Fun statistics').'</a></li>
 			</ul>
 		</div>
 		';
