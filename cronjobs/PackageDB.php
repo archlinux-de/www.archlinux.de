@@ -164,10 +164,11 @@ public function getUpdatedPackages($timestamp)
 
 public function getPackageNames()
 	{
-	$packages = array();
+	$packages = null;
 
 	if ($this->updated && is_dir($this->DBDir))
 		{
+		$packages = array();
 		$dh = opendir($this->DBDir);
 
 		while (false !== ($dir = readdir($dh)))

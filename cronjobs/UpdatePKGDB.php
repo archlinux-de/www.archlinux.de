@@ -760,7 +760,7 @@ private function getRepositoryID($repo)
 private function removeDeletedPackages($repo, $arch, $packages)
 	{
 	// $packages is empty if there are no new packages!
-	if (count($packages) > 0)
+	if (is_array($packages))
 		{
 		$delstm1 = $this->DB->prepare
 			('
