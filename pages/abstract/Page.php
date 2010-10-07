@@ -45,6 +45,7 @@ private static $availablePages = array
 	'Statistics' => 'pages/Statistics.php',
 	'Packagers' => 'pages/Packagers.php',
 	'Packages' => 'pages/Packages.php',
+	'PackagesSuggest' => 'pages/PackagesSuggest.php',
 	'PostPackageList' => 'pages/PostPackageList.php',
 	'Start' => 'pages/Start.php'
 	);

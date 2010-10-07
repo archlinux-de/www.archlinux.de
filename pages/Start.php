@@ -57,7 +57,18 @@ public function prepare()
 			<div id="pkgsearch">
 				<form method="post" action="?page=Packages">
 					<label for="searchfield">Paket-Suche:</label>
-					<input type="text" name="search" size="20" maxlength="200" id="searchfield" />
+					<input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off" />
+					<script type="text/javascript" src="jquery.min.js?v=1.4.2"></script>
+					<script type="text/javascript" src="jquery-ui-autocomplete.min.js?v=1.8.5"></script>
+					<script>
+						$(function() {
+							$("#searchfield").autocomplete({
+								source: "?page=PackagesSuggest;repo=2;arch='.$this->arch.';field=0",
+								minLength: 2,
+								delay: 50
+							});
+						});
+					</script>
 				</form>
 			</div>
 			<div id="pkgrecent" class="box">

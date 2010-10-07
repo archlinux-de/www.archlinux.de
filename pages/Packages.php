@@ -148,8 +148,20 @@ public function prepare()
 					'.$this->getGroupList().'
 				</td>
 				<td>
-					<input type="text" name="search" id="searchfield" value="'.$this->search.'" size="34" maxlength="50" />
+					<input type="text" name="search" id="searchfield" class="ui-autocomplete-input" value="'.$this->search.'" size="34" maxlength="50" autocomplete="off" />
 					<div style="padding-top: 5px;">'.$this->getSearchFields().'</div>
+					'.(in_array($this->searchField, array(0,2)) ?
+ 					'<script type="text/javascript" src="jquery.min.js?v=1.4.2"></script>
+					<script type="text/javascript" src="jquery-ui-autocomplete.min.js?v=1.8.5"></script>
+					<script>
+						$(function() {
+							$("#searchfield").autocomplete({
+								source: "?page=PackagesSuggest;repo='.$this->repository.';arch='.$this->architecture.';field='.$this->searchField.'",
+								minLength: 2,
+								delay: 50
+							});
+						});
+					</script>' : '').'
 					<input type="hidden" name="packager" value="'.$this->packager.'" />
 				</td>
 			</tr>
@@ -189,7 +201,7 @@ private function getSearchFields()
 			$selected = '';
 			}
 
-		$options .= ' <input type="radio" name="searchfield" value="'.$key.'"'.$selected.' />'.$value;
+		$options .= ' <input type="radio" id="searchfield_'.$key.'" name="searchfield" value="'.$key.'"'.$selected.'  onchange="this.form.submit()" /> <label for="searchfield_'.$key.'">'.$value.'</label>';
 		}
 
 	return $options;
