@@ -65,7 +65,7 @@ public function prepare()
 							$("#searchfield").autocomplete({
 								source: "?page=PackagesSuggest;repo=2;arch='.$this->arch.';field=0",
 								minLength: 2,
-								delay: 50
+								delay: 100
 							});
 						});
 					</script>

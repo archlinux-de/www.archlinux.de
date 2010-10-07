@@ -158,7 +158,7 @@ public function prepare()
 							$("#searchfield").autocomplete({
 								source: "?page=PackagesSuggest;repo='.$this->repository.';arch='.$this->architecture.';field='.$this->searchField.'",
 								minLength: 2,
-								delay: 50
+								delay: 100
 							});
 						});
 					</script>' : '').'
