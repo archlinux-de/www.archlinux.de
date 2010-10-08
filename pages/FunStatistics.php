@@ -85,7 +85,7 @@ public static function updateDBCache()
 				</tr>
 					'.self::getPackageStatistics(array(
 						'KDE SC' => 'kdebase-workspace',
-						'GNOME' => 'gnome-desktop',
+						'GNOME' => 'gnome-session',
 						'LXDE' => 'lxde-common',
 						'Xfce' => 'xfdesktop',
 						'e17' => 'e-svn'
@@ -108,18 +108,18 @@ public static function updateDBCache()
 						'Openbox' => 'openbox',
 						'Fluxbox' => 'fluxbox',
 						'I3' => 'i3-wm',
-						'Awesome' => 'awesome',
+						'Compiz' => 'compiz-core',
 						'FVWM' => array('fvwm', 'fvwm-devel'),
 						'Ratpoison' => 'ratpoison',
 						'Wmii' => 'wmii',
-						'Xmonad' => 'xmonad'
+						'Xmonad' => 'xmonad',
+						'Window Maker' => array('windowmaker', 'windowmaker-crm-git')
 						)).'
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Media Players').'</th>
 				</tr>
 					'.self::getPackageStatistics(array(
 						'Mplayer' => 'mplayer',
 						'Xine' => 'xine-lib',
-						'GStreamer' => 'gstreamer0.10',
 						'VLC' => 'vlc'
 						)).'
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Shells').'</th>
@@ -127,7 +127,7 @@ public static function updateDBCache()
 					'.self::getPackageStatistics(array(
 						'Bash' => 'bash',
 						'Dash' => 'dash',
-						'Zsh' => 'zsh',		
+						'Zsh' => 'zsh',
 						'Fish' => 'fish',
 						'Tcsh' => 'tcsh',
 						'Pdksh' => 'pdksh'
@@ -135,8 +135,8 @@ public static function updateDBCache()
 					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Graphic Chipsets').'</th>
 				</tr>
 					'.self::getPackageStatistics(array(
-						'ATI' => array('xf86-video-ati', 'xf86-video-r128', 'xf86-video-mach64', 'xf86-video-radeonhd', 'catalyst-utils'),
-						'NVIDIA' => array('nvidia-utils', 'nvidia-71xx-utils', 'nvidia-96xx-utils', 'nvidia-173xx-utils', 'xf86-video-nouveau', 'xf86-video-nv'),
+						'ATI' => array('xf86-video-ati', 'xf86-video-r128', 'xf86-video-mach64', 'xf86-video-radeonhd'),
+						'NVIDIA' => array('nvidia-utils', 'nvidia-96xx-utils', 'nvidia-173xx-utils', 'xf86-video-nouveau', 'xf86-video-nv'),
 						'Intel' => array('xf86-video-intel', 'xf86-video-i740')
 						)).'
 			</table>
