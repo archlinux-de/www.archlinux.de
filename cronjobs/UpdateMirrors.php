@@ -95,6 +95,7 @@ private function updateMirrorlist($mirrors)
 				tmirrors
 			SET
 				host = ?,
+				protocol = ?,
 				country = ?,
 				lastsync = ?,
 				delay = ?,
@@ -104,6 +105,7 @@ private function updateMirrorlist($mirrors)
 		foreach ($mirrors as $mirror)
 			{
 			$stm->bindString($mirror['url']);
+			$stm->bindString($mirror['protocol']);
 			$stm->bindString($mirror['country']);
 
 			$last_sync = date_parse($mirror['last_sync']);

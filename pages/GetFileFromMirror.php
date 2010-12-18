@@ -51,6 +51,7 @@ private function getMirror()
 			WHERE
 				lastsync >= ?
 				AND (country = ? OR country = \'Any\')
+				AND protocol IN (\'http\', \'htttps\')
 			ORDER BY RAND() LIMIT 1
 			');
 		$stm->bindInteger($this->Input->getTime() - $this->range);
