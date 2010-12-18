@@ -1,43 +1,42 @@
--- phpMyAdmin SQL Dump
--- version 3.3.5
--- http://www.phpmyadmin.net
+-- MySQL dump 10.13  Distrib 5.1.51, for unknown-linux-gnu (x86_64)
 --
--- Host: localhost
--- Erstellungszeit: 19. September 2010 um 17:10
--- Server Version: 5.1.50
--- PHP-Version: 5.3.3
-
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
+-- Host: localhost    Database: pkgdb
+-- ------------------------------------------------------
+-- Server version	5.1.51
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Datenbank: `pkgdb`
+-- Table structure for table `architectures`
 --
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `architectures`
---
-
+DROP TABLE IF EXISTS `architectures`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `architectures` (
   `id` tinyint(1) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `cache`
+-- Table structure for table `cache`
 --
 
+DROP TABLE IF EXISTS `cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cache` (
   `key` varchar(255) NOT NULL,
   `value` mediumblob NOT NULL,
@@ -45,13 +44,15 @@ CREATE TABLE `cache` (
   PRIMARY KEY (`key`(100)),
   KEY `expires` (`expires`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `conflicts`
+-- Table structure for table `conflicts`
 --
 
+DROP TABLE IF EXISTS `conflicts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `conflicts` (
   `package` int(11) unsigned NOT NULL,
   `conflicts` int(11) unsigned NOT NULL,
@@ -59,13 +60,15 @@ CREATE TABLE `conflicts` (
   KEY `package` (`package`),
   KEY `conflicts` (`conflicts`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `depends`
+-- Table structure for table `depends`
 --
 
+DROP TABLE IF EXISTS `depends`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `depends` (
   `package` int(11) unsigned NOT NULL,
   `depends` int(11) unsigned NOT NULL,
@@ -73,78 +76,90 @@ CREATE TABLE `depends` (
   KEY `package` (`package`),
   KEY `depends` (`depends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `files`
+-- Table structure for table `file_index`
 --
 
+DROP TABLE IF EXISTS `file_index`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `file_index` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`(15))
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `files`
+--
+
+DROP TABLE IF EXISTS `files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `package` int(11) unsigned NOT NULL,
   `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `pacakge` (`package`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `file_index`
---
-
-CREATE TABLE `file_index` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `name` (`name`(15))
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `groups`
+-- Table structure for table `groups`
 --
 
+DROP TABLE IF EXISTS `groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `groups` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `licenses`
+-- Table structure for table `licenses`
 --
 
+DROP TABLE IF EXISTS `licenses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `licenses` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `log`
+-- Table structure for table `log`
 --
 
+DROP TABLE IF EXISTS `log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log` (
   `name` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `mirrors`
+-- Table structure for table `mirrors`
 --
 
+DROP TABLE IF EXISTS `mirrors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
   `country` varchar(255) DEFAULT NULL,
@@ -155,33 +170,15 @@ CREATE TABLE `mirrors` (
   KEY `country` (`country`),
   KEY `lastsync` (`lastsync`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `mirror_log`
---
-
-CREATE TABLE `mirror_log` (
-  `host` varchar(255) NOT NULL,
-  `time` int(10) unsigned NOT NULL,
-  `lastsync` int(10) unsigned DEFAULT NULL,
-  `error` varchar(255) DEFAULT NULL,
-  `totaltime` double unsigned DEFAULT NULL,
-  PRIMARY KEY (`host`,`time`),
-  KEY `lastsync` (`lastsync`),
-  KEY `host` (`host`),
-  KEY `time` (`time`),
-  KEY `totaltime` (`totaltime`),
-  KEY `error` (`error`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `optdepends`
+-- Table structure for table `optdepends`
 --
 
+DROP TABLE IF EXISTS `optdepends`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `optdepends` (
   `package` int(11) unsigned NOT NULL,
   `optdepends` int(11) unsigned NOT NULL,
@@ -189,13 +186,60 @@ CREATE TABLE `optdepends` (
   KEY `package` (`package`),
   KEY `optdepends` (`optdepends`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `packagers`
+-- Table structure for table `package_file_index`
 --
 
+DROP TABLE IF EXISTS `package_file_index`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `package_file_index` (
+  `package` int(11) unsigned NOT NULL,
+  `file_index` int(11) unsigned NOT NULL,
+  KEY `package` (`package`),
+  KEY `file_index` (`file_index`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `package_group`
+--
+
+DROP TABLE IF EXISTS `package_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `package_group` (
+  `package` int(11) unsigned NOT NULL,
+  `group` int(11) unsigned NOT NULL,
+  KEY `package` (`package`),
+  KEY `group` (`group`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `package_license`
+--
+
+DROP TABLE IF EXISTS `package_license`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `package_license` (
+  `package` int(11) unsigned NOT NULL,
+  `license` int(11) unsigned NOT NULL,
+  KEY `package` (`package`),
+  KEY `license` (`license`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `packagers`
+--
+
+DROP TABLE IF EXISTS `packagers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `packagers` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -203,14 +247,16 @@ CREATE TABLE `packagers` (
   PRIMARY KEY (`id`),
   KEY `email` (`email`),
   KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `packages`
+-- Table structure for table `packages`
 --
 
+DROP TABLE IF EXISTS `packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `packages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(255) NOT NULL,
@@ -236,66 +282,31 @@ CREATE TABLE `packages` (
   KEY `name` (`name`(10)),
   KEY `mtime` (`mtime`),
   FULLTEXT KEY `desc` (`desc`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `package_file_index`
---
-
-CREATE TABLE `package_file_index` (
-  `package` int(11) unsigned NOT NULL,
-  `file_index` int(11) unsigned NOT NULL,
-  KEY `package` (`package`),
-  KEY `file_index` (`file_index`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `package_group`
---
-
-CREATE TABLE `package_group` (
-  `package` int(11) unsigned NOT NULL,
-  `group` int(11) unsigned NOT NULL,
-  KEY `package` (`package`),
-  KEY `group` (`group`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `package_license`
+-- Table structure for table `pkgstats_packages`
 --
 
-CREATE TABLE `package_license` (
-  `package` int(11) unsigned NOT NULL,
-  `license` int(11) unsigned NOT NULL,
-  KEY `package` (`package`),
-  KEY `license` (`license`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `pkgstats_packages`
---
-
+DROP TABLE IF EXISTS `pkgstats_packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pkgstats_packages` (
   `pkgname` varchar(255) NOT NULL,
   `month` mediumint(6) unsigned NOT NULL,
   `count` mediumint(8) unsigned NOT NULL,
   PRIMARY KEY (`pkgname`,`month`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `pkgstats_users`
+-- Table structure for table `pkgstats_users`
 --
 
+DROP TABLE IF EXISTS `pkgstats_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pkgstats_users` (
   `ip` char(40) NOT NULL,
   `time` int(10) unsigned NOT NULL,
@@ -307,13 +318,15 @@ CREATE TABLE `pkgstats_users` (
   KEY `country` (`country`(10)),
   KEY `ip` (`ip`(20),`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `provides`
+-- Table structure for table `provides`
 --
 
+DROP TABLE IF EXISTS `provides`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `provides` (
   `package` int(11) unsigned NOT NULL,
   `provides` int(11) unsigned NOT NULL,
@@ -321,13 +334,15 @@ CREATE TABLE `provides` (
   KEY `package` (`package`),
   KEY `provides` (`provides`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `replaces`
+-- Table structure for table `replaces`
 --
 
+DROP TABLE IF EXISTS `replaces`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `replaces` (
   `package` int(11) unsigned NOT NULL,
   `replaces` int(11) unsigned NOT NULL,
@@ -335,16 +350,30 @@ CREATE TABLE `replaces` (
   KEY `package` (`package`),
   KEY `replaces` (`replaces`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Tabellenstruktur für Tabelle `repositories`
+-- Table structure for table `repositories`
 --
 
+DROP TABLE IF EXISTS `repositories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `repositories` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2010-12-13 23:26:22
