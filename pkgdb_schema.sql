@@ -273,6 +273,7 @@ CREATE TABLE `packages` (
   `mtime` int(10) unsigned NOT NULL,
   `packager` int(11) unsigned NOT NULL,
   `force` tinyint(1) unsigned NOT NULL,
+  `epoch` smallint(5) unsigned NOT NULL,
   `repository` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `repository` (`repository`),
@@ -376,4 +377,4 @@ CREATE TABLE `repositories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-12-13 23:26:22
+-- Dump completed on 2010-12-18  2:44:44

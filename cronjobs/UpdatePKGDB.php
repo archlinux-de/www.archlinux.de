@@ -274,6 +274,7 @@ private function updatePackages($packages, $repo, $arch)
 			mtime = ?,
 			packager = ?,
 			`force` = ?,
+			epoch = ?,
 			repository = ?
 		WHERE
 			id = ?
@@ -298,6 +299,7 @@ private function updatePackages($packages, $repo, $arch)
 			mtime = ?,
 			packager = ?,
 			`force` = ?,
+			epoch = ?,
 			repository = ?
 		');
 
@@ -369,6 +371,7 @@ private function updatePackages($packages, $repo, $arch)
 			$updateSTM->bindInteger($package->getMTime());
 			$updateSTM->bindInteger($this->getPackagerID($package->getPackager()));
 			$updateSTM->bindInteger(($package->isForced() ? 1 : 0));
+			$updateSTM->bindInteger($package->getEpoch());
 			$updateSTM->bindInteger($this->getRepositoryID($repo));
 			$updateSTM->bindInteger($packageID);
 			$updateSTM->execute();
@@ -389,6 +392,7 @@ private function updatePackages($packages, $repo, $arch)
 			$insertSTM->bindInteger($package->getMTime());
 			$insertSTM->bindInteger($this->getPackagerID($package->getPackager()));
 			$insertSTM->bindInteger(($package->isForced() ? 1 : 0));
+			$insertSTM->bindInteger($package->getEpoch());
 			$insertSTM->bindInteger($this->getRepositoryID($repo));
 
 			$insertSTM->execute();
