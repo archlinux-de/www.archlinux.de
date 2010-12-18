@@ -95,7 +95,7 @@ public function prepare()
 				<ul>
 					<li><a href="?page=Packages">Pakete</a></li>
 					<li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
-					<li><a href="http://aur.archlinux.org/index.php?setlang=de">AUR</a></li>
+					<li><a href="https://aur.archlinux.org/index.php?setlang=de">AUR</a></li>
 					<li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
 					<li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
 					<li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>

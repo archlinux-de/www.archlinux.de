@@ -148,11 +148,11 @@ public function prepare()
 			</tr>
 			<tr>
 				<th>Quellen</th>
-				<td><a href="http://repos.archlinux.org/wsvn/'.(in_array($data['repository'], array('community', 'community-testing', 'multilib')) ? 'community' : 'packages').'/'.$data['base'].'/">Versions-Verwaltung</a></td>
+				<td><a href="https://projects.archlinux.de/svntogit/'.(in_array($data['repository'], array('community', 'community-testing', 'multilib')) ? 'community' : 'packages').'.git/tree/'.$data['base'].'/">Versions-Verwaltung</a></td>
 			</tr>
 			<tr>
 				<th>Fehler</th>
-				<td><a href="http://bugs.archlinux.org/index.php?string=%5B'.$data['name'].'%5D">Bug Tracker</a></td>
+				<td><a href="https://bugs.archlinux.org/index.php?string=%5B'.$data['name'].'%5D">Bug Tracker</a></td>
 			</tr>
 			<tr>
 				<th>Paket</th>
