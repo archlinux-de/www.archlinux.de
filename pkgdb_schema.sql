@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.1.51, for unknown-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.8, for Linux (x86_64)
 --
 -- Host: localhost    Database: pkgdb
 -- ------------------------------------------------------
--- Server version	5.1.51
+-- Server version	5.5.8
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -162,6 +162,7 @@ DROP TABLE IF EXISTS `mirrors`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
+  `protocol` enum('http','https','ftp') NOT NULL,
   `country` varchar(255) DEFAULT NULL,
   `lastsync` int(10) unsigned DEFAULT NULL,
   `delay` int(10) unsigned DEFAULT NULL,
@@ -377,4 +378,4 @@ CREATE TABLE `repositories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-12-18  2:44:44
+-- Dump completed on 2010-12-30 11:00:47
