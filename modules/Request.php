@@ -1,5 +1,4 @@
 <?php
-
 /*
 	Copyright 2002-2010 Pierre Schmitz <pierre@archlinux.de>
 
@@ -21,135 +20,100 @@
 
 class Request {
 
-private $request = array();
+	private $request = array();
 
-public function __construct(&$request)
-	{
-	$this->request = &$request;
+	public function __construct(&$request) {
+		$this->request = & $request;
 	}
 
-public function isString($name)
-	{
-	return isset($this->request[$name]) && is_unicode($this->request[$name]);
+	public function isString($name) {
+		return isset($this->request[$name]) && is_unicode($this->request[$name]);
 	}
 
-public function isEmptyString($name)
-	{
-	return !$this->isString($name) || !$this->isRegex($name, '/\S+/');
+	public function isEmptyString($name) {
+		return !$this->isString($name) || !$this->isRegex($name, '/\S+/');
 	}
 
-public function isHex($name)
-	{
-	return $this->isRegex($name, '/^[a-f0-9]+$/i');
+	public function isHex($name) {
+		return $this->isRegex($name, '/^[a-f0-9]+$/i');
 	}
 
-public function isInt($name)
-	{
-	return $this->isRegex($name, '/^-?[0-9]+$/');
+	public function isInt($name) {
+		return $this->isRegex($name, '/^-?[0-9]+$/');
 	}
 
-public function isRegex($name, $regex)
-	{
-	return isset($this->request[$name]) && preg_match($regex, $this->request[$name]);
+	public function isRegex($name, $regex) {
+		return isset($this->request[$name]) && preg_match($regex, $this->request[$name]);
 	}
 
-public function getLength($name)
-	{
-	return $this->isEmptyString($name) ? 0 : strlen($this->request[$name]);
+	public function getLength($name) {
+		return $this->isEmptyString($name) ? 0 : strlen($this->request[$name]);
 	}
 
-public function getHtmlLength($name)
-	{
-	return $this->isEmptyString($name) ? 0 : strlen(htmlspecialchars($this->request[$name], ENT_COMPAT));
+	public function getHtmlLength($name) {
+		return $this->isEmptyString($name) ? 0 : strlen(htmlspecialchars($this->request[$name], ENT_COMPAT));
 	}
 
-public function getString($name, $default = false)
-	{
-	if (!$this->isEmptyString($name))
-		{
-		return $this->request[$name];
-		}
-	elseif ($default !== false)
-		{
-		return $default;
-		}
-	else
-		{
-		throw new RequestException($name);
+	public function getString($name, $default = false) {
+		if (!$this->isEmptyString($name)) {
+			return $this->request[$name];
+		} elseif ($default !== false) {
+			return $default;
+		} else {
+			throw new RequestException($name);
 		}
 	}
 
-public function getInt($name, $default = false)
-	{
-	if ($this->isInt($name))
-		{
-		return $this->request[$name];
-		}
-	elseif ($default !== false)
-		{
-		return $default;
-		}
-	else
-		{
-		throw new RequestException($name);
+	public function getInt($name, $default = false) {
+		if ($this->isInt($name)) {
+			return $this->request[$name];
+		} elseif ($default !== false) {
+			return $default;
+		} else {
+			throw new RequestException($name);
 		}
 	}
 
-public function getHex($name, $default = false)
-	{
-	if ($this->isHex($name))
-		{
-		return $this->request[$name];
-		}
-	elseif ($default !== false)
-		{
-		return $default;
-		}
-	else
-		{
-		throw new RequestException($name);
+	public function getHex($name, $default = false) {
+		if ($this->isHex($name)) {
+			return $this->request[$name];
+		} elseif ($default !== false) {
+			return $default;
+		} else {
+			throw new RequestException($name);
 		}
 	}
 
-public function getHtml($name, $default = false)
-	{
-	return htmlspecialchars($this->getString($name, $default), ENT_COMPAT);
+	public function getHtml($name, $default = false) {
+		return htmlspecialchars($this->getString($name, $default) , ENT_COMPAT);
 	}
 
-private function checkArray(&$value, $key)
-	{
-	if (!is_unicode($value) || !preg_match('/\S+/', $value))
-		{
-		throw new RequestException($key);
+	private function checkArray(&$value, $key) {
+		if (!is_unicode($value) || !preg_match('/\S+/', $value)) {
+			throw new RequestException($key);
 		}
 	}
 
-public function getArray($name, $default = false)
-	{
-	if(isset($this->request[$name]) && is_array($this->request[$name]))
-		{
-		array_walk_recursive($this->request[$name], array($this, 'checkArray'));
-
-		return $this->request[$name];
-		}
-	elseif ($default !== false)
-		{
-		return $default;
-		}
-	else
-		{
-		throw new RequestException($name);
+	public function getArray($name, $default = false) {
+		if (isset($this->request[$name]) && is_array($this->request[$name])) {
+			array_walk_recursive($this->request[$name], array(
+				$this,
+				'checkArray'
+			));
+			return $this->request[$name];
+		} elseif ($default !== false) {
+			return $default;
+		} else {
+			throw new RequestException($name);
 		}
 	}
 }
 
 class RequestException extends RuntimeException {
 
-function __construct($message)
-	{
-	parent::__construct(sprintf('Parameter %s could not be read', $message), 0);
+	function __construct($message) {
+		parent::__construct(sprintf('Parameter %s could not be read', $message) , 0);
 	}
-
 }
 
 ?>

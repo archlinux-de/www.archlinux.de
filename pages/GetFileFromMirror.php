@@ -20,30 +20,19 @@
 
 class GetFileFromMirror extends Page {
 
-private $range = 86400; // 1 day
+	private $range = 86400; // 1 day
 
-
-public function prepare()
-	{
-	$this->Output->redirectToUrl(
-		$this->getMirror().
-		$this->Input->Get->getString('file', '')
-		);
+	public function prepare() {
+		$this->Output->redirectToUrl($this->getMirror() . $this->Input->Get->getString('file', ''));
 	}
 
-private function getMirror()
-	{
-	$country = $this->Input->getClientCountryName();
-
-	if (empty($country))
-		{
-		$country = $this->Settings->getValue('country');
+	private function getMirror() {
+		$country = $this->Input->getClientCountryName();
+		if (empty($country)) {
+			$country = $this->Settings->getValue('country');
 		}
-
-	try
-		{
-		$stm = $this->DB->prepare
-			('
+		try {
+			$stm = $this->DB->prepare('
 			SELECT
 				host
 			FROM
@@ -54,26 +43,18 @@ private function getMirror()
 				AND protocol IN (\'http\', \'htttps\')
 			ORDER BY RAND() LIMIT 1
 			');
-		$stm->bindInteger($this->Input->getTime() - $this->range);
-		$stm->bindString($country);
-
-		$mirror = $stm->getColumn();
-
-		$stm->close();
+			$stm->bindInteger($this->Input->getTime() - $this->range);
+			$stm->bindString($country);
+			$mirror = $stm->getColumn();
+			$stm->close();
+		} catch(DBNoDataException $e) {
+			$stm->close();
 		}
-	catch (DBNoDataException $e)
-		{
-		$stm->close();
+		if (empty($mirror)) {
+			$mirror = $this->Settings->getValue('mirror');
 		}
-
-	if (empty($mirror))
-		{
-		$mirror = $this->Settings->getValue('mirror');
-		}
-
-	return $mirror;
+		return $mirror;
 	}
-
 }
 
 ?>

@@ -18,35 +18,27 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Packagers extends Page{
+class Packagers extends Page {
 
-private $orderby 	= 'name';
-private $sort 		= 0;
+	private $orderby = 'name';
+	private $sort = 0;
 
-
-public function prepare()
-	{
-	$this->setValue('title', 'Packer');
-
-	try
-		{
-		if (in_array($this->Input->Get->getString('orderby'), array('name', 'lastbuilddate', 'packages')))
-			{
-			$this->orderby = $this->Input->Get->getString('orderby');
+	public function prepare() {
+		$this->setValue('title', 'Packer');
+		try {
+			if (in_array($this->Input->Get->getString('orderby') , array(
+				'name',
+				'lastbuilddate',
+				'packages'
+			))) {
+				$this->orderby = $this->Input->Get->getString('orderby');
 			}
+		} catch(RequestException $e) {
 		}
-	catch (RequestException $e)
-		{
-		}
-
-	$this->sort = $this->Input->Get->getInt('sort', 0) > 0 ? 1 : 0;
-
-	$packages = $this->DB->getColumn('SELECT COUNT(*) FROM packages');
-
-	try
-		{
-		$stm = $this->DB->prepare
-			('
+		$this->sort = $this->Input->Get->getInt('sort', 0) > 0 ? 1 : 0;
+		$packages = $this->DB->getColumn('SELECT COUNT(*) FROM packages');
+		try {
+			$stm = $this->DB->prepare('
 			 SELECT
 			 	packagers.id,
 			 	packagers.name,
@@ -70,43 +62,33 @@ public function prepare()
 			 FROM
 			 	packagers
 			 ORDER BY
-			 	'.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
+			 	' . $this->orderby . ' ' . ($this->sort > 0 ? 'DESC' : 'ASC') . '
 			');
-
-		$packagers = $stm->getRowSet();
+			$packagers = $stm->getRowSet();
+		} catch(DBNoDataException $e) {
+			$packagers = array();
 		}
-	catch (DBNoDataException $e)
-		{
-		$packagers = array();
-		}
-
-	$body = '
+		$body = '
 		<table class="pretty-table">
 			<tr>
-				<th><a href="?page=Packagers;orderby=name;sort='.abs($this->sort-1).'">Name</a></th>
+				<th><a href="?page=Packagers;orderby=name;sort=' . abs($this->sort - 1) . '">Name</a></th>
 				<th>E-Mail</th>
-				<th colspan="2"><a href="?page=Packagers;orderby=packages;sort='.abs($this->sort-1).'">Pakete</a></th>
-				<th><a href="?page=Packagers;orderby=lastbuilddate;sort='.abs($this->sort-1).'">Letzte Aktualisierung</a></th>
+				<th colspan="2"><a href="?page=Packagers;orderby=packages;sort=' . abs($this->sort - 1) . '">Pakete</a></th>
+				<th><a href="?page=Packagers;orderby=lastbuilddate;sort=' . abs($this->sort - 1) . '">Letzte Aktualisierung</a></th>
 			</tr>';
-
-	foreach ($packagers as $packager)
-		{
-		$percent = round(($packager['packages'] / $packages) * 100);
-
-		$body .= '<tr>
-				<td>'.$packager['name'].'</td>
-				<td>'.(empty($packager['email']) ? '' : '<a href="mailto:'.$packager['email'].'">'.$packager['email'].'</a>').'</td>
-				<td style="text-align:right;"><a href="?page=Packages;packager='.$packager['id'].'">'.$packager['packages'].'</a></td>
-				<td style="width:100px;"><div style="background-color:#1793d1;width:'.$percent.'px;">&nbsp;</div></td>
-				<td>'.$this->L10n->getDateTime($packager['lastbuilddate']).'</td>
+		foreach ($packagers as $packager) {
+			$percent = round(($packager['packages'] / $packages) * 100);
+			$body.= '<tr>
+				<td>' . $packager['name'] . '</td>
+				<td>' . (empty($packager['email']) ? '' : '<a href="mailto:' . $packager['email'] . '">' . $packager['email'] . '</a>') . '</td>
+				<td style="text-align:right;"><a href="?page=Packages;packager=' . $packager['id'] . '">' . $packager['packages'] . '</a></td>
+				<td style="width:100px;"><div style="background-color:#1793d1;width:' . $percent . 'px;">&nbsp;</div></td>
+				<td>' . $this->L10n->getDateTime($packager['lastbuilddate']) . '</td>
 			</tr>';
 		}
-
-	$body .= '</table>';
-
-	$this->setValue('body', $body);
+		$body.= '</table>';
+		$this->setValue('body', $body);
 	}
-
 }
 
 ?>

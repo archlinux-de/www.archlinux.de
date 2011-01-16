@@ -20,59 +20,48 @@
 
 class PackagesSuggest extends Page {
 
-private $suggestions = array();
+	private $suggestions = array();
 
-
-public function show()
-	{
-	$this->Output->setContentType('application/json; charset=UTF-8');
-	$output = json_encode($this->suggestions);
-	$this->Output->writeOutput($output);
+	public function show() {
+		$this->Output->setContentType('application/json; charset=UTF-8');
+		$output = json_encode($this->suggestions);
+		$this->Output->writeOutput($output);
 	}
 
-public function prepare()
-	{
-	try
-		{
-		$term = $this->Input->Get->getString('term');
-		$arch = $this->Input->Get->getInt('arch');
-		$repo = $this->Input->Get->getInt('repo');
-		$field = $this->Input->Get->getInt('field');
-
-		try
-			{
-			switch ($field)
-				{
-				case 0:
-					if (strlen($term) < 2 || strlen($term) > 10)
-						{
-						return;
+	public function prepare() {
+		try {
+			$term = $this->Input->Get->getString('term');
+			$arch = $this->Input->Get->getInt('arch');
+			$repo = $this->Input->Get->getInt('repo');
+			$field = $this->Input->Get->getInt('field');
+			try {
+				switch ($field) {
+					case 0:
+						if (strlen($term) < 2 || strlen($term) > 10) {
+							return;
 						}
-					$stm = $this->DB->prepare
-						('
+						$stm = $this->DB->prepare('
 						SELECT
 							name
 						FROM
 							packages
 						WHERE
 							name LIKE ?
-							'.($arch>0 ? 'AND arch = ?' : '').'
-							'.($repo>0 ? 'AND repository = ?' : '').'
+							' . ($arch > 0 ? 'AND arch = ?' : '') . '
+							' . ($repo > 0 ? 'AND repository = ?' : '') . '
 						ORDER BY
 							name ASC
 						LIMIT 15
 						');
-					$stm->bindString($term.'%');
-					$arch>0 && $stm->bindInteger($arch);
-					$repo>0 && $stm->bindInteger($repo);
+						$stm->bindString($term . '%');
+						$arch > 0 && $stm->bindInteger($arch);
+						$repo > 0 && $stm->bindInteger($repo);
 					break;
-				case 2:
-					if (strlen($term) < 2 || strlen($term) > 15)
-						{
-						return;
+					case 2:
+						if (strlen($term) < 2 || strlen($term) > 15) {
+							return;
 						}
-					$stm = $this->DB->prepare
-						('
+						$stm = $this->DB->prepare('
 						SELECT
 							name
 						FROM
@@ -83,27 +72,21 @@ public function prepare()
 							name ASC
 						LIMIT 15
 						');
-					$stm->bindString($term.'%');
+						$stm->bindString($term . '%');
 					break;
-				default: return;
+					default:
+						return;
 				}
-
-			foreach ($stm->getColumnSet() as $suggestion)
-				{
-				$this->suggestions[] = $suggestion;
+				foreach ($stm->getColumnSet() as $suggestion) {
+					$this->suggestions[] = $suggestion;
 				}
-			$stm->close();
+				$stm->close();
+			} catch(DBNoDataException $e) {
+				$stm->close();
 			}
-		catch (DBNoDataException $e)
-			{
-			$stm->close();
-			}
-		}
-	catch (RequestException $e)
-		{
+		} catch(RequestException $e) {
 		}
 	}
-
 }
 
 ?>

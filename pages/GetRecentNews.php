@@ -20,18 +20,15 @@
 
 class GetRecentNews extends Modul implements IOutput {
 
-private $url = '';
+	private $url = '';
 
-public function prepare()
-	{
-	$this->url = $this->Settings->getValue('news_feed');
+	public function prepare() {
+		$this->url = $this->Settings->getValue('news_feed');
 	}
 
-public function show()
-	{
-	$this->Output->redirectToUrl($this->url);
+	public function show() {
+		$this->Output->redirectToUrl($this->url);
 	}
-
 }
 
 ?>

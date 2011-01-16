@@ -17,55 +17,57 @@
 	You should have received a copy of the GNU General Public License
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
-class Settings{
 
+class Settings {
 
-private $config = array();
+	private $config = array();
 
-
-public function __construct()
-	{
-	$this->config['locales']			= array('de' => 'de_DE.utf8',
-							        'en' => 'en_US.utf8');
-	$this->config['timezone']			= 'Europe/Berlin';
-	$this->config['email']				= 'root@localhost';
-
-	$this->config['sql_host'] 			= 'localhost';
-	$this->config['sql_database'] 			= 'pkgdb';
-	$this->config['sql_user']			= '';
-	$this->config['sql_password']			= '';
-
-	$this->config['pkgdb_mirror']			= 'http://mirrors.kernel.org/archlinux/';
-	$this->config['pkgdb_repositories']		= array('core', 'extra', 'testing', 'community', 'community-testing');
-	$this->config['pkgdb_architectures']		= array('i686', 'x86_64');
-
-	$this->config['mirrorstatus']			= 'http://www.archlinux.org/mirrors/status/json/';
-	$this->config['mirror']				= 'http://mirrors.kernel.org/archlinux/';
-	$this->config['country']			= 'Germany';
-
-	$this->config['news_feed']			= '';
-	$this->config['news_archive']			= '';
-
-	$this->config['file_refresh']			= 60*60; //1 hour
-	$this->config['allowed_mime_types']		= array('text/plain', 'text/xml', 'application/xml',
-								'application/x-gzip', 'application/x-xz');
-
-	$this->config['debug']				= false;
-	$this->config['log_dir']			= '';
-
-	if (file_exists('LocalSettings.php'))
-		{
-		include ('LocalSettings.php');
+	public function __construct() {
+		$this->config['locales'] = array(
+			'de' => 'de_DE.utf8',
+			'en' => 'en_US.utf8'
+		);
+		$this->config['timezone'] = 'Europe/Berlin';
+		$this->config['email'] = 'root@localhost';
+		$this->config['sql_host'] = 'localhost';
+		$this->config['sql_database'] = 'pkgdb';
+		$this->config['sql_user'] = '';
+		$this->config['sql_password'] = '';
+		$this->config['pkgdb_mirror'] = 'http://mirrors.kernel.org/archlinux/';
+		$this->config['pkgdb_repositories'] = array(
+			'core',
+			'extra',
+			'testing',
+			'community',
+			'community-testing'
+		);
+		$this->config['pkgdb_architectures'] = array(
+			'i686',
+			'x86_64'
+		);
+		$this->config['mirrorstatus'] = 'http://www.archlinux.org/mirrors/status/json/';
+		$this->config['mirror'] = 'http://mirrors.kernel.org/archlinux/';
+		$this->config['country'] = 'Germany';
+		$this->config['news_feed'] = '';
+		$this->config['news_archive'] = '';
+		$this->config['file_refresh'] = 60 * 60; //1 hour
+		$this->config['allowed_mime_types'] = array(
+			'text/plain',
+			'text/xml',
+			'application/xml',
+			'application/x-gzip',
+			'application/x-xz'
+		);
+		$this->config['debug'] = false;
+		$this->config['log_dir'] = '';
+		if (file_exists('LocalSettings.php')) {
+			include ('LocalSettings.php');
 		}
 	}
 
-
-public function getValue($key)
-	{
-	return $this->config[$key];
+	public function getValue($key) {
+		return $this->config[$key];
 	}
-
-
 }
 
 ?>

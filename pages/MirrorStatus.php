@@ -20,57 +20,49 @@
 
 class MirrorStatus extends Page {
 
-private $orderby 	= 'lastsync';
-private $sort 		= 'desc';
-private $range		= 604800; // 1 week
-private $orders		= array('host', 'country', 'lastsync', 'delay', 'time');
-private $sorts		= array('asc', 'desc');
+	private $orderby = 'lastsync';
+	private $sort = 'desc';
+	private $range = 604800; // 1 week
+	private $orders = array(
+		'host',
+		'country',
+		'lastsync',
+		'delay',
+		'time'
+	);
+	private $sorts = array(
+		'asc',
+		'desc'
+	);
 
-
-public function prepare()
-	{
-	$this->setValue('title', $this->L10n->getText('Mirror status'));
-
-	try
-		{
-		if (in_array($this->Input->Get->getString('orderby'), $this->orders))
-			{
-			$this->orderby = $this->Input->Get->getString('orderby');
+	public function prepare() {
+		$this->setValue('title', $this->L10n->getText('Mirror status'));
+		try {
+			if (in_array($this->Input->Get->getString('orderby') , $this->orders)) {
+				$this->orderby = $this->Input->Get->getString('orderby');
 			}
+		} catch(RequestException $e) {
 		}
-	catch (RequestException $e)
-		{
-		}
-
-	try
-		{
-		if (in_array($this->Input->Get->getString('sort'), $this->sorts))
-			{
-			$this->sort = $this->Input->Get->getString('sort');
+		try {
+			if (in_array($this->Input->Get->getString('sort') , $this->sorts)) {
+				$this->sort = $this->Input->Get->getString('sort');
 			}
+		} catch(RequestException $e) {
 		}
-	catch (RequestException $e)
-		{
-		}
-
-	$reverseSort = ($this->sort == 'desc' ? 'asc' : 'desc');
-
-	$body = '<div class="box">
-		<h2>'.$this->L10n->getText('Mirror status').'</h2>
+		$reverseSort = ($this->sort == 'desc' ? 'asc' : 'desc');
+		$body = '<div class="box">
+		<h2>' . $this->L10n->getText('Mirror status') . '</h2>
 		</div>
 		<table class="pretty-table">
 			<tr>
-				<th><a href="?page=MirrorStatus;orderby=host;sort='.$reverseSort.'">'.$this->L10n->getText('Host').'</a></th>
-				<th><a href="?page=MirrorStatus;orderby=country;sort='.$reverseSort.'">'.$this->L10n->getText('Country').'</a></th>
-				<th title="Average time to downlaod a certain file" style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort='.$reverseSort.'">&empty;&nbsp;'.$this->L10n->getText('Response time').'</a></th>
-				<th title="Average difference between time of probe and last sychronization" style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort='.$reverseSort.'">&empty;&nbsp;'.$this->L10n->getText('Delay').'</a></th>
-				<th title="Date of last synchronization (Y-m-d) (GMT)"><a href="?page=MirrorStatus;orderby=lastsync;sort='.$reverseSort.'">'.$this->L10n->getText('Last update').'</a></th>
+				<th><a href="?page=MirrorStatus;orderby=host;sort=' . $reverseSort . '">' . $this->L10n->getText('Host') . '</a></th>
+				<th><a href="?page=MirrorStatus;orderby=country;sort=' . $reverseSort . '">' . $this->L10n->getText('Country') . '</a></th>
+				<th title="Average time to downlaod a certain file" style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->L10n->getText('Response time') . '</a></th>
+				<th title="Average difference between time of probe and last sychronization" style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->L10n->getText('Delay') . '</a></th>
+				<th title="Date of last synchronization (Y-m-d) (GMT)"><a href="?page=MirrorStatus;orderby=lastsync;sort=' . $reverseSort . '">' . $this->L10n->getText('Last update') . '</a></th>
 			</tr>';
-
-	try
-		{
-		$mirrors = $this->DB->getRowSet
-			('
+		try {
+			$mirrors = $this->DB->getRowSet('
 			SELECT
 				host,
 				country,
@@ -80,31 +72,24 @@ public function prepare()
 			FROM
 				mirrors
 			WHERE
-				lastsync >= '.($this->Input->getTime() - $this->range).'
+				lastsync >= ' . ($this->Input->getTime() - $this->range) . '
 			ORDER BY
-				'.$this->orderby.' '.$this->sort.'
+				' . $this->orderby . ' ' . $this->sort . '
 			');
-
-		foreach ($mirrors as $mirror)
-			{
-			$body .= '<tr>
-					<td><a href="'.$mirror['host'].'" rel="nofollow">'.$mirror['host'].'</a></td>
-					<td>'.$mirror['country'].'</td>
-					<td>'.$this->L10n->getEpoch($mirror['time']).'</td>
-					<td>'.$this->L10n->getEpoch($mirror['delay']).'</td>
-					<td>'.$this->L10n->getGmDateTime($mirror['lastsync']).'</td>
+			foreach ($mirrors as $mirror) {
+				$body.= '<tr>
+					<td><a href="' . $mirror['host'] . '" rel="nofollow">' . $mirror['host'] . '</a></td>
+					<td>' . $mirror['country'] . '</td>
+					<td>' . $this->L10n->getEpoch($mirror['time']) . '</td>
+					<td>' . $this->L10n->getEpoch($mirror['delay']) . '</td>
+					<td>' . $this->L10n->getGmDateTime($mirror['lastsync']) . '</td>
 				</tr>';
 			}
+		} catch(DBNoDataException $e) {
 		}
-	catch (DBNoDataException $e)
-		{
-		}
-
-	$body .= '</table>';
-
-	$this->setValue('body', $body);
+		$body.= '</table>';
+		$this->setValue('body', $body);
 	}
-
 }
 
 ?>

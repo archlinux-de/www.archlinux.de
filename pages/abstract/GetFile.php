@@ -20,60 +20,49 @@
 
 abstract class GetFile extends Modul implements IOutput {
 
-protected $compression = false;
+	protected $compression = false;
 
-public function prepare()
-	{
-	$this->exitIfCached();
-	$this->initDB();
-	$this->getParams();
+	public function prepare() {
+		$this->exitIfCached();
+		$this->initDB();
+		$this->getParams();
 	}
 
-protected function exitIfCached()
-	{
-	if ($this->Input->Server->isString('HTTP_IF_MODIFIED_SINCE')
-	&& strtotime($this->Input->Server->getString('HTTP_IF_MODIFIED_SINCE')) > $this->Input->getTime() - $this->Settings->getValue('file_refresh'))
-		{
-		$this->Output->writeHeader('HTTP/1.1 304 Not Modified');
-		exit;
+	protected function exitIfCached() {
+		if ($this->Input->Server->isString('HTTP_IF_MODIFIED_SINCE')
+			&& strtotime($this->Input->Server->getString('HTTP_IF_MODIFIED_SINCE'))
+				> $this->Input->getTime() - $this->Settings->getValue('file_refresh')) {
+			$this->Output->writeHeader('HTTP/1.1 304 Not Modified');
+			exit;
 		}
 	}
 
-protected function getParams()
-	{
+	protected function getParams() {
 	}
 
-protected function initDB()
-	{
-	$this->DB->connect(
-		$this->Settings->getValue('sql_host'),
-		$this->Settings->getValue('sql_user'),
-		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database')
-		);
+	protected function initDB() {
+		$this->DB->connect($this->Settings->getValue('sql_host'),
+			$this->Settings->getValue('sql_user'),
+			$this->Settings->getValue('sql_password'),
+			$this->Settings->getValue('sql_database'));
 	}
 
-public function showWarning($text)
-	{
-	die($text);
+	public function showWarning($text) {
+		die($text);
 	}
 
-protected function sendFile($type, $name, $content, $disposition = 'attachment')
-	{
-	$this->Output->setContentType($type);
-	$this->Output->setModified();
-	$this->Output->setCompression($this->compression);
-	$this->Output->writeHeader('Content-Disposition: '.$disposition.'; filename="'.urlencode($name).'"');
-	$this->Output->writeHeader('Cache-Control: private, max-age='.$this->Settings->getValue('file_refresh'));
-	$this->Output->writeOutput($content);
+	protected function sendFile($type, $name, $content, $disposition = 'attachment') {
+		$this->Output->setContentType($type);
+		$this->Output->setModified();
+		$this->Output->setCompression($this->compression);
+		$this->Output->writeHeader('Content-Disposition: ' . $disposition . '; filename="' . urlencode($name) . '"');
+		$this->Output->writeHeader('Cache-Control: private, max-age=' . $this->Settings->getValue('file_refresh'));
+		$this->Output->writeOutput($content);
 	}
 
-protected function sendInlineFile($type, $name, $content)
-	{
-	$this->sendFile($type, $name, $content, 'inline');
+	protected function sendInlineFile($type, $name, $content) {
+		$this->sendFile($type, $name, $content, 'inline');
 	}
-
 }
-
 
 ?>

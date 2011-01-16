@@ -20,135 +20,106 @@
 
 class Output extends Modul {
 
-private $contentType = 'text/html; charset=UTF-8';
-private $status = 'HTTP/1.1 200 OK';
-private $modified = false;
-private $compression = true;
-private $outputSeparator = '&';
-private $outputSeparatorHtml = '&amp;';
+	private $contentType = 'text/html; charset=UTF-8';
+	private $status = 'HTTP/1.1 200 OK';
+	private $modified = false;
+	private $compression = true;
+	private $outputSeparator = '&';
+	private $outputSeparatorHtml = '&amp;';
+	const NOT_FOUND = 'HTTP/1.1 404 Not Found';
+	const OK = 'HTTP/1.1 200 OK';
+	const FOUND = 'HTTP/1.1 302 Found';
+	const BAD_REQUEST = 'HTTP/1.1 400 Bad Request';
+	const INTERNAL_SERVER_ERROR = 'HTTP/1.1 500 Internal Server Error';
 
-const NOT_FOUND	= 'HTTP/1.1 404 Not Found';
-const OK = 'HTTP/1.1 200 OK';
-const FOUND = 'HTTP/1.1 302 Found';
-const BAD_REQUEST = 'HTTP/1.1 400 Bad Request';
-const INTERNAL_SERVER_ERROR = 'HTTP/1.1 500 Internal Server Error';
-
-
-function __construct()
-	{
-	$this->outputSeparator = ini_get('arg_separator.output');
-	$this->outputSeparatorHtml = htmlspecialchars($this->outputSeparator);
+	function __construct() {
+		$this->outputSeparator = ini_get('arg_separator.output');
+		$this->outputSeparatorHtml = htmlspecialchars($this->outputSeparator);
 	}
 
-public function setStatus($code)
-	{
-	$this->status = $code;
+	public function setStatus($code) {
+		$this->status = $code;
 	}
 
-public function setModified($modified = true)
-	{
-	$this->modified = $modified;
+	public function setModified($modified = true) {
+		$this->modified = $modified;
 	}
 
-public function setCompression($compression = true)
-	{
-	$this->compression = $compression;
+	public function setCompression($compression = true) {
+		$this->compression = $compression;
 	}
 
-public function setContentType($type)
-	{
-	$this->contentType = $type;
+	public function setContentType($type) {
+		$this->contentType = $type;
 	}
 
-public function getContentType()
-	{
-	return $this->contentType;
+	public function getContentType() {
+		return $this->contentType;
 	}
 
-public function setOutputHandler($handler)
-	{
-	$this->outputHandler = $handler;
+	public function setOutputHandler($handler) {
+		$this->outputHandler = $handler;
 	}
 
-public function writeHeader($string)
-	{
-	if (@header($string) != 0)
-		{
-		throw new OutputException($string);
+	public function writeHeader($string) {
+		if (@header($string) != 0) {
+			throw new OutputException($string);
 		}
 	}
 
-public function setCookie($key, $value, $expire = 0)
-	{
-	setcookie($key, $value, $expire, '', '', $this->Input->Server->isString('HTTPS'), true);
+	public function setCookie($key, $value, $expire = 0) {
+		setcookie($key, $value, $expire, '', '', $this->Input->Server->isString('HTTPS') , true);
 	}
 
-public function writeOutput(&$text)
-	{
-	$this->writeHeader ($this->status);
-	if ($this->modified)
-		{
-		$this->writeHeader ('Last-Modified: '.date('r', $this->Input->getTime()));
+	public function writeOutput(&$text) {
+		$this->writeHeader($this->status);
+		if ($this->modified) {
+			$this->writeHeader('Last-Modified: ' . date('r', $this->Input->getTime()));
 		}
-	$this->writeHeader ('Content-Type: '.$this->contentType);
-
-	if ($this->compression)
-		{
-		try
-			{
-			if (strpos($this->Input->Server->getString('HTTP_ACCEPT_ENCODING'), 'gzip') !== false)
-				{
-				$this->writeHeader('Content-Encoding: gzip');
-				$this->writeHeader('Vary: Accept-Encoding');
-				$text = gzencode($text, 3);
+		$this->writeHeader('Content-Type: ' . $this->contentType);
+		if ($this->compression) {
+			try {
+				if (strpos($this->Input->Server->getString('HTTP_ACCEPT_ENCODING') , 'gzip') !== false) {
+					$this->writeHeader('Content-Encoding: gzip');
+					$this->writeHeader('Vary: Accept-Encoding');
+					$text = gzencode($text, 3);
 				}
-			}
-		catch (RequestException $e)
-			{
+			} catch(RequestException $e) {
 			}
 		}
-
-	$this->writeHeader('Content-Length: '.strlen($text));
-	echo $text;
-
-	exit();
+		$this->writeHeader('Content-Length: ' . strlen($text));
+		echo $text;
+		exit();
 	}
 
-public function redirect($page, $options = array())
-	{
-	$this->redirectToUrl($this->createUrl($page, $options, true, false));
+	public function redirect($page, $options = array()) {
+		$this->redirectToUrl($this->createUrl($page, $options, true, false));
 	}
 
-/** FIXME: XSS->alle Zeilenumbrüche entfernen */
-public function redirectToUrl($url)
-	{
-	$this->writeHeader (Output::FOUND);
-	$this->writeHeader('Location: '.$url);
-	exit();
+	/** FIXME: XSS->alle Zeilenumbrüche entfernen */
+	public function redirectToUrl($url) {
+		$this->writeHeader(Output::FOUND);
+		$this->writeHeader('Location: ' . $url);
+		exit();
 	}
 
-public function createUrl($page, $options = array(), $absolute = false, $html = true)
-	{
-	$separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
-	$params = array();
-	foreach (array_merge(array('page' => $page), $options) as $key => $value)
-		{
-		$params[] = $key.'='.urlencode($value);
+	public function createUrl($page, $options = array() , $absolute = false, $html = true) {
+		$separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
+		$params = array();
+		foreach (array_merge(array(
+			'page' => $page
+		) , $options) as $key => $value) {
+			$params[] = $key . '=' . urlencode($value);
 		}
-
-	return ($absolute ? $this->Input->getPath() : '').'?'.implode(';', $params);
+		return ($absolute ? $this->Input->getPath() : '') . '?' . implode(';', $params);
 	}
-
 }
 
-class OutputException extends RuntimeException{
+class OutputException extends RuntimeException {
 
-
-function __construct($message)
-	{
-	parent::__construct($message, 0);
+	function __construct($message) {
+		parent::__construct($message, 0);
 	}
-
 }
 
 ?>

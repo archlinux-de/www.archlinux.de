@@ -17,11 +17,11 @@
 	You should have received a copy of the GNU Affero General Public License
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
-interface IOutput{
 
-public function prepare();
-public function show();
+interface IOutput {
 
+	public function prepare();
+	public function show();
 }
 
 ?>

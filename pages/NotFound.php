@@ -18,16 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class NotFound extends Page{
+class NotFound extends Page {
 
-
-public function prepare()
-	{
-	$this->Output->setStatus(Output::NOT_FOUND);
-	$this->setValue('title', 'Seite nicht gefunden');
-	$this->showFailure('Die Seite wurde nicht gefunden.');
+	public function prepare() {
+		$this->Output->setStatus(Output::NOT_FOUND);
+		$this->setValue('title', 'Seite nicht gefunden');
+		$this->showFailure('Die Seite wurde nicht gefunden.');
 	}
-
 }
 
 ?>

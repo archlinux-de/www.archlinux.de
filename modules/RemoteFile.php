@@ -20,128 +20,98 @@
 
 class RemoteFile extends File {
 
-private $url 		= '';
-private $fileName 	= '';
-private $size 		= 0;
-private $remoteSize 	= 0;
-private $type		= '';
-private $content 	= '';
-private $fetchedContent	= false;
+	private $url = '';
+	private $fileName = '';
+	private $size = 0;
+	private $remoteSize = 0;
+	private $type = '';
+	private $content = '';
+	private $fetchedContent = false;
 
-
-public function __construct($url)
-	{
-	if (!preg_match('/^(https?|ftp):\/\//', $url))
-		{
- 		throw new FileException($this->L10n->getText('Only http, https and ftp are allowed'));
+	public function __construct($url) {
+		if (!preg_match('/^(https?|ftp):\/\//', $url)) {
+			throw new FileException($this->L10n->getText('Only http, https and ftp are allowed'));
 		}
-
-	$this->url = $url;
-	$this->fileName = preg_replace('/.*\/([^\/]+)/', '$1', $this->url);
+		$this->url = $url;
+		$this->fileName = preg_replace('/.*\/([^\/]+)/', '$1', $this->url);
 	}
 
-public function getFileName()
-	{
-	return $this->fileName;
+	public function getFileName() {
+		return $this->fileName;
 	}
 
-public function getFileUrl()
-	{
-	return $this->url;
+	public function getFileUrl() {
+		return $this->url;
 	}
 
-public function getFileSize()
-	{
-	if (!$this->fetchedContent)
-		{
-		$this->getFileContent();
+	public function getFileSize() {
+		if (!$this->fetchedContent) {
+			$this->getFileContent();
 		}
-
-	return $this->size;
+		return $this->size;
 	}
 
-public function getRemoteFileSize()
-	{
-	if (!$this->fetchedContent)
-		{
-		$curl = $this->curlInit($this->url);
-		curl_setopt($curl, CURLOPT_NOBODY, true);
-		curl_exec($curl);
-		$this->size = curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-		curl_close($curl);
+	public function getRemoteFileSize() {
+		if (!$this->fetchedContent) {
+			$curl = $this->curlInit($this->url);
+			curl_setopt($curl, CURLOPT_NOBODY, true);
+			curl_exec($curl);
+			$this->size = curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+			curl_close($curl);
 		}
-
-	return $this->size;
+		return $this->size;
 	}
 
-public function getFileType()
-	{
-	if (!$this->fetchedContent)
-		{
-		$this->getFileContent();
+	public function getFileType() {
+		if (!$this->fetchedContent) {
+			$this->getFileContent();
 		}
-
-	return $this->type;
+		return $this->type;
 	}
 
-public function getFileContent()
-	{
-	if (!$this->fetchedContent)
-		{
-		$curl = $this->curlInit($this->url);
-		$this->content = curl_exec($curl);
-		$this->type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
-		curl_close($curl);
-
-		try
-			{
-			$this->type = $this->getTypeFromContent($this->content);
+	public function getFileContent() {
+		if (!$this->fetchedContent) {
+			$curl = $this->curlInit($this->url);
+			$this->content = curl_exec($curl);
+			$this->type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
+			curl_close($curl);
+			try {
+				$this->type = $this->getTypeFromContent($this->content);
+			} catch(FileException $e) {
+				// we will use the type provides by the client
 			}
-		catch (FileException $e)
-			{
-// 			we will use the type provides by the client
+			if (!$this->isAllowedType($this->type)) {
+				throw new FileException(sprintf($this->L10n->getText('Uploading files of type %s is not allowed'),
+					htmlspecialchars($this->type)));
 			}
-
-		if (!$this->isAllowedType($this->type))
-			{
-			throw new FileException(sprintf($this->L10n->getText('Uploading files of type %s is not allowed'), htmlspecialchars($this->type)));
-			}
-
-		$this->size = strlen($this->content);
-		$this->fetchedContent = true;
+			$this->size = strlen($this->content);
+			$this->fetchedContent = true;
 		}
-
-	return $this->content;
+		return $this->content;
 	}
 
-private function curlInit($url)
-	{
-	$curl = curl_init($url);
-	curl_setopt($curl, CURLOPT_FAILONERROR, true);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
-	curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-	curl_setopt($curl, CURLOPT_ENCODING, '');
-	curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:'.$this->Settings->getValue('email'));
-
-	return $curl;
+	private function curlInit($url) {
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_FAILONERROR, true);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($curl, CURLOPT_ENCODING, '');
+		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:' . $this->Settings->getValue('email'));
+		return $curl;
 	}
 
-private function getTypeFromContent($content)
-	{
-	$finfo = finfo_open(FILEINFO_MIME);
-	$type = finfo_buffer($finfo, $content);
-	finfo_close($finfo);
-	/** @TODO: review with php 5.3 */
-	// new version produces strings like 'image/png; charset=binary'
-	// we only need the first part
-	$type = strtok($type, ';');
-
-	return $type;
+	private function getTypeFromContent($content) {
+		$finfo = finfo_open(FILEINFO_MIME);
+		$type = finfo_buffer($finfo, $content);
+		finfo_close($finfo);
+		/** @TODO: review with php 5.3 */
+		// new version produces strings like 'image/png; charset=binary'
+		// we only need the first part
+		$type = strtok($type, ';');
+		return $type;
 	}
-
 }
-
 
 ?>

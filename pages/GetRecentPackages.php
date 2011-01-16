@@ -20,15 +20,11 @@
 
 class GetRecentPackages extends GetFile {
 
-
-public function show()
-	{
-	$lastdate = 0;
-	$entries = '';
-	try
-		{
-		$packages = $this->DB->getRowSet
-			('
+	public function show() {
+		$lastdate = 0;
+		$entries = '';
+		try {
+			$packages = $this->DB->getRowSet('
 			SELECT
 				packages.id,
 				packages.name,
@@ -58,48 +54,37 @@ public function show()
 			LIMIT
 				25
 			');
-
-		foreach($packages as $package)
-			{
-			if ($package['builddate'] > $lastdate)
-				{
-				$lastdate = $package['builddate'];
+			foreach ($packages as $package) {
+				if ($package['builddate'] > $lastdate) {
+					$lastdate = $package['builddate'];
 				}
-
-			$entries .=
-			'
+				$entries.= '
 			<entry>
-				<id>https://www.archlinux.de/?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'</id>
-				<title>'.$package['name'].' '.$package['version'].' ('.$package['architecture'].')</title>
-				<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'" />
-				<updated>'.date('c', $package['builddate']).'</updated>
-				<summary>'.$package['desc'].'</summary>
+				<id>https://www.archlinux.de/?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '</id>
+				<title>' . $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')</title>
+				<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '" />
+				<updated>' . date('c', $package['builddate']) . '</updated>
+				<summary>' . $package['desc'] . '</summary>
 				<author>
-					<name>'.$package['packager'].'</name>
-					<uri>https://www.archlinux.de/?page=Packages;packager='.$package['packagerid'].'</uri>
+					<name>' . $package['packager'] . '</name>
+					<uri>https://www.archlinux.de/?page=Packages;packager=' . $package['packagerid'] . '</uri>
 				</author>
 			</entry>
 			';
 			}
+		} catch(DBNoDataException $e) {
 		}
-	catch (DBNoDataException $e)
-		{
-		}
-
-	$content =
-'<?xml version="1.0" encoding="utf-8"?>
+		$content = '<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
 	<id>https://www.archlinux.de/?page=Packages</id>
 	<title>archlinux.de :: Aktualisierte Pakete</title>
 	<link rel="self" type="application/atom+xml" href="https://www.archlinux.de/?page=Packages" />
 	<link rel="alternate" type="text/html" href="https://www.archlinux.de/" />
-	<updated>'.date('c', $lastdate).'</updated>
-	'.$entries.'
+	<updated>' . date('c', $lastdate) . '</updated>
+	' . $entries . '
 </feed>';
-
-	$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'packages.xml', $content);
+		$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'packages.xml', $content);
 	}
-
 }
 
 ?>

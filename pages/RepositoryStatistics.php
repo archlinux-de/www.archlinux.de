@@ -22,141 +22,131 @@ require_once ('pages/abstract/IDBCachable.php');
 
 class RepositoryStatistics extends Page implements IDBCachable {
 
-private static $barColors = array();
-private static $barColorArray = array('8B0000','FF8800','006400');
+	private static $barColors = array();
+	private static $barColorArray = array(
+		'8B0000',
+		'FF8800',
+		'006400'
+	);
 
-
-public function prepare()
-	{
-	$this->setValue('title', $this->L10n->getText('Repository statistics'));
-
-	if (!($body = $this->PersistentCache->getObject('RepositoryStatistics:'.$this->L10n->getLocale())))
-		{
-		$this->Output->setStatus(Output::NOT_FOUND);
-		$this->showFailure($this->L10n->getText('No data found!'));
+	public function prepare() {
+		$this->setValue('title', $this->L10n->getText('Repository statistics'));
+		if (!($body = $this->PersistentCache->getObject('RepositoryStatistics:' . $this->L10n->getLocale()))) {
+			$this->Output->setStatus(Output::NOT_FOUND);
+			$this->showFailure($this->L10n->getText('No data found!'));
 		}
-
-	$this->setValue('body', $body);
+		$this->setValue('body', $body);
 	}
 
-public static function updateDBCache()
-	{
-	self::$barColors = self::MultiColorFade(self::$barColorArray);
-
-	try
-		{
-		$data = self::getCommonRepositoryStatistics();
-
-		$body = '<div class="box">
+	public static function updateDBCache() {
+		self::$barColors = self::MultiColorFade(self::$barColorArray);
+		try {
+			$data = self::getCommonRepositoryStatistics();
+			$body = '<div class="box">
 			<table id="packagedetails">
 				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">'.self::get('L10n')->getText('Repositories').'</h1></th>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">' . self::get('L10n')->getText('Repositories') . '</h1></th>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Overview').'</th>
+					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Overview') . '</th>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Architectures').'</th>
-					<td>'.$data['architectures'].'</td>
+					<th>' . self::get('L10n')->getText('Architectures') . '</th>
+					<td>' . $data['architectures'] . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Repositories').'</th>
-					<td>'.$data['repositories'].'</td>
+					<th>' . self::get('L10n')->getText('Repositories') . '</th>
+					<td>' . $data['repositories'] . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Groups').'</th>
-					<td>'.self::get('L10n')->getNumber($data['groups']).'</td>
+					<th>' . self::get('L10n')->getText('Groups') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['groups']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Packages').'</th>
-					<td>'.self::get('L10n')->getNumber($data['packages']).'</td>
+					<th>' . self::get('L10n')->getText('Packages') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['packages']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Files').'</th>
-					<td>'.self::get('L10n')->getNumber($data['files']).'</td>
+					<th>' . self::get('L10n')->getText('Files') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['files']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Size of file index').'</th>
-					<td>'.self::get('L10n')->getNumber($data['file_index']).'</td>
+					<th>' . self::get('L10n')->getText('Size of file index') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['file_index']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Licenses').'</th>
-					<td>'.self::get('L10n')->getNumber($data['licenses']).'</td>
+					<th>' . self::get('L10n')->getText('Licenses') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['licenses']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Dependencies').'</th>
-					<td>'.self::get('L10n')->getNumber($data['depends']).'</td>
+					<th>' . self::get('L10n')->getText('Dependencies') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['depends']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Optional dependencies').'</th>
-					<td>'.self::get('L10n')->getNumber($data['optdepends']).'</td>
+					<th>' . self::get('L10n')->getText('Optional dependencies') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['optdepends']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Provides').'</th>
-					<td>'.self::get('L10n')->getNumber($data['provides']).'</td>
+					<th>' . self::get('L10n')->getText('Provides') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['provides']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Conflicts').'</th>
-					<td>'.self::get('L10n')->getNumber($data['conflicts']).'</td>
+					<th>' . self::get('L10n')->getText('Conflicts') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['conflicts']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Replaces').'</th>
-					<td>'.self::get('L10n')->getNumber($data['replaces']).'</td>
+					<th>' . self::get('L10n')->getText('Replaces') . '</th>
+					<td>' . self::get('L10n')->getNumber($data['replaces']) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Total size of repositories').'</th>
-					<td>'.self::formatBytes($data['csize']).'Byte</td>
+					<th>' . self::get('L10n')->getText('Total size of repositories') . '</th>
+					<td>' . self::formatBytes($data['csize']) . 'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Total size of files').'</th>
-					<td>'.self::formatBytes($data['isize']).'Byte</td>
+					<th>' . self::get('L10n')->getText('Total size of files') . '</th>
+					<td>' . self::formatBytes($data['isize']) . 'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Packager').'</th>
-					<td>'.$data['packagers'].'</td>
+					<th>' . self::get('L10n')->getText('Packager') . '</th>
+					<td>' . $data['packagers'] . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Last update').'</th>
-					<td>'.self::get('L10n')->getGMDateTime(self::get('Input')->getTime()).'</td>
+					<th>' . self::get('L10n')->getText('Last update') . '</th>
+					<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Averages').'</th>
+					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Averages') . '</th>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Size of packages').'</th>
-					<td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
+					<th>' . self::get('L10n')->getText('Size of packages') . '</th>
+					<td>&empty; ' . self::formatBytes($data['avgcsize']) . 'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Size of files').'</th>
-					<td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
+					<th>' . self::get('L10n')->getText('Size of files') . '</th>
+					<td>&empty; ' . self::formatBytes($data['avgisize']) . 'Byte</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Files per package').'</th>
-					<td>&empty; '.self::get('L10n')->getNumber($data['avgfiles'], 2).'</td>
+					<th>' . self::get('L10n')->getText('Files per package') . '</th>
+					<td>&empty; ' . self::get('L10n')->getNumber($data['avgfiles'], 2) . '</td>
 				</tr>
 				<tr>
-					<th>'.self::get('L10n')->getText('Packages per packager').'</th>
-					<td>&empty; '.self::get('L10n')->getNumber($data['avgpkgperpackager'], 2).'</td>
+					<th>' . self::get('L10n')->getText('Packages per packager') . '</th>
+					<td>&empty; ' . self::get('L10n')->getNumber($data['avgpkgperpackager'], 2) . '</td>
 				</tr>
 				<tr>
-					<th colspan="2" class="packagedetailshead">'.self::get('L10n')->getText('Repositories').'</th>
+					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Repositories') . '</th>
 				</tr>
-					'.self::getRepositoryStatistics().'
+					' . self::getRepositoryStatistics() . '
 			</table>
 			</div>
 			';
-
-		self::get('PersistentCache')->addObject('RepositoryStatistics:'.self::get('L10n')->getLocale(), $body);
-		}
-	catch (DBNoDataException $e)
-		{
+			self::get('PersistentCache')->addObject('RepositoryStatistics:' . self::get('L10n')->getLocale() , $body);
+		} catch(DBNoDataException $e) {
 		}
 	}
 
-private static function getCommonRepositoryStatistics()
-	{
-	return self::get('DB')->getRow
-		('
+	private static function getCommonRepositoryStatistics() {
+		return self::get('DB')->getRow('
 		SELECT
 			(SELECT COUNT(*) FROM architectures) AS architectures,
 			(SELECT COUNT(*) FROM repositories) AS repositories,
@@ -204,28 +194,20 @@ private static function getCommonRepositoryStatistics()
 		');
 	}
 
-private static function getRepositoryStatistics()
-	{
-	try
-		{
-		$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
+	private static function getRepositoryStatistics() {
+		try {
+			$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
+		} catch(DBNoDataException $e) {
+			$repos = array();
 		}
-	catch (DBNoDataException $e)
-		{
-		$repos = array();
-		}
-
-	$total = self::get('DB')->getRow
-			('
+		$total = self::get('DB')->getRow('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
 				packages
 			');
-
-	$stm = self::get('DB')->prepare
-			('
+		$stm = self::get('DB')->prepare('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
@@ -234,165 +216,125 @@ private static function getRepositoryStatistics()
 			WHERE
 				repository = ?
 			');
-
-	$list = '';
-
-	foreach ($repos as $repo)
-		{
-		try
-			{
-			$stm->bindInteger($repo['id']);
-			$data = $stm->getRow();
-
-			$list .= '<tr>
-					<th>'.$repo['name'].'</th>
+		$list = '';
+		foreach ($repos as $repo) {
+			try {
+				$stm->bindInteger($repo['id']);
+				$data = $stm->getRow();
+				$list.= '<tr>
+					<th>' . $repo['name'] . '</th>
 					<td style="padding:0px;margin:0px;">
 						<div style="overflow:auto; max-height: 800px;">
 						<table class="pretty-table" style="border:none;">
 						<tr>
-							<td style="width: 50px;">'.self::get('L10n')->getText('Packages').'</td>
-							<td>'.self::getBar($data['packages'], $total['packages']).'</td>
+							<td style="width: 50px;">' . self::get('L10n')->getText('Packages') . '</td>
+							<td>' . self::getBar($data['packages'], $total['packages']) . '</td>
 						</tr>
 						<tr>
-							<td style="width: 50px;">'.self::get('L10n')->getText('Size').'</td>
-							<td>'.self::getBar($data['size'], $total['size']).'</td>
+							<td style="width: 50px;">' . self::get('L10n')->getText('Size') . '</td>
+							<td>' . self::getBar($data['size'], $total['size']) . '</td>
 						</tr>
 						</table>
 						</div>
 					</td>
 				</tr>';
-			}
-		catch (DBNoDataException $e)
-			{
+			} catch(DBNoDataException $e) {
 			}
 		}
-
-	$stm->close();
-
-	return $list;
+		$stm->close();
+		return $list;
 	}
 
-private static function formatBytes($bytes)
-	{
-	$kb = 1024;
-	$mb = $kb * 1024;
-	$gb = $mb * 1024;
-
-	if ($bytes >= $gb)	// GB
+	private static function formatBytes($bytes) {
+		$kb = 1024;
+		$mb = $kb * 1024;
+		$gb = $mb * 1024;
+		if ($bytes >= $gb) // GB
 		{
-		$result = round($bytes / $gb, 2);
-		$postfix = '&nbsp;G';
-		}
-	elseif ($bytes >= $mb)	// MB
+			$result = round($bytes / $gb, 2);
+			$postfix = '&nbsp;G';
+		} elseif ($bytes >= $mb) // MB
 		{
-		$result =  round($bytes / $mb, 2);
-		$postfix = '&nbsp;M';
-		}
-	elseif ($bytes >= $kb)	// KB
+			$result = round($bytes / $mb, 2);
+			$postfix = '&nbsp;M';
+		} elseif ($bytes >= $kb) // KB
 		{
-		$result =  round($bytes / $kb, 2);
-		$postfix = '&nbsp;K';
-		}
-	else			//  B
+			$result = round($bytes / $kb, 2);
+			$postfix = '&nbsp;K';
+		} else
+		//  B
 		{
-		$result =  $bytes;
-		$postfix = '&nbsp;';
+			$result = $bytes;
+			$postfix = '&nbsp;';
 		}
-
-	return self::get('L10n')->getNumber($result, 2).$postfix;
+		return self::get('L10n')->getNumber($result, 2) . $postfix;
 	}
 
-private static function getBar($value, $total)
-	{
-	if ($total <= 0)
-		{
-		return '';
+	private static function getBar($value, $total) {
+		if ($total <= 0) {
+			return '';
 		}
-
-	$percent = ($value / $total) * 100;
-	
-	$color = self::$barColors[round($percent)];
-
-	return '<table style="width:100%;">
+		$percent = ($value / $total) * 100;
+		$color = self::$barColors[round($percent) ];
+		return '<table style="width:100%;">
 			<tr>
 				<td style="padding:0px;margin:0px;">
-					<div style="background-color:#'.$color.';width:'.round($percent).'%;"
-		title="'.self::get('L10n')->getNumber($value).' '.self::get('L10n')->getText('of').' '.self::get('L10n')->getNumber($total).'">
+					<div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
+		title="' . self::get('L10n')->getNumber($value) . ' ' . self::get('L10n')->getText('of') . ' ' . self::get('L10n')->getNumber($total) . '">
 			&nbsp;
 				</div>
 				</td>
-				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#'.$color.'">
-					'.self::get('L10n')->getNumber($percent, 2).'&nbsp;%
+				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . '">
+					' . self::get('L10n')->getNumber($percent, 2) . '&nbsp;%
 				</td>
 			</tr>
 		</table>';
 	}
 
-// see http://at.php.net/manual/de/function.hexdec.php#66780
-private static function MultiColorFade($hexarray)
-	{
-	$steps = 101;
-	$total = count($hexarray);
-	$gradient = array();
-	$fixend = 2;
-	$passages = $total - 1;
-	$stepsforpassage = floor($steps / $passages);
-	$stepsremain = $steps - ($stepsforpassage * $passages);
-
-	for ($pointer = 0; $pointer < $total - 1 ; $pointer++)
-		{
-
-		$hexstart = $hexarray[$pointer];
-		$hexend = $hexarray[$pointer + 1];
-
-		if ($stepsremain > 0)
-			{
-			if ($stepsremain--)
-				{
-				$stepsforthis = $stepsforpassage + 1;
+	// see http://at.php.net/manual/de/function.hexdec.php#66780
+	private static function MultiColorFade($hexarray) {
+		$steps = 101;
+		$total = count($hexarray);
+		$gradient = array();
+		$fixend = 2;
+		$passages = $total - 1;
+		$stepsforpassage = floor($steps / $passages);
+		$stepsremain = $steps - ($stepsforpassage * $passages);
+		for ($pointer = 0;$pointer < $total - 1;$pointer++) {
+			$hexstart = $hexarray[$pointer];
+			$hexend = $hexarray[$pointer + 1];
+			if ($stepsremain > 0) {
+				if ($stepsremain--) {
+					$stepsforthis = $stepsforpassage + 1;
 				}
+			} else {
+				$stepsforthis = $stepsforpassage;
 			}
-		else
-			{
-			$stepsforthis = $stepsforpassage;
+			if ($pointer > 0) {
+				$fixend = 1;
 			}
-
-		if ($pointer > 0)
-			{
-			$fixend = 1;
-			}
-
-		$start['r'] = hexdec(substr($hexstart, 0, 2));
-		$start['g'] = hexdec(substr($hexstart, 2, 2));
-		$start['b'] = hexdec(substr($hexstart, 4, 2));
-
-		$end['r'] = hexdec(substr($hexend, 0, 2));
-		$end['g'] = hexdec(substr($hexend, 2, 2));
-		$end['b'] = hexdec(substr($hexend, 4, 2));
-
-		$step['r'] = ($start['r'] - $end['r']) / ($stepsforthis);
-		$step['g'] = ($start['g'] - $end['g']) / ($stepsforthis);
-		$step['b'] = ($start['b'] - $end['b']) / ($stepsforthis);
-
-		for($i = 0; $i <= $stepsforthis - $fixend; $i++)
-			{
-			$rgb['r'] = floor($start['r'] - ($step['r'] * $i));
-			$rgb['g'] = floor($start['g'] - ($step['g'] * $i));
-			$rgb['b'] = floor($start['b'] - ($step['b'] * $i));
-
-			$hex['r'] = sprintf('%02x', ($rgb['r']));
-			$hex['g'] = sprintf('%02x', ($rgb['g']));
-			$hex['b'] = sprintf('%02x', ($rgb['b']));
-
-			$gradient[] = strtoupper(implode(NULL, $hex));
+			$start['r'] = hexdec(substr($hexstart, 0, 2));
+			$start['g'] = hexdec(substr($hexstart, 2, 2));
+			$start['b'] = hexdec(substr($hexstart, 4, 2));
+			$end['r'] = hexdec(substr($hexend, 0, 2));
+			$end['g'] = hexdec(substr($hexend, 2, 2));
+			$end['b'] = hexdec(substr($hexend, 4, 2));
+			$step['r'] = ($start['r'] - $end['r']) / ($stepsforthis);
+			$step['g'] = ($start['g'] - $end['g']) / ($stepsforthis);
+			$step['b'] = ($start['b'] - $end['b']) / ($stepsforthis);
+			for ($i = 0;$i <= $stepsforthis - $fixend;$i++) {
+				$rgb['r'] = floor($start['r'] - ($step['r'] * $i));
+				$rgb['g'] = floor($start['g'] - ($step['g'] * $i));
+				$rgb['b'] = floor($start['b'] - ($step['b'] * $i));
+				$hex['r'] = sprintf('%02x', ($rgb['r']));
+				$hex['g'] = sprintf('%02x', ($rgb['g']));
+				$hex['b'] = sprintf('%02x', ($rgb['b']));
+				$gradient[] = strtoupper(implode(NULL, $hex));
 			}
 		}
-
-	$gradient[] = $hexarray[$total - 1];
-
-	return $gradient;
+		$gradient[] = $hexarray[$total - 1];
+		return $gradient;
 	}
-
 }
 
 ?>

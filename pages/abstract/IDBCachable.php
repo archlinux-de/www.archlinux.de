@@ -20,8 +20,7 @@
 
 interface IDBCachable {
 
-public static function updateDBCache();
-
+	public static function updateDBCache();
 }
 
 ?>

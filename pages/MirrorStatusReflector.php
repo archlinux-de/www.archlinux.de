@@ -20,58 +20,46 @@
 
 class MirrorStatusReflector extends Page {
 
-private $range	= 604800; // 1 week
-private $page = '';
+	private $range = 604800; // 1 week
+	private $page = '';
 
-
-public function show()
-	{
-	$this->Output->setContentType('text/plain; charset=UTF-8');
-	$this->Output->writeOutput($this->page);
+	public function show() {
+		$this->Output->setContentType('text/plain; charset=UTF-8');
+		$this->Output->writeOutput($this->page);
 	}
 
-protected function showWarning($text)
-	{
-	$this->Output->setStatus('HTTP/1.1 500 Warning');
-	$this->page = 'Warning: '.$text;
-	$this->show();
+	protected function showWarning($text) {
+		$this->Output->setStatus('HTTP/1.1 500 Warning');
+		$this->page = 'Warning: ' . $text;
+		$this->show();
 	}
 
-protected function showFailure($text)
-	{
-	$this->Output->setStatus('HTTP/1.1 500 Error');
-	$this->page = 'Error: '.$text;
-	$this->show();
+	protected function showFailure($text) {
+		$this->Output->setStatus('HTTP/1.1 500 Error');
+		$this->page = 'Error: ' . $text;
+		$this->show();
 	}
 
-public function prepare()
-	{
-	try
-		{
-		$mirrors = $this->DB->getRowSet
-			('
+	public function prepare() {
+		try {
+			$mirrors = $this->DB->getRowSet('
 			SELECT
 				host,
 				lastsync
 			FROM
 				mirrors
 			WHERE
-				lastsync >= '.($this->Input->getTime() - $this->range).'
+				lastsync >= ' . ($this->Input->getTime() - $this->range) . '
 			ORDER BY
 				lastsync DESC
 			');
-
-		foreach($mirrors as $mirror)
-			{
-			$this->page .= gmdate('Y-m-d H:i', $mirror['lastsync']).' '.$mirror['host']."\n";
+			foreach ($mirrors as $mirror) {
+				$this->page.= gmdate('Y-m-d H:i', $mirror['lastsync']) . ' ' . $mirror['host'] . "\n";
 			}
-		}
-	catch (DBNoDataException $e)
-		{
-		$this->showFailure('No mirrors found');
+		} catch(DBNoDataException $e) {
+			$this->showFailure('No mirrors found');
 		}
 	}
-
 }
 
 ?>

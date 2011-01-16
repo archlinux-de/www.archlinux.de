@@ -20,20 +20,14 @@
 
 class Start extends Page {
 
-private $arch = 1;
+	private $arch = 1;
 
-
-public function prepare()
-	{
-	if ($this->Input->Cookie->isInt('architecture') && $this->Input->Cookie->getInt('architecture') > 0)
-		{
-		$this->arch = $this->Input->Cookie->getInt('architecture');
+	public function prepare() {
+		if ($this->Input->Cookie->isInt('architecture') && $this->Input->Cookie->getInt('architecture') > 0) {
+			$this->arch = $this->Input->Cookie->getInt('architecture');
 		}
-
-	$this->setValue('title', 'Start');
-
-	$body =
-	'<div id="left-wrapper">
+		$this->setValue('title', 'Start');
+		$body = '<div id="left-wrapper">
 		<div id="left">
 			<div id="intro" class="box">
 				<h2>Willkommen bei Arch Linux</h2>
@@ -49,7 +43,7 @@ public function prepare()
 				<p class="readmore"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">mehr über Arch Linux</a></p>
 			</div>
 			<div id="news">
-			'.$this->getNews().'
+			' . $this->getNews() . '
 			</div>
 		</div>
 	</div>
@@ -63,7 +57,7 @@ public function prepare()
 					<script>
 						$(function() {
 							$("#searchfield").autocomplete({
-								source: "?page=PackagesSuggest;repo=2;arch='.$this->arch.';field=0",
+								source: "?page=PackagesSuggest;repo=2;arch=' . $this->arch . ';field=0",
 								minLength: 2,
 								delay: 100
 							});
@@ -72,7 +66,7 @@ public function prepare()
 				</form>
 			</div>
 			<div id="pkgrecent" class="box">
-				'.$this->getRecentPackages().'
+				' . $this->getRecentPackages() . '
 			</div>
 			<div id="sidebar">
 				<h4>Dokumentation</h4>
@@ -116,48 +110,33 @@ public function prepare()
 			</div>
 		</div>
 	';
-
-	$this->setValue('body', $body);
+		$this->setValue('body', $body);
 	}
 
-private function getNews()
-	{
-	$result = '';
-
-	if (! ($result = $this->ObjectCache->getObject('news_feed')))
-		{
-		try
-			{
-			$file = new RemoteFile($this->Settings->getValue('news_feed'));
-			$feed = new SimpleXMLElement($file->getFileContent());
-
-			$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="'.$this->Settings->getValue('news_archive').'">mehr</a>)</span></h3><a href="'.$this->Settings->getValue('news_feed').'" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a>';
-
-			foreach ($feed->entry as $entry)
-				{
-				$result .=
-					'
-					<h4><a href="'.$entry->link->attributes()->href.'">'.$entry->title.'</a></h4>
-					<p class="date">'.$this->L10n->getDate(strtotime($entry->updated)).'</p>
-					'.$entry->summary.'
+	private function getNews() {
+		$result = '';
+		if (!($result = $this->ObjectCache->getObject('news_feed'))) {
+			try {
+				$file = new RemoteFile($this->Settings->getValue('news_feed'));
+				$feed = new SimpleXMLElement($file->getFileContent());
+				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . $this->Settings->getValue('news_archive') . '">mehr</a>)</span></h3><a href="' . $this->Settings->getValue('news_feed') . '" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a>';
+				foreach ($feed->entry as $entry) {
+					$result.= '
+					<h4><a href="' . $entry->link->attributes()->href . '">' . $entry->title . '</a></h4>
+					<p class="date">' . $this->L10n->getDate(strtotime($entry->updated)) . '</p>
+					' . $entry->summary . '
 					';
 				}
-			$this->ObjectCache->addObject('news_feed', $result, 1800);
-			}
-		catch(FileException $e)
-			{
+				$this->ObjectCache->addObject('news_feed', $result, 1800);
+			} catch(FileException $e) {
 			}
 		}
-
-	return $result;
+		return $result;
 	}
 
-private function getRecentPackages()
-	{
-	try
-		{
-		$stm = $this->DB->prepare
-			('
+	private function getRecentPackages() {
+		try {
+			$stm = $this->DB->prepare('
 			SELECT
 				packages.id,
 				packages.name,
@@ -177,31 +156,23 @@ private function getRecentPackages()
 			LIMIT
 				20
 			');
-		$stm->bindInteger($this->arch);
-		$packages = $stm->getRowSet();
+			$stm->bindInteger($this->arch);
+			$packages = $stm->getRowSet();
+		} catch(DBNoDataException $e) {
+			$packages = array();
 		}
-	catch(DBNoDataException $e)
-		{
-		$packages = array();
-		}
-
-	$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a><table>';
-
-	foreach ($packages as $package)
-		{
-		$result .= '
-			<tr class="'.$package['repository'].'">
-				<td class="pkgname"><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.$package['name'].'">'.$package['name'].'</a></td>
-				<td class="pkgver">'.$package['version'].'</td>
+		$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a><table>';
+		foreach ($packages as $package) {
+			$result.= '
+			<tr class="' . $package['repository'] . '">
+				<td class="pkgname"><a href="?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '">' . $package['name'] . '</a></td>
+				<td class="pkgver">' . $package['version'] . '</td>
 			</tr>
 			';
 		}
-
-	isset($stm) && $stm->close();
-
-	return $result.'</table>';
+		isset($stm) && $stm->close();
+		return $result . '</table>';
 	}
-
 }
 
 ?>

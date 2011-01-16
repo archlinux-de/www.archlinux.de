@@ -19,118 +19,94 @@
 */
 
 interface ICache {
-public function addObject($key, $object, $ttl = 0);
-public function getObject($key);
-public function isObject($key);
+
+	public function addObject($key, $object, $ttl = 0);
+	public function getObject($key);
+	public function isObject($key);
 }
 
 class ObjectCache implements ICache {
 
-private $cache = null;
+	private $cache = null;
 
-public function __construct()
-	{
-	if (function_exists('apc_store'))
-		{
-		$this->cache = new APCObjectCache();
-		}
-	else
-		{
-		$this->cache = new NOOPObjectCache();
+	public function __construct() {
+		if (function_exists('apc_store')) {
+			$this->cache = new APCObjectCache();
+		} else {
+			$this->cache = new NOOPObjectCache();
 		}
 	}
 
-public function addObject($key, $object, $ttl = 0)
-	{
-	return $this->cache->addObject($key, $object, $ttl);
+	public function addObject($key, $object, $ttl = 0) {
+		return $this->cache->addObject($key, $object, $ttl);
 	}
 
-public function getObject($key)
-	{
-	return $this->cache->getObject($key);
+	public function getObject($key) {
+		return $this->cache->getObject($key);
 	}
 
-public function isObject($key)
-	{
-	return $this->cache->isObject($key);
+	public function isObject($key) {
+		return $this->cache->isObject($key);
 	}
-
 }
 
 class NOOPObjectCache implements ICache {
 
-public function addObject($key, $object, $ttl = 0)
-	{
-	return false;
+	public function addObject($key, $object, $ttl = 0) {
+		return false;
 	}
 
-public function getObject($key)
-	{
-	return false;
+	public function getObject($key) {
+		return false;
 	}
 
-public function isObject($key)
-	{
-	return false;
+	public function isObject($key) {
+		return false;
 	}
 }
 
 class APCObjectCache implements ICache {
 
-public function addObject($key, $object, $ttl = 0)
-	{
-	return apc_store($key, $object, $ttl);
+	public function addObject($key, $object, $ttl = 0) {
+		return apc_store($key, $object, $ttl);
 	}
 
-public function getObject($key)
-	{
-	return apc_fetch($key);
+	public function getObject($key) {
+		return apc_fetch($key);
 	}
 
-public function isObject($key)
-	{
-	apc_fetch($key, $success);
-	return $success;
+	public function isObject($key) {
+		apc_fetch($key, $success);
+		return $success;
 	}
 }
 
 class PersistentCache extends Modul implements ICache {
 
-private $time = 0;
+	private $time = 0;
 
-public function __construct()
-	{
-	$this->time = time();
+	public function __construct() {
+		$this->time = time();
 	}
 
-public function addObject($key, $object, $ttl = 0)
-	{
-	if ($ttl <= 0)
-		{
-		try
-			{
-			$stm = $this->DB->prepare
-				('
+	public function addObject($key, $object, $ttl = 0) {
+		if ($ttl <= 0) {
+			try {
+				$stm = $this->DB->prepare('
 				REPLACE INTO
 					cache
 				SET
 					`key` = ?,
 					value = ?
 				');
-			$stm->bindString($key);
-			$stm->bindString(serialize($object));
-			$stm->execute();
+				$stm->bindString($key);
+				$stm->bindString(serialize($object));
+				$stm->execute();
+			} catch(DBException $e) {
 			}
-		catch (DBException $e)
-			{
-			}
-		}
-	else
-		{
-		try
-			{
-			$stm = $this->DB->prepare
-				('
+		} else {
+			try {
+				$stm = $this->DB->prepare('
 				REPLACE INTO
 					cache
 				SET
@@ -138,28 +114,40 @@ public function addObject($key, $object, $ttl = 0)
 					value = ?,
 					expires = ?
 				');
+				$stm->bindString($key);
+				$stm->bindString(serialize($object));
+				$stm->bindInteger(($this->time + $ttl));
+				$stm->execute();
+			} catch(DBException $e) {
+			}
+		}
+		$stm->close();
+	}
+
+	public function getObject($key) {
+		$this->collectGarbage();
+		$value = false;
+		try {
+			$stm = $this->DB->prepare('
+			SELECT
+				value
+			FROM
+				cache
+			WHERE
+				`key` = ?
+			');
 			$stm->bindString($key);
-			$stm->bindString(serialize($object));
-			$stm->bindInteger(($this->time + $ttl));
-			$stm->execute();
-			}
-		catch (DBException $e)
-			{
-			}
+			$value = unserialize($stm->getColumn());
+		} catch(DBNoDataException $e) {
 		}
-	$stm->close();
+		$stm->close();
+		return $value;
 	}
 
-public function getObject($key)
-	{
-	$this->collectGarbage();
-
-	$value = false;
-
-	try
-		{
-		$stm = $this->DB->prepare
-			('
+	public function isObject($key) {
+		$value = false;
+		try {
+			$stm = $this->DB->prepare('
 			SELECT
 				value
 			FROM
@@ -167,69 +155,31 @@ public function getObject($key)
 			WHERE
 				`key` = ?
 			');
-		$stm->bindString($key);
-
-		$value = unserialize($stm->getColumn());
+			$stm->bindString($key);
+			$value = true;
+		} catch(DBNoDataException $e) {
 		}
-	catch (DBNoDataException $e)
-		{
-		}
-	$stm->close();
-
-	return $value;
+		$stm->close();
+		return $value;
 	}
 
-public function isObject($key)
-	{
-	$value = false;
-
-	try
-		{
-		$stm = $this->DB->prepare
-			('
-			SELECT
-				value
-			FROM
-				cache
-			WHERE
-				`key` = ?
-			');
-		$stm->bindString($key);
-
-		$value = true;
-		}
-	catch (DBNoDataException $e)
-		{
-		}
-	$stm->close();
-
-	return $value;
-	}
-
-private function collectGarbage()
-	{
-	/* Ignore 49% of requests */
-	if (!mt_rand(0, 50))
-		{
-		try
-			{
-			$stm = $this->DB->prepare
-				('
+	private function collectGarbage() {
+		/* Ignore 49% of requests */
+		if (!mt_rand(0, 50)) {
+			try {
+				$stm = $this->DB->prepare('
 				DELETE FROM
 					cache
 				WHERE
 					expires < ?
 				');
-			$stm->bindInteger($this->time);
-			$stm->execute();
+				$stm->bindInteger($this->time);
+				$stm->execute();
+			} catch(DBException $e) {
 			}
-		catch (DBException $e)
-			{
-			}
-		$stm->close();
+			$stm->close();
 		}
 	}
-
 }
 
 ?>

@@ -20,26 +20,21 @@
 
 class Statistics extends Page {
 
-
-public function prepare()
-	{
-	$this->setValue('title', $this->L10n->getText('Statistics'));
-
-	$body = '
+	public function prepare() {
+		$this->setValue('title', $this->L10n->getText('Statistics'));
+		$body = '
 		<div class="box">
-			<h2>'.$this->L10n->getText('Statistics').'</h2>
+			<h2>' . $this->L10n->getText('Statistics') . '</h2>
 			<ul>
-				<li><a href="'.$this->Output->createUrl('RepositoryStatistics').'">'.$this->L10n->getText('Repository statistics').'</a></li>
-				<li><a href="'.$this->Output->createUrl('UserStatistics').'">'.$this->L10n->getText('User statistics').'</a></li>
-				<li><a href="'.$this->Output->createUrl('PackageStatistics').'">'.$this->L10n->getText('Package statistics').'</a></li>
-				<li><a href="'.$this->Output->createUrl('FunStatistics').'">'.$this->L10n->getText('Fun statistics').'</a></li>
+				<li><a href="' . $this->Output->createUrl('RepositoryStatistics') . '">' . $this->L10n->getText('Repository statistics') . '</a></li>
+				<li><a href="' . $this->Output->createUrl('UserStatistics') . '">' . $this->L10n->getText('User statistics') . '</a></li>
+				<li><a href="' . $this->Output->createUrl('PackageStatistics') . '">' . $this->L10n->getText('Package statistics') . '</a></li>
+				<li><a href="' . $this->Output->createUrl('FunStatistics') . '">' . $this->L10n->getText('Fun statistics') . '</a></li>
 			</ul>
 		</div>
 		';
-
-	$this->setValue('body', $body);
+		$this->setValue('body', $body);
 	}
-
 }
 
 ?>

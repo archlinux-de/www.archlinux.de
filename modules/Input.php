@@ -1,5 +1,4 @@
 <?php
-
 /*
 	Copyright 2002-2010 Pierre Schmitz <pierre@archlinux.de>
 
@@ -26,88 +25,69 @@ require ('modules/UploadedFile.php');
 
 class Input extends Modul {
 
-public $Get 	= null;
-public $Post 	= null;
-public $Cookie 	= null;
-public $Env 	= null;
-public $Server 	= null;
+	public $Get = null;
+	public $Post = null;
+	public $Cookie = null;
+	public $Env = null;
+	public $Server = null;
+	private $time = 0;
 
-private $time	= 0;
-
-public function __construct()
-	{
-	$this->time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
-
-	$this->Get 	= new Request($_GET);
-	$this->Post 	= new Request($_POST);
-	$this->Cookie 	= new Request($_COOKIE);
-	$this->Env 	= new Request($_ENV);
-	$this->Server 	= new Request($_SERVER);
+	public function __construct() {
+		$this->time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
+		$this->Get = new Request($_GET);
+		$this->Post = new Request($_POST);
+		$this->Cookie = new Request($_COOKIE);
+		$this->Env = new Request($_ENV);
+		$this->Server = new Request($_SERVER);
 	}
 
-public function getTime()
-	{
-	return $this->time;
+	public function getTime() {
+		return $this->time;
 	}
 
-public function getHost()
-	{
-	return $this->Server->getString('HTTP_HOST');
+	public function getHost() {
+		return $this->Server->getString('HTTP_HOST');
 	}
 
-public function getClientIP()
-	{
-	return $this->Input->Server->getString('REMOTE_ADDR', '127.0.0.1');
+	public function getClientIP() {
+		return $this->Input->Server->getString('REMOTE_ADDR', '127.0.0.1');
 	}
 
-public function getClientCountryName()
-	{
-	$country = '';
-	if (function_exists('geoip_country_name_by_name'))
-		{
-		// remove ipv6 prefix
-		$ip = ltrim($this->getClientIP(), ':a-f');
-
-		if (!empty($ip))
-			{
-			// let's ignore any lookup errors
-			$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
-			restore_error_handler();
-			$country = geoip_country_name_by_name($ip) ?: '';
-			set_error_handler('ErrorHandler');
-			error_reporting($errorReporting);
+	public function getClientCountryName() {
+		$country = '';
+		if (function_exists('geoip_country_name_by_name')) {
+			// remove ipv6 prefix
+			$ip = ltrim($this->getClientIP() , ':a-f');
+			if (!empty($ip)) {
+				// let's ignore any lookup errors
+				$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
+				restore_error_handler();
+				$country = geoip_country_name_by_name($ip) ? : '';
+				set_error_handler('ErrorHandler');
+				error_reporting($errorReporting);
 			}
 		}
-
-	return $country;
+		return $country;
 	}
 
-public function getPath()
-	{
-	$directory = dirname($this->Server->getString('SCRIPT_NAME'));
-
-	return 'http'.(!$this->Server->isString('HTTPS') ? '' : 's').'://'
-			.$this->getHost()
-			.($directory == '/' ? '' : $directory).'/';
+	public function getPath() {
+		$directory = dirname($this->Server->getString('SCRIPT_NAME'));
+		return 'http'.(!$this->Server->isString('HTTPS') ? '' : 's').'://'
+			.$this->getHost().($directory == '/' ? '' : $directory).'/';
 	}
 
-public function getRelativePath()
-	{
-	$directory = dirname($this->Server->getString('SCRIPT_NAME'));
-
-	return ($directory == '/' ? '' : $directory).'/';
+	public function getRelativePath() {
+		$directory = dirname($this->Server->getString('SCRIPT_NAME'));
+		return ($directory == '/' ? '' : $directory) . '/';
 	}
 
-public function getRemoteFile($url)
-	{
-	return new RemoteFile($url);
+	public function getRemoteFile($url) {
+		return new RemoteFile($url);
 	}
 
-public function getUploadedFile($url)
-	{
-	return new UploadedFile($url);
+	public function getUploadedFile($url) {
+		return new UploadedFile($url);
 	}
-
 }
 
 ?>

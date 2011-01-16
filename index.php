@@ -31,23 +31,17 @@ $Input = Modul::set('Input', new Input());
 Modul::set('L10n', new L10n());
 $Output = Modul::set('Output', new Output());
 
-function __autoload($class)
-	{
+function __autoload($class) {
 	Modul::loadModul($class);
-	}
+}
 
 $page = $Input->Get->getString('page', 'Start');
-
-try
-	{
+try {
 	Page::loadPage($page);
-	}
-catch (RuntimeException $e)
-	{
+} catch(RuntimeException $e) {
 	$page = 'NotFound';
 	Page::loadPage($page);
-	}
-
+}
 $class = new $page();
 $class->prepare();
 $class->show();

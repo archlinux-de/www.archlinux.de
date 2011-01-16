@@ -20,33 +20,28 @@
 
 class MirrorStatusJSON extends Page {
 
-private $page = '';
+	private $page = '';
 
-
-public function show()
-	{
-	$this->Output->setContentType('application/json; charset=UTF-8');
-	$this->Output->writeOutput($this->page);
+	public function show() {
+		$this->Output->setContentType('application/json; charset=UTF-8');
+		$this->Output->writeOutput($this->page);
 	}
 
-protected function showWarning($text)
-	{
-	$this->showFailure($text);
+	protected function showWarning($text) {
+		$this->showFailure($text);
 	}
 
-protected function showFailure($text)
-	{
-	$this->Output->setStatus('HTTP/1.1 500 Error');
-	$this->page = json_encode(array('status' => '500 Error: '.$text));
-	$this->show();
+	protected function showFailure($text) {
+		$this->Output->setStatus('HTTP/1.1 500 Error');
+		$this->page = json_encode(array(
+			'status' => '500 Error: ' . $text
+		));
+		$this->show();
 	}
 
-public function prepare()
-	{
-	try
-		{
-		$mirrors = $this->DB->getRowSet
-			('
+	public function prepare() {
+		try {
+			$mirrors = $this->DB->getRowSet('
 			SELECT
 				host,
 				country,
@@ -56,30 +51,24 @@ public function prepare()
 			FROM
 				mirrors
 			');
-
-		$json = array(
+			$json = array(
 				'status' => '200 OK',
 				'location' => $this->Input->getClientCountryName()
 			);
-
-		foreach($mirrors as $mirror)
-			{
-			$json['servers'][] = array(
-				'url' => $mirror['host'],
-				'location' => $mirror['country'],
-				'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
-				'average delay' => $mirror['delay'] ?: '',
-				'average performance' => $mirror['time'] ?: ''
-			);
+			foreach ($mirrors as $mirror) {
+				$json['servers'][] = array(
+					'url' => $mirror['host'],
+					'location' => $mirror['country'],
+					'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
+					'average delay' => $mirror['delay'] ? : '',
+					'average performance' => $mirror['time'] ? : ''
+				);
 			}
-		$this->page = json_encode($json);
-		}
-	catch (DBNoDataException $e)
-		{
-		$this->showFailure('No mirrors found');
+			$this->page = json_encode($json);
+		} catch(DBNoDataException $e) {
+			$this->showFailure('No mirrors found');
 		}
 	}
-
 }
 
 ?>

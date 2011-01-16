@@ -1,6 +1,5 @@
 #!/usr/bin/php
 <?php
-
 /*
 	Copyright 2002-2010 Pierre Schmitz <pierre@archlinux.de>
 
@@ -21,8 +20,7 @@
 */
 
 ini_set('max_execution_time', 0);
-ini_set('include_path', ini_get('include_path').':../');
-
+ini_set('include_path', ini_get('include_path') . ':../');
 require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
@@ -32,50 +30,36 @@ require ('pages/PackageStatistics.php');
 require ('pages/UserStatistics.php');
 require ('pages/FunStatistics.php');
 
-
 class UpdatePkgstats extends Modul {
 
-
-private function getTmpDir()
-	{
-	$tmp = ini_get('upload_tmp_dir');
-	return empty($tmp) ? '/tmp' : $tmp;
+	private function getTmpDir() {
+		$tmp = ini_get('upload_tmp_dir');
+		return empty($tmp) ? '/tmp' : $tmp;
 	}
 
-private function getLockFile()
-	{
-	return $this->getTmpDir().'/updateRunning.lock';
+	private function getLockFile() {
+		return $this->getTmpDir() . '/updateRunning.lock';
 	}
 
-public function runUpdate()
-	{
-	if (file_exists($this->getLockFile()))
-		{
-		die('update still in progress');
+	public function runUpdate() {
+		if (file_exists($this->getLockFile())) {
+			die('update still in progress');
+		} else {
+			touch($this->getLockFile());
+			chmod($this->getLockFile() , 0600);
 		}
-	else
-		{
-		touch($this->getLockFile());
-		chmod($this->getLockFile(), 0600);
+		$this->DB->connect($this->Settings->getValue('sql_host'),
+			$this->Settings->getValue('sql_user'),
+			$this->Settings->getValue('sql_password'),
+			$this->Settings->getValue('sql_database'));
+		foreach ($this->Settings->getValue('locales') as $locale) {
+			$this->L10n->setLocale($locale);
+			PackageStatistics::updateDBCache();
+			UserStatistics::updateDBCache();
+			FunStatistics::updateDBCache();
 		}
-
-	$this->DB->connect(
-		$this->Settings->getValue('sql_host'),
-		$this->Settings->getValue('sql_user'),
-		$this->Settings->getValue('sql_password'),
-		$this->Settings->getValue('sql_database'));
-
-	foreach ($this->Settings->getValue('locales') as $locale)
-		{
-		$this->L10n->setLocale($locale);
-		PackageStatistics::updateDBCache();
-		UserStatistics::updateDBCache();
-		FunStatistics::updateDBCache();
-		}
-
-	unlink($this->getLockFile());
+		unlink($this->getLockFile());
 	}
-
 }
 
 $upd = new UpdatePkgstats();

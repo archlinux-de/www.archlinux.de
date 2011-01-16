@@ -20,34 +20,27 @@
 
 abstract class File extends Modul {
 
-abstract public function getFileName();
-abstract public function getFileSize();
-abstract public function getFileType();
-abstract public function getFileContent();
+	abstract public function getFileName();
+	abstract public function getFileSize();
+	abstract public function getFileType();
+	abstract public function getFileContent();
 
-protected function isAllowedType($type)
-	{
-	foreach ($this->Settings->getValue('allowed_mime_types') as $allowedType)
-		{
-		// prüfe keine exakte Übereinstimmung
-		if (strpos($type, $allowedType) === 0)
-			{
-			return true;
+	protected function isAllowedType($type) {
+		foreach ($this->Settings->getValue('allowed_mime_types') as $allowedType) {
+			// prüfe keine exakte Übereinstimmung
+			if (strpos($type, $allowedType) === 0) {
+				return true;
 			}
 		}
-
-	return false;
+		return false;
 	}
 }
 
+class FileException extends RuntimeException {
 
-class FileException extends RuntimeException{
-
-function __construct($message)
-	{
-	parent::__construct($message, 0);
+	function __construct($message) {
+		parent::__construct($message, 0);
 	}
-
 }
 
 ?>

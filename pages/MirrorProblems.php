@@ -20,11 +20,9 @@
 
 class MirrorProblems extends Page {
 
-public function prepare()
-	{
-	$this->Output->redirectToUrl('https://www.archlinux.org/mirrors/status/#outofsync');
+	public function prepare() {
+		$this->Output->redirectToUrl('https://www.archlinux.org/mirrors/status/#outofsync');
 	}
-
 }
 
 ?>
