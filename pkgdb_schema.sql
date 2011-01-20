@@ -89,7 +89,7 @@ CREATE TABLE `file_index` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `name` (`name`(15))
+  KEY `name` (`name`(20))
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -281,8 +281,8 @@ CREATE TABLE `packages` (
   KEY `builddate` (`builddate`),
   KEY `arch` (`arch`),
   KEY `packager` (`packager`),
-  KEY `name` (`name`(10)),
   KEY `mtime` (`mtime`),
+  KEY `name` (`name`(20)),
   FULLTEXT KEY `desc` (`desc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -378,4 +378,4 @@ CREATE TABLE `repositories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-12-30 11:00:47
+-- Dump completed on 2011-01-20  7:27:57
