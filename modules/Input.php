@@ -21,7 +21,6 @@
 require ('modules/Request.php');
 require ('modules/File.php');
 require ('modules/RemoteFile.php');
-require ('modules/UploadedFile.php');
 
 class Input extends Modul {
 
@@ -83,10 +82,6 @@ class Input extends Modul {
 
 	public function getRemoteFile($url) {
 		return new RemoteFile($url);
-	}
-
-	public function getUploadedFile($url) {
-		return new UploadedFile($url);
 	}
 }
 
