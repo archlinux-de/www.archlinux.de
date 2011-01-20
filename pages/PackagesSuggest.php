@@ -34,55 +34,51 @@ class PackagesSuggest extends Page {
 			$arch = $this->Input->Get->getInt('arch');
 			$repo = $this->Input->Get->getInt('repo');
 			$field = $this->Input->Get->getInt('field');
-			try {
-				switch ($field) {
-					case 0:
-						if (strlen($term) < 2 || strlen($term) > 10) {
-							return;
-						}
-						$stm = $this->DB->prepare('
-						SELECT
-							name
-						FROM
-							packages
-						WHERE
-							name LIKE ?
-							' . ($arch > 0 ? 'AND arch = ?' : '') . '
-							' . ($repo > 0 ? 'AND repository = ?' : '') . '
-						ORDER BY
-							name ASC
-						LIMIT 15
-						');
-						$stm->bindString($term . '%');
-						$arch > 0 && $stm->bindInteger($arch);
-						$repo > 0 && $stm->bindInteger($repo);
-					break;
-					case 2:
-						if (strlen($term) < 2 || strlen($term) > 15) {
-							return;
-						}
-						$stm = $this->DB->prepare('
-						SELECT
-							name
-						FROM
-							file_index
-						WHERE
-							name LIKE ?
-						ORDER BY
-							name ASC
-						LIMIT 15
-						');
-						$stm->bindString($term . '%');
-					break;
-					default:
+			switch ($field) {
+				case 0:
+					if (strlen($term) < 2 || strlen($term) > 10) {
 						return;
-				}
-				foreach ($stm->getColumnSet() as $suggestion) {
-					$this->suggestions[] = $suggestion;
-				}
-				$stm->close();
-			} catch(DBNoDataException $e) {
-				$stm->close();
+					}
+					$stm = DB::prepare('
+					SELECT
+						name
+					FROM
+						packages
+					WHERE
+						name LIKE :name
+						' . ($arch > 0 ? 'AND arch = :arch' : '') . '
+						' . ($repo > 0 ? 'AND repository = :repository' : '') . '
+					ORDER BY
+						name ASC
+					LIMIT 15
+					');
+					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
+					$arch > 0 && $stm->bindParam('arch', $arch, PDO::PARAM_INT);
+					$repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
+				break;
+				case 2:
+					if (strlen($term) < 2 || strlen($term) > 15) {
+						return;
+					}
+					$stm = DB::prepare('
+					SELECT
+						name
+					FROM
+						file_index
+					WHERE
+						name LIKE :name
+					ORDER BY
+						name ASC
+					LIMIT 15
+					');
+					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
+				break;
+				default:
+					return;
+			}
+			$stm->execute();
+			while ($suggestion = $stm->fetchColumn()) {
+				$this->suggestions[] = $suggestion;
 			}
 		} catch(RequestException $e) {
 		}

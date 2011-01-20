@@ -22,7 +22,7 @@ require_once ('Package.php');
 
 class PackageDB {
 
-	private $mirror = 'http://ftp.archlinux.org/';
+	private $mirror = 'http://mirrors.kernel.org/archlinux/';
 	private $repository = 'core';
 	private $architecture = 'i686';
 	private $DBtargz = '/tmp/db.tar.gz';

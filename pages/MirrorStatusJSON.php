@@ -40,34 +40,30 @@ class MirrorStatusJSON extends Page {
 	}
 
 	public function prepare() {
-		try {
-			$mirrors = $this->DB->getRowSet('
-			SELECT
-				host,
-				country,
-				lastsync,
-				delay,
-				time
-			FROM
-				mirrors
-			');
-			$json = array(
-				'status' => '200 OK',
-				'location' => $this->Input->getClientCountryName()
+		$mirrors = DB::query('
+		SELECT
+			host,
+			country,
+			lastsync,
+			delay,
+			time
+		FROM
+			mirrors
+		');
+		$json = array(
+			'status' => '200 OK',
+			'location' => $this->Input->getClientCountryName()
+		);
+		foreach ($mirrors as $mirror) {
+			$json['servers'][] = array(
+				'url' => $mirror['host'],
+				'location' => $mirror['country'],
+				'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
+				'average delay' => $mirror['delay'] ? : '',
+				'average performance' => $mirror['time'] ? : ''
 			);
-			foreach ($mirrors as $mirror) {
-				$json['servers'][] = array(
-					'url' => $mirror['host'],
-					'location' => $mirror['country'],
-					'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
-					'average delay' => $mirror['delay'] ? : '',
-					'average performance' => $mirror['time'] ? : ''
-				);
-			}
-			$this->page = json_encode($json);
-		} catch(DBNoDataException $e) {
-			$this->showFailure('No mirrors found');
 		}
+		$this->page = json_encode($json);
 	}
 }
 

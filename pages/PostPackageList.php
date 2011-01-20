@@ -86,42 +86,40 @@ class PostPackageList extends Page {
 		$this->checkIfAlreadySubmitted();
 		$country = $this->Input->getClientCountryName();
 		try {
-			$stm = $this->DB->prepare('
+			$stm = DB::prepare('
 			INSERT INTO
 				pkgstats_users
 			SET
-				ip = ?,
-				time = ?,
-				arch = ?,
-				country = ' . (!empty($country) ? '?' : 'NULL') . ',
-				mirror = ' . (!empty($mirror) ? '?' : 'NULL') . ',
-				packages = ?
+				ip = :ip,
+				time = :time,
+				arch = :arch,
+				country = ' . (!empty($country) ? ':country' : 'NULL') . ',
+				mirror = ' . (!empty($mirror) ? ':mirror' : 'NULL') . ',
+				packages = :packages
 			');
-			$stm->bindString(sha1($this->Input->getClientIP()));
-			$stm->bindInteger($this->Input->getTime());
-			$stm->bindString(htmlspecialchars($arch));
-			!empty($country) && $stm->bindString(htmlspecialchars($country));
-			!empty($mirror) && $stm->bindString(htmlspecialchars($mirror));
-			$stm->bindInteger($packageCount);
+			$stm->bindValue('ip', sha1($this->Input->getClientIP()), PDO::PARAM_STR);
+			$stm->bindValue('time', $this->Input->getTime(), PDO::PARAM_INT);
+			$stm->bindValue('arch', htmlspecialchars($arch), PDO::PARAM_STR);
+			!empty($country) && $stm->bindValue('country', htmlspecialchars($country), PDO::PARAM_STR);
+			!empty($mirror) && $stm->bindValue('mirror', htmlspecialchars($mirror), PDO::PARAM_STR);
+			$stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
 			$stm->execute();
-			$stm->close();
-			$stm = $this->DB->prepare('
+			$stm = DB::prepare('
 			INSERT INTO
 				pkgstats_packages
 			SET
-				pkgname = ?,
-				month = ?,
+				pkgname = :pkgname,
+				month = :month,
 				count = 1
 			ON DUPLICATE KEY UPDATE
 				count = count + 1
 			');
 			foreach ($packages as $package) {
-				$stm->bindString(htmlspecialchars($package));
-				$stm->bindInteger(date('Ym', $this->Input->getTime()));
+				$stm->bindValue('pkgname', htmlspecialchars($package), PDO::PARAM_STR);
+				$stm->bindValue('month', date('Ym', $this->Input->getTime()), PDO::PARAM_INT);
 				$stm->execute();
 			}
-			$stm->close();
-		} catch(DBException $e) {
+		} catch(PDOException $e) {
 			$this->Output->setStatus(Output::INTERNAL_SERVER_ERROR);
 			$this->showFailure($e->getMessage());
 		}
@@ -149,29 +147,25 @@ class PostPackageList extends Page {
 	}
 
 	private function checkIfAlreadySubmitted() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				COUNT(*) AS count,
-				MIN(time) AS mintime
-			FROM
-				pkgstats_users
-			WHERE
-				time >= ?
-				AND ip = ?
-			GROUP BY
-				ip
-			');
-			$stm->bindInteger($this->Input->getTime() - $this->delay);
-			$stm->bindString(sha1($this->Input->getClientIP()));
-			$log = $stm->getRow();
-			$stm->close();
-			if ($log['count'] >= $this->count) {
-				$this->Output->setStatus(Output::BAD_REQUEST);
-				$this->showFailure('You already submitted your data ' . $this->count . ' times since ' . $this->L10n->getGmDateTime($log['mintime']) . ' using the IP ' . $this->Input->getClientIP() . ".\n         You are blocked until " . $this->L10n->getGmDateTime($log['mintime'] + $this->delay));
-			}
-		} catch(DBNoDataException $e) {
-			$stm->close();
+		$stm = DB::prepare('
+		SELECT
+			COUNT(*) AS count,
+			MIN(time) AS mintime
+		FROM
+			pkgstats_users
+		WHERE
+			time >= :time
+			AND ip = :ip
+		GROUP BY
+			ip
+		');
+		$stm->bindValue('time', $this->Input->getTime() - $this->delay, PDO::PARAM_INT);
+		$stm->bindValue('ip', sha1($this->Input->getClientIP()), PDO::PARAM_STR);
+		$stm->execute();
+		$log = $stm->fetch();
+		if ($log !== false && $log['count'] >= $this->count) {
+			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->showFailure('You already submitted your data ' . $this->count . ' times since ' . $this->L10n->getGmDateTime($log['mintime']) . ' using the IP ' . $this->Input->getClientIP() . ".\n         You are blocked until " . $this->L10n->getGmDateTime($log['mintime'] + $this->delay));
 		}
 	}
 }

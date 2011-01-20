@@ -25,6 +25,7 @@ require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
+require ('modules/DB.php');
 
 class UpdateMirrors extends Modul {
 
@@ -45,10 +46,6 @@ class UpdateMirrors extends Modul {
 			chmod($this->getLockFile() , 0600);
 		}
 		try {
-			$this->DB->connect($this->Settings->getValue('sql_host'),
-				$this->Settings->getValue('sql_user'),
-				$this->Settings->getValue('sql_password'),
-				$this->Settings->getValue('sql_database'));
 			$status = $this->getMirrorStatus();
 			if ($status['version'] != 1) {
 				throw new RuntimeException('incompatible mirrorstatus version');
@@ -66,22 +63,22 @@ class UpdateMirrors extends Modul {
 
 	private function updateMirrorlist($mirrors) {
 		try {
-			$this->DB->execute('CREATE TEMPORARY TABLE tmirrors LIKE mirrors');
-			$stm = $this->DB->prepare('
+			DB::query('CREATE TEMPORARY TABLE tmirrors LIKE mirrors');
+			$stm = DB::prepare('
 			INSERT INTO
 				tmirrors
 			SET
-				host = ?,
-				protocol = ?,
-				country = ?,
-				lastsync = ?,
-				delay = ?,
-				time = ?
+				host = :host,
+				protocol = :protocol,
+				country = :country,
+				lastsync = :lastsync,
+				delay = :delay,
+				time = :time
 			');
 			foreach ($mirrors as $mirror) {
-				$stm->bindString($mirror['url']);
-				$stm->bindString($mirror['protocol']);
-				$stm->bindString($mirror['country']);
+				$stm->bindParam('host', $mirror['url'], PDO::PARAM_STR);
+				$stm->bindParam('protocol', $mirror['protocol'], PDO::PARAM_STR);
+				$stm->bindParam('country', $mirror['country'], PDO::PARAM_STR);
 				$last_sync = date_parse($mirror['last_sync']);
 				$last_sync = $last_sync['error_count'] > 0 
 					? null 
@@ -91,14 +88,13 @@ class UpdateMirrors extends Modul {
 						$last_sync['month'],
 						$last_sync['day'],
 						$last_sync['year']);
-				$stm->bindInteger($last_sync);
-				$stm->bindInteger($mirror['delay']);
-				$stm->bindDouble($mirror['duration_avg']);
+				$stm->bindParam('lastsync', $last_sync, PDO::PARAM_INT);
+				$stm->bindParam('delay', $mirror['delay'], PDO::PARAM_INT);
+				$stm->bindParam('time', $mirror['duration_avg'], PDO::PARAM_STR);
 				$stm->execute();
 			}
-			$stm->close();
-			$this->DB->execute('TRUNCATE mirrors');
-			$this->DB->execute('INSERT INTO mirrors SELECT * FROM tmirrors');
+			DB::query('TRUNCATE mirrors');
+			DB::query('INSERT INTO mirrors SELECT * FROM tmirrors');
 		} catch(RuntimeException $e) {
 			echo ('Warning: updateMirrorlist failed: ' . $e->getMessage());
 		}

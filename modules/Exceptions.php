@@ -65,7 +65,7 @@ function ExceptionHandler(Exception $e) {
 				header('Content-Type: text/html; charset=UTF-8');
 			}
 			if (php_sapi_name() == 'cli') {
-				echo strip_tags(unhtmlspecialchars($screen));
+				echo strip_tags(htmlspecialchars_decode($screen));
 			} else {
 				echo $screen;
 			}
@@ -94,7 +94,7 @@ function ExceptionHandler(Exception $e) {
 				header('Content-Length: ' . strlen($screen));
 			}
 			if (php_sapi_name() == 'cli') {
-				echo strip_tags(unhtmlspecialchars($screen));
+				echo strip_tags(htmlspecialchars_decode($screen));
 			} else {
 				echo $screen;
 			}

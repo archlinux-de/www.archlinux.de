@@ -170,19 +170,19 @@ class FunStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPackageStatistics($packages) {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
-		');
-		$stm = self::get('DB')->prepare('
+		')->fetchColumn();
+		$stm = DB::prepare('
 		SELECT
 			SUM(count)
 		FROM
 			pkgstats_packages
 		WHERE
-			pkgname = ?
+			pkgname = :pkgname
 		GROUP BY
 			pkgname
 		');
@@ -195,12 +195,9 @@ class FunStatistics extends Page implements IDBCachable {
 				);
 			}
 			foreach ($pkgnames as $pkgname) {
-				$stm->bindString(htmlspecialchars($pkgname));
-				try {
-					$count = $stm->getColumn();
-				} catch(DBNoDataException $e) {
-					$count = 0;
-				}
+				$stm->bindValue('pkgname', htmlspecialchars($pkgname), PDO::PARAM_STR);
+				$stm->execute();
+				$count = $stm->fetchColumn() ?: 0;
 				if (isset($packageArray[htmlspecialchars($package) ])) {
 					$packageArray[htmlspecialchars($package) ]+= $count;
 				} else {
@@ -208,7 +205,6 @@ class FunStatistics extends Page implements IDBCachable {
 				}
 			}
 		}
-		$stm->close();
 		arsort($packageArray);
 		foreach ($packageArray as $name => $count) {
 			$list.= '<tr><th>' . $name . '</th><td>' . self::getBar($count, $total) . '</td></tr>';

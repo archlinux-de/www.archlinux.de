@@ -29,7 +29,7 @@ require ('pages/RepositoryStatistics.php');
 
 class UpdateFileDB extends Modul {
 
-	private $mirror = 'ftp://ftp.archlinux.org/';
+	private $mirror = 'http://mirrors.kernel.org/archlinux/';
 	private $curmtime = array();
 	private $lastmtime = array();
 	private $changed = false;
@@ -45,10 +45,6 @@ class UpdateFileDB extends Modul {
 			touch($this->getLockFile());
 			chmod($this->getLockFile() , 0600);
 		}
-		$this->DB->connect($this->Settings->getValue('sql_host'),
-			$this->Settings->getValue('sql_user'),
-			$this->Settings->getValue('sql_password'),
-			$this->Settings->getValue('sql_database'));
 		$this->mirror = $this->Settings->getValue('pkgdb_mirror');
 		foreach ($this->Settings->getValue('pkgdb_repositories') as $repo) {
 			foreach ($this->Settings->getValue('pkgdb_architectures') as $arch) {
@@ -66,37 +62,30 @@ class UpdateFileDB extends Modul {
 	}
 
 	private function setLogEntry($name, $time) {
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		REPLACE INTO
 			log
 		SET
-			name = ?,
-			time = ?
+			name = :name,
+			time = :time
 		');
-		$stm->bindString($name);
-		$stm->bindInteger($time);
+		$stm->bindParam('name', $name, PDO::PARAM_STR);
+		$stm->bindParam('time', $time, PDO::PARAM_INT);
 		$stm->execute();
-		$stm->close();
 	}
 
 	private function getLogEntry($name) {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				time
-			FROM
-				log
-			WHERE
-				name = ?
-			');
-			$stm->bindString($name);
-			$time = $stm->GetColumn();
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$time = 0;
-		}
-		return $time;
+		$stm = DB::prepare('
+		SELECT
+			time
+		FROM
+			log
+		WHERE
+			name = :name
+		');
+		$stm->bindParam('name', $name, PDO::PARAM_STR);
+		$stm->execute();
+		return $stm->fetchColumn() ?: 0;
 	}
 
 	private function setCurMTime($repo, $arch, $mtime) {
@@ -192,92 +181,84 @@ class UpdateFileDB extends Modul {
 	}
 
 	private function insertFiles($repo, $arch, $package, $files) {
-		try {
-			$pkgid = $this->getPackageID($repo, $arch, $package);
-			$stm = $this->DB->prepare('
-			DELETE FROM
-				package_file_index
-			WHERE
-				package = ?
-			');
-			$stm->bindInteger($pkgid);
-			$stm->execute();
-			$stm->close();
+		$pkgid = $this->getPackageID($repo, $arch, $package);
+		$stm = DB::prepare('
+		DELETE FROM
+			package_file_index
+		WHERE
+			package = :package
+		');
+		$stm->bindParam('package', $pkgid, PDO::PARAM_INT);
+		$stm->execute();
 
-			$stm = $this->DB->prepare('
-			DELETE FROM
-				files
-			WHERE
-				package = ?
-			');
-			$stm->bindInteger($pkgid);
-			$stm->execute();
-			$stm->close();
+		$stm = DB::prepare('
+		DELETE FROM
+			files
+		WHERE
+			package = :package
+		');
+		$stm->bindParam('package', $pkgid, PDO::PARAM_INT);
+		$stm->execute();
 
-			$stm1 = $this->DB->prepare('
-			INSERT INTO
-				files
-			SET
-				package = ?,
-				path = ?
-			');
+		$stm1 = DB::prepare('
+		INSERT INTO
+			files
+		SET
+			package = :package,
+			path = :path
+		');
 
-			$stm2 = $this->DB->prepare('
-			INSERT INTO
-				package_file_index
-			SET
-				package = ?,
-				file_index = ?
-			');
+		$stm2 = DB::prepare('
+		INSERT INTO
+			package_file_index
+		SET
+			package = :package,
+			file_index = :file
+		');
 
-			for ($file = 1;$file < count($files);$file++) {
-				$stm1->bindInteger($pkgid);
-				$stm1->bindString(mb_substr(htmlspecialchars($files[$file]) , 0, 255, 'UTF-8'));
-				$stm1->execute();
-				$filename = mb_substr(htmlspecialchars(basename($files[$file])) , 0, 100, 'UTF-8');
-				if (strlen($filename) > 2) {
-					$stm2->bindInteger($pkgid);
-					$stm2->bindInteger($this->getFileIndexID($filename));
-					$stm2->execute();
-				}
+		for ($file = 1;$file < count($files);$file++) {
+			$stm1->bindParam('package', $pkgid, PDO::PARAM_INT);
+			$stm1->bindValue('path', mb_substr(htmlspecialchars($files[$file]) , 0, 255, 'UTF-8'), PDO::PARAM_STR);
+			$stm1->execute();
+			$filename = mb_substr(htmlspecialchars(basename($files[$file])) , 0, 100, 'UTF-8');
+			if (strlen($filename) > 2) {
+				$stm2->bindParam('package', $pkgid, PDO::PARAM_INT);
+				$stm2->bindValue('file', $this->getFileIndexID($filename), PDO::PARAM_INT);
+				$stm2->execute();
 			}
-			$stm1->close();
-			$stm2->close();
-		} catch(DBNoDataException $e) {
 		}
 	}
 
 	private function getFileIndexID($file) {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				id
-			FROM
-				file_index
-			WHERE
-				name = ?
-			');
-			$stm->bindString($file);
-			$id = $stm->getColumn();
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$stm = $this->DB->prepare('
+		$stm = DB::prepare('
+		SELECT
+			id
+		FROM
+			file_index
+		WHERE
+			name = :name
+		');
+		$stm->bindParam('name', $file, PDO::PARAM_STR);
+		$stm->execute();
+		$id = $stm->fetchColumn();
+
+		if ($id === false) {
+			$stm = DB::prepare('
 			INSERT INTO
 				file_index
 			SET
-				name = ?
+				name = :name
 			');
-			$stm->bindString($file);
+			$stm->bindParam('name', $file, PDO::PARAM_STR);
 			$stm->execute();
-			$id = $this->DB->getInsertId();
-			$stm->close();
+			$id = DB::lastInsertId();
 		}
+
 		return $id;
 	}
 
 	private function getPackageID($repo, $arch, $package) {
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		SELECT
 			packages.id
 		FROM
@@ -285,22 +266,21 @@ class UpdateFileDB extends Modul {
 			architectures,
 			repositories
 		WHERE
-			packages.name = ?
-			AND repositories.name = ?
-			AND architectures.name = ?
+			packages.name = :package
+			AND repositories.name = :repository
+			AND architectures.name = :architecture
 			AND packages.arch = architectures.id
 			AND packages.repository = repositories.id
 		');
-		$stm->bindString(htmlspecialchars(preg_replace('/^(.+)-.+?-.+?$/', '$1', $package)));
-		$stm->bindString(htmlspecialchars($repo));
-		$stm->bindString(htmlspecialchars($arch));
-		$id = $stm->getColumn();
-		$stm->close();
-		return $id;
+		$stm->bindValue('package', htmlspecialchars(preg_replace('/^(.+)-.+?-.+?$/', '$1', $package)), PDO::PARAM_STR);
+		$stm->bindValue('repository', htmlspecialchars($repo), PDO::PARAM_STR);
+		$stm->bindValue('architecture', htmlspecialchars($arch), PDO::PARAM_STR);
+		$stm->execute();
+		return $stm->fetchColumn();
 	}
 
 	private function removeUnusedEntries() {
-		$this->DB->execute('
+		DB::query('
 		DELETE FROM
 			file_index
 		WHERE

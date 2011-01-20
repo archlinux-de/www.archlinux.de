@@ -122,7 +122,7 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getCommonPackageUsageStatistics() {
-		return self::get('DB')->getRow('
+		return DB::query('
 		SELECT
 			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
 			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
@@ -133,17 +133,17 @@ class UserStatistics extends Page implements IDBCachable {
 			(SELECT MIN(packages) FROM pkgstats_users) AS mincount,
 			(SELECT MAX(packages) FROM pkgstats_users) AS maxcount,
 			(SELECT AVG(packages) FROM pkgstats_users) AS avgcount
-		');
+		')->fetch();
 	}
 
 	private static function getCountryStatistics() {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(country)
 		FROM
 			pkgstats_users
-		');
-		$countries = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$countries = DB::query('
 		SELECT
 			country,
 			COUNT(country) AS count
@@ -165,13 +165,13 @@ class UserStatistics extends Page implements IDBCachable {
 
 	private static function getRelativeCountryStatistics() {
 		$relativeCountries = array();
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(country)
 		FROM
 			pkgstats_users
-		');
-		$countries = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$countries = DB::query('
 		SELECT
 			country,
 			COUNT(country) AS count
@@ -236,13 +236,13 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getMirrorStatistics() {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(mirror)
 		FROM
 			pkgstats_users
-		');
-		$mirrors = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$mirrors = DB::query('
 		SELECT
 			mirror,
 			COUNT(mirror) AS count
@@ -278,21 +278,21 @@ class UserStatistics extends Page implements IDBCachable {
 			'http' => 0,
 			'ftp' => 0
 		);
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(mirror)
 		FROM
 			pkgstats_users
-		');
+		')->fetchColumn();
 		foreach ($protocolls as $protocoll => $count) {
-			$protocolls[$protocoll] = self::get('DB')->getColumn('
+			$protocolls[$protocoll] = DB::query('
 			SELECT
 				COUNT(mirror)
 			FROM
 				pkgstats_users
 			WHERE
 				mirror LIKE \'' . $protocoll . '%\'
-			');
+			')->fetchColumn();
 		}
 		arsort($protocolls);
 		$list = '';
@@ -369,13 +369,13 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getSubmissionsPerArchitecture() {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
-		');
-		$arches = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$arches = DB::query('
 		SELECT
 			COUNT(*) AS count,
 			arch AS name

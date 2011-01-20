@@ -24,7 +24,7 @@ class GetRecentPackages extends GetFile {
 		$lastdate = 0;
 		$entries = '';
 		try {
-			$packages = $this->DB->getRowSet('
+			$packages = DB::query('
 			SELECT
 				packages.id,
 				packages.name,

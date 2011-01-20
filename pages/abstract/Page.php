@@ -57,10 +57,6 @@ abstract class Page extends Modul implements IOutput {
 	}
 
 	public function __construct() {
-		$this->DB->connect($this->Settings->getValue('sql_host'),
-			$this->Settings->getValue('sql_user'),
-			$this->Settings->getValue('sql_password'),
-			$this->Settings->getValue('sql_database'));
 		$this->variables['body'] = '';
 		$this->variables['title'] = '';
 		$this->variables['meta.robots'] = 'index,follow';

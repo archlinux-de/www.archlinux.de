@@ -36,38 +36,33 @@ class Packagers extends Page {
 		} catch(RequestException $e) {
 		}
 		$this->sort = $this->Input->Get->getInt('sort', 0) > 0 ? 1 : 0;
-		$packages = $this->DB->getColumn('SELECT COUNT(*) FROM packages');
-		try {
-			$stm = $this->DB->prepare('
-			 SELECT
-			 	packagers.id,
-			 	packagers.name,
-			 	packagers.email,
-			 	(
-					SELECT
-						COUNT(packages.id)
-					FROM
-						packages
-					WHERE
-						packages.packager = packagers.id
-			 	) AS packages,
-			 	(
-					SELECT
-						MAX(packages.builddate)
-					FROM
-						packages
-					WHERE
-						packages.packager = packagers.id
-			 	) AS lastbuilddate
-			 FROM
-			 	packagers
-			 ORDER BY
-			 	' . $this->orderby . ' ' . ($this->sort > 0 ? 'DESC' : 'ASC') . '
-			');
-			$packagers = $stm->getRowSet();
-		} catch(DBNoDataException $e) {
-			$packagers = array();
-		}
+		$packages = DB::query('SELECT COUNT(*) FROM packages')->fetchColumn();
+		$packagers = DB::query('
+			SELECT
+			packagers.id,
+			packagers.name,
+			packagers.email,
+			(
+				SELECT
+					COUNT(packages.id)
+				FROM
+					packages
+				WHERE
+					packages.packager = packagers.id
+			) AS packages,
+			(
+				SELECT
+					MAX(packages.builddate)
+				FROM
+					packages
+				WHERE
+					packages.packager = packagers.id
+			) AS lastbuilddate
+			FROM
+			packagers
+			ORDER BY
+			' . $this->orderby . ' ' . ($this->sort > 0 ? 'DESC' : 'ASC') . '
+		');
 		$body = '
 		<table class="pretty-table">
 			<tr>

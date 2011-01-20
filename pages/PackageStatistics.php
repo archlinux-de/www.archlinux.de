@@ -95,7 +95,7 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getCommonPackageUsageStatistics() {
-		return self::get('DB')->getRow('
+		return DB::query('
 		SELECT
 			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
 			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
@@ -106,36 +106,33 @@ class PackageStatistics extends Page implements IDBCachable {
 			(SELECT MIN(packages) FROM pkgstats_users) AS mincount,
 			(SELECT MAX(packages) FROM pkgstats_users) AS maxcount,
 			(SELECT AVG(packages) FROM pkgstats_users) AS avgcount
-		');
+		')->fetch();
 	}
 
 	private static function getRepositoryStatistics() {
-		try {
-			$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
-		} catch(DBNoDataException $e) {
-			$repos = array();
-		}
-		$total = self::get('DB')->getRow('
+		$repos = DB::query('SELECT id, name FROM repositories');
+		$total = DB::query('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
 				packages
-			');
-		$stm = self::get('DB')->prepare('
+			')->fetch();
+		$stm = DB::prepare('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
 				packages
 			WHERE
-				repository = ?
+				repository = :repository
 			');
 		$list = '';
 		foreach ($repos as $repo) {
-			try {
-				$stm->bindInteger($repo['id']);
-				$data = $stm->getRow();
+			$stm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$stm->execute();
+			$data = $stm->fetch();
+			if ($data !== false) {
 				$list.= '<tr>
 					<th>' . $repo['name'] . '</th>
 					<td style="padding:0px;margin:0px;">
@@ -153,10 +150,8 @@ class PackageStatistics extends Page implements IDBCachable {
 						</div>
 					</td>
 				</tr>';
-			} catch(DBNoDataException $e) {
 			}
 		}
-		$stm->close();
 		return $list;
 	}
 
@@ -252,13 +247,13 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getSubmissionsPerArchitecture() {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
-		');
-		$arches = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$arches = DB::query('
 		SELECT
 			COUNT(*) AS count,
 			arch AS name
@@ -275,18 +270,14 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPackagesPerRepository() {
-		try {
-			$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')')->toArray();
-		} catch(DBNoDataException $e) {
-			$repos = array();
-		}
-		$total = self::get('DB')->getColumn('
+		$repos = DB::query('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')');
+		$total = DB::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
-		');
-		$countStm = self::get('DB')->prepare('
+		')->fetchColumn();
+		$countStm = DB::prepare('
 		SELECT
 			COUNT(*)
 		FROM
@@ -296,7 +287,7 @@ class PackageStatistics extends Page implements IDBCachable {
 			FROM
 				packages
 			WHERE
-				repository = ?
+				repository = :repository
 			) AS total
 			JOIN
 			(
@@ -309,7 +300,7 @@ class PackageStatistics extends Page implements IDBCachable {
 			) AS used
 			ON total.name = used.pkgname
 		');
-		$totalStm = self::get('DB')->prepare('
+		$totalStm = DB::prepare('
 		SELECT
 			COUNT(*)
 		FROM
@@ -319,30 +310,30 @@ class PackageStatistics extends Page implements IDBCachable {
 			FROM
 				packages
 			WHERE
-				repository = ?
+				repository = :repository
 			) AS total
 		');
 		$list = '';
 		foreach ($repos as $repo) {
-			$countStm->bindInteger($repo['id']);
-			$count = $countStm->getColumn();
-			$totalStm->bindInteger($repo['id']);
-			$total = $totalStm->getColumn();
+			$countStm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$countStm->execute();
+			$count = $countStm->fetchColumn();
+			$totalStm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$totalStm->execute();
+			$total = $totalStm->fetchColumn();
 			$list.= '<tr><th>' . $repo['name'] . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
 		}
-		$countStm->close();
-		$totalStm->close();
 		return $list;
 	}
 
 	private static function getPopularPackagesPerRepository() {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
-		');
-		$repos = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$repos = DB::query('
 		SELECT
 			name,
 			id
@@ -351,14 +342,14 @@ class PackageStatistics extends Page implements IDBCachable {
 		WHERE
 			name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')
 		');
-		$stm = self::get('DB')->prepare('
+		$packages = DB::prepare('
 		SELECT
 			pkgname,
 			SUM(count) AS count
 		FROM
 			pkgstats_packages
 		WHERE
-			pkgname IN (SELECT name FROM packages WHERE repository = ?)
+			pkgname IN (SELECT name FROM packages WHERE repository = :repository)
 		GROUP BY
 			pkgname
 		HAVING
@@ -370,32 +361,28 @@ class PackageStatistics extends Page implements IDBCachable {
 		$list = '';
 		$repoid = 0;
 		foreach ($repos as $repo) {
-			try {
-				$stm->bindInteger($repo['id']);
-				$packages = $stm->getRowSet();
-				if ($repoid != $repo['id']) {
-					$list.= '<tr><th>' . $repo['name'] . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
-				}
-				foreach ($packages as $package) {
-					$list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
-				}
-				$list.= '</table></div></td></tr>';
-				$repoid = $repo['id'];
-			} catch(DBNoDataException $e) {
+			$packages->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$packages->execute();
+			if ($repoid != $repo['id']) {
+				$list.= '<tr><th>' . $repo['name'] . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
 			}
+			foreach ($packages as $package) {
+				$list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
+			}
+			$list.= '</table></div></td></tr>';
+			$repoid = $repo['id'];
 		}
-		$stm->close();
 		return $list;
 	}
 
 	private static function getPopularUnofficialPackages() {
-		$total = self::get('DB')->getColumn('
+		$total = DB::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
-		');
-		$packages = self::get('DB')->getRowSet('
+		')->fetchColumn();
+		$packages = DB::query('
 		SELECT
 			pkgname,
 			SUM(count) AS count
@@ -411,15 +398,11 @@ class PackageStatistics extends Page implements IDBCachable {
 			count DESC,
 			pkgname ASC
 		');
-		$list = '';
-		try {
-			$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
-			foreach ($packages as $package) {
-				$list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
-			}
-			$list.= '</table></div></td></tr>';
-		} catch(DBNoDataException $e) {
+		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
+		foreach ($packages as $package) {
+			$list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
 		}
+		$list.= '</table></div></td></tr>';
 		return $list;
 	}
 }

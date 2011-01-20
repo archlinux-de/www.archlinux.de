@@ -61,31 +61,28 @@ class MirrorStatus extends Page {
 				<th title="Average difference between time of probe and last sychronization" style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->L10n->getText('Delay') . '</a></th>
 				<th title="Date of last synchronization (Y-m-d) (GMT)"><a href="?page=MirrorStatus;orderby=lastsync;sort=' . $reverseSort . '">' . $this->L10n->getText('Last update') . '</a></th>
 			</tr>';
-		try {
-			$mirrors = $this->DB->getRowSet('
-			SELECT
-				host,
-				country,
-				lastsync,
-				delay,
-				time
-			FROM
-				mirrors
-			WHERE
-				lastsync >= ' . ($this->Input->getTime() - $this->range) . '
-			ORDER BY
-				' . $this->orderby . ' ' . $this->sort . '
-			');
-			foreach ($mirrors as $mirror) {
-				$body.= '<tr>
-					<td><a href="' . $mirror['host'] . '" rel="nofollow">' . $mirror['host'] . '</a></td>
-					<td>' . $mirror['country'] . '</td>
-					<td>' . $this->L10n->getEpoch($mirror['time']) . '</td>
-					<td>' . $this->L10n->getEpoch($mirror['delay']) . '</td>
-					<td>' . $this->L10n->getGmDateTime($mirror['lastsync']) . '</td>
-				</tr>';
-			}
-		} catch(DBNoDataException $e) {
+		$mirrors = DB::query('
+		SELECT
+			host,
+			country,
+			lastsync,
+			delay,
+			time
+		FROM
+			mirrors
+		WHERE
+			lastsync >= ' . ($this->Input->getTime() - $this->range) . '
+		ORDER BY
+			' . $this->orderby . ' ' . $this->sort . '
+		');
+		foreach ($mirrors as $mirror) {
+			$body.= '<tr>
+				<td><a href="' . $mirror['host'] . '" rel="nofollow">' . $mirror['host'] . '</a></td>
+				<td>' . $mirror['country'] . '</td>
+				<td>' . $this->L10n->getEpoch($mirror['time']) . '</td>
+				<td>' . $this->L10n->getEpoch($mirror['delay']) . '</td>
+				<td>' . $this->L10n->getGmDateTime($mirror['lastsync']) . '</td>
+			</tr>';
 		}
 		$body.= '</table>';
 		$this->setValue('body', $body);

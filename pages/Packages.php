@@ -66,41 +66,39 @@ class Packages extends Page {
 			$this->search = '';
 		}
 		$this->searchField = $this->Input->Post->getInt('searchfield', $this->Input->Get->getInt('searchfield', 0));
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				packages.version,
-				packages.desc,
-				packages.builddate,
-				architectures.name AS architecture,
-				repositories.name AS repository
-			FROM
-				packages,
-				repositories,
-				architectures
-				' . ($this->group > 0 ? ',package_group' : '') . '
-				' . (!empty($this->search) && $this->searchField == 2 ? ',file_index, package_file_index' : '') . '
-			WHERE
-				packages.repository = repositories.id
-				' . ($this->repository > 0 ? 'AND packages.repository = ' . $this->repository : '') . '
-				AND packages.arch = architectures.id
-				' . ($this->architecture > 0 ? 'AND packages.arch = ' . $this->architecture : '') . '
-				' . ($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = ' . $this->group : '') . '
-				' . (empty($this->search) ? '' : $this->getSearchStatement()) . '
-				' . (!empty($this->search) && $this->searchField == 2 ? ' GROUP BY packages.id ' : ' ') . '
-				' . ($this->packager > 0 ? ' AND packages.packager = ' . $this->packager : '') . '
-			ORDER BY
-				' . $this->orderby . ' ' . ($this->sort > 0 ? 'DESC' : 'ASC') . '
-			LIMIT
-				' . $this->package . ',' . $this->maxPackages . '
-			');
-			!empty($this->search) && $stm->bindString($this->searchString);
-			$packages = $stm->getRowSet();
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
+
+		$packages = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			packages.version,
+			packages.desc,
+			packages.builddate,
+			architectures.name AS architecture,
+			repositories.name AS repository
+		FROM
+			packages,
+			repositories,
+			architectures
+			' . ($this->group > 0 ? ',package_group' : '') . '
+			' . (!empty($this->search) && $this->searchField == 2 ? ',file_index, package_file_index' : '') . '
+		WHERE
+			packages.repository = repositories.id
+			' . ($this->repository > 0 ? 'AND packages.repository = ' . $this->repository : '') . '
+			AND packages.arch = architectures.id
+			' . ($this->architecture > 0 ? 'AND packages.arch = ' . $this->architecture : '') . '
+			' . ($this->group > 0 ? 'AND package_group.package = packages.id AND package_group.group = ' . $this->group : '') . '
+			' . (empty($this->search) ? '' : $this->getSearchStatement()) . '
+			' . (!empty($this->search) && $this->searchField == 2 ? ' GROUP BY packages.id ' : ' ') . '
+			' . ($this->packager > 0 ? ' AND packages.packager = ' . $this->packager : '') . '
+		ORDER BY
+			' . $this->orderby . ' ' . ($this->sort > 0 ? 'DESC' : 'ASC') . '
+		LIMIT
+			' . $this->package . ',' . $this->maxPackages . '
+		');
+		!empty($this->search) && $packages->bindValue('search', $this->searchString, PDO::PARAM_STR);
+		$packages->execute();
+
 		$body = '
 		<div class="box">
 		<h2>Paket-Suche</h2>
@@ -146,7 +144,6 @@ class Packages extends Page {
 		</form>
 		</div>';
 		$body.= $this->showPackageList($packages);
-		isset($stm) && $stm->close();
 		$this->setValue('body', $body);
 	}
 
@@ -154,19 +151,19 @@ class Packages extends Page {
 		switch ($this->searchField) {
 			case 0:
 				$this->searchString = '%' . $this->search . '%';
-				return 'AND packages.name LIKE ?';
+				return 'AND packages.name LIKE :search';
 			break;
 			case 1:
 				$this->searchString = $this->search;
-				return 'AND MATCH(packages.desc) AGAINST ( ? )';
+				return 'AND MATCH(packages.desc) AGAINST ( :search )';
 			break;
 			case 2:
 				$this->searchString = $this->search . '%';
-				return 'AND package_file_index.package = packages.id AND file_index.id = package_file_index.file_index AND file_index.name LIKE ?';
+				return 'AND package_file_index.package = packages.id AND file_index.id = package_file_index.file_index AND file_index.name LIKE :search';
 			break;
 			default:
 				$this->searchString = '%' . $this->search . '%';
-				return 'AND packages.name LIKE ?';
+				return 'AND packages.name LIKE :search';
 		}
 	}
 
@@ -189,79 +186,70 @@ class Packages extends Page {
 
 	private function getRepositoryList() {
 		$options = '<select name="repository" onchange="this.form.submit()">';
-		try {
-			$repositories = $this->DB->getRowSet('
-			SELECT 0 AS id, \'\' AS name
-			UNION
-			SELECT
-				id,
-				name
-			FROM
-				repositories
-			');
-			foreach ($repositories as $repository) {
-				if ($this->repository == $repository['id']) {
-					$selected = ' selected="selected"';
-				} else {
-					$selected = '';
-				}
-				$options.= '<option value="' . $repository['id'] . '"' . $selected . '>' . $repository['name'] . '</option>';
+		$repositories = DB::query('
+		SELECT 0 AS id, \'\' AS name
+		UNION
+		SELECT
+			id,
+			name
+		FROM
+			repositories
+		');
+		foreach ($repositories as $repository) {
+			if ($this->repository == $repository['id']) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
 			}
-		} catch(DBNoDataException $e) {
+			$options.= '<option value="' . $repository['id'] . '"' . $selected . '>' . $repository['name'] . '</option>';
 		}
 		return $options . '</select>';
 	}
 
 	private function getArchitectureList() {
 		$options = '<select name="architecture" onchange="this.form.submit()">';
-		try {
-			$architectures = $this->DB->getRowSet('
-			SELECT 0 AS id, \'\' AS name
-			UNION
-			SELECT
-				id,
-				name
-			FROM
-				architectures
-			ORDER BY
-				name ASC
-			');
-			foreach ($architectures as $architecture) {
-				if ($this->architecture == $architecture['id']) {
-					$selected = ' selected="selected"';
-				} else {
-					$selected = '';
-				}
-				$options.= '<option value="' . $architecture['id'] . '"' . $selected . '>' . $architecture['name'] . '</option>';
+		$architectures = DB::query('
+		SELECT 0 AS id, \'\' AS name
+		UNION
+		SELECT
+			id,
+			name
+		FROM
+			architectures
+		ORDER BY
+			name ASC
+		');
+		foreach ($architectures as $architecture) {
+			if ($this->architecture == $architecture['id']) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
 			}
-		} catch(DBNoDataException $e) {
+			$options.= '<option value="' . $architecture['id'] . '"' . $selected . '>' . $architecture['name'] . '</option>';
 		}
 		return $options . '</select>';
 	}
 
 	private function getGroupList() {
 		$options = '<select name="group" onchange="this.form.submit()">';
-		try {
-			$groups = $this->DB->getRowSet('
-			SELECT 0 AS id, \'\' AS name
-			UNION
-			SELECT
-				id,
-				name
-			FROM
-				groups
-			ORDER BY
-				name ASC
-			');
-			foreach ($groups as $group) {
-				if ($this->group == $group['id']) {
-					$selected = ' selected="selected"';
-				} else {
-					$selected = '';
-				}
-				$options.= '<option value="' . $group['id'] . '"' . $selected . '>' . $group['name'] . '</option>';
+		$groups = DB::query('
+		SELECT 0 AS id, \'\' AS name
+		UNION
+		SELECT
+			id,
+			name
+		FROM
+			groups
+		ORDER BY
+			name ASC
+		');
+		foreach ($groups as $group) {
+			if ($this->group == $group['id']) {
+				$selected = ' selected="selected"';
+			} else {
+				$selected = '';
 			}
-		} catch(DBNoDataException $e) {
+			$options.= '<option value="' . $group['id'] . '"' . $selected . '>' . $group['name'] . '</option>';
 		}
 		return $options . '</select>';
 	}

@@ -135,32 +135,28 @@ class Start extends Page {
 	}
 
 	private function getRecentPackages() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				packages.version,
-				repositories.name AS repository,
-				architectures.name AS architecture
-			FROM
-				packages,
-				repositories,
-				architectures
-			WHERE
-				packages.repository = repositories.id
-				AND packages.arch = architectures.id
-				AND packages.arch = ?
-			ORDER BY
-				packages.builddate DESC
-			LIMIT
-				20
-			');
-			$stm->bindInteger($this->arch);
-			$packages = $stm->getRowSet();
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
+		$packages = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			packages.version,
+			repositories.name AS repository,
+			architectures.name AS architecture
+		FROM
+			packages,
+			repositories,
+			architectures
+		WHERE
+			packages.repository = repositories.id
+			AND packages.arch = architectures.id
+			AND packages.arch = :arch
+		ORDER BY
+			packages.builddate DESC
+		LIMIT
+			20
+		');
+		$packages->bindParam('arch', $this->arch, PDO::PARAM_INT);
+		$packages->execute();
 		$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a><table>';
 		foreach ($packages as $package) {
 			$result.= '
@@ -170,7 +166,6 @@ class Start extends Page {
 			</tr>
 			';
 		}
-		isset($stm) && $stm->close();
 		return $result . '</table>';
 	}
 }

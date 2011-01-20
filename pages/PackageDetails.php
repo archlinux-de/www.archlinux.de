@@ -34,47 +34,45 @@ class PackageDetails extends Page {
 		} catch(RequestException $e) {
 			$this->showFailure('Kein Paket angegeben!');
 		}
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.filename,
-				packages.name,
-				packages.base,
-				packages.version,
-				packages.desc,
-				packages.csize,
-				packages.isize,
-				packages.md5sum,
-				packages.url,
-				packages.builddate,
-				packages.mtime,
-				architectures.name AS architecture,
-				repositories.name AS repository,
-				architectures.id AS architectureid,
-				repositories.id AS repositoryid,
-				packagers.name AS packager,
-				packagers.id AS packagerid,
-				packagers.email AS packageremail
-			FROM
-				packages
-					LEFT JOIN packagers ON packages.packager = packagers.id,
-				architectures,
-				repositories
-			WHERE
-				repositories.name = ?
-				AND architectures.name = ?
-				AND packages.name = ?
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			');
-			$stm->bindString($this->repo);
-			$stm->bindString($this->arch);
-			$stm->bindString($this->pkgname);
-			$data = $stm->getRow();
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.filename,
+			packages.name,
+			packages.base,
+			packages.version,
+			packages.desc,
+			packages.csize,
+			packages.isize,
+			packages.md5sum,
+			packages.url,
+			packages.builddate,
+			packages.mtime,
+			architectures.name AS architecture,
+			repositories.name AS repository,
+			architectures.id AS architectureid,
+			repositories.id AS repositoryid,
+			packagers.name AS packager,
+			packagers.id AS packagerid,
+			packagers.email AS packageremail
+		FROM
+			packages
+				LEFT JOIN packagers ON packages.packager = packagers.id,
+			architectures,
+			repositories
+		WHERE
+			repositories.name = :repository
+			AND architectures.name = :architecture
+			AND packages.name = :package
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		');
+		$stm->bindParam('repository', $this->repo, PDO::PARAM_STR);
+		$stm->bindParam('architecture', $this->arch, PDO::PARAM_STR);
+		$stm->bindParam('package', $this->pkgname, PDO::PARAM_STR);
+		$stm->execute();
+		$data = $stm->fetch();
+		if ($data === false) {
 			$this->Output->setStatus(Output::NOT_FOUND);
 			$this->showFailure('Paket nicht gefunden!');
 		}
@@ -241,327 +239,279 @@ class PackageDetails extends Page {
 	}
 
 	private function getLicenses() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				licenses.name
-			FROM
-				licenses,
-				package_license
-			WHERE
-				package_license.license = licenses.id
-				AND package_license.package = ?
-			');
-			$stm->bindInteger($this->pkgid);
-			foreach ($stm->getColumnSet() as $license) {
-				$list[] = $license;
-			}
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = array();
+		$stm = DB::prepare('
+		SELECT
+			licenses.name
+		FROM
+			licenses,
+			package_license
+		WHERE
+			package_license.license = licenses.id
+			AND package_license.package = :package
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = array();
+		while ($license = $stm->fetchColumn()) {
+			$list[] = $license;
 		}
 		return implode(', ', $list);
 	}
 
 	private function getGroups() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				groups.id,
-				groups.name
-			FROM
-				groups,
-				package_group
-			WHERE
-				package_group.group = groups.id
-				AND package_group.package = ?
-			');
-			$stm->bindInteger($this->pkgid);
-			foreach ($stm->getRowSet() as $group) {
-				$list[] = '<a href="?page=Packages;group=' . $group['id'] . '">' . $group['name'] . '</a>';
-			}
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = array();
+		$stm = DB::prepare('
+		SELECT
+			groups.id,
+			groups.name
+		FROM
+			groups,
+			package_group
+		WHERE
+			package_group.group = groups.id
+			AND package_group.package = :package
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = array();
+		foreach ($stm as $group) {
+			$list[] = '<a href="?page=Packages;group=' . $group['id'] . '">' . $group['name'] . '</a>';
 		}
 		return implode(', ', $list);
 	}
 
 	private function getFiles() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				path
-			FROM
-				files
-			WHERE
-				package = ?
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getColumnSet() as $file) {
-				$list.= '<li>' . $file . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			path
+		FROM
+			files
+		WHERE
+			package = :package
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		while ($file = $stm->fetchColumn()) {
+			$list.= '<li>' . $file . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getDependencies() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				depends.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				depends
-					LEFT JOIN packages
-					ON depends.depends = packages.id,
-				architectures,
-				repositories
-			WHERE
-				depends.package = ?
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $dependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			depends.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			depends
+				LEFT JOIN packages
+				ON depends.depends = packages.id,
+			architectures,
+			repositories
+		WHERE
+			depends.package = :package
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $dependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getInverseDependencies() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				depends.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				packages,
-				depends,
-				architectures,
-				repositories
-			WHERE
-				depends.depends = ?
-				AND depends.package = packages.id
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $dependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			depends.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			packages,
+			depends,
+			architectures,
+			repositories
+		WHERE
+			depends.depends = :package
+			AND depends.package = packages.id
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $dependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getOptionalDependencies() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				optdepends.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				optdepends
-					LEFT JOIN packages
-					ON optdepends.optdepends = packages.id,
-				architectures,
-				repositories
-			WHERE
-				optdepends.package = ?
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $optdependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . cutString($optdependency['comment'], 30) . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			optdepends.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			optdepends
+				LEFT JOIN packages
+				ON optdepends.optdepends = packages.id,
+			architectures,
+			repositories
+		WHERE
+			optdepends.package = :package
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $optdependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . cutString($optdependency['comment'], 30) . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getInverseOptionalDependencies() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				optdepends.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				packages,
-				optdepends,
-				architectures,
-				repositories
-			WHERE
-				optdepends.optdepends = ?
-				AND optdepends.package = packages.id
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $optdependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . cutString($optdependency['comment'], 30) . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			optdepends.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			packages,
+			optdepends,
+			architectures,
+			repositories
+		WHERE
+			optdepends.optdepends = :package
+			AND optdepends.package = packages.id
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $optdependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . cutString($optdependency['comment'], 30) . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getProvides() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				provides.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				provides
-					LEFT JOIN packages
-					ON provides.provides = packages.id,
-				architectures,
-				repositories
-			WHERE
-				provides.package = ?
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $dependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			provides.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			provides
+				LEFT JOIN packages
+				ON provides.provides = packages.id,
+			architectures,
+			repositories
+		WHERE
+			provides.package = :package
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $dependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getConflicts() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				conflicts.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				conflicts
-					LEFT JOIN packages
-					ON conflicts.conflicts = packages.id,
-				architectures,
-				repositories
-			WHERE
-				conflicts.package = ?
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $dependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			conflicts.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			conflicts
+				LEFT JOIN packages
+				ON conflicts.conflicts = packages.id,
+			architectures,
+			repositories
+		WHERE
+			conflicts.package = :package
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $dependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 
 	private function getReplaces() {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				packages.id,
-				packages.name,
-				replaces.comment,
-				architectures.name AS arch,
-				repositories.name AS repo
-			FROM
-				replaces
-					LEFT JOIN packages
-					ON replaces.replaces = packages.id,
-				architectures,
-				repositories
-			WHERE
-				replaces.package = ?
-				AND packages.arch = architectures.id
-				AND packages.repository = repositories.id
-			ORDER BY
-				packages.name
-			');
-			$stm->bindInteger($this->pkgid);
-			$list = '<ul>';
-			foreach ($stm->getRowSet() as $dependency) {
-				$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-			}
-			$list.= '</ul>';
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$list = '';
+		$stm = DB::prepare('
+		SELECT
+			packages.id,
+			packages.name,
+			replaces.comment,
+			architectures.name AS arch,
+			repositories.name AS repo
+		FROM
+			replaces
+				LEFT JOIN packages
+				ON replaces.replaces = packages.id,
+			architectures,
+			repositories
+		WHERE
+			replaces.package = :package
+			AND packages.arch = architectures.id
+			AND packages.repository = repositories.id
+		ORDER BY
+			packages.name
+		');
+		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->execute();
+		$list = '<ul>';
+		foreach ($stm as $dependency) {
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
 		}
+		$list.= '</ul>';
 		return $list;
 	}
 }

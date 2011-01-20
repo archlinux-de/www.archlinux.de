@@ -48,10 +48,6 @@ class UpdatePkgstats extends Modul {
 			touch($this->getLockFile());
 			chmod($this->getLockFile() , 0600);
 		}
-		$this->DB->connect($this->Settings->getValue('sql_host'),
-			$this->Settings->getValue('sql_user'),
-			$this->Settings->getValue('sql_password'),
-			$this->Settings->getValue('sql_database'));
 		foreach ($this->Settings->getValue('locales') as $locale) {
 			$this->L10n->setLocale($locale);
 			PackageStatistics::updateDBCache();

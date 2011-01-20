@@ -41,23 +41,19 @@ class MirrorStatusReflector extends Page {
 	}
 
 	public function prepare() {
-		try {
-			$mirrors = $this->DB->getRowSet('
-			SELECT
-				host,
-				lastsync
-			FROM
-				mirrors
-			WHERE
-				lastsync >= ' . ($this->Input->getTime() - $this->range) . '
-			ORDER BY
-				lastsync DESC
-			');
-			foreach ($mirrors as $mirror) {
-				$this->page.= gmdate('Y-m-d H:i', $mirror['lastsync']) . ' ' . $mirror['host'] . "\n";
-			}
-		} catch(DBNoDataException $e) {
-			$this->showFailure('No mirrors found');
+		$mirrors = DB::query('
+		SELECT
+			host,
+			lastsync
+		FROM
+			mirrors
+		WHERE
+			lastsync >= ' . ($this->Input->getTime() - $this->range) . '
+		ORDER BY
+			lastsync DESC
+		');
+		foreach ($mirrors as $mirror) {
+			$this->page.= gmdate('Y-m-d H:i', $mirror['lastsync']) . ' ' . $mirror['host'] . "\n";
 		}
 	}
 }

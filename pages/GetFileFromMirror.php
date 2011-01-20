@@ -31,28 +31,21 @@ class GetFileFromMirror extends Page {
 		if (empty($country)) {
 			$country = $this->Settings->getValue('country');
 		}
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				host
-			FROM
-				mirrors
-			WHERE
-				lastsync >= ?
-				AND (country = ? OR country = \'Any\')
-				AND protocol IN (\'http\', \'htttps\')
-			ORDER BY RAND() LIMIT 1
-			');
-			$stm->bindInteger($this->Input->getTime() - $this->range);
-			$stm->bindString($country);
-			$mirror = $stm->getColumn();
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-		}
-		if (empty($mirror)) {
-			$mirror = $this->Settings->getValue('mirror');
-		}
+		$stm = DB::prepare('
+		SELECT
+			host
+		FROM
+			mirrors
+		WHERE
+			lastsync >= :lastsync
+			AND (country = :country OR country = \'Any\')
+			AND protocol IN (\'http\', \'htttps\')
+		ORDER BY RAND() LIMIT 1
+		');
+		$stm->bindValue('lastsync', $this->Input->getTime() - $this->range, PDO::PARAM_INT);
+		$stm->bindParam('country', $country, PDO::PARAM_STR);
+		$stm->execute();
+		$mirror = $stm->fetchColumn() ?: $this->Settings->getValue('mirror');
 		return $mirror;
 	}
 }

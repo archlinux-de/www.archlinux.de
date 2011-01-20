@@ -24,7 +24,6 @@ abstract class GetFile extends Modul implements IOutput {
 
 	public function prepare() {
 		$this->exitIfCached();
-		$this->initDB();
 		$this->getParams();
 	}
 
@@ -38,13 +37,6 @@ abstract class GetFile extends Modul implements IOutput {
 	}
 
 	protected function getParams() {
-	}
-
-	protected function initDB() {
-		$this->DB->connect($this->Settings->getValue('sql_host'),
-			$this->Settings->getValue('sql_user'),
-			$this->Settings->getValue('sql_password'),
-			$this->Settings->getValue('sql_database'));
 	}
 
 	public function showWarning($text) {

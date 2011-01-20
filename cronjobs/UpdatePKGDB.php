@@ -25,6 +25,7 @@ require ('modules/Functions.php');
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
+require ('modules/DB.php');
 require ('PackageDB.php');
 
 class UpdatePKGDB extends Modul {
@@ -53,11 +54,7 @@ class UpdatePKGDB extends Modul {
 			touch($this->getLockFile());
 			chmod($this->getLockFile() , 0600);
 		}
-		$this->DB->connect($this->Settings->getValue('sql_host'),
-			$this->Settings->getValue('sql_user'),
-			$this->Settings->getValue('sql_password'),
-			$this->Settings->getValue('sql_database'));
-		$this->DB->execute('
+		DB::query('
 		CREATE TEMPORARY TABLE
 			temp_depends
 			(
@@ -66,7 +63,7 @@ class UpdatePKGDB extends Modul {
 			PRIMARY KEY (package)
 			)
 		');
-		$this->DB->execute('
+		DB::query('
 		CREATE TEMPORARY TABLE
 			temp_optdepends
 			(
@@ -75,7 +72,7 @@ class UpdatePKGDB extends Modul {
 			PRIMARY KEY (package)
 			)
 		');
-		$this->DB->execute('
+		DB::query('
 		CREATE TEMPORARY TABLE
 			temp_provides
 			(
@@ -84,7 +81,7 @@ class UpdatePKGDB extends Modul {
 			PRIMARY KEY (package)
 			)
 		');
-		$this->DB->execute('
+		DB::query('
 		CREATE TEMPORARY TABLE
 			temp_conflicts
 			(
@@ -93,7 +90,7 @@ class UpdatePKGDB extends Modul {
 			PRIMARY KEY (package)
 			)
 		');
-		$this->DB->execute('
+		DB::query('
 		CREATE TEMPORARY TABLE
 			temp_replaces
 			(
@@ -119,25 +116,19 @@ class UpdatePKGDB extends Modul {
 	}
 
 	private function getRecentDate($repo, $arch) {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				MAX(mtime)
-			FROM
-				packages
-			WHERE
-				arch = ?
-				AND repository = ?
-			');
-			$stm->bindInteger($this->getArchitectureID($arch));
-			$stm->bindInteger($this->getRepositoryID($repo));
-			$date = $stm->getColumn();
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$date = 0;
-			$stm->close();
-		}
-		return $date;
+		$stm = DB::prepare('
+		SELECT
+			MAX(mtime)
+		FROM
+			packages
+		WHERE
+			arch = :arch
+			AND repository = :repository
+		');
+		$stm->bindValue('arch', $this->getArchitectureID($arch), PDO::PARAM_INT);
+		$stm->bindValue('repository', $this->getRepositoryID($repo), PDO::PARAM_INT);
+		$stm->execute();
+		return $stm->fetchColumn() ?: 0;
 	}
 
 	private function updateRepository($repo, $arch) {
@@ -155,42 +146,35 @@ class UpdatePKGDB extends Modul {
 
 	private function setPKGDBMTime($repo, $arch, $time) {
 		if ($time > 0) {
-			$stm = $this->DB->prepare('
+			$stm = DB::prepare('
 			REPLACE INTO
 				log
 			SET
-				name = ?,
-				time = ?
+				name = :name,
+				time = :time
 			');
-			$stm->bindString('UpdatePKGDB-' . $repo . '-' . $arch);
-			$stm->bindInteger($time);
+			$stm->bindValue('name', 'UpdatePKGDB-'.$repo.'-'.$arch, PDO::PARAM_STR);
+			$stm->bindParam('time', $time, PDO::PARAM_INT);
 			$stm->execute();
-			$stm->close();
 		}
 	}
 
 	private function getPKGDBMTime($repo, $arch) {
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				time
-			FROM
-				log
-			WHERE
-				name = ?
-			');
-			$stm->bindString('UpdatePKGDB-' . $repo . '-' . $arch);
-			$time = $stm->GetColumn();
-			$stm->close();
-		} catch(DBNoDataException $e) {
-			$stm->close();
-			$time = 0;
-		}
-		return $time;
+		$stm = DB::prepare('
+		SELECT
+			time
+		FROM
+			log
+		WHERE
+			name = :name
+		');
+		$stm->bindValue('name', 'UpdatePKGDB-'.$repo.'-'.$arch, PDO::PARAM_STR);
+		$stm->execute();
+		return $stm->fetchColumn() ?: 0;
 	}
 
 	private function updatePackages($packages, $repo, $arch) {
-		$testSTM = $this->DB->prepare('
+		$testSTM = DB::prepare('
 		SELECT
 			packages.id
 		FROM
@@ -200,161 +184,163 @@ class UpdatePKGDB extends Modul {
 		WHERE
 			packages.repository = repositories.id
 			AND packages.arch = architectures.id
-			AND packages.name = ?
-			AND repositories.name = ?
-			AND architectures.name = ?
+			AND packages.name = :package
+			AND repositories.name = :repository
+			AND architectures.name = :architecture
 		');
-		$updateSTM = $this->DB->prepare('
+		$updateSTM = DB::prepare('
 		UPDATE
 			packages
 		SET
-			filename = ?,
-			name = ?,
-			base = ?,
-			`version` = ?,
-			`desc` = ?,
-			csize = ?,
-			isize = ?,
-			md5sum = ?,
-			url = ?,
-			arch = ?,
-			builddate = ?,
-			mtime = ?,
-			packager = ?,
-			`force` = ?,
-			epoch = ?,
-			repository = ?
+			filename = :filename,
+			name = :name,
+			base = :base,
+			`version` = :version,
+			`desc` = :desc,
+			csize = :csize,
+			isize = :isize,
+			md5sum = :md5sum,
+			url = :url,
+			arch = :arch,
+			builddate = :builddate,
+			mtime = :mtime,
+			packager = :packager,
+			`force` = :force,
+			epoch = :epoch,
+			repository = :repository
 		WHERE
-			id = ?
+			id = :id
 		');
-		$insertSTM = $this->DB->prepare('
+		$insertSTM = DB::prepare('
 		INSERT INTO
 			packages
 		SET
-			filename = ?,
-			name = ?,
-			base = ?,
-			`version` = ?,
-			`desc` = ?,
-			csize = ?,
-			isize = ?,
-			md5sum = ?,
-			url = ?,
-			arch = ?,
-			builddate = ?,
-			mtime = ?,
-			packager = ?,
-			`force` = ?,
-			epoch = ?,
-			repository = ?
+			filename = :filename,
+			name = :name,
+			base = :base,
+			`version` = :version,
+			`desc` = :desc,
+			csize = :csize,
+			isize = :isize,
+			md5sum = :md5sum,
+			url = :url,
+			arch = :arch,
+			builddate = :builddate,
+			mtime = :mtime,
+			packager = :packager,
+			`force` = :force,
+			epoch = :epoch,
+			repository = :repository
 		');
-		$dependsSTM = $this->DB->prepare('
+		$dependsSTM = DB::prepare('
 		INSERT INTO
 			temp_depends
 		SET
-			package = ?,
-			depends = ?
+			package = :package,
+			depends = :depends
 		');
-		$optdependsSTM = $this->DB->prepare('
+		$optdependsSTM = DB::prepare('
 		INSERT INTO
 			temp_optdepends
 		SET
-			package = ?,
-			optdepends = ?
+			package = :package,
+			optdepends = :optdepends
 		');
-		$providesSTM = $this->DB->prepare('
+		$providesSTM = DB::prepare('
 		INSERT INTO
 			temp_provides
 		SET
-			package = ?,
-			provides = ?
+			package = :package,
+			provides = :provides
 		');
-		$conflictsSTM = $this->DB->prepare('
+		$conflictsSTM = DB::prepare('
 		INSERT INTO
 			temp_conflicts
 		SET
-			package = ?,
-			conflicts = ?
+			package = :package,
+			conflicts = :conflicts
 		');
-		$replacesSTM = $this->DB->prepare('
+		$replacesSTM = DB::prepare('
 		INSERT INTO
 			temp_replaces
 		SET
-			package = ?,
-			replaces = ?
+			package = :package,
+			replaces = :replaces
 		');
 		foreach ($packages as $package) {
-			try {
-				$testSTM->bindString(htmlspecialchars($package->getName()));
-				$testSTM->bindString(htmlspecialchars($repo));
-				$testSTM->bindString(htmlspecialchars($arch));
-				$packageID = $testSTM->getColumn();
-				$updateSTM->bindString(htmlspecialchars($package->getFileName()));
-				$updateSTM->bindString(htmlspecialchars($package->getName()));
-				$updateSTM->bindString(htmlspecialchars($package->getBase()));
-				$updateSTM->bindString(htmlspecialchars($package->getVersion()));
-				$updateSTM->bindString(htmlspecialchars($package->getDescription()));
-				$updateSTM->bindInteger($package->getCompressedSize());
-				$updateSTM->bindInteger($package->getInstalledSize());
-				$updateSTM->bindString(htmlspecialchars($package->getMD5SUM()));
-				$updateSTM->bindString(htmlspecialchars($package->getURL()));
-				$updateSTM->bindInteger($this->getArchitectureID($arch));
-				$updateSTM->bindInteger($package->getBuildDate());
-				$updateSTM->bindInteger($package->getMTime());
-				$updateSTM->bindInteger($this->getPackagerID($package->getPackager()));
-				$updateSTM->bindInteger(($package->isForced() ? 1 : 0));
-				$updateSTM->bindInteger($package->getEpoch());
-				$updateSTM->bindInteger($this->getRepositoryID($repo));
-				$updateSTM->bindInteger($packageID);
+			$testSTM->bindValue('package', htmlspecialchars($package->getName()), PDO::PARAM_STR);
+			$testSTM->bindValue('repository', htmlspecialchars($repo), PDO::PARAM_STR);
+			$testSTM->bindValue('architecture', htmlspecialchars($arch), PDO::PARAM_STR);
+			$testSTM->execute();
+			$packageID = $testSTM->fetchColumn();
+
+			if ($packageID !== false) {
+				$updateSTM->bindValue('filename', htmlspecialchars($package->getFileName()), PDO::PARAM_STR);
+				$updateSTM->bindValue('name', htmlspecialchars($package->getName()), PDO::PARAM_STR);
+				$updateSTM->bindValue('base', htmlspecialchars($package->getBase()), PDO::PARAM_STR);
+				$updateSTM->bindValue('version', htmlspecialchars($package->getVersion()), PDO::PARAM_STR);
+				$updateSTM->bindValue('desc', htmlspecialchars($package->getDescription()), PDO::PARAM_STR);
+				$updateSTM->bindValue('csize', $package->getCompressedSize(), PDO::PARAM_INT);
+				$updateSTM->bindValue('isize', $package->getInstalledSize(), PDO::PARAM_INT);
+				$updateSTM->bindValue('md5sum', htmlspecialchars($package->getMD5SUM()), PDO::PARAM_STR);
+				$updateSTM->bindValue('url', htmlspecialchars($package->getURL()), PDO::PARAM_STR);
+				$updateSTM->bindValue('arch', $this->getArchitectureID($arch), PDO::PARAM_INT);
+				$updateSTM->bindValue('builddate', $package->getBuildDate(), PDO::PARAM_INT);
+				$updateSTM->bindValue('mtime', $package->getMTime(), PDO::PARAM_INT);
+				$updateSTM->bindValue('packager', $this->getPackagerID($package->getPackager()), PDO::PARAM_INT);
+				$updateSTM->bindValue('force', ($package->isForced() ? 1 : 0), PDO::PARAM_INT);
+				$updateSTM->bindValue('epoch', $package->getEpoch(), PDO::PARAM_INT);
+				$updateSTM->bindValue('repository', $this->getRepositoryID($repo), PDO::PARAM_INT);
+				$updateSTM->bindParam('id', $packageID, PDO::PARAM_INT);
 				$updateSTM->execute();
-			} catch(DBNoDataException $e) {
-				$insertSTM->bindString(htmlspecialchars($package->getFileName()));
-				$insertSTM->bindString(htmlspecialchars($package->getName()));
-				$insertSTM->bindString(htmlspecialchars($package->getBase()));
-				$insertSTM->bindString(htmlspecialchars($package->getVersion()));
-				$insertSTM->bindString(htmlspecialchars($package->getDescription()));
-				$insertSTM->bindInteger($package->getCompressedSize());
-				$insertSTM->bindInteger($package->getInstalledSize());
-				$insertSTM->bindString(htmlspecialchars($package->getMD5SUM()));
-				$insertSTM->bindString(htmlspecialchars($package->getURL()));
-				$insertSTM->bindInteger($this->getArchitectureID($arch));
-				$insertSTM->bindInteger($package->getBuildDate());
-				$insertSTM->bindInteger($package->getMTime());
-				$insertSTM->bindInteger($this->getPackagerID($package->getPackager()));
-				$insertSTM->bindInteger(($package->isForced() ? 1 : 0));
-				$insertSTM->bindInteger($package->getEpoch());
-				$insertSTM->bindInteger($this->getRepositoryID($repo));
+			} else {
+				$insertSTM->bindValue('filename', htmlspecialchars($package->getFileName()), PDO::PARAM_STR);
+				$insertSTM->bindValue('name', htmlspecialchars($package->getName()), PDO::PARAM_STR);
+				$insertSTM->bindValue('base', htmlspecialchars($package->getBase()), PDO::PARAM_STR);
+				$insertSTM->bindValue('version', htmlspecialchars($package->getVersion()), PDO::PARAM_STR);
+				$insertSTM->bindValue('desc', htmlspecialchars($package->getDescription()), PDO::PARAM_STR);
+				$insertSTM->bindValue('csize', $package->getCompressedSize(), PDO::PARAM_INT);
+				$insertSTM->bindValue('isize', $package->getInstalledSize(), PDO::PARAM_INT);
+				$insertSTM->bindValue('md5sum', htmlspecialchars($package->getMD5SUM()), PDO::PARAM_STR);
+				$insertSTM->bindValue('url', htmlspecialchars($package->getURL()), PDO::PARAM_STR);
+				$insertSTM->bindValue('arch', $this->getArchitectureID($arch), PDO::PARAM_INT);
+				$insertSTM->bindValue('builddate', $package->getBuildDate(), PDO::PARAM_INT);
+				$insertSTM->bindValue('mtime', $package->getMTime(), PDO::PARAM_INT);
+				$insertSTM->bindValue('packager', $this->getPackagerID($package->getPackager()), PDO::PARAM_INT);
+				$insertSTM->bindValue('force', ($package->isForced() ? 1 : 0), PDO::PARAM_INT);
+				$insertSTM->bindValue('epoch', $package->getEpoch(), PDO::PARAM_INT);
+				$insertSTM->bindValue('repository', $this->getRepositoryID($repo), PDO::PARAM_INT);
 				$insertSTM->execute();
-				$packageID = $this->DB->getInsertId();
+				$packageID = DB::lastInsertId();
 			}
 			// depends
 			if (count($package->getDepends()) > 0) {
-				$dependsSTM->bindInteger($packageID);
-				$dependsSTM->bindString(implode("\n", $package->getDepends()));
+				$dependsSTM->bindParam('package', $packageID, PDO::PARAM_INT);
+				$dependsSTM->bindValue('depends', implode("\n", $package->getDepends()), PDO::PARAM_STR);
 				$dependsSTM->execute();
 			}
 			// optdepends
 			if (count($package->getOptDepends()) > 0) {
-				$optdependsSTM->bindInteger($packageID);
-				$optdependsSTM->bindString(implode("\n", $package->getOptDepends()));
+				$optdependsSTM->bindParam('package', $packageID, PDO::PARAM_INT);
+				$optdependsSTM->bindValue('optdepends', implode("\n", $package->getOptDepends()), PDO::PARAM_STR);
 				$optdependsSTM->execute();
 			}
 			// provides
 			if (count($package->getProvides()) > 0) {
-				$providesSTM->bindInteger($packageID);
-				$providesSTM->bindString(implode("\n", $package->getProvides()));
+				$providesSTM->bindParam('package', $packageID, PDO::PARAM_INT);
+				$providesSTM->bindValue('provides', implode("\n", $package->getProvides()), PDO::PARAM_STR);
 				$providesSTM->execute();
 			}
 			// conflicts
 			if (count($package->getConflicts()) > 0) {
-				$conflictsSTM->bindInteger($packageID);
-				$conflictsSTM->bindString(implode("\n", $package->getConflicts()));
+				$conflictsSTM->bindParam('package', $packageID, PDO::PARAM_INT);
+				$conflictsSTM->bindValue('conflicts', implode("\n", $package->getConflicts()), PDO::PARAM_STR);
 				$conflictsSTM->execute();
 			}
 			// replaces
 			if (count($package->getReplaces()) > 0) {
-				$replacesSTM->bindInteger($packageID);
-				$replacesSTM->bindString(implode("\n", $package->getReplaces()));
+				$replacesSTM->bindParam('package', $packageID, PDO::PARAM_INT);
+				$replacesSTM->bindValue('replaces', implode("\n", $package->getReplaces()), PDO::PARAM_STR);
 				$replacesSTM->execute();
 			}
 			// groups
@@ -366,36 +352,27 @@ class UpdatePKGDB extends Modul {
 				$this->addPackageToLicenses($packageID, $package->getLicenses());
 			}
 		}
-		$dependsSTM->close();
-		$optdependsSTM->close();
-		$providesSTM->close();
-		$conflictsSTM->close();
-		$replacesSTM->close();
-		$testSTM->close();
-		$updateSTM->close();
-		$insertSTM->close();
 	}
 
 	private function addPackageToGroups($package, $groups) {
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		DELETE FROM
 			package_group
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm->bindInteger($package);
+		$stm->bindParam('package', $package, PDO::PARAM_INT);
 		$stm->execute();
-		$stm->close();
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			package_group
 		SET
-			package = ?,
-			`group` = ?
+			package = :package,
+			`group` = :group
 		');
 		foreach ($groups as $group) {
-			$stm->bindInteger($package);
-			$stm->bindInteger($this->getGroupID($group));
+			$stm->bindParam('package', $package, PDO::PARAM_INT);
+			$stm->bindValue('group', $this->getGroupID($group), PDO::PARAM_INT);
 			$stm->execute();
 		}
 	}
@@ -404,30 +381,27 @@ class UpdatePKGDB extends Modul {
 		if (isset($this->groups[$group])) {
 			return $this->groups[$group];
 		} else {
-			try {
-				$stm = $this->DB->prepare('
-				SELECT
-					id
-				FROM
-					groups
-				WHERE
-					name = ?
-				');
-				$stm->bindString(htmlspecialchars($group));
-				$id = $stm->getColumn();
-				$stm->close();
-			} catch(DBNoDataException $e) {
-				$stm->close();
-				$stm = $this->DB->prepare('
+			$stm = DB::prepare('
+			SELECT
+				id
+			FROM
+				groups
+			WHERE
+				name = :name
+			');
+			$stm->bindValue('name', htmlspecialchars($group), PDO::PARAM_STR);
+			$stm->execute();
+			$id = $stm->fetchColumn();
+			if ($id === false) {
+				$stm = DB::prepare('
 				INSERT INTO
 					groups
 				SET
-					name = ?
+					name = :name
 				');
-				$stm->bindString(htmlspecialchars($group));
+				$stm->bindValue('name', htmlspecialchars($group), PDO::PARAM_STR);
 				$stm->execute();
-				$id = $this->DB->getInsertId();
-				$stm->close();
+				$id = DB::lastInsertId();
 			}
 			$this->groups[$group] = $id;
 			return $id;
@@ -435,25 +409,24 @@ class UpdatePKGDB extends Modul {
 	}
 
 	private function addPackageToLicenses($package, $licenses) {
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		DELETE FROM
 			package_license
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm->bindInteger($package);
+		$stm->bindParam('package', $package, PDO::PARAM_INT);
 		$stm->execute();
-		$stm->close();
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			package_license
 		SET
-			package = ?,
-			license = ?
+			package = :package,
+			license = :license
 		');
 		foreach ($licenses as $license) {
-			$stm->bindInteger($package);
-			$stm->bindInteger($this->getLicenseID($license));
+			$stm->bindParam('package', $package, PDO::PARAM_INT);
+			$stm->bindValue('license', $this->getLicenseID($license), PDO::PARAM_INT);
 			$stm->execute();
 		}
 	}
@@ -462,30 +435,27 @@ class UpdatePKGDB extends Modul {
 		if (isset($this->licenses[$license])) {
 			return $this->licenses[$license];
 		} else {
-			try {
-				$stm = $this->DB->prepare('
-				SELECT
-					id
-				FROM
-					licenses
-				WHERE
-					name = ?
-				');
-				$stm->bindString(htmlspecialchars($license));
-				$id = $stm->getColumn();
-				$stm->close();
-			} catch(DBNoDataException $e) {
-				$stm->close();
-				$stm = $this->DB->prepare('
+			$stm = DB::prepare('
+			SELECT
+				id
+			FROM
+				licenses
+			WHERE
+				name = :name
+			');
+			$stm->bindValue('name', htmlspecialchars($license), PDO::PARAM_STR);
+			$stm->execute();
+			$id = $stm->fetchColumn();
+			if ($id === false) {
+				$stm = DB::prepare('
 				INSERT INTO
 					licenses
 				SET
-					name = ?
+					name = :name
 				');
-				$stm->bindString(htmlspecialchars($license));
+				$stm->bindValue('name', htmlspecialchars($license), PDO::PARAM_STR);
 				$stm->execute();
-				$id = $this->DB->getInsertId();
-				$stm->close();
+				$id = DB::lastInsertId();
 			}
 			$this->licenses[$license] = $id;
 			return $id;
@@ -496,30 +466,27 @@ class UpdatePKGDB extends Modul {
 		if (isset($this->arches[$arch])) {
 			return $this->arches[$arch];
 		} else {
-			try {
-				$stm = $this->DB->prepare('
-				SELECT
-					id
-				FROM
-					architectures
-				WHERE
-					name = ?
-				');
-				$stm->bindString(htmlspecialchars($arch));
-				$id = $stm->getColumn();
-				$stm->close();
-			} catch(DBNoDataException $e) {
-				$stm->close();
-				$stm = $this->DB->prepare('
+			$stm = DB::prepare('
+			SELECT
+				id
+			FROM
+				architectures
+			WHERE
+				name = :name
+			');
+			$stm->bindValue('name', htmlspecialchars($arch), PDO::PARAM_STR);
+			$stm->execute();
+			$id = $stm->fetchColumn();
+			if ($id === false) {
+				$stm = DB::prepare('
 				INSERT INTO
 					architectures
 				SET
-					name = ?
+					name = :name
 				');
-				$stm->bindString(htmlspecialchars($arch));
+				$stm->bindValue('name', htmlspecialchars($arch), PDO::PARAM_STR);
 				$stm->execute();
-				$id = $this->DB->getInsertId();
-				$stm->close();
+				$id = DB::lastInsertId();
 			}
 			$this->arches[$arch] = $id;
 			return $id;
@@ -533,34 +500,31 @@ class UpdatePKGDB extends Modul {
 			preg_match('/([^<>]+)(?:<(.+?)>)?/', $packager, $matches);
 			$name = !empty($matches[1]) ? $matches[1] : $packager;
 			$email = isset($matches[2]) ? $matches[2] : '';
-			try {
-				$stm = $this->DB->prepare('
-				SELECT
-					id
-				FROM
-					packagers
-				WHERE
-					name = ?
-					AND email = ?
-				');
-				$stm->bindString(htmlspecialchars(trim($name)));
-				$stm->bindString(htmlspecialchars(trim($email)));
-				$id = $stm->getColumn();
-				$stm->close();
-			} catch(DBNoDataException $e) {
-				$stm->close();
-				$stm = $this->DB->prepare('
+			$stm = DB::prepare('
+			SELECT
+				id
+			FROM
+				packagers
+			WHERE
+				name = :name
+				AND email = :email
+			');
+			$stm->bindValue('name', htmlspecialchars(trim($name)), PDO::PARAM_STR);
+			$stm->bindValue('email', htmlspecialchars(trim($email)), PDO::PARAM_STR);
+			$stm->execute();
+			$id = $stm->fetchColumn();
+			if ($id === false) {
+				$stm = DB::prepare('
 				INSERT INTO
 					packagers
 				SET
-					name = ?,
-					email = ?
+					name = :name,
+					email = :email
 				');
-				$stm->bindString(htmlspecialchars(trim($name)));
-				$stm->bindString(htmlspecialchars(trim($email)));
+				$stm->bindValue('name', htmlspecialchars(trim($name)), PDO::PARAM_STR);
+				$stm->bindValue('email', htmlspecialchars(trim($email)), PDO::PARAM_STR);
 				$stm->execute();
-				$id = $this->DB->getInsertId();
-				$stm->close();
+				$id = DB::lastInsertId();
 			}
 			$this->packagers[$packager] = $id;
 			return $id;
@@ -571,30 +535,27 @@ class UpdatePKGDB extends Modul {
 		if (isset($this->repos[$repo])) {
 			return $this->repos[$repo];
 		} else {
-			try {
-				$stm = $this->DB->prepare('
-				SELECT
-					id
-				FROM
-					repositories
-				WHERE
-					name = ?
-				');
-				$stm->bindString(htmlspecialchars($repo));
-				$id = $stm->getColumn();
-				$stm->close();
-			} catch(DBNoDataException $e) {
-				$stm->close();
-				$stm = $this->DB->prepare('
+			$stm = DB::prepare('
+			SELECT
+				id
+			FROM
+				repositories
+			WHERE
+				name = :name
+			');
+			$stm->bindValue('name', htmlspecialchars($repo), PDO::PARAM_STR);
+			$stm->execute();
+			$id = $stm->fetchColumn();
+			if ($id === false) {
+				$stm = DB::prepare('
 				INSERT INTO
 					repositories
 				SET
-					name = ?
+					name = :name
 				');
-				$stm->bindString(htmlspecialchars($repo));
+				$stm->bindValue('name', htmlspecialchars($repo), PDO::PARAM_STR);
 				$stm->execute();
-				$id = $this->DB->getInsertId();
-				$stm->close();
+				$id = DB::lastInsertId();
 			}
 			$this->repos[$repo] = $id;
 			return $id;
@@ -604,72 +565,72 @@ class UpdatePKGDB extends Modul {
 	private function removeDeletedPackages($repo, $arch, $packages) {
 		// $packages is empty if there are no new packages!
 		if (is_array($packages)) {
-			$delstm1 = $this->DB->prepare('
+			$delstm1 = DB::prepare('
 			DELETE FROM
 				packages
 			WHERE
-				id = ?
+				id = :package
 			');
-			$delstm2 = $this->DB->prepare('
+			$delstm2 = DB::prepare('
 			DELETE FROM
 				conflicts
 			WHERE
-				package = ?
-				OR conflicts = ?
+				package = :package
+				OR conflicts = :package
 			');
-			$delstm3 = $this->DB->prepare('
+			$delstm3 = DB::prepare('
 			DELETE FROM
 				depends
 			WHERE
-				package = ?
-				OR depends = ?
+				package = :package
+				OR depends = :package
 			');
-			$delstm3a = $this->DB->prepare('
+			$delstm3a = DB::prepare('
 			DELETE FROM
 				optdepends
 			WHERE
-				package = ?
-				OR optdepends = ?
+				package = :package
+				OR optdepends = :package
 			');
-			$delstm4 = $this->DB->prepare('
+			$delstm4 = DB::prepare('
 			DELETE FROM
 				provides
 			WHERE
-				package = ?
-				OR provides = ?
+				package = :package
+				OR provides = :package
 			');
-			$delstm5 = $this->DB->prepare('
+			$delstm5 = DB::prepare('
 			DELETE FROM
 				replaces
 			WHERE
-				package = ?
-				OR replaces = ?
+				package = :package
+				OR replaces = :package
 			');
-			$delstm6 = $this->DB->prepare('
+			$delstm6 = DB::prepare('
 			DELETE FROM
 				files
 			WHERE
-				package = ?
+				package = :package
 			');
-			$delstm6b = $this->DB->prepare('
+			$delstm6b = DB::prepare('
 			DELETE FROM
 				package_file_index
 			WHERE
-				package = ?
+				package = :package
 			');
-			$delstm7 = $this->DB->prepare('
+			$delstm7 = DB::prepare('
 			DELETE FROM
 				package_group
 			WHERE
-				package = ?
+				package = :package
 			');
-			$delstm8 = $this->DB->prepare('
+			$delstm8 = DB::prepare('
 			DELETE FROM
 				package_license
 			WHERE
-				package = ?
+				package = :package
 			');
-			$stm = $this->DB->prepare('
+			$pkgs = DB::prepare('
 			SELECT
 				packages.id,
 				packages.name
@@ -680,82 +641,65 @@ class UpdatePKGDB extends Modul {
 			WHERE
 				packages.arch = architectures.id
 				AND packages.repository = repositories.id
-				AND architectures.name = ?
-				AND repositories.name = ?
+				AND architectures.name = :architecture
+				AND repositories.name = :repository
 			');
-			$stm->bindString(htmlspecialchars($arch));
-			$stm->bindString(htmlspecialchars($repo));
-			try {
-				foreach ($stm->getRowSet() as $pkg) {
-					if (!in_array($pkg['name'], $packages)) {
-						$delstm1->bindInteger($pkg['id']);
-						$delstm1->execute();
-						$delstm2->bindInteger($pkg['id']);
-						$delstm2->bindInteger($pkg['id']);
-						$delstm2->execute();
-						$delstm3->bindInteger($pkg['id']);
-						$delstm3->bindInteger($pkg['id']);
-						$delstm3->execute();
-						$delstm3a->bindInteger($pkg['id']);
-						$delstm3a->bindInteger($pkg['id']);
-						$delstm3a->execute();
-						$delstm4->bindInteger($pkg['id']);
-						$delstm4->bindInteger($pkg['id']);
-						$delstm4->execute();
-						$delstm5->bindInteger($pkg['id']);
-						$delstm5->bindInteger($pkg['id']);
-						$delstm5->execute();
-						$delstm6->bindInteger($pkg['id']);
-						$delstm6->execute();
-						$delstm6b->bindInteger($pkg['id']);
-						$delstm6b->execute();
-						$delstm7->bindInteger($pkg['id']);
-						$delstm7->execute();
-						$delstm8->bindInteger($pkg['id']);
-						$delstm8->execute();
-					}
+			$pkgs->bindValue('architecture', htmlspecialchars($arch), PDO::PARAM_STR);
+			$pkgs->bindValue('repository', htmlspecialchars($repo), PDO::PARAM_STR);
+			$pkgs->execute();
+			foreach ($pkgs as $pkg) {
+				if (!in_array($pkg['name'], $packages)) {
+					$delstm1->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm1->execute();
+					$delstm2->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm2->execute();
+					$delstm3->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm3->execute();
+					$delstm3a->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm3a->execute();
+					$delstm4->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm4->execute();
+					$delstm5->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm5->execute();
+					$delstm6->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm6->execute();
+					$delstm6b->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm6b->execute();
+					$delstm7->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm7->execute();
+					$delstm8->bindValue('package', $pkg['id'], PDO::PARAM_INT);
+					$delstm8->execute();
 				}
-			} catch(DBNoDataException $e) {
 			}
-			$delstm1->close();
-			$delstm2->close();
-			$delstm3->close();
-			$delstm4->close();
-			$delstm5->close();
-			$delstm6->close();
-			$delstm6b->close();
-			$delstm7->close();
-			$delstm8->close();
-			$stm->close();
 		}
 	}
 
 	private function removeUnusedEntries() {
-		$this->DB->execute('
+		DB::query('
 		DELETE FROM
 			groups
 		WHERE
 			id NOT IN (SELECT package_group.group FROM package_group)
 		');
-		$this->DB->execute('
+		DB::query('
 		DELETE FROM
 			licenses
 		WHERE
 			id NOT IN (SELECT license FROM package_license)
 		');
-		$this->DB->execute('
+		DB::query('
 		DELETE FROM
 			packagers
 		WHERE
 			id NOT IN (SELECT packager FROM packages)
 		');
-		$this->DB->execute('
+		DB::query('
 		DELETE FROM
 			architectures
 		WHERE
 			id NOT IN (SELECT arch FROM packages)
 		');
-		$this->DB->execute('
+		DB::query('
 		DELETE FROM
 			repositories
 		WHERE
@@ -764,32 +708,28 @@ class UpdatePKGDB extends Modul {
 	}
 
 	private function updateDependencies() {
-		try {
-			$packages = $this->DB->getRowSet('
-			SELECT
-				package,
-				depends
-			FROM
-				temp_depends
-			');
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
-		$cleanSTM = $this->DB->prepare('
+		$packages = DB::query('
+		SELECT
+			package,
+			depends
+		FROM
+			temp_depends
+		');
+		$cleanSTM = DB::prepare('
 		DELETE FROM
 			depends
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			depends
 		SET
-			package = ?,
-			depends = ?,
-			comment = ?
+			package = :package,
+			depends = :depends,
+			comment = :comment
 		');
-		$stm2 = $this->DB->prepare('
+		$stm2 = DB::prepare('
 		(
 		SELECT
 			target.id
@@ -797,10 +737,10 @@ class UpdatePKGDB extends Modul {
 			packages AS source,
 			packages AS target
 		WHERE
-			target.name = ?
+			target.name = :target
 			AND target.repository = source.repository
 			AND target.arch = source.arch
-			AND source.id = ?
+			AND source.id = :source
 		)
 		UNION
 		(
@@ -810,14 +750,14 @@ class UpdatePKGDB extends Modul {
 			packages AS source2,
 			packages AS target2
 		WHERE
-			target2.name = ?
+			target2.name = :target
 			AND target2.arch = source2.arch
-			AND source2.id = ?
+			AND source2.id = :source
 		)
 		LIMIT 1
 		');
 		foreach ($packages as $package) {
-			$cleanSTM->bindInteger($package['package']);
+			$cleanSTM->bindValue('package', $package['package'], PDO::PARAM_INT);
 			$cleanSTM->execute();
 			foreach (explode("\n", $package['depends']) as $depends) {
 				$depends = trim($depends);
@@ -831,55 +771,41 @@ class UpdatePKGDB extends Modul {
 					$depname = $depends;
 					$depcomment = '';
 				}
-				try {
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$depid = $stm2->getColumn();
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger($depid);
-					$stm->bindString(htmlspecialchars($depcomment));
-				} catch(DBNoDataException $e) {
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger(0);
-					$stm->bindString(htmlspecialchars($depends));
-				}
+				$stm2->bindValue('target', htmlspecialchars($depname), PDO::PARAM_STR);
+				$stm2->bindParam('source', $package['package'], PDO::PARAM_INT);
+				$stm2->execute();
+				$depid = $stm2->fetchColumn() ?: 0;
+				$stm->bindParam('package', $package['package'], PDO::PARAM_INT);
+				$stm->bindParam('depends', $depid, PDO::PARAM_INT);
+				$stm->bindValue('comment', htmlspecialchars($depcomment), PDO::PARAM_STR);
 				$stm->execute();
 			}
 		}
-		$cleanSTM->close();
-		$stm2->close();
-		$stm->close();
 	}
 
 	private function updateOptionalDependencies() {
-		try {
-			$packages = $this->DB->getRowSet('
-			SELECT
-				package,
-				optdepends
-			FROM
-				temp_optdepends
-			');
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
-		$cleanSTM = $this->DB->prepare('
+		$packages = DB::query('
+		SELECT
+			package,
+			optdepends
+		FROM
+			temp_optdepends
+		');
+		$cleanSTM = DB::prepare('
 		DELETE FROM
 			optdepends
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			optdepends
 		SET
-			package = ?,
-			optdepends = ?,
-			comment = ?
+			package = :package,
+			optdepends = :optdepends,
+			comment = :comment
 		');
-		$stm2 = $this->DB->prepare('
+		$stm2 = DB::prepare('
 		(
 		SELECT
 			target.id
@@ -887,10 +813,10 @@ class UpdatePKGDB extends Modul {
 			packages AS source,
 			packages AS target
 		WHERE
-			target.name = ?
+			target.name = :target
 			AND target.repository = source.repository
 			AND target.arch = source.arch
-			AND source.id = ?
+			AND source.id = :source
 		)
 		UNION
 		(
@@ -900,14 +826,14 @@ class UpdatePKGDB extends Modul {
 			packages AS source2,
 			packages AS target2
 		WHERE
-			target2.name = ?
+			target2.name = :target
 			AND target2.arch = source2.arch
-			AND source2.id = ?
+			AND source2.id = :source
 		)
 		LIMIT 1
 		');
 		foreach ($packages as $package) {
-			$cleanSTM->bindInteger($package['package']);
+			$cleanSTM->bindParam('package', $package['package'], PDO::PARAM_INT);
 			$cleanSTM->execute();
 			foreach (explode("\n", $package['optdepends']) as $optdepends) {
 				$optdepends = trim($optdepends);
@@ -921,55 +847,41 @@ class UpdatePKGDB extends Modul {
 					$optdepname = $optdepends;
 					$optdepcomment = '';
 				}
-				try {
-					$stm2->bindString(htmlspecialchars($optdepname));
-					$stm2->bindInteger($package['package']);
-					$stm2->bindString(htmlspecialchars($optdepname));
-					$stm2->bindInteger($package['package']);
-					$optdepid = $stm2->getColumn();
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger($optdepid);
-					$stm->bindString(htmlspecialchars($optdepcomment));
-				} catch(DBNoDataException $e) {
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger(0);
-					$stm->bindString(htmlspecialchars($optdepends));
-				}
+				$stm2->bindValue('target', htmlspecialchars($optdepname), PDO::PARAM_STR);
+				$stm2->bindValue('source', $package['package'], PDO::PARAM_INT);
+				$stm2->execute();
+				$optdepid = $stm2->fetchColumn() ?: 0;
+				$stm->bindValue('package', $package['package'], PDO::PARAM_INT);
+				$stm->bindValue('optdepends', $optdepid, PDO::PARAM_INT);
+				$stm->bindValue('comment', htmlspecialchars($optdepcomment), PDO::PARAM_STR);
 				$stm->execute();
 			}
 		}
-		$cleanSTM->close();
-		$stm2->close();
-		$stm->close();
 	}
 
 	private function updateProvides() {
-		try {
-			$packages = $this->DB->getRowSet('
-			SELECT
-				package,
-				provides
-			FROM
-				temp_provides
-			');
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
-		$cleanSTM = $this->DB->prepare('
+		$packages = DB::query('
+		SELECT
+			package,
+			provides
+		FROM
+			temp_provides
+		');
+		$cleanSTM = DB::prepare('
 		DELETE FROM
 			provides
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			provides
 		SET
-			package = ?,
-			provides = ?,
-			comment = ?
+			package = :package,
+			provides = :provides,
+			comment = :comment
 		');
-		$stm2 = $this->DB->prepare('
+		$stm2 = DB::prepare('
 		(
 		SELECT
 			target.id
@@ -977,10 +889,10 @@ class UpdatePKGDB extends Modul {
 			packages AS source,
 			packages AS target
 		WHERE
-			target.name = ?
+			target.name = :target
 			AND target.repository = source.repository
 			AND target.arch = source.arch
-			AND source.id = ?
+			AND source.id = :source
 		)
 		UNION
 		(
@@ -990,14 +902,14 @@ class UpdatePKGDB extends Modul {
 			packages AS source2,
 			packages AS target2
 		WHERE
-			target2.name = ?
+			target2.name = :target
 			AND target2.arch = source2.arch
-			AND source2.id = ?
+			AND source2.id = :source
 		)
 		LIMIT 1
 		');
 		foreach ($packages as $package) {
-			$cleanSTM->bindInteger($package['package']);
+			$cleanSTM->bindParam('package', $package['package'], PDO::PARAM_INT);
 			$cleanSTM->execute();
 			foreach (explode("\n", $package['provides']) as $provides) {
 				$provides = trim($provides);
@@ -1011,55 +923,41 @@ class UpdatePKGDB extends Modul {
 					$depname = $provides;
 					$depcomment = '';
 				}
-				try {
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$depid = $stm2->getColumn();
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger($depid);
-					$stm->bindString(htmlspecialchars($depcomment));
-				} catch(DBNoDataException $e) {
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger(0);
-					$stm->bindString(htmlspecialchars($provides));
-				}
+				$stm2->bindValue('target', htmlspecialchars($depname), PDO::PARAM_STR);
+				$stm2->bindParam('source', $package['package'], PDO::PARAM_INT);
+				$stm2->execute();
+				$depid = $stm2->fetchColumn() ?: 0;
+				$stm->bindParam('package', $package['package'], PDO::PARAM_INT);
+				$stm->bindParam('provides', $depid, PDO::PARAM_INT);
+				$stm->bindValue('comment', htmlspecialchars($depcomment), PDO::PARAM_STR);
 				$stm->execute();
 			}
 		}
-		$cleanSTM->close();
-		$stm2->close();
-		$stm->close();
 	}
 
 	private function updateConflicts() {
-		try {
-			$packages = $this->DB->getRowSet('
-			SELECT
-				package,
-				conflicts
-			FROM
-				temp_conflicts
-			');
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
-		$cleanSTM = $this->DB->prepare('
+		$packages = DB::query('
+		SELECT
+			package,
+			conflicts
+		FROM
+			temp_conflicts
+		');
+		$cleanSTM = DB::prepare('
 		DELETE FROM
 			conflicts
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			conflicts
 		SET
-			package = ?,
-			conflicts = ?,
-			comment = ?
+			package = :package,
+			conflicts = :conflicts,
+			comment = :comment
 		');
-		$stm2 = $this->DB->prepare('
+		$stm2 = DB::prepare('
 		(
 		SELECT
 			target.id
@@ -1067,10 +965,10 @@ class UpdatePKGDB extends Modul {
 			packages AS source,
 			packages AS target
 		WHERE
-			target.name = ?
+			target.name = :target
 			AND target.repository = source.repository
 			AND target.arch = source.arch
-			AND source.id = ?
+			AND source.id = :source
 		)
 		UNION
 		(
@@ -1080,14 +978,14 @@ class UpdatePKGDB extends Modul {
 			packages AS source2,
 			packages AS target2
 		WHERE
-			target2.name = ?
+			target2.name = :target
 			AND target2.arch = source2.arch
-			AND source2.id = ?
+			AND source2.id = :source
 		)
 		LIMIT 1
 		');
 		foreach ($packages as $package) {
-			$cleanSTM->bindInteger($package['package']);
+			$cleanSTM->bindParam('package', $package['package'], PDO::PARAM_INT);
 			$cleanSTM->execute();
 			foreach (explode("\n", $package['conflicts']) as $depends) {
 				$depends = trim($depends);
@@ -1101,55 +999,41 @@ class UpdatePKGDB extends Modul {
 					$depname = $depends;
 					$depcomment = '';
 				}
-				try {
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$depid = $stm2->getColumn();
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger($depid);
-					$stm->bindString(htmlspecialchars($depcomment));
-				} catch(DBNoDataException $e) {
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger(0);
-					$stm->bindString(htmlspecialchars($depends));
-				}
+				$stm2->bindValue('target', htmlspecialchars($depname), PDO::PARAM_STR);
+				$stm2->bindParam('source', $package['package'], PDO::PARAM_INT);
+				$stm2->execute();
+				$depid = $stm2->fetchColumn() ?: 0;
+				$stm->bindParam('package', $package['package'], PDO::PARAM_INT);
+				$stm->bindParam('conflicts', $depid, PDO::PARAM_INT);
+				$stm->bindValue('comment', htmlspecialchars($depcomment), PDO::PARAM_STR);
 				$stm->execute();
 			}
 		}
-		$cleanSTM->close();
-		$stm2->close();
-		$stm->close();
 	}
 
 	private function updateReplaces() {
-		try {
-			$packages = $this->DB->getRowSet('
-			SELECT
-				package,
-				replaces
-			FROM
-				temp_replaces
-			');
-		} catch(DBNoDataException $e) {
-			$packages = array();
-		}
-		$cleanSTM = $this->DB->prepare('
+		$packages = DB::query('
+		SELECT
+			package,
+			replaces
+		FROM
+			temp_replaces
+		');
+		$cleanSTM = DB::prepare('
 		DELETE FROM
 			replaces
 		WHERE
-			package = ?
+			package = :package
 		');
-		$stm = $this->DB->prepare('
+		$stm = DB::prepare('
 		INSERT INTO
 			replaces
 		SET
-			package = ?,
-			replaces = ?,
-			comment = ?
+			package = :package,
+			replaces = :replaces,
+			comment = :comment
 		');
-		$stm2 = $this->DB->prepare('
+		$stm2 = DB::prepare('
 		(
 		SELECT
 			target.id
@@ -1157,10 +1041,10 @@ class UpdatePKGDB extends Modul {
 			packages AS source,
 			packages AS target
 		WHERE
-			target.name = ?
+			target.name = :target
 			AND target.repository = source.repository
 			AND target.arch = source.arch
-			AND source.id = ?
+			AND source.id = :source
 		)
 		UNION
 		(
@@ -1170,14 +1054,14 @@ class UpdatePKGDB extends Modul {
 			packages AS source2,
 			packages AS target2
 		WHERE
-			target2.name = ?
+			target2.name = :target
 			AND target2.arch = source2.arch
-			AND source2.id = ?
+			AND source2.id = :source
 		)
 		LIMIT 1
 		');
 		foreach ($packages as $package) {
-			$cleanSTM->bindInteger($package['package']);
+			$cleanSTM->bindParam('package', $package['package'], PDO::PARAM_INT);
 			$cleanSTM->execute();
 			foreach (explode("\n", $package['replaces']) as $depends) {
 				$depends = trim($depends);
@@ -1191,26 +1075,16 @@ class UpdatePKGDB extends Modul {
 					$depname = $depends;
 					$depcomment = '';
 				}
-				try {
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$stm2->bindString(htmlspecialchars($depname));
-					$stm2->bindInteger($package['package']);
-					$depid = $stm2->getColumn();
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger($depid);
-					$stm->bindString(htmlspecialchars($depcomment));
-				} catch(DBNoDataException $e) {
-					$stm->bindInteger($package['package']);
-					$stm->bindInteger(0);
-					$stm->bindString(htmlspecialchars($depends));
-				}
+				$stm2->bindValue('target', htmlspecialchars($depname), PDO::PARAM_STR);
+				$stm2->bindParam('source', $package['package'], PDO::PARAM_INT);
+				$stm2->execute();
+				$depid = $stm2->fetchColumn() ?: 0;
+				$stm->bindParam('package', $package['package'], PDO::PARAM_INT);
+				$stm->bindParam('replaces', $depid, PDO::PARAM_INT);
+				$stm->bindValue('comment', htmlspecialchars($depcomment), PDO::PARAM_STR);
 				$stm->execute();
 			}
 		}
-		$cleanSTM->close();
-		$stm2->close();
-		$stm->close();
 	}
 }
 

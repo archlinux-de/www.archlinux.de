@@ -90,94 +90,66 @@ class PersistentCache extends Modul implements ICache {
 	}
 
 	public function addObject($key, $object, $ttl = 0) {
-		if ($ttl <= 0) {
-			try {
-				$stm = $this->DB->prepare('
-				REPLACE INTO
-					cache
-				SET
-					`key` = ?,
-					value = ?
-				');
-				$stm->bindString($key);
-				$stm->bindString(serialize($object));
-				$stm->execute();
-			} catch(DBException $e) {
-			}
-		} else {
-			try {
-				$stm = $this->DB->prepare('
-				REPLACE INTO
-					cache
-				SET
-					`key` = ?,
-					value = ?,
-					expires = ?
-				');
-				$stm->bindString($key);
-				$stm->bindString(serialize($object));
-				$stm->bindInteger(($this->time + $ttl));
-				$stm->execute();
-			} catch(DBException $e) {
-			}
-		}
-		$stm->close();
+		$stm = DB::prepare('
+		REPLACE INTO
+			cache
+		SET
+			`key` = :key,
+			value = :value,
+			expires = :expires
+		');
+		$stm->bindParam('key', $key, PDO::PARAM_STR);
+		$stm->bindValue('value', serialize($object), PDO::PARAM_STR);
+		$stm->bindValue('expires', ($ttl > 0 ? $this->time + $ttl : null), PDO::PARAM_INT);
+		$stm->execute();
 	}
 
 	public function getObject($key) {
 		$this->collectGarbage();
-		$value = false;
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				value
-			FROM
-				cache
-			WHERE
-				`key` = ?
-			');
-			$stm->bindString($key);
-			$value = unserialize($stm->getColumn());
-		} catch(DBNoDataException $e) {
+		$stm = DB::prepare('
+		SELECT
+			value
+		FROM
+			cache
+		WHERE
+			`key` = :key
+		');
+		$stm->bindParam('key', $key, PDO::PARAM_STR);
+		$stm->execute();
+		$value = $stm->fetchColumn();
+		if ($value !== false) {
+			return unserialize($value);
+		} else {
+			return false;
 		}
-		$stm->close();
-		return $value;
 	}
 
 	public function isObject($key) {
-		$value = false;
-		try {
-			$stm = $this->DB->prepare('
-			SELECT
-				value
-			FROM
-				cache
-			WHERE
-				`key` = ?
-			');
-			$stm->bindString($key);
-			$value = true;
-		} catch(DBNoDataException $e) {
-		}
-		$stm->close();
-		return $value;
+		$stm = DB::prepare('
+		SELECT
+			value
+		FROM
+			cache
+		WHERE
+			`key` = :key
+		');
+		$stm->bindParam('key', $key, PDO::PARAM_STR);
+		$stm->execute();
+		$value = $stm->fetchColumn();
+		return $value !== false;
 	}
 
 	private function collectGarbage() {
 		/* Ignore 49% of requests */
 		if (!mt_rand(0, 50)) {
-			try {
-				$stm = $this->DB->prepare('
-				DELETE FROM
-					cache
-				WHERE
-					expires < ?
-				');
-				$stm->bindInteger($this->time);
-				$stm->execute();
-			} catch(DBException $e) {
-			}
-			$stm->close();
+			$stm = DB::prepare('
+			DELETE FROM
+				cache
+			WHERE
+				expires < :expires
+			');
+			$stm->bindParam('expires', $this->time, PDO::PARAM_INT);
+			$stm->execute();
 		}
 	}
 }

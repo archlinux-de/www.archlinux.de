@@ -146,7 +146,7 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getCommonRepositoryStatistics() {
-		return self::get('DB')->getRow('
+		return DB::query('
 		SELECT
 			(SELECT COUNT(*) FROM architectures) AS architectures,
 			(SELECT COUNT(*) FROM repositories) AS repositories,
@@ -191,57 +191,50 @@ class RepositoryStatistics extends Page implements IDBCachable {
 				GROUP BY package
 				) AS temp2
 			) AS avgfiles
-		');
+		')->fetch();
 	}
 
 	private static function getRepositoryStatistics() {
-		try {
-			$repos = self::get('DB')->getRowSet('SELECT id, name FROM repositories')->toArray();
-		} catch(DBNoDataException $e) {
-			$repos = array();
-		}
-		$total = self::get('DB')->getRow('
+		$repos = DB::query('SELECT id, name FROM repositories');
+		$total = DB::query('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
 				packages
-			');
-		$stm = self::get('DB')->prepare('
+			')->fetch();
+		$stm = DB::prepare('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
 				packages
 			WHERE
-				repository = ?
+				repository = :repository
 			');
 		$list = '';
 		foreach ($repos as $repo) {
-			try {
-				$stm->bindInteger($repo['id']);
-				$data = $stm->getRow();
-				$list.= '<tr>
-					<th>' . $repo['name'] . '</th>
-					<td style="padding:0px;margin:0px;">
-						<div style="overflow:auto; max-height: 800px;">
-						<table class="pretty-table" style="border:none;">
-						<tr>
-							<td style="width: 50px;">' . self::get('L10n')->getText('Packages') . '</td>
-							<td>' . self::getBar($data['packages'], $total['packages']) . '</td>
-						</tr>
-						<tr>
-							<td style="width: 50px;">' . self::get('L10n')->getText('Size') . '</td>
-							<td>' . self::getBar($data['size'], $total['size']) . '</td>
-						</tr>
-						</table>
-						</div>
-					</td>
-				</tr>';
-			} catch(DBNoDataException $e) {
-			}
+			$stm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$stm->execute();
+			$data = $stm->fetch();
+			$list.= '<tr>
+				<th>' . $repo['name'] . '</th>
+				<td style="padding:0px;margin:0px;">
+					<div style="overflow:auto; max-height: 800px;">
+					<table class="pretty-table" style="border:none;">
+					<tr>
+						<td style="width: 50px;">' . self::get('L10n')->getText('Packages') . '</td>
+						<td>' . self::getBar($data['packages'], $total['packages']) . '</td>
+					</tr>
+					<tr>
+						<td style="width: 50px;">' . self::get('L10n')->getText('Size') . '</td>
+						<td>' . self::getBar($data['size'], $total['size']) . '</td>
+					</tr>
+					</table>
+					</div>
+				</td>
+			</tr>';
 		}
-		$stm->close();
 		return $list;
 	}
 
