@@ -26,8 +26,28 @@ class Request {
 		$this->request = & $request;
 	}
 
+	// see http://w3.org/International/questions/qa-forms-utf-8.html
+	private function is_unicode($input) {
+		# long values will make pcre segfaulting...
+		for ($i = 0;$i <= mb_strlen($input, 'UTF-8');$i+= 1000) {
+			if (!preg_match('%^(?:
+				[\x09\x0A\x0D\x20-\x7E]			# ASCII
+				| [\xC2-\xDF][\x80-\xBF]		# non-overlong 2-byte
+				|  \xE0[\xA0-\xBF][\x80-\xBF]		# excluding overlongs
+				| [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}	# straight 3-byte
+				|  \xED[\x80-\x9F][\x80-\xBF]		# excluding surrogates
+				|  \xF0[\x90-\xBF][\x80-\xBF]{2}	# planes 1-3
+				| [\xF1-\xF3][\x80-\xBF]{3}		# planes 4-15
+				|  \xF4[\x80-\x8F][\x80-\xBF]{2}	# plane 16
+				)*$%xs', mb_substr($input, $i, 1000, 'UTF-8'))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public function isString($name) {
-		return isset($this->request[$name]) && is_unicode($this->request[$name]);
+		return isset($this->request[$name]) && $this->is_unicode($this->request[$name]);
 	}
 
 	public function isEmptyString($name) {
@@ -89,7 +109,7 @@ class Request {
 	}
 
 	private function checkArray(&$value, $key) {
-		if (!is_unicode($value) || !preg_match('/\S+/', $value)) {
+		if (!$this->is_unicode($value) || !preg_match('/\S+/', $value)) {
 			throw new RequestException($key);
 		}
 	}

@@ -26,7 +26,6 @@ abstract class Modul {
 		'Page' => 'pages/abstract/Page.php',
 		'DB' => 'modules/DB.php',
 		'Exceptions' => 'modules/Exceptions.php',
-		'Functions' => 'modules/Functions.php',
 		'Input' => 'modules/Input.php',
 		'L10n' => 'modules/L10n.php',
 		'Modul' => 'modules/Modul.php',

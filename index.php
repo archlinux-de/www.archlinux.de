@@ -21,7 +21,6 @@
 require ('modules/Modul.php');
 require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/Functions.php');
 require ('modules/Input.php');
 require ('modules/Output.php');
 require ('modules/L10n.php');

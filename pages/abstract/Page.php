@@ -89,6 +89,13 @@ abstract class Page extends Modul implements IOutput {
 		$this->setValue('body', 'kein Text');
 	}
 
+	protected function cutString($string, $length) {
+		// Verhindere das Abschneiden im Entity
+		$string = htmlspecialchars_decode(trim($string));
+		$string = (mb_strlen($string, 'UTF-8') > $length ? mb_substr($string, 0, ($length - 3) , 'UTF-8') . '...' : $string);
+		return htmlspecialchars($string);
+	}
+
 	private function sendOutput() {
 		$file = '<!DOCTYPE HTML>
 <html>

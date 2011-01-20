@@ -61,7 +61,7 @@ class Packages extends Page {
 		}
 		$this->group = $this->Input->Post->getInt('group', $this->Input->Get->getInt('group', 0));
 		$this->packager = $this->Input->Get->getInt('packager', 0);
-		$this->search = cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Input->Post->getString('search', $this->Input->Get->getString('search', '')))) , 50);
+		$this->search = $this->cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Input->Post->getString('search', $this->Input->Get->getString('search', '')))) , 50);
 		if (strlen($this->search) < 2) {
 			$this->search = '';
 		}
@@ -258,7 +258,7 @@ class Packages extends Page {
 		$link = '?page=Packages;package=' . $this->package . ';repository=' . $this->repository . ';architecture=' . $this->architecture . ';group=' . $this->group . ';packager=' . $this->packager . ';search=' . urlencode($this->search) . ';searchfield=' . $this->searchField;
 		$curlink = '?page=Packages;orderby=' . $this->orderby . ';sort=' . $this->sort . ';repository=' . $this->repository . ';architecture=' . $this->architecture . ';group=' . $this->group . ';packager=' . $this->packager . ';search=' . urlencode($this->search) . ';searchfield=' . $this->searchField;
 		$next = ' <a href="' . $curlink . ';package=' . ($this->maxPackages + $this->package) . '">&#187;</a>';
-		$last = ($this->package > 0 ? '<a href="' . $curlink . ';package=' . nat($this->package - $this->maxPackages) . '">&#171;</a>' : '');
+		$last = ($this->package > 0 ? '<a href="' . $curlink . ';package=' . max(0, floor($this->package - $this->maxPackages)) . '">&#171;</a>' : '');
 		$body = '<table class="pretty-table">
 			<tr>
 				<td class="pages" colspan="6">' . $last . $next . '</td>
@@ -278,7 +278,7 @@ class Packages extends Page {
 				'staging'
 			)) ? ' class="less"' : '');
 			$body.= '<tr' . $style . '>
-				<td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . cutString($package['desc'], 70) . '</td><td>' . $this->L10n->getDateTime($package['builddate']) . '</td>
+				<td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . $this->cutString($package['desc'], 70) . '</td><td>' . $this->L10n->getDateTime($package['builddate']) . '</td>
 			</tr>';
 		}
 		$body.= '

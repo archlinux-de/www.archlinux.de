@@ -385,7 +385,7 @@ class PackageDetails extends Page {
 		$stm->execute();
 		$list = '<ul>';
 		foreach ($stm as $optdependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . cutString($optdependency['comment'], 30) . '</li>';
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . $this->cutString($optdependency['comment'], 30) . '</li>';
 		}
 		$list.= '</ul>';
 		return $list;
@@ -416,7 +416,7 @@ class PackageDetails extends Page {
 		$stm->execute();
 		$list = '<ul>';
 		foreach ($stm as $optdependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . cutString($optdependency['comment'], 30) . '</li>';
+			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . $this->cutString($optdependency['comment'], 30) . '</li>';
 		}
 		$list.= '</ul>';
 		return $list;
