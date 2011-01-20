@@ -31,16 +31,16 @@ class PackagesSuggest extends Page {
 	public function prepare() {
 		try {
 			$term = $this->Input->Get->getString('term');
+			if (strlen($term) < 2 || strlen($term) > 20) {
+				return;
+			}
 			$arch = $this->Input->Get->getInt('arch');
 			$repo = $this->Input->Get->getInt('repo');
 			$field = $this->Input->Get->getInt('field');
 			switch ($field) {
 				case 0:
-					if (strlen($term) < 2 || strlen($term) > 10) {
-						return;
-					}
 					$stm = DB::prepare('
-					SELECT
+					SELECT DISTINCT
 						name
 					FROM
 						packages
@@ -50,18 +50,15 @@ class PackagesSuggest extends Page {
 						' . ($repo > 0 ? 'AND repository = :repository' : '') . '
 					ORDER BY
 						name ASC
-					LIMIT 15
+					LIMIT 20
 					');
 					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
 					$arch > 0 && $stm->bindParam('arch', $arch, PDO::PARAM_INT);
 					$repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
 				break;
 				case 2:
-					if (strlen($term) < 2 || strlen($term) > 15) {
-						return;
-					}
 					$stm = DB::prepare('
-					SELECT
+					SELECT DISTINCT
 						name
 					FROM
 						file_index
@@ -69,7 +66,7 @@ class PackagesSuggest extends Page {
 						name LIKE :name
 					ORDER BY
 						name ASC
-					LIMIT 15
+					LIMIT 20
 					');
 					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
 				break;

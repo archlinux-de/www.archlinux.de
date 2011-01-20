@@ -126,8 +126,8 @@ class Packages extends Page {
 					' . (in_array($this->searchField, array(
 			0,
 			2
-		)) ? '<script type="text/javascript" src="jquery.min.js?v=1.4.2"></script>
-					<script type="text/javascript" src="jquery-ui-autocomplete.min.js?v=1.8.5"></script>
+		)) ? '<script type="text/javascript" src="jquery.min.js?v=1.4.4"></script>
+					<script type="text/javascript" src="jquery-ui-autocomplete.min.js?v=1.8.8"></script>
 					<script>
 						$(function() {
 							$("#searchfield").autocomplete({
