@@ -28,7 +28,6 @@ require ('modules/DB.php');
 require ('PackageDB.php');
 
 class UpdatePKGDB extends Modul {
-
 	// Cache for id-name mapping
 	private $arches = array();
 	private $packagers = array();

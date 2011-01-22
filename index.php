@@ -43,6 +43,6 @@ try {
 }
 $class = new $page();
 $class->prepare();
-$class->show();
+$class->printPage();
 
 ?>

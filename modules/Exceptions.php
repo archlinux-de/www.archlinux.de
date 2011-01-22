@@ -37,85 +37,29 @@ function ExceptionHandler(Exception $e) {
 			E_USER_WARNING => 'USER WARNING',
 			E_USER_NOTICE => 'USER NOTICE',
 			E_STRICT => 'STRICT NOTICE',
-			E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR'
+			E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR',
+			E_DEPRECATED => 'DEPRECATED',
+			E_USER_DEPRECATED =>'USER_DEPRECATED'
 		);
-		$screen = '<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
-<head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>' . get_class($e) . '</title>
-</head>
-<body>
-<h1 style="font-size:16px;">' . get_class($e) . '</h1>
-<pre style="overflow:auto;">' . htmlspecialchars($e->getMessage()) . '</pre>
-<pre>
-<strong>Type</strong>: ' . (isset($errorType[$e->getCode() ]) ? $errorType[$e->getCode() ] : $e->getCode()) . '
-<strong>File</strong>: ' . htmlspecialchars($e->getFile()) . '
-<strong>Line</strong>: ' . $e->getLine() . '</pre>
-<h2 style="font-size:14px;">Trace:</h2>
-<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>
-</body>
-</html>';
-		if (Modul::get('Settings')->getValue('debug')) {
-			if (!headers_sent()) {
-				header('HTTP/1.1 500 Exception');
-				header('Content-Length: ' . strlen($screen));
-				header('Content-Type: text/html; charset=UTF-8');
-			}
-			if (php_sapi_name() == 'cli') {
-				echo strip_tags(htmlspecialchars_decode($screen));
-			} else {
-				echo $screen;
-			}
-			die();
+		$type = (isset($errorType[$e->getCode() ]) ? $errorType[$e->getCode() ] : $e->getCode());
+
+		Modul::get('Output')->setStatus(Output::INTERNAL_SERVER_ERROR);
+
+		if (php_sapi_name() == 'cli') {
+			require (__DIR__.'/../templates/ExceptionCliTemplate.php');
+		} elseif (Modul::get('Settings')->getValue('debug')) {
+			require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
 		} else {
-			if (Modul::get('Settings')->getValue('log_dir') != '') {
-				file_put_contents(Modul::get('Settings')->getValue('log_dir') . time() . '.html', $screen);
-			}
-			$screen = '<?xml version="1.0" encoding="UTF-8" ?>
-			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "xhtml11.dtd">
-			<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
-			<head>
-			<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-			<title>Schwerer Fehler</title>
-			</head>
-			<body>
-				<h1 style="font-size:16px;">Fehler in Modul ' . get_class($e) . '</h1>
-				<p>Es ist ein schwerer Fehler aufgetreten. Die Administration wurde bereits benachrichtigt. Das Problem wird sobald wie möglich behoben.</p>
-				<h2 style="font-size:14px;">Kontakt</h2>
-				<p><a href="mailto:' . Modul::get('Settings')->getValue('email') . '">' . Modul::get('Settings')->getValue('email') . '</a></p>
-			</body>
-			</html>';
-			if (!headers_sent()) {
-				header('HTTP/1.1 500 Exception');
-				header('Content-Type: text/html; charset=UTF-8');
-				header('Content-Length: ' . strlen($screen));
-			}
-			if (php_sapi_name() == 'cli') {
-				echo strip_tags(htmlspecialchars_decode($screen));
-			} else {
-				echo $screen;
-			}
-			die();
+			require (__DIR__.'/../templates/ExceptionTemplate.php');
 		}
-	} catch(Exception $e) {
+	} catch (Exception $e) {
 		die($e->getMessage());
 	}
 }
 
 function ErrorHandler($code, $string, $file, $line) {
-	ExceptionHandler(new InternalRuntimeException($string, $code, $file, $line));
+	throw new ErrorException($string, $code, E_ERROR, $file, $line);
 }
 
-class InternalRuntimeException extends RuntimeException {
-
-	public function __construct($string, $code, $file, $line) {
-		parent::__construct($string, $code);
-		$this->file = $file;
-		$this->line = $line;
-	}
-}
 
 ?>

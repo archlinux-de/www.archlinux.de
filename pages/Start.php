@@ -52,8 +52,8 @@ class Start extends Page {
 				<form method="post" action="?page=Packages">
 					<label for="searchfield">Paket-Suche:</label>
 					<input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off" />
-					<script type="text/javascript" src="jquery.min.js?v=1.4.4"></script>
-					<script type="text/javascript" src="jquery-ui-autocomplete.min.js?v=1.8.8"></script>
+					<script type="text/javascript" src="style/jquery.min.js?v=1.4.4"></script>
+					<script type="text/javascript" src="style/jquery-ui-autocomplete.min.js?v=1.8.8"></script>
 					<script>
 						$(function() {
 							$("#searchfield").autocomplete({
@@ -119,7 +119,7 @@ class Start extends Page {
 			try {
 				$file = new RemoteFile($this->Settings->getValue('news_feed'));
 				$feed = new SimpleXMLElement($file->getFileContent());
-				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . $this->Settings->getValue('news_archive') . '">mehr</a>)</span></h3><a href="' . $this->Settings->getValue('news_feed') . '" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a>';
+				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . $this->Settings->getValue('news_archive') . '">mehr</a>)</span></h3><a href="' . $this->Settings->getValue('news_feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 				foreach ($feed->entry as $entry) {
 					$result.= '
 					<h4><a href="' . $entry->link->attributes()->href . '">' . $entry->title . '</a></h4>
@@ -157,7 +157,7 @@ class Start extends Page {
 		');
 		$packages->bindParam('arch', $this->arch, PDO::PARAM_INT);
 		$packages->execute();
-		$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="rss.png" alt="RSS Feed" /></a><table>';
+		$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
 		foreach ($packages as $package) {
 			$result.= '
 			<tr class="' . $package['repository'] . '">
