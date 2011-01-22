@@ -30,7 +30,7 @@ class RemoteFile extends File {
 
 	public function __construct($url) {
 		if (!preg_match('/^(https?|ftp):\/\//', $url)) {
-			throw new FileException($this->L10n->getText('Only http, https and ftp are allowed'));
+			throw new FileException('Only http, https and ftp are allowed');
 		}
 		$this->url = $url;
 		$this->fileName = preg_replace('/.*\/([^\/]+)/', '$1', $this->url);
@@ -81,7 +81,7 @@ class RemoteFile extends File {
 				// we will use the type provides by the client
 			}
 			if (!$this->isAllowedType($this->type)) {
-				throw new FileException(sprintf($this->L10n->getText('Uploading files of type %s is not allowed'),
+				throw new FileException(sprintf('Uploading files of type %s is not allowed',
 					htmlspecialchars($this->type)));
 			}
 			$this->size = strlen($this->content);

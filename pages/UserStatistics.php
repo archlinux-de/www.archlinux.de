@@ -30,95 +30,92 @@ class UserStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$this->setValue('title', $this->L10n->getText('User statistics'));
-		if (!($body = $this->PersistentCache->getObject('UserStatistics:' . $this->L10n->getLocale()))) {
+		$this->setValue('title', 'User statistics');
+		if (!($body = $this->PersistentCache->getObject('UserStatistics'))) {
 			$this->Output->setStatus(Output::NOT_FOUND);
-			$this->showFailure($this->L10n->getText('No data found!'));
+			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
 	}
 
 	public static function updateDBCache() {
 		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		try {
-			$log = self::getCommonPackageUsageStatistics();
-			$body = '<div class="box">
-			<table id="packagedetails">
-				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">' . self::get('L10n')->getText('User statistics') . '</h1></th>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Common statistics') . '</th>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Submissions') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['submissions']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Different IPs') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['differentips']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('First entry') . '</th>
-					<td>' . self::get('L10n')->getGMDateTime($log['minvisited']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Last entry') . '</th>
-					<td>' . self::get('L10n')->getGMDateTime($log['maxvisited']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Last update') . '</th>
-					<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Countries') . '</th>
-				</tr>
-					' . self::getCountryStatistics() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Countries (relative to population)') . '</th>
-				</tr>
-					' . self::getRelativeCountryStatistics() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Mirrors') . '</th>
-				</tr>
-					' . self::getMirrorStatistics() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Mirror protocolls') . '</th>
-				</tr>
-					' . self::getMirrorProtocollStatistics() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Submissions per architectures') . '</th>
-				</tr>
-					' . self::getSubmissionsPerArchitecture() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Common statistics') . '</th>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Sum of submitted packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['sumcount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Number of different packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['diffcount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Lowest number of installed packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['mincount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Highest number of installed packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['maxcount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Average number of installed packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['avgcount']) . '</td>
-				</tr>
-			</table>
-			</div>
-			';
-			self::get('PersistentCache')->addObject('UserStatistics:' . self::get('L10n')->getLocale() , $body);
-		} catch(DBNoDataException $e) {
-		}
+		$log = self::getCommonPackageUsageStatistics();
+		$body = '<div class="box">
+		<table id="packagedetails">
+			<tr>
+				<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">User statistics</h1></th>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Common statistics</th>
+			</tr>
+			<tr>
+				<th>Submissions</th>
+				<td>' . number_format($log['submissions']) . '</td>
+			</tr>
+			<tr>
+				<th>Different IPs</th>
+				<td>' . number_format($log['differentips']) . '</td>
+			</tr>
+			<tr>
+				<th>First entry</th>
+				<td>' . self::get('L10n')->getGMDateTime($log['minvisited']) . '</td>
+			</tr>
+			<tr>
+				<th>Last entry</th>
+				<td>' . self::get('L10n')->getGMDateTime($log['maxvisited']) . '</td>
+			</tr>
+			<tr>
+				<th>Last update</th>
+				<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Countries</th>
+			</tr>
+				' . self::getCountryStatistics() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Countries (relative to population)</th>
+			</tr>
+				' . self::getRelativeCountryStatistics() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Mirrors</th>
+			</tr>
+				' . self::getMirrorStatistics() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Mirror protocolls</th>
+			</tr>
+				' . self::getMirrorProtocollStatistics() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Submissions per architectures</th>
+			</tr>
+				' . self::getSubmissionsPerArchitecture() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Common statistics</th>
+			</tr>
+			<tr>
+				<th>Sum of submitted packages</th>
+				<td>' . number_format($log['sumcount']) . '</td>
+			</tr>
+			<tr>
+				<th>Number of different packages</th>
+				<td>' . number_format($log['diffcount']) . '</td>
+			</tr>
+			<tr>
+				<th>Lowest number of installed packages</th>
+				<td>' . number_format($log['mincount']) . '</td>
+			</tr>
+			<tr>
+				<th>Highest number of installed packages</th>
+				<td>' . number_format($log['maxcount']) . '</td>
+			</tr>
+			<tr>
+				<th>Average number of installed packages</th>
+				<td>' . number_format($log['avgcount']) . '</td>
+			</tr>
+		</table>
+		</div>
+		';
+		self::get('PersistentCache')->addObject('UserStatistics', $body);
 	}
 
 	private static function getCommonPackageUsageStatistics() {
@@ -312,12 +309,12 @@ class UserStatistics extends Page implements IDBCachable {
 			<tr>
 				<td style="padding:0px;margin:0px;">
 					<div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
-		title="' . self::get('L10n')->getNumber($value) . ' ' . self::get('L10n')->getText('of') . ' ' . self::get('L10n')->getNumber($total) . '">
+		title="' . number_format($value) . ' of ' . number_format($total) . '">
 			&nbsp;
 				</div>
 				</td>
 				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . '">
-					' . self::get('L10n')->getNumber($percent, 2) . '&nbsp;%
+					' . number_format($percent, 2) . '&nbsp;%
 				</td>
 			</tr>
 		</table>';

@@ -30,68 +30,65 @@ class PackageStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$this->setValue('title', $this->L10n->getText('Package statistics'));
-		if (!($body = $this->PersistentCache->getObject('PackageStatistics:' . $this->L10n->getLocale()))) {
+		$this->setValue('title', 'Package statistics');
+		if (!($body = $this->PersistentCache->getObject('PackageStatistics'))) {
 			$this->Output->setStatus(Output::NOT_FOUND);
-			$this->showFailure($this->L10n->getText('No data found!'));
+			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
 	}
 
 	public static function updateDBCache() {
 		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		try {
-			$log = self::getCommonPackageUsageStatistics();
-			$body = '<div class="box">
-			<table id="packagedetails">
-				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">' . self::get('L10n')->getText('Package usage') . '</h1></th>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Common statistics') . '</th>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Sum of submitted packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['sumcount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Number of different packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['diffcount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Lowest number of installed packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['mincount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Highest number of installed packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['maxcount']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Average number of installed packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($log['avgcount']) . '</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Submissions per architectures') . '</th>
-				</tr>
-				' . self::getSubmissionsPerArchitecture() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Installed packages per repository') . '</th>
-				</tr>
-				' . self::getPackagesPerRepository() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Popular packages per repository') . '</th>
-				</tr>
-				' . self::getPopularPackagesPerRepository() . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Popular unofficial packages') . '</th>
-				</tr>
-				' . self::getPopularUnofficialPackages() . '
-			</table>
-			</div>
-			';
-			self::get('PersistentCache')->addObject('PackageStatistics:' . self::get('L10n')->getLocale() , $body);
-		} catch(DBNoDataException $e) {
-		}
+		$log = self::getCommonPackageUsageStatistics();
+		$body = '<div class="box">
+		<table id="packagedetails">
+			<tr>
+				<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Package usage</h1></th>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Common statistics</th>
+			</tr>
+			<tr>
+				<th>Sum of submitted packages</th>
+				<td>' . number_format($log['sumcount']) . '</td>
+			</tr>
+			<tr>
+				<th>Number of different packages</th>
+				<td>' . number_format($log['diffcount']) . '</td>
+			</tr>
+			<tr>
+				<th>Lowest number of installed packages</th>
+				<td>' . number_format($log['mincount']) . '</td>
+			</tr>
+			<tr>
+				<th>Highest number of installed packages</th>
+				<td>' . number_format($log['maxcount']) . '</td>
+			</tr>
+			<tr>
+				<th>Average number of installed packages</th>
+				<td>' . number_format($log['avgcount']) . '</td>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Submissions per architectures</th>
+			</tr>
+			' . self::getSubmissionsPerArchitecture() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Installed packages per repository</th>
+			</tr>
+			' . self::getPackagesPerRepository() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Popular packages per repository</th>
+			</tr>
+			' . self::getPopularPackagesPerRepository() . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Popular unofficial packages</th>
+			</tr>
+			' . self::getPopularUnofficialPackages() . '
+		</table>
+		</div>
+		';
+		self::get('PersistentCache')->addObject('PackageStatistics', $body);
 	}
 
 	private static function getCommonPackageUsageStatistics() {
@@ -139,11 +136,11 @@ class PackageStatistics extends Page implements IDBCachable {
 						<div style="overflow:auto; max-height: 800px;">
 						<table class="pretty-table" style="border:none;">
 						<tr>
-							<td style="width: 50px;">' . self::get('L10n')->getText('Packages') . '</td>
+							<td style="width: 50px;">Packages</td>
 							<td>' . self::getBar($data['packages'], $total['packages']) . '</td>
 						</tr>
 						<tr>
-							<td style="width: 50px;">' . self::get('L10n')->getText('Size') . '</td>
+							<td style="width: 50px;">Size</td>
 							<td>' . self::getBar($data['size'], $total['size']) . '</td>
 						</tr>
 						</table>
@@ -177,7 +174,7 @@ class PackageStatistics extends Page implements IDBCachable {
 			$result = $bytes;
 			$postfix = '&nbsp;';
 		}
-		return self::get('L10n')->getNumber($result, 2) . $postfix;
+		return number_format($result, 2) . $postfix;
 	}
 
 	private static function getBar($value, $total) {
@@ -190,12 +187,12 @@ class PackageStatistics extends Page implements IDBCachable {
 			<tr>
 				<td style="padding:0px;margin:0px;">
 					<div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
-		title="' . self::get('L10n')->getNumber($value) . ' ' . self::get('L10n')->getText('of') . ' ' . self::get('L10n')->getNumber($total) . '">
+		title="' . number_format($value) . ' of ' . number_format($total) . '">
 			&nbsp;
 				</div>
 				</td>
 				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . '">
-					' . self::get('L10n')->getNumber($percent, 2) . '&nbsp;%
+					' . number_format($percent, 2) . '&nbsp;%
 				</td>
 			</tr>
 		</table>';

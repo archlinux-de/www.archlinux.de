@@ -47,12 +47,9 @@ class UpdatePkgstats extends Modul {
 			touch($this->getLockFile());
 			chmod($this->getLockFile() , 0600);
 		}
-		foreach ($this->Settings->getValue('locales') as $locale) {
-			$this->L10n->setLocale($locale);
-			PackageStatistics::updateDBCache();
-			UserStatistics::updateDBCache();
-			FunStatistics::updateDBCache();
-		}
+		PackageStatistics::updateDBCache();
+		UserStatistics::updateDBCache();
+		FunStatistics::updateDBCache();
 		unlink($this->getLockFile());
 	}
 }

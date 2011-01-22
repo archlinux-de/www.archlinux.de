@@ -30,119 +30,116 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$this->setValue('title', $this->L10n->getText('Repository statistics'));
-		if (!($body = $this->PersistentCache->getObject('RepositoryStatistics:' . $this->L10n->getLocale()))) {
+		$this->setValue('title', 'Repository statistics');
+		if (!($body = $this->PersistentCache->getObject('RepositoryStatistics'))) {
 			$this->Output->setStatus(Output::NOT_FOUND);
-			$this->showFailure($this->L10n->getText('No data found!'));
+			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
 	}
 
 	public static function updateDBCache() {
 		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		try {
-			$data = self::getCommonRepositoryStatistics();
-			$body = '<div class="box">
-			<table id="packagedetails">
-				<tr>
-					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">' . self::get('L10n')->getText('Repositories') . '</h1></th>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Overview') . '</th>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Architectures') . '</th>
-					<td>' . $data['architectures'] . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Repositories') . '</th>
-					<td>' . $data['repositories'] . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Groups') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['groups']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Packages') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['packages']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Files') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['files']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Size of file index') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['file_index']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Licenses') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['licenses']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Dependencies') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['depends']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Optional dependencies') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['optdepends']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Provides') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['provides']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Conflicts') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['conflicts']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Replaces') . '</th>
-					<td>' . self::get('L10n')->getNumber($data['replaces']) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Total size of repositories') . '</th>
-					<td>' . self::formatBytes($data['csize']) . 'Byte</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Total size of files') . '</th>
-					<td>' . self::formatBytes($data['isize']) . 'Byte</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Packager') . '</th>
-					<td>' . $data['packagers'] . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Last update') . '</th>
-					<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Averages') . '</th>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Size of packages') . '</th>
-					<td>&empty; ' . self::formatBytes($data['avgcsize']) . 'Byte</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Size of files') . '</th>
-					<td>&empty; ' . self::formatBytes($data['avgisize']) . 'Byte</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Files per package') . '</th>
-					<td>&empty; ' . self::get('L10n')->getNumber($data['avgfiles'], 2) . '</td>
-				</tr>
-				<tr>
-					<th>' . self::get('L10n')->getText('Packages per packager') . '</th>
-					<td>&empty; ' . self::get('L10n')->getNumber($data['avgpkgperpackager'], 2) . '</td>
-				</tr>
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Repositories') . '</th>
-				</tr>
-					' . self::getRepositoryStatistics() . '
-			</table>
-			</div>
-			';
-			self::get('PersistentCache')->addObject('RepositoryStatistics:' . self::get('L10n')->getLocale() , $body);
-		} catch(DBNoDataException $e) {
-		}
+		$data = self::getCommonRepositoryStatistics();
+		$body = '<div class="box">
+		<table id="packagedetails">
+			<tr>
+				<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Repositories</h1></th>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Overview</th>
+			</tr>
+			<tr>
+				<th>Architectures</th>
+				<td>' . $data['architectures'] . '</td>
+			</tr>
+			<tr>
+				<th>Repositories</th>
+				<td>' . $data['repositories'] . '</td>
+			</tr>
+			<tr>
+				<th>Groups</th>
+				<td>' . number_format($data['groups']) . '</td>
+			</tr>
+			<tr>
+				<th>Packages</th>
+				<td>' . number_format($data['packages']) . '</td>
+			</tr>
+			<tr>
+				<th>Files</th>
+				<td>' . number_format($data['files']) . '</td>
+			</tr>
+			<tr>
+				<th>Size of file index</th>
+				<td>' . number_format($data['file_index']) . '</td>
+			</tr>
+			<tr>
+				<th>Licenses</th>
+				<td>' . number_format($data['licenses']) . '</td>
+			</tr>
+			<tr>
+				<th>Dependencies</th>
+				<td>' . number_format($data['depends']) . '</td>
+			</tr>
+			<tr>
+				<th>Optional dependencies</th>
+				<td>' . number_format($data['optdepends']) . '</td>
+			</tr>
+			<tr>
+				<th>Provides</th>
+				<td>' . number_format($data['provides']) . '</td>
+			</tr>
+			<tr>
+				<th>Conflicts</th>
+				<td>' . number_format($data['conflicts']) . '</td>
+			</tr>
+			<tr>
+				<th>Replaces</th>
+				<td>' . number_format($data['replaces']) . '</td>
+			</tr>
+			<tr>
+				<th>Total size of repositories</th>
+				<td>' . self::formatBytes($data['csize']) . 'Byte</td>
+			</tr>
+			<tr>
+				<th>Total size of files</th>
+				<td>' . self::formatBytes($data['isize']) . 'Byte</td>
+			</tr>
+			<tr>
+				<th>Packager</th>
+				<td>' . $data['packagers'] . '</td>
+			</tr>
+			<tr>
+				<th>Last update</th>
+				<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Averages</th>
+			</tr>
+			<tr>
+				<th>Size of packages</th>
+				<td>&empty; ' . self::formatBytes($data['avgcsize']) . 'Byte</td>
+			</tr>
+			<tr>
+				<th>Size of files</th>
+				<td>&empty; ' . self::formatBytes($data['avgisize']) . 'Byte</td>
+			</tr>
+			<tr>
+				<th>Files per package</th>
+				<td>&empty; ' . number_format($data['avgfiles'], 2) . '</td>
+			</tr>
+			<tr>
+				<th>Packages per packager</th>
+				<td>&empty; ' . number_format($data['avgpkgperpackager'], 2) . '</td>
+			</tr>
+			<tr>
+				<th colspan="2" class="packagedetailshead">Repositories</th>
+			</tr>
+				' . self::getRepositoryStatistics() . '
+		</table>
+		</div>
+		';
+		self::get('PersistentCache')->addObject('RepositoryStatistics', $body);
 	}
 
 	private static function getCommonRepositoryStatistics() {
@@ -223,11 +220,11 @@ class RepositoryStatistics extends Page implements IDBCachable {
 					<div style="overflow:auto; max-height: 800px;">
 					<table class="pretty-table" style="border:none;">
 					<tr>
-						<td style="width: 50px;">' . self::get('L10n')->getText('Packages') . '</td>
+						<td style="width: 50px;">Packages</td>
 						<td>' . self::getBar($data['packages'], $total['packages']) . '</td>
 					</tr>
 					<tr>
-						<td style="width: 50px;">' . self::get('L10n')->getText('Size') . '</td>
+						<td style="width: 50px;">Size</td>
 						<td>' . self::getBar($data['size'], $total['size']) . '</td>
 					</tr>
 					</table>
@@ -260,7 +257,7 @@ class RepositoryStatistics extends Page implements IDBCachable {
 			$result = $bytes;
 			$postfix = '&nbsp;';
 		}
-		return self::get('L10n')->getNumber($result, 2) . $postfix;
+		return number_format($result, 2) . $postfix;
 	}
 
 	private static function getBar($value, $total) {
@@ -273,12 +270,12 @@ class RepositoryStatistics extends Page implements IDBCachable {
 			<tr>
 				<td style="padding:0px;margin:0px;">
 					<div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
-		title="' . self::get('L10n')->getNumber($value) . ' ' . self::get('L10n')->getText('of') . ' ' . self::get('L10n')->getNumber($total) . '">
+		title="' . number_format($value) . ' of ' . number_format($total) . '">
 			&nbsp;
 				</div>
 				</td>
 				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . '">
-					' . self::get('L10n')->getNumber($percent, 2) . '&nbsp;%
+					' . number_format($percent, 2) . '&nbsp;%
 				</td>
 			</tr>
 		</table>';

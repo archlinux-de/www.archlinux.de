@@ -72,19 +72,23 @@ class L10n extends Modul {
 	}
 
 	public function getDate($timestamp = null) {
-		return strftime($this->getText('%x') , $timestamp);
+		return date($this->getText('Y-m-d') , $timestamp);
 	}
 
 	public function getTime($timestamp = null) {
-		return strftime($this->getText('%X') , $timestamp);
+		return date($this->getText('H:i') , $timestamp);
 	}
 
 	public function getDateTime($timestamp = null) {
-		return strftime($this->getText('%c') , $timestamp);
+		return date($this->getText('Y-m-d H:i') , $timestamp);
 	}
 
 	public function getGmDate($timestamp = null) {
 		return gmdate('Y-m-d', $timestamp);
+	}
+
+	public function getGmTime($timestamp = null) {
+		return gmdate('H:i', $timestamp);
 	}
 
 	public function getGmDateTime($timestamp = null) {

@@ -30,143 +30,140 @@ class FunStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$this->setValue('title', $this->L10n->getText('Fun statistics'));
-		if (!($body = $this->PersistentCache->getObject('FunStatistics:' . $this->L10n->getLocale()))) {
+		$this->setValue('title', 'Fun statistics');
+		if (!($body = $this->PersistentCache->getObject('FunStatistics'))) {
 			$this->Output->setStatus(Output::NOT_FOUND);
-			$this->showFailure($this->L10n->getText('No data found!'));
+			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
 	}
 
 	public static function updateDBCache() {
 		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		try {
-			$body = '<div class="box">
-			<table id="packagedetails">
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Browser') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'Mozilla Firefox' => 'firefox',
-				'Chromium' => 'chromium',
-				'Konqueror' => 'kdebase-konqueror',
-				'Midori' => 'midori',
-				'Arora' => 'arora',
-				'Epiphany' => 'epiphany',
-				'Rekonq' => 'rekonq',
-				'Uzbl' => 'uzbl-core',
-				'Netsurf' => 'netsurf',
-				'Dillo' => 'dillo'
-			)) . '
-				<tr>
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Editors') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'Vim' => array(
-					'vim',
-					'gvim'
-				) ,
-				'Emacs' => array(
-					'emacs',
-					'xemacs'
-				) ,
-				'Nano' => 'nano',
-				'Gedit' => 'gedit',
-				'Kate' => 'kdesdk-kate',
-				'Kwrite' => 'kdebase-kwrite',
-				'Jedit' => 'jedit',
-				'Ne' => 'ne',
-				'Jed' => 'jed',
-				'Medit' => 'medit',
-				'Vi' => 'vi',
-				'Mousepad' => 'mousepad',
-				'Medit' => 'nedit',
-				'Joe' => 'joe'
-			)) . '
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Desktop Environments') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'KDE SC' => 'kdebase-workspace',
-				'GNOME' => 'gnome-session',
-				'LXDE' => 'lxde-common',
-				'Xfce' => 'xfdesktop',
-				'e17' => 'e-svn'
-			)) . '
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('File Managers') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'Dolphin' => 'kdebase-dolphin',
-				'Konqueror' => 'kdebase-konqueror',
-				'MC' => 'mc',
-				'Nautilus' => 'nautilus',
-				'Gnome-Commander' => 'gnome-commander',
-				'Krusader' => 'krusader',
-				'Pcmanfm' => 'pcmanfm',
-				'Thunar' => 'thunar'
-			)) . '
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Window Managers') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'Openbox' => 'openbox',
-				'Fluxbox' => 'fluxbox',
-				'I3' => 'i3-wm',
-				'Compiz' => 'compiz-core',
-				'FVWM' => array(
-					'fvwm',
-					'fvwm-devel'
-				) ,
-				'Ratpoison' => 'ratpoison',
-				'Wmii' => 'wmii',
-				'Xmonad' => 'xmonad',
-				'Window Maker' => array(
-					'windowmaker',
-					'windowmaker-crm-git'
-				)
-			)) . '
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Media Players') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'Mplayer' => 'mplayer',
-				'Xine' => 'xine-lib',
-				'VLC' => 'vlc'
-			)) . '
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Shells') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'Bash' => 'bash',
-				'Dash' => 'dash',
-				'Zsh' => 'zsh',
-				'Fish' => 'fish',
-				'Tcsh' => 'tcsh',
-				'Pdksh' => 'pdksh'
-			)) . '
-					<th colspan="2" class="packagedetailshead">' . self::get('L10n')->getText('Graphic Chipsets') . '</th>
-				</tr>
-					' . self::getPackageStatistics(array(
-				'ATI' => array(
-					'xf86-video-ati',
-					'xf86-video-r128',
-					'xf86-video-mach64',
-					'xf86-video-radeonhd'
-				) ,
-				'NVIDIA' => array(
-					'nvidia-utils',
-					'nvidia-96xx-utils',
-					'nvidia-173xx-utils',
-					'xf86-video-nouveau',
-					'xf86-video-nv'
-				) ,
-				'Intel' => array(
-					'xf86-video-intel',
-					'xf86-video-i740'
-				)
-			)) . '
-			</table>
-			</div>
-			';
-			self::get('PersistentCache')->addObject('FunStatistics:' . self::get('L10n')->getLocale() , $body);
-		} catch(DBNoDataException $e) {
-		}
+		$body = '<div class="box">
+		<table id="packagedetails">
+			<tr>
+				<th colspan="2" class="packagedetailshead">Browser</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'Mozilla Firefox' => 'firefox',
+			'Chromium' => 'chromium',
+			'Konqueror' => 'kdebase-konqueror',
+			'Midori' => 'midori',
+			'Arora' => 'arora',
+			'Epiphany' => 'epiphany',
+			'Rekonq' => 'rekonq',
+			'Uzbl' => 'uzbl-core',
+			'Netsurf' => 'netsurf',
+			'Dillo' => 'dillo'
+		)) . '
+			<tr>
+				<th colspan="2" class="packagedetailshead">Editors</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'Vim' => array(
+				'vim',
+				'gvim'
+			) ,
+			'Emacs' => array(
+				'emacs',
+				'xemacs'
+			) ,
+			'Nano' => 'nano',
+			'Gedit' => 'gedit',
+			'Kate' => 'kdesdk-kate',
+			'Kwrite' => 'kdebase-kwrite',
+			'Jedit' => 'jedit',
+			'Ne' => 'ne',
+			'Jed' => 'jed',
+			'Medit' => 'medit',
+			'Vi' => 'vi',
+			'Mousepad' => 'mousepad',
+			'Medit' => 'nedit',
+			'Joe' => 'joe'
+		)) . '
+				<th colspan="2" class="packagedetailshead">Desktop Environments</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'KDE SC' => 'kdebase-workspace',
+			'GNOME' => 'gnome-session',
+			'LXDE' => 'lxde-common',
+			'Xfce' => 'xfdesktop',
+			'e17' => 'e-svn'
+		)) . '
+				<th colspan="2" class="packagedetailshead">File Managers</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'Dolphin' => 'kdebase-dolphin',
+			'Konqueror' => 'kdebase-konqueror',
+			'MC' => 'mc',
+			'Nautilus' => 'nautilus',
+			'Gnome-Commander' => 'gnome-commander',
+			'Krusader' => 'krusader',
+			'Pcmanfm' => 'pcmanfm',
+			'Thunar' => 'thunar'
+		)) . '
+				<th colspan="2" class="packagedetailshead">Window Managers</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'Openbox' => 'openbox',
+			'Fluxbox' => 'fluxbox',
+			'I3' => 'i3-wm',
+			'Compiz' => 'compiz-core',
+			'FVWM' => array(
+				'fvwm',
+				'fvwm-devel'
+			) ,
+			'Ratpoison' => 'ratpoison',
+			'Wmii' => 'wmii',
+			'Xmonad' => 'xmonad',
+			'Window Maker' => array(
+				'windowmaker',
+				'windowmaker-crm-git'
+			)
+		)) . '
+				<th colspan="2" class="packagedetailshead">Media Players</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'Mplayer' => 'mplayer',
+			'Xine' => 'xine-lib',
+			'VLC' => 'vlc'
+		)) . '
+				<th colspan="2" class="packagedetailshead">Shells</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'Bash' => 'bash',
+			'Dash' => 'dash',
+			'Zsh' => 'zsh',
+			'Fish' => 'fish',
+			'Tcsh' => 'tcsh',
+			'Pdksh' => 'pdksh'
+		)) . '
+				<th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
+			</tr>
+				' . self::getPackageStatistics(array(
+			'ATI' => array(
+				'xf86-video-ati',
+				'xf86-video-r128',
+				'xf86-video-mach64',
+				'xf86-video-radeonhd'
+			) ,
+			'NVIDIA' => array(
+				'nvidia-utils',
+				'nvidia-96xx-utils',
+				'nvidia-173xx-utils',
+				'xf86-video-nouveau',
+				'xf86-video-nv'
+			) ,
+			'Intel' => array(
+				'xf86-video-intel',
+				'xf86-video-i740'
+			)
+		)) . '
+		</table>
+		</div>
+		';
+		self::get('PersistentCache')->addObject('FunStatistics', $body);
 	}
 
 	private static function getPackageStatistics($packages) {
@@ -222,12 +219,12 @@ class FunStatistics extends Page implements IDBCachable {
 			<tr>
 				<td style="padding:0px;margin:0px;">
 					<div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
-		title="'.self::get('L10n')->getNumber($value).' '.self::get('L10n')->getText('of').' '.self::get('L10n')->getNumber($total).'">
+		title="'.number_format($value).' of '.number_format($total).'">
 			&nbsp;
 				</div>
 				</td>
 				<td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . '">
-					' . self::get('L10n')->getNumber($percent, 2) . '&nbsp;%
+					' . number_format($percent, 2) . '&nbsp;%
 				</td>
 			</tr>
 		</table>';

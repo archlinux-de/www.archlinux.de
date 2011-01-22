@@ -53,10 +53,7 @@ class UpdateFileDB extends Modul {
 		}
 		if ($this->changed) {
 			$this->removeUnusedEntries();
-			foreach ($this->Settings->getValue('locales') as $locale) {
-				$this->L10n->setLocale($locale);
-				RepositoryStatistics::updateDBCache();
-			}
+			RepositoryStatistics::updateDBCache();
 		}
 		unlink($this->getLockFile());
 	}
