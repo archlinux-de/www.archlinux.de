@@ -25,14 +25,8 @@ set_error_handler('ErrorHandler');
 function ExceptionHandler(Exception $e) {
 	try {
 		$errorType = array(
-			E_ERROR => 'ERROR',
 			E_WARNING => 'WARNING',
-			E_PARSE => 'PARSING ERROR',
 			E_NOTICE => 'NOTICE',
-			E_CORE_ERROR => 'CORE ERROR',
-			E_CORE_WARNING => 'CORE WARNING',
-			E_COMPILE_ERROR => 'COMPILE ERROR',
-			E_COMPILE_WARNING => 'COMPILE WARNING',
 			E_USER_ERROR => 'USER ERROR',
 			E_USER_WARNING => 'USER WARNING',
 			E_USER_NOTICE => 'USER NOTICE',
@@ -42,6 +36,8 @@ function ExceptionHandler(Exception $e) {
 			E_USER_DEPRECATED =>'USER_DEPRECATED'
 		);
 		$type = (isset($errorType[$e->getCode() ]) ? $errorType[$e->getCode() ] : $e->getCode());
+		$files = get_included_files();
+		$context = array_slice(file($e->getFile(), FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
 
 		Modul::get('Output')->setStatus(Output::INTERNAL_SERVER_ERROR);
 
@@ -55,10 +51,11 @@ function ExceptionHandler(Exception $e) {
 	} catch (Exception $e) {
 		die($e->getMessage());
 	}
+	die();
 }
 
 function ErrorHandler($code, $string, $file, $line) {
-	throw new ErrorException($string, $code, E_ERROR, $file, $line);
+	throw new ErrorException($string, $code, E_WARNING, $file, $line);
 }
 
 
