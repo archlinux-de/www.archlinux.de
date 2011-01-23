@@ -117,8 +117,8 @@ class Start extends Page {
 		$result = '';
 		if (!($result = $this->ObjectCache->getObject('news_feed'))) {
 			try {
-				$file = new RemoteFile(Config::get('news', 'feed'));
-				$feed = new SimpleXMLElement($file->getFileContent());
+				$download = new Download(Config::get('news', 'feed'));
+				$feed = new SimpleXMLElement($download->getFile(), 0, true);
 				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 				foreach ($feed->entry as $entry) {
 					$result.= '
@@ -128,7 +128,7 @@ class Start extends Page {
 					';
 				}
 				$this->ObjectCache->addObject('news_feed', $result, 1800);
-			} catch(FileException $e) {
+			} catch (Exception $e) {
 			}
 		}
 		return $result;

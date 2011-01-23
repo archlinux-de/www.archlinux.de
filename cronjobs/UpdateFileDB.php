@@ -118,37 +118,16 @@ class UpdateFileDB extends Modul {
 	}
 
 	private function updateFiles($repo, $arch) {
-		// get remote mtime
-		$curl = curl_init($this->mirror . $repo . '/os/' . $arch . '/' . $repo . '.files.tar.gz');
-		curl_setopt($curl, CURLOPT_NOBODY, true);
-		curl_setopt($curl, CURLOPT_FILETIME, true);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
-		curl_exec($curl);
-		$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
-		curl_close($curl);
+		$download = new Download($this->mirror.$repo.'/os/'.$arch.'/'.$repo.'.files.tar.gz');
+		$mtime = $download->getMTime();
 
 		if ($mtime > $this->getLogEntry('UpdateFileDB-mtime-' . $repo . '-' . $arch)) {
 			$this->setLastMTime($repo, $arch, $this->getLogEntry('UpdateFileDB-' . $repo . '-' . $arch));
 			$this->changed = true;
-			$dbtargz = tempnam($this->getTmpDir() . '/', $arch . '-' . $repo . '-files.tar.gz-');
 			$dbDir = tempnam($this->getTmpDir() . '/', $arch . '-' . $repo . '-files.db-');
 			unlink($dbDir);
 			mkdir($dbDir, 0700);
-			$fh = fopen($dbtargz, 'w');
-			flock($fh, LOCK_EX);
-			$curl = curl_init($this->mirror . $repo . '/os/' . $arch . '/' . $repo . '.files.tar.gz');
-			curl_setopt($curl, CURLOPT_FILE, $fh);
-			curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-			curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
-			curl_exec($curl);
-			curl_close($curl);
-			flock($fh, LOCK_UN);
-			fclose($fh);
-			exec('bsdtar -xf ' . $dbtargz . ' -C ' . $dbDir, $output, $return);
-			unlink($dbtargz);
+			exec('bsdtar -xf '.$download->getFile().' -C '.$dbDir, $output, $return);
 
 			if ($return == 0) {
 				$dh = opendir($dbDir);

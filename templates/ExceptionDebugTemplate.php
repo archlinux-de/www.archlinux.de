@@ -24,7 +24,7 @@
 	<div id="content">
 		<div id="error">
 		<h2><?php echo get_class($e); ?></h2>
-		<pre><?php echo htmlspecialchars($e->getMessage()); ?></pre><br />
+		<pre><?php echo $e->getMessage(); ?></pre><br />
 		<pre><strong>Type</strong>: <?php echo $type; ?></pre>
 		<pre><strong>File</strong>: <?php echo htmlspecialchars($e->getFile()); ?></pre>
 		<pre><strong>Line</strong>: <?php echo $e->getLine(); ?></pre>

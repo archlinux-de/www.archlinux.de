@@ -100,25 +100,12 @@ class UpdateMirrors extends Modul {
 	}
 
 	private function getMirrorStatus() {
-		if (false === ($curl = curl_init(Config::get('mirrors', 'status')))) {
-			throw new RuntimeException('failed to init curl: ' . htmlspecialchars($url));
-		}
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 120);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
-		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:'.Config::get('common', 'email'));
-		$content = curl_exec($curl);
-		if (curl_errno($curl) > 0 || false === $content) {
-			$error = htmlspecialchars(curl_error($curl));
-			curl_close($curl);
-			throw new RuntimeException($error, 1);
-		} elseif (empty($content)) {
-			curl_close($curl);
+		$download = new Download(Config::get('mirrors', 'status'));
+
+		$content = file_get_contents($download->getFile());
+		if (empty($content)) {
 			throw new RuntimeException('empty mirrorstatus', 1);
 		}
-		curl_close($curl);
 		$mirrors = json_decode($content, true);
 		if (json_last_error() != JSON_ERROR_NONE) {
 			throw new RuntimeException('could not decode mirrorstatus', 1);

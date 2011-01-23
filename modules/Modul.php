@@ -22,13 +22,12 @@ abstract class Modul {
 
 	private static $loadedModules = array();
 	private static $availableModules = array(
-		'GetFile' => 'pages/abstract/GetFile.php',
+		'Download' => 'modules/Download.php',
 		'Page' => 'pages/abstract/Page.php',
 		'DB' => 'modules/DB.php',
 		'Exceptions' => 'modules/Exceptions.php',
 		'Input' => 'modules/Input.php',
 		'L10n' => 'modules/L10n.php',
-		'Modul' => 'modules/Modul.php',
 		'ObjectCache' => 'modules/ObjectCache.php',
 		'PersistentCache' => 'modules/ObjectCache.php',
 		'Output' => 'modules/Output.php',

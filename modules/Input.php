@@ -19,8 +19,6 @@
 */
 
 require ('modules/Request.php');
-require ('modules/File.php');
-require ('modules/RemoteFile.php');
 
 class Input extends Modul {
 
@@ -78,10 +76,6 @@ class Input extends Modul {
 	public function getRelativePath() {
 		$directory = dirname($this->Server->getString('SCRIPT_NAME'));
 		return ($directory == '/' ? '' : $directory) . '/';
-	}
-
-	public function getRemoteFile($url) {
-		return new RemoteFile($url);
 	}
 }
 

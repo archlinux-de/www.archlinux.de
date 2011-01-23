@@ -25,7 +25,6 @@ class PackageDB {
 	private $mirror = 'http://mirrors.kernel.org/archlinux/';
 	private $repository = 'core';
 	private $architecture = 'i686';
-	private $DBtargz = '/tmp/db.tar.gz';
 	private $DBDir = '/tmp/dbdir';
 	private $mtime = 0;
 	private $updated = false;
@@ -53,36 +52,15 @@ class PackageDB {
 	}
 
 	private function update($lastmtime) {
-		// get remote mtime
-		$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
-		curl_setopt($curl, CURLOPT_NOBODY, true);
-		curl_setopt($curl, CURLOPT_FILETIME, true);
-		curl_setopt($curl, CURLOPT_FAILONERROR, false);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
-		curl_exec($curl);
-		$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
-		curl_close($curl);
+		$download = new Download($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
+		$this->mtime = $download->getMTime();
 
 		if ($this->mtime > $lastmtime) {
-			$this->DBtargz = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb.tar.gz-');
 			$this->DBDir = tempnam($this->getTmpDir().'/', $this->architecture.'-'.$this->repository.'-pkgdb-');
 			unlink($this->DBDir);
 			mkdir($this->DBDir, 0700);
-			$fh = fopen($this->DBtargz, 'w');
-			flock($fh, LOCK_EX);
-			$curl = curl_init($this->mirror.$this->repository.'/os/'.$this->architecture.'/'.$this->repository.'.db.tar.gz');
-			curl_setopt($curl, CURLOPT_FILE, $fh);
-			curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-			curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
-			curl_exec($curl);
-			curl_close($curl);
-			flock($fh, LOCK_UN);
-			fclose($fh);
-			system('bsdtar -xf ' . $this->DBtargz . ' -C ' . $this->DBDir, $return);
-			unlink($this->DBtargz);
+
+			system('bsdtar -xf '.$download->getFile().' -C '.$this->DBDir, $return);
 			if ($return == 0) {
 				$this->updated = true;
 			} else {
