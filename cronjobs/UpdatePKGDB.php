@@ -204,7 +204,6 @@ class UpdatePKGDB extends Modul {
 			mtime = :mtime,
 			packager = :packager,
 			`force` = :force,
-			epoch = :epoch,
 			repository = :repository
 		WHERE
 			id = :id
@@ -227,7 +226,6 @@ class UpdatePKGDB extends Modul {
 			mtime = :mtime,
 			packager = :packager,
 			`force` = :force,
-			epoch = :epoch,
 			repository = :repository
 		');
 		$dependsSTM = DB::prepare('
@@ -287,7 +285,6 @@ class UpdatePKGDB extends Modul {
 				$updateSTM->bindValue('mtime', $package->getMTime(), PDO::PARAM_INT);
 				$updateSTM->bindValue('packager', $this->getPackagerID($package->getPackager()), PDO::PARAM_INT);
 				$updateSTM->bindValue('force', ($package->isForced() ? 1 : 0), PDO::PARAM_INT);
-				$updateSTM->bindValue('epoch', $package->getEpoch(), PDO::PARAM_INT);
 				$updateSTM->bindValue('repository', $this->getRepositoryID($repo), PDO::PARAM_INT);
 				$updateSTM->bindParam('id', $packageID, PDO::PARAM_INT);
 				$updateSTM->execute();
@@ -306,7 +303,6 @@ class UpdatePKGDB extends Modul {
 				$insertSTM->bindValue('mtime', $package->getMTime(), PDO::PARAM_INT);
 				$insertSTM->bindValue('packager', $this->getPackagerID($package->getPackager()), PDO::PARAM_INT);
 				$insertSTM->bindValue('force', ($package->isForced() ? 1 : 0), PDO::PARAM_INT);
-				$insertSTM->bindValue('epoch', $package->getEpoch(), PDO::PARAM_INT);
 				$insertSTM->bindValue('repository', $this->getRepositoryID($repo), PDO::PARAM_INT);
 				$insertSTM->execute();
 				$packageID = DB::lastInsertId();

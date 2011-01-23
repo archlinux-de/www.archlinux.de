@@ -138,10 +138,6 @@ class Package {
 		return isset($this->depends['FORCE']) || isset($this->desc['FORCE']);
 	}
 
-	public function getEpoch() {
-		return isset($this->desc['EPOCH'][0]) ? $this->desc['EPOCH'][0] : 0;
-	}
-
 	public function getDepends() {
 		return isset($this->depends['DEPENDS']) ? $this->depends['DEPENDS'] : array();
 	}

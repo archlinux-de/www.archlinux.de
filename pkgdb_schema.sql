@@ -274,7 +274,6 @@ CREATE TABLE `packages` (
   `mtime` int(10) unsigned NOT NULL,
   `packager` int(11) unsigned NOT NULL,
   `force` tinyint(1) unsigned NOT NULL,
-  `epoch` smallint(5) unsigned NOT NULL,
   `repository` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `repository` (`repository`),
