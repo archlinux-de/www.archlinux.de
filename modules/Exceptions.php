@@ -43,7 +43,7 @@ function ExceptionHandler(Exception $e) {
 
 		if (php_sapi_name() == 'cli') {
 			require (__DIR__.'/../templates/ExceptionCliTemplate.php');
-		} elseif (Modul::get('Settings')->getValue('debug')) {
+		} elseif (Config::get('common', 'debug')) {
 			require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
 		} else {
 			require (__DIR__.'/../templates/ExceptionTemplate.php');

@@ -31,8 +31,8 @@ abstract class Modul {
 		'Modul' => 'modules/Modul.php',
 		'ObjectCache' => 'modules/ObjectCache.php',
 		'PersistentCache' => 'modules/ObjectCache.php',
-		'Ouput' => 'modules/Output.php',
-		'Settings' => 'modules/Settings.php'
+		'Output' => 'modules/Output.php',
+		'Config' => 'modules/Config.php'
 	);
 
 	public static function loadModul($name) {

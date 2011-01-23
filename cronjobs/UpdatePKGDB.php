@@ -22,7 +22,7 @@
 ini_set('max_execution_time', 0);
 ini_set('include_path', ini_get('include_path') . ':../');
 require ('modules/Modul.php');
-require ('modules/Settings.php');
+require ('modules/Config.php');
 require ('modules/Exceptions.php');
 require ('modules/DB.php');
 require ('PackageDB.php');
@@ -97,8 +97,8 @@ class UpdatePKGDB extends Modul {
 			PRIMARY KEY (package)
 			)
 		');
-		foreach ($this->Settings->getValue('pkgdb_repositories') as $repo) {
-			foreach ($this->Settings->getValue('pkgdb_architectures') as $arch) {
+		foreach (Config::get('packages', 'repositories') as $repo) {
+			foreach (Config::get('packages', 'architectures') as $arch) {
 				$this->updateRepository($repo, $arch);
 			}
 		}
@@ -131,7 +131,7 @@ class UpdatePKGDB extends Modul {
 
 	private function updateRepository($repo, $arch) {
 		$lastpkgdbmtime = $this->getPKGDBMTime($repo, $arch);
-		$pkgdb = new PackageDB($this->Settings->getValue('pkgdb_mirror') , $repo, $arch, $lastpkgdbmtime);
+		$pkgdb = new PackageDB(Config::get('packages', 'mirror') , $repo, $arch, $lastpkgdbmtime);
 		$mtime = $pkgdb->getMTime();
 		if ($mtime > $lastpkgdbmtime) {
 			$this->changed = true;

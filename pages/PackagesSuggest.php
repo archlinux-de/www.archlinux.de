@@ -22,10 +22,9 @@ class PackagesSuggest extends Page {
 
 	private $suggestions = array();
 
-	public function show() {
+	public function printPage() {
 		$this->Output->setContentType('application/json; charset=UTF-8');
-		$output = json_encode($this->suggestions);
-		$this->Output->writeOutput($output);
+		echo json_encode($this->suggestions);
 	}
 
 	public function prepare() {

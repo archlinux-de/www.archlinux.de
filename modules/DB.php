@@ -24,9 +24,9 @@ class DB extends Modul {
 
 	private static function getInstance() {
 		if (is_null(self::$pdo)) {
-			self::$pdo = new PDO('mysql:dbname='.Modul::get('Settings')->getValue('sql_database'),
-				Modul::get('Settings')->getValue('sql_user'),
-				Modul::get('Settings')->getValue('sql_password'),
+			self::$pdo = new PDO('mysql:dbname='.Config::get('DB', 'database'),
+				Config::get('DB', 'user'),
+				Config::get('DB', 'password'),
 				array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
 				      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
 			);

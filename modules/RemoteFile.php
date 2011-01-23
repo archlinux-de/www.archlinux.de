@@ -80,10 +80,6 @@ class RemoteFile extends File {
 			} catch(FileException $e) {
 				// we will use the type provides by the client
 			}
-			if (!$this->isAllowedType($this->type)) {
-				throw new FileException(sprintf('Uploading files of type %s is not allowed',
-					htmlspecialchars($this->type)));
-			}
 			$this->size = strlen($this->content);
 			$this->fetchedContent = true;
 		}
@@ -98,7 +94,7 @@ class RemoteFile extends File {
 		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($curl, CURLOPT_ENCODING, '');
-		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:' . $this->Settings->getValue('email'));
+		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:' . Config::get('common', 'email'));
 		return $curl;
 	}
 

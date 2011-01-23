@@ -28,9 +28,7 @@ abstract class GetFile extends Modul implements IOutput {
 	}
 
 	protected function exitIfCached() {
-		if ($this->Input->Server->isString('HTTP_IF_MODIFIED_SINCE')
-			&& strtotime($this->Input->Server->getString('HTTP_IF_MODIFIED_SINCE'))
-				> $this->Input->getTime() - $this->Settings->getValue('file_refresh')) {
+		if ($this->Input->Server->isString('HTTP_IF_MODIFIED_SINCE')) {
 			$this->Output->writeHeader('HTTP/1.1 304 Not Modified');
 			exit;
 		}
@@ -48,7 +46,6 @@ abstract class GetFile extends Modul implements IOutput {
 		$this->Output->setModified();
 		$this->Output->setCompression($this->compression);
 		$this->Output->writeHeader('Content-Disposition: ' . $disposition . '; filename="' . urlencode($name) . '"');
-		$this->Output->writeHeader('Cache-Control: private, max-age=' . $this->Settings->getValue('file_refresh'));
 		$this->Output->writeOutput($content);
 	}
 

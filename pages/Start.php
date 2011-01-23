@@ -117,9 +117,9 @@ class Start extends Page {
 		$result = '';
 		if (!($result = $this->ObjectCache->getObject('news_feed'))) {
 			try {
-				$file = new RemoteFile($this->Settings->getValue('news_feed'));
+				$file = new RemoteFile(Config::get('news', 'feed'));
 				$feed = new SimpleXMLElement($file->getFileContent());
-				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . $this->Settings->getValue('news_archive') . '">mehr</a>)</span></h3><a href="' . $this->Settings->getValue('news_feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
+				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 				foreach ($feed->entry as $entry) {
 					$result.= '
 					<h4><a href="' . $entry->link->attributes()->href . '">' . $entry->title . '</a></h4>

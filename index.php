@@ -18,14 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// require ('modules/Config.php');
 require ('modules/Modul.php');
-require ('modules/Settings.php');
 require ('modules/Exceptions.php');
-require ('modules/Input.php');
-require ('modules/Output.php');
-require ('modules/L10n.php');
+// require ('modules/Input.php');
+// require ('modules/Output.php');
+// require ('modules/L10n.php');
 
-Modul::set('Settings', new Settings());
 $Input = Modul::set('Input', new Input());
 Modul::set('L10n', new L10n());
 $Output = Modul::set('Output', new Output());

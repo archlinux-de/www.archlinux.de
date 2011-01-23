@@ -22,7 +22,7 @@
 ini_set('max_execution_time', 0);
 ini_set('include_path', ini_get('include_path') . ':../');
 require ('modules/Modul.php');
-require ('modules/Settings.php');
+require ('modules/Config.php');
 require ('modules/Exceptions.php');
 require ('pages/abstract/Page.php');
 require ('pages/RepositoryStatistics.php');
@@ -45,9 +45,9 @@ class UpdateFileDB extends Modul {
 			touch($this->getLockFile());
 			chmod($this->getLockFile() , 0600);
 		}
-		$this->mirror = $this->Settings->getValue('pkgdb_mirror');
-		foreach ($this->Settings->getValue('pkgdb_repositories') as $repo) {
-			foreach ($this->Settings->getValue('pkgdb_architectures') as $arch) {
+		$this->mirror = Config::get('packages', 'mirror');
+		foreach (Config::get('packages', 'repositories') as $repo) {
+			foreach (Config::get('packages', 'architectures') as $arch) {
 				$this->updateFiles($repo, $arch);
 			}
 		}
@@ -124,7 +124,7 @@ class UpdateFileDB extends Modul {
 		curl_setopt($curl, CURLOPT_FILETIME, true);
 		curl_setopt($curl, CURLOPT_TIMEOUT, 60);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-		curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
+		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
 		curl_exec($curl);
 		$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 		curl_close($curl);
@@ -142,7 +142,7 @@ class UpdateFileDB extends Modul {
 			curl_setopt($curl, CURLOPT_FILE, $fh);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 60);
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-			curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
+			curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
 			curl_exec($curl);
 			curl_close($curl);
 			flock($fh, LOCK_UN);

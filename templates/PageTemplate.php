@@ -5,7 +5,7 @@
 	<title>archlinux.de - <?php echo $this->getValue('title'); ?></title>
 	<link rel="stylesheet" media="screen" href="style/arch.css?v=4" />
 	<link rel="stylesheet" media="screen" href="style/archnavbar.css?v=2" />
-	<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="<?php echo $this->Settings->getValue('news_feed'); ?>" />
+	<link rel="alternate" type="application/atom+xml" title="Aktuelle Ankündigungen" href="<?php echo Config::get('news', 'feed'); ?>" />
 	<link rel="alternate" type="application/atom+xml" title="Aktualisierte Pakete" href="?page=GetRecentPackages" />
 	<link rel="search" type="application/opensearchdescription+xml" href="?page=GetOpenSearch" title="www.archlinux.de" />
 	<link rel="shortcut icon" href="style/favicon.ico" />

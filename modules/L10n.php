@@ -32,7 +32,7 @@ class L10n extends Modul {
 		putenv('LC_ALL=' . $this->locale);
 		putenv('LANGUAGE=' . $this->locale);
 		setlocale(LC_ALL, $this->locale);
-		date_default_timezone_set($this->Settings->getValue('timezone'));
+		date_default_timezone_set(Config::get('L10n', 'timezone'));
 		$this->localeInfo = localeconv();
 		if (function_exists('bindtextdomain')) {
 			bindtextdomain('messages', 'l10n');
@@ -41,7 +41,7 @@ class L10n extends Modul {
 	}
 
 	private function getAcceptLanguage() {
-		$locales = $this->Settings->getValue('locales');
+		$locales = Config::get('L10n', 'locales');
 		try {
 			foreach (explode(',', $this->Input->Server->getString('HTTP_ACCEPT_LANGUAGE')) as $lang) {
 				$lang = substr(strtolower(trim($lang)) , 0, 2);

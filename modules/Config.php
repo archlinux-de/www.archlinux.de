@@ -18,17 +18,30 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetRecentNews extends Modul implements IOutput {
+class Config {
 
-	private $url = '';
+	private static $config = array();
 
-	public function prepare() {
-		$this->url = Config::get('news', 'feed');
+	private function __construct() {}
+
+	public static function set($section, $key, $value) {
+		self::$config[$section][$key] = $value;
 	}
 
-	public function show() {
-		$this->Output->redirectToUrl($this->url);
+	public static function get($section, $key) {
+		if (isset(self::$config[$section][$key])) {
+			return self::$config[$section][$key];
+		} else {
+			throw new RuntimeException('No configuration entry was found for key "'.$key.'" in section "'.$section.'"');
+		}
 	}
+
+}
+
+require_once (__DIR__.'/../config/DefaultConfig.php');
+
+if (file_exists(__DIR__.'/../config/LocalConfig.php')) {
+	include_once (__DIR__.'/../config/LocalConfig.php');
 }
 
 ?>

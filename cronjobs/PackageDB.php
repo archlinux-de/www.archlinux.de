@@ -60,7 +60,7 @@ class PackageDB {
 		curl_setopt($curl, CURLOPT_FAILONERROR, false);
 		curl_setopt($curl, CURLOPT_TIMEOUT, 60);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-		curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
+		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
 		curl_exec($curl);
 		$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 		curl_close($curl);
@@ -76,7 +76,7 @@ class PackageDB {
 			curl_setopt($curl, CURLOPT_FILE, $fh);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 60);
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-			curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
+			curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
 			curl_exec($curl);
 			curl_close($curl);
 			flock($fh, LOCK_UN);

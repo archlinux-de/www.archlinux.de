@@ -25,7 +25,7 @@
 		<div id="error">
 		<h2><?php echo get_class($e); ?></h2>
 		<p>I am sorry, something went wrong while processing file <strong><?php echo basename($e->getFile(), '.php'); ?></strong>.</p>
-		<p>Contact <a href="mailto:<?php echo Modul::get('Settings')->getValue('email'); ?>"><?php echo Modul::get('Settings')->getValue('email'); ?></a></p>
+		<p>Contact <a href="mailto:<?php echo Config::get('common', 'email'); ?>"><?php echo Config::get('common', 'email'); ?></a></p>
 		</div>
 	</div>
 </body>

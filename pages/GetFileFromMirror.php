@@ -29,7 +29,7 @@ class GetFileFromMirror extends Page {
 	private function getMirror() {
 		$country = $this->Input->getClientCountryName();
 		if (empty($country)) {
-			$country = $this->Settings->getValue('country');
+			$country = Config::get('mirrors', 'country');
 		}
 		$stm = DB::prepare('
 		SELECT
@@ -45,7 +45,7 @@ class GetFileFromMirror extends Page {
 		$stm->bindValue('lastsync', $this->Input->getTime() - $this->range, PDO::PARAM_INT);
 		$stm->bindParam('country', $country, PDO::PARAM_STR);
 		$stm->execute();
-		$mirror = $stm->fetchColumn() ?: $this->Settings->getValue('mirror');
+		$mirror = $stm->fetchColumn() ?: Config::get('mirrors', 'default');
 		return $mirror;
 	}
 }
