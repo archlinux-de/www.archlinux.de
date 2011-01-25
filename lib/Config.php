@@ -38,10 +38,10 @@ class Config {
 
 }
 
-require_once (__DIR__.'/../config/DefaultConfig.php');
+require (__DIR__.'/../config/DefaultConfig.php');
 
 if (file_exists(__DIR__.'/../config/LocalConfig.php')) {
-	include_once (__DIR__.'/../config/LocalConfig.php');
+	include (__DIR__.'/../config/LocalConfig.php');
 }
 
 ?>

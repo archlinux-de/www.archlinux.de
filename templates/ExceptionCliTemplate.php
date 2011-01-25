@@ -1,9 +1,9 @@
-<?php echo get_class($e); ?>
-<?php echo $e->getMessage(); ?>
+<?php echo get_class($e); ?> 
+<?php echo $e->getMessage(); ?> 
 
-Type: <?php echo $type; ?>
-File: <?php echo $e->getFile(); ?>
-Line: <?php echo $e->getLine(); ?>
+Type: <?php echo $type; ?> 
+File: <?php echo $e->getFile(); ?> 
+Line: <?php echo $e->getLine(); ?> 
 
 Context:
 <?php
@@ -13,7 +13,7 @@ foreach ($context as $line => $content) {
 ?>
 
 Trace:
-<?php echo $e->getTraceAsString(); ?>
+<?php echo $e->getTraceAsString(); ?> 
 
 Files:
-<?php echo implode("\n", $files); ?>
+<?php echo implode("\n", $files); ?> 

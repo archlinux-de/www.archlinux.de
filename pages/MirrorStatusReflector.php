@@ -21,26 +21,12 @@
 class MirrorStatusReflector extends Page {
 
 	private $range = 604800; // 1 week
-	private $page = '';
-
-	public function show() {
-		$this->Output->setContentType('text/plain; charset=UTF-8');
-		$this->Output->writeOutput($this->page);
-	}
-
-	protected function showWarning($text) {
-		$this->Output->setStatus('HTTP/1.1 500 Warning');
-		$this->page = 'Warning: ' . $text;
-		$this->show();
-	}
-
-	protected function showFailure($text) {
-		$this->Output->setStatus('HTTP/1.1 500 Error');
-		$this->page = 'Error: ' . $text;
-		$this->show();
-	}
 
 	public function prepare() {
+		$this->setContentType('text/plain; charset=UTF-8');
+	}
+
+	public function printPage() {
 		$mirrors = DB::query('
 		SELECT
 			host,
@@ -48,12 +34,12 @@ class MirrorStatusReflector extends Page {
 		FROM
 			mirrors
 		WHERE
-			lastsync >= ' . ($this->Input->getTime() - $this->range) . '
+			lastsync >= ' . (Input::getTime() - $this->range) . '
 		ORDER BY
 			lastsync DESC
 		');
 		foreach ($mirrors as $mirror) {
-			$this->page.= gmdate('Y-m-d H:i', $mirror['lastsync']) . ' ' . $mirror['host'] . "\n";
+			echo gmdate('Y-m-d H:i', $mirror['lastsync']), ' ', $mirror['host'], "\n";
 		}
 	}
 }

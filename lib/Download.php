@@ -41,7 +41,10 @@ class Download {
 			$curl = $this->curlInit($this->url);
 			curl_setopt($curl, CURLOPT_NOBODY, true);
 			curl_setopt($curl, CURLOPT_FILETIME, true);
-			curl_exec($curl);
+			$ret = curl_exec($curl);
+			if ($ret === false) {
+				throw new RuntimeException(curl_error($curl), curl_errno($curl));
+			}
 			$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 			curl_close($curl);
 		}
@@ -55,7 +58,10 @@ class Download {
 
 			$curl = $this->curlInit($this->url);
 			curl_setopt($curl, CURLOPT_FILE, $fh);
-			curl_exec($curl);
+			$ret = curl_exec($curl);
+			if ($ret === false) {
+				throw new RuntimeException(curl_error($curl), curl_errno($curl));
+			}
 			$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 			curl_close($curl);
 

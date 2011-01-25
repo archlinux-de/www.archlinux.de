@@ -21,7 +21,7 @@
 class ArchitectureDifferences extends Page {
 
 	public function prepare() {
-		$this->Output->redirectToUrl('https://www.archlinux.org/packages/differences/');
+		$this->redirectPermanentlyToUrl('https://www.archlinux.org/packages/differences/');
 	}
 }
 

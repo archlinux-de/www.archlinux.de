@@ -20,14 +20,10 @@
 */
 
 ini_set('max_execution_time', 0);
-ini_set('include_path', ini_get('include_path') . ':../');
-require ('modules/Modul.php');
-require ('modules/Config.php');
-require ('modules/Exceptions.php');
-require ('pages/abstract/Page.php');
-require ('pages/RepositoryStatistics.php');
+require (__DIR__.'/../lib/Exceptions.php');
+require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdateFileDB extends Modul {
+class UpdateFileDB {
 
 	private $mirror = 'http://mirrors.kernel.org/archlinux/';
 	private $curmtime = array();

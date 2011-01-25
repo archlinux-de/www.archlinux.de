@@ -18,18 +18,20 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetOpenSearch extends GetFile {
+class GetOpenSearch extends Page {
 
-	public function show() {
-		$xml = '<?xml version="1.0"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-<ShortName>archlinux.de :: Paketsuche</ShortName>
-<Description>Suche nach Paketen für Arch Linux</Description>
-<Image height="16" width="16" type="image/x-icon">https://www.archlinux.de/favicon.ico</Image>
-<Url type="text/html" method="get" template="https://www.archlinux.de/?page=Packages;submit=;search={searchTerms}"/>
-</OpenSearchDescription>';
-		$this->compression = true;
-		$this->sendInlineFile('application/opensearchdescription+xml; charset=UTF-8', 'search.xml', $xml);
+	public function prepare() {
+		$this->setContentType('application/opensearchdescription+xml; charset=UTF-8');
+	}
+
+	public function printPage() {
+		echo '<?xml version="1.0"?>
+			<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+			<ShortName>archlinux.de :: Paketsuche</ShortName>
+			<Description>Suche nach Paketen für Arch Linux</Description>
+			<Image height="16" width="16" type="image/x-icon">https://www.archlinux.de/favicon.ico</Image>
+			<Url type="text/html" method="get" template="https://www.archlinux.de/?page=Packages;submit=;search={searchTerms}"/>
+			</OpenSearchDescription>';
 	}
 }
 

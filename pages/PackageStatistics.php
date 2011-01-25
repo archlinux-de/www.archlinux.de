@@ -18,8 +18,6 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once ('pages/abstract/IDBCachable.php');
-
 class PackageStatistics extends Page implements IDBCachable {
 
 	private static $barColors = array();
@@ -30,9 +28,10 @@ class PackageStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
+		$cache = new PersistentCache();
 		$this->setValue('title', 'Package statistics');
-		if (!($body = $this->PersistentCache->getObject('PackageStatistics'))) {
-			$this->Output->setStatus(Output::NOT_FOUND);
+		if (!($body = $cache->getObject('PackageStatistics'))) {
+			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
@@ -88,7 +87,8 @@ class PackageStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		self::get('PersistentCache')->addObject('PackageStatistics', $body);
+		$cache = new PersistentCache();
+		$cache->addObject('PackageStatistics', $body);
 	}
 
 	private static function getCommonPackageUsageStatistics() {

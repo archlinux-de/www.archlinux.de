@@ -20,26 +20,11 @@
 
 class MirrorStatusJSON extends Page {
 
-	private $page = '';
-
-	public function show() {
-		$this->Output->setContentType('application/json; charset=UTF-8');
-		$this->Output->writeOutput($this->page);
-	}
-
-	protected function showWarning($text) {
-		$this->showFailure($text);
-	}
-
-	protected function showFailure($text) {
-		$this->Output->setStatus('HTTP/1.1 500 Error');
-		$this->page = json_encode(array(
-			'status' => '500 Error: ' . $text
-		));
-		$this->show();
-	}
-
 	public function prepare() {
+		$this->setContentType('application/json; charset=UTF-8');
+	}
+
+	public function printPage() {
 		$mirrors = DB::query('
 		SELECT
 			host,
@@ -52,7 +37,7 @@ class MirrorStatusJSON extends Page {
 		');
 		$json = array(
 			'status' => '200 OK',
-			'location' => $this->Input->getClientCountryName()
+			'location' => Input::getClientCountryName()
 		);
 		foreach ($mirrors as $mirror) {
 			$json['servers'][] = array(
@@ -63,7 +48,7 @@ class MirrorStatusJSON extends Page {
 				'average performance' => $mirror['time'] ? : ''
 			);
 		}
-		$this->page = json_encode($json);
+		echo json_encode($json);
 	}
 }
 

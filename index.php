@@ -18,30 +18,17 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// require ('modules/Config.php');
-require ('modules/Modul.php');
-require ('modules/Exceptions.php');
-// require ('modules/Input.php');
-// require ('modules/Output.php');
-// require ('modules/L10n.php');
+require (__DIR__.'/lib/Exceptions.php');
+require (__DIR__.'/lib/AutoLoad.php');
 
-$Input = Modul::set('Input', new Input());
-Modul::set('L10n', new L10n());
-$Output = Modul::set('Output', new Output());
-
-function __autoload($class) {
-	Modul::loadModul($class);
-}
-
-$page = $Input->Get->getString('page', 'Start');
+$page = Input::get()->getString('page', 'Start');
 try {
-	Page::loadPage($page);
-} catch(RuntimeException $e) {
-	$page = 'NotFound';
-	Page::loadPage($page);
+	$thisPage = new $page();
+} catch (AutoLoadException $e) {
+	$thisPage = new NotFound();
 }
-$class = new $page();
-$class->prepare();
-$class->printPage();
+
+$thisPage->prepare();
+$thisPage->printPage();
 
 ?>

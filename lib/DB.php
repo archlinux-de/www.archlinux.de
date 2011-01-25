@@ -18,11 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class DB extends Modul {
+class DB {
 
 	private static $pdo = null;
 
-	private static function getInstance() {
+	private function __construct() {}
+
+	public static function __callStatic($name, $args) {
 		if (is_null(self::$pdo)) {
 			self::$pdo = new PDO('mysql:dbname='.Config::get('DB', 'database'),
 				Config::get('DB', 'user'),
@@ -31,11 +33,7 @@ class DB extends Modul {
 				      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
 			);
 		}
-		return self::$pdo ;
-	}
-
-	public static function __callStatic($name, $args) {
-		return call_user_func_array(array(self::getInstance(), $name), $args);
+		return call_user_func_array(array(self::$pdo, $name), $args);
 	}
 }
 

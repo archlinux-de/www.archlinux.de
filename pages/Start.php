@@ -23,9 +23,7 @@ class Start extends Page {
 	private $arch = 1;
 
 	public function prepare() {
-		if ($this->Input->Cookie->isInt('architecture') && $this->Input->Cookie->getInt('architecture') > 0) {
-			$this->arch = $this->Input->Cookie->getInt('architecture');
-		}
+		$this->arch = Input::cookie()->getInt('architecture', $this->arch);
 		$this->setValue('title', 'Start');
 		$body = '<div id="left-wrapper">
 		<div id="left">
@@ -115,7 +113,8 @@ class Start extends Page {
 
 	private function getNews() {
 		$result = '';
-		if (!($result = $this->ObjectCache->getObject('news_feed'))) {
+		$cache = new ObjectCache();
+		if (!($result = $cache->getObject('news_feed'))) {
 			try {
 				$download = new Download(Config::get('news', 'feed'));
 				$feed = new SimpleXMLElement($download->getFile(), 0, true);
@@ -123,11 +122,11 @@ class Start extends Page {
 				foreach ($feed->entry as $entry) {
 					$result.= '
 					<h4><a href="' . $entry->link->attributes()->href . '">' . $entry->title . '</a></h4>
-					<p class="date">' . $this->L10n->getDate(strtotime($entry->updated)) . '</p>
+					<p class="date">' . $this->l10n->getDate(strtotime($entry->updated)) . '</p>
 					' . $entry->summary . '
 					';
 				}
-				$this->ObjectCache->addObject('news_feed', $result, 1800);
+				$cache->addObject('news_feed', $result, 1800);
 			} catch (Exception $e) {
 			}
 		}

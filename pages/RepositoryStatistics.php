@@ -18,8 +18,6 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once ('pages/abstract/IDBCachable.php');
-
 class RepositoryStatistics extends Page implements IDBCachable {
 
 	private static $barColors = array();
@@ -30,9 +28,10 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
+		$cache = new PersistentCache();
 		$this->setValue('title', 'Repository statistics');
-		if (!($body = $this->PersistentCache->getObject('RepositoryStatistics'))) {
-			$this->Output->setStatus(Output::NOT_FOUND);
+		if (!($body = $cache->getObject('RepositoryStatistics'))) {
+			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
@@ -110,10 +109,6 @@ class RepositoryStatistics extends Page implements IDBCachable {
 				<td>' . $data['packagers'] . '</td>
 			</tr>
 			<tr>
-				<th>Last update</th>
-				<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
-			</tr>
-			<tr>
 				<th colspan="2" class="packagedetailshead">Averages</th>
 			</tr>
 			<tr>
@@ -139,7 +134,8 @@ class RepositoryStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		self::get('PersistentCache')->addObject('RepositoryStatistics', $body);
+		$cache = new PersistentCache();
+		$cache->addObject('RepositoryStatistics', $body);
 	}
 
 	private static function getCommonRepositoryStatistics() {

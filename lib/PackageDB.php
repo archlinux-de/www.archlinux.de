@@ -18,8 +18,6 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once ('Package.php');
-
 class PackageDB {
 
 	private $mirror = 'http://mirrors.kernel.org/archlinux/';

@@ -18,9 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetRecentPackages extends GetFile {
+class GetRecentPackages extends Page {
 
-	public function show() {
+	public function prepare() {
+		$this->setContentType('application/atom+xml; charset=UTF-8');
+	}
+
+	public function printPage() {
 		$lastdate = 0;
 		$entries = '';
 		try {
@@ -72,18 +76,17 @@ class GetRecentPackages extends GetFile {
 			</entry>
 			';
 			}
-		} catch(DBNoDataException $e) {
+		} catch (Exception $e) {
 		}
-		$content = '<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
-	<id>https://www.archlinux.de/?page=Packages</id>
-	<title>archlinux.de :: Aktualisierte Pakete</title>
-	<link rel="self" type="application/atom+xml" href="https://www.archlinux.de/?page=Packages" />
-	<link rel="alternate" type="text/html" href="https://www.archlinux.de/" />
-	<updated>' . date('c', $lastdate) . '</updated>
-	' . $entries . '
-</feed>';
-		$this->sendInlineFile('application/atom+xml; charset=UTF-8', 'packages.xml', $content);
+		echo '<?xml version="1.0" encoding="utf-8"?>
+			<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
+				<id>https://www.archlinux.de/?page=Packages</id>
+				<title>archlinux.de :: Aktualisierte Pakete</title>
+				<link rel="self" type="application/atom+xml" href="https://www.archlinux.de/?page=Packages" />
+				<link rel="alternate" type="text/html" href="https://www.archlinux.de/" />
+				<updated>' . date('c', $lastdate) . '</updated>
+				' . $entries . '
+			</feed>';
 	}
 }
 

@@ -20,15 +20,10 @@
 */
 
 ini_set('max_execution_time', 0);
-ini_set('include_path', ini_get('include_path') . ':../');
-require ('modules/Modul.php');
-require ('modules/Config.php');
-require ('modules/Download.php');
-require ('modules/Exceptions.php');
-require ('modules/DB.php');
-require ('PackageDB.php');
+require (__DIR__.'/../lib/Exceptions.php');
+require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdatePKGDB extends Modul {
+class UpdatePKGDB {
 	// Cache for id-name mapping
 	private $arches = array();
 	private $packagers = array();

@@ -28,9 +28,9 @@ class PackageDetails extends Page {
 	public function prepare() {
 		$this->setValue('title', 'Paket-Details');
 		try {
-			$this->repo = $this->Input->Get->getString('repo');
-			$this->arch = $this->Input->Get->getString('arch');
-			$this->pkgname = $this->Input->Get->getString('pkgname');
+			$this->repo = Input::get()->getString('repo');
+			$this->arch = Input::get()->getString('arch');
+			$this->pkgname = Input::get()->getString('pkgname');
 		} catch(RequestException $e) {
 			$this->showFailure('Kein Paket angegeben!');
 		}
@@ -73,7 +73,7 @@ class PackageDetails extends Page {
 		$stm->execute();
 		$data = $stm->fetch();
 		if ($data === false) {
-			$this->Output->setStatus(Output::NOT_FOUND);
+			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('Paket nicht gefunden!');
 		}
 		$this->pkgid = $data['id'];
@@ -125,11 +125,11 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>Aktualisierung</th>
-				<td>' . $this->L10n->getDateTime($data['builddate']) . '</td>
+				<td>' . $this->l10n->getDateTime($data['builddate']) . '</td>
 			</tr>
 			<tr>
 				<th>Veröffentlichung</th>
-				<td>' . $this->L10n->getDateTime($data['mtime']) . '</td>
+				<td>' . $this->l10n->getDateTime($data['mtime']) . '</td>
 			</tr>
 			<tr>
 				<th>Quellen</th>
@@ -209,7 +209,7 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<td>
-					' . ($this->Input->Get->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">Dateien anzeigen</a>') . '
+					' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">Dateien anzeigen</a>') . '
 				</td>
 			</tr>
 		</table>

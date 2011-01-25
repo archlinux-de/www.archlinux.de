@@ -35,37 +35,37 @@ class Packages extends Page {
 	public function prepare() {
 		$this->setValue('title', 'Paket-Suche');
 		try {
-			if (in_array($this->Input->Get->getString('orderby') , array(
+			if (in_array(Input::get()->getString('orderby') , array(
 				'name',
 				'builddate',
 				'repository',
 				'architecture'
 			))) {
-				$this->orderby = $this->Input->Get->getString('orderby');
+				$this->orderby = Input::get()->getString('orderby');
 			}
 		} catch(RequestException $e) {
 		}
-		$this->sort = $this->Input->Get->getInt('sort', 1) > 0 ? 1 : 0;
-		$this->package = $this->Input->Get->getInt('package', 0);
-		$this->repository = $this->Input->Post->getInt('repository', $this->Input->Get->getInt('repository', 0));
+		$this->sort = Input::get()->getInt('sort', 1) > 0 ? 1 : 0;
+		$this->package = Input::get()->getInt('package', 0);
+		$this->repository = Input::post()->getInt('repository', Input::get()->getInt('repository', 0));
 		try {
-			if ($this->Input->Get->isInt('architecture')) {
-				$this->architecture = $this->Input->Get->getInt('architecture');
-			} elseif ($this->Input->Post->isInt('architecture')) {
-				$this->architecture = $this->Input->Post->getInt('architecture');
+			if (Input::get()->isInt('architecture')) {
+				$this->architecture = Input::get()->getInt('architecture');
+			} elseif (Input::post()->isInt('architecture')) {
+				$this->architecture = Input::post()->getInt('architecture');
 			} else {
-				$this->architecture = $this->Input->Cookie->getInt('architecture');
+				$this->architecture = Input::cookie()->getInt('architecture');
 			}
-			$this->Output->setCookie('architecture', $this->architecture, (time() + 31536000));
+			$this->setCookie('architecture', $this->architecture, (time() + 31536000));
 		} catch(RequestException $e) {
 		}
-		$this->group = $this->Input->Post->getInt('group', $this->Input->Get->getInt('group', 0));
-		$this->packager = $this->Input->Get->getInt('packager', 0);
-		$this->search = $this->cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', $this->Input->Post->getString('search', $this->Input->Get->getString('search', '')))) , 50);
+		$this->group = Input::post()->getInt('group', Input::get()->getInt('group', 0));
+		$this->packager = Input::get()->getInt('packager', 0);
+		$this->search = $this->cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '', Input::post()->getString('search', Input::get()->getString('search', '')))) , 50);
 		if (strlen($this->search) < 2) {
 			$this->search = '';
 		}
-		$this->searchField = $this->Input->Post->getInt('searchfield', $this->Input->Get->getInt('searchfield', 0));
+		$this->searchField = Input::post()->getInt('searchfield', Input::get()->getInt('searchfield', 0));
 
 		$packages = DB::prepare('
 		SELECT
@@ -278,7 +278,7 @@ class Packages extends Page {
 				'staging'
 			)) ? ' class="less"' : '');
 			$body.= '<tr' . $style . '>
-				<td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . $this->cutString($package['desc'], 70) . '</td><td>' . $this->L10n->getDateTime($package['builddate']) . '</td>
+				<td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . $this->cutString($package['desc'], 70) . '</td><td>' . $this->l10n->getDateTime($package['builddate']) . '</td>
 			</tr>';
 		}
 		$body.= '

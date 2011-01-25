@@ -25,26 +25,25 @@ class PostPackageList extends Page {
 	private $quiet = false;
 
 	public function prepare() {
-		$this->Output->setContentType('text/plain; charset=UTF-8');
-		$this->Output->setCompression(false);
+		$this->setContentType('text/plain; charset=UTF-8');
 		try {
 			# Can be rewritten once 2.0 is no longer in use
-			$pkgstatsver = $this->Input->Post->getString('pkgstatsver',
-				str_replace('pkgstats/', '', $this->Input->Server->getString('HTTP_USER_AGENT')));
+			$pkgstatsver = Input::post()->getString('pkgstatsver',
+				str_replace('pkgstats/', '', Input::server()->getString('HTTP_USER_AGENT')));
 		} catch(RequestException $e) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('Please make sure to use pkgstats to submit your data.');
 		}
 		try {
-			$packages = array_unique(explode("\n", trim($this->Input->Post->getString('packages'))));
+			$packages = array_unique(explode("\n", trim(Input::post()->getString('packages'))));
 			$packageCount = count($packages);
-			$arch = $this->Input->Post->getString('arch');
+			$arch = Input::post()->getString('arch');
 			# Can be rewritten once 1.0 is no longer in use
-			$mirror = $this->Input->Post->getString('mirror', '');
+			$mirror = Input::post()->getString('mirror', '');
 			# Can be rewritten once 2.0 is no longer in use
-			$this->quiet = ($this->Input->Post->getString('quiet', 'false') == 'true');
+			$this->quiet = (Input::post()->getString('quiet', 'false') == 'true');
 		} catch(RequestException $e) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure($e->getMessage());
 		}
 		if (!in_array($pkgstatsver, array(
@@ -52,13 +51,13 @@ class PostPackageList extends Page {
 			'2.0',
 			'2.1'
 		))) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('Sorry, your version of pkgstats is not supported.');
 		}
 		if (!empty($mirror) && !preg_match('#^(https?|ftp)://\S+/#', $mirror)) {
 			$mirror = '';
-		} elseif (!empty($mirror) && $this->Input->Post->getHtmlLength('mirror') > 255) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+		} elseif (!empty($mirror) && Input::post()->getHtmlLength('mirror') > 255) {
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure(htmlspecialchars($mirror) . ' is too long.');
 			$mirror = '';
 		}
@@ -66,25 +65,25 @@ class PostPackageList extends Page {
 			'i686',
 			'x86_64'
 		))) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure(htmlspecialchars($arch) . ' is not a known architecture.');
 		}
 		if ($packageCount == 0) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('Your package list is empty.');
 		}
 		if ($packageCount > 10000) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
+			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('So, you have installed more than 10,000 packages?');
 		}
 		foreach ($packages as $package) {
 			if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package))) {
-				$this->Output->setStatus(Output::BAD_REQUEST);
+				$this->setStatus(Output::BAD_REQUEST);
 				$this->showFailure(htmlspecialchars($package) . ' does not look like a valid package');
 			}
 		}
 		$this->checkIfAlreadySubmitted();
-		$country = $this->Input->getClientCountryName();
+		$country = Input::getClientCountryName();
 		try {
 			$stm = DB::prepare('
 			INSERT INTO
@@ -97,8 +96,8 @@ class PostPackageList extends Page {
 				mirror = ' . (!empty($mirror) ? ':mirror' : 'NULL') . ',
 				packages = :packages
 			');
-			$stm->bindValue('ip', sha1($this->Input->getClientIP()), PDO::PARAM_STR);
-			$stm->bindValue('time', $this->Input->getTime(), PDO::PARAM_INT);
+			$stm->bindValue('ip', sha1(Input::getClientIP()), PDO::PARAM_STR);
+			$stm->bindValue('time', Input::getTime(), PDO::PARAM_INT);
 			$stm->bindValue('arch', htmlspecialchars($arch), PDO::PARAM_STR);
 			!empty($country) && $stm->bindValue('country', htmlspecialchars($country), PDO::PARAM_STR);
 			!empty($mirror) && $stm->bindValue('mirror', htmlspecialchars($mirror), PDO::PARAM_STR);
@@ -116,34 +115,30 @@ class PostPackageList extends Page {
 			');
 			foreach ($packages as $package) {
 				$stm->bindValue('pkgname', htmlspecialchars($package), PDO::PARAM_STR);
-				$stm->bindValue('month', date('Ym', $this->Input->getTime()), PDO::PARAM_INT);
+				$stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
 				$stm->execute();
 			}
 		} catch(PDOException $e) {
-			$this->Output->setStatus(Output::INTERNAL_SERVER_ERROR);
+			$this->setStatus(Output::INTERNAL_SERVER_ERROR);
 			$this->showFailure($e->getMessage());
 		}
 	}
 
 	protected function showWarning($text) {
-		$text = 'Warning: ' . $text . "\n";
-		$this->Output->writeOutput($text);
+		echo 'Warning: ' . $text . "\n";
+		exit();
 	}
 
 	protected function showFailure($text) {
-		$text = 'Failure: ' . $text . "\n";
-		$this->Output->writeOutput($text);
-		exit;
+		echo 'Failure: ' . $text . "\n";
+		exit();
 	}
 
-	public function show() {
-		if ($this->quiet) {
-			$text = '';
-		} else {
-			$text = 'Thanks for your submission. :-)' . "\n";
-			$text.= 'See results at ' . $this->Output->createURL('Statistics', array() , true, false) . "\n";
+	public function printPage() {
+		if (!$this->quiet) {
+			echo 'Thanks for your submission. :-)' . "\n";
+			echo 'See results at ' . $this->createURL('Statistics', array() , true, false) . "\n";
 		}
-		$this->Output->writeOutput($text);
 	}
 
 	private function checkIfAlreadySubmitted() {
@@ -159,13 +154,13 @@ class PostPackageList extends Page {
 		GROUP BY
 			ip
 		');
-		$stm->bindValue('time', $this->Input->getTime() - $this->delay, PDO::PARAM_INT);
-		$stm->bindValue('ip', sha1($this->Input->getClientIP()), PDO::PARAM_STR);
+		$stm->bindValue('time', Input::getTime() - $this->delay, PDO::PARAM_INT);
+		$stm->bindValue('ip', sha1(Input::getClientIP()), PDO::PARAM_STR);
 		$stm->execute();
 		$log = $stm->fetch();
 		if ($log !== false && $log['count'] >= $this->count) {
-			$this->Output->setStatus(Output::BAD_REQUEST);
-			$this->showFailure('You already submitted your data ' . $this->count . ' times since ' . $this->L10n->getGmDateTime($log['mintime']) . ' using the IP ' . $this->Input->getClientIP() . ".\n         You are blocked until " . $this->L10n->getGmDateTime($log['mintime'] + $this->delay));
+			$this->setStatus(Output::BAD_REQUEST);
+			$this->showFailure('You already submitted your data ' . $this->count . ' times since ' . $this->l10n->getGmDateTime($log['mintime']) . ' using the IP ' . Input::getClientIP() . ".\n         You are blocked until " . $this->l10n->getGmDateTime($log['mintime'] + $this->delay));
 		}
 	}
 }

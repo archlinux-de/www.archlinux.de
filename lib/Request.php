@@ -20,10 +20,25 @@
 
 class Request {
 
+	private static $instances = array();
 	private $request = array();
 
-	public function __construct(&$request) {
-		$this->request = & $request;
+	private function __construct($type) {
+		switch ($type) {
+			case 'get': $this->request =& $_GET; break;
+			case 'post': $this->request =& $_POST; break;
+			case 'cookie': $this->request =& $_COOKIE; break;
+			case 'request': $this->request =& $_REQUEST; break;
+			case 'server': $this->request =& $_SERVER; break;
+			case 'env': $this->request =& $_ENV; break;
+		}
+	}
+
+	public static function getInstance($type) {
+		if (!isset(self::$instances[$type])) {
+			self::$instances[$type] = new self($type);
+		}
+		return self::$instances[$type];
 	}
 
 	// see http://w3.org/International/questions/qa-forms-utf-8.html
@@ -132,7 +147,7 @@ class Request {
 class RequestException extends RuntimeException {
 
 	function __construct($message) {
-		parent::__construct(sprintf('Parameter %s could not be read', $message) , 0);
+		parent::__construct(sprintf('Parameter %s could not be read', $message));
 	}
 }
 

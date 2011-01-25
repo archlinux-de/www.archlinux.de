@@ -20,13 +20,10 @@
 */
 
 ini_set('max_execution_time', 0);
-ini_set('include_path', ini_get('include_path') . ':../');
-require ('modules/Modul.php');
-require ('modules/Config.php');
-require ('modules/Exceptions.php');
-require ('modules/DB.php');
+require (__DIR__.'/../lib/Exceptions.php');
+require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdateMirrors extends Modul {
+class UpdateMirrors {
 
 	private function getTmpDir() {
 		$tmp = ini_get('upload_tmp_dir');

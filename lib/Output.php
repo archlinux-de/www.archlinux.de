@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class Output extends Modul {
+abstract class Output {
 
 	const OK = 'HTTP/1.1 200 OK';
 	const FOUND = 'HTTP/1.1 302 Found';
@@ -46,39 +46,39 @@ class Output extends Modul {
 		header('Content-Type: '.$this->contentType);
 	}
 
-	public function setStatus($code) {
+	protected function setStatus($code) {
 		$this->status = $code;
 	}
 
-	public function setContentType($type) {
+	protected function setContentType($type) {
 		$this->contentType = $type;
 	}
 
-	public function setCookie($key, $value, $expire = 0) {
-		setcookie($key, $value, $expire, '', '', $this->Input->Server->isString('HTTPS'), true);
+	protected function setCookie($key, $value, $expire = 0) {
+		setcookie($key, $value, $expire, '', '', Input::server()->isString('HTTPS'), true);
 	}
 
-	public function redirect($page, $options = array()) {
+	protected function redirect($page, $options = array()) {
 		$this->redirectToUrl($this->createUrl($page, $options, true, false));
 	}
 
-	public function redirectPermanently($page, $options = array()) {
+	protected function redirectPermanently($page, $options = array()) {
 		$this->redirectPermanentlyToUrl($this->createUrl($page, $options, true, false));
 	}
 
-	public function redirectToUrl($url) {
+	protected function redirectToUrl($url) {
 		$this->setStatus(Output::FOUND);
 		header('Location: '.$url);
 		exit();
 	}
 
-	public function redirectPermanentlyToUrl($url) {
+	protected function redirectPermanentlyToUrl($url) {
 		$this->setStatus(Output::MOVED_PERMANENTLY);
 		header('Location: '.$url);
 		exit();
 	}
 
-	public function createUrl($page, $options = array(), $absolute = false, $html = true) {
+	protected function createUrl($page, $options = array(), $absolute = false, $html = true) {
 		$separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
 		$params = array();
 		foreach (array_merge(array(
@@ -86,7 +86,7 @@ class Output extends Modul {
 		) , $options) as $key => $value) {
 			$params[] = $key . '=' . urlencode($value);
 		}
-		return ($absolute ? $this->Input->getPath() : '') . '?' . implode(';', $params);
+		return ($absolute ? Input::getPath() : '') . '?' . implode($separator, $params);
 	}
 }
 

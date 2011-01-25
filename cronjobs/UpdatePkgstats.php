@@ -20,16 +20,10 @@
 */
 
 ini_set('max_execution_time', 0);
-ini_set('include_path', ini_get('include_path') . ':../');
-require ('modules/Modul.php');
-require ('modules/Config.php');
-require ('modules/Exceptions.php');
-require ('pages/abstract/Page.php');
-require ('pages/PackageStatistics.php');
-require ('pages/UserStatistics.php');
-require ('pages/FunStatistics.php');
+require (__DIR__.'/../lib/Exceptions.php');
+require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdatePkgstats extends Modul {
+class UpdatePkgstats {
 
 	private function getTmpDir() {
 		$tmp = ini_get('upload_tmp_dir');

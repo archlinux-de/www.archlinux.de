@@ -18,17 +18,14 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class L10n extends Modul {
+class L10n {
 
 	private $localeInfo = array();
 	private $locale = '';
 
 	public function __construct() {
-		$this->locale = $this->getAcceptLanguage();
-		$this->initLocale();
-	}
+		$this->locale = Config::get('L10n', 'locale');
 
-	private function initLocale() {
 		putenv('LC_ALL=' . $this->locale);
 		putenv('LANGUAGE=' . $this->locale);
 		setlocale(LC_ALL, $this->locale);
@@ -40,27 +37,8 @@ class L10n extends Modul {
 		}
 	}
 
-	private function getAcceptLanguage() {
-		$locales = Config::get('L10n', 'locales');
-		try {
-			foreach (explode(',', $this->Input->Server->getString('HTTP_ACCEPT_LANGUAGE')) as $lang) {
-				$lang = substr(strtolower(trim($lang)) , 0, 2);
-				if (isset($locales[$lang])) {
-					return $locales[$lang];
-				}
-			}
-		} catch(RequestException $e) {
-		}
-		return array_shift($locales);
-	}
-
 	public function getLocale() {
 		return $this->locale;
-	}
-
-	public function setLocale($locale) {
-		$this->locale = $locale;
-		$this->initLocale();
 	}
 
 	public function getText($text) {

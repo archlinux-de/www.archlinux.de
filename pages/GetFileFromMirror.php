@@ -23,11 +23,11 @@ class GetFileFromMirror extends Page {
 	private $range = 86400; // 1 day
 
 	public function prepare() {
-		$this->Output->redirectToUrl($this->getMirror() . $this->Input->Get->getString('file', ''));
+		$this->redirectToUrl($this->getMirror() . Input::get()->getString('file', ''));
 	}
 
 	private function getMirror() {
-		$country = $this->Input->getClientCountryName();
+		$country = Input::getClientCountryName();
 		if (empty($country)) {
 			$country = Config::get('mirrors', 'country');
 		}
@@ -42,7 +42,7 @@ class GetFileFromMirror extends Page {
 			AND protocol IN (\'http\', \'htttps\')
 		ORDER BY RAND() LIMIT 1
 		');
-		$stm->bindValue('lastsync', $this->Input->getTime() - $this->range, PDO::PARAM_INT);
+		$stm->bindValue('lastsync', Input::getTime() - $this->range, PDO::PARAM_INT);
 		$stm->bindParam('country', $country, PDO::PARAM_STR);
 		$stm->execute();
 		$mirror = $stm->fetchColumn() ?: Config::get('mirrors', 'default');

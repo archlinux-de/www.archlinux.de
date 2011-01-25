@@ -39,8 +39,10 @@ function ExceptionHandler(Exception $e) {
 		$files = get_included_files();
 		$context = array_slice(file($e->getFile(), FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
 
-		Modul::get('Output')->setStatus(Output::INTERNAL_SERVER_ERROR);
-
+		if (!headers_sent()) {
+			header('HTTP/1.1 500 Internal Server Error');
+			header('text/html; charset=UTF-8');
+		}
 		if (php_sapi_name() == 'cli') {
 			require (__DIR__.'/../templates/ExceptionCliTemplate.php');
 		} elseif (Config::get('common', 'debug')) {

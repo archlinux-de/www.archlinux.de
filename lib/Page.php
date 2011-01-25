@@ -18,68 +18,45 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require ('modules/DB.php');
-require ('modules/IOutput.php');
-
-abstract class Page extends Modul implements IOutput {
+abstract class Page extends Output {
 
 	protected $variables = array();
-	private static $availablePages = array(
-		'ArchitectureDifferences' => 'pages/ArchitectureDifferences.php',
-		'GetFileFromMirror' => 'pages/GetFileFromMirror.php',
-		'GetOpenSearch' => 'pages/GetOpenSearch.php',
-		'GetRecentNews' => 'pages/GetRecentNews.php',
-		'GetRecentPackages' => 'pages/GetRecentPackages.php',
-		'MirrorStatus' => 'pages/MirrorStatus.php',
-		'MirrorStatusJSON' => 'pages/MirrorStatusJSON.php',
-		'MirrorStatusReflector' => 'pages/MirrorStatusReflector.php',
-		'MirrorProblems' => 'pages/MirrorProblems.php',
-		'NotFound' => 'pages/NotFound.php',
-		'PackageDetails' => 'pages/PackageDetails.php',
-		'PackageStatistics' => 'pages/PackageStatistics.php',
-		'UserStatistics' => 'pages/UserStatistics.php',
-		'RepositoryStatistics' => 'pages/RepositoryStatistics.php',
-		'FunStatistics' => 'pages/FunStatistics.php',
-		'Statistics' => 'pages/Statistics.php',
-		'Packagers' => 'pages/Packagers.php',
-		'Packages' => 'pages/Packages.php',
-		'PackagesSuggest' => 'pages/PackagesSuggest.php',
-		'PostPackageList' => 'pages/PostPackageList.php',
-		'Start' => 'pages/Start.php'
-	);
-
-	public static function loadPage($name) {
-		if (isset(self::$availablePages[$name])) {
-			include_once (self::$availablePages[$name]);
-		} else {
-			throw new RuntimeException('Seite ' . $name . ' wurde nicht gefunden!', 0);
-		}
-	}
+	protected $l10n = null;
 
 	public function __construct() {
 		$this->variables['body'] = '';
 		$this->variables['title'] = '';
 		$this->variables['meta.robots'] = 'index,follow';
+		$this->l10n = new L10n();
+		parent::__construct();
 	}
 
-	public function setValue($key, $value) {
+	protected function setValue($key, $value) {
 		$this->variables[$key] = $value;
 	}
 
-	public function getValue($key) {
+	protected function getValue($key) {
 		return $this->variables[$key];
+	}
+
+	protected function getName() {
+		return get_class($this);
 	}
 
 	protected function showWarning($text) {
 		$this->setValue('meta.robots', 'noindex,nofollow');
 		$this->setValue('title', 'Warnung');
 		$this->setValue('body', '<div id="warning">' . $text . '</div>');
+		require (__DIR__.'/../templates/PageTemplate.php');
+		exit();
 	}
 
 	protected function showFailure($text) {
 		$this->setValue('meta.robots', 'noindex,nofollow');
 		$this->setValue('title', 'Fehler');
 		$this->setValue('body', '<div id="warning">' . $text . '</div>');
+		require (__DIR__.'/../templates/PageTemplate.php');
+		exit();
 	}
 
 	public function prepare() {
@@ -95,7 +72,7 @@ abstract class Page extends Modul implements IOutput {
 	}
 
 	public function printPage() {
-		require (__DIR__.'/../../templates/PageTemplate.php');
+		require (__DIR__.'/../templates/PageTemplate.php');
 	}
 }
 

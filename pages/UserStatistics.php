@@ -18,8 +18,6 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once ('pages/abstract/IDBCachable.php');
-
 class UserStatistics extends Page implements IDBCachable {
 
 	private static $barColors = array();
@@ -30,9 +28,10 @@ class UserStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
+		$cache = new PersistentCache();
 		$this->setValue('title', 'User statistics');
-		if (!($body = $this->PersistentCache->getObject('UserStatistics'))) {
-			$this->Output->setStatus(Output::NOT_FOUND);
+		if (!($body = $cache->getObject('UserStatistics'))) {
+			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
@@ -56,18 +55,6 @@ class UserStatistics extends Page implements IDBCachable {
 			<tr>
 				<th>Different IPs</th>
 				<td>' . number_format($log['differentips']) . '</td>
-			</tr>
-			<tr>
-				<th>First entry</th>
-				<td>' . self::get('L10n')->getGMDateTime($log['minvisited']) . '</td>
-			</tr>
-			<tr>
-				<th>Last entry</th>
-				<td>' . self::get('L10n')->getGMDateTime($log['maxvisited']) . '</td>
-			</tr>
-			<tr>
-				<th>Last update</th>
-				<td>' . self::get('L10n')->getGMDateTime(self::get('Input')->getTime()) . '</td>
 			</tr>
 			<tr>
 				<th colspan="2" class="packagedetailshead">Countries</th>
@@ -115,7 +102,8 @@ class UserStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		self::get('PersistentCache')->addObject('UserStatistics', $body);
+		$cache = new PersistentCache();
+		$cache->addObject('UserStatistics', $body);
 	}
 
 	private static function getCommonPackageUsageStatistics() {
@@ -196,7 +184,8 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPopulationPerCountry() {
-		if (!($countryarray = self::get('PersistentCache')->getObject('UserStatistics:PopulationPerCountry'))) {
+		$cache = new PersistentCache();
+		if (!($countryarray = $cache->getObject('UserStatistics:PopulationPerCountry'))) {
 			if (false === ($curl = curl_init('https://www.cia.gov/library/publications/the-world-factbook/rankorder/rawdata_2119.text'))) {
 				throw new RuntimeException('failed to init curl: ' . htmlspecialchars($url));
 			}
@@ -227,7 +216,7 @@ class UserStatistics extends Page implements IDBCachable {
 			if (count($countryarray) == 0) {
 				throw new RuntimeException('empty country list', 1);
 			}
-			self::get('PersistentCache')->addObject('UserStatistics:PopulationPerCountry', $countryarray, (60 * 60 * 24 * 30));
+			$cache->addObject('UserStatistics:PopulationPerCountry', $countryarray, (60 * 60 * 24 * 30));
 		}
 		return $countryarray;
 	}

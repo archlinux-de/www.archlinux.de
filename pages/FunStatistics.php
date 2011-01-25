@@ -18,8 +18,6 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once ('pages/abstract/IDBCachable.php');
-
 class FunStatistics extends Page implements IDBCachable {
 
 	private static $barColors = array();
@@ -30,9 +28,10 @@ class FunStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
+		$cache = new PersistentCache();
 		$this->setValue('title', 'Fun statistics');
-		if (!($body = $this->PersistentCache->getObject('FunStatistics'))) {
-			$this->Output->setStatus(Output::NOT_FOUND);
+		if (!($body = $cache->getObject('FunStatistics'))) {
+			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
 		$this->setValue('body', $body);
@@ -163,7 +162,8 @@ class FunStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		self::get('PersistentCache')->addObject('FunStatistics', $body);
+		$cache = new PersistentCache();
+		$cache->addObject('FunStatistics', $body);
 	}
 
 	private static function getPackageStatistics($packages) {
@@ -204,6 +204,9 @@ class FunStatistics extends Page implements IDBCachable {
 		}
 		arsort($packageArray);
 		foreach ($packageArray as $name => $count) {
+			// FIXME: calculation of totals is not that accurate
+			// e.g. one person might have installed several nvidia drivers
+			$count = min ($count, $total);
 			$list.= '<tr><th>' . $name . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
 		}
 		return $list;

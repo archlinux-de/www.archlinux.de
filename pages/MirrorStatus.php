@@ -36,30 +36,30 @@ class MirrorStatus extends Page {
 	);
 
 	public function prepare() {
-		$this->setValue('title', $this->L10n->getText('Mirror status'));
+		$this->setValue('title', $this->l10n->getText('Mirror status'));
 		try {
-			if (in_array($this->Input->Get->getString('orderby') , $this->orders)) {
-				$this->orderby = $this->Input->Get->getString('orderby');
+			if (in_array(Input::get()->getString('orderby') , $this->orders)) {
+				$this->orderby = Input::get()->getString('orderby');
 			}
 		} catch(RequestException $e) {
 		}
 		try {
-			if (in_array($this->Input->Get->getString('sort') , $this->sorts)) {
-				$this->sort = $this->Input->Get->getString('sort');
+			if (in_array(Input::get()->getString('sort') , $this->sorts)) {
+				$this->sort = Input::get()->getString('sort');
 			}
 		} catch(RequestException $e) {
 		}
 		$reverseSort = ($this->sort == 'desc' ? 'asc' : 'desc');
 		$body = '<div class="box">
-		<h2>' . $this->L10n->getText('Mirror status') . '</h2>
+		<h2>' . $this->l10n->getText('Mirror status') . '</h2>
 		</div>
 		<table class="pretty-table">
 			<tr>
-				<th><a href="?page=MirrorStatus;orderby=host;sort=' . $reverseSort . '">' . $this->L10n->getText('Host') . '</a></th>
-				<th><a href="?page=MirrorStatus;orderby=country;sort=' . $reverseSort . '">' . $this->L10n->getText('Country') . '</a></th>
-				<th title="Average time to downlaod a certain file" style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->L10n->getText('Response time') . '</a></th>
-				<th title="Average difference between time of probe and last sychronization" style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->L10n->getText('Delay') . '</a></th>
-				<th title="Date of last synchronization (Y-m-d) (GMT)"><a href="?page=MirrorStatus;orderby=lastsync;sort=' . $reverseSort . '">' . $this->L10n->getText('Last update') . '</a></th>
+				<th><a href="?page=MirrorStatus;orderby=host;sort=' . $reverseSort . '">' . $this->l10n->getText('Host') . '</a></th>
+				<th><a href="?page=MirrorStatus;orderby=country;sort=' . $reverseSort . '">' . $this->l10n->getText('Country') . '</a></th>
+				<th title="Average time to downlaod a certain file" style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->l10n->getText('Response time') . '</a></th>
+				<th title="Average difference between time of probe and last sychronization" style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->l10n->getText('Delay') . '</a></th>
+				<th title="Date of last synchronization (Y-m-d) (GMT)"><a href="?page=MirrorStatus;orderby=lastsync;sort=' . $reverseSort . '">' . $this->l10n->getText('Last update') . '</a></th>
 			</tr>';
 		$mirrors = DB::query('
 		SELECT
@@ -71,7 +71,7 @@ class MirrorStatus extends Page {
 		FROM
 			mirrors
 		WHERE
-			lastsync >= ' . ($this->Input->getTime() - $this->range) . '
+			lastsync >= ' . (Input::getTime() - $this->range) . '
 		ORDER BY
 			' . $this->orderby . ' ' . $this->sort . '
 		');
@@ -79,9 +79,9 @@ class MirrorStatus extends Page {
 			$body.= '<tr>
 				<td><a href="' . $mirror['host'] . '" rel="nofollow">' . $mirror['host'] . '</a></td>
 				<td>' . $mirror['country'] . '</td>
-				<td>' . $this->L10n->getEpoch($mirror['time']) . '</td>
-				<td>' . $this->L10n->getEpoch($mirror['delay']) . '</td>
-				<td>' . $this->L10n->getGmDateTime($mirror['lastsync']) . '</td>
+				<td>' . $this->l10n->getEpoch($mirror['time']) . '</td>
+				<td>' . $this->l10n->getEpoch($mirror['delay']) . '</td>
+				<td>' . $this->l10n->getGmDateTime($mirror['lastsync']) . '</td>
 			</tr>';
 		}
 		$body.= '</table>';

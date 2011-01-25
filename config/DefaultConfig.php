@@ -25,11 +25,8 @@ Config::set('DB', 'database', 'pkgdb');
 Config::set('DB', 'user', 'root');
 Config::set('DB', 'password', '');
 
-Config::set('L10n', 'locales', array(
-			'en' => 'en_US.utf8',
-			'de' => 'de_DE.utf8'
-		));
-Config::set('L10n', 'timezone', 'Europe/Berlin');
+Config::set('L10n', 'locale', 'en_US.utf8');
+Config::set('L10n', 'timezone', 'UTC');
 
 Config::set('packages', 'mirror', 'http://mirrors.kernel.org/archlinux/');
 Config::set('packages', 'repositories', array(
@@ -46,7 +43,7 @@ Config::set('packages', 'architectures', array(
 
 Config::set('mirrors', 'status', 'http://www.archlinux.org/mirrors/status/json/');
 Config::set('mirrors', 'default', 'http://mirrors.kernel.org/archlinux/');
-Config::set('mirrors', 'country', 'Germany');
+Config::set('mirrors', 'country', 'Any');
 
 Config::set('news', 'feed', '');
 Config::set('news', 'archive', '');

@@ -26,16 +26,16 @@ class Packagers extends Page {
 	public function prepare() {
 		$this->setValue('title', 'Packer');
 		try {
-			if (in_array($this->Input->Get->getString('orderby') , array(
+			if (in_array(Input::get()->getString('orderby') , array(
 				'name',
 				'lastbuilddate',
 				'packages'
 			))) {
-				$this->orderby = $this->Input->Get->getString('orderby');
+				$this->orderby = Input::get()->getString('orderby');
 			}
 		} catch(RequestException $e) {
 		}
-		$this->sort = $this->Input->Get->getInt('sort', 0) > 0 ? 1 : 0;
+		$this->sort = Input::get()->getInt('sort', 0) > 0 ? 1 : 0;
 		$packages = DB::query('SELECT COUNT(*) FROM packages')->fetchColumn();
 		$packagers = DB::query('
 			SELECT
@@ -78,7 +78,7 @@ class Packagers extends Page {
 				<td>' . (empty($packager['email']) ? '' : '<a href="mailto:' . $packager['email'] . '">' . $packager['email'] . '</a>') . '</td>
 				<td style="text-align:right;"><a href="?page=Packages;packager=' . $packager['id'] . '">' . $packager['packages'] . '</a></td>
 				<td style="width:100px;"><div style="background-color:#1793d1;width:' . $percent . 'px;">&nbsp;</div></td>
-				<td>' . $this->L10n->getDateTime($packager['lastbuilddate']) . '</td>
+				<td>' . $this->l10n->getDateTime($packager['lastbuilddate']) . '</td>
 			</tr>';
 		}
 		$body.= '</table>';

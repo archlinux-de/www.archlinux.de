@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetRecentNews extends Modul implements IOutput {
+class GetRecentNews extends Page {
 
 	private $url = '';
 
@@ -26,8 +26,8 @@ class GetRecentNews extends Modul implements IOutput {
 		$this->url = Config::get('news', 'feed');
 	}
 
-	public function show() {
-		$this->Output->redirectToUrl($this->url);
+	public function printPage() {
+		$this->redirectPermanentlyToUrl($this->url);
 	}
 }
 

@@ -81,7 +81,7 @@ class APCObjectCache implements ICache {
 	}
 }
 
-class PersistentCache extends Modul implements ICache {
+class PersistentCache implements ICache {
 
 	private $time = 0;
 

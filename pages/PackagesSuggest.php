@@ -22,20 +22,15 @@ class PackagesSuggest extends Page {
 
 	private $suggestions = array();
 
-	public function printPage() {
-		$this->Output->setContentType('application/json; charset=UTF-8');
-		echo json_encode($this->suggestions);
-	}
-
 	public function prepare() {
 		try {
-			$term = $this->Input->Get->getString('term');
+			$term = Input::get()->getString('term');
 			if (strlen($term) < 2 || strlen($term) > 20) {
 				return;
 			}
-			$arch = $this->Input->Get->getInt('arch');
-			$repo = $this->Input->Get->getInt('repo');
-			$field = $this->Input->Get->getInt('field');
+			$arch = Input::get()->getInt('arch');
+			$repo = Input::get()->getInt('repo');
+			$field = Input::get()->getInt('field');
 			switch ($field) {
 				case 0:
 					$stm = DB::prepare('
@@ -78,6 +73,11 @@ class PackagesSuggest extends Page {
 			}
 		} catch(RequestException $e) {
 		}
+	}
+
+	public function printPage() {
+		$this->setContentType('application/json; charset=UTF-8');
+		echo json_encode($this->suggestions);
 	}
 }
 
