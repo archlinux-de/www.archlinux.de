@@ -120,7 +120,7 @@ msgstr "Paket-Suche"
 
 #: ../../../pages/Start.php:111
 msgid "Recent packages"
-msgstr "Aktuelle Arch Linux Pakete"
+msgstr "Aktuelle Pakete"
 
 #: ../../../pages/Packages.php:108
 #: ../../../pages/Packages.php:267
