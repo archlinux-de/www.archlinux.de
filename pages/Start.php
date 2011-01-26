@@ -40,8 +40,6 @@ class Start extends Page {
 				<form method="post" action="?page=Packages">
 					<label for="searchfield">'.$this->l10n->getText('Package search').':</label>
 					<input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off" />
-					<script type="text/javascript" src="style/jquery.min.js?v=1.4.4"></script>
-					<script type="text/javascript" src="style/jquery-ui-autocomplete.min.js?v=1.8.8"></script>
 					<script>
 						$(function() {
 							$("#searchfield").autocomplete({

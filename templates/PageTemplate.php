@@ -20,6 +20,8 @@
 	?>" href="<?php
 		echo $this->createUrl('GetOpenSearch');
 	?>" />
+	<script type="text/javascript" src="style/jquery.min.js?v=1.4.4"></script>
+	<script type="text/javascript" src="style/jquery-ui-autocomplete.min.js?v=1.8.8"></script>
 	<link rel="shortcut icon" href="style/favicon.ico" />
 </head>
 <body>
