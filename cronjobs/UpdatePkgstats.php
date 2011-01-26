@@ -19,36 +19,19 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-ini_set('max_execution_time', 0);
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdatePkgstats {
+class UpdatePkgstats extends CronJob {
 
-	private function getTmpDir() {
-		$tmp = ini_get('upload_tmp_dir');
-		return empty($tmp) ? '/tmp' : $tmp;
-	}
 
-	private function getLockFile() {
-		return $this->getTmpDir() . '/updateRunning.lock';
-	}
-
-	public function runUpdate() {
-		if (file_exists($this->getLockFile())) {
-			die('update still in progress');
-		} else {
-			touch($this->getLockFile());
-			chmod($this->getLockFile() , 0600);
-		}
+	public function execute() {
 		PackageStatistics::updateDBCache();
 		UserStatistics::updateDBCache();
 		FunStatistics::updateDBCache();
-		unlink($this->getLockFile());
 	}
 }
 
-$upd = new UpdatePkgstats();
-$upd->runUpdate();
+UpdatePkgstats::run();
 
 ?>

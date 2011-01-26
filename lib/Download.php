@@ -27,7 +27,7 @@ class Download {
 
 	public function __construct($url) {
 		$this->url = $url;
-		$this->tmpFile = tempnam(ini_get('upload_tmp_dir') ?: '/tmp/', strtolower(get_class($this)));
+		$this->tmpFile = tempnam(Config::get('common', 'tmpdir'), strtolower(get_class($this)));
 	}
 
 	public function __destruct() {

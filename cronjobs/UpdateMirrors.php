@@ -19,28 +19,12 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-ini_set('max_execution_time', 0);
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdateMirrors {
+class UpdateMirrors extends CronJob {
 
-	private function getTmpDir() {
-		$tmp = ini_get('upload_tmp_dir');
-		return empty($tmp) ? '/tmp' : $tmp;
-	}
-
-	private function getLockFile() {
-		return $this->getTmpDir() . '/MirrorCheckRunning.lock';
-	}
-
-	public function runUpdate() {
-		if (file_exists($this->getLockFile())) {
-			die('UpdateMirrors still in progress');
-		} else {
-			touch($this->getLockFile());
-			chmod($this->getLockFile() , 0600);
-		}
+	public function execute() {
 		try {
 			$status = $this->getMirrorStatus();
 			if ($status['version'] != 1) {
@@ -51,10 +35,9 @@ class UpdateMirrors {
 				throw new RuntimeException('mirrorlist is empty');
 			}
 			$this->updateMirrorlist($mirrors);
-		} catch(RuntimeException $e) {
+		} catch (RuntimeException $e) {
 			echo ('Warning: UpdateMirrors failed: ' . $e->getMessage());
 		}
-		unlink($this->getLockFile());
 	}
 
 	private function updateMirrorlist($mirrors) {
@@ -111,7 +94,6 @@ class UpdateMirrors {
 	}
 }
 
-$upd = new UpdateMirrors();
-$upd->runUpdate();
+UpdateMirrors::run();
 
 ?>

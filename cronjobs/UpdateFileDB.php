@@ -19,28 +19,17 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-ini_set('max_execution_time', 0);
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
 
-class UpdateFileDB {
+class UpdateFileDB extends CronJob {
 
 	private $mirror = 'http://mirrors.kernel.org/archlinux/';
 	private $curmtime = array();
 	private $lastmtime = array();
 	private $changed = false;
 
-	private function getLockFile() {
-		return $this->getTmpDir() . '/updateRunning.lock';
-	}
-
-	public function runUpdate() {
-		if (file_exists($this->getLockFile())) {
-			die('update still in progress');
-		} else {
-			touch($this->getLockFile());
-			chmod($this->getLockFile() , 0600);
-		}
+	public function execute() {
 		$this->mirror = Config::get('packages', 'mirror');
 		foreach (Config::get('packages', 'repositories') as $repo) {
 			foreach (Config::get('packages', 'architectures') as $arch) {
@@ -51,7 +40,6 @@ class UpdateFileDB {
 			$this->removeUnusedEntries();
 			RepositoryStatistics::updateDBCache();
 		}
-		unlink($this->getLockFile());
 	}
 
 	private function setLogEntry($name, $time) {
@@ -120,7 +108,7 @@ class UpdateFileDB {
 		if ($mtime > $this->getLogEntry('UpdateFileDB-mtime-' . $repo . '-' . $arch)) {
 			$this->setLastMTime($repo, $arch, $this->getLogEntry('UpdateFileDB-' . $repo . '-' . $arch));
 			$this->changed = true;
-			$dbDir = tempnam($this->getTmpDir() . '/', $arch . '-' . $repo . '-files.db-');
+			$dbDir = tempnam(Config::get('common', 'tmpdir') . '/', $arch . '-' . $repo . '-files.db-');
 			unlink($dbDir);
 			mkdir($dbDir, 0700);
 			exec('bsdtar -xf '.$download->getFile().' -C '.$dbDir, $output, $return);
@@ -145,11 +133,6 @@ class UpdateFileDB {
 				$this->rmrf($dbDir);
 			}
 		}
-	}
-
-	private function getTmpDir() {
-		$tmp = ini_get('upload_tmp_dir');
-		return empty($tmp) ? '/tmp' : $tmp;
 	}
 
 	private function insertFiles($repo, $arch, $package, $files) {
@@ -278,7 +261,6 @@ class UpdateFileDB {
 	}
 }
 
-$upd = new UpdateFileDB();
-$upd->runUpdate();
+UpdateFileDB::run();
 
 ?>

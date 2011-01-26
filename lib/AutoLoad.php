@@ -21,6 +21,7 @@
 function __autoload($class) {
 	$availableClasses = array(
 		'Config' => '/Config.php',
+		'CronJob' => '/CronJob.php',
 		'DB' => '/DB.php',
 		'Download' => '/Download.php',
 		'Exceptions' => '/Exceptions.php',
