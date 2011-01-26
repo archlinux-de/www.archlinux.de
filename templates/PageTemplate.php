@@ -8,7 +8,7 @@
 	<link rel="alternate" type="application/atom+xml" title="<?php
 		echo $this->l10n->getText('Recent news');
 	?>" href="<?php
-		echo Config::get('news', 'feed'); 
+		echo Config::get('news', 'feed');
 	?>" />
 	<link rel="alternate" type="application/atom+xml" title="<?php
 		echo $this->l10n->getText('Recent Arch Linux packages');

@@ -26,15 +26,15 @@ class Start extends Page {
 		$this->arch = Input::cookie()->getInt('architecture', $this->arch);
 		$this->setValue('title', $this->l10n->getText('Start'));
 		$body = '<div id="left-wrapper">
-		<div id="left">
-			<div id="intro" class="box">
-				'.$this->l10n->getTextFile('StartWelcome').'
-			</div>
-			<div id="news">
-			' . $this->getNews() . '
+			<div id="left">
+				<div id="intro" class="box">
+					'.$this->l10n->getTextFile('StartWelcome').'
+				</div>
+				<div id="news">
+				' . $this->getNews() . '
+				</div>
 			</div>
 		</div>
-	</div>
 		<div id="right">
 			<div id="pkgsearch">
 				<form method="post" action="?page=Packages">

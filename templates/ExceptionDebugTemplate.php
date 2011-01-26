@@ -10,11 +10,7 @@
 <body>
 	<div id="archnavbar" class="anb-exception">
 		<div id="archnavbarlogo"><h1><a href="?page=Start">Arch Linux</a></h1></div>
-		<div id="archnavbarmenu">
-		<ul id="archnavbarlist">
-			<?php echo $this->l10n->getTextFile('PageMenu'); ?>
-		</ul>
-		</div>
+		<div id="archnavbarmenu"><ul id="archnavbarlist"></ul></div>
 	</div>
 	<div id="content">
 		<div id="error">
@@ -40,9 +36,7 @@
 		<h3>Files:</h3>
 		<pre><?php echo htmlspecialchars(implode("\n", $files)); ?></pre>
 		</div>
-		<div id="footer">
-			<?php echo $this->l10n->getTextFile('PageFooter'); ?>
-		</div>
+		<div id="footer"></div>
 	</div>
 </body>
 </html>

@@ -48,10 +48,11 @@ function ExceptionHandler(Exception $e) {
 		} elseif (Config::get('common', 'debug')) {
 			require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
 		} else {
+			$l10n = new L10n();
 			require (__DIR__.'/../templates/ExceptionTemplate.php');
 		}
-	} catch (Exception $e) {
-		die($e->getMessage());
+	} catch (Exception $d) {
+		echo $d->getMessage(), "<br />\n", $e->getMessage();
 	}
 	die();
 }
