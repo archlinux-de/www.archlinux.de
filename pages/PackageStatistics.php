@@ -28,9 +28,8 @@ class PackageStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$cache = new PersistentCache();
 		$this->setValue('title', 'Package statistics');
-		if (!($body = $cache->getObject('PackageStatistics'))) {
+		if (!($body = ObjectStore::getObject('PackageStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
@@ -87,8 +86,7 @@ class PackageStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		$cache = new PersistentCache();
-		$cache->addObject('PackageStatistics', $body);
+		ObjectStore::addObject('PackageStatistics', $body);
 	}
 
 	private static function getCommonPackageUsageStatistics() {

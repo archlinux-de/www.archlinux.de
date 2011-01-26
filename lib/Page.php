@@ -45,7 +45,7 @@ abstract class Page extends Output {
 
 	protected function showWarning($text) {
 		$this->setValue('meta.robots', 'noindex,nofollow');
-		$this->setValue('title', 'Warnung');
+		$this->setValue('title', $this->l10n->getText('Warning'));
 		$this->setValue('body', '<div id="warning">' . $text . '</div>');
 		require (__DIR__.'/../templates/PageTemplate.php');
 		exit();
@@ -53,15 +53,15 @@ abstract class Page extends Output {
 
 	protected function showFailure($text) {
 		$this->setValue('meta.robots', 'noindex,nofollow');
-		$this->setValue('title', 'Fehler');
+		$this->setValue('title', $this->l10n->getText('Error'));
 		$this->setValue('body', '<div id="warning">' . $text . '</div>');
 		require (__DIR__.'/../templates/PageTemplate.php');
 		exit();
 	}
 
 	public function prepare() {
-		$this->setValue('title', 'Warnung');
-		$this->setValue('body', 'kein Text');
+		$this->setValue('title', $this->l10n->getText('Warning'));
+		$this->setValue('body', $this->l10n->getText('no text'));
 	}
 
 	protected function cutString($string, $length) {

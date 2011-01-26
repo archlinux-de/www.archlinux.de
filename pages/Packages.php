@@ -33,7 +33,7 @@ class Packages extends Page {
 	private $searchField = 0;
 
 	public function prepare() {
-		$this->setValue('title', 'Paket-Suche');
+		$this->setValue('title', $this->l10n->getText('Package search'));
 		try {
 			if (in_array(Input::get()->getString('orderby') , array(
 				'name',
@@ -101,14 +101,14 @@ class Packages extends Page {
 
 		$body = '
 		<div class="box">
-		<h2>Paket-Suche</h2>
+		<h2>'.$this->getValue('title').'</h2>
 		<form method="post" action="?page=Packages">
 		<table id="searchbox">
 			<tr>
-				<th>Repositorium</th>
-				<th>Architektur</th>
-				<th>Gruppe</th>
-				<th>Schlüsselwörter</th>
+				<th>'.$this->l10n->getText('Repository').'</th>
+				<th>'.$this->l10n->getText('Architecture').'</th>
+				<th>'.$this->l10n->getText('Group').'</th>
+				<th>'.$this->l10n->getText('Keywords').'</th>
 			</tr>
 			<tr>
 				<td>
@@ -170,9 +170,9 @@ class Packages extends Page {
 	private function getSearchFields() {
 		$options = '';
 		foreach (array(
-			0 => 'Name',
-			1 => 'Beschreibung',
-			2 => 'Datei'
+			0 => $this->l10n->getText('Name'),
+			1 => $this->l10n->getText('Description'),
+			2 => $this->l10n->getText('File')
 		) as $key => $value) {
 			if ($key == $this->searchField) {
 				$selected = ' checked="checked"';
@@ -264,12 +264,12 @@ class Packages extends Page {
 				<td class="pages" colspan="6">' . $last . $next . '</td>
 			</tr>
 			<tr>
-				<th><a href="' . $link . ';orderby=repository;sort=' . abs($this->sort - 1) . '">Repositorium</a></th>
-				<th><a href="' . $link . ';orderby=architecture;sort=' . abs($this->sort - 1) . '">Architektur</a></th>
-				<th><a href="' . $link . ';orderby=pkgname;sort=' . abs($this->sort - 1) . '">Name</a></th>
-				<th>Version</th>
-				<th>Beschreibung</th>
-				<th><a href="' . $link . ';orderby=lastupdate;sort=' . abs($this->sort - 1) . '">Aktualisierung</a></th>
+				<th><a href="' . $link . ';orderby=repository;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Repository').'</a></th>
+				<th><a href="' . $link . ';orderby=architecture;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Architecture').'</a></th>
+				<th><a href="' . $link . ';orderby=pkgname;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Name').'</a></th>
+				<th>'.$this->l10n->getText('Version').'</th>
+				<th>'.$this->l10n->getText('Description').'</th>
+				<th><a href="' . $link . ';orderby=lastupdate;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Last update').'</a></th>
 			</tr>';
 		foreach ($packages as $package) {
 			$style = (in_array($package['repository'], array(

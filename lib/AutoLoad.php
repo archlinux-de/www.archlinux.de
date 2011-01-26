@@ -28,7 +28,7 @@ function __autoload($class) {
 		'Input' => '/Input.php',
 		'L10n' => '/L10n.php',
 		'ObjectCache' => '/ObjectCache.php',
-		'PersistentCache' => '/ObjectCache.php',	// FIXME
+		'ObjectStore' => '/ObjectStore.php',
 		'Output' => '/Output.php',
 		'Package' => '/Package.php',
 		'PackageDB' => '/PackageDB.php',

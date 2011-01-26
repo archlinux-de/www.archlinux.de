@@ -22,8 +22,7 @@ class NotFound extends Page {
 
 	public function prepare() {
 		$this->setStatus(Output::NOT_FOUND);
-		$this->setValue('title', 'Seite nicht gefunden');
-		$this->showFailure('Die Seite wurde nicht gefunden.');
+		$this->showFailure($this->l10n->getText('Page could not be found'));
 	}
 }
 

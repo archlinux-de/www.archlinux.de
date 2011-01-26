@@ -21,12 +21,9 @@
 class MirrorStatusReflector extends Page {
 
 	private $range = 604800; // 1 week
+	private $text = '';
 
 	public function prepare() {
-		$this->setContentType('text/plain; charset=UTF-8');
-	}
-
-	public function printPage() {
 		$mirrors = DB::query('
 		SELECT
 			host,
@@ -39,8 +36,13 @@ class MirrorStatusReflector extends Page {
 			lastsync DESC
 		');
 		foreach ($mirrors as $mirror) {
-			echo gmdate('Y-m-d H:i', $mirror['lastsync']), ' ', $mirror['host'], "\n";
+			$this->text .= gmdate('Y-m-d H:i'.$mirror['lastsync']).' '.$mirror['host']."\n";
 		}
+	}
+
+	public function printPage() {
+		$this->setContentType('text/plain; charset=UTF-8');
+		echo $this->text;
 	}
 }
 

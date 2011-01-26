@@ -28,9 +28,8 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$cache = new PersistentCache();
 		$this->setValue('title', 'Repository statistics');
-		if (!($body = $cache->getObject('RepositoryStatistics'))) {
+		if (!($body = ObjectStore::getObject('RepositoryStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
@@ -134,8 +133,7 @@ class RepositoryStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		$cache = new PersistentCache();
-		$cache->addObject('RepositoryStatistics', $body);
+		ObjectStore::addObject('RepositoryStatistics', $body);
 	}
 
 	private static function getCommonRepositoryStatistics() {

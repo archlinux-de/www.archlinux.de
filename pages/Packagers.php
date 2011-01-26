@@ -24,7 +24,7 @@ class Packagers extends Page {
 	private $sort = 0;
 
 	public function prepare() {
-		$this->setValue('title', 'Packer');
+		$this->setValue('title', $this->l10n->getText('Packagers'));
 		try {
 			if (in_array(Input::get()->getString('orderby') , array(
 				'name',
@@ -66,10 +66,10 @@ class Packagers extends Page {
 		$body = '
 		<table class="pretty-table">
 			<tr>
-				<th><a href="?page=Packagers;orderby=name;sort=' . abs($this->sort - 1) . '">Name</a></th>
-				<th>E-Mail</th>
-				<th colspan="2"><a href="?page=Packagers;orderby=packages;sort=' . abs($this->sort - 1) . '">Pakete</a></th>
-				<th><a href="?page=Packagers;orderby=lastbuilddate;sort=' . abs($this->sort - 1) . '">Letzte Aktualisierung</a></th>
+				<th><a href="?page=Packagers;orderby=name;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Name').'</a></th>
+				<th>'.$this->l10n->getText('Email').'</th>
+				<th colspan="2"><a href="?page=Packagers;orderby=packages;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Packages').'</a></th>
+				<th><a href="?page=Packagers;orderby=lastbuilddate;sort=' . abs($this->sort - 1) . '">'.$this->l10n->getText('Last update').'</a></th>
 			</tr>';
 		foreach ($packagers as $packager) {
 			$percent = round(($packager['packages'] / $packages) * 100);

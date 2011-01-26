@@ -78,13 +78,14 @@ abstract class Output {
 		exit();
 	}
 
-	protected function createUrl($page, $options = array(), $absolute = false, $html = true) {
+	// FIXME: parameters are insane
+	protected function createUrl($page, $options = array(), $absolute = false, $html = true, $urlencode = true) {
 		$separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
 		$params = array();
 		foreach (array_merge(array(
 			'page' => $page
 		) , $options) as $key => $value) {
-			$params[] = $key . '=' . urlencode($value);
+			$params[] = $key . '=' . ($urlencode ? urlencode($value) : $value);
 		}
 		return ($absolute ? Input::getPath() : '') . '?' . implode($separator, $params);
 	}

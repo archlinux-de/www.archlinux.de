@@ -24,21 +24,11 @@ class Start extends Page {
 
 	public function prepare() {
 		$this->arch = Input::cookie()->getInt('architecture', $this->arch);
-		$this->setValue('title', 'Start');
+		$this->setValue('title', $this->l10n->getText('Start'));
 		$body = '<div id="left-wrapper">
 		<div id="left">
 			<div id="intro" class="box">
-				<h2>Willkommen bei Arch Linux</h2>
-				<p>
-				<strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em> Distribution für jeden erdenklichen Einsatz-Zweck. Ein einfaches Grundsystem kann nach den Bedürfnissen des jeweiligen Nutzers nahezu beliebig erweitert werden.
-				</p>
-				<p>
-				Nach einem gleitenden Release-System bieten wir zur Zeit vorkompilierte Pakete für die <code>i686</code>- und <code>x86_64</code>-Architekturen an. Zusätzliche Werkzeuge ermöglichen zudem den schnellen Eigenbau von Paketen.
-				</p>
-				<p>
-				Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es werden wollen...
-				</p>
-				<p class="readmore"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">mehr über Arch Linux</a></p>
+				'.$this->l10n->getTextFile('StartWelcome').'
 			</div>
 			<div id="news">
 			' . $this->getNews() . '
@@ -48,7 +38,7 @@ class Start extends Page {
 		<div id="right">
 			<div id="pkgsearch">
 				<form method="post" action="?page=Packages">
-					<label for="searchfield">Paket-Suche:</label>
+					<label for="searchfield">'.$this->l10n->getText('Package search').':</label>
 					<input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off" />
 					<script type="text/javascript" src="style/jquery.min.js?v=1.4.4"></script>
 					<script type="text/javascript" src="style/jquery-ui-autocomplete.min.js?v=1.8.8"></script>
@@ -67,44 +57,7 @@ class Start extends Page {
 				' . $this->getRecentPackages() . '
 			</div>
 			<div id="sidebar">
-				<h4>Dokumentation</h4>
-				<ul>
-					<li><a href="https://wiki.archlinux.de/">Wiki</a></li>
-					<li><a href="https://wiki.archlinux.de/title/Offizielle_Arch_Linux_Installations-Anleitung">Offizielle Arch Linux Installations-Anleitung</a></li>
-				</ul>
-				<h4>Gemeinschaft</h4>
-				<ul>
-					<li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
-					<li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
-					<li><a href="https://wiki.archlinux.org/index.php/International_Communities">Internationale Gemeinschaft</a></li>
-				</ul>
-				<h4>Unterstützung</h4>
-				<ul>
-					<li><a href="https://wiki.archlinux.de/title/Spenden">Spenden (archlinux.de)</a></li>
-					<li><a href="https://www.archlinux.org/donate/">Spenden (international)</a></li>
-				</ul>
-				<h4>Entwicklung</h4>
-				<ul>
-					<li><a href="?page=Packages">Pakete</a></li>
-					<li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
-					<li><a href="https://aur.archlinux.org/index.php?setlang=de">AUR</a></li>
-					<li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
-					<li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
-					<li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>
-					<li><a href="https://git.archlinux.de/">archlinux.de in Git</a></li>
-					<li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki">Entwickler-Wiki</a></li>
-				</ul>
-				<h4>Informationen</h4>
-				<ul>
-					<li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
-					<li><a href="https://wiki.archlinux.de/title/Download">Arch herunterladen</a></li>
-					<li><a href="https://wiki.archlinux.de/title/Arch_in_den_Medien">Arch in den Medien</a></li>
-					<li><a href="https://www.archlinux.org/art/">Logos</a></li>
-					<li><a href="https://www.archlinux.org/developers/">Entwickler</a></li>
-					<li><a href="https://www.archlinux.org/trustedusers/">Trusted Users</a></li>
-					<li><a href="https://www.archlinux.org/fellows/">Ehemalige</a></li>
-					<li><a href="?page=MirrorStatus">Mirror-Status</a></li>
-				</ul>
+				'.$this->l10n->getTextFile('StartSidebar').'
 			</div>
 		</div>
 	';
@@ -113,12 +66,11 @@ class Start extends Page {
 
 	private function getNews() {
 		$result = '';
-		$cache = new ObjectCache();
-		if (!($result = $cache->getObject('news_feed'))) {
+		if (!($result = ObjectCache::getObject('news_feed'))) {
 			try {
 				$download = new Download(Config::get('news', 'feed'));
 				$feed = new SimpleXMLElement($download->getFile(), 0, true);
-				$result = '<h3>Aktuelle Ankündigungen <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
+				$result = '<h3>'.$this->l10n->getText('Recent news').' <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 				foreach ($feed->entry as $entry) {
 					$result.= '
 					<h4><a href="' . $entry->link->attributes()->href . '">' . $entry->title . '</a></h4>
@@ -126,7 +78,7 @@ class Start extends Page {
 					' . $entry->summary . '
 					';
 				}
-				$cache->addObject('news_feed', $result, 1800);
+				ObjectCache::addObject('news_feed', $result, 1800);
 			} catch (Exception $e) {
 			}
 		}
@@ -156,7 +108,7 @@ class Start extends Page {
 		');
 		$packages->bindParam('arch', $this->arch, PDO::PARAM_INT);
 		$packages->execute();
-		$result = '<h3>Aktualisierte Pakete <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
+		$result = '<h3>'.$this->l10n->getText('Recent packages').' <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
 		foreach ($packages as $package) {
 			$result.= '
 			<tr class="' . $package['repository'] . '">

@@ -26,13 +26,13 @@ class PackageDetails extends Page {
 	private $pkgname = '';
 
 	public function prepare() {
-		$this->setValue('title', 'Paket-Details');
+		$this->setValue('title', $this->l10n->getText('Package details'));
 		try {
 			$this->repo = Input::get()->getString('repo');
 			$this->arch = Input::get()->getString('arch');
 			$this->pkgname = Input::get()->getString('pkgname');
 		} catch(RequestException $e) {
-			$this->showFailure('Kein Paket angegeben!');
+			$this->showFailure($this->l10n->getText('No package specified'));
 		}
 		$stm = DB::prepare('
 		SELECT
@@ -74,7 +74,7 @@ class PackageDetails extends Page {
 		$data = $stm->fetch();
 		if ($data === false) {
 			$this->setStatus(Output::NOT_FOUND);
-			$this->showFailure('Paket nicht gefunden!');
+			$this->showFailure($this->l10n->getText('Package was not found'));
 		}
 		$this->pkgid = $data['id'];
 		$this->setValue('title', $data['name']);
@@ -82,94 +82,94 @@ class PackageDetails extends Page {
 		<h2>' . $data['name'] . '</h2>
 		<table id="packagedetails">
 			<tr>
-				<th colspan="2" class="packagedetailshead">Programm-Details</th>
+				<th colspan="2" class="packagedetailshead">'.$this->l10n->getText('Package details').'</th>
 			</tr>
 			<tr>
-				<th>Name</th>
+				<th>'.$this->l10n->getText('Name').'</th>
 				<td>' . $data['name'] . '</td>
 			</tr>
 			<tr>
-				<th>Version</th>
+				<th>'.$this->l10n->getText('Version').'</th>
 				<td>' . $data['version'] . '</td>
 			</tr>
 			<tr>
-				<th>Beschreibung</th>
+				<th>'.$this->l10n->getText('Description').'</th>
 				<td>' . $data['desc'] . '</td>
 			</tr>
 			<tr>
-				<th>URL</th>
+				<th>'.$this->l10n->getText('URL').'</th>
 				<td><a rel="nofollow" href="' . $data['url'] . '">' . $data['url'] . '</a></td>
 			</tr>
 			<tr>
-				<th>Lizenzen</th>
+				<th>'.$this->l10n->getText('Licenses').'</th>
 				<td>' . $this->getLicenses() . '</td>
 			</tr>
 			<tr>
-				<th colspan="2" class="packagedetailshead">Paket-Details</th>
+				<th colspan="2" class="packagedetailshead">'.$this->l10n->getText('Package details').'</th>
 			</tr>
 			<tr>
-				<th>Repositorium</th>
+				<th>'.$this->l10n->getText('Repository').'</th>
 				<td><a href="?page=Packages;repository=' . $data['repositoryid'] . '">' . $data['repository'] . '</a></td>
 			</tr>
 			<tr>
-				<th>Architektur</th>
+				<th>'.$this->l10n->getText('Architecture').'</th>
 				<td><a href="?page=Packages;architecture=' . $data['architectureid'] . '">' . $data['architecture'] . '</a></td>
 			</tr>
 			<tr>
-				<th>Gruppen</th>
+				<th>'.$this->l10n->getText('Groups').'</th>
 				<td>' . $this->getGroups() . '</td>
 			</tr>
 			<tr>
-				<th>Packer</th>
+				<th>'.$this->l10n->getText('Packager').'</th>
 				<td><a href="?page=Packages;packager=' . $data['packagerid'] . '">' . $data['packager'] . '</a>' . (!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:' . $data['packageremail'] . '">@</a>' : '') . '</td>
 			</tr>
 			<tr>
-				<th>Aktualisierung</th>
+				<th>'.$this->l10n->getText('Build date').'</th>
 				<td>' . $this->l10n->getDateTime($data['builddate']) . '</td>
 			</tr>
 			<tr>
-				<th>Veröffentlichung</th>
+				<th>'.$this->l10n->getText('Publish date').'</th>
 				<td>' . $this->l10n->getDateTime($data['mtime']) . '</td>
 			</tr>
 			<tr>
-				<th>Quellen</th>
+				<th>'.$this->l10n->getText('Source code').'</th>
 				<td><a href="https://projects.archlinux.de/svntogit/' . (in_array($data['repository'], array(
 			'community',
 			'community-testing',
 			'multilib'
-		)) ? 'community' : 'packages') . '.git/tree/' . $data['base'] . '/">Versions-Verwaltung</a></td>
+		)) ? 'community' : 'packages') . '.git/tree/' . $data['base'] . '/">'.$this->l10n->getText('Revision control').'</a></td>
 			</tr>
 			<tr>
-				<th>Fehler</th>
-				<td><a href="https://bugs.archlinux.org/index.php?string=%5B' . $data['name'] . '%5D">Bug Tracker</a></td>
+				<th>'.$this->l10n->getText('Bugs').'</th>
+				<td><a href="https://bugs.archlinux.org/index.php?string=%5B' . $data['name'] . '%5D">'.$this->l10n->getText('Bug Tracker').'</a></td>
 			</tr>
 			<tr>
-				<th>Paket</th>
+				<th>'.$this->l10n->getText('Package').'</th>
 				<td><a href="?page=GetFileFromMirror;file=' . $data['repository'] . '/os/' . $data['architecture'] . '/' . $data['filename'] . '">' . $data['filename'] . '</a></td>
 			</tr>
 			<tr>
-				<th>MD5-Prüfsumme</th>
+				<th>'.$this->l10n->getText('MD5 checksum').'</th>
 				<td><code>' . $data['md5sum'] . '</code></td>
 			</tr>
 			<tr>
-				<th>Paket-Größe</th>
+				<th>'.$this->l10n->getText('Package size').'</th>
 				<td>' . $this->formatBytes($data['csize']) . 'Byte</td>
 			</tr>
 			<tr>
-				<th>Installations-Größe</th>
+				<th>'.$this->l10n->getText('Installation size').'</th>
 				<td>' . $this->formatBytes($data['isize']) . 'Byte</td>
 			</tr>
 		</table>
 		<table id="packagedependencies">
 			<tr>
-				<th colspan="5" class="packagedependencieshead">Abhängigkeiten</th>
+				<th colspan="5" class="packagedependencieshead">'.$this->l10n->getText('Dependencies').'</th>
 			</tr>
 			<tr>
-				<th>hängt ab von</th>
-				<th>wird benötigt von</th>
-				<th>stellt bereit</th>
-				<th>kollidiert mit</th>
-				<th>ersetzt</th>
+				<th>'.$this->l10n->getText('depends on').'</th>
+				<th>'.$this->l10n->getText('required by').'</th>
+				<th>'.$this->l10n->getText('provides').'</th>
+				<th>'.$this->l10n->getText('conflicts with').'</th>
+				<th>'.$this->l10n->getText('replaces').'</th>
 			</tr>
 			<tr>
 				<td>
@@ -189,8 +189,8 @@ class PackageDetails extends Page {
 				</td>
 			</tr>
 			<tr>
-				<th>hängt optional ab von</th>
-				<th>wird optional benötigt von</th>
+				<th>'.$this->l10n->getText('optionally depends on').'</th>
+				<th>'.$this->l10n->getText('optionally required by').'</th>
 				<th colspan="3">&nbsp;</th>
 			</tr>
 			<tr>
@@ -205,11 +205,11 @@ class PackageDetails extends Page {
 		</table>
 		<table id="packagedependencies">
 			<tr>
-				<th class="packagedependencieshead">Dateien</th>
+				<th class="packagedependencieshead">'.$this->l10n->getText('Files').'</th>
 			</tr>
 			<tr>
 				<td>
-					' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">Dateien anzeigen</a>') . '
+					' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">'.$this->l10n->getText('Show files').'</a>') . '
 				</td>
 			</tr>
 		</table>

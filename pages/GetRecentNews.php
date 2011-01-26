@@ -27,7 +27,7 @@ class GetRecentNews extends Page {
 	}
 
 	public function printPage() {
-		$this->redirectPermanentlyToUrl($this->url);
+		$this->redirectToUrl($this->url);
 	}
 }
 

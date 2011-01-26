@@ -26,27 +26,36 @@ class L10n {
 	public function __construct() {
 		$this->locale = Config::get('L10n', 'locale');
 
-		putenv('LC_ALL=' . $this->locale);
-		putenv('LANGUAGE=' . $this->locale);
+		putenv('LC_ALL='.$this->locale);
 		setlocale(LC_ALL, $this->locale);
 		date_default_timezone_set(Config::get('L10n', 'timezone'));
 		$this->localeInfo = localeconv();
-		if (function_exists('bindtextdomain')) {
-			bindtextdomain('messages', 'l10n');
-			textdomain('messages');
-		}
+		bindtextdomain('messages', __DIR__.'/../l10n');
+		textdomain('messages');
 	}
 
 	public function getLocale() {
 		return $this->locale;
 	}
 
+	private function getLocalePath() {
+		return __DIR__.'/../l10n/'.strtok($this->locale, '.');
+	}
+
 	public function getText($text) {
-		if (function_exists('gettext')) {
-			return gettext($text);
-		} else {
-			return $text;
+		return gettext($text);
+	}
+
+	public function ngetText($singular, $plural, $count) {
+		return ngettext($singular, $plural, $count);
+	}
+
+	public function getTextFile($name) {
+		if (!($text = ObjectCache::getObject($name))) {
+			$text = file_get_contents ($this->getLocalePath().'/'.$name.'.html');
+			ObjectCache::addObject($name, $text);
 		}
+		return $text;
 	}
 
 	public function getDate($timestamp = null) {
@@ -73,7 +82,6 @@ class L10n {
 		return gmdate('Y-m-d H:i', $timestamp);
 	}
 
-	// @TODO: add singular
 	public function getEpoch($seconds) {
 		$minutes = 60;
 		$hours = 60 * $minutes;
@@ -82,31 +90,31 @@ class L10n {
 		$months = 4 * $weeks;
 		$years = 12 * $months;
 		if ($seconds >= $years) {
-			$result = round($seconds / $years, 2);
-			$postfix = '&nbsp;' . $this->getText('years');
+			$result = round($seconds / $years);
+			return sprintf($this->ngetText('%d year', '%d years', $result), $result);
 		} elseif ($seconds >= $months) {
-			$result = round($seconds / $months, 2);
-			$postfix = '&nbsp;' . $this->getText('months');
+			$result = round($seconds / $months);
+			return sprintf($this->ngetText('%d month', '%d months', $result), $result);
 		} elseif ($seconds >= $weeks) {
-			$result = round($seconds / $weeks, 2);
-			$postfix = '&nbsp;' . $this->getText('weeks');
+			$result = round($seconds / $weeks);
+			return sprintf($this->ngetText('%d week', '%d weeks', $result), $result);
 		} elseif ($seconds >= $days) {
-			$result = round($seconds / $days, 2);
-			$postfix = '&nbsp;' . $this->getText('days');
+			$result = round($seconds / $days);
+			return sprintf($this->ngetText('%d day', '%d days', $result), $result);
 		} elseif ($seconds >= $hours) {
 			$result = round($seconds / $hours, 2);
-			$postfix = '&nbsp;' . $this->getText('hours');
+			return sprintf($this->getText('%.2f hours'), $result);
 		} elseif ($seconds >= $minutes) {
 			$result = round($seconds / $minutes, 2);
-			$postfix = '&nbsp;' . $this->getText('minutes');
+			return sprintf($this->getText('%.2f minutes'), $result);
 		} else {
 			$result = round($seconds, 2);
-			$postfix = '&nbsp;' . $this->getText('seconds');
+			return sprintf($this->getText('%.2f seconds'), $result);
 		}
-		return $result . $postfix;
 	}
 
 	public function getNumber($number, $decimals = 0) {
+		// FIXME: use sprintf %f instead?
 		return number_format($number, $decimals, $this->localeInfo['decimal_point'], $this->localeInfo['thousands_sep']);
 	}
 }

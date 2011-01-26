@@ -20,73 +20,119 @@
 
 class GetRecentPackages extends Page {
 
+	private $feed = '';
+
 	public function prepare() {
-		$this->setContentType('application/atom+xml; charset=UTF-8');
+		$dom = new DOMDocument('1.0', 'UTF-8');
+		$body = $dom->createElementNS('http://www.w3.org/2005/Atom', 'feed');
+
+		$id = $dom->createElement('id', Input::getPath());
+		$title = $dom->createElement('title', $this->l10n->getText('Recent Arch Linux packages'));
+		$updated = $dom->createElement('updated', date('c', DB::query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
+
+		$author = $dom->createElement('author');
+		$authorName = $dom->createElement('name', Input::getHost());
+		$authorEmail = $dom->createElement('email', Config::get('common', 'email'));
+		$authorUri = $dom->createElement('uri', Input::getPath());
+		$author->appendChild($authorName);
+		$author->appendChild($authorEmail);
+		$author->appendChild($authorUri);
+
+		$alternate = $dom->createElement('link');
+		$alternate->setAttribute('href', $this->createUrl('Packages', array(), true, false));
+		$alternate->setAttribute('rel', 'alternate');
+		$alternate->setAttribute('type', 'text/html');
+		$self = $dom->createElement('link');
+		$self->setAttribute('href', $this->createUrl($this->getName(), array(), true, false));
+		$self->setAttribute('rel', 'self');
+		$self->setAttribute('type', 'application/atom+xml');
+
+		$icon = $dom->createElement('icon', Input::getPath().'style/favicon.ico');
+		$logo = $dom->createElement('logo', Input::getPath().'style/archlogo-64.png');
+
+		$body->appendChild($id);
+		$body->appendChild($title);
+		$body->appendChild($updated);
+		$body->appendChild($author);
+		$body->appendChild($alternate);
+		$body->appendChild($self);
+		$body->appendChild($icon);
+		$body->appendChild($logo);
+
+		$packages = DB::query('
+		SELECT
+			packages.name,
+			packages.builddate,
+			packages.version,
+			packages.desc,
+			packagers.name AS packager,
+			packagers.email AS email,
+			architectures.name AS architecture,
+			repositories.name AS repository
+		FROM
+			packages
+				JOIN
+					packagers
+				ON
+					packages.packager = packagers.id
+				JOIN
+					architectures
+				ON
+					packages.arch = architectures.id
+				JOIN
+					repositories
+				ON
+					packages.repository = repositories.id
+		ORDER BY
+			packages.builddate DESC
+		LIMIT
+			25
+		');
+		foreach ($packages as $package) {
+			$entry = $dom->createElement('entry');
+			$entryId = $dom->createElement('id', $this->createUrl('PackageDetails', array(
+					'repo' => $package['repository'],
+					'arch' => $package['architecture'],
+					'pkgname' => $package['name']
+				), true));
+			$entryTitle = $dom->createElement('title', $package['name'].' '.$package['version'].' ('.$package['architecture'].')');
+			$entryUpdated = $dom->createElement('updated', date('c', $package['builddate']));
+
+			$entryAuthor = $dom->createElement('author');
+			$entryAuthorName = $dom->createElement('name', $package['packager']);
+			$entryAuthorEmail = $dom->createElement('email', $package['email']);
+			$entryAuthor->appendChild($entryAuthorName);
+			$entryAuthor->appendChild($entryAuthorEmail);
+
+			$entryLink = $dom->createElement('link');
+			$entryLink->setAttribute('href', $this->createUrl('PackageDetails', array(
+					'repo' => $package['repository'],
+					'arch' => $package['architecture'],
+					'pkgname' => $package['name']
+				), true));
+			$entryLink->setAttribute('rel', 'alternate');
+			$entryLink->setAttribute('type', 'text/html');
+
+			$entrySummary = $dom->createElement('summary', $package['desc']);
+
+			$entry->appendChild($entryId);
+			$entry->appendChild($entryTitle);
+			$entry->appendChild($entryUpdated);
+			$entry->appendChild($entryAuthor);
+			$entry->appendChild($entryLink);
+			$entry->appendChild($entrySummary);
+
+			$body->appendChild($entry);
+		}
+
+		$dom->appendChild($body);
+
+		$this->feed = $dom->saveXML();
 	}
 
 	public function printPage() {
-		$lastdate = 0;
-		$entries = '';
-		try {
-			$packages = DB::query('
-			SELECT
-				packages.id,
-				packages.name,
-				packages.builddate,
-				packages.version,
-				packages.desc,
-				packagers.id AS packagerid,
-				packagers.name AS packager,
-				architectures.name AS architecture,
-				repositories.name AS repository
-			FROM
-				packages
-					JOIN
-						packagers
-					ON
-						packages.packager = packagers.id
-					JOIN
-						architectures
-					ON
-						packages.arch = architectures.id
-					JOIN
-						repositories
-					ON
-						packages.repository = repositories.id
-			ORDER BY
-				packages.builddate DESC
-			LIMIT
-				25
-			');
-			foreach ($packages as $package) {
-				if ($package['builddate'] > $lastdate) {
-					$lastdate = $package['builddate'];
-				}
-				$entries.= '
-			<entry>
-				<id>https://www.archlinux.de/?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '</id>
-				<title>' . $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')</title>
-				<link rel="alternate" type="text/html" href="https://www.archlinux.de/?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '" />
-				<updated>' . date('c', $package['builddate']) . '</updated>
-				<summary>' . $package['desc'] . '</summary>
-				<author>
-					<name>' . $package['packager'] . '</name>
-					<uri>https://www.archlinux.de/?page=Packages;packager=' . $package['packagerid'] . '</uri>
-				</author>
-			</entry>
-			';
-			}
-		} catch (Exception $e) {
-		}
-		echo '<?xml version="1.0" encoding="utf-8"?>
-			<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de">
-				<id>https://www.archlinux.de/?page=Packages</id>
-				<title>archlinux.de :: Aktualisierte Pakete</title>
-				<link rel="self" type="application/atom+xml" href="https://www.archlinux.de/?page=Packages" />
-				<link rel="alternate" type="text/html" href="https://www.archlinux.de/" />
-				<updated>' . date('c', $lastdate) . '</updated>
-				' . $entries . '
-			</feed>';
+		$this->setContentType('application/atom+xml; charset=UTF-8');
+		echo $this->feed;
 	}
 }
 

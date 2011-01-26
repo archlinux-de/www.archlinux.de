@@ -28,9 +28,8 @@ class UserStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$cache = new PersistentCache();
 		$this->setValue('title', 'User statistics');
-		if (!($body = $cache->getObject('UserStatistics'))) {
+		if (!($body = ObjectStore::getObject('UserStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
@@ -102,8 +101,7 @@ class UserStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		$cache = new PersistentCache();
-		$cache->addObject('UserStatistics', $body);
+		ObjectStore::addObject('UserStatistics', $body);
 	}
 
 	private static function getCommonPackageUsageStatistics() {
@@ -184,8 +182,7 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPopulationPerCountry() {
-		$cache = new PersistentCache();
-		if (!($countryarray = $cache->getObject('UserStatistics:PopulationPerCountry'))) {
+		if (!($countryarray = ObjectStore::getObject('UserStatistics:PopulationPerCountry'))) {
 			if (false === ($curl = curl_init('https://www.cia.gov/library/publications/the-world-factbook/rankorder/rawdata_2119.text'))) {
 				throw new RuntimeException('failed to init curl: ' . htmlspecialchars($url));
 			}
@@ -216,7 +213,7 @@ class UserStatistics extends Page implements IDBCachable {
 			if (count($countryarray) == 0) {
 				throw new RuntimeException('empty country list', 1);
 			}
-			$cache->addObject('UserStatistics:PopulationPerCountry', $countryarray, (60 * 60 * 24 * 30));
+			ObjectStore::addObject('UserStatistics:PopulationPerCountry', $countryarray, (60 * 60 * 24 * 30));
 		}
 		return $countryarray;
 	}

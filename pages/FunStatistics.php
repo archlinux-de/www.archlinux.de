@@ -28,9 +28,8 @@ class FunStatistics extends Page implements IDBCachable {
 	);
 
 	public function prepare() {
-		$cache = new PersistentCache();
 		$this->setValue('title', 'Fun statistics');
-		if (!($body = $cache->getObject('FunStatistics'))) {
+		if (!($body = ObjectStore::getObject('FunStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
@@ -162,8 +161,7 @@ class FunStatistics extends Page implements IDBCachable {
 		</table>
 		</div>
 		';
-		$cache = new PersistentCache();
-		$cache->addObject('FunStatistics', $body);
+		ObjectStore::addObject('FunStatistics', $body);
 	}
 
 	private static function getPackageStatistics($packages) {

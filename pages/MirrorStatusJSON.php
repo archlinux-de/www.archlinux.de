@@ -20,11 +20,9 @@
 
 class MirrorStatusJSON extends Page {
 
-	public function prepare() {
-		$this->setContentType('application/json; charset=UTF-8');
-	}
+	private $json = '';
 
-	public function printPage() {
+	public function prepare() {
 		$mirrors = DB::query('
 		SELECT
 			host,
@@ -48,7 +46,12 @@ class MirrorStatusJSON extends Page {
 				'average performance' => $mirror['time'] ? : ''
 			);
 		}
-		echo json_encode($json);
+		$this->json = json_encode($json);
+	}
+
+	public function printPage() {
+		$this->setContentType('application/json; charset=UTF-8');
+		echo $this->json;
 	}
 }
 
