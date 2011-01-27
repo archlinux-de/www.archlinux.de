@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title><?php echo Input::getHost(); ?> - <?php echo get_class($e); ?></title>
+	<title><?php echo Config::get('common', 'sitename'); ?> - <?php echo get_class($e); ?></title>
 	<meta name="robots" content="noindex,nofollow" />
 	<link rel="stylesheet" media="screen" href="style/arch.css?v=4" />
 	<link rel="stylesheet" media="screen" href="style/archnavbar.css?v=2" />

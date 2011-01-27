@@ -21,6 +21,7 @@
 Config::set('common', 'debug', true);
 Config::set('common', 'email', 'webmaster@localhost');
 Config::set('common', 'tmpdir', '/tmp');
+Config::set('common', 'sitename', 'archportal');
 
 Config::set('DB', 'database', 'pkgdb');
 Config::set('DB', 'user', 'root');

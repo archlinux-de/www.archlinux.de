@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title><?php echo Input::getHost(); ?> - <?php echo $this->getValue('title'); ?></title>
+	<title><?php echo Config::get('common', 'sitename'); ?> - <?php echo $this->getValue('title'); ?></title>
 	<meta name="robots" content="<?php echo $this->getValue('meta.robots'); ?>" />
 	<link rel="stylesheet" media="screen" href="style/arch.css?v=4" />
 	<link rel="stylesheet" media="screen" href="style/archnavbar.css?v=2" />

@@ -31,7 +31,7 @@ class GetRecentPackages extends Page {
 		$updated = $dom->createElement('updated', date('c', DB::query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
 
 		$author = $dom->createElement('author');
-		$authorName = $dom->createElement('name', Input::getHost());
+		$authorName = $dom->createElement('name', Config::get('common', 'sitename'));
 		$authorEmail = $dom->createElement('email', Config::get('common', 'email'));
 		$authorUri = $dom->createElement('uri', Input::getPath());
 		$author->appendChild($authorName);
