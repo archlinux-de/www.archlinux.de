@@ -78,9 +78,9 @@ class Download {
 		$curl = curl_init($url);
 		curl_setopt($curl, CURLOPT_FAILONERROR, true);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_MAXREDIRS, 1);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 120);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
 		curl_setopt($curl, CURLOPT_ENCODING, '');
 		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
 		return $curl;
