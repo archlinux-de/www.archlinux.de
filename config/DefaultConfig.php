@@ -36,7 +36,8 @@ Config::set('packages', 'repositories', array(
 			'extra',
 			'testing',
 			'community',
-			'community-testing'
+			'community-testing',
+			'multilib'
 		));
 Config::set('packages', 'architectures', array(
 			'i686',

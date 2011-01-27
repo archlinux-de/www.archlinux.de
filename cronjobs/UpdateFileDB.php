@@ -33,6 +33,9 @@ class UpdateFileDB extends CronJob {
 		$this->mirror = Config::get('packages', 'mirror');
 		foreach (Config::get('packages', 'repositories') as $repo) {
 			foreach (Config::get('packages', 'architectures') as $arch) {
+				if ($repo == 'multilib' && $arch != 'x86_64') {
+					continue;
+				}
 				$this->updateFiles($repo, $arch);
 			}
 		}

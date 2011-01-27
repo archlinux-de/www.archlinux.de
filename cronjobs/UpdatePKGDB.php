@@ -79,6 +79,9 @@ class UpdatePKGDB extends CronJob {
 		');
 		foreach (Config::get('packages', 'repositories') as $repo) {
 			foreach (Config::get('packages', 'architectures') as $arch) {
+				if ($repo == 'multilib' && $arch != 'x86_64') {
+					continue;
+				}
 				$this->updateRepository($repo, $arch);
 			}
 		}
