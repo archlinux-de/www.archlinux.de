@@ -82,7 +82,6 @@ class Download {
 		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($curl, CURLOPT_ENCODING, '');
-		curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:'.Config::get('common', 'email'));
 		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
 		return $curl;
 	}
