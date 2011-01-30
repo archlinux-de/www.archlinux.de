@@ -67,12 +67,19 @@ h5 { font-size: 1em; margin-top: 1em; }
 #packagedetails th, td { text-align:left; font-size:12px; padding-top:2px; padding-bottom:2px; padding-left:8px; padding-right:8px; vertical-align:top; }
 #packagedetails th { width:200px; }
 #packagedetails th.packagedetailshead { text-align:right; margin: 0; padding: 0; border-bottom: 1px dotted #bbb; margin-bottom: 4px; padding-bottom: 2px; font-size: 10px; }
-#packagedependencies { width:100%; }
-#packagedependencies th { text-align:left; font-size:12px; padding-top:2px; padding-bottom:2px; padding-left:8px; padding-right:8px; }
-#packagedependencies td { vertical-align:top; }
-#packagedependencies th.packagedependencieshead { text-align:right; margin: 0; padding: 0; border-bottom: 1px dotted #bbb; margin-bottom: 4px; padding-bottom: 2px; font-size: 10px; }
+#packagedependencies,
+#packagefiles { width:100%; }
+#packagedependencies th,
+#packagefiles th { text-align:left; font-size:12px; padding-top:2px; padding-bottom:2px; padding-left:8px; padding-right:8px; }
+#packagedependencies td,
+#packagefiles td { vertical-align:top; }
+#packagedependencies th.packagedependencieshead,
+#packagefiles th.packagefileshead { text-align:right; margin: 0; padding: 0; border-bottom: 1px dotted #bbb; margin-bottom: 4px; padding-bottom: 2px; font-size: 10px; }
 #packagedependencies ul { position: relative; list-style-type: none; vertical-align:top; left:-40px; overflow:auto; max-height:300px; padding-left: 4em; padding-top: 1em; }
 #packagedependencies  li { padding:0px; margin:0px; }
+
+#packagefiles ul { list-style-type: square; }
+#packagefiles tr td > ul { overflow:auto; max-height:600px; }
 
 #searchbox { width:100%; }
 #searchbox th { text-align:left; font-size:12px; }

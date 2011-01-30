@@ -203,9 +203,9 @@ class PackageDetails extends Page {
 				<td colspan="3">&nbsp;</td>
 			</tr>
 		</table>
-		<table id="packagedependencies">
+		<table id="packagefiles">
 			<tr>
-				<th class="packagedependencieshead">'.$this->l10n->getText('Files').'</th>
+				<th class="packagefileshead">'.$this->l10n->getText('Files').'</th>
 			</tr>
 			<tr>
 				<td>
@@ -287,14 +287,35 @@ class PackageDetails extends Page {
 			files
 		WHERE
 			package = :package
+		ORDER BY
+			path
 		');
 		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
 		$stm->execute();
-		$list = '<ul>';
-		while ($file = $stm->fetchColumn()) {
-			$list.= '<li>' . $file . '</li>';
-		}
-		$list.= '</ul>';
+
+		$list = '';
+		$last = 0;
+		while ($path = $stm->fetchColumn()) {
+			$cur = substr_count($path, '/');
+			if (substr($path, -1) != '/') {
+				$cur++;
+			}
+
+			if ($cur == $last + 1) {
+				$list .= '<ul>';
+			} elseif ($cur < $last) {
+				$list .= '</li>'.str_repeat('</ul></li>', $last - $cur);
+			} elseif ($cur > $last + 1) {
+				throw new RuntimeException('incorrect list depth');
+			} else {
+				$list .= '</li>';
+			}
+
+			$list .= '<li>'.basename($path);
+			$last = $cur;
+			}
+
+		$list .= str_repeat('</li></ul>', $cur);
 		return $list;
 	}
 
