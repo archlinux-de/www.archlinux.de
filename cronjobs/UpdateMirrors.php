@@ -42,10 +42,11 @@ class UpdateMirrors extends CronJob {
 
 	private function updateMirrorlist($mirrors) {
 		try {
-			DB::query('CREATE TEMPORARY TABLE tmirrors LIKE mirrors');
+			DB::beginTransaction();
+			DB::query('DELETE FROM mirrors');
 			$stm = DB::prepare('
 			INSERT INTO
-				tmirrors
+				mirrors
 			SET
 				host = :host,
 				protocol = :protocol,
@@ -72,9 +73,9 @@ class UpdateMirrors extends CronJob {
 				$stm->bindParam('time', $mirror['duration_avg'], PDO::PARAM_STR);
 				$stm->execute();
 			}
-			DB::query('TRUNCATE mirrors');
-			DB::query('INSERT INTO mirrors SELECT * FROM tmirrors');
+			DB::commit();
 		} catch(RuntimeException $e) {
+			DB::rollBack();
 			echo ('Warning: updateMirrorlist failed: ' . $e->getMessage());
 		}
 	}

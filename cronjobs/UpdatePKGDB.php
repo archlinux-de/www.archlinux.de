@@ -32,66 +32,73 @@ class UpdatePKGDB extends CronJob {
 	private $changed = false;
 
 	public function execute() {
-		DB::query('
-		CREATE TEMPORARY TABLE
-			temp_depends
-			(
-			package INT( 11 ) UNSIGNED NOT NULL,
-			depends LONGTEXT NOT NULL,
-			PRIMARY KEY (package)
-			)
-		');
-		DB::query('
-		CREATE TEMPORARY TABLE
-			temp_optdepends
-			(
-			package INT( 11 ) UNSIGNED NOT NULL,
-			optdepends LONGTEXT NOT NULL,
-			PRIMARY KEY (package)
-			)
-		');
-		DB::query('
-		CREATE TEMPORARY TABLE
-			temp_provides
-			(
-			package INT( 11 ) UNSIGNED NOT NULL,
-			provides LONGTEXT NOT NULL,
-			PRIMARY KEY (package)
-			)
-		');
-		DB::query('
-		CREATE TEMPORARY TABLE
-			temp_conflicts
-			(
-			package INT( 11 ) UNSIGNED NOT NULL,
-			conflicts LONGTEXT NOT NULL,
-			PRIMARY KEY (package)
-			)
-		');
-		DB::query('
-		CREATE TEMPORARY TABLE
-			temp_replaces
-			(
-			package INT( 11 ) UNSIGNED NOT NULL,
-			replaces LONGTEXT NOT NULL,
-			PRIMARY KEY (package)
-			)
-		');
-		foreach (Config::get('packages', 'repositories') as $repo) {
-			foreach (Config::get('packages', 'architectures') as $arch) {
-				if (strpos($repo, 'multilib') === 0 && $arch != 'x86_64') {
-					continue;
+		try {
+			DB::beginTransaction();
+			DB::query('
+			CREATE TEMPORARY TABLE
+				temp_depends
+				(
+				package INT( 11 ) UNSIGNED NOT NULL,
+				depends LONGTEXT NOT NULL,
+				PRIMARY KEY (package)
+				)
+			');
+			DB::query('
+			CREATE TEMPORARY TABLE
+				temp_optdepends
+				(
+				package INT( 11 ) UNSIGNED NOT NULL,
+				optdepends LONGTEXT NOT NULL,
+				PRIMARY KEY (package)
+				)
+			');
+			DB::query('
+			CREATE TEMPORARY TABLE
+				temp_provides
+				(
+				package INT( 11 ) UNSIGNED NOT NULL,
+				provides LONGTEXT NOT NULL,
+				PRIMARY KEY (package)
+				)
+			');
+			DB::query('
+			CREATE TEMPORARY TABLE
+				temp_conflicts
+				(
+				package INT( 11 ) UNSIGNED NOT NULL,
+				conflicts LONGTEXT NOT NULL,
+				PRIMARY KEY (package)
+				)
+			');
+			DB::query('
+			CREATE TEMPORARY TABLE
+				temp_replaces
+				(
+				package INT( 11 ) UNSIGNED NOT NULL,
+				replaces LONGTEXT NOT NULL,
+				PRIMARY KEY (package)
+				)
+			');
+			foreach (Config::get('packages', 'repositories') as $repo) {
+				foreach (Config::get('packages', 'architectures') as $arch) {
+					if (strpos($repo, 'multilib') === 0 && $arch != 'x86_64') {
+						continue;
+					}
+					$this->updateRepository($repo, $arch);
 				}
-				$this->updateRepository($repo, $arch);
 			}
-		}
-		if ($this->changed) {
-			$this->updateDependencies();
-			$this->updateOptionalDependencies();
-			$this->updateProvides();
-			$this->updateConflicts();
-			$this->updateReplaces();
-			$this->removeUnusedEntries();
+			if ($this->changed) {
+				$this->updateDependencies();
+				$this->updateOptionalDependencies();
+				$this->updateProvides();
+				$this->updateConflicts();
+				$this->updateReplaces();
+				$this->removeUnusedEntries();
+			}
+			DB::commit();
+		} catch (RuntimeException $e) {
+			DB::rollBack();
+			echo 'UpdatePKGDB failed:'.$e->getMessage();
 		}
 	}
 

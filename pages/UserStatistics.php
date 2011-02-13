@@ -37,71 +37,78 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	public static function updateDBCache() {
-		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		$log = self::getCommonPackageUsageStatistics();
-		$body = '<div class="box">
-		<table id="packagedetails">
-			<tr>
-				<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">User statistics</h1></th>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Common statistics</th>
-			</tr>
-			<tr>
-				<th>Submissions</th>
-				<td>' . number_format($log['submissions']) . '</td>
-			</tr>
-			<tr>
-				<th>Different IPs</th>
-				<td>' . number_format($log['differentips']) . '</td>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Countries</th>
-			</tr>
-				' . self::getCountryStatistics() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Countries (relative to population)</th>
-			</tr>
-				' . self::getRelativeCountryStatistics() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Mirrors</th>
-			</tr>
-				' . self::getMirrorStatistics() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Mirror protocolls</th>
-			</tr>
-				' . self::getMirrorProtocollStatistics() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Submissions per architectures</th>
-			</tr>
-				' . self::getSubmissionsPerArchitecture() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Common statistics</th>
-			</tr>
-			<tr>
-				<th>Sum of submitted packages</th>
-				<td>' . number_format($log['sumcount']) . '</td>
-			</tr>
-			<tr>
-				<th>Number of different packages</th>
-				<td>' . number_format($log['diffcount']) . '</td>
-			</tr>
-			<tr>
-				<th>Lowest number of installed packages</th>
-				<td>' . number_format($log['mincount']) . '</td>
-			</tr>
-			<tr>
-				<th>Highest number of installed packages</th>
-				<td>' . number_format($log['maxcount']) . '</td>
-			</tr>
-			<tr>
-				<th>Average number of installed packages</th>
-				<td>' . number_format($log['avgcount']) . '</td>
-			</tr>
-		</table>
-		</div>
-		';
-		ObjectStore::addObject('UserStatistics', $body);
+		try {
+			DB::beginTransaction();
+			self::$barColors = self::MultiColorFade(self::$barColorArray);
+			$log = self::getCommonPackageUsageStatistics();
+			$body = '<div class="box">
+			<table id="packagedetails">
+				<tr>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">User statistics</h1></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Common statistics</th>
+				</tr>
+				<tr>
+					<th>Submissions</th>
+					<td>' . number_format($log['submissions']) . '</td>
+				</tr>
+				<tr>
+					<th>Different IPs</th>
+					<td>' . number_format($log['differentips']) . '</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Countries</th>
+				</tr>
+					' . self::getCountryStatistics() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Countries (relative to population)</th>
+				</tr>
+					' . self::getRelativeCountryStatistics() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Mirrors</th>
+				</tr>
+					' . self::getMirrorStatistics() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Mirror protocolls</th>
+				</tr>
+					' . self::getMirrorProtocollStatistics() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Submissions per architectures</th>
+				</tr>
+					' . self::getSubmissionsPerArchitecture() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Common statistics</th>
+				</tr>
+				<tr>
+					<th>Sum of submitted packages</th>
+					<td>' . number_format($log['sumcount']) . '</td>
+				</tr>
+				<tr>
+					<th>Number of different packages</th>
+					<td>' . number_format($log['diffcount']) . '</td>
+				</tr>
+				<tr>
+					<th>Lowest number of installed packages</th>
+					<td>' . number_format($log['mincount']) . '</td>
+				</tr>
+				<tr>
+					<th>Highest number of installed packages</th>
+					<td>' . number_format($log['maxcount']) . '</td>
+				</tr>
+				<tr>
+					<th>Average number of installed packages</th>
+					<td>' . number_format($log['avgcount']) . '</td>
+				</tr>
+			</table>
+			</div>
+			';
+			ObjectStore::addObject('UserStatistics', $body);
+			DB::commit();
+		} catch (RuntimeException $e) {
+			DB::rollBack();
+			echo 'UserStatistics failed:'.$e->getMessage();
+		}
 	}
 
 	private static function getCommonPackageUsageStatistics() {

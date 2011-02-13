@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.8, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.9, for Linux (x86_64)
 --
 -- Host: localhost    Database: pkgdb
 -- ------------------------------------------------------
--- Server version	5.5.8
+-- Server version	5.5.9
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -27,7 +27,7 @@ CREATE TABLE `architectures` (
   `name` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `cache` (
   `expires` int(11) DEFAULT NULL,
   PRIMARY KEY (`key`(100)),
   KEY `expires` (`expires`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -59,7 +59,7 @@ CREATE TABLE `conflicts` (
   `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `conflicts` (`conflicts`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,7 +75,7 @@ CREATE TABLE `depends` (
   `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `depends` (`depends`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +90,7 @@ CREATE TABLE `file_index` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `name` (`name`(20))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +106,7 @@ CREATE TABLE `files` (
   `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `pacakge` (`package`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +121,7 @@ CREATE TABLE `groups` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +136,7 @@ CREATE TABLE `licenses` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,7 +150,7 @@ CREATE TABLE `log` (
   `name` varchar(255) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   PRIMARY KEY (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -170,7 +170,7 @@ CREATE TABLE `mirrors` (
   PRIMARY KEY (`host`),
   KEY `country` (`country`),
   KEY `lastsync` (`lastsync`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,7 +186,7 @@ CREATE TABLE `optdepends` (
   `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `optdepends` (`optdepends`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -201,7 +201,7 @@ CREATE TABLE `package_file_index` (
   `file_index` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
   KEY `file_index` (`file_index`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +216,7 @@ CREATE TABLE `package_group` (
   `group` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
   KEY `group` (`group`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,7 +231,7 @@ CREATE TABLE `package_license` (
   `license` int(11) unsigned NOT NULL,
   KEY `package` (`package`),
   KEY `license` (`license`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,7 +248,7 @@ CREATE TABLE `packagers` (
   PRIMARY KEY (`id`),
   KEY `email` (`email`),
   KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +264,7 @@ CREATE TABLE `packages` (
   `name` varchar(255) NOT NULL,
   `base` varchar(255) NOT NULL,
   `version` varchar(100) NOT NULL,
-  `desc` text NOT NULL,
+  `desc` varchar(255) NOT NULL,
   `csize` int(11) unsigned NOT NULL,
   `isize` int(11) unsigned NOT NULL,
   `md5sum` varchar(32) NOT NULL,
@@ -281,9 +281,8 @@ CREATE TABLE `packages` (
   KEY `arch` (`arch`),
   KEY `packager` (`packager`),
   KEY `mtime` (`mtime`),
-  KEY `name` (`name`(20)),
-  FULLTEXT KEY `desc` (`desc`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  KEY `name` (`name`(20))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -298,7 +297,7 @@ CREATE TABLE `pkgstats_packages` (
   `month` mediumint(6) unsigned NOT NULL,
   `count` mediumint(8) unsigned NOT NULL,
   PRIMARY KEY (`pkgname`,`month`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -318,7 +317,7 @@ CREATE TABLE `pkgstats_users` (
   KEY `mirror` (`mirror`(20)),
   KEY `country` (`country`(10)),
   KEY `ip` (`ip`(20),`time`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -334,7 +333,7 @@ CREATE TABLE `provides` (
   `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `provides` (`provides`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -350,7 +349,7 @@ CREATE TABLE `replaces` (
   `comment` varchar(255) NOT NULL,
   KEY `package` (`package`),
   KEY `replaces` (`replaces`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -365,7 +364,7 @@ CREATE TABLE `repositories` (
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -377,4 +376,4 @@ CREATE TABLE `repositories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-01-20  7:27:57
+-- Dump completed on 2011-02-13 19:04:31

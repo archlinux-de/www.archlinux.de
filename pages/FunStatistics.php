@@ -37,131 +37,138 @@ class FunStatistics extends Page implements IDBCachable {
 	}
 
 	public static function updateDBCache() {
-		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		$body = '<div class="box">
-		<table id="packagedetails">
-			<tr>
-				<th colspan="2" class="packagedetailshead">Browser</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'Mozilla Firefox' => 'firefox',
-			'Chromium' => 'chromium',
-			'Konqueror' => 'kdebase-konqueror',
-			'Midori' => 'midori',
-			'Arora' => 'arora',
-			'Epiphany' => 'epiphany',
-			'Rekonq' => 'rekonq',
-			'Uzbl' => 'uzbl-core',
-			'Netsurf' => 'netsurf',
-			'Dillo' => 'dillo'
-		)) . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Editors</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'Vim' => array(
-				'vim',
-				'gvim'
-			) ,
-			'Emacs' => array(
-				'emacs',
-				'xemacs'
-			) ,
-			'Nano' => 'nano',
-			'Gedit' => 'gedit',
-			'Kate' => 'kdesdk-kate',
-			'Kwrite' => 'kdebase-kwrite',
-			'Jedit' => 'jedit',
-			'Ne' => 'ne',
-			'Jed' => 'jed',
-			'Medit' => 'medit',
-			'Vi' => 'vi',
-			'Mousepad' => 'mousepad',
-			'Medit' => 'nedit',
-			'Joe' => 'joe'
-		)) . '
-				<th colspan="2" class="packagedetailshead">Desktop Environments</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'KDE SC' => 'kdebase-workspace',
-			'GNOME' => 'gnome-session',
-			'LXDE' => 'lxde-common',
-			'Xfce' => 'xfdesktop',
-			'e17' => 'e-svn'
-		)) . '
-				<th colspan="2" class="packagedetailshead">File Managers</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'Dolphin' => 'kdebase-dolphin',
-			'Konqueror' => 'kdebase-konqueror',
-			'MC' => 'mc',
-			'Nautilus' => 'nautilus',
-			'Gnome-Commander' => 'gnome-commander',
-			'Krusader' => 'krusader',
-			'Pcmanfm' => 'pcmanfm',
-			'Thunar' => 'thunar'
-		)) . '
-				<th colspan="2" class="packagedetailshead">Window Managers</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'Openbox' => 'openbox',
-			'Fluxbox' => 'fluxbox',
-			'I3' => 'i3-wm',
-			'Compiz' => 'compiz-core',
-			'FVWM' => array(
-				'fvwm',
-				'fvwm-devel'
-			) ,
-			'Ratpoison' => 'ratpoison',
-			'Wmii' => 'wmii',
-			'Xmonad' => 'xmonad',
-			'Window Maker' => array(
-				'windowmaker',
-				'windowmaker-crm-git'
-			)
-		)) . '
-				<th colspan="2" class="packagedetailshead">Media Players</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'Mplayer' => 'mplayer',
-			'Xine' => 'xine-lib',
-			'VLC' => 'vlc'
-		)) . '
-				<th colspan="2" class="packagedetailshead">Shells</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'Bash' => 'bash',
-			'Dash' => 'dash',
-			'Zsh' => 'zsh',
-			'Fish' => 'fish',
-			'Tcsh' => 'tcsh',
-			'Pdksh' => 'pdksh'
-		)) . '
-				<th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
-			</tr>
-				' . self::getPackageStatistics(array(
-			'ATI' => array(
-				'xf86-video-ati',
-				'xf86-video-r128',
-				'xf86-video-mach64',
-				'xf86-video-radeonhd'
-			) ,
-			'NVIDIA' => array(
-				'nvidia-utils',
-				'nvidia-96xx-utils',
-				'nvidia-173xx-utils',
-				'xf86-video-nouveau',
-				'xf86-video-nv'
-			) ,
-			'Intel' => array(
-				'xf86-video-intel',
-				'xf86-video-i740'
-			)
-		)) . '
-		</table>
-		</div>
-		';
-		ObjectStore::addObject('FunStatistics', $body);
+		try {
+			DB::beginTransaction();
+			self::$barColors = self::MultiColorFade(self::$barColorArray);
+			$body = '<div class="box">
+			<table id="packagedetails">
+				<tr>
+					<th colspan="2" class="packagedetailshead">Browser</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'Mozilla Firefox' => 'firefox',
+				'Chromium' => 'chromium',
+				'Konqueror' => 'kdebase-konqueror',
+				'Midori' => 'midori',
+				'Arora' => 'arora',
+				'Epiphany' => 'epiphany',
+				'Rekonq' => 'rekonq',
+				'Uzbl' => 'uzbl-core',
+				'Netsurf' => 'netsurf',
+				'Dillo' => 'dillo'
+			)) . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Editors</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'Vim' => array(
+					'vim',
+					'gvim'
+				) ,
+				'Emacs' => array(
+					'emacs',
+					'xemacs'
+				) ,
+				'Nano' => 'nano',
+				'Gedit' => 'gedit',
+				'Kate' => 'kdesdk-kate',
+				'Kwrite' => 'kdebase-kwrite',
+				'Jedit' => 'jedit',
+				'Ne' => 'ne',
+				'Jed' => 'jed',
+				'Medit' => 'medit',
+				'Vi' => 'vi',
+				'Mousepad' => 'mousepad',
+				'Medit' => 'nedit',
+				'Joe' => 'joe'
+			)) . '
+					<th colspan="2" class="packagedetailshead">Desktop Environments</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'KDE SC' => 'kdebase-workspace',
+				'GNOME' => 'gnome-session',
+				'LXDE' => 'lxde-common',
+				'Xfce' => 'xfdesktop',
+				'e17' => 'e-svn'
+			)) . '
+					<th colspan="2" class="packagedetailshead">File Managers</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'Dolphin' => 'kdebase-dolphin',
+				'Konqueror' => 'kdebase-konqueror',
+				'MC' => 'mc',
+				'Nautilus' => 'nautilus',
+				'Gnome-Commander' => 'gnome-commander',
+				'Krusader' => 'krusader',
+				'Pcmanfm' => 'pcmanfm',
+				'Thunar' => 'thunar'
+			)) . '
+					<th colspan="2" class="packagedetailshead">Window Managers</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'Openbox' => 'openbox',
+				'Fluxbox' => 'fluxbox',
+				'I3' => 'i3-wm',
+				'Compiz' => 'compiz-core',
+				'FVWM' => array(
+					'fvwm',
+					'fvwm-devel'
+				) ,
+				'Ratpoison' => 'ratpoison',
+				'Wmii' => 'wmii',
+				'Xmonad' => 'xmonad',
+				'Window Maker' => array(
+					'windowmaker',
+					'windowmaker-crm-git'
+				)
+			)) . '
+					<th colspan="2" class="packagedetailshead">Media Players</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'Mplayer' => 'mplayer',
+				'Xine' => 'xine-lib',
+				'VLC' => 'vlc'
+			)) . '
+					<th colspan="2" class="packagedetailshead">Shells</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'Bash' => 'bash',
+				'Dash' => 'dash',
+				'Zsh' => 'zsh',
+				'Fish' => 'fish',
+				'Tcsh' => 'tcsh',
+				'Pdksh' => 'pdksh'
+			)) . '
+					<th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
+				</tr>
+					' . self::getPackageStatistics(array(
+				'ATI' => array(
+					'xf86-video-ati',
+					'xf86-video-r128',
+					'xf86-video-mach64',
+					'xf86-video-radeonhd'
+				) ,
+				'NVIDIA' => array(
+					'nvidia-utils',
+					'nvidia-96xx-utils',
+					'nvidia-173xx-utils',
+					'xf86-video-nouveau',
+					'xf86-video-nv'
+				) ,
+				'Intel' => array(
+					'xf86-video-intel',
+					'xf86-video-i740'
+				)
+			)) . '
+			</table>
+			</div>
+			';
+			ObjectStore::addObject('FunStatistics', $body);
+			DB::commit();
+		} catch (RuntimeException $e) {
+			DB::rollBack();
+			echo 'FunStatistics failed:'.$e->getMessage();
+		}
 	}
 
 	private static function getPackageStatistics($packages) {

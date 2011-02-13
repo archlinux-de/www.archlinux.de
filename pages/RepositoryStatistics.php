@@ -37,103 +37,110 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	}
 
 	public static function updateDBCache() {
-		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		$data = self::getCommonRepositoryStatistics();
-		$body = '<div class="box">
-		<table id="packagedetails">
-			<tr>
-				<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Repositories</h1></th>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Overview</th>
-			</tr>
-			<tr>
-				<th>Architectures</th>
-				<td>' . $data['architectures'] . '</td>
-			</tr>
-			<tr>
-				<th>Repositories</th>
-				<td>' . $data['repositories'] . '</td>
-			</tr>
-			<tr>
-				<th>Groups</th>
-				<td>' . number_format($data['groups']) . '</td>
-			</tr>
-			<tr>
-				<th>Packages</th>
-				<td>' . number_format($data['packages']) . '</td>
-			</tr>
-			<tr>
-				<th>Files</th>
-				<td>' . number_format($data['files']) . '</td>
-			</tr>
-			<tr>
-				<th>Size of file index</th>
-				<td>' . number_format($data['file_index']) . '</td>
-			</tr>
-			<tr>
-				<th>Licenses</th>
-				<td>' . number_format($data['licenses']) . '</td>
-			</tr>
-			<tr>
-				<th>Dependencies</th>
-				<td>' . number_format($data['depends']) . '</td>
-			</tr>
-			<tr>
-				<th>Optional dependencies</th>
-				<td>' . number_format($data['optdepends']) . '</td>
-			</tr>
-			<tr>
-				<th>Provides</th>
-				<td>' . number_format($data['provides']) . '</td>
-			</tr>
-			<tr>
-				<th>Conflicts</th>
-				<td>' . number_format($data['conflicts']) . '</td>
-			</tr>
-			<tr>
-				<th>Replaces</th>
-				<td>' . number_format($data['replaces']) . '</td>
-			</tr>
-			<tr>
-				<th>Total size of repositories</th>
-				<td>' . self::formatBytes($data['csize']) . 'Byte</td>
-			</tr>
-			<tr>
-				<th>Total size of files</th>
-				<td>' . self::formatBytes($data['isize']) . 'Byte</td>
-			</tr>
-			<tr>
-				<th>Packager</th>
-				<td>' . $data['packagers'] . '</td>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Averages</th>
-			</tr>
-			<tr>
-				<th>Size of packages</th>
-				<td>&empty; ' . self::formatBytes($data['avgcsize']) . 'Byte</td>
-			</tr>
-			<tr>
-				<th>Size of files</th>
-				<td>&empty; ' . self::formatBytes($data['avgisize']) . 'Byte</td>
-			</tr>
-			<tr>
-				<th>Files per package</th>
-				<td>&empty; ' . number_format($data['avgfiles'], 2) . '</td>
-			</tr>
-			<tr>
-				<th>Packages per packager</th>
-				<td>&empty; ' . number_format($data['avgpkgperpackager'], 2) . '</td>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Repositories</th>
-			</tr>
-				' . self::getRepositoryStatistics() . '
-		</table>
-		</div>
-		';
-		ObjectStore::addObject('RepositoryStatistics', $body);
+		try {
+			DB::beginTransaction();
+			self::$barColors = self::MultiColorFade(self::$barColorArray);
+			$data = self::getCommonRepositoryStatistics();
+			$body = '<div class="box">
+			<table id="packagedetails">
+				<tr>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Repositories</h1></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Overview</th>
+				</tr>
+				<tr>
+					<th>Architectures</th>
+					<td>' . $data['architectures'] . '</td>
+				</tr>
+				<tr>
+					<th>Repositories</th>
+					<td>' . $data['repositories'] . '</td>
+				</tr>
+				<tr>
+					<th>Groups</th>
+					<td>' . number_format($data['groups']) . '</td>
+				</tr>
+				<tr>
+					<th>Packages</th>
+					<td>' . number_format($data['packages']) . '</td>
+				</tr>
+				<tr>
+					<th>Files</th>
+					<td>' . number_format($data['files']) . '</td>
+				</tr>
+				<tr>
+					<th>Size of file index</th>
+					<td>' . number_format($data['file_index']) . '</td>
+				</tr>
+				<tr>
+					<th>Licenses</th>
+					<td>' . number_format($data['licenses']) . '</td>
+				</tr>
+				<tr>
+					<th>Dependencies</th>
+					<td>' . number_format($data['depends']) . '</td>
+				</tr>
+				<tr>
+					<th>Optional dependencies</th>
+					<td>' . number_format($data['optdepends']) . '</td>
+				</tr>
+				<tr>
+					<th>Provides</th>
+					<td>' . number_format($data['provides']) . '</td>
+				</tr>
+				<tr>
+					<th>Conflicts</th>
+					<td>' . number_format($data['conflicts']) . '</td>
+				</tr>
+				<tr>
+					<th>Replaces</th>
+					<td>' . number_format($data['replaces']) . '</td>
+				</tr>
+				<tr>
+					<th>Total size of repositories</th>
+					<td>' . self::formatBytes($data['csize']) . 'Byte</td>
+				</tr>
+				<tr>
+					<th>Total size of files</th>
+					<td>' . self::formatBytes($data['isize']) . 'Byte</td>
+				</tr>
+				<tr>
+					<th>Packager</th>
+					<td>' . $data['packagers'] . '</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Averages</th>
+				</tr>
+				<tr>
+					<th>Size of packages</th>
+					<td>&empty; ' . self::formatBytes($data['avgcsize']) . 'Byte</td>
+				</tr>
+				<tr>
+					<th>Size of files</th>
+					<td>&empty; ' . self::formatBytes($data['avgisize']) . 'Byte</td>
+				</tr>
+				<tr>
+					<th>Files per package</th>
+					<td>&empty; ' . number_format($data['avgfiles'], 2) . '</td>
+				</tr>
+				<tr>
+					<th>Packages per packager</th>
+					<td>&empty; ' . number_format($data['avgpkgperpackager'], 2) . '</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Repositories</th>
+				</tr>
+					' . self::getRepositoryStatistics() . '
+			</table>
+			</div>
+			';
+			ObjectStore::addObject('RepositoryStatistics', $body);
+			DB::commit();
+		} catch (RuntimeException $e) {
+			DB::rollBack();
+			echo 'RepositoryStatistics failed:'.$e->getMessage();
+		}
 	}
 
 	private static function getCommonRepositoryStatistics() {

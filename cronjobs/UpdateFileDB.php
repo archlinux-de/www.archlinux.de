@@ -31,17 +31,24 @@ class UpdateFileDB extends CronJob {
 
 	public function execute() {
 		$this->mirror = Config::get('packages', 'mirror');
-		foreach (Config::get('packages', 'repositories') as $repo) {
-			foreach (Config::get('packages', 'architectures') as $arch) {
-				if (strpos($repo, 'multilib') === 0 && $arch != 'x86_64') {
-					continue;
+		try {
+			DB::beginTransaction();
+			foreach (Config::get('packages', 'repositories') as $repo) {
+				foreach (Config::get('packages', 'architectures') as $arch) {
+					if (strpos($repo, 'multilib') === 0 && $arch != 'x86_64') {
+						continue;
+					}
+					$this->updateFiles($repo, $arch);
 				}
-				$this->updateFiles($repo, $arch);
 			}
-		}
-		if ($this->changed) {
-			$this->removeUnusedEntries();
-			RepositoryStatistics::updateDBCache();
+			if ($this->changed) {
+				$this->removeUnusedEntries();
+				RepositoryStatistics::updateDBCache();
+			}
+			DB::commit();
+		} catch (RuntimeException $e) {
+			DB::rollBack();
+			echo 'UpdateFileDB failed:'.$e->getMessage();
 		}
 	}
 

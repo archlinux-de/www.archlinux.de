@@ -148,19 +148,22 @@ class Packages extends Page {
 	private function getSearchStatement() {
 		switch ($this->searchField) {
 			case 0:
+				// FIXME: this cannot use any index
 				$this->searchString = '%' . $this->search . '%';
 				return 'AND packages.name LIKE :search';
 			break;
 			case 1:
-				$this->searchString = $this->search;
-				return 'AND MATCH(packages.desc) AGAINST ( :search )';
+				// FIXME: this cannot use any index
+				$this->searchString = '%' . $this->search . '%';
+				return 'AND packages.desc LIKE :search';
 			break;
 			case 2:
+				// FIXME: this is a very expensive query
 				$this->searchString = $this->search . '%';
-				return 'AND package_file_index.package = packages.id AND file_index.id = package_file_index.file_index AND file_index.name LIKE :search';
+				return 'AND file_index.name LIKE :search AND file_index.id = package_file_index.file_index AND package_file_index.package = packages.id';
 			break;
 			default:
-				$this->searchString = '%' . $this->search . '%';
+				$this->searchString = $this->search . '%';
 				return 'AND packages.name LIKE :search';
 		}
 	}

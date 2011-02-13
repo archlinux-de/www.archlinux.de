@@ -85,6 +85,7 @@ class PostPackageList extends Page {
 		$this->checkIfAlreadySubmitted();
 		$country = Input::getClientCountryName();
 		try {
+			DB::beginTransaction();
 			$stm = DB::prepare('
 			INSERT INTO
 				pkgstats_users
@@ -118,7 +119,9 @@ class PostPackageList extends Page {
 				$stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
 				$stm->execute();
 			}
+			DB::commit();
 		} catch(PDOException $e) {
+			DB::rollBack();
 			$this->setStatus(Output::INTERNAL_SERVER_ERROR);
 			$this->showFailure($e->getMessage());
 		}

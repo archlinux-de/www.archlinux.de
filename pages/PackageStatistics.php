@@ -37,56 +37,63 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	public static function updateDBCache() {
-		self::$barColors = self::MultiColorFade(self::$barColorArray);
-		$log = self::getCommonPackageUsageStatistics();
-		$body = '<div class="box">
-		<table id="packagedetails">
-			<tr>
-				<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Package usage</h1></th>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Common statistics</th>
-			</tr>
-			<tr>
-				<th>Sum of submitted packages</th>
-				<td>' . number_format($log['sumcount']) . '</td>
-			</tr>
-			<tr>
-				<th>Number of different packages</th>
-				<td>' . number_format($log['diffcount']) . '</td>
-			</tr>
-			<tr>
-				<th>Lowest number of installed packages</th>
-				<td>' . number_format($log['mincount']) . '</td>
-			</tr>
-			<tr>
-				<th>Highest number of installed packages</th>
-				<td>' . number_format($log['maxcount']) . '</td>
-			</tr>
-			<tr>
-				<th>Average number of installed packages</th>
-				<td>' . number_format($log['avgcount']) . '</td>
-			</tr>
-			<tr>
-				<th colspan="2" class="packagedetailshead">Submissions per architectures</th>
-			</tr>
-			' . self::getSubmissionsPerArchitecture() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Installed packages per repository</th>
-			</tr>
-			' . self::getPackagesPerRepository() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Popular packages per repository</th>
-			</tr>
-			' . self::getPopularPackagesPerRepository() . '
-			<tr>
-				<th colspan="2" class="packagedetailshead">Popular unofficial packages</th>
-			</tr>
-			' . self::getPopularUnofficialPackages() . '
-		</table>
-		</div>
-		';
-		ObjectStore::addObject('PackageStatistics', $body);
+		try {
+			DB::beginTransaction();
+			self::$barColors = self::MultiColorFade(self::$barColorArray);
+			$log = self::getCommonPackageUsageStatistics();
+			$body = '<div class="box">
+			<table id="packagedetails">
+				<tr>
+					<th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Package usage</h1></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Common statistics</th>
+				</tr>
+				<tr>
+					<th>Sum of submitted packages</th>
+					<td>' . number_format($log['sumcount']) . '</td>
+				</tr>
+				<tr>
+					<th>Number of different packages</th>
+					<td>' . number_format($log['diffcount']) . '</td>
+				</tr>
+				<tr>
+					<th>Lowest number of installed packages</th>
+					<td>' . number_format($log['mincount']) . '</td>
+				</tr>
+				<tr>
+					<th>Highest number of installed packages</th>
+					<td>' . number_format($log['maxcount']) . '</td>
+				</tr>
+				<tr>
+					<th>Average number of installed packages</th>
+					<td>' . number_format($log['avgcount']) . '</td>
+				</tr>
+				<tr>
+					<th colspan="2" class="packagedetailshead">Submissions per architectures</th>
+				</tr>
+				' . self::getSubmissionsPerArchitecture() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Installed packages per repository</th>
+				</tr>
+				' . self::getPackagesPerRepository() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Popular packages per repository</th>
+				</tr>
+				' . self::getPopularPackagesPerRepository() . '
+				<tr>
+					<th colspan="2" class="packagedetailshead">Popular unofficial packages</th>
+				</tr>
+				' . self::getPopularUnofficialPackages() . '
+			</table>
+			</div>
+			';
+			ObjectStore::addObject('PackageStatistics', $body);
+			DB::commit();
+		} catch (RuntimeException $e) {
+			DB::rollBack();
+			echo 'PackageStatistics failed:'.$e->getMessage();
+		}
 	}
 
 	private static function getCommonPackageUsageStatistics() {
