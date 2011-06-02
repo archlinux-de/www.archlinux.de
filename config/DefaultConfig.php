@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-Config::set('common', 'debug', true);
+Config::set('common', 'debug', false);
 Config::set('common', 'email', 'webmaster@localhost');
 Config::set('common', 'tmpdir', '/tmp');
 Config::set('common', 'sitename', 'archportal');
@@ -32,17 +32,13 @@ Config::set('L10n', 'timezone', 'UTC');
 
 Config::set('packages', 'mirror', 'http://mirrors.kernel.org/archlinux/');
 Config::set('packages', 'repositories', array(
-			'core',
-			'extra',
-			'testing',
-			'community',
-			'community-testing',
-			'multilib',
-			'multilib-testing'
-		));
-Config::set('packages', 'architectures', array(
-			'i686',
-			'x86_64'
+			'core' => array('i686', 'x86_64'),
+			'extra' => array('i686', 'x86_64'),
+			'testing' => array('i686', 'x86_64'),
+			'community' => array('i686', 'x86_64'),
+			'community-testing' => array('i686', 'x86_64'),
+			'multilib' => array('x86_64'),
+			'multilib-testing' => array('x86_64')
 		));
 
 Config::set('mirrors', 'status', 'http://www.archlinux.org/mirrors/status/json/');

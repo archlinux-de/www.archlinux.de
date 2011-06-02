@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.9, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.10, for Linux (x86_64)
 --
 -- Host: localhost    Database: pkgdb
 -- ------------------------------------------------------
--- Server version	5.5.9
+-- Server version	5.5.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -47,38 +47,6 @@ CREATE TABLE `cache` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `conflicts`
---
-
-DROP TABLE IF EXISTS `conflicts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `conflicts` (
-  `package` int(11) unsigned NOT NULL,
-  `conflicts` int(11) unsigned NOT NULL,
-  `comment` varchar(255) NOT NULL,
-  KEY `package` (`package`),
-  KEY `conflicts` (`conflicts`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `depends`
---
-
-DROP TABLE IF EXISTS `depends`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `depends` (
-  `package` int(11) unsigned NOT NULL,
-  `depends` int(11) unsigned NOT NULL,
-  `comment` varchar(255) NOT NULL,
-  KEY `package` (`package`),
-  KEY `depends` (`depends`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `file_index`
 --
 
@@ -101,11 +69,9 @@ DROP TABLE IF EXISTS `files`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `files` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `package` int(11) unsigned NOT NULL,
   `path` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `pacakge` (`package`)
+  KEY `package` (`package`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -140,20 +106,6 @@ CREATE TABLE `licenses` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `log`
---
-
-DROP TABLE IF EXISTS `log`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `log` (
-  `name` varchar(255) NOT NULL,
-  `time` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `mirrors`
 --
 
@@ -170,22 +122,6 @@ CREATE TABLE `mirrors` (
   PRIMARY KEY (`host`),
   KEY `country` (`country`),
   KEY `lastsync` (`lastsync`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `optdepends`
---
-
-DROP TABLE IF EXISTS `optdepends`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `optdepends` (
-  `package` int(11) unsigned NOT NULL,
-  `optdepends` int(11) unsigned NOT NULL,
-  `comment` varchar(255) NOT NULL,
-  KEY `package` (`package`),
-  KEY `optdepends` (`optdepends`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -235,6 +171,25 @@ CREATE TABLE `package_license` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `package_relation`
+--
+
+DROP TABLE IF EXISTS `package_relation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `package_relation` (
+  `packageId` int(11) unsigned NOT NULL,
+  `dependsId` int(11) unsigned DEFAULT NULL,
+  `dependsName` varchar(255) NOT NULL,
+  `dependsVersion` varchar(255) DEFAULT NULL,
+  `type` enum('replaces','depends','optdepends','conflicts','provides') NOT NULL,
+  KEY `packageId` (`packageId`),
+  KEY `dependsId` (`dependsId`),
+  KEY `dependsName` (`dependsName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `packagers`
 --
 
@@ -273,7 +228,6 @@ CREATE TABLE `packages` (
   `builddate` int(10) unsigned NOT NULL,
   `mtime` int(10) unsigned NOT NULL,
   `packager` int(11) unsigned NOT NULL,
-  `force` tinyint(1) unsigned NOT NULL,
   `repository` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `repository` (`repository`),
@@ -321,38 +275,6 @@ CREATE TABLE `pkgstats_users` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `provides`
---
-
-DROP TABLE IF EXISTS `provides`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `provides` (
-  `package` int(11) unsigned NOT NULL,
-  `provides` int(11) unsigned NOT NULL,
-  `comment` varchar(255) NOT NULL,
-  KEY `package` (`package`),
-  KEY `provides` (`provides`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `replaces`
---
-
-DROP TABLE IF EXISTS `replaces`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `replaces` (
-  `package` int(11) unsigned NOT NULL,
-  `replaces` int(11) unsigned NOT NULL,
-  `comment` varchar(255) NOT NULL,
-  KEY `package` (`package`),
-  KEY `replaces` (`replaces`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `repositories`
 --
 
@@ -362,8 +284,11 @@ DROP TABLE IF EXISTS `repositories`;
 CREATE TABLE `repositories` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
+  `arch` int(11) unsigned NOT NULL,
+  `testing` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `mtime` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`,`arch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -376,4 +301,4 @@ CREATE TABLE `repositories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-02-13 19:04:31
+-- Dump completed on 2011-03-27 13:43:43

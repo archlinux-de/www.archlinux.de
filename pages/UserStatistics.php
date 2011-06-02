@@ -62,10 +62,6 @@ class UserStatistics extends Page implements IDBCachable {
 				</tr>
 					' . self::getCountryStatistics() . '
 				<tr>
-					<th colspan="2" class="packagedetailshead">Countries (relative to population)</th>
-				</tr>
-					' . self::getRelativeCountryStatistics() . '
-				<tr>
 					<th colspan="2" class="packagedetailshead">Mirrors</th>
 				</tr>
 					' . self::getMirrorStatistics() . '
@@ -151,78 +147,6 @@ class UserStatistics extends Page implements IDBCachable {
 			$list.= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'], $total) . '</td></tr>';
 		}
 		return $list;
-	}
-
-	private static function getRelativeCountryStatistics() {
-		$relativeCountries = array();
-		$total = DB::query('
-		SELECT
-			COUNT(country)
-		FROM
-			pkgstats_users
-		')->fetchColumn();
-		$countries = DB::query('
-		SELECT
-			country,
-			COUNT(country) AS count
-		FROM
-			pkgstats_users
-		GROUP BY
-			country
-		');
-		$population = self::getPopulationPerCountry();
-		$totalPopulation = array_sum($population);
-		foreach ($countries as $country) {
-			if (isset($population[$country['country']])) {
-				$density = $country['count'] / ($population[$country['country']] / $totalPopulation);
-				if ($density > (floor($total / 100) / ($population[$country['country']] / $totalPopulation))) {
-					$relativeCountries[$country['country']] = $density;
-				}
-			}
-		}
-		arsort($relativeCountries);
-		$list = '';
-		foreach ($relativeCountries as $countryName => $density) {
-			$list.= '<tr><th>' . $countryName . '</th><td>' . self::getBar($density, array_sum($relativeCountries)) . '</td></tr>';
-		}
-		return $list;
-	}
-
-	private static function getPopulationPerCountry() {
-		if (!($countryarray = ObjectStore::getObject('UserStatistics:PopulationPerCountry'))) {
-			if (false === ($curl = curl_init('https://www.cia.gov/library/publications/the-world-factbook/rankorder/rawdata_2119.text'))) {
-				throw new RuntimeException('failed to init curl: ' . htmlspecialchars($url));
-			}
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
-			curl_setopt($curl, CURLOPT_TIMEOUT, 120);
-			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-			curl_setopt($curl, CURLOPT_USERAGENT, 'bob@archlinux.de');
-			curl_setopt($curl, CURLOPT_USERPWD, 'anonymous:bob@archlinux.de');
-			$content = curl_exec($curl);
-			if (curl_errno($curl) > 0 || false === $content) {
-				$error = htmlspecialchars(curl_error($curl));
-				curl_close($curl);
-				throw new RuntimeException($error, 1);
-			} elseif (empty($content)) {
-				curl_close($curl);
-				throw new RuntimeException('empty country list', 1);
-			}
-			curl_close($curl);
-			$countrylist = explode("\r", $content);
-			$countryarray = array();
-			foreach ($countrylist as $country) {
-				preg_match("/^\d+\t([\w, \(\)]+)\t\s*([\d,]+)$/", $country, $matches);
-				if (!empty($matches[1]) && !empty($matches[2])) {
-					$countryarray[$matches[1]] = str_replace(',', '', $matches[2]);
-				}
-			}
-			if (count($countryarray) == 0) {
-				throw new RuntimeException('empty country list', 1);
-			}
-			ObjectStore::addObject('UserStatistics:PopulationPerCountry', $countryarray, (60 * 60 * 24 * 30));
-		}
-		return $countryarray;
 	}
 
 	private static function getMirrorStatistics() {

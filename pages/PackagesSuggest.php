@@ -28,39 +28,39 @@ class PackagesSuggest extends Page {
 			if (strlen($term) < 2 || strlen($term) > 20) {
 				return;
 			}
-			$arch = Input::get()->getInt('arch');
-			$repo = Input::get()->getInt('repo');
-			$field = Input::get()->getInt('field');
+			$arch = Input::get()->getInt('architecture', 0);
+			$repo = Input::get()->getInt('repository', 0);
+			$field = Input::get()->getString('field', 'name');
 			switch ($field) {
-				case 0:
+				case 'name':
 					$stm = DB::prepare('
-					SELECT DISTINCT
-						name
-					FROM
-						packages
-					WHERE
-						name LIKE :name
-						' . ($arch > 0 ? 'AND arch = :arch' : '') . '
-						' . ($repo > 0 ? 'AND repository = :repository' : '') . '
-					ORDER BY
-						name ASC
-					LIMIT 20
+						SELECT DISTINCT
+							name
+						FROM
+							packages
+						WHERE
+							name LIKE :name
+							' . ($arch > 0 ? 'AND arch = :arch' : '') . '
+							' . ($repo > 0 ? 'AND repository = :repository' : '') . '
+						ORDER BY
+							name ASC
+						LIMIT 20
 					');
 					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
 					$arch > 0 && $stm->bindParam('arch', $arch, PDO::PARAM_INT);
 					$repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
 				break;
-				case 2:
+				case 'file':
 					$stm = DB::prepare('
-					SELECT DISTINCT
-						name
-					FROM
-						file_index
-					WHERE
-						name LIKE :name
-					ORDER BY
-						name ASC
-					LIMIT 20
+						SELECT DISTINCT
+							name
+						FROM
+							file_index
+						WHERE
+							name LIKE :name
+						ORDER BY
+							name ASC
+						LIMIT 20
 					');
 					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
 				break;

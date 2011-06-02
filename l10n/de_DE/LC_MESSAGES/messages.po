@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: archlinux.de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-25 18:36+0100\n"
+"POT-Creation-Date: 2011-06-02 15:26+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Pierre Schmitz <pierre@archlinux.de>\n"
 "Language-Team: Pierre Schmitz <pierre@archlinux.de>\n"
@@ -18,19 +18,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../templates/ExceptionTemplate.php:22
-#, php-format
-msgid "I am sorry, something went wrong while processing file %s"
-msgstr "Tut mir leid, etwas lief schief beim Verarbeiten der Datei %s"
-
-#: ../../../templates/ExceptionTemplate.php:23
-#, php-format
-msgid "Contact %s"
-msgstr "Kontaktiere %s"
-
 #: ../../../templates/PageTemplate.php:9
 msgid "Recent news"
-msgstr "Aktuelle Neuigkeiten"
+msgstr "Tut mir Leid, etwas lief schief beim Verarbeiten der Datei %s"
 
 #: ../../../templates/PageTemplate.php:14
 msgid "Recent Arch Linux packages"
@@ -39,6 +29,16 @@ msgstr "Aktuelle Arch Linux Pakete"
 #: ../../../templates/PageTemplate.php:19
 msgid "Search for Arch Linux packages"
 msgstr "Suche nach Arch Linux Paketen"
+
+#: ../../../templates/ExceptionTemplate.php:22
+#, php-format
+msgid "I am sorry, something went wrong while processing file %s"
+msgstr "Tut mir Leid, etwas lief schief beim Verarbeiten der Datei %s"
+
+#: ../../../templates/ExceptionTemplate.php:23
+#, php-format
+msgid "Contact %s"
+msgstr "Kontaktiere %s"
 
 #: ../../../lib/Page.php:48
 #: ../../../lib/Page.php:63
@@ -53,153 +53,65 @@ msgstr "Fehler"
 msgid "no text"
 msgstr "kein Text"
 
-#: ../../../lib/L10n.php:62
+#: ../../../lib/L10n.php:63
 msgid "Y-m-d"
 msgstr "d.m.Y"
 
-#: ../../../lib/L10n.php:66
+#: ../../../lib/L10n.php:67
 msgid "H:i"
 msgstr "H:i"
 
-#: ../../../lib/L10n.php:70
+#: ../../../lib/L10n.php:71
 msgid "Y-m-d H:i"
 msgstr "d.m.Y H:i"
 
-#: ../../../lib/L10n.php:94
+#: ../../../lib/L10n.php:95
 #, php-format
 msgid "%d year"
 msgid_plural "%d years"
 msgstr[0] "%d Jahr"
 msgstr[1] "%d Jahre"
 
-#: ../../../lib/L10n.php:97
+#: ../../../lib/L10n.php:98
 #, php-format
 msgid "%d month"
 msgid_plural "%d months"
 msgstr[0] "%d Monat"
 msgstr[1] "%d Monate"
 
-#: ../../../lib/L10n.php:100
+#: ../../../lib/L10n.php:101
 #, php-format
 msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] "%d Woche"
 msgstr[1] "%d Wochen"
 
-#: ../../../lib/L10n.php:103
+#: ../../../lib/L10n.php:104
 #, php-format
 msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d Tag"
 msgstr[1] "%d Tage"
 
-#: ../../../lib/L10n.php:106
+#: ../../../lib/L10n.php:107
 #, php-format
 msgid "%.2f hours"
 msgstr "%.2f Stunden"
 
-#: ../../../lib/L10n.php:109
+#: ../../../lib/L10n.php:110
 #, php-format
 msgid "%.2f minutes"
 msgstr "%.2f Minuten"
 
-#: ../../../lib/L10n.php:112
+#: ../../../lib/L10n.php:113
 #, php-format
 msgid "%.2f seconds"
 msgstr "%.2f Sekunden"
 
-#: ../../../pages/Start.php:27
-msgid "Start"
-msgstr "Start"
-
-#: ../../../pages/Start.php:41
-#: ../../../pages/Packages.php:36
 #: ../../../pages/GetOpenSearch.php:29
+#: ../../../pages/Packages.php:36
 msgid "Package search"
 msgstr "Paket-Suche"
-
-#: ../../../pages/Start.php:111
-msgid "Recent packages"
-msgstr "Aktuelle Pakete"
-
-#: ../../../pages/Packages.php:108
-#: ../../../pages/Packages.php:267
-msgid "Repository"
-msgstr "Repositorium"
-
-#: ../../../pages/Packages.php:109
-#: ../../../pages/Packages.php:268
-msgid "Architecture"
-msgstr "Architektur"
-
-#: ../../../pages/Packages.php:110
-msgid "Group"
-msgstr "Gruppe"
-
-#: ../../../pages/Packages.php:111
-msgid "Keywords"
-msgstr "Schlüsselwörter"
-
-#: ../../../pages/Packages.php:173
-#: ../../../pages/Packages.php:269
-#: ../../../pages/Packagers.php:69
-msgid "Name"
-msgstr "Name"
-
-#: ../../../pages/Packages.php:174
-#: ../../../pages/Packages.php:271
-msgid "Description"
-msgstr "Beschreibung"
-
-#: ../../../pages/Packages.php:175
-msgid "File"
-msgstr "Datei"
-
-#: ../../../pages/Packages.php:270
-msgid "Version"
-msgstr "Version"
-
-#: ../../../pages/Packages.php:272
-#: ../../../pages/Packagers.php:72
-msgid "Last update"
-msgstr "Letzte Aktualisierung"
-
-#: ../../../pages/NotFound.php:25
-msgid "Page could not be found"
-msgstr "Seite wurde nicht gefunden"
-
-#: ../../../pages/Packagers.php:27
-msgid "Packagers"
-msgstr "Packer"
-
-#: ../../../pages/Packagers.php:70
-msgid "Email"
-msgstr "E-Mail"
-
-#: ../../../pages/Packagers.php:71
-msgid "Packages"
-msgstr "Pakete"
-
-#: ../../../pages/MirrorStatus.php:39
-#: ../../../pages/MirrorStatus.php:54
-msgid "Mirror status"
-msgstr "Mirror-Status"
-
-#: ../../../pages/MirrorStatus.php:58
-msgid "Host"
-msgstr "Host"
-
-#: ../../../pages/MirrorStatus.php:59
-msgid "Country"
-msgstr "Land"
-
-#: ../../../pages/MirrorStatus.php:60
-msgid "Response time"
-msgstr "Antwortzeit"
-
-#: ../../../pages/MirrorStatus.php:61
-msgid "Delay"
-msgstr "Verzögerung"
 
 #: ../../../pages/PackageDetails.php:29
 #: ../../../pages/PackageDetails.php:85
@@ -215,6 +127,23 @@ msgstr "Kein Paket angegeben"
 msgid "Package was not found"
 msgstr "Paket wurde nicht gefunden"
 
+#: ../../../pages/PackageDetails.php:88
+#: ../../../pages/Packages.php:249
+#: ../../../pages/Packages.php:329
+msgid "Name"
+msgstr "Name"
+
+#: ../../../pages/PackageDetails.php:92
+#: ../../../pages/Packages.php:330
+msgid "Version"
+msgstr "Version"
+
+#: ../../../pages/PackageDetails.php:96
+#: ../../../pages/Packages.php:250
+#: ../../../pages/Packages.php:331
+msgid "Description"
+msgstr "Beschreibung"
+
 #: ../../../pages/PackageDetails.php:100
 msgid "URL"
 msgstr "URL"
@@ -222,6 +151,18 @@ msgstr "URL"
 #: ../../../pages/PackageDetails.php:104
 msgid "Licenses"
 msgstr "Lizenzen"
+
+#: ../../../pages/PackageDetails.php:111
+#: ../../../pages/Packages.php:81
+#: ../../../pages/Packages.php:327
+msgid "Repository"
+msgstr "Repositorium"
+
+#: ../../../pages/PackageDetails.php:115
+#: ../../../pages/Packages.php:82
+#: ../../../pages/Packages.php:328
+msgid "Architecture"
+msgstr "Architektur"
 
 #: ../../../pages/PackageDetails.php:119
 msgid "Groups"
@@ -261,7 +202,7 @@ msgstr "Paket"
 
 #: ../../../pages/PackageDetails.php:151
 msgid "MD5 checksum"
-msgstr "MD%-Prüfsumme"
+msgstr "MD5-Prüfsumme"
 
 #: ../../../pages/PackageDetails.php:155
 msgid "Package size"
@@ -310,4 +251,65 @@ msgstr "Dateien"
 #: ../../../pages/PackageDetails.php:212
 msgid "Show files"
 msgstr "Dateien anzeigen"
+
+#: ../../../pages/NotFound.php:25
+msgid "Page could not be found"
+msgstr "Seite wurde nicht gefunden"
+
+#: ../../../pages/Packages.php:83
+msgid "Group"
+msgstr "Gruppe"
+
+#: ../../../pages/Packages.php:84
+msgid "Keywords"
+msgstr "Schlüsselwörter"
+
+#: ../../../pages/Packages.php:251
+msgid "File"
+msgstr "Datei"
+
+#: ../../../pages/Packages.php:332
+msgid "Last update"
+msgstr "Letzte Aktualisierung"
+
+#: ../../../pages/Start.php:27
+msgid "Start"
+msgstr "Start"
+
+#: ../../../pages/Start.php:109
+msgid "Recent packages"
+msgstr "Aktuelle Pakete"
+
+#: ../../../pages/Packagers.php:27
+msgid "Packagers"
+msgstr "Packer"
+
+#: ../../../pages/Packagers.php:70
+msgid "Email"
+msgstr "E-Mail"
+
+#: ../../../pages/Packagers.php:71
+msgid "Packages"
+msgstr "Pakete"
+
+#: ../../../pages/MirrorStatus.php:39
+#: ../../../pages/MirrorStatus.php:54
+msgid "Mirror status"
+msgstr "Mirror-Status"
+
+#: ../../../pages/MirrorStatus.php:58
+msgid "Host"
+msgstr "Host"
+
+#: ../../../pages/MirrorStatus.php:59
+msgid "Country"
+msgstr "Land"
+
+#: ../../../pages/MirrorStatus.php:60
+msgid "Response time"
+msgstr "Antwortzeit"
+
+#: ../../../pages/MirrorStatus.php:61
+msgid "Delay"
+msgstr "Verzögerung"
 

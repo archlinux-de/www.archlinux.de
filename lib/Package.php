@@ -20,37 +20,37 @@
 
 class Package {
 
+	private $packageDir = '';
 	private $desc = array();
 	private $depends = array();
-	private $filemtime = 0;
 
-	public function __construct($desc, $depends, $filemtime) {
-		$this->filemtime = $filemtime;
-		$this->desc = $this->loadInfo($desc);
-		if (!empty($depends)) {
-			$this->depends = $this->loadInfo($depends);
+	public function __construct($packageDir) {
+		$this->packageDir = $packageDir;
+
+		if (!file_exists($this->packageDir.'/desc')
+			|| !file_exists($this->packageDir.'/depends')) {
+			throw new RuntimeException('Invalid package data');
 		}
+		$this->desc = $this->loadInfo($this->packageDir.'/desc');
+		$this->depends = $this->loadInfo($this->packageDir.'/depends');
 	}
 
 	private function loadInfo($file) {
 		$index = '';
 		$data = array();
-		foreach (explode("\n", $file) as $line) {
-			if (!empty($line)) {
-				if ($line[0] == '%' && $line[strlen($line) - 1] == '%') {
-					$index = substr($line, 1, -1);
-				} else {
-					$data[$index][] = trim($line);
-				}
+		foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+			if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
+				$index = substr($line, 1, -1);
+				$data[$index] = array();
+			} else {
+				$data[$index][] = $line;
 			}
 		}
 		return $data;
 	}
 
 	public function getFileName() {
-		return isset($this->desc['FILENAME'][0]) 
-			? $this->desc['FILENAME'][0] 
-			: $this->getName() . '-' . $this->getVersion() . '.pkg.tar.gz';
+		return $this->desc['FILENAME'][0];
 	}
 
 	public function getName() {
@@ -74,11 +74,11 @@ class Package {
 	}
 
 	public function getCompressedSize() {
-		return $this->desc['CSIZE'][0];
+		return isset($this->desc['CSIZE'][0]) ? $this->desc['CSIZE'][0] : 0;
 	}
 
 	public function getInstalledSize() {
-		return isset($this->desc['ISIZE'][0]) ? $this->desc['ISIZE'][0] : $this->getCompressedSize();
+		return isset($this->desc['ISIZE'][0]) ? $this->desc['ISIZE'][0] : 0;
 	}
 
 	public function getMD5SUM() {
@@ -101,23 +101,16 @@ class Package {
 		return isset($this->desc['LICENSE']) ? $this->desc['LICENSE'] : array();
 	}
 
-	public function getArchitecture() {
-		return $this->desc['ARCH'][0];
+	public function getArch() {
+		return isset($this->desc['ARCH'][0]) ? $this->desc['ARCH'][0] : '';
 	}
 
 	public function getBuildDate() {
-		// use mtime if builddate is kind of "strange"
-		if (isset($this->desc['BUILDDATE'][0]) 
-			&& $this->desc['BUILDDATE'][0] > 0 
-			&& $this->desc['BUILDDATE'][0] <= $this->getMTime()) {
-			return $this->desc['BUILDDATE'][0];
-		} else {
-			return $this->getMTime();
-		}
+		return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : 0;
 	}
 
 	public function getMTime() {
-		return $this->filemtime;
+		return filemtime($this->packageDir.'/desc');
 	}
 
 	public function getPackager() {
@@ -125,17 +118,7 @@ class Package {
 	}
 
 	public function getReplaces() {
-		if (isset($this->depends['REPLACES'])) {
-			return $this->depends['REPLACES'];
-		} elseif (isset($this->desc['REPLACES'])) {
-			return $this->desc['REPLACES'];
-		} else {
-			return array();
-		}
-	}
-
-	public function isForced() {
-		return isset($this->depends['FORCE']) || isset($this->desc['FORCE']);
+		return isset($this->desc['REPLACES']) ? $this->desc['REPLACES'] : array();
 	}
 
 	public function getDepends() {
@@ -152,6 +135,15 @@ class Package {
 
 	public function getProvides() {
 		return isset($this->depends['PROVIDES']) ? $this->depends['PROVIDES'] : array();
+	}
+
+	public function getFiles() {
+		if (file_exists($this->packageDir.'/files')) {
+			$data = $this->loadInfo($this->packageDir.'/files');
+			return $data['FILES'];
+		} else {
+			return array();
+		}
 	}
 }
 

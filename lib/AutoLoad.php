@@ -32,7 +32,7 @@ function __autoload($class) {
 		'ObjectStore' => '/ObjectStore.php',
 		'Output' => '/Output.php',
 		'Package' => '/Package.php',
-		'PackageDB' => '/PackageDB.php',
+		'PackageDatabase' => '/PackageDatabase.php',
 		'Page' => '/Page.php',
 		'Request' => '/Request.php',
 

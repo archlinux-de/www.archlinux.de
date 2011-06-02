@@ -109,11 +109,11 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Repository').'</th>
-				<td><a href="?page=Packages;repository=' . $data['repositoryid'] . '">' . $data['repository'] . '</a></td>
+				<td><a href="?page=Packages;repository=' . $data['repository'] . '">' . $data['repository'] . '</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Architecture').'</th>
-				<td><a href="?page=Packages;architecture=' . $data['architectureid'] . '">' . $data['architecture'] . '</a></td>
+				<td><a href="?page=Packages;architecture=' . $data['architecture'] . '">' . $data['architecture'] . '</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Groups').'</th>
@@ -173,19 +173,19 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<td>
-					' . $this->getDependencies() . '
+					' . $this->getRelations('depends') . '
 				</td>
 				<td>
-					' . $this->getInverseDependencies() . '
+					' . $this->getInverseRelations('depends') . '
 				</td>
 				<td>
-					' . $this->getProvides() . '
+					' . $this->getRelations('provides') . '
 				</td>
 				<td>
-					' . $this->getConflicts() . '
+					' . $this->getRelations('conflicts') . '
 				</td>
 				<td>
-					' . $this->getReplaces() . '
+					' . $this->getRelations('replaces') . '
 				</td>
 			</tr>
 			<tr>
@@ -195,10 +195,10 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<td>
-					' . $this->getOptionalDependencies() . '
+					' . $this->getRelations('optdepends') . '
 				</td>
 				<td>
-					' . $this->getInverseOptionalDependencies() . '
+					' . $this->getInverseRelations('optdepends') . '
 				</td>
 				<td colspan="3">&nbsp;</td>
 			</tr>
@@ -259,22 +259,21 @@ class PackageDetails extends Page {
 	}
 
 	private function getGroups() {
-		$stm = DB::prepare('
-		SELECT
-			groups.id,
-			groups.name
-		FROM
-			groups,
-			package_group
-		WHERE
-			package_group.group = groups.id
-			AND package_group.package = :package
+		$groups = DB::prepare('
+			SELECT
+				groups.name
+			FROM
+				groups,
+				package_group
+			WHERE
+				package_group.group = groups.id
+				AND package_group.package = :package
 		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
-		$stm->execute();
+		$groups->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$groups->execute();
 		$list = array();
-		foreach ($stm as $group) {
-			$list[] = '<a href="?page=Packages;group=' . $group['id'] . '">' . $group['name'] . '</a>';
+		while ($group = $groups->fetchColumn()) {
+			$list[] = '<a href="?page=Packages;group=' . urlencode($group) . '">' . $group . '</a>';
 		}
 		return implode(', ', $list);
 	}
@@ -319,218 +318,70 @@ class PackageDetails extends Page {
 		return $list;
 	}
 
-	private function getDependencies() {
+	private function getRelations($type) {
 		$stm = DB::prepare('
 		SELECT
 			packages.id,
-			packages.name,
-			depends.comment,
+			package_relation.dependsName AS name,
+			package_relation.dependsVersion AS version,
 			architectures.name AS arch,
 			repositories.name AS repo
 		FROM
-			depends
+			package_relation
 				LEFT JOIN packages
-				ON depends.depends = packages.id,
+				ON package_relation.dependsId = packages.id,
 			architectures,
 			repositories
 		WHERE
-			depends.package = :package
-			AND packages.arch = architectures.id
+			package_relation.packageId = :packageId
+			AND package_relation.type = :type
 			AND packages.repository = repositories.id
+			AND repositories.arch = architectures.id
 		ORDER BY
-			packages.name
+			package_relation.dependsName
 		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->bindParam('packageId', $this->pkgid, PDO::PARAM_INT);
+		$stm->bindParam('type', $type, PDO::PARAM_STR);
 		$stm->execute();
 		$list = '<ul>';
 		foreach ($stm as $dependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
+			if (is_null($dependency['id'])) {
+				$list.= '<li>'.$dependency['name'].$dependency['version'].'</li>';
+			} else {
+				$list.= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.urlencode($dependency['name']).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
+			}
 		}
 		$list.= '</ul>';
 		return $list;
 	}
 
-	private function getInverseDependencies() {
+	private function getInverseRelations($type) {
 		$stm = DB::prepare('
 		SELECT
-			packages.id,
 			packages.name,
-			depends.comment,
+			package_relation.dependsVersion AS version,
 			architectures.name AS arch,
 			repositories.name AS repo
 		FROM
+			package_relation,
 			packages,
-			depends,
 			architectures,
 			repositories
 		WHERE
-			depends.depends = :package
-			AND depends.package = packages.id
-			AND packages.arch = architectures.id
+			package_relation.dependsId = :packageId
+			AND package_relation.packageId = packages.id
+			AND package_relation.type = :type
 			AND packages.repository = repositories.id
+			AND repositories.arch = architectures.id
 		ORDER BY
 			packages.name
 		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
+		$stm->bindParam('packageId', $this->pkgid, PDO::PARAM_INT);
+		$stm->bindParam('type', $type, PDO::PARAM_STR);
 		$stm->execute();
 		$list = '<ul>';
 		foreach ($stm as $dependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-		}
-		$list.= '</ul>';
-		return $list;
-	}
-
-	private function getOptionalDependencies() {
-		$stm = DB::prepare('
-		SELECT
-			packages.id,
-			packages.name,
-			optdepends.comment,
-			architectures.name AS arch,
-			repositories.name AS repo
-		FROM
-			optdepends
-				LEFT JOIN packages
-				ON optdepends.optdepends = packages.id,
-			architectures,
-			repositories
-		WHERE
-			optdepends.package = :package
-			AND packages.arch = architectures.id
-			AND packages.repository = repositories.id
-		ORDER BY
-			packages.name
-		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
-		$stm->execute();
-		$list = '<ul>';
-		foreach ($stm as $optdependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . $this->cutString($optdependency['comment'], 30) . '</li>';
-		}
-		$list.= '</ul>';
-		return $list;
-	}
-
-	private function getInverseOptionalDependencies() {
-		$stm = DB::prepare('
-		SELECT
-			packages.id,
-			packages.name,
-			optdepends.comment,
-			architectures.name AS arch,
-			repositories.name AS repo
-		FROM
-			packages,
-			optdepends,
-			architectures,
-			repositories
-		WHERE
-			optdepends.optdepends = :package
-			AND optdepends.package = packages.id
-			AND packages.arch = architectures.id
-			AND packages.repository = repositories.id
-		ORDER BY
-			packages.name
-		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
-		$stm->execute();
-		$list = '<ul>';
-		foreach ($stm as $optdependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $optdependency['repo'] . ';arch=' . $optdependency['arch'] . ';pkgname=' . $optdependency['name'] . '">' . $optdependency['name'] . '</a>&nbsp;' . $this->cutString($optdependency['comment'], 30) . '</li>';
-		}
-		$list.= '</ul>';
-		return $list;
-	}
-
-	private function getProvides() {
-		$stm = DB::prepare('
-		SELECT
-			packages.id,
-			packages.name,
-			provides.comment,
-			architectures.name AS arch,
-			repositories.name AS repo
-		FROM
-			provides
-				LEFT JOIN packages
-				ON provides.provides = packages.id,
-			architectures,
-			repositories
-		WHERE
-			provides.package = :package
-			AND packages.arch = architectures.id
-			AND packages.repository = repositories.id
-		ORDER BY
-			packages.name
-		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
-		$stm->execute();
-		$list = '<ul>';
-		foreach ($stm as $dependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-		}
-		$list.= '</ul>';
-		return $list;
-	}
-
-	private function getConflicts() {
-		$stm = DB::prepare('
-		SELECT
-			packages.id,
-			packages.name,
-			conflicts.comment,
-			architectures.name AS arch,
-			repositories.name AS repo
-		FROM
-			conflicts
-				LEFT JOIN packages
-				ON conflicts.conflicts = packages.id,
-			architectures,
-			repositories
-		WHERE
-			conflicts.package = :package
-			AND packages.arch = architectures.id
-			AND packages.repository = repositories.id
-		ORDER BY
-			packages.name
-		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
-		$stm->execute();
-		$list = '<ul>';
-		foreach ($stm as $dependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
-		}
-		$list.= '</ul>';
-		return $list;
-	}
-
-	private function getReplaces() {
-		$stm = DB::prepare('
-		SELECT
-			packages.id,
-			packages.name,
-			replaces.comment,
-			architectures.name AS arch,
-			repositories.name AS repo
-		FROM
-			replaces
-				LEFT JOIN packages
-				ON replaces.replaces = packages.id,
-			architectures,
-			repositories
-		WHERE
-			replaces.package = :package
-			AND packages.arch = architectures.id
-			AND packages.repository = repositories.id
-		ORDER BY
-			packages.name
-		');
-		$stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
-		$stm->execute();
-		$list = '<ul>';
-		foreach ($stm as $dependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo=' . $dependency['repo'] . ';arch=' . $dependency['arch'] . ';pkgname=' . $dependency['name'] . '">' . $dependency['name'] . '</a>' . $dependency['comment'] . '</li>';
+			$list.= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.urlencode($dependency['name']).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
 		}
 		$list.= '</ul>';
 		return $list;

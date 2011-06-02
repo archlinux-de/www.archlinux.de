@@ -72,6 +72,17 @@ class Input {
 		return self::$countryName;
 	}
 
+	public static function getPathPattern($pattern) {
+		$pathInfo = self::server()->getString('PATH_INFO');
+		$matches = array();
+		if (preg_match($pattern, $pathInfo, $matches) == 1) {
+			return $matches;
+		} else {
+			throw new RequestException($pattern);
+		}
+	}
+
+	// FIXME: Rename function
 	public static function getPath() {
 		if (is_null(self::$path)) {
 			$directory = dirname(self::server()->getString('SCRIPT_NAME'));
@@ -81,6 +92,7 @@ class Input {
 		return self::$path;
 	}
 
+	// FIXME: Rename function
 	public static function getRelativePath() {
 		if (is_null(self::$relativePath)) {
 			$directory = dirname(self::server()->getString('SCRIPT_NAME'));

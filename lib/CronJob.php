@@ -23,6 +23,7 @@ abstract class CronJob {
 	private $lockFile = '/tmp/cronjob.lck';
 	private $waitForLock = 600;
 	private $waitInterval = 10;
+	private $memoryLimit = '256M';
 
 	public static function run() {
 		$class = get_called_class();
@@ -34,7 +35,10 @@ abstract class CronJob {
 
 	public function __construct() {
 		ini_set('max_execution_time', 0);
-		ini_set('memory_limit', '256M');
+		ini_set('memory_limit', $this->memoryLimit);
+		if (ini_get('memory_limit') != $this->memoryLimit) {
+			throw new Exception('Could not adjuest memory_limit to '. $this->memoryLimit);
+		}
 		$this->lockFile = Config::get('common', 'tmpdir').'/cronjob.lck';
 		$this->aquireLock();
 	}
@@ -55,7 +59,7 @@ abstract class CronJob {
 				$waited += $this->waitInterval;
 			}
 		}
-		throw new Exception('Another cron job is still running');	
+		throw new Exception('Another cron job is still running');
 	}
 
 	private function releaseLock() {
@@ -63,6 +67,22 @@ abstract class CronJob {
 			unlink($this->lockFile);
 		}
 	}
+
+	protected function printDebug($text) {
+		echo $text, "\n";
+	}
+
+	protected function printError($text) {
+		file_put_contents('php://stderr', $text."\n");
+	}
+
+	protected function printProgress($current, $total, $prefix = '') {
+		echo "\r", $prefix, round($current / $total * 100), '%';
+		if ($current == $total) {
+			echo "\n";
+		}
+	}
+
 }
 
 ?>

@@ -155,11 +155,11 @@ class RepositoryStatistics extends Page implements IDBCachable {
 			(SELECT COUNT(*) FROM packagers) AS packagers,
 			(SELECT COUNT(*) FROM groups) AS groups,
 			(SELECT COUNT(*) FROM licenses) AS licenses,
-			(SELECT COUNT(*) FROM depends) AS depends,
-			(SELECT COUNT(*) FROM optdepends) AS optdepends,
-			(SELECT COUNT(*) FROM conflicts) AS conflicts,
-			(SELECT COUNT(*) FROM replaces) AS replaces,
-			(SELECT COUNT(*) FROM provides) AS provides,
+			(SELECT COUNT(*) FROM package_relation WHERE type = "depends") AS depends,
+			(SELECT COUNT(*) FROM package_relation WHERE type = "optdepends") AS optdepends,
+			(SELECT COUNT(*) FROM package_relation WHERE type = "conflicts") AS conflicts,
+			(SELECT COUNT(*) FROM package_relation WHERE type = "replaces") AS replaces,
+			(SELECT COUNT(*) FROM package_relation WHERE type = "provides") AS provides,
 			(SELECT COUNT(*) FROM file_index) AS file_index,
 			(SELECT AVG(csize) FROM packages) AS avgcsize,
 			(SELECT AVG(isize) FROM packages) AS avgisize,
@@ -183,7 +183,7 @@ class RepositoryStatistics extends Page implements IDBCachable {
 			FROM
 				(
 				SELECT
-					COUNT(id) AS pkgfiles
+					COUNT(*) AS pkgfiles
 				FROM
 					files
 				GROUP BY package
@@ -193,7 +193,7 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getRepositoryStatistics() {
-		$repos = DB::query('SELECT id, name FROM repositories');
+		$repos = DB::query('SELECT DISTINCT name FROM repositories')->fetchAll(PDO::FETCH_COLUMN);
 		$total = DB::query('
 			SELECT
 				COUNT(id) AS packages,
@@ -203,20 +203,22 @@ class RepositoryStatistics extends Page implements IDBCachable {
 			')->fetch();
 		$stm = DB::prepare('
 			SELECT
-				COUNT(id) AS packages,
-				SUM(csize) AS size
+				COUNT(packages.id) AS packages,
+				SUM(packages.csize) AS size
 			FROM
 				packages
+					JOIN repositories
+					ON packages.repository = repositories.id
 			WHERE
-				repository = :repository
+				repositories.name = :repositoryName
 			');
 		$list = '';
 		foreach ($repos as $repo) {
-			$stm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$stm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
 			$stm->execute();
 			$data = $stm->fetch();
 			$list.= '<tr>
-				<th>' . $repo['name'] . '</th>
+				<th>' . $repo . '</th>
 				<td style="padding:0px;margin:0px;">
 					<div style="overflow:auto; max-height: 800px;">
 					<table class="pretty-table" style="border:none;">
