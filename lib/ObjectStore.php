@@ -79,7 +79,7 @@ class ObjectStore {
 			WHERE
 				expires < :expires
 			');
-			$stm->bindParam('expires', Input::getTime(), PDO::PARAM_INT);
+			$stm->bindValue('expires', Input::getTime(), PDO::PARAM_INT);
 			$stm->execute();
 		}
 	}
