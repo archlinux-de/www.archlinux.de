@@ -43,7 +43,8 @@ class Start extends Page {
 		</div>
 		<div id="right">
 			<div id="pkgsearch">
-				<form method="post" action="?page=Packages">
+				<form method="get">
+					<input type="hidden" name="page" value="Packages" />
 					<label for="searchfield">'.$this->l10n->getText('Package search').':</label>
 					<input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off" />
 					<script>
