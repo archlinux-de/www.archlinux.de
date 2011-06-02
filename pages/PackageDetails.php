@@ -34,41 +34,53 @@ class PackageDetails extends Page {
 		} catch(RequestException $e) {
 			$this->showFailure($this->l10n->getText('No package specified'));
 		}
+
+		$repository = DB::prepare('
+			SELECT
+				repositories.id
+			FROM
+				repositories
+					JOIN architectures
+					ON architectures.id = repositories.arch
+			WHERE
+				repositories.name = :repositoryName
+				AND architectures.name = :architectureName
+			');
+		$repository->bindParam('repositoryName', $this->repo, PDO::PARAM_STR);
+		$repository->bindParam('architectureName', $this->arch, PDO::PARAM_STR);
+		$repository->execute();
+
 		$stm = DB::prepare('
-		SELECT
-			packages.id,
-			packages.filename,
-			packages.name,
-			packages.base,
-			packages.version,
-			packages.desc,
-			packages.csize,
-			packages.isize,
-			packages.md5sum,
-			packages.url,
-			packages.builddate,
-			packages.mtime,
-			architectures.name AS architecture,
-			repositories.name AS repository,
-			architectures.id AS architectureid,
-			repositories.id AS repositoryid,
-			packagers.name AS packager,
-			packagers.id AS packagerid,
-			packagers.email AS packageremail
-		FROM
-			packages
-				LEFT JOIN packagers ON packages.packager = packagers.id,
-			architectures,
-			repositories
-		WHERE
-			repositories.name = :repository
-			AND architectures.name = :architecture
-			AND packages.name = :package
-			AND packages.arch = architectures.id
-			AND packages.repository = repositories.id
+			SELECT
+				packages.id,
+				packages.filename,
+				packages.name,
+				packages.base,
+				packages.version,
+				packages.desc,
+				packages.csize,
+				packages.isize,
+				packages.md5sum,
+				packages.url,
+				packages.builddate,
+				packages.mtime,
+				architectures.name AS architecture,
+				repositories.name AS repository,
+				packagers.name AS packager,
+				packagers.id AS packagerid,
+				packagers.email AS packageremail
+			FROM
+				packages
+					LEFT JOIN packagers ON packages.packager = packagers.id,
+				architectures,
+				repositories
+			WHERE
+				repositories.id = :repositoryId
+				AND packages.name = :package
+				AND packages.arch = architectures.id
+				AND packages.repository = repositories.id
 		');
-		$stm->bindParam('repository', $this->repo, PDO::PARAM_STR);
-		$stm->bindParam('architecture', $this->arch, PDO::PARAM_STR);
+		$stm->bindValue('repositoryId', $repository->fetchColumn(), PDO::PARAM_STR);
 		$stm->bindParam('package', $this->pkgname, PDO::PARAM_STR);
 		$stm->execute();
 		$data = $stm->fetch();

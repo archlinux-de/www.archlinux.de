@@ -349,7 +349,7 @@ class Packages extends Page {
 				'staging'
 			)) ? ' class="less"' : '');
 			$body.= '<tr'.$style.'>
-				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$package['architecture'].';pkgname='.urlencode($package['name']).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
+				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$this->architecture['name'].';pkgname='.urlencode($package['name']).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
 			</tr>';
 		}
 		$body.= '
