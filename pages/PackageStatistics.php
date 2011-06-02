@@ -111,52 +111,6 @@ class PackageStatistics extends Page implements IDBCachable {
 		')->fetch();
 	}
 
-	private static function getRepositoryStatistics() {
-		$repos = DB::query('SELECT id, name FROM repositories');
-		$total = DB::query('
-			SELECT
-				COUNT(id) AS packages,
-				SUM(csize) AS size
-			FROM
-				packages
-			')->fetch();
-		$stm = DB::prepare('
-			SELECT
-				COUNT(id) AS packages,
-				SUM(csize) AS size
-			FROM
-				packages
-			WHERE
-				repository = :repository
-			');
-		$list = '';
-		foreach ($repos as $repo) {
-			$stm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
-			$stm->execute();
-			$data = $stm->fetch();
-			if ($data !== false) {
-				$list.= '<tr>
-					<th>' . $repo['name'] . '</th>
-					<td style="padding:0px;margin:0px;">
-						<div style="overflow:auto; max-height: 800px;">
-						<table class="pretty-table" style="border:none;">
-						<tr>
-							<td style="width: 50px;">Packages</td>
-							<td>' . self::getBar($data['packages'], $total['packages']) . '</td>
-						</tr>
-						<tr>
-							<td style="width: 50px;">Size</td>
-							<td>' . self::getBar($data['size'], $total['size']) . '</td>
-						</tr>
-						</table>
-						</div>
-					</td>
-				</tr>';
-			}
-		}
-		return $list;
-	}
-
 	private static function formatBytes($bytes) {
 		$kb = 1024;
 		$mb = $kb * 1024;
@@ -272,133 +226,156 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPackagesPerRepository() {
-		$repos = DB::query('SELECT id, name FROM repositories WHERE name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')');
+		$repos = DB::query('
+			SELECT DISTINCT
+				name
+			FROM
+				repositories
+			WHERE
+				name NOT LIKE "%testing"
+				AND name NOT LIKE "%unstable"
+				AND name NOT LIKE "%staging"
+			')->fetchAll(PDO::FETCH_COLUMN);
 		$total = DB::query('
-		SELECT
-			COUNT(*)
-		FROM
-			pkgstats_users
+			SELECT
+				COUNT(*)
+			FROM
+				pkgstats_users
 		')->fetchColumn();
 		$countStm = DB::prepare('
-		SELECT
-			COUNT(*)
-		FROM
-			(
-			SELECT DISTINCT
-				name
+			SELECT
+				COUNT(*)
 			FROM
-				packages
-			WHERE
-				repository = :repository
-			) AS total
-			JOIN
-			(
-			SELECT DISTINCT
-				pkgname
-			FROM
-				pkgstats_packages
-			WHERE
-				count >= ' . (floor($total / 100)) . '
-			) AS used
-			ON total.name = used.pkgname
+				(
+				SELECT DISTINCT
+					packages.name
+				FROM
+					packages
+						JOIN repositories
+						ON packages.repository = repositories.id
+				WHERE
+					repositories.name = :repositoryName
+				) AS total
+				JOIN
+				(
+				SELECT DISTINCT
+					pkgname
+				FROM
+					pkgstats_packages
+				WHERE
+					count >= ' . (floor($total / 100)) . '
+				) AS used
+				ON total.name = used.pkgname
 		');
 		$totalStm = DB::prepare('
-		SELECT
-			COUNT(*)
-		FROM
-			(
-			SELECT DISTINCT
-				name
+			SELECT
+				COUNT(*)
 			FROM
-				packages
-			WHERE
-				repository = :repository
-			) AS total
+				(
+				SELECT DISTINCT
+					packages.name
+				FROM
+					packages
+						JOIN repositories
+						ON packages.repository = repositories.id
+				WHERE
+					repositories.name = :repositoryName
+				) AS total
 		');
 		$list = '';
 		foreach ($repos as $repo) {
-			$countStm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$countStm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
 			$countStm->execute();
 			$count = $countStm->fetchColumn();
-			$totalStm->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$totalStm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
 			$totalStm->execute();
 			$total = $totalStm->fetchColumn();
-			$list.= '<tr><th>' . $repo['name'] . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+			$list.= '<tr><th>' . $repo . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
 		}
 		return $list;
 	}
 
 	private static function getPopularPackagesPerRepository() {
-		$total = DB::query('
-		SELECT
-			COUNT(*)
-		FROM
-			pkgstats_users
-		')->fetchColumn();
 		$repos = DB::query('
-		SELECT
-			name,
-			id
-		FROM
-			repositories
-		WHERE
-			name NOT IN (\'testing\', \'community-testing\', \'multilib-testing\', \'staging\', \'community-staging\', \'kde-unstable\', \'gnome-unstable\')
-		');
+			SELECT DISTINCT
+				name
+			FROM
+				repositories
+			WHERE
+				name NOT LIKE "%testing"
+				AND name NOT LIKE "%unstable"
+				AND name NOT LIKE "%staging"
+			')->fetchAll(PDO::FETCH_COLUMN);
+		$total = DB::query('
+			SELECT
+				COUNT(*)
+			FROM
+				pkgstats_users
+		')->fetchColumn();
 		$packages = DB::prepare('
-		SELECT
-			pkgname,
-			SUM(count) AS count
-		FROM
-			pkgstats_packages
-		WHERE
-			pkgname IN (SELECT name FROM packages WHERE repository = :repository)
-		GROUP BY
-			pkgname
-		HAVING
-			count >= ' . (floor($total / 100)) . '
-		ORDER BY
-			count DESC,
-			pkgname ASC
+			SELECT
+				pkgname,
+				SUM(count) AS count
+			FROM
+				pkgstats_packages
+			WHERE
+				pkgname IN (
+					SELECT
+						packages.name
+					FROM
+						packages
+							JOIN repositories
+							ON packages.repository = repositories.id
+					WHERE
+						repositories.name = :repositoryName
+				)
+			GROUP BY
+				pkgname
+			HAVING
+				count >= ' . (floor($total / 100)) . '
+			ORDER BY
+				count DESC,
+				pkgname ASC
 		');
 		$list = '';
-		$repoid = 0;
+		$currentRepo = '';
 		foreach ($repos as $repo) {
-			$packages->bindParam('repository', $repo['id'], PDO::PARAM_INT);
+			$packages->bindParam('repositoryName', $repo, PDO::PARAM_STR);
 			$packages->execute();
-			if ($repoid != $repo['id']) {
-				$list.= '<tr><th>' . $repo['name'] . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
+			if ($currentRepo != $repo) {
+				$list.= '<tr><th>' . $repo . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
 			}
 			foreach ($packages as $package) {
 				$list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
 			}
 			$list.= '</table></div></td></tr>';
-			$repoid = $repo['id'];
+			$currentRepo = $repo;
 		}
 		return $list;
 	}
 
 	private static function getPopularUnofficialPackages() {
 		$total = DB::query('
-		SELECT
-			COUNT(*)
-		FROM
-			pkgstats_users
+			SELECT
+				COUNT(*)
+			FROM
+				pkgstats_users
 		')->fetchColumn();
 		$packages = DB::query('
-		SELECT
-			pkgname,
-			SUM(count) AS count
-		FROM
-			pkgstats_packages
-		WHERE
-			pkgname NOT IN (SELECT name FROM packages)
-		GROUP BY
-			pkgname
-		HAVING
-			count >= ' . (floor($total / 100)) . '
-		ORDER BY
-			count DESC,
-			pkgname ASC
+			SELECT
+				pkgname,
+				SUM(count) AS count
+			FROM
+				pkgstats_packages
+			WHERE
+				pkgname NOT IN (SELECT name FROM packages)
+			GROUP BY
+				pkgname
+			HAVING
+				count >= ' . (floor($total / 100)) . '
+			ORDER BY
+				count DESC,
+				pkgname ASC
 		');
 		$list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
 		foreach ($packages as $package) {

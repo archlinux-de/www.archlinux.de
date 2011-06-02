@@ -193,7 +193,7 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getRepositoryStatistics() {
-		$repos = DB::query('SELECT DISTINCT name FROM repositories')->fetchAll(PDO::FETCH_COLUMN);
+		$repos = DB::query('SELECT DISTINCT name FROM repositories')->fetchALL(PDO::FETCH_COLUMN);
 		$total = DB::query('
 			SELECT
 				COUNT(id) AS packages,
