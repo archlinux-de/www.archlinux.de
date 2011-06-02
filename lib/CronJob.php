@@ -23,7 +23,6 @@ abstract class CronJob {
 	private $lockFile = '/tmp/cronjob.lck';
 	private $waitForLock = 600;
 	private $waitInterval = 10;
-	private $memoryLimit = '256M';
 
 	public static function run() {
 		$class = get_called_class();
@@ -35,10 +34,6 @@ abstract class CronJob {
 
 	public function __construct() {
 		ini_set('max_execution_time', 0);
-		ini_set('memory_limit', $this->memoryLimit);
-		if (ini_get('memory_limit') != $this->memoryLimit) {
-			throw new Exception('Could not adjuest memory_limit to '. $this->memoryLimit);
-		}
 		$this->lockFile = Config::get('common', 'tmpdir').'/cronjob.lck';
 		$this->aquireLock();
 	}

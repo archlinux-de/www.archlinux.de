@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -d memory_limit=256M
 <?php
 /*
 	Copyright 2002-2011 Pierre Schmitz <pierre@archlinux.de>
