@@ -69,6 +69,10 @@ class Request {
 		return !$this->isString($name) || !$this->isRegex($name, '/\S+/');
 	}
 
+	public function isRequest($name) {
+		return isset($this->request[$name]);
+	}
+
 	public function isHex($name) {
 		return $this->isRegex($name, '/^[a-f0-9]+$/i');
 	}

@@ -72,6 +72,17 @@ class Input {
 		return self::$countryName;
 	}
 
+	public static function getClientArchitecture() {
+		$userAgent = self::server()->getString('HTTP_USER_AGENT');
+		if (preg_match('/x(86_)?64/', $userAgent)) {
+			return 'x86_64';
+		} elseif (preg_match('/i[3456]86/', $userAgent)) {
+			return 'i686';
+		} else {
+			return '';
+		}
+	}
+
 	public static function getPathPattern($pattern) {
 		$pathInfo = self::server()->getString('PATH_INFO');
 		$matches = array();

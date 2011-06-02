@@ -20,10 +20,16 @@
 
 class Start extends Page {
 
-	private $arch = 1;
+	private $architectureId = 0;
 
 	public function prepare() {
-		$this->arch = Input::cookie()->getInt('architecture', $this->arch);
+		$clientArch = Input::getClientArchitecture();
+		$availableArchitectures = $this->getAvailableArchitectures();
+		if (!in_array($clientArch, $availableArchitectures)) {
+			$clientArch = $availableArchitectures[0];
+		}
+		$this->architectureId = $this->getArchitectureId($clientArch);
+
 		$this->setValue('title', $this->l10n->getText('Start'));
 		$body = '<div id="left-wrapper">
 			<div id="left">
@@ -43,7 +49,7 @@ class Start extends Page {
 					<script>
 						$(function() {
 							$("#searchfield").autocomplete({
-								source: "?page=PackagesSuggest;repo=2;arch=' . $this->arch . ';field=0",
+								source: "?page=PackagesSuggest;architecture=' . $this->architectureId . '",
 								minLength: 2,
 								delay: 100
 							});
@@ -60,6 +66,30 @@ class Start extends Page {
 		</div>
 	';
 		$this->setValue('body', $body);
+	}
+
+	private function getAvailableArchitectures() {
+		$uniqueArchitectures = array();
+		foreach (Config::get('packages', 'repositories') as $architectures) {
+			foreach ($architectures as $architecture) {
+				$uniqueArchitectures[$architecture] = 1;
+			}
+		}
+		return array_keys($uniqueArchitectures);
+	}
+
+	private function getArchitectureId($architectureName) {
+		$stm = DB::prepare('
+			SELECT
+				id
+			FROM
+				architectures
+			WHERE
+				name = :architectureName
+			');
+		$stm->bindParam('architectureName', $architectureName, PDO::PARAM_STR);
+		$stm->execute();
+		return $stm->fetchColumn();
 	}
 
 	private function getNews() {
@@ -86,7 +116,6 @@ class Start extends Page {
 	private function getRecentPackages() {
 		$packages = DB::prepare('
 		SELECT
-			packages.id,
 			packages.name,
 			packages.version,
 			repositories.name AS repository,
@@ -97,14 +126,14 @@ class Start extends Page {
 			architectures
 		WHERE
 			packages.repository = repositories.id
-			AND packages.arch = architectures.id
-			AND packages.arch = :arch
+			AND repositories.arch = :architectureId
+			AND architectures.id = repositories.arch
 		ORDER BY
 			packages.builddate DESC
 		LIMIT
 			20
 		');
-		$packages->bindParam('arch', $this->arch, PDO::PARAM_INT);
+		$packages->bindParam('architectureId', $this->architectureId, PDO::PARAM_INT);
 		$packages->execute();
 		$result = '<h3>'.$this->l10n->getText('Recent packages').' <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
 		foreach ($packages as $package) {

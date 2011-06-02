@@ -193,7 +193,9 @@ class Packages extends Page {
 		$this->repository['name'] = $this->getRequest('repository',
 			$this->getAvailableRepositories(), '');
 		$this->architecture['name'] = $this->getRequest('architecture',
-			$this->getAvailableArchitectures($this->repository['name']), '');
+			$this->getAvailableArchitectures($this->repository['name']),
+				(Input::get()->isRequest('architecture') ? '' : $this->getClientArchitecture())
+			);
 		$this->architecture['id'] = $this->getArchitectureId($this->architecture['name']);
 		$this->repository['id'] = $this->getRepositoryId($this->repository['name'], $this->architecture['id']);
 
@@ -209,6 +211,15 @@ class Packages extends Page {
 				'description',
 				'file'
 			));
+	}
+
+	private function getClientArchitecture() {
+		$clientArch = Input::getClientArchitecture();
+		$availableArchitectures = $this->getAvailableArchitectures();
+		if (!in_array($clientArch, $availableArchitectures)) {
+			$clientArch = '';
+		}
+		return $clientArch;
 	}
 
 	private function getRequest($name, $allowedValues, $default = null) {
