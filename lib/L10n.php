@@ -30,8 +30,8 @@ class L10n {
 		setlocale(LC_ALL, $this->locale);
 		date_default_timezone_set(Config::get('L10n', 'timezone'));
 		$this->localeInfo = localeconv();
-		bindtextdomain('messages', __DIR__.'/../l10n');
-		textdomain('messages');
+		bindtextdomain('archportal', __DIR__.'/../l10n');
+		textdomain('archportal');
 	}
 
 	public function getLocale() {
