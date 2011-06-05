@@ -21,16 +21,36 @@
 class ObjectCache {
 
 	public static function addObject($key, $object, $ttl = 0) {
-		return apc_store($key, $object, $ttl);
+		if (function_exists('apc_store')) {
+			return apc_store($key, $object, $ttl);
+		} elseif (function_exists('xcache_set')) {
+			return xcache_set($key, $object, $ttl);
+		} else {
+			false;
+		}
 	}
 
 	public static function getObject($key) {
-		return apc_fetch($key);
+		if (function_exists('apc_fetch')) {
+			return apc_fetch($key);
+		} elseif (function_exists('xcache_get')) {
+			return xcache_get($key);
+		} else {
+			false;
+		}
 	}
 
 	public static function isObject($key) {
-		apc_fetch($key, $success);
-		return $success;
+		if (function_exists('apc_exists')) {
+			return apc_exists($key);
+		} elseif (function_exists('apc_fetch')) {
+			apc_fetch($key, $success);
+			return $success;
+		} elseif (function_exists('xcache_isset')) {
+			return xcache_isset($key);
+		} else {
+			false;
+		}
 	}
 }
 
