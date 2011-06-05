@@ -214,19 +214,22 @@ class PackageDetails extends Page {
 				</td>
 				<td colspan="3">&nbsp;</td>
 			</tr>
-		</table>
-		<table id="packagefiles">
-			<tr>
-				<th class="packagefileshead">'.$this->l10n->getText('Files').'</th>
-			</tr>
-			<tr>
-				<td>
-					' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">'.$this->l10n->getText('Show files').'</a>') . '
-				</td>
-			</tr>
-		</table>
-		</div>
-		';
+		</table>';
+
+		if (Config::get('packages', 'files')) {
+		$body .= '<table id="packagefiles">
+				<tr>
+					<th class="packagefileshead">'.$this->l10n->getText('Files').'</th>
+				</tr>
+				<tr>
+					<td>
+						' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">'.$this->l10n->getText('Show files').'</a>') . '
+					</td>
+				</tr>
+			</table>';
+		}
+
+		$body .= '</div>';
 		$this->setValue('body', $body);
 	}
 

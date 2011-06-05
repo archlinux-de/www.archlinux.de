@@ -51,18 +51,22 @@ class PackagesSuggest extends Page {
 					$repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
 				break;
 				case 'file':
-					$stm = Database::prepare('
-						SELECT DISTINCT
-							name
-						FROM
-							file_index
-						WHERE
-							name LIKE :name
-						ORDER BY
-							name ASC
-						LIMIT 20
-					');
-					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
+					if (Config::get('packages', 'files')) {
+						$stm = Database::prepare('
+							SELECT DISTINCT
+								name
+							FROM
+								file_index
+							WHERE
+								name LIKE :name
+							ORDER BY
+								name ASC
+							LIMIT 20
+						');
+						$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
+					} else {
+						return;
+					}
 				break;
 				default:
 					return;

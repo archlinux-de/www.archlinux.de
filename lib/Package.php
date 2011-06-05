@@ -138,7 +138,7 @@ class Package {
 	}
 
 	public function getFiles() {
-		if (file_exists($this->packageDir.'/files')) {
+		if (Config::get('packages', 'files') && file_exists($this->packageDir.'/files')) {
 			$data = $this->loadInfo($this->packageDir.'/files');
 			return $data['FILES'];
 		} else {

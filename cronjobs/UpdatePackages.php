@@ -318,46 +318,48 @@ class UpdatePackages extends CronJob {
 			');
 
 		// files
-		$this->selectFileIndex = Database::prepare('
-			SELECT
-				id
-			FROM
-				file_index
-			WHERE
-				name = :name
-			');
-		$this->insertFileIndex = Database::prepare('
-			INSERT INTO
-				file_index
-			SET
-				name = :name
-			');
-		$this->cleanupPackageFileIndex = Database::prepare('
-			DELETE FROM
-				package_file_index
-			WHERE
-				package = :package
-			');
-		$this->cleanupFiles = Database::prepare('
-			DELETE FROM
-				files
-			WHERE
-				package = :package
-			');
-		$this->insertFiles = Database::prepare('
-			INSERT INTO
-				files
-			SET
-				package = :package,
-				path = :path
-			');
-		$this->insertPackageFileIndex = Database::prepare('
-			INSERT INTO
-				package_file_index
-			SET
-				package = :package,
-				file_index = :file
-			');
+		if (Config::get('packages', 'files')) {
+			$this->selectFileIndex = Database::prepare('
+				SELECT
+					id
+				FROM
+					file_index
+				WHERE
+					name = :name
+				');
+			$this->insertFileIndex = Database::prepare('
+				INSERT INTO
+					file_index
+				SET
+					name = :name
+				');
+			$this->cleanupPackageFileIndex = Database::prepare('
+				DELETE FROM
+					package_file_index
+				WHERE
+					package = :package
+				');
+			$this->cleanupFiles = Database::prepare('
+				DELETE FROM
+					files
+				WHERE
+					package = :package
+				');
+			$this->insertFiles = Database::prepare('
+				INSERT INTO
+					files
+				SET
+					package = :package,
+					path = :path
+				');
+			$this->insertPackageFileIndex = Database::prepare('
+				INSERT INTO
+					package_file_index
+				SET
+					package = :package,
+					file_index = :file
+				');
+		}
 
 		// relations
 		$this->cleanupRelation = Database::prepare('
@@ -590,7 +592,9 @@ class UpdatePackages extends CronJob {
 		$this->addRelation($package->getConflicts(), $packageId, 'conflicts');
 		$this->addRelation($package->getProvides(), $packageId, 'provides');
 
-		$this->insertFiles($package->getFiles(), $packageId);
+		if (Config::get('packages', 'files')) {
+			$this->insertFiles($package->getFiles(), $packageId);
+		}
 
 		$this->updatedPackages = true;
 // 		echo "\tadding package $packageName\n";
@@ -656,18 +660,20 @@ class UpdatePackages extends CronJob {
 			WHERE
 				packageId = :packageId
 			');
-		$cleanupFiles = Database::prepare('
-			DELETE FROM
-				files
-			WHERE
-				package = :packageId
-			');
-		$cleanupPackageFileIndex = Database::prepare('
-			DELETE FROM
-				package_file_index
-			WHERE
-				package = :packageId
-			');
+		if (Config::get('packages', 'files')) {
+			$cleanupFiles = Database::prepare('
+				DELETE FROM
+					files
+				WHERE
+					package = :packageId
+				');
+			$cleanupPackageFileIndex = Database::prepare('
+				DELETE FROM
+					package_file_index
+				WHERE
+					package = :packageId
+				');
+		}
 		$cleanupPackageGroup = Database::prepare('
 			DELETE FROM
 				package_group
@@ -700,10 +706,12 @@ class UpdatePackages extends CronJob {
 				$cleanupPackages->execute();
 				$cleanupRelations->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
 				$cleanupRelations->execute();
-				$cleanupFiles->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
-				$cleanupFiles->execute();
-				$cleanupPackageFileIndex->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
-				$cleanupPackageFileIndex->execute();
+				if (Config::get('packages', 'files')) {
+					$cleanupFiles->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+					$cleanupFiles->execute();
+					$cleanupPackageFileIndex->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+					$cleanupPackageFileIndex->execute();
+				}
 				$cleanupPackageGroup->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
 				$cleanupPackageGroup->execute();
 				$cleanupPackageLicense->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
@@ -765,12 +773,14 @@ class UpdatePackages extends CronJob {
 			WHERE
 				id NOT IN (SELECT arch FROM packages)
 			');
-		Database::query('
-			DELETE FROM
-				file_index
-			WHERE
-				id NOT IN (SELECT file_index FROM package_file_index)
-			');
+		if (Config::get('packages', 'files')) {
+			Database::query('
+				DELETE FROM
+					file_index
+				WHERE
+					id NOT IN (SELECT file_index FROM package_file_index)
+				');
+		}
 	}
 }
 

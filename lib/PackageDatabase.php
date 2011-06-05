@@ -20,7 +20,7 @@
 
 class PackageDatabase implements Iterator {
 
-	private $dbext = '.files';
+	private $dbext = '.db';
 
 	private $mtime = 0;
 	private $repoMinMTime = 0;
@@ -34,6 +34,9 @@ class PackageDatabase implements Iterator {
 	private $packageCount = null;
 
 	public function __construct($repository, $architecture, $repoMinMTime = 0, $packageMinMTime = 0) {
+		if (Config::get('packages', 'files')) {
+			$this->dbext = '.files';
+		}
 		$this->repoMinMTime = $repoMinMTime;
 		$this->packageMinMTime = $packageMinMTime;
 		$download = new Download(Config::get('packages', 'mirror').$repository.'/os/'.$architecture.'/'.$repository.$this->dbext);

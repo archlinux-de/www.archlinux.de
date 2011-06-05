@@ -206,11 +206,12 @@ class Packages extends Page {
 		if (strlen($this->search) < 2) {
 			$this->search = '';
 		}
-		$this->searchField = $this->getRequest('searchfield', array(
-				'name',
-				'description',
-				'file'
-			));
+
+		$searchFields = array('name', 'description');
+		if (Config::get('packages', 'files')) {
+			$searchFields[] = 'file';
+		}
+		$this->searchField = $this->getRequest('searchfield', $searchFields);
 	}
 
 	private function getClientArchitecture() {
@@ -256,11 +257,14 @@ class Packages extends Page {
 
 	private function getSearchFields() {
 		$options = '';
-		foreach (array(
+		$searchFields = array(
 			'name' => $this->l10n->getText('Name'),
-			'description' => $this->l10n->getText('Description'),
-			'file' => $this->l10n->getText('File')
-		) as $key => $value) {
+			'description' => $this->l10n->getText('Description')
+			);
+		if (Config::get('packages', 'files')) {
+			$searchFields['file'] = $this->l10n->getText('File');
+		}
+		foreach ($searchFields as $key => $value) {
 			if ($key == $this->searchField) {
 				$selected = ' checked="checked"';
 			} else {
