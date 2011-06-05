@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class RepositoryStatistics extends Page implements IDBCachable {
+class RepositoryStatistics extends Page implements IDatabaseCachable {
 
 	private static $barColors = array();
 	private static $barColorArray = array(
@@ -36,9 +36,9 @@ class RepositoryStatistics extends Page implements IDBCachable {
 		$this->setValue('body', $body);
 	}
 
-	public static function updateDBCache() {
+	public static function updateDatabaseCache() {
 		try {
-			DB::beginTransaction();
+			Database::beginTransaction();
 			self::$barColors = self::MultiColorFade(self::$barColorArray);
 			$data = self::getCommonRepositoryStatistics();
 			$body = '<div class="box">
@@ -136,15 +136,15 @@ class RepositoryStatistics extends Page implements IDBCachable {
 			</div>
 			';
 			ObjectStore::addObject('RepositoryStatistics', $body);
-			DB::commit();
+			Database::commit();
 		} catch (RuntimeException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			echo 'RepositoryStatistics failed:'.$e->getMessage();
 		}
 	}
 
 	private static function getCommonRepositoryStatistics() {
-		return DB::query('
+		return Database::query('
 		SELECT
 			(SELECT COUNT(*) FROM architectures) AS architectures,
 			(SELECT COUNT(*) FROM repositories) AS repositories,
@@ -193,15 +193,15 @@ class RepositoryStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getRepositoryStatistics() {
-		$repos = DB::query('SELECT DISTINCT name FROM repositories')->fetchALL(PDO::FETCH_COLUMN);
-		$total = DB::query('
+		$repos = Database::query('SELECT DISTINCT name FROM repositories')->fetchALL(PDO::FETCH_COLUMN);
+		$total = Database::query('
 			SELECT
 				COUNT(id) AS packages,
 				SUM(csize) AS size
 			FROM
 				packages
 			')->fetch();
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 			SELECT
 				COUNT(packages.id) AS packages,
 				SUM(packages.csize) AS size

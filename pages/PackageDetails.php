@@ -35,7 +35,7 @@ class PackageDetails extends Page {
 			$this->showFailure($this->l10n->getText('No package specified'));
 		}
 
-		$repository = DB::prepare('
+		$repository = Database::prepare('
 			SELECT
 				repositories.id
 			FROM
@@ -50,7 +50,7 @@ class PackageDetails extends Page {
 		$repository->bindParam('architectureName', $this->arch, PDO::PARAM_STR);
 		$repository->execute();
 
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 			SELECT
 				packages.id,
 				packages.filename,
@@ -251,7 +251,7 @@ class PackageDetails extends Page {
 	}
 
 	private function getLicenses() {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			licenses.name
 		FROM
@@ -271,7 +271,7 @@ class PackageDetails extends Page {
 	}
 
 	private function getGroups() {
-		$groups = DB::prepare('
+		$groups = Database::prepare('
 			SELECT
 				groups.name
 			FROM
@@ -291,7 +291,7 @@ class PackageDetails extends Page {
 	}
 
 	private function getFiles() {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			path
 		FROM
@@ -331,7 +331,7 @@ class PackageDetails extends Page {
 	}
 
 	private function getRelations($type) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			packages.id,
 			package_relation.dependsName AS name,
@@ -368,7 +368,7 @@ class PackageDetails extends Page {
 	}
 
 	private function getInverseRelations($type) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			packages.name,
 			package_relation.dependsVersion AS version,

@@ -18,9 +18,9 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-interface IDBCachable {
+interface IDatabaseCachable {
 
-	public static function updateDBCache();
+	public static function updateDatabaseCache();
 }
 
 ?>

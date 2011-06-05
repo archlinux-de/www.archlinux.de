@@ -36,8 +36,8 @@ class Packagers extends Page {
 		} catch(RequestException $e) {
 		}
 		$this->sort = Input::get()->getInt('sort', 0) > 0 ? 1 : 0;
-		$packages = DB::query('SELECT COUNT(*) FROM packages')->fetchColumn();
-		$packagers = DB::query('
+		$packages = Database::query('SELECT COUNT(*) FROM packages')->fetchColumn();
+		$packagers = Database::query('
 			SELECT
 			packagers.id,
 			packagers.name,

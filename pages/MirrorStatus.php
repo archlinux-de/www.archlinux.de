@@ -61,7 +61,7 @@ class MirrorStatus extends Page {
 				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->l10n->getText('Delay') . '</a></th>
 				<th><a href="?page=MirrorStatus;orderby=lastsync;sort=' . $reverseSort . '">' . $this->l10n->getText('Last update') . '</a></th>
 			</tr>';
-		$mirrors = DB::query('
+		$mirrors = Database::query('
 		SELECT
 			host,
 			country,

@@ -85,8 +85,8 @@ class PostPackageList extends Page {
 		$this->checkIfAlreadySubmitted();
 		$country = Input::getClientCountryName();
 		try {
-			DB::beginTransaction();
-			$stm = DB::prepare('
+			Database::beginTransaction();
+			$stm = Database::prepare('
 			INSERT INTO
 				pkgstats_users
 			SET
@@ -104,7 +104,7 @@ class PostPackageList extends Page {
 			!empty($mirror) && $stm->bindValue('mirror', htmlspecialchars($mirror), PDO::PARAM_STR);
 			$stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
 			$stm->execute();
-			$stm = DB::prepare('
+			$stm = Database::prepare('
 			INSERT INTO
 				pkgstats_packages
 			SET
@@ -119,9 +119,9 @@ class PostPackageList extends Page {
 				$stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
 				$stm->execute();
 			}
-			DB::commit();
+			Database::commit();
 		} catch(PDOException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			$this->setStatus(Output::INTERNAL_SERVER_ERROR);
 			$this->showFailure($e->getMessage());
 		}
@@ -145,7 +145,7 @@ class PostPackageList extends Page {
 	}
 
 	private function checkIfAlreadySubmitted() {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			COUNT(*) AS count,
 			MIN(time) AS mintime

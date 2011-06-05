@@ -36,7 +36,7 @@ class Packages extends Page {
 		$this->setValue('title', $this->l10n->getText('Package search'));
 		$this->initParameters();
 
-		$packages = DB::prepare('
+		$packages = Database::prepare('
 			SELECT
 				packages.id,
 				packages.name,
@@ -133,7 +133,7 @@ class Packages extends Page {
 	}
 
 	private function getRepositoryId($repositoryName, $architectureId) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -164,7 +164,7 @@ class Packages extends Page {
 	}
 
 	private function getArchitectureId($architectureName) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -297,7 +297,7 @@ class Packages extends Page {
 		$options = '<select name="group" onchange="this.form.submit()">
 			<option value=""></option>';
 
-		$groups = DB::query('
+		$groups = Database::query('
 			SELECT
 				name
 			FROM

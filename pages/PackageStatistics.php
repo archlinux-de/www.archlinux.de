@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class PackageStatistics extends Page implements IDBCachable {
+class PackageStatistics extends Page implements IDatabaseCachable {
 
 	private static $barColors = array();
 	private static $barColorArray = array(
@@ -36,9 +36,9 @@ class PackageStatistics extends Page implements IDBCachable {
 		$this->setValue('body', $body);
 	}
 
-	public static function updateDBCache() {
+	public static function updateDatabaseCache() {
 		try {
-			DB::beginTransaction();
+			Database::beginTransaction();
 			self::$barColors = self::MultiColorFade(self::$barColorArray);
 			$log = self::getCommonPackageUsageStatistics();
 			$body = '<div class="box">
@@ -89,15 +89,15 @@ class PackageStatistics extends Page implements IDBCachable {
 			</div>
 			';
 			ObjectStore::addObject('PackageStatistics', $body);
-			DB::commit();
+			Database::commit();
 		} catch (RuntimeException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			echo 'PackageStatistics failed:'.$e->getMessage();
 		}
 	}
 
 	private static function getCommonPackageUsageStatistics() {
-		return DB::query('
+		return Database::query('
 		SELECT
 			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
 			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
@@ -203,13 +203,13 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getSubmissionsPerArchitecture() {
-		$total = DB::query('
+		$total = Database::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
 		')->fetchColumn();
-		$arches = DB::query('
+		$arches = Database::query('
 		SELECT
 			COUNT(*) AS count,
 			arch AS name
@@ -226,7 +226,7 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPackagesPerRepository() {
-		$repos = DB::query('
+		$repos = Database::query('
 			SELECT DISTINCT
 				name
 			FROM
@@ -236,13 +236,13 @@ class PackageStatistics extends Page implements IDBCachable {
 				AND name NOT LIKE "%unstable"
 				AND name NOT LIKE "%staging"
 			')->fetchAll(PDO::FETCH_COLUMN);
-		$total = DB::query('
+		$total = Database::query('
 			SELECT
 				COUNT(*)
 			FROM
 				pkgstats_users
 		')->fetchColumn();
-		$countStm = DB::prepare('
+		$countStm = Database::prepare('
 			SELECT
 				COUNT(*)
 			FROM
@@ -267,7 +267,7 @@ class PackageStatistics extends Page implements IDBCachable {
 				) AS used
 				ON total.name = used.pkgname
 		');
-		$totalStm = DB::prepare('
+		$totalStm = Database::prepare('
 			SELECT
 				COUNT(*)
 			FROM
@@ -296,7 +296,7 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPopularPackagesPerRepository() {
-		$repos = DB::query('
+		$repos = Database::query('
 			SELECT DISTINCT
 				name
 			FROM
@@ -306,13 +306,13 @@ class PackageStatistics extends Page implements IDBCachable {
 				AND name NOT LIKE "%unstable"
 				AND name NOT LIKE "%staging"
 			')->fetchAll(PDO::FETCH_COLUMN);
-		$total = DB::query('
+		$total = Database::query('
 			SELECT
 				COUNT(*)
 			FROM
 				pkgstats_users
 		')->fetchColumn();
-		$packages = DB::prepare('
+		$packages = Database::prepare('
 			SELECT
 				pkgname,
 				SUM(count) AS count
@@ -355,13 +355,13 @@ class PackageStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getPopularUnofficialPackages() {
-		$total = DB::query('
+		$total = Database::query('
 			SELECT
 				COUNT(*)
 			FROM
 				pkgstats_users
 		')->fetchColumn();
-		$packages = DB::query('
+		$packages = Database::query('
 			SELECT
 				pkgname,
 				SUM(count) AS count

@@ -33,7 +33,7 @@ class PackagesSuggest extends Page {
 			$field = Input::get()->getString('field', 'name');
 			switch ($field) {
 				case 'name':
-					$stm = DB::prepare('
+					$stm = Database::prepare('
 						SELECT DISTINCT
 							name
 						FROM
@@ -51,7 +51,7 @@ class PackagesSuggest extends Page {
 					$repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
 				break;
 				case 'file':
-					$stm = DB::prepare('
+					$stm = Database::prepare('
 						SELECT DISTINCT
 							name
 						FROM

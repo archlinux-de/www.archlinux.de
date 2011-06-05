@@ -23,9 +23,9 @@ Config::set('common', 'email', 'webmaster@localhost');
 Config::set('common', 'tmpdir', '/tmp');
 Config::set('common', 'sitename', 'archportal');
 
-Config::set('DB', 'database', 'pkgdb');
-Config::set('DB', 'user', 'root');
-Config::set('DB', 'password', '');
+Config::set('Database', 'database', 'archportal');
+Config::set('Database', 'user', 'root');
+Config::set('Database', 'password', '');
 
 Config::set('L10n', 'locale', 'en_US.utf8');
 Config::set('L10n', 'timezone', 'UTC');
@@ -41,7 +41,7 @@ Config::set('packages', 'repositories', array(
 			'multilib-testing' => array('x86_64')
 		));
 
-Config::set('mirrors', 'status', 'http://www.archlinux.org/mirrors/status/json/');
+Config::set('mirrors', 'status', 'https://www.archlinux.org/mirrors/status/json/');
 Config::set('mirrors', 'default', 'http://mirrors.kernel.org/archlinux/');
 Config::set('mirrors', 'country', 'Any');
 

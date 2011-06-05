@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class DB {
+class Database {
 
 	private static $pdo = null;
 
@@ -26,9 +26,9 @@ class DB {
 
 	public static function __callStatic($name, $args) {
 		if (is_null(self::$pdo)) {
-			self::$pdo = new PDO('mysql:dbname='.Config::get('DB', 'database'),
-				Config::get('DB', 'user'),
-				Config::get('DB', 'password'),
+			self::$pdo = new PDO('mysql:dbname='.Config::get('Database', 'database'),
+				Config::get('Database', 'user'),
+				Config::get('Database', 'password'),
 				array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
 				      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
 			);

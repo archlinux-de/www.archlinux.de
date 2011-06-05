@@ -31,7 +31,7 @@ class GetFileFromMirror extends Page {
 		if (empty($country)) {
 			$country = Config::get('mirrors', 'country');
 		}
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			host
 		FROM

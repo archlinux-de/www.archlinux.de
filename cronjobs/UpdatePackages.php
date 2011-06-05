@@ -71,7 +71,7 @@ class UpdatePackages extends CronJob {
 
 	public function execute() {
 		try {
-			DB::beginTransaction();
+			Database::beginTransaction();
 			$this->prepareQueries();
 
 			foreach (Config::get('packages', 'repositories') as $repo => $arches) {
@@ -120,16 +120,16 @@ class UpdatePackages extends CronJob {
 				$this->resolveRelations();
 			}
 
-			DB::commit();
+			Database::commit();
 		} catch (RuntimeException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			$this->printError('UpdatePackages failed at line '.$e->getLine().': '.$e->getMessage());
 		}
 	}
 
 	private function prepareQueries() {
 		// arches
-		$this->selectArchId = DB::prepare('
+		$this->selectArchId = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -137,7 +137,7 @@ class UpdatePackages extends CronJob {
 			WHERE
 				name = :name
 			');
-		$this->insertArchName = DB::prepare('
+		$this->insertArchName = Database::prepare('
 			INSERT INTO
 				architectures
 			SET
@@ -145,7 +145,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		//repos
-		$this->selectRepoId = DB::prepare('
+		$this->selectRepoId = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -154,7 +154,7 @@ class UpdatePackages extends CronJob {
 				name = :name
 				AND arch = :arch
 			');
-		$this->insertRepoName = DB::prepare('
+		$this->insertRepoName = Database::prepare('
 			INSERT INTO
 				repositories
 			SET
@@ -164,7 +164,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// mtime
-		$this->selectRepoMTime = DB::prepare('
+		$this->selectRepoMTime = Database::prepare('
 			SELECT
 				mtime
 			FROM
@@ -172,7 +172,7 @@ class UpdatePackages extends CronJob {
 			WHERE
 				id = :repoId
 			');
-		$this->updateRepoMTime = DB::prepare('
+		$this->updateRepoMTime = Database::prepare('
 			UPDATE
 				repositories
 			SET
@@ -180,7 +180,7 @@ class UpdatePackages extends CronJob {
 			WHERE
 				id = :repoId
 			');
-		$this->selectPackageMTime = DB::prepare('
+		$this->selectPackageMTime = Database::prepare('
 			SELECT
 				MAX(mtime)
 			FROM
@@ -190,7 +190,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// packages
-		$this->selectPackageId = DB::prepare('
+		$this->selectPackageId = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -200,7 +200,7 @@ class UpdatePackages extends CronJob {
 				AND arch = :archId
 				AND name = :pkgname
 			');
-		$this->updatePackage = DB::prepare('
+		$this->updatePackage = Database::prepare('
 			UPDATE
 				packages
 			SET
@@ -221,7 +221,7 @@ class UpdatePackages extends CronJob {
 			WHERE
 				id = :id
 			');
-		$this->insertPackage = DB::prepare('
+		$this->insertPackage = Database::prepare('
 			INSERT INTO
 				packages
 			SET
@@ -242,7 +242,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// packagers
-		$this->selectPackager = DB::prepare('
+		$this->selectPackager = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -251,7 +251,7 @@ class UpdatePackages extends CronJob {
 				name = :name
 				AND email = :email
 			');
-		$this->insertPackager = DB::prepare('
+		$this->insertPackager = Database::prepare('
 			INSERT INTO
 				packagers
 			SET
@@ -260,7 +260,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// groups
-		$this->selectGroup = DB::prepare('
+		$this->selectGroup = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -268,19 +268,19 @@ class UpdatePackages extends CronJob {
 			WHERE
 				name = :name
 			');
-		$this->insertGroup = DB::prepare('
+		$this->insertGroup = Database::prepare('
 			INSERT INTO
 				groups
 			SET
 				name = :name
 			');
-		$this->cleanupPackageGroup = DB::prepare('
+		$this->cleanupPackageGroup = Database::prepare('
 			DELETE FROM
 				package_group
 			WHERE
 				package = :package
 			');
-		$this->insertPackageGroup = DB::prepare('
+		$this->insertPackageGroup = Database::prepare('
 			INSERT INTO
 				package_group
 			SET
@@ -289,7 +289,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// licenses
-		$this->selectLicense = DB::prepare('
+		$this->selectLicense = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -297,19 +297,19 @@ class UpdatePackages extends CronJob {
 			WHERE
 				name = :name
 			');
-		$this->insertLicense = DB::prepare('
+		$this->insertLicense = Database::prepare('
 			INSERT INTO
 				licenses
 			SET
 				name = :name
 			');
-		$this->cleanupPackageLicense = DB::prepare('
+		$this->cleanupPackageLicense = Database::prepare('
 			DELETE FROM
 				package_license
 			WHERE
 				package = :package
 			');
-		$this->insertPackageLicense = DB::prepare('
+		$this->insertPackageLicense = Database::prepare('
 			INSERT INTO
 				package_license
 			SET
@@ -318,7 +318,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// files
-		$this->selectFileIndex = DB::prepare('
+		$this->selectFileIndex = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -326,32 +326,32 @@ class UpdatePackages extends CronJob {
 			WHERE
 				name = :name
 			');
-		$this->insertFileIndex = DB::prepare('
+		$this->insertFileIndex = Database::prepare('
 			INSERT INTO
 				file_index
 			SET
 				name = :name
 			');
-		$this->cleanupPackageFileIndex = DB::prepare('
+		$this->cleanupPackageFileIndex = Database::prepare('
 			DELETE FROM
 				package_file_index
 			WHERE
 				package = :package
 			');
-		$this->cleanupFiles = DB::prepare('
+		$this->cleanupFiles = Database::prepare('
 			DELETE FROM
 				files
 			WHERE
 				package = :package
 			');
-		$this->insertFiles = DB::prepare('
+		$this->insertFiles = Database::prepare('
 			INSERT INTO
 				files
 			SET
 				package = :package,
 				path = :path
 			');
-		$this->insertPackageFileIndex = DB::prepare('
+		$this->insertPackageFileIndex = Database::prepare('
 			INSERT INTO
 				package_file_index
 			SET
@@ -360,14 +360,14 @@ class UpdatePackages extends CronJob {
 			');
 
 		// relations
-		$this->cleanupRelation = DB::prepare('
+		$this->cleanupRelation = Database::prepare('
 			DELETE FROM
 				package_relation
 			WHERE
 				packageId = :packageId
 				AND type = :type
 			');
-		$this->insertRelation = DB::prepare('
+		$this->insertRelation = Database::prepare('
 			INSERT INTO
 				package_relation
 			SET
@@ -387,7 +387,7 @@ class UpdatePackages extends CronJob {
 			if ($id === false) {
 				$this->insertArchName->bindParam('name', $archHtml, PDO::PARAM_STR);
 				$this->insertArchName->execute();
-				$id = DB::lastInsertId();
+				$id = Database::lastInsertId();
 			}
 			$this->arches[$archName] = $id;
 		}
@@ -405,7 +405,7 @@ class UpdatePackages extends CronJob {
 			$this->insertRepoName->bindParam('arch', $archId, PDO::PARAM_INT);
 			$this->insertRepoName->bindValue('testing', (preg_match('/(-|^)testing$/', $repoName) > 0 ? 1 : 0), PDO::PARAM_INT);
 			$this->insertRepoName->execute();
-			$id = DB::lastInsertId();
+			$id = Database::lastInsertId();
 		}
 		return $id;
 	}
@@ -423,7 +423,7 @@ class UpdatePackages extends CronJob {
 				$this->insertPackager->bindParam('name', $name, PDO::PARAM_STR);
 				$this->insertPackager->bindParam('email', $email, PDO::PARAM_STR);
 				$this->insertPackager->execute();
-				$id = DB::lastInsertId();
+				$id = Database::lastInsertId();
 			}
 			$this->packagers[$packager] = $id;
 		}
@@ -449,7 +449,7 @@ class UpdatePackages extends CronJob {
 			if ($id === false) {
 				$this->insertGroup->bindParam('name', $htmlGroup, PDO::PARAM_STR);
 				$this->insertGroup->execute();
-				$id = DB::lastInsertId();
+				$id = Database::lastInsertId();
 			}
 			$this->groups[$groupName] = $id;
 		}
@@ -475,7 +475,7 @@ class UpdatePackages extends CronJob {
 			if ($id === false) {
 				$this->insertLicense->bindParam('name', $htmlLicense, PDO::PARAM_STR);
 				$this->insertLicense->execute();
-				$id = DB::lastInsertId();
+				$id = Database::lastInsertId();
 			}
 			$this->licenses[$licenseName] = $id;
 		}
@@ -514,7 +514,7 @@ class UpdatePackages extends CronJob {
 			if ($id === false) {
 				$this->insertFileIndex->bindParam('name', $htmlFile, PDO::PARAM_STR);
 				$this->insertFileIndex->execute();
-				$id = DB::lastInsertId();
+				$id = Database::lastInsertId();
 			}
 			$this->files[$fileName] = $id;
 		}
@@ -578,7 +578,7 @@ class UpdatePackages extends CronJob {
 		$packageStm->execute();
 
 		if ($packageId === false) {
-			$packageId = DB::lastInsertId();
+			$packageId = Database::lastInsertId();
 		}
 
 		$this->addPackageToGroups($packageId, $package->getGroups());
@@ -598,7 +598,7 @@ class UpdatePackages extends CronJob {
 
 	private function resolveRelations() {
 		// Reset all relations
-		DB::query('
+		Database::query('
 			UPDATE
 				package_relation
 			SET
@@ -606,7 +606,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// Look for depends within the same repo
-		DB::query('
+		Database::query('
 			UPDATE
 				package_relation,
 				packages,
@@ -623,7 +623,7 @@ class UpdatePackages extends CronJob {
 			');
 
 		// Look for depends in other repos except testing repos
-		DB::query('
+		Database::query('
 			UPDATE
 				package_relation,
 				packages,
@@ -644,43 +644,43 @@ class UpdatePackages extends CronJob {
 	}
 
 	private function cleanupObsoletePackages($repoId, $packageMTime, $allPackages) {
-		$cleanupPackages = DB::prepare('
+		$cleanupPackages = Database::prepare('
 			DELETE FROM
 				packages
 			WHERE
 				id = :packageId
 			');
-		$cleanupRelations = DB::prepare('
+		$cleanupRelations = Database::prepare('
 			DELETE FROM
 				package_relation
 			WHERE
 				packageId = :packageId
 			');
-		$cleanupFiles = DB::prepare('
+		$cleanupFiles = Database::prepare('
 			DELETE FROM
 				files
 			WHERE
 				package = :packageId
 			');
-		$cleanupPackageFileIndex = DB::prepare('
+		$cleanupPackageFileIndex = Database::prepare('
 			DELETE FROM
 				package_file_index
 			WHERE
 				package = :packageId
 			');
-		$cleanupPackageGroup = DB::prepare('
+		$cleanupPackageGroup = Database::prepare('
 			DELETE FROM
 				package_group
 			WHERE
 				package = :packageId
 			');
-		$cleanupPackageLicense = DB::prepare('
+		$cleanupPackageLicense = Database::prepare('
 			DELETE FROM
 				package_license
 			WHERE
 				package = :packageId
 			');
-		$repoPackages = DB::prepare('
+		$repoPackages = Database::prepare('
 			SELECT
 				id,
 				name
@@ -714,7 +714,7 @@ class UpdatePackages extends CronJob {
 	}
 
 	private function cleanupObsoleteRepositories() {
-		$repos = DB::prepare('
+		$repos = Database::prepare('
 			SELECT
 				repositories.id,
 				repositories.name,
@@ -729,7 +729,7 @@ class UpdatePackages extends CronJob {
 			if (!isset($configRepos[$repo['name']])
 				|| !in_array($repo['arch'], $configRepos[$repo['name']])) {
 				$this->cleanupObsoletePackages($repo['id'], time(), array());
-				DB::query('
+				Database::query('
 					DELETE FROM
 						repositories
 					WHERE
@@ -741,31 +741,31 @@ class UpdatePackages extends CronJob {
 	}
 
 	private function cleanupDatabase() {
-		DB::query('
+		Database::query('
 			DELETE FROM
 				groups
 			WHERE
 				id NOT IN (SELECT package_group.group FROM package_group)
 			');
-		DB::query('
+		Database::query('
 			DELETE FROM
 				licenses
 			WHERE
 				id NOT IN (SELECT license FROM package_license)
 			');
-		DB::query('
+		Database::query('
 			DELETE FROM
 				packagers
 			WHERE
 				id NOT IN (SELECT packager FROM packages)
 			');
-		DB::query('
+		Database::query('
 			DELETE FROM
 				architectures
 			WHERE
 				id NOT IN (SELECT arch FROM packages)
 			');
-		DB::query('
+		Database::query('
 			DELETE FROM
 				file_index
 			WHERE

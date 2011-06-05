@@ -80,7 +80,7 @@ class Start extends Page {
 	}
 
 	private function getArchitectureId($architectureName) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 			SELECT
 				id
 			FROM
@@ -115,7 +115,7 @@ class Start extends Page {
 	}
 
 	private function getRecentPackages() {
-		$packages = DB::prepare('
+		$packages = Database::prepare('
 		SELECT
 			packages.name,
 			packages.version,

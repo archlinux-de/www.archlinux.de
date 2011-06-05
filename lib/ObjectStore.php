@@ -21,7 +21,7 @@
 class ObjectStore {
 
 	public static function addObject($key, $object, $ttl = 0) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		REPLACE INTO
 			cache
 		SET
@@ -37,7 +37,7 @@ class ObjectStore {
 
 	public static function getObject($key) {
 		self::collectGarbage();
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			value
 		FROM
@@ -56,7 +56,7 @@ class ObjectStore {
 	}
 
 	public static function isObject($key) {
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			value
 		FROM
@@ -73,7 +73,7 @@ class ObjectStore {
 	private static function collectGarbage() {
 		/* Ignore 49% of requests */
 		if (!mt_rand(0, 50)) {
-			$stm = DB::prepare('
+			$stm = Database::prepare('
 			DELETE FROM
 				cache
 			WHERE

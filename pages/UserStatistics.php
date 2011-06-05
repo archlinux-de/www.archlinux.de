@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class UserStatistics extends Page implements IDBCachable {
+class UserStatistics extends Page implements IDatabaseCachable {
 
 	private static $barColors = array();
 	private static $barColorArray = array(
@@ -36,9 +36,9 @@ class UserStatistics extends Page implements IDBCachable {
 		$this->setValue('body', $body);
 	}
 
-	public static function updateDBCache() {
+	public static function updateDatabaseCache() {
 		try {
-			DB::beginTransaction();
+			Database::beginTransaction();
 			self::$barColors = self::MultiColorFade(self::$barColorArray);
 			$log = self::getCommonPackageUsageStatistics();
 			$body = '<div class="box">
@@ -100,15 +100,15 @@ class UserStatistics extends Page implements IDBCachable {
 			</div>
 			';
 			ObjectStore::addObject('UserStatistics', $body);
-			DB::commit();
+			Database::commit();
 		} catch (RuntimeException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			echo 'UserStatistics failed:'.$e->getMessage();
 		}
 	}
 
 	private static function getCommonPackageUsageStatistics() {
-		return DB::query('
+		return Database::query('
 		SELECT
 			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
 			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
@@ -123,13 +123,13 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getCountryStatistics() {
-		$total = DB::query('
+		$total = Database::query('
 		SELECT
 			COUNT(country)
 		FROM
 			pkgstats_users
 		')->fetchColumn();
-		$countries = DB::query('
+		$countries = Database::query('
 		SELECT
 			country,
 			COUNT(country) AS count
@@ -150,13 +150,13 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getMirrorStatistics() {
-		$total = DB::query('
+		$total = Database::query('
 		SELECT
 			COUNT(mirror)
 		FROM
 			pkgstats_users
 		')->fetchColumn();
-		$mirrors = DB::query('
+		$mirrors = Database::query('
 		SELECT
 			mirror,
 			COUNT(mirror) AS count
@@ -192,14 +192,14 @@ class UserStatistics extends Page implements IDBCachable {
 			'http' => 0,
 			'ftp' => 0
 		);
-		$total = DB::query('
+		$total = Database::query('
 		SELECT
 			COUNT(mirror)
 		FROM
 			pkgstats_users
 		')->fetchColumn();
 		foreach ($protocolls as $protocoll => $count) {
-			$protocolls[$protocoll] = DB::query('
+			$protocolls[$protocoll] = Database::query('
 			SELECT
 				COUNT(mirror)
 			FROM
@@ -283,13 +283,13 @@ class UserStatistics extends Page implements IDBCachable {
 	}
 
 	private static function getSubmissionsPerArchitecture() {
-		$total = DB::query('
+		$total = Database::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
 		')->fetchColumn();
-		$arches = DB::query('
+		$arches = Database::query('
 		SELECT
 			COUNT(*) AS count,
 			arch AS name

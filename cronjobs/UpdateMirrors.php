@@ -42,9 +42,9 @@ class UpdateMirrors extends CronJob {
 
 	private function updateMirrorlist($mirrors) {
 		try {
-			DB::beginTransaction();
-			DB::query('DELETE FROM mirrors');
-			$stm = DB::prepare('
+			Database::beginTransaction();
+			Database::query('DELETE FROM mirrors');
+			$stm = Database::prepare('
 			INSERT INTO
 				mirrors
 			SET
@@ -73,9 +73,9 @@ class UpdateMirrors extends CronJob {
 				$stm->bindParam('time', $mirror['duration_avg'], PDO::PARAM_STR);
 				$stm->execute();
 			}
-			DB::commit();
+			Database::commit();
 		} catch(RuntimeException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			echo ('Warning: updateMirrorlist failed: ' . $e->getMessage());
 		}
 	}

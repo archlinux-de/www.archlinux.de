@@ -28,7 +28,7 @@ class GetRecentPackages extends Page {
 
 		$id = $dom->createElement('id', Input::getPath());
 		$title = $dom->createElement('title', $this->l10n->getText('Recent Arch Linux packages'));
-		$updated = $dom->createElement('updated', date('c', DB::query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
+		$updated = $dom->createElement('updated', date('c', Database::query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
 
 		$author = $dom->createElement('author');
 		$authorName = $dom->createElement('name', Config::get('common', 'sitename'));
@@ -59,7 +59,7 @@ class GetRecentPackages extends Page {
 		$body->appendChild($icon);
 		$body->appendChild($logo);
 
-		$packages = DB::query('
+		$packages = Database::query('
 		SELECT
 			packages.name,
 			packages.builddate,

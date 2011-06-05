@@ -26,10 +26,10 @@ class UpdatePkgstats extends CronJob {
 
 
 	public function execute() {
-		RepositoryStatistics::updateDBCache();
-		PackageStatistics::updateDBCache();
-		UserStatistics::updateDBCache();
-		FunStatistics::updateDBCache();
+		RepositoryStatistics::updateDatabaseCache();
+		PackageStatistics::updateDatabaseCache();
+		UserStatistics::updateDatabaseCache();
+		FunStatistics::updateDatabaseCache();
 	}
 }
 

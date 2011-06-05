@@ -18,7 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class FunStatistics extends Page implements IDBCachable {
+class FunStatistics extends Page implements IDatabaseCachable {
 
 	private static $barColors = array();
 	private static $barColorArray = array(
@@ -36,9 +36,9 @@ class FunStatistics extends Page implements IDBCachable {
 		$this->setValue('body', $body);
 	}
 
-	public static function updateDBCache() {
+	public static function updateDatabaseCache() {
 		try {
-			DB::beginTransaction();
+			Database::beginTransaction();
 			self::$barColors = self::MultiColorFade(self::$barColorArray);
 			$body = '<div class="box">
 			<table id="packagedetails">
@@ -164,21 +164,21 @@ class FunStatistics extends Page implements IDBCachable {
 			</div>
 			';
 			ObjectStore::addObject('FunStatistics', $body);
-			DB::commit();
+			Database::commit();
 		} catch (RuntimeException $e) {
-			DB::rollBack();
+			Database::rollBack();
 			echo 'FunStatistics failed:'.$e->getMessage();
 		}
 	}
 
 	private static function getPackageStatistics($packages) {
-		$total = DB::query('
+		$total = Database::query('
 		SELECT
 			COUNT(*)
 		FROM
 			pkgstats_users
 		')->fetchColumn();
-		$stm = DB::prepare('
+		$stm = Database::prepare('
 		SELECT
 			SUM(count)
 		FROM

@@ -24,7 +24,7 @@ class MirrorStatusReflector extends Page {
 	private $text = '';
 
 	public function prepare() {
-		$mirrors = DB::query('
+		$mirrors = Database::query('
 		SELECT
 			host,
 			lastsync

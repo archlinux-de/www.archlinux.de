@@ -22,10 +22,10 @@ function __autoload($class) {
 	$availableClasses = array(
 		'Config' => '/Config.php',
 		'CronJob' => '/CronJob.php',
-		'DB' => '/DB.php',
+		'Database' => '/Database.php',
 		'Download' => '/Download.php',
 		'Exceptions' => '/Exceptions.php',
-		'IDBCachable' => '/IDBCachable.php',
+		'IDatabaseCachable' => '/IDatabaseCachable.php',
 		'Input' => '/Input.php',
 		'L10n' => '/L10n.php',
 		'ObjectCache' => '/ObjectCache.php',

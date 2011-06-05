@@ -23,7 +23,7 @@ class MirrorStatusJSON extends Page {
 	private $json = '';
 
 	public function prepare() {
-		$mirrors = DB::query('
+		$mirrors = Database::query('
 		SELECT
 			host,
 			country,

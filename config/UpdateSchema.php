@@ -23,11 +23,11 @@ require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
 
 system('mysqldump -d -u'
-	.'\''.escapeshellcmd(Config::get('DB', 'user')).'\''
+	.'\''.escapeshellcmd(Config::get('Database', 'user')).'\''
 	.' '
-	.escapeshellcmd(strlen(Config::get('DB', 'password')) > 0 ? '-p\''.Config::get('DB', 'password').'\'' : '')
+	.escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\''.Config::get('Database', 'password').'\'' : '')
 	.' '
-	.'\''.escapeshellcmd(Config::get('DB', 'database')).'\''
+	.'\''.escapeshellcmd(Config::get('Database', 'database')).'\''
 	.' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > archportal_schema.sql'
 );
 
