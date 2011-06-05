@@ -35,15 +35,11 @@ function __autoload($class) {
 		'Page' => '/Page.php',
 		'Request' => '/Request.php',
 
-		'ArchitectureDifferences' => '/../pages/ArchitectureDifferences.php',
 		'GetFileFromMirror' => '/../pages/GetFileFromMirror.php',
 		'GetOpenSearch' => '/../pages/GetOpenSearch.php',
 		'GetRecentNews' => '/../pages/GetRecentNews.php',
 		'GetRecentPackages' => '/../pages/GetRecentPackages.php',
-		'MirrorProblems' => '/../pages/MirrorProblems.php',
-		'MirrorStatusJSON' => '/../pages/MirrorStatusJSON.php',
 		'MirrorStatus' => '/../pages/MirrorStatus.php',
-		'MirrorStatusReflector' => '/../pages/MirrorStatusReflector.php',
 		'NotFound' => '/../pages/NotFound.php',
 		'PackageDetails' => '/../pages/PackageDetails.php',
 		'Packagers' => '/../pages/Packagers.php',
@@ -60,6 +56,15 @@ function __autoload($class) {
 			'UserStatistics' => '/../pages/UserStatistics.php',
 			'FunStatistics' => '/../pages/FunStatistics.php',
 			'RepositoryStatistics' => '/../pages/RepositoryStatistics.php'
+		));
+	}
+
+	if (Config::get('common', 'legacysites')) {
+		$availableClasses = array_merge($availableClasses, array(
+			'MirrorStatusReflector' => '/../pages/MirrorStatusReflector.php',
+			'MirrorStatusJSON' => '/../pages/MirrorStatusJSON.php',
+			'MirrorProblems' => '/../pages/MirrorProblems.php',
+			'ArchitectureDifferences' => '/../pages/ArchitectureDifferences.php'
 		));
 	}
 

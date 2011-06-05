@@ -19,6 +19,7 @@
 */
 
 Config::set('common', 'statistics', false);
+Config::set('common', 'legacysites', false);
 Config::set('common', 'debug', false);
 Config::set('common', 'email', 'webmaster@localhost');
 Config::set('common', 'tmpdir', '/tmp');
