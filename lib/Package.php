@@ -66,7 +66,7 @@ class Package {
 	}
 
 	public function getDescription() {
-		return isset($this->desc['DESC'][0]) ? $this->desc['DESC'][0] : '';
+		return isset($this->desc['DESC'][0]) ? mb_strcut($this->desc['DESC'][0], 0, 255, 'UTF-8') : '';
 	}
 
 	public function getGroups() {

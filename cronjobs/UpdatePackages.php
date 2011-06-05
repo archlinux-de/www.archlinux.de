@@ -123,7 +123,7 @@ class UpdatePackages extends CronJob {
 			DB::commit();
 		} catch (RuntimeException $e) {
 			DB::rollBack();
-			$this->printError('UpdatePackages failed:'.$e->getMessage().' at line '.$e->getLine());
+			$this->printError('UpdatePackages failed at line '.$e->getLine().': '.$e->getMessage());
 		}
 	}
 

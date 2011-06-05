@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.10, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.13, for Linux (x86_64)
 --
 -- Host: localhost    Database: pkgdb
 -- ------------------------------------------------------
--- Server version	5.5.10
+-- Server version	5.5.13
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -286,7 +286,7 @@ CREATE TABLE `repositories` (
   `name` varchar(50) NOT NULL,
   `arch` int(11) unsigned NOT NULL,
   `testing` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `mtime` int(10) unsigned NOT NULL,
+  `mtime` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`arch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -301,4 +301,4 @@ CREATE TABLE `repositories` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-03-27 13:43:43
+-- Dump completed on 2011-06-05 12:08:31

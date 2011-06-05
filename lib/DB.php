@@ -29,9 +29,12 @@ class DB {
 			self::$pdo = new PDO('mysql:dbname='.Config::get('DB', 'database'),
 				Config::get('DB', 'user'),
 				Config::get('DB', 'password'),
-				array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
+				array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
 				      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
 			);
+			if (Config::get('common', 'debug')) {
+				self::$pdo->query('SET sql_mode="STRICT_ALL_TABLES"');
+			}
 		}
 		return call_user_func_array(array(self::$pdo, $name), $args);
 	}
