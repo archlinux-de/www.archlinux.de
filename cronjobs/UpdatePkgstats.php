@@ -19,6 +19,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require (__DIR__.'/../lib/Config.php');
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
 
@@ -26,10 +27,12 @@ class UpdatePkgstats extends CronJob {
 
 
 	public function execute() {
-		RepositoryStatistics::updateDatabaseCache();
-		PackageStatistics::updateDatabaseCache();
-		UserStatistics::updateDatabaseCache();
-		FunStatistics::updateDatabaseCache();
+		if (Config::get('common', 'statistics')) {
+			RepositoryStatistics::updateDatabaseCache();
+			PackageStatistics::updateDatabaseCache();
+			UserStatistics::updateDatabaseCache();
+			FunStatistics::updateDatabaseCache();
+		}
 	}
 }
 

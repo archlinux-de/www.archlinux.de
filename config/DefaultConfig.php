@@ -18,6 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+Config::set('common', 'statistics', false);
 Config::set('common', 'debug', false);
 Config::set('common', 'email', 'webmaster@localhost');
 Config::set('common', 'tmpdir', '/tmp');

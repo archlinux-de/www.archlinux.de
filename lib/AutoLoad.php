@@ -20,7 +20,6 @@
 
 function __autoload($class) {
 	$availableClasses = array(
-		'Config' => '/Config.php',
 		'CronJob' => '/CronJob.php',
 		'Database' => '/Database.php',
 		'Download' => '/Download.php',
@@ -37,7 +36,6 @@ function __autoload($class) {
 		'Request' => '/Request.php',
 
 		'ArchitectureDifferences' => '/../pages/ArchitectureDifferences.php',
-		'FunStatistics' => '/../pages/FunStatistics.php',
 		'GetFileFromMirror' => '/../pages/GetFileFromMirror.php',
 		'GetOpenSearch' => '/../pages/GetOpenSearch.php',
 		'GetRecentNews' => '/../pages/GetRecentNews.php',
@@ -51,13 +49,19 @@ function __autoload($class) {
 		'Packagers' => '/../pages/Packagers.php',
 		'Packages' => '/../pages/Packages.php',
 		'PackagesSuggest' => '/../pages/PackagesSuggest.php',
-		'PackageStatistics' => '/../pages/PackageStatistics.php',
-		'PostPackageList' => '/../pages/PostPackageList.php',
-		'RepositoryStatistics' => '/../pages/RepositoryStatistics.php',
-		'Start' => '/../pages/Start.php',
-		'Statistics' => '/../pages/Statistics.php',
-		'UserStatistics' => '/../pages/UserStatistics.php'
+		'Start' => '/../pages/Start.php'
 	);
+
+	if (Config::get('common', 'statistics')) {
+		$availableClasses = array_merge($availableClasses, array(
+			'PostPackageList' => '/../pages/PostPackageList.php',
+			'Statistics' => '/../pages/Statistics.php',
+			'PackageStatistics' => '/../pages/PackageStatistics.php',
+			'UserStatistics' => '/../pages/UserStatistics.php',
+			'FunStatistics' => '/../pages/FunStatistics.php',
+			'RepositoryStatistics' => '/../pages/RepositoryStatistics.php'
+		));
+	}
 
 	if (isset($availableClasses[$class])) {
 		require (__DIR__.$availableClasses[$class]);

@@ -18,6 +18,7 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require (__DIR__.'/lib/Config.php');
 require (__DIR__.'/lib/Exceptions.php');
 require (__DIR__.'/lib/AutoLoad.php');
 
