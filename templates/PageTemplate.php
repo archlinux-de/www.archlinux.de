@@ -26,7 +26,7 @@
 </head>
 <body>
 	<div id="archnavbar" class="anb-<?php echo strtolower($this->getName()); ?>">
-		<div id="archnavbarlogo"><h1><a href="?page=Start">Arch Linux</a></h1></div>
+		<div id="archnavbarlogo"><h1><a href="<?php echo $this->createUrl('Start'); ?>">Arch Linux</a></h1></div>
 		<div id="archnavbarmenu">
 		<ul id="archnavbarlist">
 			<?php echo $this->l10n->getTextFile('PageMenu'); ?>

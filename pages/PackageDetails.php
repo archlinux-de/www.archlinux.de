@@ -121,11 +121,11 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Repository').'</th>
-				<td><a href="?page=Packages;repository=' . $data['repository'] . '">' . $data['repository'] . '</a></td>
+				<td><a href="'.$this->createUrl('Packages', array('repository' => $data['repository'])).'">' . $data['repository'] . '</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Architecture').'</th>
-				<td><a href="?page=Packages;architecture=' . $data['architecture'] . '">' . $data['architecture'] . '</a></td>
+				<td><a href="'.$this->createUrl('Packages', array('architecture' => $data['architecture'])).'">' . $data['architecture'] . '</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Groups').'</th>
@@ -133,7 +133,7 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Packager').'</th>
-				<td><a href="?page=Packages;packager=' . $data['packagerid'] . '">' . $data['packager'] . '</a>' . (!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:' . $data['packageremail'] . '">@</a>' : '') . '</td>
+				<td><a href="'.$this->createUrl('Packages', array('packager' => $data['packagerid'])).'">' . $data['packager'] . '</a>' . (!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:' . $data['packageremail'] . '">@</a>' : '') . '</td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Build date').'</th>
@@ -157,7 +157,7 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Package').'</th>
-				<td><a href="?page=GetFileFromMirror;file=' . $data['repository'] . '/os/' . $data['architecture'] . '/' . $data['filename'] . '">' . $data['filename'] . '</a></td>
+				<td><a href="'.$this->createUrl('GetFileFromMirror', array('file' => $data['repository'].'/os/'.$data['architecture'].'/'.$data['filename'])).'">' . $data['filename'] . '</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('MD5 checksum').'</th>
@@ -223,7 +223,7 @@ class PackageDetails extends Page {
 				</tr>
 				<tr>
 					<td>
-						' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="?page=PackageDetails;repo=' . $this->repo . ';arch=' . $this->arch . ';pkgname=' . $this->pkgname . ';showfiles=1">'.$this->l10n->getText('Show files').'</a>') . '
+						' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="'.$this->createUrl('PackageDetails', array('repo' => $this->repo, 'arch' => $this->arch, 'pkgname' => $this->pkgname, 'showfiles' => '1')).'">'.$this->l10n->getText('Show files').'</a>') . '
 					</td>
 				</tr>
 			</table>';
@@ -288,7 +288,7 @@ class PackageDetails extends Page {
 		$groups->execute();
 		$list = array();
 		while ($group = $groups->fetchColumn()) {
-			$list[] = '<a href="?page=Packages;group=' . urlencode($group) . '">' . $group . '</a>';
+			$list[] = '<a href="'.$this->createUrl('Packages', array('group' => $group)).'">' . $group . '</a>';
 		}
 		return implode(', ', $list);
 	}
@@ -363,7 +363,7 @@ class PackageDetails extends Page {
 			if (is_null($dependency['id'])) {
 				$list.= '<li>'.$dependency['name'].$dependency['version'].'</li>';
 			} else {
-				$list.= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.urlencode($dependency['name']).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
+				$list.= '<li><a href="'.$this->createUrl('PackageDetails', array('repo' => $dependency['repo'], 'arch' => $dependency['arch'], 'pkgname' => $dependency['name'])).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
 			}
 		}
 		$list.= '</ul>';
@@ -396,7 +396,7 @@ class PackageDetails extends Page {
 		$stm->execute();
 		$list = '<ul>';
 		foreach ($stm as $dependency) {
-			$list.= '<li><a href="?page=PackageDetails;repo='.$dependency['repo'].';arch='.$dependency['arch'].';pkgname='.urlencode($dependency['name']).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
+			$list.= '<li><a href="'.$this->createUrl('PackageDetails', array('repo' => $dependency['repo'], 'arch' => $dependency['arch'], 'pkgname' => $dependency['name'])).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
 		}
 		$list.= '</ul>';
 		return $list;

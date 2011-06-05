@@ -55,11 +55,11 @@ class MirrorStatus extends Page {
 		</div>
 		<table class="pretty-table">
 			<tr>
-				<th><a href="?page=MirrorStatus;orderby=host;sort=' . $reverseSort . '">' . $this->l10n->getText('Host') . '</a></th>
-				<th><a href="?page=MirrorStatus;orderby=country;sort=' . $reverseSort . '">' . $this->l10n->getText('Country') . '</a></th>
-				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=time;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->l10n->getText('Response time') . '</a></th>
-				<th style="width:140px;"><a href="?page=MirrorStatus;orderby=delay;sort=' . $reverseSort . '">&empty;&nbsp;' . $this->l10n->getText('Delay') . '</a></th>
-				<th><a href="?page=MirrorStatus;orderby=lastsync;sort=' . $reverseSort . '">' . $this->l10n->getText('Last update') . '</a></th>
+				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'host', 'sort' => $reverseSort)).'">' . $this->l10n->getText('Host') . '</a></th>
+				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'country', 'sort' => $reverseSort)).'">' . $this->l10n->getText('Country') . '</a></th>
+				<th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'time', 'sort' => $reverseSort)).'">&empty;&nbsp;' . $this->l10n->getText('Response time') . '</a></th>
+				<th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'delay', 'sort' => $reverseSort)).'">&empty;&nbsp;' . $this->l10n->getText('Delay') . '</a></th>
+				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'lastsync', 'sort' => $reverseSort)).'">' . $this->l10n->getText('Last update') . '</a></th>
 			</tr>';
 		$mirrors = Database::query('
 		SELECT

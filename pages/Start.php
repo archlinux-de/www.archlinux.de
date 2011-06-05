@@ -50,7 +50,7 @@ class Start extends Page {
 					<script>
 						$(function() {
 							$("#searchfield").autocomplete({
-								source: "?page=PackagesSuggest;architecture=' . $this->architectureId . '",
+								source: "'.$this->createUrl('PackagesSuggest', array('architecture' => $this->architectureId)).'",
 								minLength: 2,
 								delay: 100
 							});
@@ -136,11 +136,11 @@ class Start extends Page {
 		');
 		$packages->bindParam('architectureId', $this->architectureId, PDO::PARAM_INT);
 		$packages->execute();
-		$result = '<h3>'.$this->l10n->getText('Recent packages').' <span class="more">(<a href="?page=Packages">mehr</a>)</span></h3><a href="?page=GetRecentPackages" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
+		$result = '<h3>'.$this->l10n->getText('Recent packages').' <span class="more">(<a href="'.$this->createUrl('Packages').'">mehr</a>)</span></h3><a href="'.$this->createUrl('GetRecentPackages').'" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
 		foreach ($packages as $package) {
 			$result.= '
 			<tr class="' . $package['repository'] . '">
-				<td class="pkgname"><a href="?page=PackageDetails;repo=' . $package['repository'] . ';arch=' . $package['architecture'] . ';pkgname=' . $package['name'] . '">' . $package['name'] . '</a></td>
+				<td class="pkgname"><a href="'.$this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $package['architecture'], 'pkgname' => $package['name'])).'">' . $package['name'] . '</a></td>
 				<td class="pkgver">' . $package['version'] . '</td>
 			</tr>
 			';

@@ -102,7 +102,7 @@ class Packages extends Page {
 		)) ? '			<script>
 						$(function() {
 							$("#searchfield").autocomplete({
-								source: "?page=PackagesSuggest;repository=' . $this->repository['id'] . ';architecture=' . $this->architecture['id'] . ';field=' . $this->searchField . '",
+								source: "'.$this->createUrl('PackagesSuggest', array('repository' => $this->repository['id'], 'architecture' => $this->architecture['id'], 'field' => $this->searchField)).'",
 								minLength: 2,
 								delay: 100
 							});
@@ -318,33 +318,30 @@ class Packages extends Page {
 
 	private function showPackageList($packages) {
 		$parameters = array(
-			'repository='.$this->repository['name'],
-			'architecture='.$this->architecture['name'],
-			'group='.urlencode($this->group),
-			'packager='.$this->packager,
-			'search='.urlencode($this->search),
-			'searchfield='.$this->searchField
+			'repository' => $this->repository['name'],
+			'architecture' => $this->architecture['name'],
+			'group' => $this->group,
+			'packager' => $this->packager,
+			'search' => $this->search,
+			'searchfield' => $this->searchField
 			);
 
 		$newSort = ($this->sort == 'asc' ? 'desc' : 'asc');
 
-		$link = '?page=Packages;'.implode(';', $parameters);
-		$curlink = $link.';orderby='.$this->orderby.';sort='.$this->sort;
-
-		$next = ' <a href="'.$curlink.';p='.($this->page + 1).'">&#187;</a>';
-		$prev = ($this->page > 1 ? '<a href="'.$curlink.';p='.max(1, $this->page - 1).'">&#171;</a>' : '');
+		$next = ' <a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => ($this->page + 1)))).'">&#187;</a>';
+		$prev = ($this->page > 1 ? '<a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => max(1, $this->page - 1)))).'">&#171;</a>' : '');
 
 		$body = '<table class="pretty-table">
 			<tr>
 				<td class="pages" colspan="6">' . $prev . $next . '</td>
 			</tr>
 			<tr>
-				<th><a href="'.$link.';orderby=repository;sort='.$newSort.'">'.$this->l10n->getText('Repository').'</a></th>
-				<th><a href="'.$link.';orderby=architecture;sort='.$newSort.'">'.$this->l10n->getText('Architecture').'</a></th>
-				<th><a href="'.$link.';orderby=name;sort='.$newSort.'">'.$this->l10n->getText('Name').'</a></th>
+				<th><a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => 'repository', 'sort' => $newSort))).'">'.$this->l10n->getText('Repository').'</a></th>
+				<th><a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => 'architecture', 'sort' => $newSort))).'">'.$this->l10n->getText('Architecture').'</a></th>
+				<th><a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => 'name', 'sort' => $newSort))).'">'.$this->l10n->getText('Name').'</a></th>
 				<th>'.$this->l10n->getText('Version').'</th>
 				<th>'.$this->l10n->getText('Description').'</th>
-				<th><a href="'.$link.';orderby=builddate;sort='.$newSort.'">'.$this->l10n->getText('Last update').'</a></th>
+				<th><a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => 'builddate', 'sort' => $newSort))).'">'.$this->l10n->getText('Last update').'</a></th>
 			</tr>';
 		foreach ($packages as $package) {
 			$style = (in_array($package['repository'], array(
@@ -353,7 +350,7 @@ class Packages extends Page {
 				'staging'
 			)) ? ' class="less"' : '');
 			$body.= '<tr'.$style.'>
-				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="?page=PackageDetails;repo='.$package['repository'].';arch='.$this->architecture['name'].';pkgname='.urlencode($package['name']).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
+				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="'.$this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $this->architecture['name'], 'pkgname' => $package['name'])).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
 			</tr>';
 		}
 		$body.= '
