@@ -20,7 +20,12 @@
 
 class ObjectCache {
 
+	private static function getPrefix() {
+		return Config::get('Database', 'database').':';
+	}
+
 	public static function addObject($key, $object, $ttl = 0) {
+		$key = self::getPrefix().$key;
 		if (function_exists('apc_store')) {
 			return apc_store($key, $object, $ttl);
 		} elseif (function_exists('xcache_set')) {
@@ -31,6 +36,7 @@ class ObjectCache {
 	}
 
 	public static function getObject($key) {
+		$key = self::getPrefix().$key;
 		if (function_exists('apc_fetch')) {
 			return apc_fetch($key);
 		} elseif (function_exists('xcache_get')) {
@@ -41,6 +47,7 @@ class ObjectCache {
 	}
 
 	public static function isObject($key) {
+		$key = self::getPrefix().$key;
 		if (function_exists('apc_exists')) {
 			return apc_exists($key);
 		} elseif (function_exists('apc_fetch')) {
