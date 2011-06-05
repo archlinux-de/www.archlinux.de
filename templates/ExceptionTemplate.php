@@ -9,7 +9,7 @@
 </head>
 <body>
 	<div id="archnavbar" class="anb-exception">
-		<div id="archnavbarlogo"><h1><a href="<?php echo $this->createUrl('Start'); ?>">Arch Linux</a></h1></div>
+		<div id="archnavbarlogo"><h1><a href="/">Arch Linux</a></h1></div>
 		<div id="archnavbarmenu">
 		<ul id="archnavbarlist">
 			<?php echo $l10n->getTextFile('PageMenu'); ?>
