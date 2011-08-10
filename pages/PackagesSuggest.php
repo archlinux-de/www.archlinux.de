@@ -35,15 +35,18 @@ class PackagesSuggest extends Page {
 				case 'name':
 					$stm = Database::prepare('
 						SELECT DISTINCT
-							name
+							packages.name
 						FROM
 							packages
+							'.( $arch > 0 || $repo > 0 ? '
+								JOIN repositories
+								ON packages.repository = repositories.id' : '').'
 						WHERE
-							name LIKE :name
-							' . ($arch > 0 ? 'AND arch = :arch' : '') . '
-							' . ($repo > 0 ? 'AND repository = :repository' : '') . '
+							packages.name LIKE :name
+							' . ($arch > 0 ? 'AND repositories.arch = :arch' : '') . '
+							' . ($repo > 0 ? 'AND repositories.id = :repository' : '') . '
 						ORDER BY
-							name ASC
+							packages.name ASC
 						LIMIT 20
 					');
 					$stm->bindValue('name', $term.'%', PDO::PARAM_STR);
