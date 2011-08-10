@@ -43,18 +43,21 @@ class Packages extends Page {
 				packages.version,
 				packages.desc,
 				packages.builddate,
-				architectures.name AS architecture,
-				repositories.name AS repository
+				pkgarch.name AS packageArchitecture,
+				repositories.name AS repositoryName,
+				repoarch.name AS repositoryArchitecture
 			FROM
 				packages,
-				repositories,
-				architectures
+				repositories
+					JOIN architectures repoarch
+					ON repoarch.id = repositories.arch,
+				architectures pkgarch
 				' . (!empty($this->group) ? ',package_group, groups' : '') . '
 				' . (!empty($this->search) && $this->searchField == 'file' ? ',file_index, package_file_index' : '') . '
 			WHERE
 				packages.repository = repositories.id
 				' . (!empty($this->repository['name']) ? 'AND repositories.name = :repositoryName' : '') . '
-				AND packages.arch = architectures.id
+				AND packages.arch = pkgarch.id
 				' . (!empty($this->architecture['id']) ? 'AND repositories.arch = :architectureId' : '') . '
 				' . (!empty($this->group) ? 'AND package_group.package = packages.id AND package_group.group = groups.id AND groups.name = :group' : '') . '
 				' . (empty($this->search) ? '' : $this->getSearchStatement()) . '
@@ -344,13 +347,13 @@ class Packages extends Page {
 				<th><a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => 'builddate', 'sort' => $newSort))).'">'.$this->l10n->getText('Last update').'</a></th>
 			</tr>';
 		foreach ($packages as $package) {
-			$style = (in_array($package['repository'], array(
+			$style = (in_array($package['repositoryName'], array(
 				'testing',
 				'community-testing',
 				'staging'
 			)) ? ' class="less"' : '');
 			$body.= '<tr'.$style.'>
-				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="'.$this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $this->architecture['name'], 'pkgname' => $package['name'])).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
+				<td>'.$package['repositoryName'].'</td><td>'.$package['packageArchitecture'].'</td><td><a href="'.$this->createUrl('PackageDetails', array('repo' => $package['repositoryName'], 'arch' => $package['repositoryArchitecture'], 'pkgname' => $package['name'])).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
 			</tr>';
 		}
 		$body.= '
