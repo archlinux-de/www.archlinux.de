@@ -221,7 +221,7 @@ class Packages extends Page {
 		$clientArch = Input::getClientArchitecture();
 		$availableArchitectures = $this->getAvailableArchitectures();
 		if (!in_array($clientArch, $availableArchitectures)) {
-			$clientArch = '';
+			$clientArch = $availableArchitectures[0];
 		}
 		return $clientArch;
 	}
