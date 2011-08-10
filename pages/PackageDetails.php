@@ -344,14 +344,14 @@ class PackageDetails extends Page {
 		FROM
 			package_relation
 				LEFT JOIN packages
-				ON package_relation.dependsId = packages.id,
-			architectures,
-			repositories
+				ON package_relation.dependsId = packages.id
+				LEFT JOIN repositories
+				ON packages.repository = repositories.id
+				LEFT JOIN architectures
+				ON repositories.arch = architectures.id
 		WHERE
 			package_relation.packageId = :packageId
 			AND package_relation.type = :type
-			AND packages.repository = repositories.id
-			AND repositories.arch = architectures.id
 		ORDER BY
 			package_relation.dependsName
 		');
