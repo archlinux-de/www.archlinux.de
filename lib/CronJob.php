@@ -23,6 +23,7 @@ abstract class CronJob {
 	private $lockFile = '/tmp/cronjob.lck';
 	private $waitForLock = 600;
 	private $waitInterval = 10;
+	private $quiet = false;
 
 	public static function run() {
 		$class = get_called_class();
@@ -35,6 +36,9 @@ abstract class CronJob {
 	public function __construct() {
 		ini_set('max_execution_time', 0);
 		$this->lockFile = Config::get('common', 'tmpdir').'/cronjob.lck';
+		if (count(getopt('q', array('quiet'))) > 0) {
+			$this->quiet = true;
+		}
 		$this->aquireLock();
 	}
 
@@ -64,7 +68,9 @@ abstract class CronJob {
 	}
 
 	protected function printDebug($text) {
-		echo $text, "\n";
+		if (!$this->quiet) {
+			echo $text, "\n";
+		}
 	}
 
 	protected function printError($text) {
@@ -72,9 +78,11 @@ abstract class CronJob {
 	}
 
 	protected function printProgress($current, $total, $prefix = '') {
-		echo "\r", $prefix, round($current / $total * 100), '%';
-		if ($current == $total) {
-			echo "\n";
+		if (!$this->quiet) {
+			echo "\r", $prefix, round($current / $total * 100), '%';
+			if ($current == $total) {
+				echo "\n";
+			}
 		}
 	}
 
