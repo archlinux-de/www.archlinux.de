@@ -75,14 +75,17 @@ class Download {
 	}
 
 	private function curlInit($url) {
+		$curlVersion = curl_version();
 		$curl = curl_init($url);
 		curl_setopt($curl, CURLOPT_FAILONERROR, true);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 120);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 1800);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
+		curl_setopt($curl, CURLOPT_LOW_SPEED_LIMIT, 5000);
+		curl_setopt($curl, CURLOPT_LOW_SPEED_TIME, 600);
 		curl_setopt($curl, CURLOPT_ENCODING, '');
-		curl_setopt($curl, CURLOPT_USERAGENT, Config::get('common', 'email'));
+		curl_setopt($curl, CURLOPT_USERAGENT, 'archportal/curl-'.$curlVersion['version']);
 		return $curl;
 	}
 }
