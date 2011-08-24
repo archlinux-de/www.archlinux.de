@@ -85,6 +85,14 @@ class Package {
 		return $this->desc['MD5SUM'][0];
 	}
 
+	public function getSHA256SUM() {
+		return isset($this->desc['SHA256SUM'][0]) ? $this->desc['SHA256SUM'][0] : null;
+	}
+
+	public function getPGPSignature() {
+		return isset($this->desc['PGPSIG'][0]) ? $this->desc['PGPSIG'][0] : null;
+	}
+
 	public function getURL() {
 		if (isset($this->desc['URL'][0])) {
 			if (!preg_match('#^(https?|ftp)://#', $this->desc['URL'][0])) {

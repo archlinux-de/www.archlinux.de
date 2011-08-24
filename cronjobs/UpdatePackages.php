@@ -213,6 +213,8 @@ class UpdatePackages extends CronJob {
 				csize = :csize,
 				isize = :isize,
 				md5sum = :md5sum,
+				sha256sum = :sha256sum,
+				pgpsig = :pgpsig,
 				url = :url,
 				arch = :arch,
 				builddate = :builddate,
@@ -234,6 +236,8 @@ class UpdatePackages extends CronJob {
 				csize = :csize,
 				isize = :isize,
 				md5sum = :md5sum,
+				sha256sum = :sha256sum,
+				pgpsig = :pgpsig,
 				url = :url,
 				arch = :arch,
 				builddate = :builddate,
@@ -572,6 +576,8 @@ class UpdatePackages extends CronJob {
 		$packageStm->bindValue('csize', $package->getCompressedSize(), PDO::PARAM_INT);
 		$packageStm->bindValue('isize', $package->getInstalledSize(), PDO::PARAM_INT);
 		$packageStm->bindValue('md5sum', $package->getMD5SUM(), PDO::PARAM_STR);
+		$packageStm->bindValue('sha256sum', $package->getSHA256SUM(), PDO::PARAM_STR);
+		$packageStm->bindValue('pgpsig', $package->getPGPSignature(), PDO::PARAM_STR);
 		$packageStm->bindValue('url', htmlspecialchars($package->getURL()), PDO::PARAM_STR);
 		$packageStm->bindParam('arch', $packageArch, PDO::PARAM_INT);
 		$packageStm->bindValue('builddate', $package->getBuildDate(), PDO::PARAM_INT);
