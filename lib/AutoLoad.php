@@ -34,6 +34,7 @@ function __autoload($class) {
 		'PackageDatabase' => '/PackageDatabase.php',
 		'Page' => '/Page.php',
 		'Request' => '/Request.php',
+		'StatisticsPage' => '/StatisticsPage.php',
 
 		'GetFileFromMirror' => '/../pages/GetFileFromMirror.php',
 		'GetOpenSearch' => '/../pages/GetOpenSearch.php',
