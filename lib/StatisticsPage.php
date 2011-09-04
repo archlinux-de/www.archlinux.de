@@ -20,6 +20,7 @@
 
 abstract class StatisticsPage extends Page implements IDatabaseCachable {
 
+	private static $rangeMonths = 6;
 	protected static $barColors = array();
 	protected static $barColorArray = array(
 		'8B0000',
@@ -77,6 +78,9 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable {
 			return '';
 		}
 		$percent = ($value / $total) * 100;
+		if ($percent > 100) {
+			return '';
+		}
 		$color = self::$barColors[round($percent) ];
 		return '<table style="width:100%;">
 			<tr>
@@ -91,6 +95,14 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable {
 				</td>
 			</tr>
 		</table>';
+	}
+
+	protected static function getRangeTime() {
+		return strtotime(date('1-m-Y', strtotime('now -'.self::$rangeMonths.' months')));
+	}
+
+	protected static function getRangeYearMonth() {
+		return date('Ym', self::getRangeTime());
 	}
 }
 

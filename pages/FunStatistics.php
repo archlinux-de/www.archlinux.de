@@ -174,6 +174,8 @@ class FunStatistics extends StatisticsPage {
 			COUNT(*)
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$stm = Database::prepare('
 		SELECT
@@ -182,6 +184,7 @@ class FunStatistics extends StatisticsPage {
 			pkgstats_packages
 		WHERE
 			pkgname = :pkgname
+			AND month >= '.self::getRangeYearMonth().'
 		GROUP BY
 			pkgname
 		');

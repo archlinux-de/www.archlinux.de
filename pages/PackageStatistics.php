@@ -92,15 +92,15 @@ class PackageStatistics extends StatisticsPage {
 	private static function getCommonPackageUsageStatistics() {
 		return Database::query('
 		SELECT
-			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
-			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
-			(SELECT MIN(time) FROM pkgstats_users) AS minvisited,
-			(SELECT MAX(time) FROM pkgstats_users) AS maxvisited,
-			(SELECT SUM(count) FROM pkgstats_packages) AS sumcount,
-			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages) AS diffpkgs) AS diffcount,
-			(SELECT MIN(packages) FROM pkgstats_users) AS mincount,
-			(SELECT MAX(packages) FROM pkgstats_users) AS maxcount,
-			(SELECT AVG(packages) FROM pkgstats_users) AS avgcount
+			(SELECT COUNT(*) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS submissions,
+			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= '.self::getRangeTime().' GROUP BY ip) AS temp) AS differentips,
+			(SELECT MIN(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS minvisited,
+			(SELECT MAX(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxvisited,
+			(SELECT SUM(count) FROM pkgstats_packages WHERE month >= '.self::getRangeYearMonth().') AS sumcount,
+			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= '.self::getRangeYearMonth().') AS diffpkgs) AS diffcount,
+			(SELECT MIN(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS mincount,
+			(SELECT MAX(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxcount,
+			(SELECT AVG(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS avgcount
 		')->fetch();
 	}
 
@@ -135,6 +135,8 @@ class PackageStatistics extends StatisticsPage {
 			COUNT(*)
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$arches = Database::query('
 		SELECT
@@ -142,6 +144,8 @@ class PackageStatistics extends StatisticsPage {
 			arch AS name
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		GROUP BY
 			arch
 		');
@@ -168,6 +172,8 @@ class PackageStatistics extends StatisticsPage {
 				COUNT(*)
 			FROM
 				pkgstats_users
+			WHERE
+				time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$countStm = Database::prepare('
 			SELECT
@@ -190,7 +196,8 @@ class PackageStatistics extends StatisticsPage {
 				FROM
 					pkgstats_packages
 				WHERE
-					count >= ' . (floor($total / 100)) . '
+					month >= '.self::getRangeYearMonth().'
+					AND count >= ' . (floor($total / 100)) . '
 				) AS used
 				ON total.name = used.pkgname
 		');
@@ -238,6 +245,8 @@ class PackageStatistics extends StatisticsPage {
 				COUNT(*)
 			FROM
 				pkgstats_users
+			WHERE
+				time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$packages = Database::prepare('
 			SELECT
@@ -246,7 +255,8 @@ class PackageStatistics extends StatisticsPage {
 			FROM
 				pkgstats_packages
 			WHERE
-				pkgname IN (
+				month >= '.self::getRangeYearMonth().'
+				AND pkgname IN (
 					SELECT
 						packages.name
 					FROM
@@ -287,6 +297,8 @@ class PackageStatistics extends StatisticsPage {
 				COUNT(*)
 			FROM
 				pkgstats_users
+			WHERE
+				time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$packages = Database::query('
 			SELECT
@@ -295,7 +307,8 @@ class PackageStatistics extends StatisticsPage {
 			FROM
 				pkgstats_packages
 			WHERE
-				pkgname NOT IN (SELECT name FROM packages)
+				month >= '.self::getRangeYearMonth().'
+				AND pkgname NOT IN (SELECT name FROM packages)
 			GROUP BY
 				pkgname
 			HAVING

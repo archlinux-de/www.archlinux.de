@@ -103,15 +103,15 @@ class UserStatistics extends StatisticsPage {
 	private static function getCommonPackageUsageStatistics() {
 		return Database::query('
 		SELECT
-			(SELECT COUNT(*) FROM pkgstats_users) AS submissions,
-			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users GROUP BY ip) AS temp) AS differentips,
-			(SELECT MIN(time) FROM pkgstats_users) AS minvisited,
-			(SELECT MAX(time) FROM pkgstats_users) AS maxvisited,
-			(SELECT SUM(count) FROM pkgstats_packages) AS sumcount,
-			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages) AS diffpkgs) AS diffcount,
-			(SELECT MIN(packages) FROM pkgstats_users) AS mincount,
-			(SELECT MAX(packages) FROM pkgstats_users) AS maxcount,
-			(SELECT AVG(packages) FROM pkgstats_users) AS avgcount
+			(SELECT COUNT(*) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS submissions,
+			(SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= '.self::getRangeTime().' GROUP BY ip) AS temp) AS differentips,
+			(SELECT MIN(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS minvisited,
+			(SELECT MAX(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxvisited,
+			(SELECT SUM(count) FROM pkgstats_packages WHERE month >= '.self::getRangeYearMonth().') AS sumcount,
+			(SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= '.self::getRangeYearMonth().') AS diffpkgs) AS diffcount,
+			(SELECT MIN(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS mincount,
+			(SELECT MAX(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxcount,
+			(SELECT AVG(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS avgcount
 		')->fetch();
 	}
 
@@ -121,6 +121,8 @@ class UserStatistics extends StatisticsPage {
 			COUNT(country)
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$countries = Database::query('
 		SELECT
@@ -128,6 +130,8 @@ class UserStatistics extends StatisticsPage {
 			COUNT(country) AS count
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		GROUP BY
 			country
 		HAVING
@@ -148,6 +152,8 @@ class UserStatistics extends StatisticsPage {
 			COUNT(mirror)
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$mirrors = Database::query('
 		SELECT
@@ -155,6 +161,8 @@ class UserStatistics extends StatisticsPage {
 			COUNT(mirror) AS count
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		GROUP BY
 			mirror
 		HAVING
@@ -190,6 +198,8 @@ class UserStatistics extends StatisticsPage {
 			COUNT(mirror)
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		foreach ($protocolls as $protocoll => $count) {
 			$protocolls[$protocoll] = Database::query('
@@ -198,7 +208,8 @@ class UserStatistics extends StatisticsPage {
 			FROM
 				pkgstats_users
 			WHERE
-				mirror LIKE \'' . $protocoll . '%\'
+				time >= '.self::getRangeTime().'
+				AND mirror LIKE \'' . $protocoll . '%\'
 			')->fetchColumn();
 		}
 		arsort($protocolls);
@@ -215,6 +226,8 @@ class UserStatistics extends StatisticsPage {
 			COUNT(*)
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		')->fetchColumn();
 		$arches = Database::query('
 		SELECT
@@ -222,6 +235,8 @@ class UserStatistics extends StatisticsPage {
 			arch AS name
 		FROM
 			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
 		GROUP BY
 			arch
 		ORDER BY
