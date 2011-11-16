@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: archportal \n"
 "Report-Msgid-Bugs-To: pierre@archlinux.de\n"
-"POT-Creation-Date: 2011-06-04 13:50+0200\n"
+"POT-Creation-Date: 2011-11-16 10:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,7 +119,7 @@ msgid "Delay"
 msgstr ""
 
 #: ../pages/MirrorStatus.php:62 ../pages/Packagers.php:72
-#: ../pages/Packages.php:343
+#: ../pages/Packages.php:347
 msgid "Last update"
 msgstr ""
 
@@ -127,8 +127,8 @@ msgstr ""
 msgid "Page could not be found"
 msgstr ""
 
-#: ../pages/PackageDetails.php:29 ../pages/PackageDetails.php:97
-#: ../pages/PackageDetails.php:120
+#: ../pages/PackageDetails.php:29 ../pages/PackageDetails.php:103
+#: ../pages/PackageDetails.php:126
 msgid "Package details"
 msgstr ""
 
@@ -140,123 +140,127 @@ msgstr ""
 msgid "Package was not found"
 msgstr ""
 
-#: ../pages/PackageDetails.php:100 ../pages/Packagers.php:69
-#: ../pages/Packages.php:260 ../pages/Packages.php:340
+#: ../pages/PackageDetails.php:106 ../pages/Packagers.php:69
+#: ../pages/Packages.php:264 ../pages/Packages.php:344
 msgid "Name"
 msgstr ""
 
-#: ../pages/PackageDetails.php:104 ../pages/Packages.php:341
+#: ../pages/PackageDetails.php:110 ../pages/Packages.php:345
 msgid "Version"
 msgstr ""
 
-#: ../pages/PackageDetails.php:108 ../pages/Packages.php:261
-#: ../pages/Packages.php:342
+#: ../pages/PackageDetails.php:114 ../pages/Packages.php:265
+#: ../pages/Packages.php:346
 msgid "Description"
 msgstr ""
 
-#: ../pages/PackageDetails.php:112
+#: ../pages/PackageDetails.php:118
 msgid "URL"
 msgstr ""
 
-#: ../pages/PackageDetails.php:116
+#: ../pages/PackageDetails.php:122
 msgid "Licenses"
 msgstr ""
 
-#: ../pages/PackageDetails.php:123 ../pages/Packages.php:81
-#: ../pages/Packages.php:338
+#: ../pages/PackageDetails.php:129 ../pages/Packages.php:84
+#: ../pages/Packages.php:342
 msgid "Repository"
 msgstr ""
 
-#: ../pages/PackageDetails.php:127 ../pages/Packages.php:82
-#: ../pages/Packages.php:339
+#: ../pages/PackageDetails.php:133 ../pages/Packages.php:85
+#: ../pages/Packages.php:343
 msgid "Architecture"
 msgstr ""
 
-#: ../pages/PackageDetails.php:131
+#: ../pages/PackageDetails.php:137
 msgid "Groups"
 msgstr ""
 
-#: ../pages/PackageDetails.php:135
+#: ../pages/PackageDetails.php:141
 msgid "Packager"
 msgstr ""
 
-#: ../pages/PackageDetails.php:139
+#: ../pages/PackageDetails.php:145
 msgid "Build date"
 msgstr ""
 
-#: ../pages/PackageDetails.php:143
+#: ../pages/PackageDetails.php:149
 msgid "Publish date"
 msgstr ""
 
-#: ../pages/PackageDetails.php:147
+#: ../pages/PackageDetails.php:153
 msgid "Source code"
 msgstr ""
 
-#: ../pages/PackageDetails.php:152
-msgid "Revision control"
+#: ../pages/PackageDetails.php:154
+msgid "Source Files"
 msgstr ""
 
 #: ../pages/PackageDetails.php:155
+msgid "Changelog"
+msgstr ""
+
+#: ../pages/PackageDetails.php:158
 msgid "Bugs"
 msgstr ""
 
-#: ../pages/PackageDetails.php:156
+#: ../pages/PackageDetails.php:159
 msgid "Bug Tracker"
 msgstr ""
 
-#: ../pages/PackageDetails.php:159
+#: ../pages/PackageDetails.php:162
 msgid "Package"
 msgstr ""
 
-#: ../pages/PackageDetails.php:163
+#: ../pages/PackageDetails.php:166
 msgid "MD5 checksum"
 msgstr ""
 
-#: ../pages/PackageDetails.php:167
+#: ../pages/PackageDetails.php:170
 msgid "Package size"
 msgstr ""
 
-#: ../pages/PackageDetails.php:171
+#: ../pages/PackageDetails.php:174
 msgid "Installation size"
 msgstr ""
 
-#: ../pages/PackageDetails.php:177
+#: ../pages/PackageDetails.php:180
 msgid "Dependencies"
 msgstr ""
 
-#: ../pages/PackageDetails.php:180
+#: ../pages/PackageDetails.php:183
 msgid "depends on"
 msgstr ""
 
-#: ../pages/PackageDetails.php:181
+#: ../pages/PackageDetails.php:184
 msgid "required by"
 msgstr ""
 
-#: ../pages/PackageDetails.php:182
+#: ../pages/PackageDetails.php:185
 msgid "provides"
 msgstr ""
 
-#: ../pages/PackageDetails.php:183
+#: ../pages/PackageDetails.php:186
 msgid "conflicts with"
 msgstr ""
 
-#: ../pages/PackageDetails.php:184
+#: ../pages/PackageDetails.php:187
 msgid "replaces"
 msgstr ""
 
-#: ../pages/PackageDetails.php:204
+#: ../pages/PackageDetails.php:207
 msgid "optionally depends on"
 msgstr ""
 
-#: ../pages/PackageDetails.php:205
+#: ../pages/PackageDetails.php:208
 msgid "optionally required by"
 msgstr ""
 
-#: ../pages/PackageDetails.php:220
+#: ../pages/PackageDetails.php:225
 msgid "Files"
 msgstr ""
 
-#: ../pages/PackageDetails.php:224
+#: ../pages/PackageDetails.php:229
 msgid "Show files"
 msgstr ""
 
@@ -272,15 +276,15 @@ msgstr ""
 msgid "Packages"
 msgstr ""
 
-#: ../pages/Packages.php:83
+#: ../pages/Packages.php:86
 msgid "Group"
 msgstr ""
 
-#: ../pages/Packages.php:84
+#: ../pages/Packages.php:87
 msgid "Keywords"
 msgstr ""
 
-#: ../pages/Packages.php:262
+#: ../pages/Packages.php:268
 msgid "File"
 msgstr ""
 
