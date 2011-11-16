@@ -33,6 +33,7 @@ Config::set('L10n', 'locale', 'en_US.utf8');
 Config::set('L10n', 'timezone', 'UTC');
 
 Config::set('packages', 'mirror', 'http://mirrors.kernel.org/archlinux/');
+Config::set('packages', 'cgit', 'https://projects.archlinux.org/svntogit/');
 Config::set('packages', 'repositories', array(
 			'core' => array('i686', 'x86_64'),
 			'extra' => array('i686', 'x86_64'),

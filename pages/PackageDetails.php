@@ -90,6 +90,12 @@ class PackageDetails extends Page {
 		}
 		$this->pkgid = $data['id'];
 		$this->setValue('title', $data['name']);
+		$cgitUrl = Config::get('packages', 'cgit').(in_array($data['repository'], array(
+				'community',
+				'community-testing',
+				'multilib'
+			)) ? 'community' : 'packages')
+			.'.git/';
 		$body = '<div class="box">
 		<h2>' . $data['name'] . '</h2>
 		<table id="packagedetails">
@@ -145,11 +151,8 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Source code').'</th>
-				<td><a href="https://projects.archlinux.de/svntogit/' . (in_array($data['repository'], array(
-			'community',
-			'community-testing',
-			'multilib'
-		)) ? 'community' : 'packages') . '.git/tree/' . $data['base'] . '/">'.$this->l10n->getText('Revision control').'</a></td>
+				<td><a href="'.$cgitUrl.'tree/trunk?h=packages/'.$data['base'].'">'.$this->l10n->getText('Source Files').'</a>,
+				<a href="'.$cgitUrl.'log/trunk?h=packages/'.$data['base'].'">'.$this->l10n->getText('Changelog').'</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Bugs').'</th>
