@@ -43,6 +43,7 @@ Config::set('packages', 'repositories', array(
 			'multilib-testing' => array('x86_64')
 		));
 Config::set('packages', 'files', true);
+Config::set('packages', 'delay', 120);
 
 Config::set('mirrors', 'status', 'https://www.archlinux.org/mirrors/status/json/');
 Config::set('mirrors', 'default', 'http://mirrors.kernel.org/archlinux/');

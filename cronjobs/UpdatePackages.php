@@ -92,7 +92,7 @@ class UpdatePackages extends CronJob {
 					$this->printDebug("\tDownloading...");
 					$packages = new PackageDatabase($repo, $arch, $repoMTime, $packageMTime);
 
-					if ($packages->getMTime() > $repoMTime) {
+					if ($packages->getMTime() > $repoMTime && Input::getTime() - $packages->getMTime() > Config::get('packages', 'delay')) {
 						$packageCount = 0;
 						foreach ($packages as $package) {
 							$this->printProgress(++$packageCount, $packages->getNewPackageCount(), "\tReading packages: ");
