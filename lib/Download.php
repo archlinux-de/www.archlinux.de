@@ -45,8 +45,13 @@ class Download {
 			if ($ret === false) {
 				throw new RuntimeException(curl_error($curl), curl_errno($curl));
 			}
-			$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
+			$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
 			curl_close($curl);
+			if ($mtime < 1) {
+				throw new RuntimeException('Invalid filetime "'.$mtime.'" for "'.$this->url.'"');
+			} else {
+				$this->mtime = $mtime;
+			}
 		}
 		return $this->mtime;
 	}
