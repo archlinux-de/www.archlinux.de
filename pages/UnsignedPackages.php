@@ -30,19 +30,20 @@ class UnsignedPackages extends Page {
 				repositories.name AS repository
 			FROM
 				packages a
-				JOIN repositories
-				ON repositories.id = a.repository
+					JOIN repositories
+					ON repositories.id = a.repository
 			WHERE
-				pgpsig IS NULL
+				a.pgpsig IS NULL
 				AND NOT EXISTS (
 					SELECT
 						*
 					FROM
 						packages b
 					WHERE
-						a.base = b.base
+						a.name = b.name
 						AND a.arch = b.arch
 						AND a.repository <> b.repository
+						AND b.pgpsig IS NOT NULL
 				)
 			ORDER BY
 				repositories.id ASC,
