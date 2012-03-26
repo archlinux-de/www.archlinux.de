@@ -28,7 +28,7 @@ class UpdateMirrors extends CronJob {
 	public function execute() {
 		try {
 			$status = $this->getMirrorStatus();
-			if ($status['version'] != 1) {
+			if ($status['version'] != 2) {
 				throw new RuntimeException('incompatible mirrorstatus version');
 			}
 			$mirrors = $status['urls'];
@@ -60,16 +60,8 @@ class UpdateMirrors extends CronJob {
 				$stm->bindParam('host', $mirror['url'], PDO::PARAM_STR);
 				$stm->bindParam('protocol', $mirror['protocol'], PDO::PARAM_STR);
 				$stm->bindParam('country', $mirror['country'], PDO::PARAM_STR);
-				$last_sync = date_parse($mirror['last_sync']);
-				$last_sync = $last_sync['error_count'] > 0 
-					? null 
-					: gmmktime($last_sync['hour'],
-						$last_sync['minute'],
-						$last_sync['second'],
-						$last_sync['month'],
-						$last_sync['day'],
-						$last_sync['year']);
-				$stm->bindParam('lastsync', $last_sync, PDO::PARAM_INT);
+				$lastSync = new DateTime($mirror['last_sync']);
+				$stm->bindValue('lastsync', $lastSync->getTimestamp(), PDO::PARAM_INT);
 				$stm->bindParam('delay', $mirror['delay'], PDO::PARAM_INT);
 				$stm->bindParam('time', $mirror['duration_avg'], PDO::PARAM_STR);
 				$stm->execute();
