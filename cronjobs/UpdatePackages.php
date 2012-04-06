@@ -73,6 +73,11 @@ class UpdatePackages extends CronJob {
 	public function execute() {
 		try {
 			Database::beginTransaction();
+
+			if (count(getopt('p', array('purge'))) > 0) {
+				$this->purgeDatabase();
+			}
+
 			$this->prepareQueries();
 
 			foreach (Config::get('packages', 'repositories') as $repo => $arches) {
@@ -125,6 +130,32 @@ class UpdatePackages extends CronJob {
 		} catch (RuntimeException $e) {
 			Database::rollBack();
 			$this->printError('UpdatePackages failed at '.$e->getFile().' on line '.$e->getLine().': '.$e->getMessage());
+		}
+	}
+
+	private function purgeDatabase() {
+		$tables = array(
+			'architectures',
+			'files',
+			'file_index',
+			'groups',
+			'licenses',
+			'packagers',
+			'packages',
+			'package_file_index',
+			'package_group',
+			'package_license',
+			'package_relation',
+			'repositories'
+			);
+		$rowsTotal = 0;
+		foreach ($tables as $table) {
+			$rowsTotal += Database::query('SELECT COUNT(*) FROM `'.$table.'`')->fetchColumn();
+		}
+		$rowCount = 0;
+		foreach ($tables as $table) {
+			$rowCount += Database::exec('DELETE FROM `'.$table.'`');
+			$this->printProgress($rowCount, $rowsTotal, "Purging database: ");
 		}
 	}
 
