@@ -604,7 +604,6 @@ class UpdatePackages extends CronJob {
 		}
 
 		$this->updatedPackages = true;
-// 		echo "\tadding package $packageName\n";
 	}
 
 	private function resolveRelations() {
@@ -708,7 +707,6 @@ class UpdatePackages extends CronJob {
 		$repoPackages->execute();
 		foreach ($repoPackages as $repoPackage) {
 			if (!in_array($repoPackage['name'], $allPackages)) {
-// 				echo "\tremoving package $repoPackage[name]\n";
 				$cleanupPackages->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
 				$cleanupPackages->execute();
 				$cleanupRelations->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
@@ -729,7 +727,7 @@ class UpdatePackages extends CronJob {
 	}
 
 	private function cleanupObsoleteRepositories() {
-		$repos = Database::prepare('
+		$repos = Database::query('
 			SELECT
 				repositories.id,
 				repositories.name,
@@ -743,6 +741,7 @@ class UpdatePackages extends CronJob {
 		foreach ($repos as $repo) {
 			if (!isset($configRepos[$repo['name']])
 				|| !in_array($repo['arch'], $configRepos[$repo['name']])) {
+				echo "\tRemoving repository [$repo[name]] ($repo[arch])\n";
 				$this->cleanupObsoletePackages($repo['id'], time(), array());
 				Database::query('
 					DELETE FROM
@@ -760,32 +759,42 @@ class UpdatePackages extends CronJob {
 			DELETE FROM
 				groups
 			WHERE
-				id NOT IN (SELECT package_group.group FROM package_group)
+				NOT EXISTS (
+					SELECT * FROM package_group WHERE package_group.group = groups.id
+				)
 			');
 		Database::query('
 			DELETE FROM
 				licenses
 			WHERE
-				id NOT IN (SELECT license FROM package_license)
+				NOT EXISTS (
+					SELECT * FROM package_license WHERE package_license.license = licenses.id
+				)
 			');
 		Database::query('
 			DELETE FROM
 				packagers
 			WHERE
-				id NOT IN (SELECT packager FROM packages)
+				NOT EXISTS (
+					SELECT * FROM packages WHERE packages.packager = packagers.id
+				)
 			');
 		Database::query('
 			DELETE FROM
 				architectures
 			WHERE
-				id NOT IN (SELECT arch FROM packages)
+				NOT EXISTS (
+					SELECT * FROM packages WHERE packages.arch = architectures.id
+				)
 			');
 		if (Config::get('packages', 'files')) {
 			Database::query('
 				DELETE FROM
 					file_index
 				WHERE
-					id NOT IN (SELECT file_index FROM package_file_index)
+					NOT EXISTS (
+						SELECT * FROM package_file_index WHERE package_file_index.file_index = file_index.id
+					)
 				');
 		}
 	}
