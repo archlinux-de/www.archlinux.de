@@ -60,8 +60,13 @@ class UpdateMirrors extends CronJob {
 				$stm->bindParam('host', $mirror['url'], PDO::PARAM_STR);
 				$stm->bindParam('protocol', $mirror['protocol'], PDO::PARAM_STR);
 				$stm->bindParam('country', $mirror['country'], PDO::PARAM_STR);
-				$lastSync = new DateTime($mirror['last_sync']);
-				$stm->bindValue('lastsync', $lastSync->getTimestamp(), PDO::PARAM_INT);
+				if (is_null($mirror['last_sync'])) {
+					$lastSync = null;
+				} else {
+					$lastSyncDate = new DateTime($mirror['last_sync']);
+					$lastSync = $lastSyncDate->getTimestamp();
+				}
+				$stm->bindParam('lastsync', $lastSync, PDO::PARAM_INT);
 				$stm->bindParam('delay', $mirror['delay'], PDO::PARAM_INT);
 				$stm->bindParam('time', $mirror['duration_avg'], PDO::PARAM_STR);
 				$stm->execute();
