@@ -35,6 +35,14 @@
 		<pre><?php echo htmlspecialchars($e->getTraceAsString()); ?></pre>
 		<h3>Files:</h3>
 		<pre><?php echo htmlspecialchars(implode("\n", $files)); ?></pre>
+		<h3>Request:</h3>
+		<pre><?php
+		foreach ($_REQUEST as $key => $value) {
+			echo '<strong>['.htmlspecialchars($key).']</strong> => '
+			.htmlspecialchars(print_r($value, true))
+			.'<br />';
+		}
+		?></pre>
 		</div>
 		<div id="footer"></div>
 	</div>
