@@ -48,8 +48,7 @@ class AutoLoad {
 			'Packagers' => '/../pages/Packagers.php',
 			'Packages' => '/../pages/Packages.php',
 			'PackagesSuggest' => '/../pages/PackagesSuggest.php',
-			'Start' => '/../pages/Start.php',
-			'UnsignedPackages' => '/../pages/UnsignedPackages.php'
+			'Start' => '/../pages/Start.php'
 		);
 
 		if (Config::get('common', 'statistics')) {
