@@ -18,65 +18,67 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-function __autoload($class) {
-	$availableClasses = array(
-		'CronJob' => '/CronJob.php',
-		'Database' => '/Database.php',
-		'Download' => '/Download.php',
-		'Exceptions' => '/Exceptions.php',
-		'IDatabaseCachable' => '/IDatabaseCachable.php',
-		'Input' => '/Input.php',
-		'L10n' => '/L10n.php',
-		'ObjectCache' => '/ObjectCache.php',
-		'ObjectStore' => '/ObjectStore.php',
-		'Output' => '/Output.php',
-		'Package' => '/Package.php',
-		'PackageDatabase' => '/PackageDatabase.php',
-		'Page' => '/Page.php',
-		'Request' => '/Request.php',
-		'StatisticsPage' => '/StatisticsPage.php',
+class AutoLoad {
 
-		'GetFileFromMirror' => '/../pages/GetFileFromMirror.php',
-		'GetOpenSearch' => '/../pages/GetOpenSearch.php',
-		'GetRecentNews' => '/../pages/GetRecentNews.php',
-		'GetRecentPackages' => '/../pages/GetRecentPackages.php',
-		'MirrorStatus' => '/../pages/MirrorStatus.php',
-		'NotFound' => '/../pages/NotFound.php',
-		'PackageDetails' => '/../pages/PackageDetails.php',
-		'Packagers' => '/../pages/Packagers.php',
-		'Packages' => '/../pages/Packages.php',
-		'PackagesSuggest' => '/../pages/PackagesSuggest.php',
-		'Start' => '/../pages/Start.php',
-		'UnsignedPackages' => '/../pages/UnsignedPackages.php'
-	);
+	public static function loadClass($class) {
+		$availableClasses = array(
+			'CronJob' => '/CronJob.php',
+			'Database' => '/Database.php',
+			'Download' => '/Download.php',
+			'Exceptions' => '/Exceptions.php',
+			'IDatabaseCachable' => '/IDatabaseCachable.php',
+			'Input' => '/Input.php',
+			'L10n' => '/L10n.php',
+			'ObjectCache' => '/ObjectCache.php',
+			'ObjectStore' => '/ObjectStore.php',
+			'Output' => '/Output.php',
+			'Package' => '/Package.php',
+			'PackageDatabase' => '/PackageDatabase.php',
+			'Page' => '/Page.php',
+			'Request' => '/Request.php',
+			'StatisticsPage' => '/StatisticsPage.php',
 
-	if (Config::get('common', 'statistics')) {
-		$availableClasses = array_merge($availableClasses, array(
-			'PostPackageList' => '/../pages/PostPackageList.php',
-			'Statistics' => '/../pages/Statistics.php',
-			'PackageStatistics' => '/../pages/PackageStatistics.php',
-			'UserStatistics' => '/../pages/UserStatistics.php',
-			'FunStatistics' => '/../pages/FunStatistics.php',
-			'RepositoryStatistics' => '/../pages/RepositoryStatistics.php'
-		));
+			'GetFileFromMirror' => '/../pages/GetFileFromMirror.php',
+			'GetOpenSearch' => '/../pages/GetOpenSearch.php',
+			'GetRecentNews' => '/../pages/GetRecentNews.php',
+			'GetRecentPackages' => '/../pages/GetRecentPackages.php',
+			'MirrorStatus' => '/../pages/MirrorStatus.php',
+			'NotFound' => '/../pages/NotFound.php',
+			'PackageDetails' => '/../pages/PackageDetails.php',
+			'Packagers' => '/../pages/Packagers.php',
+			'Packages' => '/../pages/Packages.php',
+			'PackagesSuggest' => '/../pages/PackagesSuggest.php',
+			'Start' => '/../pages/Start.php',
+			'UnsignedPackages' => '/../pages/UnsignedPackages.php'
+		);
+
+		if (Config::get('common', 'statistics')) {
+			$availableClasses = array_merge($availableClasses, array(
+				'PostPackageList' => '/../pages/PostPackageList.php',
+				'Statistics' => '/../pages/Statistics.php',
+				'PackageStatistics' => '/../pages/PackageStatistics.php',
+				'UserStatistics' => '/../pages/UserStatistics.php',
+				'FunStatistics' => '/../pages/FunStatistics.php',
+				'RepositoryStatistics' => '/../pages/RepositoryStatistics.php'
+			));
+		}
+
+		if (Config::get('common', 'legacysites')) {
+			$availableClasses = array_merge($availableClasses, array(
+				'MirrorStatusReflector' => '/../pages/MirrorStatusReflector.php',
+				'MirrorStatusJSON' => '/../pages/MirrorStatusJSON.php',
+				'MirrorProblems' => '/../pages/MirrorProblems.php',
+				'ArchitectureDifferences' => '/../pages/ArchitectureDifferences.php'
+			));
+		}
+
+		if (isset($availableClasses[$class])) {
+			require (__DIR__.$availableClasses[$class]);
+		}
 	}
 
-	if (Config::get('common', 'legacysites')) {
-		$availableClasses = array_merge($availableClasses, array(
-			'MirrorStatusReflector' => '/../pages/MirrorStatusReflector.php',
-			'MirrorStatusJSON' => '/../pages/MirrorStatusJSON.php',
-			'MirrorProblems' => '/../pages/MirrorProblems.php',
-			'ArchitectureDifferences' => '/../pages/ArchitectureDifferences.php'
-		));
-	}
-
-	if (isset($availableClasses[$class])) {
-		require (__DIR__.$availableClasses[$class]);
-	} else {
-		throw new AutoLoadException('Class '.$class.' could not be found');
-	}
 }
 
-class AutoLoadException extends RuntimeException {}
+spl_autoload_register('AutoLoad::loadClass');
 
 ?>
