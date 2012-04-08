@@ -160,7 +160,7 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Package').'</th>
-				<td><a href="'.$this->createUrl('GetFileFromMirror', array('file' => $data['repository'].'/os/'.$data['architecture'].'/'.$data['filename'])).'">' . $data['filename'] . '</a></td>
+				<td><a href="'.$this->createUrl('GetFileFromMirror', array('file' => $data['repository'].'/os/'.$this->arch.'/'.$data['filename'])).'">' . $data['filename'] . '</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('MD5 checksum').'</th>
