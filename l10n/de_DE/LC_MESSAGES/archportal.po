@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: archlinux.de\n"
 "Report-Msgid-Bugs-To: pierre@archlinux.de\n"
-"POT-Creation-Date: 2011-11-16 10:41+0100\n"
+"POT-Creation-Date: 2012-04-08 11:11+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Pierre Schmitz <pierre@archlinux.de>\n"
 "Language-Team: Pierre Schmitz <pierre@archlinux.de>\n"
@@ -67,8 +67,7 @@ msgstr "%.2f Minuten"
 msgid "%.2f seconds"
 msgstr "%.2f Sekunden"
 
-#: ../lib/Page.php:48
-#: ../lib/Page.php:63
+#: ../lib/Page.php:48 ../lib/Page.php:63
 msgid "Warning"
 msgstr "Warnung"
 
@@ -80,24 +79,32 @@ msgstr "Fehler"
 msgid "no text"
 msgstr "kein Text"
 
-#: ../pages/GetOpenSearch.php:29
-#: ../pages/Packages.php:36
+#: ../pages/GetFileFromMirror.php:27
+msgid "Invalid file name"
+msgstr "Ungültiger Dateiname"
+
+#: ../pages/GetFileFromMirror.php:53 ../pages/PackageDetails.php:89
+msgid "Package was not found"
+msgstr "Paket wurde nicht gefunden"
+
+#: ../pages/GetFileFromMirror.php:107
+msgid "File was not found"
+msgstr "Datei wurde nicht gefunden"
+
+#: ../pages/GetOpenSearch.php:29 ../pages/Packages.php:36
 #: ../pages/Start.php:48
 msgid "Package search"
 msgstr "Paket-Suche"
 
-#: ../pages/GetOpenSearch.php:30
-#: ../templates/PageTemplate.php:19
+#: ../pages/GetOpenSearch.php:30 ../templates/PageTemplate.php:19
 msgid "Search for Arch Linux packages"
 msgstr "Suche nach Arch Linux Paketen"
 
-#: ../pages/GetRecentPackages.php:30
-#: ../templates/PageTemplate.php:14
+#: ../pages/GetRecentPackages.php:30 ../templates/PageTemplate.php:14
 msgid "Recent Arch Linux packages"
 msgstr "Aktuelle Arch Linux Pakete"
 
-#: ../pages/MirrorStatus.php:39
-#: ../pages/MirrorStatus.php:54
+#: ../pages/MirrorStatus.php:39 ../pages/MirrorStatus.php:54
 msgid "Mirror status"
 msgstr "Mirror-Status"
 
@@ -117,8 +124,7 @@ msgstr "Antwortzeit"
 msgid "Delay"
 msgstr "Verzögerung"
 
-#: ../pages/MirrorStatus.php:62
-#: ../pages/Packagers.php:72
+#: ../pages/MirrorStatus.php:62 ../pages/Packagers.php:72
 #: ../pages/Packages.php:347
 msgid "Last update"
 msgstr "Letzte Aktualisierung"
@@ -127,8 +133,7 @@ msgstr "Letzte Aktualisierung"
 msgid "Page could not be found"
 msgstr "Seite wurde nicht gefunden"
 
-#: ../pages/PackageDetails.php:29
-#: ../pages/PackageDetails.php:103
+#: ../pages/PackageDetails.php:29 ../pages/PackageDetails.php:103
 #: ../pages/PackageDetails.php:126
 msgid "Package details"
 msgstr "Paket-Details"
@@ -137,24 +142,16 @@ msgstr "Paket-Details"
 msgid "No package specified"
 msgstr "Kein Paket angegeben"
 
-#: ../pages/PackageDetails.php:89
-msgid "Package was not found"
-msgstr "Paket wurde nicht gefunden"
-
-#: ../pages/PackageDetails.php:106
-#: ../pages/Packagers.php:69
-#: ../pages/Packages.php:264
-#: ../pages/Packages.php:344
+#: ../pages/PackageDetails.php:106 ../pages/Packagers.php:69
+#: ../pages/Packages.php:264 ../pages/Packages.php:344
 msgid "Name"
 msgstr "Name"
 
-#: ../pages/PackageDetails.php:110
-#: ../pages/Packages.php:345
+#: ../pages/PackageDetails.php:110 ../pages/Packages.php:345
 msgid "Version"
 msgstr "Version"
 
-#: ../pages/PackageDetails.php:114
-#: ../pages/Packages.php:265
+#: ../pages/PackageDetails.php:114 ../pages/Packages.php:265
 #: ../pages/Packages.php:346
 msgid "Description"
 msgstr "Beschreibung"
@@ -167,14 +164,12 @@ msgstr "URL"
 msgid "Licenses"
 msgstr "Lizenzen"
 
-#: ../pages/PackageDetails.php:129
-#: ../pages/Packages.php:84
+#: ../pages/PackageDetails.php:129 ../pages/Packages.php:84
 #: ../pages/Packages.php:342
 msgid "Repository"
 msgstr "Repositorium"
 
-#: ../pages/PackageDetails.php:133
-#: ../pages/Packages.php:85
+#: ../pages/PackageDetails.php:133 ../pages/Packages.php:85
 #: ../pages/Packages.php:343
 msgid "Architecture"
 msgstr "Architektur"
@@ -299,8 +294,7 @@ msgstr "Datei"
 msgid "Start"
 msgstr "Start"
 
-#: ../pages/Start.php:102
-#: ../templates/PageTemplate.php:9
+#: ../pages/Start.php:102 ../templates/PageTemplate.php:9
 msgid "Recent news"
 msgstr "Aktuelle Neuigkeiten"
 
@@ -318,3 +312,5 @@ msgstr "Tut mir Leid, etwas lief schief beim Verarbeiten der Datei %s"
 msgid "Contact %s"
 msgstr "Kontaktiere %s"
 
+#~ msgid "Package not found"
+#~ msgstr "Paket wurde nicht gefunden"

@@ -50,7 +50,7 @@ class GetFileFromMirror extends Page {
 			$pkgdate->execute();
 			if ($pkgdate->rowCount() == 0) {
 				$this->setStatus(Output::NOT_FOUND);
-				$this->showFailure($this->l10n->getText('Package not found'));
+				$this->showFailure($this->l10n->getText('Package was not found'));
 			}
 			$lastsync = $pkgdate->fetchColumn();
 		} else {
@@ -104,7 +104,7 @@ class GetFileFromMirror extends Page {
 			$stm->execute();
 			if ($stm->rowCount() == 0) {
 				$this->setStatus(Output::NOT_FOUND);
-				$this->showFailure($this->l10n->getText('File not found'));
+				$this->showFailure($this->l10n->getText('File was not found'));
 			}
 		}
 		return $stm->fetchColumn();
