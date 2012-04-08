@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 /*
-	Copyright 2002-2011 Pierre Schmitz <pierre@archlinux.de>
+	Copyright 2002-2012 Pierre Schmitz <pierre@archlinux.de>
 
 	This file is part of archlinux.de.
 
