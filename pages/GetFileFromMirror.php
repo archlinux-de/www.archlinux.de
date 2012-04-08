@@ -20,33 +20,94 @@
 
 class GetFileFromMirror extends Page {
 
-	private $range = 86400; // 1 day
-
 	public function prepare() {
-		$this->redirectToUrl($this->getMirror() . Input::get()->getString('file', ''));
+		$file = Input::get()->getString('file', '');
+		if (!preg_match('#^[a-zA-Z0-9\.\-\+_/]{1,255}$#', $file)) {
+			$this->setStatus(Output::BAD_REQUEST);
+			$this->showFailure($this->l10n->getText('Invalid file name'));
+		}
+		$repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
+		$architectures = implode('|', $this->getAvailableArchitectures());
+		$pkgextension = '(?:'.$architectures.'|any).pkg.tar.(?:g|x)z';
+		if (preg_match('#('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'#', $file, $matches)) {
+			$pkgdate = Database::prepare('
+				SELECT
+					packages.mtime
+				FROM
+					packages
+					LEFT JOIN repositories
+					ON packages.repository = repositories.id
+					LEFT JOIN architectures
+					ON repositories.arch = architectures.id
+				WHERE
+					packages.name = :pkgname
+					AND repositories.name = :repository
+					AND architectures.name = :architecture
+				');
+			$pkgdate->bindParam('pkgname', $matches[3], PDO::PARAM_STR);
+			$pkgdate->bindParam('repository', $matches[1], PDO::PARAM_STR);
+			$pkgdate->bindParam('architecture', $matches[2], PDO::PARAM_STR);
+			$pkgdate->execute();
+			if ($pkgdate->rowCount() == 0) {
+				$this->setStatus(Output::NOT_FOUND);
+				$this->showFailure($this->l10n->getText('Package not found'));
+			}
+			$lastsync = $pkgdate->fetchColumn();
+		} else {
+			$lastsync = Input::getTime() - (60 * 60 * 24);
+		}
+		$this->redirectToUrl($this->getMirror($lastsync).$file);
 	}
 
-	private function getMirror() {
+	private function getAvailableArchitectures() {
+		$uniqueArchitectures = array();
+		foreach (Config::get('packages', 'repositories') as $architectures) {
+			foreach ($architectures as $architecture) {
+				$uniqueArchitectures[$architecture] = 1;
+			}
+		}
+		return array_keys($uniqueArchitectures);
+	}
+
+	private function getMirror($lastsync) {
 		$country = Input::getClientCountryName();
 		if (empty($country)) {
 			$country = Config::get('mirrors', 'country');
 		}
 		$stm = Database::prepare('
-		SELECT
-			host
-		FROM
-			mirrors
-		WHERE
-			lastsync >= :lastsync
-			AND (country = :country OR country = \'Any\')
-			AND protocol IN (\'http\', \'htttps\')
-		ORDER BY RAND() LIMIT 1
-		');
-		$stm->bindValue('lastsync', Input::getTime() - $this->range, PDO::PARAM_INT);
+			SELECT
+				host
+			FROM
+				mirrors
+			WHERE
+				lastsync > :lastsync
+				AND (country = :country OR country = "Any")
+				AND protocol IN ("http", "htttps")
+			ORDER BY RAND() LIMIT 1
+			');
+		$stm->bindParam('lastsync', $lastsync, PDO::PARAM_INT);
 		$stm->bindParam('country', $country, PDO::PARAM_STR);
 		$stm->execute();
-		$mirror = $stm->fetchColumn() ?: Config::get('mirrors', 'default');
-		return $mirror;
+		if ($stm->rowCount() == 0) {
+			// Let's see if any mirror is recent enough
+			$stm = Database::prepare('
+				SELECT
+					host
+				FROM
+					mirrors
+				WHERE
+					lastsync > :lastsync
+					AND protocol IN ("http", "htttps")
+				ORDER BY RAND() LIMIT 1
+				');
+			$stm->bindParam('lastsync', $lastsync, PDO::PARAM_INT);
+			$stm->execute();
+			if ($stm->rowCount() == 0) {
+				$this->setStatus(Output::NOT_FOUND);
+				$this->showFailure($this->l10n->getText('File not found'));
+			}
+		}
+		return $stm->fetchColumn();
 	}
 }
 
