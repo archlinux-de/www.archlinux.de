@@ -22,7 +22,7 @@ class GetFileFromMirror extends Page {
 
 	public function prepare() {
 		$file = Input::get()->getString('file', '');
-		if (!preg_match('#^[a-zA-Z0-9\.\-\+_/]{1,255}$#', $file)) {
+		if (!preg_match('#^[a-zA-Z0-9\.\-\+_/:]{1,255}$#', $file)) {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure($this->l10n->getText('Invalid file name'));
 		}
