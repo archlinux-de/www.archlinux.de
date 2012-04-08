@@ -8,7 +8,7 @@ Line: <?php echo $e->getLine(); ?>
 Context:
 <?php
 foreach ($context as $line => $content) {
-	echo ++$line.' '.$context."\n";
+	echo ++$line.' '.$content."\n";
 }
 ?>
 
