@@ -41,6 +41,9 @@ class Exceptions {
 			$files = get_included_files();
 			$context = array_slice(file($e->getFile(), FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
 
+			if (ob_get_level() > 0) {
+				ob_end_clean();
+			}
 			if (!headers_sent()) {
 				header('HTTP/1.1 500 Internal Server Error');
 				header('text/html; charset=UTF-8');
@@ -50,6 +53,10 @@ class Exceptions {
 			} elseif (Config::get('common', 'debug')) {
 				require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
 			} else {
+				ob_start();
+				require (__DIR__.'/../templates/ExceptionLog.php');
+				self::sendLog(ob_get_contents());
+				ob_end_clean();
 				$l10n = new L10n();
 				require (__DIR__.'/../templates/ExceptionTemplate.php');
 			}
@@ -57,6 +64,15 @@ class Exceptions {
 			echo $d->getMessage(), "<br />\n", $e->getMessage();
 		}
 		die();
+	}
+
+	private static function sendLog($log) {
+		mail(
+			Config::get('common', 'email'),
+			Config::get('common', 'sitename').': Exception',
+			utf8_decode($log),
+			'From: '.Config::get('common', 'email')
+		);
 	}
 
 	public static function ErrorHandler($code, $string, $file, $line) {
