@@ -19,47 +19,50 @@
 */
 
 ini_set('docref_root', 'http://www.php.net/');
-set_exception_handler('ExceptionHandler');
-set_error_handler('ErrorHandler');
+set_exception_handler('Exceptions::ExceptionHandler');
+set_error_handler('Exceptions::ErrorHandler');
 
-function ExceptionHandler(Exception $e) {
-	try {
-		$errorType = array(
-			E_WARNING => 'WARNING',
-			E_NOTICE => 'NOTICE',
-			E_USER_ERROR => 'USER ERROR',
-			E_USER_WARNING => 'USER WARNING',
-			E_USER_NOTICE => 'USER NOTICE',
-			E_STRICT => 'STRICT NOTICE',
-			E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR',
-			E_DEPRECATED => 'DEPRECATED',
-			E_USER_DEPRECATED =>'USER_DEPRECATED'
-		);
-		$type = (isset($errorType[$e->getCode() ]) ? $errorType[$e->getCode() ] : $e->getCode());
-		$files = get_included_files();
-		$context = array_slice(file($e->getFile(), FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
+class Exceptions {
 
-		if (!headers_sent()) {
-			header('HTTP/1.1 500 Internal Server Error');
-			header('text/html; charset=UTF-8');
+	public static function ExceptionHandler(Exception $e) {
+		try {
+			$errorType = array(
+				E_WARNING => 'WARNING',
+				E_NOTICE => 'NOTICE',
+				E_USER_ERROR => 'USER ERROR',
+				E_USER_WARNING => 'USER WARNING',
+				E_USER_NOTICE => 'USER NOTICE',
+				E_STRICT => 'STRICT NOTICE',
+				E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR',
+				E_DEPRECATED => 'DEPRECATED',
+				E_USER_DEPRECATED =>'USER_DEPRECATED'
+			);
+			$type = (isset($errorType[$e->getCode() ]) ? $errorType[$e->getCode() ] : $e->getCode());
+			$files = get_included_files();
+			$context = array_slice(file($e->getFile(), FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
+
+			if (!headers_sent()) {
+				header('HTTP/1.1 500 Internal Server Error');
+				header('text/html; charset=UTF-8');
+			}
+			if (php_sapi_name() == 'cli') {
+				require (__DIR__.'/../templates/ExceptionCliTemplate.php');
+			} elseif (Config::get('common', 'debug')) {
+				require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
+			} else {
+				$l10n = new L10n();
+				require (__DIR__.'/../templates/ExceptionTemplate.php');
+			}
+		} catch (Exception $d) {
+			echo $d->getMessage(), "<br />\n", $e->getMessage();
 		}
-		if (php_sapi_name() == 'cli') {
-			require (__DIR__.'/../templates/ExceptionCliTemplate.php');
-		} elseif (Config::get('common', 'debug')) {
-			require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
-		} else {
-			$l10n = new L10n();
-			require (__DIR__.'/../templates/ExceptionTemplate.php');
-		}
-	} catch (Exception $d) {
-		echo $d->getMessage(), "<br />\n", $e->getMessage();
+		die();
 	}
-	die();
-}
 
-function ErrorHandler($code, $string, $file, $line) {
-	throw new ErrorException($string, $code, E_WARNING, $file, $line);
-}
+	public static function ErrorHandler($code, $string, $file, $line) {
+		throw new ErrorException($string, $code, E_WARNING, $file, $line);
+	}
 
+}
 
 ?>
