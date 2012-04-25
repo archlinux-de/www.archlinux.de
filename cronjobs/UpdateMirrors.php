@@ -28,7 +28,7 @@ class UpdateMirrors extends CronJob {
 	public function execute() {
 		try {
 			$status = $this->getMirrorStatus();
-			if ($status['version'] != 2) {
+			if ($status['version'] != 3) {
 				throw new RuntimeException('incompatible mirrorstatus version');
 			}
 			$mirrors = $status['urls'];
