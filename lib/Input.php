@@ -64,7 +64,7 @@ class Input {
 					$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
 					restore_error_handler();
 					self::$countryName = geoip_country_name_by_name($ip) ? : '';
-					set_error_handler('ErrorHandler');
+					set_error_handler('Exceptions::ErrorHandler');
 					error_reporting($errorReporting);
 				}
 			}
