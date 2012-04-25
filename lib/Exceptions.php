@@ -54,7 +54,7 @@ class Exceptions {
 				require (__DIR__.'/../templates/ExceptionDebugTemplate.php');
 			} else {
 				ob_start();
-				require (__DIR__.'/../templates/ExceptionLog.php');
+				require (__DIR__.'/../templates/ExceptionLogTemplate.php');
 				self::sendLog(ob_get_contents());
 				ob_end_clean();
 				$l10n = new L10n();
