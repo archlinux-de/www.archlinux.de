@@ -24,10 +24,12 @@ require (__DIR__.'/lib/AutoLoad.php');
 
 $page = Input::get()->getString('page', 'Start');
 try {
-	$thisPage = new $page();
+	AutoLoad::loadPage($page);
 } catch (AutoLoadException $e) {
-	$thisPage = new NotFound();
+	$page = 'NotFound';
+	AutoLoad::loadPage($page);
 }
+$thisPage = new $page();
 
 $thisPage->prepare();
 $thisPage->printPage();

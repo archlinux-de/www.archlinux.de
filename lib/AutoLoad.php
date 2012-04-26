@@ -20,8 +20,7 @@
 
 class AutoLoad {
 
-	public static function loadClass($class) {
-		$availableClasses = array(
+	private static $availableClasses = array(
 			'CronJob' => '/CronJob.php',
 			'Database' => '/Database.php',
 			'Download' => '/Download.php',
@@ -36,8 +35,10 @@ class AutoLoad {
 			'PackageDatabase' => '/PackageDatabase.php',
 			'Page' => '/Page.php',
 			'Request' => '/Request.php',
-			'StatisticsPage' => '/StatisticsPage.php',
+			'StatisticsPage' => '/StatisticsPage.php'
+		);
 
+	private static $availablePages = array(
 			'GetFileFromMirror' => '/../pages/GetFileFromMirror.php',
 			'GetOpenSearch' => '/../pages/GetOpenSearch.php',
 			'GetRecentNews' => '/../pages/GetRecentNews.php',
@@ -51,8 +52,17 @@ class AutoLoad {
 			'Start' => '/../pages/Start.php'
 		);
 
+	public static function loadClass($class) {
+		if (isset(self::$availableClasses[$class])) {
+			require (__DIR__.self::$availableClasses[$class]);
+		} else {
+			throw new AutoLoadException('Class '.$class.' could not be found');
+		}
+	}
+
+	public static function loadPage($page) {
 		if (Config::get('common', 'statistics')) {
-			$availableClasses = array_merge($availableClasses, array(
+			self::$availablePages = array_merge(self::$availablePages, array(
 				'PostPackageList' => '/../pages/PostPackageList.php',
 				'Statistics' => '/../pages/Statistics.php',
 				'PackageStatistics' => '/../pages/PackageStatistics.php',
@@ -63,20 +73,23 @@ class AutoLoad {
 		}
 
 		if (Config::get('common', 'legacysites')) {
-			$availableClasses = array_merge($availableClasses, array(
+			self::$availablePages = array_merge(self::$availablePages, array(
 				'MirrorStatusReflector' => '/../pages/MirrorStatusReflector.php',
 				'MirrorStatusJSON' => '/../pages/MirrorStatusJSON.php',
 				'MirrorProblems' => '/../pages/MirrorProblems.php',
 				'ArchitectureDifferences' => '/../pages/ArchitectureDifferences.php'
 			));
 		}
-
-		if (isset($availableClasses[$class])) {
-			require (__DIR__.$availableClasses[$class]);
+		if (isset(self::$availablePages[$page])) {
+			require (__DIR__.self::$availablePages[$page]);
+		} else {
+			throw new AutoLoadException('Page '.$page.' could not be found');
 		}
 	}
 
 }
+
+class AutoLoadException extends RuntimeException {}
 
 spl_autoload_register('AutoLoad::loadClass');
 
