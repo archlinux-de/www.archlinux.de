@@ -23,9 +23,13 @@ class Start extends Page {
 	private $architectureId = 0;
 
 	public function prepare() {
-		$clientArch = Input::getClientArchitecture();
 		$availableArchitectures = $this->getAvailableArchitectures();
-		if (!in_array($clientArch, $availableArchitectures)) {
+		try {
+			$clientArch = Input::getClientArchitecture();
+			if (!in_array($clientArch, $availableArchitectures)) {
+				$clientArch = $availableArchitectures[0];
+			}
+		} catch (RequestException $e) {
 			$clientArch = $availableArchitectures[0];
 		}
 		$this->architectureId = $this->getArchitectureId($clientArch);

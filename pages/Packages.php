@@ -218,9 +218,13 @@ class Packages extends Page {
 	}
 
 	private function getClientArchitecture() {
-		$clientArch = Input::getClientArchitecture();
 		$availableArchitectures = $this->getAvailableArchitectures();
-		if (!in_array($clientArch, $availableArchitectures)) {
+		try {
+			$clientArch = Input::getClientArchitecture();
+			if (!in_array($clientArch, $availableArchitectures)) {
+				$clientArch = $availableArchitectures[0];
+			}
+		} catch (RequestException $e) {
 			$clientArch = $availableArchitectures[0];
 		}
 		return $clientArch;
