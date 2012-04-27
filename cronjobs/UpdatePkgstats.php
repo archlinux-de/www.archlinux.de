@@ -28,10 +28,15 @@ class UpdatePkgstats extends CronJob {
 
 	public function execute() {
 		if (Config::get('common', 'statistics')) {
-			RepositoryStatistics::updateDatabaseCache();
-			PackageStatistics::updateDatabaseCache();
-			UserStatistics::updateDatabaseCache();
-			FunStatistics::updateDatabaseCache();
+			foreach (array(
+					'RepositoryStatistics',
+					'PackageStatistics',
+					'UserStatistics',
+					'FunStatistics'
+				) as $page) {
+				AutoLoad::loadPage($page);
+				$page::updateDatabaseCache();
+			}
 		}
 	}
 }
