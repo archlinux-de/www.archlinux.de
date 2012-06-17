@@ -37,8 +37,9 @@ abstract class Output {
 		$this->outputSeparatorHtml = htmlspecialchars($this->outputSeparator);
 
 		if (!ini_get('zlib.output_compression')) {
-			ob_start('ob_gzhandler');
+			ini_set('zlib.output_compression', 'On');
 		}
+		ob_start();
 	}
 
 	public function __destruct() {
