@@ -35,10 +35,6 @@ abstract class Output {
 	public function __construct() {
 		$this->outputSeparator = ini_get('arg_separator.output');
 		$this->outputSeparatorHtml = htmlspecialchars($this->outputSeparator);
-
-		if (!ini_get('zlib.output_compression')) {
-			ini_set('zlib.output_compression', 'On');
-		}
 		ob_start();
 	}
 
