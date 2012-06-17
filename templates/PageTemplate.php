@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title><?php echo Config::get('common', 'sitename'); ?> - <?php echo $this->getValue('title'); ?></title>
 	<meta name="robots" content="<?php echo $this->getValue('meta.robots'); ?>" />
 	<link rel="stylesheet" media="screen" href="style/arch.css?v=4" />
