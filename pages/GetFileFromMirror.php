@@ -81,7 +81,7 @@ class GetFileFromMirror extends Page {
 				mirrors
 			WHERE
 				lastsync > :lastsync
-				AND (country = :country OR country = "Any")
+				AND country = :country
 				AND protocol IN ("http", "htttps")
 			ORDER BY RAND() LIMIT 1
 			');
