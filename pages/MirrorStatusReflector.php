@@ -32,6 +32,7 @@ class MirrorStatusReflector extends Page {
 			mirrors
 		WHERE
 			lastsync >= ' . (Input::getTime() - $this->range) . '
+			AND protocol IN ("ftp", "http", "htttps")
 		ORDER BY
 			lastsync DESC
 		');

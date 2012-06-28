@@ -56,7 +56,7 @@ CREATE TABLE `licenses` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mirrors` (
   `host` varchar(255) NOT NULL,
-  `protocol` enum('http','https','ftp') NOT NULL,
+  `protocol` enum('http','https','ftp','rsync') NOT NULL,
   `country` varchar(255) DEFAULT NULL,
   `lastsync` int(10) unsigned DEFAULT NULL,
   `delay` int(10) unsigned DEFAULT NULL,

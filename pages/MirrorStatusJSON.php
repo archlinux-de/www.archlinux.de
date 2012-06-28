@@ -32,6 +32,8 @@ class MirrorStatusJSON extends Page {
 			time
 		FROM
 			mirrors
+		WHERE
+			protocol IN ("ftp", "http", "htttps")
 		');
 		$json = array(
 			'status' => '200 OK',
