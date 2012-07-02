@@ -55,15 +55,19 @@ CREATE TABLE `licenses` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mirrors` (
-  `host` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
   `protocol` enum('http','https','ftp','rsync') NOT NULL,
   `country` varchar(255) DEFAULT NULL,
+  `countryCode` char(2) DEFAULT NULL,
   `lastsync` int(10) unsigned DEFAULT NULL,
   `delay` int(10) unsigned DEFAULT NULL,
-  `time` double unsigned DEFAULT NULL,
-  PRIMARY KEY (`host`),
-  KEY `country` (`country`),
-  KEY `lastsync` (`lastsync`)
+  `durationAvg` double unsigned DEFAULT NULL,
+  `score` double unsigned DEFAULT NULL,
+  `completionPct` double unsigned DEFAULT NULL,
+  `durationStddev` double unsigned DEFAULT NULL,
+  PRIMARY KEY (`url`),
+  KEY `lastsync` (`lastsync`),
+  KEY `countryCode` (`countryCode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

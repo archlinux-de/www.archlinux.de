@@ -48,7 +48,7 @@ Config::set('packages', 'delay', 120);
 
 Config::set('mirrors', 'status', 'https://www.archlinux.org/mirrors/status/json/');
 Config::set('mirrors', 'default', 'http://mirrors.kernel.org/archlinux/');
-Config::set('mirrors', 'country', 'United States');
+Config::set('mirrors', 'country', 'US');
 
 Config::set('news', 'feed', '');
 Config::set('news', 'archive', '');

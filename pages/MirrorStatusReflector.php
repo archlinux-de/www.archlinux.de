@@ -26,7 +26,7 @@ class MirrorStatusReflector extends Page {
 	public function prepare() {
 		$mirrors = Database::query('
 		SELECT
-			host,
+			url,
 			lastsync
 		FROM
 			mirrors
@@ -37,7 +37,7 @@ class MirrorStatusReflector extends Page {
 			lastsync DESC
 		');
 		foreach ($mirrors as $mirror) {
-			$this->text .= gmdate('Y-m-d H:i'.$mirror['lastsync']).' '.$mirror['host']."\n";
+			$this->text .= gmdate('Y-m-d H:i'.$mirror['lastsync']).' '.$mirror['url']."\n";
 		}
 	}
 

@@ -24,11 +24,11 @@ class MirrorStatus extends Page {
 	private $sort = 'desc';
 	private $range = 604800; // 1 week
 	private $orders = array(
-		'host',
+		'url',
 		'country',
 		'lastsync',
 		'delay',
-		'time'
+		'durationAvg'
 	);
 	private $sorts = array(
 		'asc',
@@ -55,19 +55,19 @@ class MirrorStatus extends Page {
 		</div>
 		<table class="pretty-table">
 			<tr>
-				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'host', 'sort' => $reverseSort)).'">' . $this->l10n->getText('Host') . '</a></th>
+				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'url', 'sort' => $reverseSort)).'">' . $this->l10n->getText('url') . '</a></th>
 				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'country', 'sort' => $reverseSort)).'">' . $this->l10n->getText('Country') . '</a></th>
-				<th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'time', 'sort' => $reverseSort)).'">&empty;&nbsp;' . $this->l10n->getText('Response time') . '</a></th>
+				<th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'durationAvg', 'sort' => $reverseSort)).'">&empty;&nbsp;' . $this->l10n->getText('Response time') . '</a></th>
 				<th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'delay', 'sort' => $reverseSort)).'">&empty;&nbsp;' . $this->l10n->getText('Delay') . '</a></th>
 				<th><a href="'.$this->createUrl('MirrorStatus', array('orderby' => 'lastsync', 'sort' => $reverseSort)).'">' . $this->l10n->getText('Last update') . '</a></th>
 			</tr>';
 		$mirrors = Database::query('
 		SELECT
-			host,
+			url,
 			country,
 			lastsync,
 			delay,
-			time
+			durationAvg
 		FROM
 			mirrors
 		WHERE
@@ -77,9 +77,9 @@ class MirrorStatus extends Page {
 		');
 		foreach ($mirrors as $mirror) {
 			$body.= '<tr>
-				<td><a href="' . $mirror['host'] . '" rel="nofollow">' . $mirror['host'] . '</a></td>
+				<td><a href="' . $mirror['url'] . '" rel="nofollow">' . $mirror['url'] . '</a></td>
 				<td>' . $mirror['country'] . '</td>
-				<td>' . $this->l10n->getEpoch($mirror['time']) . '</td>
+				<td>' . $this->l10n->getEpoch($mirror['durationAvg']) . '</td>
 				<td>' . $this->l10n->getEpoch($mirror['delay']) . '</td>
 				<td>' . $this->l10n->getGmDateTime($mirror['lastsync']) . '</td>
 			</tr>';

@@ -25,11 +25,11 @@ class MirrorStatusJSON extends Page {
 	public function prepare() {
 		$mirrors = Database::query('
 		SELECT
-			host,
+			url,
 			country,
 			lastsync,
 			delay,
-			time
+			durationAvg
 		FROM
 			mirrors
 		WHERE
@@ -41,11 +41,11 @@ class MirrorStatusJSON extends Page {
 		);
 		foreach ($mirrors as $mirror) {
 			$json['servers'][] = array(
-				'url' => $mirror['host'],
+				'url' => $mirror['url'],
 				'location' => $mirror['country'],
 				'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
 				'average delay' => $mirror['delay'] ? : '',
-				'average performance' => $mirror['time'] ? : ''
+				'average performance' => $mirror['durationAvg'] ? : ''
 			);
 		}
 		$this->json = json_encode($json);

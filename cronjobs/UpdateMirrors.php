@@ -49,17 +49,22 @@ class UpdateMirrors extends CronJob {
 			INSERT INTO
 				mirrors
 			SET
-				host = :host,
+				url = :url,
 				protocol = :protocol,
 				country = :country,
+				countryCode = :countryCode,
 				lastsync = :lastsync,
 				delay = :delay,
-				time = :time
+				durationAvg = :durationAvg,
+				score = :score,
+				completionPct = :completionPct,
+				durationStddev = :durationStddev
 			');
 			foreach ($mirrors as $mirror) {
-				$stm->bindParam('host', $mirror['url'], PDO::PARAM_STR);
+				$stm->bindParam('url', $mirror['url'], PDO::PARAM_STR);
 				$stm->bindParam('protocol', $mirror['protocol'], PDO::PARAM_STR);
 				$stm->bindParam('country', $mirror['country'], PDO::PARAM_STR);
+				$stm->bindParam('countryCode', $mirror['country_code'], PDO::PARAM_STR);
 				if (is_null($mirror['last_sync'])) {
 					$lastSync = null;
 				} else {
@@ -68,7 +73,10 @@ class UpdateMirrors extends CronJob {
 				}
 				$stm->bindParam('lastsync', $lastSync, PDO::PARAM_INT);
 				$stm->bindParam('delay', $mirror['delay'], PDO::PARAM_INT);
-				$stm->bindParam('time', $mirror['duration_avg'], PDO::PARAM_STR);
+				$stm->bindParam('durationAvg', $mirror['duration_avg'], PDO::PARAM_STR);
+				$stm->bindParam('score', $mirror['score'], PDO::PARAM_STR);
+				$stm->bindParam('completionPct', $mirror['completion_pct'], PDO::PARAM_STR);
+				$stm->bindParam('durationStddev', $mirror['duration_stddev'], PDO::PARAM_STR);
 				$stm->execute();
 			}
 			Database::commit();

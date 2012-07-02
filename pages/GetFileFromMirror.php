@@ -18,18 +18,22 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class GetFileFromMirror extends Page {
+class GetFileFromMirror extends Output {
+
+	private $lastsync = 0;
+	private $file = '';
 
 	public function prepare() {
-		$file = Input::get()->getString('file', '');
-		if (!preg_match('#^[a-zA-Z0-9\.\-\+_/:]{1,255}$#', $file)) {
+		$this->setContentType('text/plain; charset=UTF-8');
+		$this->file = Input::get()->getString('file', '');
+		if (!preg_match('#^[a-zA-Z0-9\.\-\+_/:]{1,255}$#', $this->file)) {
 			$this->setStatus(Output::BAD_REQUEST);
-			$this->showFailure($this->l10n->getText('Invalid file name'));
+			$this->showFailure('Invalid file name');
 		}
 		$repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
 		$architectures = implode('|', $this->getAvailableArchitectures());
 		$pkgextension = '(?:'.$architectures.'|any).pkg.tar.(?:g|x)z';
-		if (preg_match('#('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'#', $file, $matches)) {
+		if (preg_match('#('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'#', $this->file, $matches)) {
 			$pkgdate = Database::prepare('
 				SELECT
 					packages.mtime
@@ -50,13 +54,21 @@ class GetFileFromMirror extends Page {
 			$pkgdate->execute();
 			if ($pkgdate->rowCount() == 0) {
 				$this->setStatus(Output::NOT_FOUND);
-				$this->showFailure($this->l10n->getText('Package was not found'));
+				$this->showFailure('Package was not found');
 			}
-			$lastsync = $pkgdate->fetchColumn();
+			$this->lastsync = $pkgdate->fetchColumn();
 		} else {
-			$lastsync = Input::getTime() - (60 * 60 * 24);
+			$this->lastsync = Input::getTime() - (60 * 60 * 24);
 		}
-		$this->redirectToUrl($this->getMirror($lastsync).$file);
+	}
+
+	private function showFailure($text) {
+		echo $text;
+		exit();
+	}
+
+	public function printPage() {
+		$this->redirectToUrl($this->getMirror($this->lastsync).$this->file);
 	}
 
 	private function getAvailableArchitectures() {
@@ -70,29 +82,29 @@ class GetFileFromMirror extends Page {
 	}
 
 	private function getMirror($lastsync) {
-		$country = Input::getClientCountryName();
-		if (empty($country)) {
-			$country = Config::get('mirrors', 'country');
+		$countryCode = Input::getClientCountryCode();
+		if (empty($countryCode)) {
+			$countryCode = Config::get('mirrors', 'country');
 		}
 		$stm = Database::prepare('
 			SELECT
-				host
+				url
 			FROM
 				mirrors
 			WHERE
 				lastsync > :lastsync
-				AND country = :country
+				AND countryCode = :countryCode
 				AND protocol IN ("http", "htttps")
 			ORDER BY RAND() LIMIT 1
 			');
 		$stm->bindParam('lastsync', $lastsync, PDO::PARAM_INT);
-		$stm->bindParam('country', $country, PDO::PARAM_STR);
+		$stm->bindParam('countryCode', $countryCode, PDO::PARAM_STR);
 		$stm->execute();
 		if ($stm->rowCount() == 0) {
 			// Let's see if any mirror is recent enough
 			$stm = Database::prepare('
 				SELECT
-					host
+					url
 				FROM
 					mirrors
 				WHERE
@@ -104,7 +116,7 @@ class GetFileFromMirror extends Page {
 			$stm->execute();
 			if ($stm->rowCount() == 0) {
 				$this->setStatus(Output::NOT_FOUND);
-				$this->showFailure($this->l10n->getText('File was not found'));
+				$this->showFailure('File was not found');
 			}
 		}
 		return $stm->fetchColumn();
