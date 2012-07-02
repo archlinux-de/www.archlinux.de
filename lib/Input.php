@@ -74,14 +74,14 @@ class Input {
 
 	public static function getClientCountryCode() {
 		if (is_null(self::$countryName)) {
-			if (function_exists('geoip_country_name_by_name')) {
+			if (function_exists('geoip_country_code_by_name')) {
 				// remove ipv6 prefix
 				$ip = ltrim(self::getClientIP() , ':a-f');
 				if (!empty($ip)) {
 					// let's ignore any lookup errors
 					$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
 					restore_error_handler();
-					self::$countryName = geoip_country_name_by_name($ip) ? : '';
+					self::$countryName = geoip_country_code_by_name($ip) ? : '';
 					set_error_handler('Exceptions::ErrorHandler');
 					error_reporting($errorReporting);
 				}
