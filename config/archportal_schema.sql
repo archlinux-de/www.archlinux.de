@@ -166,6 +166,7 @@ CREATE TABLE `pkgstats_users` (
   `time` int(10) unsigned NOT NULL,
   `arch` enum('i686','x86_64') NOT NULL,
   `country` varchar(255) DEFAULT NULL,
+  `countryCode` char(2) DEFAULT NULL,
   `mirror` varchar(255) DEFAULT NULL,
   `packages` smallint(5) unsigned NOT NULL,
   KEY `mirror` (`mirror`(20)),

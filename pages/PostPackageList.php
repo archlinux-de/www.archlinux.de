@@ -84,6 +84,7 @@ class PostPackageList extends Page {
 		}
 		$this->checkIfAlreadySubmitted();
 		$country = Input::getClientCountryName();
+		$countryCode = Input::getClientCountryCode();
 		try {
 			Database::beginTransaction();
 			$stm = Database::prepare('
@@ -94,6 +95,7 @@ class PostPackageList extends Page {
 				time = :time,
 				arch = :arch,
 				country = ' . (!empty($country) ? ':country' : 'NULL') . ',
+				countryCode = ' . (!empty($countryCode) ? ':countryCode' : 'NULL') . ',
 				mirror = ' . (!empty($mirror) ? ':mirror' : 'NULL') . ',
 				packages = :packages
 			');
@@ -101,6 +103,7 @@ class PostPackageList extends Page {
 			$stm->bindValue('time', Input::getTime(), PDO::PARAM_INT);
 			$stm->bindValue('arch', htmlspecialchars($arch), PDO::PARAM_STR);
 			!empty($country) && $stm->bindValue('country', htmlspecialchars($country), PDO::PARAM_STR);
+			!empty($countryCode) && $stm->bindValue('countryCode', htmlspecialchars($countryCode), PDO::PARAM_STR);
 			!empty($mirror) && $stm->bindValue('mirror', htmlspecialchars($mirror), PDO::PARAM_STR);
 			$stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
 			$stm->execute();
