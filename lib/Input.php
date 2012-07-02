@@ -23,7 +23,6 @@ class Input {
 	private static $time = null;
 	private static $host = null;
 	private static $ip = null;
-	private static $countryName = null;
 	private static $countryCode = null;
 	private static $path = null;
 	private static $relativePath = null;
@@ -53,24 +52,6 @@ class Input {
 			self::$ip = self::server()->getString('REMOTE_ADDR', '127.0.0.1');
 		}
 		return self::$ip;
-	}
-
-	public static function getClientCountryName() {
-		if (is_null(self::$countryName)) {
-			if (function_exists('geoip_country_name_by_name')) {
-				// remove ipv6 prefix
-				$ip = ltrim(self::getClientIP() , ':a-f');
-				if (!empty($ip)) {
-					// let's ignore any lookup errors
-					$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
-					restore_error_handler();
-					self::$countryName = geoip_country_name_by_name($ip) ? : '';
-					set_error_handler('Exceptions::ErrorHandler');
-					error_reporting($errorReporting);
-				}
-			}
-		}
-		return self::$countryName;
 	}
 
 	public static function getClientCountryCode() {

@@ -25,19 +25,21 @@ class MirrorStatusJSON extends Page {
 	public function prepare() {
 		$mirrors = Database::query('
 		SELECT
-			url,
-			country,
-			lastsync,
-			delay,
-			durationAvg
+			mirrors.url,
+			countries.name AS country,
+			mirrors.lastsync,
+			mirrors.delay,
+			mirrors.durationAvg
 		FROM
 			mirrors
+			JOIN countries
+			ON mirrors.countryCode = countries.code
 		WHERE
-			protocol IN ("ftp", "http", "htttps")
+			mirrors.protocol IN ("ftp", "http", "htttps")
 		');
 		$json = array(
 			'status' => '200 OK',
-			'location' => Input::getClientCountryName()
+			'location' => $this->getClientCountryName()
 		);
 		foreach ($mirrors as $mirror) {
 			$json['servers'][] = array(
@@ -49,6 +51,24 @@ class MirrorStatusJSON extends Page {
 			);
 		}
 		$this->json = json_encode($json);
+	}
+
+	private function getClientCountryName() {
+		$countryName = Database::prepare('
+			SELECT
+				name
+			FROM
+				countries
+			WHERE
+				code = :code
+			');
+		$countryName->bindValue('code', Input::getClientCountryCode(), PDO::PARAM_STR);
+		$countryName->execute();
+		if ($countryName->rowCount() > 0) {
+			return $countryName->fetchColumn();
+		} else {
+			return '';
+		}
 	}
 
 	public function printPage() {

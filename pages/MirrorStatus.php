@@ -63,15 +63,17 @@ class MirrorStatus extends Page {
 			</tr>';
 		$mirrors = Database::query('
 		SELECT
-			url,
-			country,
-			lastsync,
-			delay,
-			durationAvg
+			mirrors.url,
+			countries.name AS country,
+			mirrors.lastsync,
+			mirrors.delay,
+			mirrors.durationAvg
 		FROM
 			mirrors
+			JOIN countries
+			ON mirrors.countryCode = countries.code
 		WHERE
-			lastsync >= ' . (Input::getTime() - $this->range) . '
+			mirrors.lastsync >= ' . (Input::getTime() - $this->range) . '
 		ORDER BY
 			' . $this->orderby . ' ' . $this->sort . '
 		');

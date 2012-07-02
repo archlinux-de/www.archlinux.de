@@ -118,7 +118,7 @@ class UserStatistics extends StatisticsPage {
 	private static function getCountryStatistics() {
 		$total = Database::query('
 		SELECT
-			COUNT(country)
+			COUNT(countryCode)
 		FROM
 			pkgstats_users
 		WHERE
@@ -126,14 +126,16 @@ class UserStatistics extends StatisticsPage {
 		')->fetchColumn();
 		$countries = Database::query('
 		SELECT
-			country,
-			COUNT(country) AS count
+			countries.name AS country,
+			COUNT(countryCode) AS count
 		FROM
 			pkgstats_users
+			JOIN countries
+			ON pkgstats_users.countryCode = countries.code
 		WHERE
-			time >= '.self::getRangeTime().'
+			pkgstats_users.time >= '.self::getRangeTime().'
 		GROUP BY
-			country
+			pkgstats_users.countryCode
 		HAVING
 			count >= ' . (floor($total / 100)) . '
 		ORDER BY

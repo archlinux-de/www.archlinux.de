@@ -65,7 +65,6 @@ CREATE TABLE `licenses` (
 CREATE TABLE `mirrors` (
   `url` varchar(255) NOT NULL,
   `protocol` enum('http','https','ftp','rsync') NOT NULL,
-  `country` varchar(255) DEFAULT NULL,
   `countryCode` char(2) DEFAULT NULL,
   `lastsync` int(10) unsigned DEFAULT NULL,
   `delay` int(10) unsigned DEFAULT NULL,
@@ -173,13 +172,12 @@ CREATE TABLE `pkgstats_users` (
   `ip` char(40) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   `arch` enum('i686','x86_64') NOT NULL,
-  `country` varchar(255) DEFAULT NULL,
   `countryCode` char(2) DEFAULT NULL,
   `mirror` varchar(255) DEFAULT NULL,
   `packages` smallint(5) unsigned NOT NULL,
   KEY `mirror` (`mirror`(20)),
-  KEY `country` (`country`(10)),
-  KEY `ip` (`ip`(20),`time`)
+  KEY `ip` (`ip`(20),`time`),
+  KEY `countryCode` (`countryCode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

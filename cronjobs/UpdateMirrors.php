@@ -51,7 +51,6 @@ class UpdateMirrors extends CronJob {
 			SET
 				url = :url,
 				protocol = :protocol,
-				country = :country,
 				countryCode = :countryCode,
 				lastsync = :lastsync,
 				delay = :delay,
@@ -63,7 +62,6 @@ class UpdateMirrors extends CronJob {
 			foreach ($mirrors as $mirror) {
 				$stm->bindParam('url', $mirror['url'], PDO::PARAM_STR);
 				$stm->bindParam('protocol', $mirror['protocol'], PDO::PARAM_STR);
-				$stm->bindParam('country', $mirror['country'], PDO::PARAM_STR);
 				$stm->bindParam('countryCode', $mirror['country_code'], PDO::PARAM_STR);
 				if (is_null($mirror['last_sync'])) {
 					$lastSync = null;
