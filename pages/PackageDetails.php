@@ -93,7 +93,8 @@ class PackageDetails extends Page {
 		$cgitUrl = Config::get('packages', 'cgit').(in_array($data['repository'], array(
 				'community',
 				'community-testing',
-				'multilib'
+				'multilib',
+				'multilib-testing'
 			)) ? 'community' : 'packages')
 			.'.git/';
 		$body = '<div class="box">

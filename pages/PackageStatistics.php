@@ -163,7 +163,7 @@ class PackageStatistics extends StatisticsPage {
 			FROM
 				repositories
 			WHERE
-				name NOT LIKE "%testing"
+				testing = 0
 				AND name NOT LIKE "%unstable"
 				AND name NOT LIKE "%staging"
 			')->fetchAll(PDO::FETCH_COLUMN);
@@ -236,7 +236,7 @@ class PackageStatistics extends StatisticsPage {
 			FROM
 				repositories
 			WHERE
-				name NOT LIKE "%testing"
+				testing = 0
 				AND name NOT LIKE "%unstable"
 				AND name NOT LIKE "%staging"
 			')->fetchAll(PDO::FETCH_COLUMN);

@@ -124,6 +124,7 @@ class Start extends Page {
 			packages.name,
 			packages.version,
 			repositories.name AS repository,
+			repositories.testing,
 			architectures.name AS architecture
 		FROM
 			packages,
@@ -143,7 +144,7 @@ class Start extends Page {
 		$result = '<h3>'.$this->l10n->getText('Recent packages').' <span class="more">(<a href="'.$this->createUrl('Packages').'">mehr</a>)</span></h3><a href="'.$this->createUrl('GetRecentPackages').'" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
 		foreach ($packages as $package) {
 			$result.= '
-			<tr class="' . $package['repository'] . '">
+			<tr'.( $package['testing'] == 1 ? ' class="testing"' : '').'>
 				<td class="pkgname"><a href="'.$this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $package['architecture'], 'pkgname' => $package['name'])).'">' . $package['name'] . '</a></td>
 				<td class="pkgver">' . $package['version'] . '</td>
 			</tr>

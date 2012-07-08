@@ -45,6 +45,7 @@ class Packages extends Page {
 				packages.builddate,
 				pkgarch.name AS architecture,
 				repositories.name AS repository,
+				repositories.testing,
 				repoarch.name AS repositoryArchitecture
 			FROM
 				packages,
@@ -351,11 +352,7 @@ class Packages extends Page {
 				<th><a href="'.$this->createUrl('Packages', array_merge($parameters, array('orderby' => 'builddate', 'sort' => $newSort))).'">'.$this->l10n->getText('Last update').'</a></th>
 			</tr>';
 		foreach ($packages as $package) {
-			$style = (in_array($package['repository'], array(
-				'testing',
-				'community-testing',
-				'staging'
-			)) ? ' class="less"' : '');
+			$style = ($package['testing'] == 1 ? ' class="less"' : '');
 			$body.= '<tr'.$style.'>
 				<td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="'.$this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $package['repositoryArchitecture'], 'pkgname' => $package['name'])).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'], 70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
 			</tr>';
