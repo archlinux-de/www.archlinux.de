@@ -34,9 +34,25 @@ class PostPackageList extends Page {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('Please make sure to use pkgstats to submit your data.');
 		}
+		if (!in_array($pkgstatsver, array(
+			'1.0',
+			'2.0',
+			'2.1',
+			'2.2'
+		))) {
+			$this->setStatus(Output::BAD_REQUEST);
+			$this->showFailure('Sorry, your version of pkgstats is not supported.');
+		}
 		try {
 			$packages = array_unique(explode("\n", trim(Input::post()->getString('packages'))));
 			$packageCount = count($packages);
+			if (in_array($pkgstatsver, array('2.2'))) {
+				$modules = array_unique(explode("\n", trim(Input::post()->getString('modules'))));
+				$moduleCount = count($modules);
+			} else {
+				$modules = array();
+				$moduleCount = null;
+			}
 			$arch = Input::post()->getString('arch');
 			# Can be rewritten once 1.0 is no longer in use
 			$mirror = Input::post()->getString('mirror', '');
@@ -45,14 +61,6 @@ class PostPackageList extends Page {
 		} catch(RequestException $e) {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure($e->getMessage());
-		}
-		if (!in_array($pkgstatsver, array(
-			'1.0',
-			'2.0',
-			'2.1'
-		))) {
-			$this->setStatus(Output::BAD_REQUEST);
-			$this->showFailure('Sorry, your version of pkgstats is not supported.');
 		}
 		if (!empty($mirror) && !preg_match('#^(https?|ftp)://\S+/#', $mirror)) {
 			$mirror = '';
@@ -82,6 +90,16 @@ class PostPackageList extends Page {
 				$this->showFailure(htmlspecialchars($package) . ' does not look like a valid package');
 			}
 		}
+		if ($moduleCount > 5000) {
+			$this->setStatus(Output::BAD_REQUEST);
+			$this->showFailure('So, you have loaded more than 5,000 modules?');
+		}
+		foreach ($modules as $module) {
+			if (!preg_match('/^[a-z0-9\-_]{1,254}$/', $module)) {
+				$this->setStatus(Output::BAD_REQUEST);
+				$this->showFailure($module . ' does not look like a valid module');
+			}
+		}
 		$this->checkIfAlreadySubmitted();
 		$countryCode = Input::getClientCountryCode();
 		try {
@@ -95,7 +113,8 @@ class PostPackageList extends Page {
 				arch = :arch,
 				countryCode = ' . (!empty($countryCode) ? ':countryCode' : 'NULL') . ',
 				mirror = ' . (!empty($mirror) ? ':mirror' : 'NULL') . ',
-				packages = :packages
+				packages = :packages,
+				modules = :modules
 			');
 			$stm->bindValue('ip', sha1(Input::getClientIP()), PDO::PARAM_STR);
 			$stm->bindValue('time', Input::getTime(), PDO::PARAM_INT);
@@ -103,6 +122,7 @@ class PostPackageList extends Page {
 			!empty($countryCode) && $stm->bindValue('countryCode', htmlspecialchars($countryCode), PDO::PARAM_STR);
 			!empty($mirror) && $stm->bindValue('mirror', htmlspecialchars($mirror), PDO::PARAM_STR);
 			$stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
+			$stm->bindParam('modules', $moduleCount, PDO::PARAM_INT);
 			$stm->execute();
 			$stm = Database::prepare('
 			INSERT INTO
@@ -116,6 +136,21 @@ class PostPackageList extends Page {
 			');
 			foreach ($packages as $package) {
 				$stm->bindValue('pkgname', htmlspecialchars($package), PDO::PARAM_STR);
+				$stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
+				$stm->execute();
+			}
+			$stm = Database::prepare('
+			INSERT INTO
+				pkgstats_modules
+			SET
+				name = :module,
+				month = :month,
+				count = 1
+			ON DUPLICATE KEY UPDATE
+				count = count + 1
+			');
+			foreach ($modules as $module) {
+				$stm->bindParam('module', $module, PDO::PARAM_STR);
 				$stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
 				$stm->execute();
 			}

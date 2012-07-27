@@ -29,6 +29,7 @@ class Statistics extends Page {
 				<li><a href="' . $this->createUrl('RepositoryStatistics') . '">Repository statistics</a></li>
 				<li><a href="' . $this->createUrl('UserStatistics') . '">User statistics</a></li>
 				<li><a href="' . $this->createUrl('PackageStatistics') . '">Package statistics</a></li>
+				<li><a href="' . $this->createUrl('ModuleStatistics') . '">Module statistics</a></li>
 				<li><a href="' . $this->createUrl('FunStatistics') . '">Fun statistics</a></li>
 			</ul>
 		</div>

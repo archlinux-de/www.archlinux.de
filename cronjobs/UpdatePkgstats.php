@@ -31,6 +31,7 @@ class UpdatePkgstats extends CronJob {
 			foreach (array(
 					'RepositoryStatistics',
 					'PackageStatistics',
+					'ModuleStatistics',
 					'UserStatistics',
 					'FunStatistics'
 				) as $page) {

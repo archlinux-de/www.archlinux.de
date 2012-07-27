@@ -66,6 +66,7 @@ class AutoLoad {
 				'PostPackageList' => '/../pages/PostPackageList.php',
 				'Statistics' => '/../pages/Statistics.php',
 				'PackageStatistics' => '/../pages/PackageStatistics.php',
+				'ModuleStatistics' => '/../pages/ModuleStatistics.php',
 				'UserStatistics' => '/../pages/UserStatistics.php',
 				'FunStatistics' => '/../pages/FunStatistics.php',
 				'RepositoryStatistics' => '/../pages/RepositoryStatistics.php'
