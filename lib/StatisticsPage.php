@@ -20,7 +20,7 @@
 
 abstract class StatisticsPage extends Page implements IDatabaseCachable {
 
-	private static $rangeMonths = 6;
+	private static $rangeMonths = 3;
 	protected static $barColors = array();
 	protected static $barColorArray = array(
 		'8B0000',
