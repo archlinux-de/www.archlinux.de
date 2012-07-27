@@ -67,6 +67,10 @@ class UserStatistics extends StatisticsPage {
 				</tr>
 					' . self::getSubmissionsPerArchitecture() . '
 				<tr>
+					<th colspan="2" class="packagedetailshead">Submissions per CPU architectures</th>
+				</tr>
+					' . self::getSubmissionsPerCpuArchitecture() . '
+				<tr>
 					<th colspan="2" class="packagedetailshead">Common statistics</th>
 				</tr>
 				<tr>
@@ -243,6 +247,35 @@ class UserStatistics extends StatisticsPage {
 			arch
 		ORDER BY
 			count DESC
+		');
+		$list = '';
+		foreach ($arches as $arch) {
+			$list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+		}
+		return $list;
+	}
+
+	private static function getSubmissionsPerCpuArchitecture() {
+		$total = Database::query('
+		SELECT
+			COUNT(*)
+		FROM
+			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
+			AND cpuarch IS NOT NULL
+		')->fetchColumn();
+		$arches = Database::query('
+		SELECT
+			COUNT(cpuarch) AS count,
+			cpuarch AS name
+		FROM
+			pkgstats_users
+		WHERE
+			time >= '.self::getRangeTime().'
+			AND cpuarch IS NOT NULL
+		GROUP BY
+			cpuarch
 		');
 		$list = '';
 		foreach ($arches as $arch) {

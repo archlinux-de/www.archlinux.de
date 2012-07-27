@@ -38,7 +38,8 @@ class PostPackageList extends Page {
 			'1.0',
 			'2.0',
 			'2.1',
-			'2.2'
+			'2.2',
+			'2.3'
 		))) {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('Sorry, your version of pkgstats is not supported.');
@@ -46,7 +47,7 @@ class PostPackageList extends Page {
 		try {
 			$packages = array_unique(explode("\n", trim(Input::post()->getString('packages'))));
 			$packageCount = count($packages);
-			if (in_array($pkgstatsver, array('2.2'))) {
+			if (in_array($pkgstatsver, array('2.2', '2.3'))) {
 				$modules = array_unique(explode("\n", trim(Input::post()->getString('modules'))));
 				$moduleCount = count($modules);
 			} else {
@@ -54,8 +55,9 @@ class PostPackageList extends Page {
 				$moduleCount = null;
 			}
 			$arch = Input::post()->getString('arch');
+			$cpuArch = Input::post()->getString('cpuarch', '');
 			# Can be rewritten once 1.0 is no longer in use
-			$mirror = Input::post()->getString('mirror', '');
+			$mirror = Input::post()->getHtml('mirror', '');
 			# Can be rewritten once 2.0 is no longer in use
 			$this->quiet = (Input::post()->getString('quiet', 'false') == 'true');
 		} catch(RequestException $e) {
@@ -63,11 +65,13 @@ class PostPackageList extends Page {
 			$this->showFailure($e->getMessage());
 		}
 		if (!empty($mirror) && !preg_match('#^(https?|ftp)://\S+/#', $mirror)) {
-			$mirror = '';
+			$mirror = null;
 		} elseif (!empty($mirror) && Input::post()->getHtmlLength('mirror') > 255) {
 			$this->setStatus(Output::BAD_REQUEST);
-			$this->showFailure(htmlspecialchars($mirror) . ' is too long.');
-			$mirror = '';
+			$this->showFailure($mirror.' is too long.');
+			$mirror = null;
+		} elseif (empty($mirror)) {
+			$mirror = null;
 		}
 		if (!in_array($arch, array(
 			'i686',
@@ -75,6 +79,17 @@ class PostPackageList extends Page {
 		))) {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure(htmlspecialchars($arch) . ' is not a known architecture.');
+		}
+		if (!in_array($cpuArch, array(
+			'i686',
+			'x86_64',
+			''
+		))) {
+			$this->setStatus(Output::BAD_REQUEST);
+			$this->showFailure(htmlspecialchars($cpuArch) . ' is not a known architecture.');
+		}
+		if ($cpuArch == '') {
+			$cpuArch = null;
 		}
 		if ($packageCount == 0) {
 			$this->setStatus(Output::BAD_REQUEST);
@@ -102,6 +117,9 @@ class PostPackageList extends Page {
 		}
 		$this->checkIfAlreadySubmitted();
 		$countryCode = Input::getClientCountryCode();
+		if (empty($countryCode)) {
+			$countryCode = null;
+		}
 		try {
 			Database::beginTransaction();
 			$stm = Database::prepare('
@@ -111,16 +129,18 @@ class PostPackageList extends Page {
 				ip = :ip,
 				time = :time,
 				arch = :arch,
-				countryCode = ' . (!empty($countryCode) ? ':countryCode' : 'NULL') . ',
-				mirror = ' . (!empty($mirror) ? ':mirror' : 'NULL') . ',
+				cpuarch = :cpuarch,
+				countryCode = :countryCode,
+				mirror = :mirror,
 				packages = :packages,
 				modules = :modules
 			');
 			$stm->bindValue('ip', sha1(Input::getClientIP()), PDO::PARAM_STR);
 			$stm->bindValue('time', Input::getTime(), PDO::PARAM_INT);
-			$stm->bindValue('arch', htmlspecialchars($arch), PDO::PARAM_STR);
-			!empty($countryCode) && $stm->bindValue('countryCode', htmlspecialchars($countryCode), PDO::PARAM_STR);
-			!empty($mirror) && $stm->bindValue('mirror', htmlspecialchars($mirror), PDO::PARAM_STR);
+			$stm->bindParam('arch', $arch, PDO::PARAM_STR);
+			$stm->bindParam('cpuarch', $cpuArch, PDO::PARAM_STR);
+			$stm->bindParam('countryCode', $countryCode, PDO::PARAM_STR);
+			$stm->bindParam('mirror', $mirror, PDO::PARAM_STR);
 			$stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
 			$stm->bindParam('modules', $moduleCount, PDO::PARAM_INT);
 			$stm->execute();

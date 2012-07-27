@@ -181,6 +181,7 @@ CREATE TABLE `pkgstats_users` (
   `ip` char(40) NOT NULL,
   `time` int(10) unsigned NOT NULL,
   `arch` enum('i686','x86_64') NOT NULL,
+  `cpuarch` enum('i686','x86_64') DEFAULT NULL,
   `countryCode` char(2) DEFAULT NULL,
   `mirror` varchar(255) DEFAULT NULL,
   `packages` smallint(5) unsigned NOT NULL,
