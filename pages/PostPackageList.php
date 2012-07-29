@@ -110,7 +110,7 @@ class PostPackageList extends Page {
 			$this->showFailure('So, you have loaded more than 5,000 modules?');
 		}
 		foreach ($modules as $module) {
-			if (!preg_match('/^[a-z0-9\-_]{1,254}$/', $module)) {
+			if (!preg_match('/^[\w\-]{1,254}$/', $module)) {
 				$this->setStatus(Output::BAD_REQUEST);
 				$this->showFailure($module . ' does not look like a valid module');
 			}
