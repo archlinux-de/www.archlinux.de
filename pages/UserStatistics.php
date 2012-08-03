@@ -309,6 +309,8 @@ class UserStatistics extends StatisticsPage {
 			AND cpuarch IS NOT NULL
 		GROUP BY
 			cpuarch
+		ORDER BY
+			count DESC
 		');
 		$list = '';
 		foreach ($arches as $arch) {

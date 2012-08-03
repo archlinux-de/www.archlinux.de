@@ -186,7 +186,18 @@ class RepositoryStatistics extends StatisticsPage {
 	}
 
 	private static function getRepositoryStatistics() {
-		$repos = Database::query('SELECT DISTINCT name FROM repositories')->fetchALL(PDO::FETCH_COLUMN);
+		$repos = Database::query('
+			SELECT DISTINCT
+				name
+			FROM
+				repositories
+			WHERE
+				testing = 0
+				AND name NOT LIKE "%unstable"
+				AND name NOT LIKE "%staging"
+			ORDER BY
+				id
+			')->fetchAll(PDO::FETCH_COLUMN);
 		$total = Database::query('
 			SELECT
 				COUNT(id) AS packages,

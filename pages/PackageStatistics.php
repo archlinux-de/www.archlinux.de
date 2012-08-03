@@ -152,6 +152,8 @@ class PackageStatistics extends StatisticsPage {
 			time >= '.self::getRangeTime().'
 		GROUP BY
 			arch
+		ORDER BY
+			count DESC
 		');
 		$list = '';
 		foreach ($arches as $arch) {
@@ -181,6 +183,8 @@ class PackageStatistics extends StatisticsPage {
 			AND cpuarch IS NOT NULL
 		GROUP BY
 			cpuarch
+		ORDER BY
+			count DESC
 		');
 		$list = '';
 		foreach ($arches as $arch) {
@@ -249,7 +253,10 @@ class PackageStatistics extends StatisticsPage {
 					repositories.name = :repositoryName
 				) AS total
 		');
-		$list = '';
+		$result = '';
+		$list = array();
+		$sortList = array();
+		$id = 0;
 		foreach ($repos as $repo) {
 			$countStm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
 			$countStm->execute();
@@ -257,9 +264,14 @@ class PackageStatistics extends StatisticsPage {
 			$totalStm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
 			$totalStm->execute();
 			$total = $totalStm->fetchColumn();
-			$list.= '<tr><th>' . $repo . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+			$sortList[$id] = $count / $total;
+			$list[$id++] = '<tr><th>' . $repo . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
 		}
-		return $list;
+		arsort($sortList);
+		foreach (array_keys($sortList) as $id) {
+			$result .= $list[$id];
+		}
+		return $result;
 	}
 
 	private static function getPopularPackagesPerRepository() {
@@ -272,6 +284,8 @@ class PackageStatistics extends StatisticsPage {
 				testing = 0
 				AND name NOT LIKE "%unstable"
 				AND name NOT LIKE "%staging"
+			ORDER BY
+				id
 			')->fetchAll(PDO::FETCH_COLUMN);
 		$total = Database::query('
 			SELECT
