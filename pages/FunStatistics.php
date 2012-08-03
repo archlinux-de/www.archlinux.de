@@ -36,7 +36,7 @@ class FunStatistics extends StatisticsPage {
 			$body = '<div class="box">
 			<table id="packagedetails">
 				<tr>
-					<th colspan="2" class="packagedetailshead">Browser</th>
+					<th colspan="2" class="packagedetailshead">Browsers</th>
 				</tr>
 					' . self::getPackageStatistics(array(
 				'Mozilla Firefox' => 'firefox',
@@ -76,7 +76,8 @@ class FunStatistics extends StatisticsPage {
 				'Mousepad' => 'mousepad',
 				'Medit' => 'nedit',
 				'Joe' => 'joe',
-				'Leafpad' => 'leafpad'
+				'Leafpad' => 'leafpad',
+				'Geany' => 'geany'
 			)) . '
 					<th colspan="2" class="packagedetailshead">Desktop Environments</th>
 				</tr>
@@ -106,18 +107,13 @@ class FunStatistics extends StatisticsPage {
 				'Fluxbox' => 'fluxbox',
 				'I3' => 'i3-wm',
 				'Compiz' => 'compiz-core',
-				'FVWM' => array(
-					'fvwm',
-					'fvwm-devel'
-				) ,
+				'FVWM' => 'fvwm',
 				'Ratpoison' => 'ratpoison',
 				'Wmii' => 'wmii',
 				'Xmonad' => 'xmonad',
-				'Window Maker' => array(
-					'windowmaker',
-					'windowmaker-crm-git'
-				),
-				'subtle' => 'subtle'
+				'Window Maker' => 'windowmaker',
+				'subtle' => 'subtle',
+				'awesome' => 'awesome'
 			)) . '
 					<th colspan="2" class="packagedetailshead">Media Players</th>
 				</tr>
@@ -142,13 +138,10 @@ class FunStatistics extends StatisticsPage {
 				'ATI' => array(
 					'xf86-video-ati',
 					'xf86-video-r128',
-					'xf86-video-mach64',
-					'xf86-video-radeonhd'
+					'xf86-video-mach64'
 				) ,
 				'NVIDIA' => array(
 					'nvidia-utils',
-					'nvidia-96xx-utils',
-					'nvidia-173xx-utils',
 					'xf86-video-nouveau',
 					'xf86-video-nv'
 				) ,
