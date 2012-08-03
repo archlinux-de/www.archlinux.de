@@ -59,6 +59,10 @@ class UserStatistics extends StatisticsPage {
 				</tr>
 					' . self::getMirrorStatistics() . '
 				<tr>
+					<th colspan="2" class="packagedetailshead">Mirrors per Country</th>
+				</tr>
+					' . self::getMirrorCountryStatistics() . '
+				<tr>
 					<th colspan="2" class="packagedetailshead">Mirror protocolls</th>
 				</tr>
 					' . self::getMirrorProtocollStatistics() . '
@@ -190,6 +194,35 @@ class UserStatistics extends StatisticsPage {
 		$list = '';
 		foreach ($hosts as $host => $count) {
 			$list.= '<tr><th>' . $host . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+		}
+		return $list;
+	}
+
+	private static function getMirrorCountryStatistics() {
+		$total = Database::query('
+		SELECT
+			COUNT(countryCode)
+		FROM
+			mirrors
+		')->fetchColumn();
+		$countries = Database::query('
+		SELECT
+			countries.name AS country,
+			COUNT(countryCode) AS count
+		FROM
+			mirrors
+			JOIN countries
+			ON mirrors.countryCode = countries.code
+		GROUP BY
+			mirrors.countryCode
+		HAVING
+			count > ' . (floor($total / 100)) . '
+		ORDER BY
+			count DESC
+		');
+		$list = '';
+		foreach ($countries as $country) {
+			$list.= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'], $total) . '</td></tr>';
 		}
 		return $list;
 	}
