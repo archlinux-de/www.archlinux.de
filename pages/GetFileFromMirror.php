@@ -30,10 +30,13 @@ class GetFileFromMirror extends Output {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure('Invalid file name');
 		}
+		if (strpos($this->file, '/') === 0) {
+			$this->file = substr($this->file, 1);
+		}
 		$repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
 		$architectures = implode('|', $this->getAvailableArchitectures());
 		$pkgextension = '(?:'.$architectures.'|any).pkg.tar.(?:g|x)z';
-		if (preg_match('#('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'#', $this->file, $matches)) {
+		if (preg_match('#^('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'$#', $this->file, $matches)) {
 			$pkgdate = Database::prepare('
 				SELECT
 					packages.mtime
@@ -57,6 +60,16 @@ class GetFileFromMirror extends Output {
 				$this->showFailure('Package was not found');
 			}
 			$this->lastsync = $pkgdate->fetchColumn();
+		} elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $this->file, $matches)) {
+			$isoAge = gmdate('Ymd') - str_replace('.', '', $matches[1]);
+			if ($isoAge < 0 || $isoAge > 365) {
+				$this->setStatus(Output::NOT_FOUND);
+				$this->showFailure('ISO image was not found');
+			} elseif ($isoAge == 0) {
+				$this->lastsync = Input::getTime() - (60 * 60 * 2);
+			} else {
+				$this->lastsync = Input::getTime() - (60 * 60 * 24 * $isoAge);
+			}
 		} else {
 			$this->lastsync = Input::getTime() - (60 * 60 * 24);
 		}
