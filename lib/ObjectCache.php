@@ -31,7 +31,7 @@ class ObjectCache {
 		} elseif (function_exists('xcache_set')) {
 			return xcache_set($key, $object, $ttl);
 		} else {
-			false;
+			return false;
 		}
 	}
 
@@ -40,9 +40,13 @@ class ObjectCache {
 		if (function_exists('apc_fetch')) {
 			return apc_fetch($key);
 		} elseif (function_exists('xcache_get')) {
-			return xcache_get($key);
+			$result = xcache_get($key);
+			if (is_null($result)) {
+				return false;
+			}
+			return $result;
 		} else {
-			false;
+			return false;
 		}
 	}
 
@@ -56,7 +60,7 @@ class ObjectCache {
 		} elseif (function_exists('xcache_isset')) {
 			return xcache_isset($key);
 		} else {
-			false;
+			return false;
 		}
 	}
 }
