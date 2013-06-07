@@ -27,13 +27,13 @@ h5 { font-size: 1em; margin-top: 1em; }
 #intro .readmore { margin: -0.5em 0 0 0; font-size: .9em; text-align: right; }
 
 #news { margin-top: 1.5em; }
-#news p { margin-bottom: 1.5em; }
+#news p { margin-bottom: 5px; }
 #news h3 { border-bottom: 1px solid #888; margin-bottom: 0.5em; }
 #news h4 { font-size: 1em; margin-top: 1.5em; border-bottom: 1px dotted #bbb; margin-bottom: 0.5em; }
 #news .date { float: right; font-size: 0.85em; margin: -2em 0.5em 0 0; }
 #news ol, ul { padding-left: 2em; }
 #news ul { list-style: square; }
-#news li p { margin-top:-1em; margin-bottom: 1em; }
+#news .codebox { margin: 5px; padding: 2px; }
 
 #pkgsearch { padding: 1em 0.75em; background: #3ad; color: #fff; border: 1px solid #08b; } 
 #pkgsearch label { margin: 0; padding: 0; font-weight: bold; text-align: right; }
