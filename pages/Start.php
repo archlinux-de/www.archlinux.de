@@ -35,6 +35,18 @@ class Start extends Page {
 		$this->architectureId = $this->getArchitectureId($clientArch);
 
 		$this->setTitle($this->l10n->getText('Start'));
+
+		$this->addJS('jquery.min');
+		$this->addJS('jquery.ui.core.min');
+		$this->addJS('jquery.ui.widget.min');
+		$this->addJS('jquery.ui.position.min');
+		$this->addJS('jquery.ui.menu.min');
+		$this->addJS('jquery.ui.autocomplete.min');
+		$this->addCSS('jquery.ui.core.min');
+		$this->addCSS('jquery.ui.theme.min');
+		$this->addCSS('jquery.ui.menu.min');
+		$this->addCSS('jquery.ui.autocomplete.min');
+
 		$body = '<div id="left-wrapper">
 			<div id="left">
 				<div id="intro" class="box">

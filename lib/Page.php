@@ -23,6 +23,8 @@ abstract class Page extends Output {
 	private $title = '';
 	private $body = '';
 	private $metaRobots = 'index,follow';
+	private $cssFiles = array('arch', 'archnavbar');
+	private $jsFiles = array();
 	protected $l10n = null;
 
 	public function __construct() {
@@ -52,6 +54,22 @@ abstract class Page extends Output {
 
 	protected function getMetaRobots() {
 		return $this->metaRobots;
+	}
+
+	protected function addCSS($name) {
+		$this->cssFiles[] = $name;
+	}
+
+	protected function getCSS() {
+		return $this->cssFiles;
+	}
+
+	protected function addJS($name) {
+		$this->jsFiles[] = $name;
+	}
+
+	protected function getJS() {
+		return $this->jsFiles;
 	}
 
 	protected function getName() {
