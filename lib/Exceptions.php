@@ -75,8 +75,11 @@ class Exceptions {
 		);
 	}
 
-	public static function ErrorHandler($code, $string, $file, $line) {
-		throw new ErrorException($string, $code, E_WARNING, $file, $line);
+	public static function ErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {
+		if (!(error_reporting() & $errno)) {
+			return false;
+		}
+		throw new ErrorException($errstr, $errno, E_WARNING, $errfile, $errline);
 	}
 
 }
