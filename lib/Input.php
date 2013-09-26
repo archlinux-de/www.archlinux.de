@@ -61,11 +61,7 @@ class Input {
 				$ip = ltrim(self::getClientIP() , ':a-f');
 				if (!empty($ip)) {
 					// let's ignore any lookup errors
-					$errorReporting = error_reporting(E_ALL ^ E_NOTICE);
-					restore_error_handler();
-					self::$countryCode = strtoupper(geoip_country_code_by_name($ip)) ? : '';
-					set_error_handler('Exceptions::ErrorHandler');
-					error_reporting($errorReporting);
+					self::$countryCode = strtoupper(@geoip_country_code_by_name($ip)) ? : '';
 				}
 			}
 		}
