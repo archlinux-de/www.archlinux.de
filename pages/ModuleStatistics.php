@@ -21,12 +21,12 @@
 class ModuleStatistics extends StatisticsPage {
 
 	public function prepare() {
-		$this->setValue('title', 'Module statistics');
+		$this->setTitle('Module statistics');
 		if (!($body = ObjectStore::getObject('ModuleStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	public static function updateDatabaseCache() {

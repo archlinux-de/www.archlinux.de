@@ -26,7 +26,7 @@ class PackageDetails extends Page {
 	private $pkgname = '';
 
 	public function prepare() {
-		$this->setValue('title', $this->l10n->getText('Package details'));
+		$this->setTitle($this->l10n->getText('Package details'));
 		try {
 			$this->repo = Input::get()->getString('repo');
 			$this->arch = Input::get()->getString('arch');
@@ -89,7 +89,7 @@ class PackageDetails extends Page {
 			$this->showFailure($this->l10n->getText('Package was not found'));
 		}
 		$this->pkgid = $data['id'];
-		$this->setValue('title', $data['name']);
+		$this->setTitle($data['name']);
 		$cgitUrl = Config::get('packages', 'cgit').(in_array($data['repository'], array(
 				'community',
 				'community-testing',
@@ -234,7 +234,7 @@ class PackageDetails extends Page {
 		}
 
 		$body .= '</div>';
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	private function formatBytes($bytes) {

@@ -21,12 +21,12 @@
 class RepositoryStatistics extends StatisticsPage {
 
 	public function prepare() {
-		$this->setValue('title', 'Repository statistics');
+		$this->setTitle('Repository statistics');
 		if (!($body = ObjectStore::getObject('RepositoryStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	public static function updateDatabaseCache() {

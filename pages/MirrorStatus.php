@@ -36,7 +36,7 @@ class MirrorStatus extends Page {
 	);
 
 	public function prepare() {
-		$this->setValue('title', $this->l10n->getText('Mirror status'));
+		$this->setTitle($this->l10n->getText('Mirror status'));
 		try {
 			if (in_array(Input::get()->getString('orderby') , $this->orders)) {
 				$this->orderby = Input::get()->getString('orderby');
@@ -87,7 +87,7 @@ class MirrorStatus extends Page {
 			</tr>';
 		}
 		$body.= '</table>';
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 }
 

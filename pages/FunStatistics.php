@@ -21,12 +21,12 @@
 class FunStatistics extends StatisticsPage {
 
 	public function prepare() {
-		$this->setValue('title', 'Fun statistics');
+		$this->setTitle('Fun statistics');
 		if (!($body = ObjectStore::getObject('FunStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	public static function updateDatabaseCache() {

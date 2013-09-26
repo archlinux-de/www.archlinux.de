@@ -24,7 +24,7 @@ class Packagers extends Page {
 	private $sort = 0;
 
 	public function prepare() {
-		$this->setValue('title', $this->l10n->getText('Packagers'));
+		$this->setTitle($this->l10n->getText('Packagers'));
 		try {
 			if (in_array(Input::get()->getString('orderby') , array(
 				'name',
@@ -82,7 +82,7 @@ class Packagers extends Page {
 			</tr>';
 		}
 		$body.= '</table>';
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 }
 

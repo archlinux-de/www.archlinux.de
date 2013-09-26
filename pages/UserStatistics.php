@@ -21,12 +21,12 @@
 class UserStatistics extends StatisticsPage {
 
 	public function prepare() {
-		$this->setValue('title', 'User statistics');
+		$this->setTitle('User statistics');
 		if (!($body = ObjectStore::getObject('UserStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	public static function updateDatabaseCache() {

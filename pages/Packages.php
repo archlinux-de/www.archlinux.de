@@ -33,7 +33,7 @@ class Packages extends Page {
 	private $searchField = 0;
 
 	public function prepare() {
-		$this->setValue('title', $this->l10n->getText('Package search'));
+		$this->setTitle($this->l10n->getText('Package search'));
 		$this->initParameters();
 
 		$packages = Database::prepare('
@@ -77,7 +77,7 @@ class Packages extends Page {
 
 		$body = '
 		<div class="box">
-		<h2>'.$this->getValue('title').'</h2>
+		<h2>'.$this->getTitle().'</h2>
 		<form method="get">
 		<input type="hidden" name="page" value="Packages" />
 		<table id="searchbox">
@@ -119,7 +119,7 @@ class Packages extends Page {
 		</form>
 		</div>';
 		$body.= $this->showPackageList($packages);
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	private function getAvailableRepositories($architecture = '') {

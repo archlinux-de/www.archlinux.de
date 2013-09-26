@@ -21,7 +21,7 @@
 class Statistics extends Page {
 
 	public function prepare() {
-		$this->setValue('title', 'Statistics');
+		$this->setTitle('Statistics');
 		$body = '
 		<div class="box">
 			<h2>Statistics</h2>
@@ -34,7 +34,7 @@ class Statistics extends Page {
 			</ul>
 		</div>
 		';
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 }
 

@@ -20,23 +20,38 @@
 
 abstract class Page extends Output {
 
-	protected $variables = array();
+	private $title = '';
+	private $body = '';
+	private $metaRobots = 'index,follow';
 	protected $l10n = null;
 
 	public function __construct() {
-		$this->variables['body'] = '';
-		$this->variables['title'] = '';
-		$this->variables['meta.robots'] = 'index,follow';
 		$this->l10n = new L10n();
 		parent::__construct();
 	}
 
-	protected function setValue($key, $value) {
-		$this->variables[$key] = $value;
+	protected function setTitle($title) {
+		$this->title = $title;
 	}
 
-	protected function getValue($key) {
-		return $this->variables[$key];
+	protected function getTitle() {
+		return $this->title;
+	}
+
+	protected function setBody($body) {
+		$this->body = $body;
+	}
+
+	protected function getBody() {
+		return $this->body;
+	}
+
+	protected function setMetaRobots($metaRobots) {
+		$this->metaRobots = $metaRobots;
+	}
+
+	protected function getMetaRobots() {
+		return $this->metaRobots;
 	}
 
 	protected function getName() {
@@ -44,24 +59,24 @@ abstract class Page extends Output {
 	}
 
 	protected function showWarning($text) {
-		$this->setValue('meta.robots', 'noindex,nofollow');
-		$this->setValue('title', $this->l10n->getText('Warning'));
-		$this->setValue('body', '<div id="warning">' . $text . '</div>');
+		$this->setMetaRobots('noindex,nofollow');
+		$this->setTitle($this->l10n->getText('Warning'));
+		$this->setBody('<div id="warning">' . $text . '</div>');
 		require (__DIR__.'/../templates/PageTemplate.php');
 		exit();
 	}
 
 	protected function showFailure($text) {
-		$this->setValue('meta.robots', 'noindex,nofollow');
-		$this->setValue('title', $this->l10n->getText('Error'));
-		$this->setValue('body', '<div id="warning">' . $text . '</div>');
+		$this->setMetaRobots('noindex,nofollow');
+		$this->setTitle($this->l10n->getText('Error'));
+		$this->setBody('<div id="warning">' . $text . '</div>');
 		require (__DIR__.'/../templates/PageTemplate.php');
 		exit();
 	}
 
 	public function prepare() {
-		$this->setValue('title', $this->l10n->getText('Warning'));
-		$this->setValue('body', $this->l10n->getText('no text'));
+		$this->setTitle($this->l10n->getText('Warning'));
+		$this->setBody($this->l10n->getText('no text'));
 	}
 
 	protected function cutString($string, $length) {

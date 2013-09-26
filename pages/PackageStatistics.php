@@ -21,12 +21,12 @@
 class PackageStatistics extends StatisticsPage {
 
 	public function prepare() {
-		$this->setValue('title', 'Package statistics');
+		$this->setTitle('Package statistics');
 		if (!($body = ObjectStore::getObject('PackageStatistics'))) {
 			$this->setStatus(Output::NOT_FOUND);
 			$this->showFailure('No data found!');
 		}
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	public static function updateDatabaseCache() {

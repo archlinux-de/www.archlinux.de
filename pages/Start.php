@@ -34,7 +34,7 @@ class Start extends Page {
 		}
 		$this->architectureId = $this->getArchitectureId($clientArch);
 
-		$this->setValue('title', $this->l10n->getText('Start'));
+		$this->setTitle($this->l10n->getText('Start'));
 		$body = '<div id="left-wrapper">
 			<div id="left">
 				<div id="intro" class="box">
@@ -70,7 +70,7 @@ class Start extends Page {
 			</div>
 		</div>
 	';
-		$this->setValue('body', $body);
+		$this->setBody($body);
 	}
 
 	private function getAvailableArchitectures() {
