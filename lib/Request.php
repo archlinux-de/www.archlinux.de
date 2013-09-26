@@ -62,7 +62,7 @@ class Request {
 	}
 
 	public function isString($name) {
-		return isset($this->request[$name]) && $this->is_unicode($this->request[$name]);
+		return isset($this->request[$name]) && is_string($this->request[$name]) && $this->is_unicode($this->request[$name]);
 	}
 
 	public function isEmptyString($name) {
@@ -82,7 +82,7 @@ class Request {
 	}
 
 	public function isRegex($name, $regex) {
-		return isset($this->request[$name]) && preg_match($regex, $this->request[$name]);
+		return $this->isString($name) && preg_match($regex, $this->request[$name]);
 	}
 
 	public function getLength($name) {
