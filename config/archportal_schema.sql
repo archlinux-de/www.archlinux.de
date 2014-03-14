@@ -111,7 +111,7 @@ CREATE TABLE `package_relation` (
   `dependsId` int(11) unsigned DEFAULT NULL,
   `dependsName` varchar(255) NOT NULL,
   `dependsVersion` varchar(255) DEFAULT NULL,
-  `type` enum('replaces','depends','optdepends','conflicts','provides') NOT NULL,
+  `type` enum('replaces','depends','optdepends','conflicts','provides','makedepends','checkdepends') NOT NULL,
   KEY `packageId` (`packageId`),
   KEY `dependsId` (`dependsId`),
   KEY `dependsName` (`dependsName`)

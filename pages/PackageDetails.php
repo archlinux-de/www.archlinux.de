@@ -61,6 +61,8 @@ class PackageDetails extends Page {
 				packages.csize,
 				packages.isize,
 				packages.md5sum,
+				packages.sha256sum,
+				packages.pgpsig,
 				packages.url,
 				packages.builddate,
 				packages.mtime,
@@ -168,6 +170,14 @@ class PackageDetails extends Page {
 				<td><code>' . $data['md5sum'] . '</code></td>
 			</tr>
 			<tr>
+				<th>'.$this->l10n->getText('SHA256 checksum').'</th>
+				<td><code>' . $data['sha256sum'] . '</code></td>
+			</tr>
+			<tr>
+				<th>'.$this->l10n->getText('PGP signature').'</th>
+				<td><a href="data:application/pgp-signature;base64,' . $data['pgpsig'] . '" download="'.$data['filename'].'.sig">'.$data['filename'].'.sig</a></td>
+			</tr>
+			<tr>
 				<th>'.$this->l10n->getText('Package size').'</th>
 				<td>' . $this->formatBytes($data['csize']) . 'Byte</td>
 			</tr>
@@ -207,7 +217,9 @@ class PackageDetails extends Page {
 			<tr>
 				<th>'.$this->l10n->getText('optionally depends on').'</th>
 				<th>'.$this->l10n->getText('optionally required by').'</th>
-				<th colspan="3">&nbsp;</th>
+				<th>'.$this->l10n->getText('make depends on').'</th>
+				<th>'.$this->l10n->getText('make required by').'</th>
+				<th>'.$this->l10n->getText('check depends on').'</th>
 			</tr>
 			<tr>
 				<td>
@@ -216,7 +228,15 @@ class PackageDetails extends Page {
 				<td>
 					' . $this->getInverseRelations('optdepends') . '
 				</td>
-				<td colspan="3">&nbsp;</td>
+				<td>
+					' . $this->getRelations('makedepends') . '
+				</td>
+				<td>
+					' . $this->getInverseRelations('makedepends') . '
+				</td>
+				<td>
+					' . $this->getRelations('checkdepends') . '
+				</td>
 			</tr>
 		</table>';
 

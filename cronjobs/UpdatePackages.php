@@ -629,6 +629,8 @@ class UpdatePackages extends CronJob {
 		$this->addRelation($package->getOptDepends(), $packageId, 'optdepends');
 		$this->addRelation($package->getConflicts(), $packageId, 'conflicts');
 		$this->addRelation($package->getProvides(), $packageId, 'provides');
+		$this->addRelation($package->getMakeDepends(), $packageId, 'makedepends');
+		$this->addRelation($package->getCheckDepends(), $packageId, 'checkdepends');
 
 		if (Config::get('packages', 'files')) {
 			$this->insertFiles($package->getFiles(), $packageId);
