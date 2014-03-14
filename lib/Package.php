@@ -117,10 +117,6 @@ class Package {
 		return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : 0;
 	}
 
-	public function getMTime() {
-		return filemtime($this->packageDir.'/desc');
-	}
-
 	public function getPackager() {
 		return isset($this->desc['PACKAGER'][0]) ? $this->desc['PACKAGER'][0] : '';
 	}
@@ -133,16 +129,24 @@ class Package {
 		return isset($this->depends['DEPENDS']) ? $this->depends['DEPENDS'] : array();
 	}
 
-	public function getOptDepends() {
-		return isset($this->depends['OPTDEPENDS']) ? $this->depends['OPTDEPENDS'] : array();
-	}
-
 	public function getConflicts() {
 		return isset($this->depends['CONFLICTS']) ? $this->depends['CONFLICTS'] : array();
 	}
 
 	public function getProvides() {
 		return isset($this->depends['PROVIDES']) ? $this->depends['PROVIDES'] : array();
+	}
+
+	public function getOptDepends() {
+		return isset($this->depends['OPTDEPENDS']) ? $this->depends['OPTDEPENDS'] : array();
+	}
+
+	public function getMakeDepends() {
+		return isset($this->depends['MAKEDEPENDS']) ? $this->depends['MAKEDEPENDS'] : array();
+	}
+
+	public function getCheckDepends() {
+		return isset($this->depends['CHECKDEPENDS']) ? $this->depends['CHECKDEPENDS'] : array();
 	}
 
 	public function getFiles() {
@@ -153,6 +157,11 @@ class Package {
 			return array();
 		}
 	}
+
+	public function getMTime() {
+		return filemtime($this->packageDir.'/desc');
+	}
+
 }
 
 ?>
