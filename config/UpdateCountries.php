@@ -23,12 +23,7 @@ require (__DIR__.'/../lib/Config.php');
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
 
-
-$download = new Download('http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements_xml.htm');
-$content = file_get_contents($download->getFile());
-// They send a utf8 encoded file but set the wrong encoding in the xml doctype
-$content = str_replace('encoding="ISO-8859-1"', 'encoding="UTF-8"', $content);
-$xml = new SimpleXMLElement($content);
+$xml = new SimpleXMLElement(__DIR__.'/country_names_and_code_elements_xml.htm', 0, true);
 
 Database::beginTransaction();
 Database::query('DELETE FROM countries');
