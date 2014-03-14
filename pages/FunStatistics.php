@@ -86,7 +86,9 @@ class FunStatistics extends StatisticsPage {
 				'GNOME' => 'gnome-session',
 				'LXDE' => 'lxde-common',
 				'Xfce' => 'xfdesktop',
-				'e17' => 'e-svn'
+				'Enlightenment' => 'enlightenment',
+				'MATE' => 'mate-desktop',
+				'Cinnamon' => 'cinnamon-desktop'
 			)) . '
 					<th colspan="2" class="packagedetailshead">File Managers</th>
 				</tr>
@@ -141,6 +143,7 @@ class FunStatistics extends StatisticsPage {
 					'xf86-video-mach64'
 				) ,
 				'NVIDIA' => array(
+					'nvidia-304xx-utils',
 					'nvidia-utils',
 					'xf86-video-nouveau',
 					'xf86-video-nv'
