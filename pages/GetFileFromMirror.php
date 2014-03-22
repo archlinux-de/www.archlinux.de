@@ -61,15 +61,22 @@ class GetFileFromMirror extends Output {
 			}
 			$this->lastsync = $pkgdate->fetchColumn();
 		} elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $this->file, $matches)) {
-			$isoAge = gmdate('Ymd') - str_replace('.', '', $matches[1]);
-			if ($isoAge < 0 || $isoAge > 365) {
+			$releasedate = Database::prepare('
+				SELECT
+					created
+				FROM
+					releng_releases
+				WHERE
+					version = :version
+					AND available = 1
+				');
+			$releasedate->bindParam('version', $matches[1], PDO::PARAM_STR);
+			$releasedate->execute();
+			if ($releasedate->rowCount() == 0) {
 				$this->setStatus(Output::NOT_FOUND);
 				$this->showFailure('ISO image was not found');
-			} elseif ($isoAge == 0) {
-				$this->lastsync = Input::getTime() - (60 * 60 * 2);
-			} else {
-				$this->lastsync = Input::getTime() - (60 * 60 * 24 * $isoAge);
 			}
+			$this->lastsync = $releasedate->fetchColumn();
 		} else {
 			$this->lastsync = Input::getTime() - (60 * 60 * 24);
 		}

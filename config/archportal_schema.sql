@@ -193,6 +193,33 @@ CREATE TABLE `pkgstats_users` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `releng_releases` (
+  `version` varchar(20) NOT NULL,
+  `available` tinyint(1) unsigned NOT NULL,
+  `info` text NOT NULL,
+  `iso_url` varchar(255) NOT NULL,
+  `md5_sum` char(32) DEFAULT NULL,
+  `created` int(10) unsigned NOT NULL,
+  `kernel_version` varchar(20) DEFAULT NULL,
+  `release_date` date NOT NULL,
+  `torrent_url` varchar(255) DEFAULT NULL,
+  `sha1_sum` char(40) DEFAULT NULL,
+  `torrent_comment` text,
+  `torrent_info_hash` char(40) DEFAULT NULL,
+  `torrent_piece_length` int(10) unsigned DEFAULT NULL,
+  `torrent_file_name` varchar(255) DEFAULT NULL,
+  `torrent_announce` varchar(255) DEFAULT NULL,
+  `torrent_file_length` bigint(20) unsigned DEFAULT NULL,
+  `torrent_piece_count` smallint(5) unsigned DEFAULT NULL,
+  `torrent_created_by` varchar(255) DEFAULT NULL,
+  `torrent_creation_date` int(10) unsigned DEFAULT NULL,
+  `magnet_uri` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`version`),
+  KEY `available` (`available`,`release_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `repositories` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,

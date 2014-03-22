@@ -53,4 +53,6 @@ Config::set('mirrors', 'country', 'US');
 Config::set('news', 'feed', '');
 Config::set('news', 'archive', '');
 
+Config::set('releng', 'releases', 'https://www.archlinux.org/releng/releases/json/');
+
 ?>
