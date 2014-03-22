@@ -110,23 +110,28 @@ class Start extends Page {
 	}
 
 	private function getNews() {
-		$result = '';
-		if (!($result = ObjectCache::getObject('news_feed'))) {
-			try {
-				$download = new Download(Config::get('news', 'feed'));
-				$feed = new SimpleXMLElement($download->getFile(), 0, true);
-				$result = '<h3>'.$this->l10n->getText('Recent news').' <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
-				foreach ($feed->entry as $entry) {
-					$result.= '
-					<h4><a href="' . $entry->link->attributes()->href . '">' . $entry->title . '</a></h4>
-					<p class="date">' . $this->l10n->getDate(strtotime($entry->updated)) . '</p>
-					' . $entry->summary . '
-					';
-				}
-				ObjectCache::addObject('news_feed', $result, 1800);
-			} catch (Exception $e) {
-			}
+		$result = '<h3>'.$this->l10n->getText('Recent news').' <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
+
+		$newsFeed = Database::query('
+			SELECT
+				link,
+				title,
+				updated,
+				summary
+			FROM
+				news_feed
+			ORDER BY
+				updated DESC
+			LIMIT 6
+			');
+		foreach ($newsFeed as $entry) {
+			$result.= '
+			<h4><a href="'.$entry['link'].'">'.$entry['title'].'</a></h4>
+			<p class="date">'.$this->l10n->getDate($entry['updated']).'</p>
+			'.$entry['summary'].'
+			';
 		}
+
 		return $result;
 	}
 

@@ -79,6 +79,20 @@ CREATE TABLE `mirrors` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `news_feed` (
+  `id` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `link` varchar(255) NOT NULL,
+  `summary` text NOT NULL,
+  `author_name` varchar(255) NOT NULL,
+  `author_uri` varchar(255) NOT NULL,
+  `updated` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `updated` (`updated`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `package_file_index` (
   `package` int(11) unsigned NOT NULL,
   `file_index` int(11) unsigned NOT NULL,
