@@ -32,7 +32,7 @@ Config::set('Database', 'password', '');
 Config::set('L10n', 'locale', 'en_US.utf8');
 Config::set('L10n', 'timezone', 'UTC');
 
-Config::set('packages', 'mirror', 'http://mirrors.kernel.org/archlinux/');
+Config::set('packages', 'mirror', 'http://mirror.de.leaseweb.net/archlinux/');
 Config::set('packages', 'cgit', 'https://projects.archlinux.org/svntogit/');
 Config::set('packages', 'repositories', array(
 			'core' => array('i686', 'x86_64'),
@@ -47,8 +47,8 @@ Config::set('packages', 'files', true);
 Config::set('packages', 'delay', 120);
 
 Config::set('mirrors', 'status', 'https://www.archlinux.org/mirrors/status/json/');
-Config::set('mirrors', 'default', 'http://mirrors.kernel.org/archlinux/');
-Config::set('mirrors', 'country', 'US');
+Config::set('mirrors', 'default', Config::get('packages', 'mirror'));
+Config::set('mirrors', 'country', 'DE');
 
 Config::set('news', 'feed', '');
 Config::set('news', 'archive', '');
