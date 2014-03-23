@@ -37,7 +37,7 @@ class UpdateMirrors extends CronJob {
 			}
 			$this->updateMirrorlist($mirrors);
 		} catch (RuntimeException $e) {
-			echo ('Warning: UpdateMirrors failed: ' . $e->getMessage());
+			$this->printError('Warning: UpdateMirrors failed: ' . $e->getMessage());
 		}
 	}
 
@@ -80,7 +80,7 @@ class UpdateMirrors extends CronJob {
 			Database::commit();
 		} catch(RuntimeException $e) {
 			Database::rollBack();
-			echo ('Warning: updateMirrorlist failed: ' . $e->getMessage());
+			$this->printError('Warning: updateMirrorlist failed: ' . $e->getMessage());
 		}
 	}
 

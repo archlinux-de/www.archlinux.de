@@ -796,7 +796,7 @@ class UpdatePackages extends CronJob {
 		foreach ($repos as $repo) {
 			if (!isset($configRepos[$repo['name']])
 				|| !in_array($repo['arch'], $configRepos[$repo['name']])) {
-				echo "\tRemoving repository [$repo[name]] ($repo[arch])\n";
+				$this->printDebug("\tRemoving repository [$repo[name]] ($repo[arch])");
 				$this->cleanupObsoletePackages($repo['id'], time(), array());
 				Database::query('
 					DELETE FROM

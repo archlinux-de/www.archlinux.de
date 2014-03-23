@@ -30,7 +30,7 @@ class UpdateNews extends CronJob {
 			$newsEntries = $this->getNewsEntries();
 			$this->updateNewsEntries($newsEntries);
 		} catch (RuntimeException $e) {
-			echo ('Warning: UpdateNews failed: ' . $e->getMessage());
+			$this->printError('Warning: UpdateNews failed: ' . $e->getMessage());
 		}
 	}
 
@@ -67,7 +67,7 @@ class UpdateNews extends CronJob {
 			Database::commit();
 		} catch(RuntimeException $e) {
 			Database::rollBack();
-			echo ('Warning: updateNews failed: ' . $e->getMessage());
+			$this->printError('Warning: updateNews failed: ' . $e->getMessage());
 		}
 	}
 

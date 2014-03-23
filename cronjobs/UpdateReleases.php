@@ -37,7 +37,7 @@ class UpdateReleases extends CronJob {
 			}
 			$this->updateRelengReleases($releases);
 		} catch (RuntimeException $e) {
-			echo ('Warning: UpdateReleases failed: ' . $e->getMessage());
+			$this->printError('Warning: UpdateReleases failed: ' . $e->getMessage());
 		}
 	}
 
@@ -96,7 +96,7 @@ class UpdateReleases extends CronJob {
 			Database::commit();
 		} catch (RuntimeException $e) {
 			Database::rollBack();
-			echo ('Warning: UpdateReleases failed: ' . $e->getMessage());
+			$this->printError('Warning: UpdateReleases failed: ' . $e->getMessage());
 		}
 	}
 
