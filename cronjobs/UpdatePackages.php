@@ -144,23 +144,14 @@ class UpdatePackages extends CronJob {
 	}
 
 	private function checkLastMirrorUpdate() {
-		$lastLocalUpdateFile = Config::get('common', 'tmpdir').'/archportal_lastupdate';
-		if (!file_exists($lastLocalUpdateFile)) {
-			return true;
-		} else {
-			$download = new Download(Config::get('packages', 'mirror').'lastupdate');
-			$this->lastMirrorUpdate = file_get_contents($download->getFile());
-			$lastLocalUpdate = file_get_contents($lastLocalUpdateFile);
-			if ($this->lastMirrorUpdate != $lastLocalUpdate) {
-				return true;
-			}
-		}
-		return false;
+		$lastLocalUpdate = ObjectStore::getObject('UpdatePackages:lastupdate');
+		$download = new Download(Config::get('packages', 'mirror').'lastupdate');
+		$this->lastMirrorUpdate = file_get_contents($download->getFile());
+		return $this->lastMirrorUpdate !== $lastLocalUpdate;
 	}
 
 	private function updateLastMirrorUpdate() {
-		$lastLocalUpdateFile = Config::get('common', 'tmpdir').'/archportal_lastupdate';
-		file_put_contents($lastLocalUpdateFile, $this->lastMirrorUpdate, LOCK_EX);
+		ObjectStore::addObject('UpdatePackages:lastupdate', $this->lastMirrorUpdate);
 	}
 
 	private function purgeDatabase() {
