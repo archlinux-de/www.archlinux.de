@@ -155,6 +155,7 @@ class UpdatePackages extends CronJob {
 		$rowCount = 0;
 		foreach ($tables as $table) {
 			$rowCount += Database::exec('DELETE FROM `'.$table.'`');
+			Database::exec('ALTER TABLE `'.$table.'` AUTO_INCREMENT = 1');
 			$this->printProgress($rowCount, $rowsTotal, "Purging database: ");
 		}
 	}
@@ -568,11 +569,11 @@ class UpdatePackages extends CronJob {
 
 		foreach ($files as $file) {
 			$this->insertFiles->bindParam('package', $packageId, PDO::PARAM_INT);
-			$this->insertFiles->bindValue('path', mb_substr(htmlspecialchars($file) , 0, 255, 'UTF-8'), PDO::PARAM_STR);
+			$this->insertFiles->bindValue('path', htmlspecialchars($file), PDO::PARAM_STR);
 			$this->insertFiles->execute();
 			// skip directories (which end with /)
 			if (substr($file, -1) != '/') {
-				$filename = mb_substr(basename($file) , 0, 100, 'UTF-8');
+				$filename = basename($file);
 				if (strlen($filename) > 2) {
 					$this->insertPackageFileIndex->bindParam('package', $packageId, PDO::PARAM_INT);
 					$this->insertPackageFileIndex->bindValue('file', $this->getFileIndexID($filename), PDO::PARAM_INT);
@@ -608,7 +609,7 @@ class UpdatePackages extends CronJob {
 		$packageStm->bindValue('isize', $package->getInstalledSize(), PDO::PARAM_INT);
 		$packageStm->bindValue('md5sum', $package->getMD5SUM(), PDO::PARAM_STR);
 		$packageStm->bindValue('sha256sum', $package->getSHA256SUM(), PDO::PARAM_STR);
-		$packageStm->bindValue('pgpsig', $package->getPGPSignature(), PDO::PARAM_STR);
+		$packageStm->bindValue('pgpsig', base64_decode($package->getPGPSignature(), true), PDO::PARAM_STR);
 		$packageStm->bindValue('url', htmlspecialchars($package->getURL()), PDO::PARAM_STR);
 		$packageStm->bindParam('arch', $packageArch, PDO::PARAM_INT);
 		$packageStm->bindValue('builddate', $package->getBuildDate(), PDO::PARAM_INT);

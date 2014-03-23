@@ -175,7 +175,7 @@ class PackageDetails extends Page {
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('PGP signature').'</th>
-				<td><a href="data:application/pgp-signature;base64,' . $data['pgpsig'] . '" download="'.$data['filename'].'.sig">'.$data['filename'].'.sig</a></td>
+				<td><a href="data:application/pgp-signature;base64,' . base64_encode($data['pgpsig']) . '" download="'.$data['filename'].'.sig">'.$data['filename'].'.sig</a></td>
 			</tr>
 			<tr>
 				<th>'.$this->l10n->getText('Package size').'</th>
