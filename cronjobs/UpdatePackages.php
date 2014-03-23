@@ -25,6 +25,8 @@ require (__DIR__.'/../lib/AutoLoad.php');
 
 class UpdatePackages extends CronJob {
 
+	private $lastMirrorUpdate = 0;
+
 	private $updatedPackages = false;
 
 	private $selectRepoMTime = null;
@@ -72,6 +74,13 @@ class UpdatePackages extends CronJob {
 
 	public function execute() {
 		try {
+			if (count(getopt('p', array('purge'))) == 0) {
+				if (!$this->checkLastMirrorUpdate()) {
+					$this->printDebug("No updated packages available...");
+					return;
+				}
+			}
+
 			Database::beginTransaction();
 
 			if (count(getopt('p', array('purge'))) > 0) {
@@ -127,10 +136,31 @@ class UpdatePackages extends CronJob {
 			}
 
 			Database::commit();
+			$this->updateLastMirrorUpdate();
 		} catch (RuntimeException $e) {
 			Database::rollBack();
 			$this->printError('UpdatePackages failed at '.$e->getFile().' on line '.$e->getLine().': '.$e->getMessage());
 		}
+	}
+
+	private function checkLastMirrorUpdate() {
+		$lastLocalUpdateFile = Config::get('common', 'tmpdir').'/archportal_lastupdate';
+		if (!file_exists($lastLocalUpdateFile)) {
+			return true;
+		} else {
+			$download = new Download(Config::get('packages', 'mirror').'lastupdate');
+			$this->lastMirrorUpdate = file_get_contents($download->getFile());
+			$lastLocalUpdate = file_get_contents($lastLocalUpdateFile);
+			if ($this->lastMirrorUpdate != $lastLocalUpdate) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function updateLastMirrorUpdate() {
+		$lastLocalUpdateFile = Config::get('common', 'tmpdir').'/archportal_lastupdate';
+		file_put_contents($lastLocalUpdateFile, $this->lastMirrorUpdate, LOCK_EX);
 	}
 
 	private function purgeDatabase() {
