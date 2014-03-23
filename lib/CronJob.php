@@ -18,6 +18,10 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
+use RuntimeException;
+
 abstract class CronJob {
 
 	private $lockName = 'cronjob';
@@ -46,7 +50,7 @@ abstract class CronJob {
 
 	private function aquireLock() {
 		if (!Database::aquireLock($this->lockName, $this->waitForLock)) {
-			throw new Exception('Another cron job is still running');
+			throw new RuntimeException('Another cron job is still running');
 		}
 	}
 

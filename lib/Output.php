@@ -18,6 +18,8 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
 abstract class Output {
 
 	const OK = 'HTTP/1.1 200 OK';

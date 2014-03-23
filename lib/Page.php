@@ -18,6 +18,8 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
 abstract class Page extends Output {
 
 	private $title = '';

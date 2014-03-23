@@ -18,6 +18,11 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
+use Iterator;
+use RuntimeException;
+
 class PackageDatabase implements Iterator {
 
 	private $dbext = '.db';

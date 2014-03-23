@@ -18,6 +18,14 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages\statistics;
+
+use archportal\lib\Database;
+use archportal\lib\ObjectStore;
+use archportal\lib\Output;
+use archportal\lib\StatisticsPage;
+use RuntimeException;
+
 class ModuleStatistics extends StatisticsPage {
 
 	public function prepare() {

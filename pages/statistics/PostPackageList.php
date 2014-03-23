@@ -18,6 +18,16 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages\statistics;
+
+use archportal\lib\Database;
+use archportal\lib\Input;
+use archportal\lib\Output;
+use archportal\lib\Page;
+use archportal\lib\RequestException;
+use PDO;
+use PDOException;
+
 class PostPackageList extends Page {
 
 	private $delay = 86400; // 24 hours
@@ -60,7 +70,7 @@ class PostPackageList extends Page {
 			$mirror = Input::post()->getHtml('mirror', '');
 			# Can be rewritten once 2.0 is no longer in use
 			$this->quiet = (Input::post()->getString('quiet', 'false') == 'true');
-		} catch(RequestException $e) {
+		} catch (RequestException $e) {
 			$this->setStatus(Output::BAD_REQUEST);
 			$this->showFailure($e->getMessage());
 		}
@@ -175,7 +185,7 @@ class PostPackageList extends Page {
 				$stm->execute();
 			}
 			Database::commit();
-		} catch(PDOException $e) {
+		} catch (PDOException $e) {
 			Database::rollBack();
 			$this->setStatus(Output::INTERNAL_SERVER_ERROR);
 			$this->showFailure($e->getMessage());

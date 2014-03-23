@@ -18,6 +18,8 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
 abstract class StatisticsPage extends Page implements IDatabaseCachable {
 
 	private static $rangeMonths = 3;

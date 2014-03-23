@@ -18,6 +18,11 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages;
+
+use archportal\lib\Output;
+use archportal\lib\Page;
+
 class NotFound extends Page {
 
 	public function prepare() {

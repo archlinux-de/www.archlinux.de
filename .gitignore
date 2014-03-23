@@ -1,3 +1,5 @@
 *~
 /config/LocalConfig.php
 /.kateproject.d/
+/nbproject/private/
+/nbproject/

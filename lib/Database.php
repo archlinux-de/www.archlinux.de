@@ -18,6 +18,10 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
+use PDO;
+
 class Database {
 
 	private static $pdo = null;

@@ -18,6 +18,10 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
+use RuntimeException;
+
 class Download {
 
 	private $downloaded = false;
@@ -39,13 +43,13 @@ class Download {
 	public function getMTime() {
 		if (!$this->downloaded && $this->mtime == 0) {
 			$curl = $this->curlInit($this->url);
-			curl_setopt($curl, CURLOPT_NOBODY, true);
-			curl_setopt($curl, CURLOPT_FILETIME, true);
+			curl_setopt($curl, \CURLOPT_NOBODY, true);
+			curl_setopt($curl, \CURLOPT_FILETIME, true);
 			$ret = curl_exec($curl);
 			if ($ret === false) {
 				throw new RuntimeException(curl_error($curl), curl_errno($curl));
 			}
-			$mtime = curl_getinfo($curl, CURLINFO_FILETIME);
+			$mtime = curl_getinfo($curl, \CURLINFO_FILETIME);
 			curl_close($curl);
 			if ($mtime < 1) {
 				throw new RuntimeException('Invalid filetime "'.$mtime.'" for "'.$this->url.'"');
@@ -59,18 +63,18 @@ class Download {
 	public function getFile() {
 		if (!$this->downloaded) {
 			$fh = fopen($this->tmpFile, 'w');
-			flock($fh, LOCK_EX);
+			flock($fh, \LOCK_EX);
 
 			$curl = $this->curlInit($this->url);
-			curl_setopt($curl, CURLOPT_FILE, $fh);
+			curl_setopt($curl, \CURLOPT_FILE, $fh);
 			$ret = curl_exec($curl);
 			if ($ret === false) {
 				throw new RuntimeException(curl_error($curl), curl_errno($curl));
 			}
-			$this->mtime = curl_getinfo($curl, CURLINFO_FILETIME);
+			$this->mtime = curl_getinfo($curl, \CURLINFO_FILETIME);
 			curl_close($curl);
 
-			flock($fh, LOCK_UN);
+			flock($fh, \LOCK_UN);
 			fclose($fh);
 
 			$this->downloaded = true;
@@ -82,15 +86,15 @@ class Download {
 	private function curlInit($url) {
 		$curlVersion = curl_version();
 		$curl = curl_init($url);
-		curl_setopt($curl, CURLOPT_FAILONERROR, true);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_MAXREDIRS, 3);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 1800);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
-		curl_setopt($curl, CURLOPT_LOW_SPEED_LIMIT, 5000);
-		curl_setopt($curl, CURLOPT_LOW_SPEED_TIME, 600);
-		curl_setopt($curl, CURLOPT_ENCODING, '');
-		curl_setopt($curl, CURLOPT_USERAGENT, 'archportal/curl-'.$curlVersion['version']);
+		curl_setopt($curl, \CURLOPT_FAILONERROR, true);
+		curl_setopt($curl, \CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, \CURLOPT_MAXREDIRS, 3);
+		curl_setopt($curl, \CURLOPT_TIMEOUT, 1800);
+		curl_setopt($curl, \CURLOPT_CONNECTTIMEOUT, 60);
+		curl_setopt($curl, \CURLOPT_LOW_SPEED_LIMIT, 5000);
+		curl_setopt($curl, \CURLOPT_LOW_SPEED_TIME, 600);
+		curl_setopt($curl, \CURLOPT_ENCODING, '');
+		curl_setopt($curl, \CURLOPT_USERAGENT, 'archportal/curl-'.$curlVersion['version']);
 		return $curl;
 	}
 }

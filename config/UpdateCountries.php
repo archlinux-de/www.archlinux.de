@@ -19,9 +19,15 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\config;
+
 require (__DIR__.'/../lib/Config.php');
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
+
+use archportal\lib\Database;
+use PDO;
+use SimpleXMLElement;
 
 $xml = new SimpleXMLElement(__DIR__.'/country_names_and_code_elements_xml.htm', 0, true);
 

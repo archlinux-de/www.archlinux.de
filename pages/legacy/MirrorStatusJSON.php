@@ -18,6 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages\legacy;
+
+use archportal\lib\Database;
+use archportal\lib\Input;
+use archportal\lib\Page;
+use PDO;
+
 class MirrorStatusJSON extends Page {
 
 	private $json = '';

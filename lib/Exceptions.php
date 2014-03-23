@@ -18,28 +18,29 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-ini_set('docref_root', 'http://www.php.net/');
-set_exception_handler('Exceptions::ExceptionHandler');
-set_error_handler('Exceptions::ErrorHandler');
+namespace archportal\lib;
+
+use ErrorException;
+use Exception;
 
 class Exceptions {
 
-	public static function ExceptionHandler(Exception $e) {
+	public static function ExceptionHandler(\Exception $e) {
 		try {
 			$errorType = array(
-				E_WARNING => 'WARNING',
-				E_NOTICE => 'NOTICE',
-				E_USER_ERROR => 'USER ERROR',
-				E_USER_WARNING => 'USER WARNING',
-				E_USER_NOTICE => 'USER NOTICE',
-				E_STRICT => 'STRICT NOTICE',
-				E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR',
-				E_DEPRECATED => 'DEPRECATED',
-				E_USER_DEPRECATED =>'USER_DEPRECATED'
+				\E_WARNING => 'WARNING',
+				\E_NOTICE => 'NOTICE',
+				\E_USER_ERROR => 'USER ERROR',
+				\E_USER_WARNING => 'USER WARNING',
+				\E_USER_NOTICE => 'USER NOTICE',
+				\E_STRICT => 'STRICT NOTICE',
+				\E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR',
+				\E_DEPRECATED => 'DEPRECATED',
+				\E_USER_DEPRECATED =>'USER_DEPRECATED'
 			);
 			$type = (isset($errorType[$e->getCode() ]) ? $errorType[$e->getCode() ] : $e->getCode());
 			$files = get_included_files();
-			$context = array_slice(file($e->getFile(), FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
+			$context = array_slice(file($e->getFile(), \FILE_IGNORE_NEW_LINES), max(0, $e->getLine() - 2), 3, true);
 
 			if (ob_get_level() > 0) {
 				ob_end_clean();
@@ -79,7 +80,7 @@ class Exceptions {
 		if (!(error_reporting() & $errno)) {
 			return false;
 		}
-		throw new ErrorException($errstr, $errno, E_WARNING, $errfile, $errline);
+		throw new ErrorException($errstr, $errno, \E_WARNING, $errfile, $errline);
 	}
 
 }

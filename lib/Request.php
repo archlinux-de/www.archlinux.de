@@ -18,6 +18,8 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
 class Request {
 
 	private static $instances = array();
@@ -129,13 +131,6 @@ class Request {
 		} else {
 			throw new RequestException($name);
 		}
-	}
-}
-
-class RequestException extends RuntimeException {
-
-	function __construct($message) {
-		parent::__construct('Parameter "'.$message.'" could not be read');
 	}
 }
 

@@ -18,6 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages;
+
+use archportal\lib\Database;
+use archportal\lib\Input;
+use archportal\lib\Page;
+use archportal\lib\RequestException;
+
 class MirrorStatus extends Page {
 
 	private $orderby = 'lastsync';
@@ -41,7 +48,7 @@ class MirrorStatus extends Page {
 			if (in_array(Input::get()->getString('orderby') , $this->orders)) {
 				$this->orderby = Input::get()->getString('orderby');
 			}
-		} catch(RequestException $e) {
+		} catch (RequestException $e) {
 		}
 		try {
 			if (in_array(Input::get()->getString('sort') , $this->sorts)) {

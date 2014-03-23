@@ -18,6 +18,10 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages\legacy;
+
+use archportal\lib\Page;
+
 class MirrorProblems extends Page {
 
 	public function prepare() {

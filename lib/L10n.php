@@ -18,6 +18,8 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
 class L10n {
 
 	private $localeInfo = array();

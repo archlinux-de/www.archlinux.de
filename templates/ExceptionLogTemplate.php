@@ -1,4 +1,8 @@
-<?= get_class($e); ?> 
+<?php
+
+namespace archportal\templates;
+
+?><?= get_class($e); ?> 
 <?= $e->getMessage(); ?> 
 
 Type: <?= $type; ?> 

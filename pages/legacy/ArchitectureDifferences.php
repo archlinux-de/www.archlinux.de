@@ -18,32 +18,14 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class MirrorStatusReflector extends Page {
+namespace archportal\pages\legacy;
 
-	private $range = 604800; // 1 week
-	private $text = '';
+use archportal\lib\Page;
+
+class ArchitectureDifferences extends Page {
 
 	public function prepare() {
-		$mirrors = Database::query('
-		SELECT
-			url,
-			lastsync
-		FROM
-			mirrors
-		WHERE
-			lastsync >= ' . (Input::getTime() - $this->range) . '
-			AND protocol IN ("ftp", "http", "htttps")
-		ORDER BY
-			lastsync DESC
-		');
-		foreach ($mirrors as $mirror) {
-			$this->text .= gmdate('Y-m-d H:i'.$mirror['lastsync']).' '.$mirror['url']."\n";
-		}
-	}
-
-	public function printPage() {
-		$this->setContentType('text/plain; charset=UTF-8');
-		echo $this->text;
+		$this->redirectPermanentlyToUrl('https://www.archlinux.org/packages/differences/');
 	}
 }
 

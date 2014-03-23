@@ -19,9 +19,15 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\cronjobs;
+
 require (__DIR__.'/../lib/Config.php');
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');
+
+use archportal\lib\AutoLoad;
+use archportal\lib\Config;
+use archportal\lib\CronJob;
 
 class UpdatePkgstats extends CronJob {
 

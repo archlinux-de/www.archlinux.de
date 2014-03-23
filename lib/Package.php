@@ -18,6 +18,10 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\lib;
+
+use RuntimeException;
+
 class Package {
 
 	private $packageDir = '';
@@ -38,7 +42,7 @@ class Package {
 	private function loadInfo($file) {
 		$index = '';
 		$data = array();
-		foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+		foreach (file($file, \FILE_IGNORE_NEW_LINES | \FILE_SKIP_EMPTY_LINES) as $line) {
 			if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
 				$index = substr($line, 1, -1);
 				$data[$index] = array();

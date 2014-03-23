@@ -19,6 +19,10 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\config;
+
+use archportal\lib\Config;
+
 require (__DIR__.'/../lib/Config.php');
 require (__DIR__.'/../lib/Exceptions.php');
 require (__DIR__.'/../lib/AutoLoad.php');

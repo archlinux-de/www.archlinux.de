@@ -18,6 +18,13 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages;
+
+use archportal\lib\Database;
+use archportal\lib\Input;
+use archportal\lib\Page;
+use archportal\lib\RequestException;
+
 class Packagers extends Page {
 
 	private $orderby = 'name';
@@ -33,7 +40,7 @@ class Packagers extends Page {
 			))) {
 				$this->orderby = Input::get()->getString('orderby');
 			}
-		} catch(RequestException $e) {
+		} catch (RequestException $e) {
 		}
 		$this->sort = Input::get()->getInt('sort', 0) > 0 ? 1 : 0;
 		$packages = Database::query('SELECT COUNT(*) FROM packages')->fetchColumn();

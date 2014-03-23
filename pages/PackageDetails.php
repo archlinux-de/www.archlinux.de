@@ -18,6 +18,17 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages;
+
+use archportal\lib\Config;
+use archportal\lib\Database;
+use archportal\lib\Input;
+use archportal\lib\Output;
+use archportal\lib\Page;
+use archportal\lib\RequestException;
+use PDO;
+use RuntimeException;
+
 class PackageDetails extends Page {
 
 	private $pkgid = 0;
@@ -31,7 +42,7 @@ class PackageDetails extends Page {
 			$this->repo = Input::get()->getString('repo');
 			$this->arch = Input::get()->getString('arch');
 			$this->pkgname = Input::get()->getString('pkgname');
-		} catch(RequestException $e) {
+		} catch (RequestException $e) {
 			$this->showFailure($this->l10n->getText('No package specified'));
 		}
 

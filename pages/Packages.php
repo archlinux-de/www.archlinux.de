@@ -18,6 +18,15 @@
 	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace archportal\pages;
+
+use archportal\lib\Config;
+use archportal\lib\Database;
+use archportal\lib\Input;
+use archportal\lib\Page;
+use archportal\lib\RequestException;
+use PDO;
+
 class Packages extends Page {
 
 	private $page = 1;
