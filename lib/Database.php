@@ -33,11 +33,26 @@ class Database {
 				      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
 			);
 			if (Config::get('common', 'debug')) {
-				self::$pdo->query('SET sql_mode="STRICT_ALL_TABLES"');
+				self::$pdo->exec('SET sql_mode="STRICT_ALL_TABLES"');
 			}
 		}
 		return call_user_func_array(array(self::$pdo, $name), $args);
 	}
+
+	public static function aquireLock($name, $timeout = 0) {
+		$stm = self::prepare('SELECT GET_LOCK(:name, :timeout)');
+		$stm->bindValue('name', Config::get('Database', 'database').':'.$name, PDO::PARAM_STR);
+		$stm->bindParam('timeout', $timeout, PDO::PARAM_INT);
+		$stm->execute();
+		return $stm->fetchColumn() == 1;
+	}
+
+	public static function releaseLock($name) {
+		$stm = self::prepare('DO RELEASE_LOCK(:name)');
+		$stm->bindValue('name', Config::get('Database', 'database').':'.$name, PDO::PARAM_STR);
+		$stm->execute();
+	}
+
 }
 
 ?>

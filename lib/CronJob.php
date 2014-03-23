@@ -20,9 +20,8 @@
 
 abstract class CronJob {
 
-	private $lockFile = '/tmp/cronjob.lck';
+	private $lockName = 'cronjob';
 	private $waitForLock = 600;
-	private $waitInterval = 10;
 	private $quiet = false;
 
 	public static function run() {
@@ -35,7 +34,6 @@ abstract class CronJob {
 
 	public function __construct() {
 		ini_set('max_execution_time', 0);
-		$this->lockFile = Config::get('common', 'tmpdir').'/cronjob.lck';
 		if (count(getopt('q', array('quiet'))) > 0) {
 			$this->quiet = true;
 		}
@@ -47,24 +45,13 @@ abstract class CronJob {
 	}
 
 	private function aquireLock() {
-		$waited = 0;
-		while ($waited < $this->waitForLock) {
-			if (!file_exists($this->lockFile)) {
-				touch($this->lockFile);
-				chmod($this->lockFile , 0600);
-				return;
-			} else {
-				sleep($this->waitInterval);
-				$waited += $this->waitInterval;
-			}
+		if (!Database::aquireLock($this->lockName, $this->waitForLock)) {
+			throw new Exception('Another cron job is still running');
 		}
-		throw new Exception('Another cron job is still running');
 	}
 
 	private function releaseLock() {
-		if (file_exists($this->lockFile)) {
-			unlink($this->lockFile);
-		}
+		Database::releaseLock($this->lockName);
 	}
 
 	protected function printDebug($text) {
