@@ -326,7 +326,7 @@ class Packages extends Page
     private function getRepositoryList()
     {
         $options = '<select name="repository" onchange="this.form.submit()">
-            <option value=""></option>';
+            <option value="">&nbsp;</option>';
 
         foreach ($this->getAvailableRepositories($this->architecture['name']) as $repository) {
             $options.= '<option value="' . $repository . '"' . ($this->repository['name'] == $repository ? ' selected="selected"' : '') . '>' . $repository . '</option>';
@@ -338,7 +338,7 @@ class Packages extends Page
     private function getArchitectureList()
     {
         $options = '<select name="architecture" onchange="this.form.submit()">
-            <option value=""></option>';
+            <option value="">&nbsp;</option>';
 
         foreach ($this->getAvailableArchitectures($this->repository['name']) as $architecture) {
             $options.= '<option value="' . $architecture . '"' . ($this->architecture['name'] == $architecture ? ' selected="selected"' : '') . '>' . $architecture . '</option>';
@@ -350,7 +350,7 @@ class Packages extends Page
     private function getGroupList()
     {
         $options = '<select name="group" onchange="this.form.submit()">
-            <option value=""></option>';
+            <option value="">&nbsp;</option>';
 
         $groups = Database::query('
             SELECT

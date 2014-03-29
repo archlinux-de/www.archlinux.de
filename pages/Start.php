@@ -127,7 +127,7 @@ class Start extends Page
 
     private function getNews()
     {
-        $result = '<h3>' . $this->l10n->getText('Recent news') . ' <span class="more">(<a href="' . Config::get('news', 'archive') . '">mehr</a>)</span></h3><a href="' . Config::get('news', 'feed') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
+        $result = '<h3>' . $this->l10n->getText('Recent news') . ' <span class="more">(<a href="' . htmlspecialchars(Config::get('news', 'archive')) . '">mehr</a>)</span></h3><a href="' . htmlspecialchars(Config::get('news', 'feed')) . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 
         $newsFeed = Database::query('
             SELECT
@@ -143,7 +143,7 @@ class Start extends Page
             ');
         foreach ($newsFeed as $entry) {
             $result.= '
-            <h4><a href="' . $entry['link'] . '">' . $entry['title'] . '</a></h4>
+            <h4><a href="' . htmlspecialchars($entry['link']) . '">' . $entry['title'] . '</a></h4>
             <p class="date">' . $this->l10n->getDate($entry['updated']) . '</p>
             ' . $entry['summary'] . '
             ';

@@ -21,7 +21,7 @@ use archportal\lib\Config;
             <?php
         }
         ?>
-        <link rel="alternate" type="application/atom+xml" title="<?= $this->l10n->getText('Recent news'); ?>" href="<?= Config::get('news', 'feed'); ?>" />
+        <link rel="alternate" type="application/atom+xml" title="<?= $this->l10n->getText('Recent news'); ?>" href="<?= htmlspecialchars(Config::get('news', 'feed')); ?>" />
         <link rel="alternate" type="application/atom+xml" title="<?= $this->l10n->getText('Recent Arch Linux packages'); ?>" href="<?= $this->createUrl('GetRecentPackages'); ?>" />
         <link rel="search" type="application/opensearchdescription+xml" title="<?= $this->l10n->getText('Search for Arch Linux packages'); ?>" href="<?= $this->createUrl('GetOpenSearch'); ?>" />
         <link rel="shortcut icon" href="style/favicon.ico" />
