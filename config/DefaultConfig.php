@@ -1,22 +1,23 @@
 <?php
+
 /*
-	Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
 
-	This file is part of archlinux.de.
+  This file is part of archlinux.de.
 
-	archlinux.de is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+  archlinux.de is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-	archlinux.de is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+  archlinux.de is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
-*/
+  You should have received a copy of the GNU General Public License
+  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace archportal\config;
 
@@ -39,14 +40,14 @@ Config::set('L10n', 'timezone', 'UTC');
 Config::set('packages', 'mirror', 'http://mirror.de.leaseweb.net/archlinux/');
 Config::set('packages', 'cgit', 'https://projects.archlinux.org/svntogit/');
 Config::set('packages', 'repositories', array(
-			'core' => array('i686', 'x86_64'),
-			'extra' => array('i686', 'x86_64'),
-			'testing' => array('i686', 'x86_64'),
-			'community' => array('i686', 'x86_64'),
-			'community-testing' => array('i686', 'x86_64'),
-			'multilib' => array('x86_64'),
-			'multilib-testing' => array('x86_64')
-		));
+    'core' => array('i686', 'x86_64'),
+    'extra' => array('i686', 'x86_64'),
+    'testing' => array('i686', 'x86_64'),
+    'community' => array('i686', 'x86_64'),
+    'community-testing' => array('i686', 'x86_64'),
+    'multilib' => array('x86_64'),
+    'multilib-testing' => array('x86_64')
+));
 Config::set('packages', 'files', true);
 Config::set('packages', 'delay', 120);
 
@@ -58,5 +59,3 @@ Config::set('news', 'feed', '');
 Config::set('news', 'archive', '');
 
 Config::set('releng', 'releases', 'https://www.archlinux.org/releng/releases/json/');
-
-?>

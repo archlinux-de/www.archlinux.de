@@ -1,82 +1,90 @@
 <?php
+
 /*
-	Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
 
-	This file is part of archlinux.de.
+  This file is part of archlinux.de.
 
-	archlinux.de is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+  archlinux.de is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-	archlinux.de is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+  archlinux.de is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
-*/
+  You should have received a copy of the GNU General Public License
+  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace archportal\lib;
 
 use RuntimeException;
 
-abstract class CronJob {
+abstract class CronJob
+{
 
-	private $lockName = 'cronjob';
-	private $waitForLock = 600;
-	private $quiet = false;
+    private $lockName = 'cronjob';
+    private $waitForLock = 600;
+    private $quiet = false;
 
-	public static function run() {
-		$class = get_called_class();
-		$instance = new $class();
-		$instance->execute();
-	}
+    public static function run()
+    {
+        $class = get_called_class();
+        $instance = new $class();
+        $instance->execute();
+    }
 
-	abstract public function execute();
+    abstract public function execute();
 
-	public function __construct() {
-		ini_set('max_execution_time', 0);
-		if (count(getopt('q', array('quiet'))) > 0) {
-			$this->quiet = true;
-		}
-		$this->aquireLock();
-	}
+    public function __construct()
+    {
+        ini_set('max_execution_time', 0);
+        if (count(getopt('q', array('quiet'))) > 0) {
+            $this->quiet = true;
+        }
+        $this->aquireLock();
+    }
 
-	public function __destruct() {
-		$this->releaseLock();
-	}
+    public function __destruct()
+    {
+        $this->releaseLock();
+    }
 
-	private function aquireLock() {
-		if (!Database::aquireLock($this->lockName, $this->waitForLock)) {
-			throw new RuntimeException('Another cron job is still running');
-		}
-	}
+    private function aquireLock()
+    {
+        if (!Database::aquireLock($this->lockName, $this->waitForLock)) {
+            throw new RuntimeException('Another cron job is still running');
+        }
+    }
 
-	private function releaseLock() {
-		Database::releaseLock($this->lockName);
-	}
+    private function releaseLock()
+    {
+        Database::releaseLock($this->lockName);
+    }
 
-	protected function printDebug($text) {
-		if (!$this->quiet) {
-			echo $text, "\n";
-		}
-	}
+    protected function printDebug($text)
+    {
+        if (!$this->quiet) {
+            echo $text, "\n";
+        }
+    }
 
-	protected function printError($text) {
-		file_put_contents('php://stderr', $text."\n");
-	}
+    protected function printError($text)
+    {
+        file_put_contents('php://stderr', $text . "\n");
+    }
 
-	protected function printProgress($current, $total, $prefix = '') {
-		if (!$this->quiet) {
-			echo "\r", $prefix, round($current / $total * 100), '%';
-			if ($current == $total) {
-				echo "\n";
-			}
-		}
-	}
+    protected function printProgress($current, $total, $prefix = '')
+    {
+        if (!$this->quiet) {
+            echo "\r", $prefix, round($current / $total * 100), '%';
+            if ($current == $total) {
+                echo "\n";
+            }
+        }
+    }
 
 }
-
-?>

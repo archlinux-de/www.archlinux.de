@@ -1,23 +1,22 @@
 <?php
 
 namespace archportal\templates;
+?><?= get_class($e); ?>
+<?= $e->getMessage(); ?>
 
-?><?= get_class($e); ?> 
-<?= $e->getMessage(); ?> 
-
-Type: <?= $type; ?> 
-File: <?= $e->getFile(); ?> 
-Line: <?= $e->getLine(); ?> 
+Type: <?= $type; ?>
+File: <?= $e->getFile(); ?>
+Line: <?= $e->getLine(); ?>
 
 Context:
 <?php
 foreach ($context as $line => $content) {
-	echo ++$line.' '.$content."\n";
+    echo ++$line . ' ' . $content . "\n";
 }
 ?>
 
 Trace:
-<?= $e->getTraceAsString(); ?> 
+<?= $e->getTraceAsString(); ?>
 
 Files:
-<?= implode("\n", $files); ?> 
+<?= implode("\n", $files); ?>

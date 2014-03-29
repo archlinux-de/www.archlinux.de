@@ -44,7 +44,7 @@ class Routing
         'PostPackageList' => 'pages\statistics\PostPackageList',
         'RepositoryStatistics' => 'pages\statistics\RepositoryStatistics',
         'Statistics' => 'pages\statistics\Statistics',
-        'UserStatistics' => 'pages\statisticsserStatistics'
+        'UserStatistics' => 'pages\statistics\UserStatistics'
     );
     private static $legacyPages = array(
         'ArchitectureDifferences' => 'pages\legacy\ArchitectureDifferences',
