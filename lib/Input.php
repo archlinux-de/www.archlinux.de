@@ -33,7 +33,7 @@ class Input
 
     private function __construct()
     {
-
+        
     }
 
     public static function __callStatic($name, $args)
@@ -93,17 +93,6 @@ class Input
             return 'i686';
         } else {
             return '';
-        }
-    }
-
-    public static function getPathPattern($pattern)
-    {
-        $pathInfo = self::server()->getString('PATH_INFO');
-        $matches = array();
-        if (preg_match($pattern, $pathInfo, $matches) == 1) {
-            return $matches;
-        } else {
-            throw new RequestException($pattern);
         }
     }
 

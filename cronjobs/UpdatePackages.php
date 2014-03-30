@@ -70,7 +70,6 @@ class UpdatePackages extends CronJob
     private $insertRelation = null;
     private $selectFileIndex = null;
     private $insertFileIndex = null;
-    private $cleanupFileIndex = null;
     private $cleanupFiles = null;
     private $insertFiles = null;
     private $insertPackageFileIndex = null;

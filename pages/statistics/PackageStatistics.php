@@ -122,29 +122,6 @@ class PackageStatistics extends StatisticsPage
         ')->fetch();
     }
 
-    private static function formatBytes($bytes)
-    {
-        $kb = 1024;
-        $mb = $kb * 1024;
-        $gb = $mb * 1024;
-        if ($bytes >= $gb) { // GB
-            $result = round($bytes / $gb, 2);
-            $postfix = '&nbsp;G';
-        } elseif ($bytes >= $mb) { // MB
-            $result = round($bytes / $mb, 2);
-            $postfix = '&nbsp;M';
-        } elseif ($bytes >= $kb) { // KB
-            $result = round($bytes / $kb, 2);
-            $postfix = '&nbsp;K';
-        } else {
-        //  B
-            $result = $bytes;
-            $postfix = '&nbsp;';
-        }
-
-        return number_format($result, 2) . $postfix;
-    }
-
     private static function getSubmissionsPerArchitecture()
     {
         $total = Database::query('
