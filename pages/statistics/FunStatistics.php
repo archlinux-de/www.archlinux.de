@@ -45,13 +45,32 @@ class FunStatistics extends StatisticsPage
     {
         try {
             Database::beginTransaction();
+            $total = Database::query('
+            SELECT
+                COUNT(*)
+            FROM
+                pkgstats_users
+            WHERE
+                time >= ' . self::getRangeTime() . '
+            ')->fetchColumn();
+            $stm = Database::prepare('
+            SELECT
+                SUM(count)
+            FROM
+                pkgstats_packages
+            WHERE
+                pkgname = :pkgname
+                AND month >= ' . self::getRangeYearMonth() . '
+            GROUP BY
+                pkgname
+            ');
             self::$barColors = self::MultiColorFade(self::$barColorArray);
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" class="packagedetailshead">Browsers</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'Mozilla Firefox' => 'firefox',
                         'Chromium' => 'chromium',
                         'Konqueror' => 'kdebase-konqueror',
@@ -68,7 +87,7 @@ class FunStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Editors</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'Vim' => array(
                             'vim',
                             'gvim'
@@ -94,7 +113,7 @@ class FunStatistics extends StatisticsPage
                     )) . '
                     <th colspan="2" class="packagedetailshead">Desktop Environments</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'KDE SC' => 'kdebase-workspace',
                         'GNOME' => 'gnome-session',
                         'LXDE' => 'lxde-common',
@@ -105,7 +124,7 @@ class FunStatistics extends StatisticsPage
                     )) . '
                     <th colspan="2" class="packagedetailshead">File Managers</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'Dolphin' => 'kdebase-dolphin',
                         'Konqueror' => 'kdebase-konqueror',
                         'MC' => 'mc',
@@ -117,7 +136,7 @@ class FunStatistics extends StatisticsPage
                     )) . '
                     <th colspan="2" class="packagedetailshead">Window Managers</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'Openbox' => 'openbox',
                         'Fluxbox' => 'fluxbox',
                         'I3' => 'i3-wm',
@@ -132,14 +151,14 @@ class FunStatistics extends StatisticsPage
                     )) . '
                     <th colspan="2" class="packagedetailshead">Media Players</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'Mplayer' => 'mplayer',
                         'Xine' => 'xine-lib',
                         'VLC' => 'vlc'
                     )) . '
                     <th colspan="2" class="packagedetailshead">Shells</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'Bash' => 'bash',
                         'Dash' => 'dash',
                         'Zsh' => 'zsh',
@@ -149,7 +168,7 @@ class FunStatistics extends StatisticsPage
                     )) . '
                     <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
                 </tr>
-                    ' . self::getPackageStatistics(array(
+                    ' . self::getPackageStatistics($total, $stm, array(
                         'ATI' => array(
                             'xf86-video-ati',
                             'xf86-video-r128',
@@ -177,27 +196,8 @@ class FunStatistics extends StatisticsPage
         }
     }
 
-    private static function getPackageStatistics($packages)
+    private static function getPackageStatistics($total, $stm, $packages)
     {
-        $total = Database::query('
-        SELECT
-            COUNT(*)
-        FROM
-            pkgstats_users
-        WHERE
-            time >= ' . self::getRangeTime() . '
-        ')->fetchColumn();
-        $stm = Database::prepare('
-        SELECT
-            SUM(count)
-        FROM
-            pkgstats_packages
-        WHERE
-            pkgname = :pkgname
-            AND month >= ' . self::getRangeYearMonth() . '
-        GROUP BY
-            pkgname
-        ');
         $packageArray = array();
         $list = '';
         foreach ($packages as $package => $pkgnames) {
