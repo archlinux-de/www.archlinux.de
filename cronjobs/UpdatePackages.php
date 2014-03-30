@@ -79,15 +79,13 @@ class UpdatePackages extends CronJob
 
     public function execute()
     {
+        if (count(getopt('p', array('purge'))) == 0 && !$this->checkLastMirrorUpdate()) {
+            $this->printDebug("No updated packages available...");
+
+            return;
+        }
+
         try {
-            if (count(getopt('p', array('purge'))) == 0) {
-                if (!$this->checkLastMirrorUpdate()) {
-                    $this->printDebug("No updated packages available...");
-
-                    return;
-                }
-            }
-
             Database::beginTransaction();
 
             if (count(getopt('p', array('purge'))) > 0) {
@@ -116,7 +114,7 @@ class UpdatePackages extends CronJob
                     if ($packages->getMTime() > $repoMTime && Input::getTime() - $packages->getMTime() > Config::get('packages', 'delay')) {
                         $packageCount = 0;
                         foreach ($packages as $package) {
-                            $this->printProgress( ++$packageCount, $packages->getNewPackageCount(), "\tReading packages: ");
+                            $this->printProgress(++$packageCount, $packages->getNewPackageCount(), "\tReading packages: ");
                             $this->updatePackage($repoId, $package);
                         }
 
