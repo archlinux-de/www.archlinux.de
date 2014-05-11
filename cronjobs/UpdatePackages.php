@@ -75,10 +75,24 @@ class UpdatePackages extends CronJob
     private $insertPackageFileIndex = null;
     private $cleanupPackageFileIndex = null;
     private $files = array();
+    private $contentTables = array(
+        'architectures',
+        'files',
+        'file_index',
+        'groups',
+        'licenses',
+        'packagers',
+        'packages',
+        'package_file_index',
+        'package_group',
+        'package_license',
+        'package_relation',
+        'repositories'
+    );
 
     public function execute()
     {
-        if (count(getopt('p', array('purge'))) == 0 && !$this->checkLastMirrorUpdate()) {
+        if (count(getopt('pr', array('purge', 'reset'))) == 0 && !$this->checkLastMirrorUpdate()) {
             $this->printDebug("No updated packages available...");
 
             return;
@@ -89,6 +103,8 @@ class UpdatePackages extends CronJob
 
             if (count(getopt('p', array('purge'))) > 0) {
                 $this->purgeDatabase();
+            } elseif (count(getopt('r', array('reset'))) > 0) {
+                $this->resetDatabase();
             }
 
             $this->prepareQueries();
@@ -163,30 +179,31 @@ class UpdatePackages extends CronJob
 
     private function purgeDatabase()
     {
-        $tables = array(
-            'architectures',
-            'files',
-            'file_index',
-            'groups',
-            'licenses',
-            'packagers',
-            'packages',
-            'package_file_index',
-            'package_group',
-            'package_license',
-            'package_relation',
-            'repositories'
-        );
         $rowsTotal = 0;
-        foreach ($tables as $table) {
+        foreach ($this->contentTables as $table) {
             $rowsTotal += Database::query('SELECT COUNT(*) FROM `' . $table . '`')->fetchColumn();
         }
         $rowCount = 0;
-        foreach ($tables as $table) {
+        foreach ($this->contentTables as $table) {
             $rowCount += Database::exec('DELETE FROM `' . $table . '`');
-            Database::exec('ALTER TABLE `' . $table . '` AUTO_INCREMENT = 1');
             $this->printProgress($rowCount, $rowsTotal, "Purging database: ");
         }
+        ObjectStore::addObject('UpdatePackages:lastupdate', 0);
+    }
+
+    private function resetDatabase()
+    {
+        Database::commit();
+
+        $tablesTotal = count($this->contentTables);
+        $tableCount = 0;
+        foreach ($this->contentTables as $table) {
+            Database::exec('TRUNCATE TABLE `' . $table . '`');
+            $this->printProgress( ++$tableCount, $tablesTotal, "Resetting database: ");
+        }
+        ObjectStore::addObject('UpdatePackages:lastupdate', 0);
+
+        Database::beginTransaction();
     }
 
     private function prepareQueries()
