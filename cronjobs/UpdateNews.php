@@ -87,6 +87,9 @@ class UpdateNews extends CronJob
         }
     }
 
+    /**
+     * @return \SimpleXMLElement
+     */
     private function getNewsEntries()
     {
         $download = new Download(Config::get('news', 'feed'));

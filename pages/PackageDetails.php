@@ -306,7 +306,7 @@ class PackageDetails extends Page
         $stm->bindParam('package', $this->pkgid, PDO::PARAM_INT);
         $stm->execute();
         $list = array();
-        while ($license = $stm->fetchColumn()) {
+        while (($license = $stm->fetchColumn())) {
             $list[] = $license;
         }
 
@@ -328,7 +328,7 @@ class PackageDetails extends Page
         $groups->bindParam('package', $this->pkgid, PDO::PARAM_INT);
         $groups->execute();
         $list = array();
-        while ($group = $groups->fetchColumn()) {
+        while (($group = $groups->fetchColumn())) {
             $list[] = '<a href="' . $this->createUrl('Packages', array('group' => $group)) . '">' . $group . '</a>';
         }
 
@@ -354,7 +354,7 @@ class PackageDetails extends Page
         if ($stm->rowCount() > 0) {
             $last = 0;
             $cur = 0;
-            while ($path = $stm->fetchColumn()) {
+            while (($path = $stm->fetchColumn())) {
                 $cur = substr_count($path, '/');
                 if (substr($path, -1) != '/') {
                     $cur++;

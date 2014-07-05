@@ -33,6 +33,7 @@ abstract class CronJob
     public static function run()
     {
         $class = get_called_class();
+        /** @var CronJob $instance */
         $instance = new $class();
         $instance->execute();
     }

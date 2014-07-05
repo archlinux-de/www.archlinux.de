@@ -29,6 +29,7 @@ use archportal\lib\Database;
 use archportal\lib\Download;
 use archportal\lib\Input;
 use archportal\lib\ObjectStore;
+use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
 use PDO;
 use RuntimeException;
@@ -42,37 +43,66 @@ class UpdatePackages extends CronJob
 
     private $lastMirrorUpdate = 0;
     private $updatedPackages = false;
+    /** @var \PDOStatement  */
     private $selectRepoMTime = null;
+    /** @var \PDOStatement  */
     private $selectPackageMTime = null;
+    /** @var \PDOStatement  */
     private $updateRepoMTime = null;
+    /** @var \PDOStatement  */
     private $selectArchId = null;
+    /** @var \PDOStatement  */
     private $insertArchName = null;
+    /** @var \PDOStatement  */
     private $arches = array();
+    /** @var \PDOStatement  */
     private $selectRepoId = null;
+    /** @var \PDOStatement  */
     private $insertRepoName = null;
+    /** @var \PDOStatement  */
     private $selectPackageId = null;
+    /** @var \PDOStatement  */
     private $updatePackage = null;
+    /** @var \PDOStatement  */
     private $insertPackage = null;
+    /** @var \PDOStatement  */
     private $selectPackager = null;
+    /** @var \PDOStatement  */
     private $insertPackager = null;
     private $packagers = array();
+    /** @var \PDOStatement  */
     private $selectGroup = null;
+    /** @var \PDOStatement  */
     private $insertGroup = null;
+    /** @var \PDOStatement  */
     private $cleanupPackageGroup = null;
+    /** @var \PDOStatement  */
     private $insertPackageGroup = null;
     private $groups = array();
+    /** @var \PDOStatement  */
     private $selectLicense = null;
+    /** @var \PDOStatement  */
     private $insertLicense = null;
+    /** @var \PDOStatement  */
     private $cleanupPackageLicense = null;
+    /** @var \PDOStatement  */
     private $insertPackageLicense = null;
     private $licenses = array();
+    /** @var \PDOStatement  */
     private $cleanupRelation = null;
+    /** @var \PDOStatement  */
     private $insertRelation = null;
+    /** @var \PDOStatement  */
     private $selectFileIndex = null;
+    /** @var \PDOStatement  */
     private $insertFileIndex = null;
+    /** @var \PDOStatement  */
     private $cleanupFiles = null;
+    /** @var \PDOStatement  */
     private $insertFiles = null;
+    /** @var \PDOStatement  */
     private $insertPackageFileIndex = null;
+    /** @var \PDOStatement  */
     private $cleanupPackageFileIndex = null;
     private $files = array();
     private $contentTables = array(
@@ -181,7 +211,7 @@ class UpdatePackages extends CronJob
     {
         $rowsTotal = 0;
         foreach ($this->contentTables as $table) {
-            $rowsTotal += Database::query('SELECT COUNT(*) FROM `' . $table . '`')->fetchColumn();
+            $rowsTotal += (int) Database::query('SELECT COUNT(*) FROM `' . $table . '`')->fetchColumn();
         }
         $rowCount = 0;
         foreach ($this->contentTables as $table) {
@@ -646,7 +676,7 @@ class UpdatePackages extends CronJob
         }
     }
 
-    private function updatePackage($repoId, $package)
+    private function updatePackage($repoId, Package $package)
     {
         $packageName = htmlspecialchars($package->getName());
         $packageArch = $this->getArchId($package->getArch());
@@ -811,7 +841,7 @@ class UpdatePackages extends CronJob
                 $cleanupPackages->execute();
                 $cleanupRelations->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
                 $cleanupRelations->execute();
-                if (Config::get('packages', 'files')) {
+                if (isset($cleanupFiles) && isset($cleanupPackageFileIndex)) {
                     $cleanupFiles->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
                     $cleanupFiles->execute();
                     $cleanupPackageFileIndex->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);

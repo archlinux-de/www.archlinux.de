@@ -39,11 +39,6 @@ class L10n
         textdomain('archportal');
     }
 
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
     private function getLocalePath()
     {
         return __DIR__ . '/../l10n/' . strtok($this->locale, '.');
@@ -75,24 +70,9 @@ class L10n
         return date($this->getText('Y-m-d'), $timestamp);
     }
 
-    public function getTime($timestamp = null)
-    {
-        return date($this->getText('H:i'), $timestamp);
-    }
-
     public function getDateTime($timestamp = null)
     {
         return date($this->getText('Y-m-d H:i'), $timestamp);
-    }
-
-    public function getGmDate($timestamp = null)
-    {
-        return gmdate('Y-m-d', $timestamp);
-    }
-
-    public function getGmTime($timestamp = null)
-    {
-        return gmdate('H:i', $timestamp);
     }
 
     public function getGmDateTime($timestamp = null)
@@ -137,12 +117,6 @@ class L10n
 
             return sprintf($this->getText('%.2f seconds'), $result);
         }
-    }
-
-    public function getNumber($number, $decimals = 0)
-    {
-        // FIXME: use sprintf %f instead?
-        return number_format($number, $decimals, $this->localeInfo['decimal_point'], $this->localeInfo['thousands_sep']);
     }
 
 }

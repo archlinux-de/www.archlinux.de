@@ -106,7 +106,7 @@ class FunStatistics extends StatisticsPage
                         'Medit' => 'medit',
                         'Vi' => 'vi',
                         'Mousepad' => 'mousepad',
-                        'Medit' => 'nedit',
+                        'Nedit' => 'nedit',
                         'Joe' => 'joe',
                         'Leafpad' => 'leafpad',
                         'Geany' => 'geany'
@@ -196,7 +196,7 @@ class FunStatistics extends StatisticsPage
         }
     }
 
-    private static function getPackageStatistics($total, $stm, $packages)
+    private static function getPackageStatistics($total, \PDOStatement $stm, $packages)
     {
         $packageArray = array();
         $list = '';

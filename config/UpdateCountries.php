@@ -31,7 +31,7 @@ spl_autoload_register('archportal\lib\AutoLoad::loadClass');
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
-$xml = new SimpleXMLElement(__DIR__ . '/country_names_and_code_elements_xml.htm', 0, true);
+$xml = new SimpleXMLElement(__DIR__ . '/country_names_and_code_elements_xml.xml', 0, true);
 
 Database::beginTransaction();
 Database::query('DELETE FROM countries');

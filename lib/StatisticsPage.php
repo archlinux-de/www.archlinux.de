@@ -42,6 +42,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         $passages = $total - 1;
         $stepsforpassage = floor($steps / $passages);
         $stepsremain = $steps - ($stepsforpassage * $passages);
+        $stepsforthis = 0;
         for ($pointer = 0; $pointer < $total - 1; $pointer++) {
             $hexstart = $hexarray[$pointer];
             $hexend = $hexarray[$pointer + 1];
@@ -88,7 +89,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         if ($percent > 100) {
             return '';
         }
-        $color = self::$barColors[round($percent)];
+        $color = self::$barColors[(int) round($percent)];
 
         return '<table style="width:100%;">
             <tr>

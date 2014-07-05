@@ -92,15 +92,6 @@ abstract class Page extends Output
         return get_class($this);
     }
 
-    protected function showWarning($text)
-    {
-        $this->setMetaRobots('noindex,nofollow');
-        $this->setTitle($this->l10n->getText('Warning'));
-        $this->setBody('<div id="warning">' . $text . '</div>');
-        require (__DIR__ . '/../templates/PageTemplate.php');
-        exit();
-    }
-
     protected function showFailure($text)
     {
         $this->setMetaRobots('noindex,nofollow');

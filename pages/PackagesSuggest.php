@@ -87,7 +87,7 @@ class PackagesSuggest extends Page
                     return;
             }
             $stm->execute();
-            while ($suggestion = $stm->fetchColumn()) {
+            while (($suggestion = $stm->fetchColumn())) {
                 $this->suggestions[] = $suggestion;
             }
         } catch (RequestException $e) {

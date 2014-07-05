@@ -360,7 +360,7 @@ class Packages extends Page
             ORDER BY
                 name ASC
             ');
-        while ($group = $groups->fetchColumn()) {
+        while (($group = $groups->fetchColumn())) {
             $options.= '<option value="' . $group . '"' . ($this->group == $group ? ' selected="selected"' : '') . '>' . $group . '</option>';
         }
 

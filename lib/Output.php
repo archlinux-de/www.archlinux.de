@@ -59,21 +59,6 @@ abstract class Output
         $this->contentType = $type;
     }
 
-    protected function setCookie($key, $value, $expire = 0)
-    {
-        setcookie($key, $value, $expire, '', '', Input::server()->isString('HTTPS'), true);
-    }
-
-    protected function redirect($page, $options = array())
-    {
-        $this->redirectToUrl($this->createUrl($page, $options, true, false));
-    }
-
-    protected function redirectPermanently($page, $options = array())
-    {
-        $this->redirectPermanentlyToUrl($this->createUrl($page, $options, true, false));
-    }
-
     protected function redirectToUrl($url)
     {
         $this->setStatus(Output::FOUND);

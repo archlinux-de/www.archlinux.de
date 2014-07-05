@@ -24,6 +24,7 @@ namespace archportal;
 require (__DIR__ . '/lib/AutoLoad.php');
 
 use archportal\lib\Input;
+use archportal\lib\Page;
 use archportal\lib\Routing;
 
 spl_autoload_register('archportal\lib\AutoLoad::loadClass');
@@ -31,6 +32,7 @@ set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 $page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
+/** @var Page $thisPage */
 $thisPage = new $page();
 
 $thisPage->prepare();

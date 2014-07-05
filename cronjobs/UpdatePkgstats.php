@@ -26,6 +26,7 @@ require (__DIR__ . '/../lib/AutoLoad.php');
 use archportal\lib\Config;
 use archportal\lib\CronJob;
 use archportal\lib\Routing;
+use archportal\lib\StatisticsPage;
 
 spl_autoload_register('archportal\lib\AutoLoad::loadClass');
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
@@ -44,6 +45,7 @@ class UpdatePkgstats extends CronJob
         'UserStatistics',
         'FunStatistics'
             ) as $page) {
+                /** @var StatisticsPage $pageClass */
                 $pageClass = Routing::getPageClass($page);
                 $pageClass::updateDatabaseCache();
             }

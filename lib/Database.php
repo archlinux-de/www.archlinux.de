@@ -22,7 +22,17 @@
 namespace archportal\lib;
 
 use PDO;
+use PDOStatement;
 
+/**
+ * @method static PDOStatement prepare string $statement, array $driver_options
+ * @method static int exec string $statement
+ * @method static PDOStatement query string $statement
+ * @method static mixed lastInsertId
+ * @method static bool beginTransaction
+ * @method static bool commit
+ * @method static bool rollBack
+ */
 class Database
 {
 

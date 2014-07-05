@@ -21,6 +21,14 @@
 
 namespace archportal\lib;
 
+/**
+ * @method static Request get
+ * @method static Request post
+ * @method static Request cookie
+ * @method static Request request
+ * @method static Request server
+ * @method static Request env
+ */
 class Input
 {
 
@@ -29,11 +37,10 @@ class Input
     private static $ip = null;
     private static $countryCode = null;
     private static $path = null;
-    private static $relativePath = null;
 
     private function __construct()
     {
-        
+
     }
 
     public static function __callStatic($name, $args)
@@ -50,7 +57,7 @@ class Input
         return self::$time;
     }
 
-    public static function getHost()
+    private static function getHost()
     {
         if (is_null(self::$host)) {
             self::$host = self::server()->getString('HTTP_HOST');
@@ -106,17 +113,6 @@ class Input
         }
 
         return self::$path;
-    }
-
-    // FIXME: Rename function
-    public static function getRelativePath()
-    {
-        if (is_null(self::$relativePath)) {
-            $directory = dirname(self::server()->getString('SCRIPT_NAME'));
-            self::$relativePath = ($directory == '/' ? '' : $directory) . '/';
-        }
-
-        return self::$relativePath;
     }
 
 }

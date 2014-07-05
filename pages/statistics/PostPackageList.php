@@ -45,6 +45,8 @@ class PostPackageList extends Page
         } catch (RequestException $e) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('Please make sure to use pkgstats to submit your data.');
+
+            return;
         }
         if (!in_array($pkgstatsver, array(
                     '1.0',
@@ -55,6 +57,8 @@ class PostPackageList extends Page
                 ))) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('Sorry, your version of pkgstats is not supported.');
+
+            return;
         }
         try {
             $packages = array_unique(explode("\n", trim(Input::post()->getString('packages'))));
@@ -75,13 +79,16 @@ class PostPackageList extends Page
         } catch (RequestException $e) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure($e->getMessage());
+
+            return;
         }
         if (!empty($mirror) && !preg_match('#^(https?|ftp)://\S+/#', $mirror)) {
             $mirror = null;
         } elseif (!empty($mirror) && Input::post()->getHtmlLength('mirror') > 255) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure($mirror . ' is too long.');
-            $mirror = null;
+
+            return;
         } elseif (empty($mirror)) {
             $mirror = null;
         }
@@ -91,6 +98,8 @@ class PostPackageList extends Page
                 ))) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure(htmlspecialchars($arch) . ' is not a known architecture.');
+
+            return;
         }
         if (!in_array($cpuArch, array(
                     'i686',
@@ -99,6 +108,8 @@ class PostPackageList extends Page
                 ))) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure(htmlspecialchars($cpuArch) . ' is not a known architecture.');
+
+            return;
         }
         if ($cpuArch == '') {
             $cpuArch = null;
@@ -106,25 +117,35 @@ class PostPackageList extends Page
         if ($packageCount == 0) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('Your package list is empty.');
+
+            return;
         }
         if ($packageCount > 10000) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('So, you have installed more than 10,000 packages?');
+
+            return;
         }
         foreach ($packages as $package) {
             if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package))) {
                 $this->setStatus(Output::BAD_REQUEST);
                 $this->showFailure(htmlspecialchars($package) . ' does not look like a valid package');
+
+                return;
             }
         }
         if ($moduleCount > 5000) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('So, you have loaded more than 5,000 modules?');
+
+            return;
         }
         foreach ($modules as $module) {
             if (!preg_match('/^[\w\-]{1,254}$/', $module)) {
                 $this->setStatus(Output::BAD_REQUEST);
                 $this->showFailure($module . ' does not look like a valid module');
+
+                return;
             }
         }
         $this->checkIfAlreadySubmitted();
@@ -191,6 +212,8 @@ class PostPackageList extends Page
             Database::rollBack();
             $this->setStatus(Output::INTERNAL_SERVER_ERROR);
             $this->showFailure($e->getMessage());
+
+            return;
         }
     }
 
