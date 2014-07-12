@@ -17,5 +17,8 @@
             "archportal\\pages\\": "pages/",
             "archportal\\templates\\": "templates/"
         }
+    },
+    "require": {
+        "geoip/geoip": "~1.14"
     }
 }

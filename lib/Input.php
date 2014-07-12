@@ -40,7 +40,6 @@ class Input
 
     private function __construct()
     {
-
     }
 
     public static function __callStatic($name, $args)
@@ -78,14 +77,19 @@ class Input
     public static function getClientCountryCode()
     {
         if (is_null(self::$countryCode)) {
-            if (function_exists('geoip_country_code_by_name')) {
-                // remove ipv6 prefix
-                $ip = ltrim(self::getClientIP(), ':a-f');
-                if (!empty($ip)) {
-                    // let's ignore any lookup errors
-                    self::$countryCode = strtoupper(@geoip_country_code_by_name($ip)) ? : '';
-                }
+            $ip = self::getClientIP();
+            $isIPv6 = strpos($ip, ':') !== false;
+            $dbFile = '/usr/share/GeoIP/GeoIP' . ($isIPv6 ? 'v6' : '') . '.dat';
+
+            $geoIp = geoip_open($dbFile, GEOIP_STANDARD);
+            if ($isIPv6) {
+                $countryCode = geoip_country_code_by_addr_v6($geoIp, $ip) ? : '';
+            } else {
+                $countryCode = geoip_country_code_by_addr($geoIp, $ip) ? : '';
             }
+            geoip_close($geoIp);
+
+            self::$countryCode = $countryCode;
         }
 
         return self::$countryCode;
@@ -108,11 +112,10 @@ class Input
     {
         if (is_null(self::$path)) {
             $directory = dirname(self::server()->getString('SCRIPT_NAME'));
-            self::$path = 'http' . (!self::server()->isString('HTTPS') ? '' : 's') . '://'
-                    . self::getHost() . ($directory == '/' ? '' : $directory) . '/';
+            self::$path = 'http' . (!self::server()->isString('HTTPS') ? '' : 's') . '://' . self::getHost(
+                ) . ($directory == '/' ? '' : $directory) . '/';
         }
 
         return self::$path;
     }
-
 }
