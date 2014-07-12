@@ -21,7 +21,7 @@
 
 namespace archportal\cronjobs;
 
-require (__DIR__ . '/../lib/AutoLoad.php');
+require (__DIR__ . '/../vendor/autoload.php');
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -31,7 +31,6 @@ use DateTime;
 use PDO;
 use RuntimeException;
 
-spl_autoload_register('archportal\lib\AutoLoad::loadClass');
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 

@@ -1,0 +1,21 @@
+{
+    "name": "archportal",
+    "description": "A portal website for lcoal Arch Linux communities",
+    "minimum-stability": "stable",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Pierre Schmitz",
+            "email": "pierre@archlinux.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "archportal\\config\\": "config/",
+            "archportal\\cronjobs\\": "cronjobs/",
+            "archportal\\lib\\": "lib/",
+            "archportal\\pages\\": "pages/",
+            "archportal\\templates\\": "templates/"
+        }
+    }
+}

@@ -21,13 +21,12 @@
 
 namespace archportal;
 
-require (__DIR__ . '/lib/AutoLoad.php');
+require (__DIR__ . '/vendor/autoload.php');
 
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\Routing;
 
-spl_autoload_register('archportal\lib\AutoLoad::loadClass');
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
