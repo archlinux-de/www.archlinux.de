@@ -21,31 +21,33 @@
 
 namespace archportal\config;
 
-require (__DIR__ . '/../vendor/autoload.php');
+require(__DIR__ . '/../vendor/autoload.php');
 
 use archportal\lib\Database;
 use PDO;
-use SimpleXMLElement;
 
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
-$xml = new SimpleXMLElement(__DIR__ . '/country_names_and_code_elements_xml.xml', 0, true);
+$geoIP = new \GeoIP();
+$countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
 
 Database::beginTransaction();
 Database::query('DELETE FROM countries');
 
-$insertCountry = Database::prepare('
-    INSERT INTO
-        countries
-    SET
-        code = :code,
-        name = :name
-    ');
+$insertCountry = Database::prepare(
+    '
+        INSERT INTO
+            countries
+        SET
+            code = :code,
+            name = :name
+        '
+);
 
-foreach ($xml->{'ISO_3166-1_Entry'} as $entry) {
-    $insertCountry->bindValue('code', $entry->{'ISO_3166-1_Alpha-2_Code_element'}, PDO::PARAM_STR);
-    $insertCountry->bindValue('name', $entry->{'ISO_3166-1_Country_name'}, PDO::PARAM_STR);
+foreach ($countries as $code => $name) {
+    $insertCountry->bindValue('code', $code, PDO::PARAM_STR);
+    $insertCountry->bindValue('name', $name, PDO::PARAM_STR);
     $insertCountry->execute();
 }
 
