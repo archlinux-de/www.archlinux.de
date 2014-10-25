@@ -37,61 +37,97 @@ abstract class Page extends Output
         parent::__construct();
     }
 
+    /**
+     * @param string $title
+     */
     protected function setTitle($title)
     {
         $this->title = $title;
     }
 
+    /**
+     * @return string
+     */
     protected function getTitle()
     {
         return $this->title;
     }
 
+    /**
+     * @param string $body
+     */
     protected function setBody($body)
     {
         $this->body = $body;
     }
 
+    /**
+     * @return string
+     */
     protected function getBody()
     {
         return $this->body;
     }
 
+    /**
+     * @param string $metaRobots
+     */
     protected function setMetaRobots($metaRobots)
     {
         $this->metaRobots = $metaRobots;
     }
 
+    /**
+     * @return string
+     */
     protected function getMetaRobots()
     {
         return $this->metaRobots;
     }
 
+    /**
+     * @param string $name
+     */
     protected function addCSS($name)
     {
         $this->cssFiles[] = $name;
     }
 
+    /**
+     * @return array
+     */
     protected function getCSS()
     {
         return $this->cssFiles;
     }
 
+    /**
+     * @param string $name
+     */
     protected function addJS($name)
     {
         $this->jsFiles[] = $name;
     }
 
+    /**
+     * @return array
+     */
     protected function getJS()
     {
         return $this->jsFiles;
     }
 
+    /**
+     * @return string
+     */
     protected function getName()
     {
         return get_class($this);
     }
 
+    /**
+     * @param string $text
+     */
     protected function showFailure($text)
     {
         $this->setMetaRobots('noindex,nofollow');
@@ -107,6 +143,11 @@ abstract class Page extends Output
         $this->setBody($this->l10n->getText('no text'));
     }
 
+    /**
+     * @param string $string
+     * @param int $length
+     * @return string
+     */
     protected function cutString($string, $length)
     {
         // Verhindere das Abschneiden im Entity

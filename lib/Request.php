@@ -45,6 +45,10 @@ class Request
         }
     }
 
+    /**
+     * @param string $type
+     * @return Request
+     */
     public static function getInstance($type)
     {
         if (!isset(self::$instances[$type])) {
@@ -54,41 +58,75 @@ class Request
         return self::$instances[$type];
     }
 
+    /**
+     * @param string $input
+     * @return bool
+     */
     private function is_unicode($input)
     {
         return mb_check_encoding($input, 'UTF-8');
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function isString($name)
     {
         return isset($this->request[$name]) && is_string($this->request[$name]) && $this->is_unicode($this->request[$name]);
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function isEmptyString($name)
     {
         return !$this->isString($name) || !$this->isRegex($name, '/\S+/');
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function isRequest($name)
     {
         return isset($this->request[$name]);
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function isInt($name)
     {
         return $this->isRegex($name, '/^-?[0-9]+$/');
     }
 
+    /**
+     * @param string $name
+     * @param string $regex
+     * @return bool
+     */
     public function isRegex($name, $regex)
     {
         return $this->isString($name) && preg_match($regex, $this->request[$name]);
     }
 
+    /**
+     * @param string $name
+     * @return int
+     */
     public function getHtmlLength($name)
     {
         return $this->isEmptyString($name) ? 0 : strlen(htmlspecialchars($this->request[$name], ENT_COMPAT));
     }
 
+    /**
+     * @param string $name
+     * @param bool $default
+     * @return string
+     */
     public function getString($name, $default = false)
     {
         if (!$this->isEmptyString($name)) {
@@ -100,6 +138,11 @@ class Request
         }
     }
 
+    /**
+     * @param string $name
+     * @param bool $default
+     * @return int
+     */
     public function getInt($name, $default = false)
     {
         if ($this->isInt($name)) {
@@ -111,6 +154,11 @@ class Request
         }
     }
 
+    /**
+     * @param string $name
+     * @param bool $default
+     * @return string
+     */
     public function getHtml($name, $default = false)
     {
         return htmlspecialchars($this->getString($name, $default), ENT_COMPAT);

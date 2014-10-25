@@ -298,6 +298,8 @@ class Packages extends Page
 
                 return 'AND file_index.name LIKE :search AND file_index.id = package_file_index.file_index AND package_file_index.package = packages.id';
                 break;
+            default:
+                return '';
         }
     }
 

@@ -31,6 +31,9 @@ class Download
     private $tmpFile = '';
     private $mtime = 0;
 
+    /**
+     * @param string $url
+     */
     public function __construct($url)
     {
         $this->url = $url;
@@ -44,6 +47,9 @@ class Download
         }
     }
 
+    /**
+     * @return int
+     */
     public function getMTime()
     {
         if (!$this->downloaded && $this->mtime == 0) {
@@ -66,6 +72,9 @@ class Download
         return $this->mtime;
     }
 
+    /**
+     * @return string
+     */
     public function getFile()
     {
         if (!$this->downloaded) {

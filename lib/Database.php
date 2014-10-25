@@ -43,6 +43,11 @@ class Database
 
     }
 
+    /**
+     * @param string $name
+     * @param array $args
+     * @return mixed
+     */
     public static function __callStatic($name, $args)
     {
         if (is_null(self::$pdo)) {
@@ -57,6 +62,11 @@ class Database
         return call_user_func_array(array(self::$pdo, $name), $args);
     }
 
+    /**
+     * @param string $name
+     * @param int $timeout
+     * @return bool
+     */
     public static function aquireLock($name, $timeout = 0)
     {
         $stm = self::prepare('SELECT GET_LOCK(:name, :timeout)');
@@ -67,6 +77,9 @@ class Database
         return $stm->fetchColumn() == 1;
     }
 
+    /**
+     * @param string $name
+     */
     public static function releaseLock($name)
     {
         $stm = self::prepare('DO RELEASE_LOCK(:name)');

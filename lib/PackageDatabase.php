@@ -37,6 +37,12 @@ class PackageDatabase implements Iterator
     private $dbDir = null;
     private $packageCount = null;
 
+    /**
+     * @param string $repository
+     * @param string $architecture
+     * @param int $repoMinMTime
+     * @param int $packageMinMTime
+     */
     public function __construct($repository, $architecture, $repoMinMTime = 0, $packageMinMTime = 0)
     {
         if (Config::get('packages', 'files')) {
@@ -131,6 +137,9 @@ class PackageDatabase implements Iterator
         }
     }
 
+    /**
+     * @return int
+     */
     public function getNewPackageCount()
     {
         if (is_null($this->packageCount)) {
@@ -151,6 +160,9 @@ class PackageDatabase implements Iterator
         return $this->packageCount;
     }
 
+    /**
+     * @return array
+     */
     public function getOldPackageNames()
     {
         $packages = array();

@@ -32,7 +32,12 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         '006400'
     );
 
-    // see http://at.php.net/manual/de/function.hexdec.php#66780
+    /**
+     * @param array $hexarray
+     * @return array
+     *
+     * see http://at.php.net/manual/de/function.hexdec.php#66780
+     */
     protected static function MultiColorFade($hexarray)
     {
         $steps = 101;
@@ -80,6 +85,11 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         return $gradient;
     }
 
+    /**
+     * @param int $value
+     * @param int $total
+     * @return string
+     */
     protected static function getBar($value, $total)
     {
         if ($total <= 0) {
@@ -99,18 +109,24 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
             &nbsp;
                 </div>
                 </td>
-                <td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . '">
+                <td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . ';">
                     ' . number_format($percent, 2) . '&nbsp;%
                 </td>
             </tr>
         </table>';
     }
 
+    /**
+     * @return int
+     */
     protected static function getRangeTime()
     {
         return strtotime(date('1-m-Y', strtotime('now -' . self::$rangeMonths . ' months')));
     }
 
+    /**
+     * @return string
+     */
     protected static function getRangeYearMonth()
     {
         return date('Ym', self::getRangeTime());

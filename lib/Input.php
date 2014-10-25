@@ -42,11 +42,19 @@ class Input
     {
     }
 
+    /**
+     * @param string $name
+     * @param array $args
+     * @return Request
+     */
     public static function __callStatic($name, $args)
     {
         return Request::getInstance($name);
     }
 
+    /**
+     * @return int
+     */
     public static function getTime()
     {
         if (self::$time == 0) {
@@ -56,6 +64,9 @@ class Input
         return self::$time;
     }
 
+    /**
+     * @return string
+     */
     private static function getHost()
     {
         if (is_null(self::$host)) {
@@ -65,6 +76,9 @@ class Input
         return self::$host;
     }
 
+    /**
+     * @return string
+     */
     public static function getClientIP()
     {
         if (is_null(self::$ip)) {
@@ -74,6 +88,9 @@ class Input
         return self::$ip;
     }
 
+    /**
+     * @return string
+     */
     public static function getClientCountryCode()
     {
         if (is_null(self::$countryCode)) {
@@ -95,6 +112,9 @@ class Input
         return self::$countryCode;
     }
 
+    /**
+     * @return string
+     */
     public static function getClientArchitecture()
     {
         $userAgent = self::server()->getString('HTTP_USER_AGENT');
@@ -107,7 +127,9 @@ class Input
         }
     }
 
-    // FIXME: Rename function
+    /**
+     * @return string
+     */
     public static function getPath()
     {
         if (is_null(self::$path)) {

@@ -49,16 +49,25 @@ abstract class Output
         header('Content-Type: ' . $this->contentType);
     }
 
+    /**
+     * @param string $code
+     */
     protected function setStatus($code)
     {
         $this->status = $code;
     }
 
+    /**
+     * @param string $type
+     */
     protected function setContentType($type)
     {
         $this->contentType = $type;
     }
 
+    /**
+     * @param string $url
+     */
     protected function redirectToUrl($url)
     {
         $this->setStatus(Output::FOUND);
@@ -66,6 +75,9 @@ abstract class Output
         exit();
     }
 
+    /**
+     * @param string $url
+     */
     protected function redirectPermanentlyToUrl($url)
     {
         $this->setStatus(Output::MOVED_PERMANENTLY);
@@ -73,7 +85,14 @@ abstract class Output
         exit();
     }
 
-    // FIXME: parameters are insane
+    /**
+     * @param string $page
+     * @param array $options
+     * @param bool $absolute
+     * @param bool $html
+     * @param bool $urlencode
+     * @return string
+     */
     protected function createUrl($page, $options = array(), $absolute = false, $html = true, $urlencode = true)
     {
         $separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);

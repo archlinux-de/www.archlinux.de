@@ -53,6 +53,10 @@ class Routing
         'MirrorStatusReflector' => 'pages\legacy\MirrorStatusReflector'
     );
 
+    /**
+     * @param string $page
+     * @return string
+     */
     public static function getPageClass($page)
     {
         if (Config::get('common', 'statistics')) {

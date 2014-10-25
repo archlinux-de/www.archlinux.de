@@ -66,6 +66,9 @@ abstract class CronJob
         Database::releaseLock($this->lockName);
     }
 
+    /**
+     * @param string $text
+     */
     protected function printDebug($text)
     {
         if (!$this->quiet) {
@@ -73,11 +76,19 @@ abstract class CronJob
         }
     }
 
+    /**
+     * @param string $text
+     */
     protected function printError($text)
     {
         file_put_contents('php://stderr', $text . "\n");
     }
 
+    /**
+     * @param int $current
+     * @param int $total
+     * @param string string $prefix
+     */
     protected function printProgress($current, $total, $prefix = '')
     {
         if (!$this->quiet) {

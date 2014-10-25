@@ -33,11 +33,21 @@ class Config
 
     }
 
+    /**
+     * @param string $section
+     * @param string $key
+     * @param mixed $value
+     */
     public static function set($section, $key, $value)
     {
         self::$config[$section][$key] = $value;
     }
 
+    /**
+     * @param string $section
+     * @param string $key
+     * @return mixed
+     */
     public static function get($section, $key)
     {
         if (isset(self::$config[$section][$key])) {

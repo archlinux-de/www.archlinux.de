@@ -44,16 +44,30 @@ class L10n
         return __DIR__ . '/../l10n/' . strtok($this->locale, '.');
     }
 
+    /**
+     * @param string $text
+     * @return string
+     */
     public function getText($text)
     {
         return gettext($text);
     }
 
+    /**
+     * @param string $singular
+     * @param string $plural
+     * @param int $count
+     * @return string
+     */
     public function ngetText($singular, $plural, $count)
     {
         return ngettext($singular, $plural, $count);
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function getTextFile($name)
     {
         $key = 'L10n:' . $this->locale . ':' . $name;
@@ -65,21 +79,37 @@ class L10n
         return $text;
     }
 
+    /**
+     * @param int $timestamp
+     * @return string
+     */
     public function getDate($timestamp = null)
     {
         return date($this->getText('Y-m-d'), $timestamp);
     }
 
+    /**
+     * @param int $timestamp
+     * @return string
+     */
     public function getDateTime($timestamp = null)
     {
         return date($this->getText('Y-m-d H:i'), $timestamp);
     }
 
+    /**
+     * @param int $timestamp
+     * @return string
+     */
     public function getGmDateTime($timestamp = null)
     {
         return gmdate('Y-m-d H:i', $timestamp);
     }
 
+    /**
+     * @param int $seconds
+     * @return string
+     */
     public function getEpoch($seconds)
     {
         $minutes = 60;

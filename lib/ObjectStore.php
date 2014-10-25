@@ -26,6 +26,11 @@ use PDO;
 class ObjectStore
 {
 
+    /**
+     * @param string $key
+     * @param mixed $object
+     * @param int $ttl
+     */
     public static function addObject($key, $object, $ttl = 0)
     {
         $stm = Database::prepare('
@@ -42,6 +47,10 @@ class ObjectStore
         $stm->execute();
     }
 
+    /**
+     * @param string $key
+     * @return mixed
+     */
     public static function getObject($key)
     {
         self::collectGarbage();
@@ -63,6 +72,10 @@ class ObjectStore
         }
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     public static function isObject($key)
     {
         $stm = Database::prepare('

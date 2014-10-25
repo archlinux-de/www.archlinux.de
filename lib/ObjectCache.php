@@ -29,6 +29,12 @@ class ObjectCache
         return Config::get('Database', 'database') . ':';
     }
 
+    /**
+     * @param string $key
+     * @param mixed $object
+     * @param int $ttl
+     * @return bool
+     */
     public static function addObject($key, $object, $ttl = 0)
     {
         $key = self::getPrefix() . $key;
@@ -41,6 +47,10 @@ class ObjectCache
         }
     }
 
+    /**
+     * @param string $key
+     * @return mixed
+     */
     public static function getObject($key)
     {
         $key = self::getPrefix() . $key;
@@ -58,6 +68,10 @@ class ObjectCache
         }
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     public static function isObject($key)
     {
         $key = self::getPrefix() . $key;
