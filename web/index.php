@@ -19,9 +19,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace archportal;
-
-require (__DIR__ . '/vendor/autoload.php');
+require(__DIR__ . '/../vendor/autoload.php');
 
 use archportal\lib\Input;
 use archportal\lib\Page;

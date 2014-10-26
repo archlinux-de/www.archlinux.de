@@ -19,8 +19,6 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace archportal\config;
-
 use archportal\lib\Config;
 
 Config::set('common', 'statistics', false);

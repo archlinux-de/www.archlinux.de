@@ -19,12 +19,9 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace archportal\config;
-
 require(__DIR__ . '/../vendor/autoload.php');
 
 use archportal\lib\Database;
-use PDO;
 
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');

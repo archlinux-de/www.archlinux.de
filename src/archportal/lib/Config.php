@@ -59,8 +59,8 @@ class Config
 
 }
 
-require (__DIR__ . '/../config/DefaultConfig.php');
+require (__DIR__ . '/../../../config/DefaultConfig.php');
 
-if (file_exists(__DIR__ . '/../config/LocalConfig.php')) {
-    include (__DIR__ . '/../config/LocalConfig.php');
+if (file_exists(__DIR__ . '/../../../config/LocalConfig.php')) {
+    include (__DIR__ . '/../../../config/LocalConfig.php');
 }

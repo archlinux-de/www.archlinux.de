@@ -3,6 +3,7 @@
     "description": "A portal website for lcoal Arch Linux communities",
     "minimum-stability": "stable",
     "license": "GPL",
+    "type": "project",
     "authors": [
         {
             "name": "Pierre Schmitz",
@@ -10,13 +11,7 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "archportal\\config\\": "config/",
-            "archportal\\cronjobs\\": "cronjobs/",
-            "archportal\\lib\\": "lib/",
-            "archportal\\pages\\": "pages/",
-            "archportal\\templates\\": "templates/"
-        }
+        "psr-0": {"": "src/"}
     },
     "require": {
         "geoip/geoip": "~1.14"
