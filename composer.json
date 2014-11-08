@@ -1,0 +1,19 @@
+{
+    "name": "archportal",
+    "description": "A portal website for lcoal Arch Linux communities",
+    "minimum-stability": "stable",
+    "license": "GPL",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Pierre Schmitz",
+            "email": "pierre@archlinux.de"
+        }
+    ],
+    "autoload": {
+        "psr-0": {"": "src/"}
+    },
+    "require": {
+        "geoip/geoip": "~1.14"
+    }
+}

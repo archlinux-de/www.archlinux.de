@@ -1,5 +1,5 @@
-#!/usr/bin/php
 <?php
+
 /*
   Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
 
@@ -21,34 +21,16 @@
 
 require(__DIR__ . '/../vendor/autoload.php');
 
-use archportal\lib\Config;
-use archportal\lib\CronJob;
+use archportal\lib\Input;
+use archportal\lib\Page;
 use archportal\lib\Routing;
-use archportal\lib\StatisticsPage;
 
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
-class UpdatePkgstats extends CronJob
-{
+$page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
+/** @var Page $thisPage */
+$thisPage = new $page();
 
-    public function execute()
-    {
-        if (Config::get('common', 'statistics')) {
-            foreach (array(
-        'RepositoryStatistics',
-        'PackageStatistics',
-        'ModuleStatistics',
-        'UserStatistics',
-        'FunStatistics'
-            ) as $page) {
-                /** @var StatisticsPage $pageClass */
-                $pageClass = Routing::getPageClass($page);
-                $pageClass::updateDatabaseCache();
-            }
-        }
-    }
-
-}
-
-UpdatePkgstats::run();
+$thisPage->prepare();
+$thisPage->printPage();

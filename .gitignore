@@ -1,2 +1,9 @@
 *~
 /config/LocalConfig.php
+/vendor
+composer.phar
+composer.lock
+/.kateproject.d/
+/nbproject/private/
+/nbproject/
+/.idea/

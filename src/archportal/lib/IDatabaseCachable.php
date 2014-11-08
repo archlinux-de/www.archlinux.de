@@ -1,5 +1,5 @@
-#!/usr/bin/php
 <?php
+
 /*
   Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
 
@@ -19,18 +19,10 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+namespace archportal\lib;
 
-use archportal\lib\Config;
+interface IDatabaseCachable
+{
 
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
-
-system('mysqldump -d --compact -u'
-        . '\'' . escapeshellcmd(Config::get('Database', 'user')) . '\''
-        . ' '
-        . escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\'' . Config::get('Database', 'password') . '\'' : '')
-        . ' '
-        . '\'' . escapeshellcmd(Config::get('Database', 'database')) . '\''
-        . ' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > ' . __DIR__ . '/archportal_schema.sql'
-);
+    public static function updateDatabaseCache();
+}
