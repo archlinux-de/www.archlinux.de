@@ -25,9 +25,9 @@ use archportal\lib\Config;
 use archportal\lib\CronJob;
 use archportal\lib\Database;
 use archportal\lib\Download;
+use Symfony\Component\Debug\Debug;
 
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
+Debug::enable();
 
 class UpdateReleases extends CronJob
 {

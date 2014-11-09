@@ -21,16 +21,29 @@
 
 require(__DIR__ . '/../vendor/autoload.php');
 
+use archportal\lib\Config;
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\Routing;
+use Symfony\Component\Debug\Debug;
 
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
-$page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
-/** @var Page $thisPage */
-$thisPage = new $page();
+$app = new Silex\Application();
 
-$thisPage->prepare();
-$thisPage->printPage();
+if (Config::get('common', 'debug')) {
+    Debug::enable();
+    $app['debug'] = true;
+}
+
+$app->get('/', function() use ($app) {
+    $page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
+    /** @var Page $thisPage */
+    $thisPage = new $page();
+
+    ob_start();
+    $thisPage->prepare();
+    $thisPage->printPage();
+    return ob_get_clean();
+});
+
+$app->run();

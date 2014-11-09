@@ -29,9 +29,9 @@ use archportal\lib\Input;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
+use Symfony\Component\Debug\Debug;
 
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
+Debug::enable();
 
 class UpdatePackages extends CronJob
 {
