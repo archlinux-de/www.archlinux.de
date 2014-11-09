@@ -40,7 +40,6 @@ abstract class Output
     {
         $this->outputSeparator = ini_get('arg_separator.output');
         $this->outputSeparatorHtml = htmlspecialchars($this->outputSeparator);
-        ob_start();
     }
 
     public function __destruct()
@@ -93,7 +92,7 @@ abstract class Output
      * @param bool $urlencode
      * @return string
      */
-    protected function createUrl($page, $options = array(), $absolute = false, $html = true, $urlencode = true)
+    public function createUrl($page, $options = array(), $absolute = false, $html = true, $urlencode = true)
     {
         $separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
         $params = array();

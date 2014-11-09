@@ -31,6 +31,14 @@ abstract class Page extends Output
     private $jsFiles = array();
     protected $l10n = null;
 
+    /**
+     * @return L10n
+     */
+    public function getL10n()
+    {
+        return $this->l10n;
+    }
+
     public function __construct()
     {
         $this->l10n = new L10n();
@@ -48,7 +56,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getTitle()
+    public function getTitle()
     {
         return $this->title;
     }
@@ -64,7 +72,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getBody()
+    public function getBody()
     {
         return $this->body;
     }
@@ -80,7 +88,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getMetaRobots()
+    public function getMetaRobots()
     {
         return $this->metaRobots;
     }
@@ -96,7 +104,7 @@ abstract class Page extends Output
     /**
      * @return array
      */
-    protected function getCSS()
+    public function getCSS()
     {
         return $this->cssFiles;
     }
@@ -112,7 +120,7 @@ abstract class Page extends Output
     /**
      * @return array
      */
-    protected function getJS()
+    public function getJS()
     {
         return $this->jsFiles;
     }
@@ -120,7 +128,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getName()
+    public function getName()
     {
         return get_class($this);
     }
@@ -133,7 +141,6 @@ abstract class Page extends Output
         $this->setMetaRobots('noindex,nofollow');
         $this->setTitle($this->l10n->getText('Error'));
         $this->setBody('<div id="warning">' . $text . '</div>');
-        require (__DIR__ . '/../templates/PageTemplate.php');
         exit();
     }
 
@@ -156,10 +163,4 @@ abstract class Page extends Output
 
         return htmlspecialchars($string);
     }
-
-    public function printPage()
-    {
-        require (__DIR__ . '/../templates/PageTemplate.php');
-    }
-
 }

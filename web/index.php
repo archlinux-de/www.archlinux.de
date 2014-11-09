@@ -35,15 +35,24 @@ if (Config::get('common', 'debug')) {
     $app['debug'] = true;
 }
 
-$app->get('/', function() use ($app) {
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
+    'twig.path' => __DIR__ . '/../views',
+    'debug' => Config::get('common', 'debug'),
+    'strict_variables' => Config::get('common', 'debug')
+));
+
+$app->get('/', function () use ($app) {
     $page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
     /** @var Page $thisPage */
     $thisPage = new $page();
 
-    ob_start();
     $thisPage->prepare();
-    $thisPage->printPage();
-    return ob_get_clean();
+
+    return $app['twig']->render('layout.twig', array(
+        'sitename' => Config::get('common', 'sitename'),
+        'newsfeed' => Config::get('news', 'feed'),
+        'page' => $thisPage
+    ));
 });
 
 $app->run();

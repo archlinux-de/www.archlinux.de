@@ -15,6 +15,7 @@
     },
     "require": {
         "silex/silex": "~1.2",
+        "symfony/twig-bridge": "~2.5",
         "geoip/geoip": "~1.14"
     }
 }

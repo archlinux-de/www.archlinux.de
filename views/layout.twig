@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>{{ sitename }} - {{ page.getTitle }}</title>
+    <meta name="robots" content="{{ page.getMetaRobots }}" />
+    {% for cssfile in page.getCss %}
+        <link rel="stylesheet" media="screen" href="style/{{ cssfile }}.css" />
+    {% endfor %}
+    {% for jsfile in page.getJs %}
+        <script type="text/javascript" src="style/{{ jsfile }}.js"></script>
+    {% endfor %}
+    <link rel="alternate" type="application/atom+xml" title="{{ page.getL10n.getText('Recent news') }}" href="{{ newsfeed }}" />
+    <link rel="alternate" type="application/atom+xml" title="{{ page.getL10n.getText('Recent Arch Linux packages') }}" href="{{ page.createUrl('GetRecentPackages') }}" />
+    <link rel="search" type="application/opensearchdescription+xml" title="{{ page.getL10n.getText('Search for Arch Linux packages') }}" href="{{  page.createUrl('GetOpenSearch') }}" />
+    <link rel="shortcut icon" href="style/favicon.ico" />
+</head>
+<body>
+<div id="archnavbar" class="anb-{{ page.getName | lower }}">
+    <div id="archnavbarlogo"><h1><a href="{{ page.createUrl('Start') }}">Arch Linux</a></h1></div>
+    <div id="archnavbarmenu">
+        <ul id="archnavbarlist">
+            {{ page.getL10n.getTextFile('PageMenu') | raw }}
+        </ul>
+    </div>
+</div>
+<div id="content">
+    {{ page.getBody | raw }}
+    <div id="footer">
+            {{ page.getL10n.getTextFile('PageFooter') | raw }}
+    </div>
+</div>
+</body>
+</html>
