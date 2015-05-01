@@ -114,17 +114,11 @@ class Input
 
     /**
      * @return string
+     * @deprecated
      */
     public static function getClientArchitecture()
     {
-        $userAgent = self::server()->getString('HTTP_USER_AGENT');
-        if (preg_match('/x(86_)?64/', $userAgent)) {
-            return 'x86_64';
-        } elseif (preg_match('/i[3456]86/', $userAgent)) {
-            return 'i686';
-        } else {
-            return '';
-        }
+        return 'x86_64';
     }
 
     /**
