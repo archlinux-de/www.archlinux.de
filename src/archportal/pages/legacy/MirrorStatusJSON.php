@@ -33,6 +33,7 @@ class MirrorStatusJSON extends Page
 
     public function prepare()
     {
+        $this->disallowCaching();
         $mirrors = Database::query('
         SELECT
             mirrors.url,

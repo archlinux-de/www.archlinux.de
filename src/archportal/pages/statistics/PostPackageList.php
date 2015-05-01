@@ -38,6 +38,7 @@ class PostPackageList extends Page
 
     public function prepare()
     {
+        $this->disallowCaching();
         $this->setContentType('text/plain; charset=UTF-8');
         try {
             # Can be rewritten once 2.0 is no longer in use

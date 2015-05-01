@@ -36,6 +36,8 @@ abstract class Output
     private $outputSeparator = '&';
     private $outputSeparatorHtml = '&amp;';
 
+    private $headers = array();
+
     public function __construct()
     {
         $this->outputSeparator = ini_get('arg_separator.output');
@@ -47,6 +49,9 @@ abstract class Output
     {
         header($this->status);
         header('Content-Type: ' . $this->contentType);
+        foreach ($this->headers as $key => $value) {
+            header($key.': '.$value);
+        }
     }
 
     /**
@@ -106,4 +111,11 @@ abstract class Output
         return ($absolute ? Input::getPath() : '') . '?' . implode($separator, $params);
     }
 
+    protected function disallowCaching()
+    {
+        $this->headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'; // HTTP 1.1
+        $this->headers['Pragma'] = 'no-cache'; // HTTP 1.0
+        $this->headers['Expires'] = '0'; // Proxies
+        $this->headers['X-Accel-Expires'] = '0'; // Nginx
+    }
 }
