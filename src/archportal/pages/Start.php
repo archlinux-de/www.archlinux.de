@@ -23,9 +23,7 @@ namespace archportal\pages;
 
 use archportal\lib\Config;
 use archportal\lib\Database;
-use archportal\lib\Input;
 use archportal\lib\Page;
-use archportal\lib\RequestException;
 use PDO;
 
 class Start extends Page
@@ -35,16 +33,7 @@ class Start extends Page
 
     public function prepare()
     {
-        $availableArchitectures = $this->getAvailableArchitectures();
-        try {
-            $clientArch = Input::getClientArchitecture();
-            if (!in_array($clientArch, $availableArchitectures)) {
-                $clientArch = $availableArchitectures[0];
-            }
-        } catch (RequestException $e) {
-            $clientArch = $availableArchitectures[0];
-        }
-        $this->architectureId = $this->getArchitectureId($clientArch);
+        $this->architectureId = $this->getArchitectureId(Config::get('packages', 'default_architecture'));
 
         $this->setTitle($this->l10n->getText('Start'));
 
@@ -95,18 +84,6 @@ class Start extends Page
         </div>
     ';
         $this->setBody($body);
-    }
-
-    private function getAvailableArchitectures()
-    {
-        $uniqueArchitectures = array();
-        foreach (Config::get('packages', 'repositories') as $architectures) {
-            foreach ($architectures as $architecture) {
-                $uniqueArchitectures[$architecture] = 1;
-            }
-        }
-
-        return array_keys($uniqueArchitectures);
     }
 
     private function getArchitectureId($architectureName)

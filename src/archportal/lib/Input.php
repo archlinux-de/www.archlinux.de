@@ -114,15 +114,6 @@ class Input
 
     /**
      * @return string
-     * @deprecated
-     */
-    public static function getClientArchitecture()
-    {
-        return 'x86_64';
-    }
-
-    /**
-     * @return string
      */
     public static function getPath()
     {

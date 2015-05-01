@@ -25,7 +25,6 @@ use archportal\lib\Config;
 use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
-use archportal\lib\RequestException;
 use PDO;
 
 class Packages extends Page
@@ -229,7 +228,7 @@ class Packages extends Page
         $this->page = Input::get()->getInt('p', 1);
 
         $this->repository['name'] = $this->getRequest('repository', $this->getAvailableRepositories(), '');
-        $this->architecture['name'] = $this->getRequest('architecture', $this->getAvailableArchitectures($this->repository['name']), (Input::get()->isRequest('architecture') ? '' : $this->getClientArchitecture())
+        $this->architecture['name'] = $this->getRequest('architecture', $this->getAvailableArchitectures($this->repository['name']), (Input::get()->isRequest('architecture') ? '' : Config::get('packages', 'default_architecture'))
         );
         $this->architecture['id'] = $this->getArchitectureId($this->architecture['name']);
         $this->repository['id'] = $this->getRepositoryId($this->repository['name'], $this->architecture['id']);
@@ -247,21 +246,6 @@ class Packages extends Page
             $searchFields[] = 'file';
         }
         $this->searchField = $this->getRequest('searchfield', $searchFields);
-    }
-
-    private function getClientArchitecture()
-    {
-        $availableArchitectures = $this->getAvailableArchitectures();
-        try {
-            $clientArch = Input::getClientArchitecture();
-            if (!in_array($clientArch, $availableArchitectures)) {
-                $clientArch = $availableArchitectures[0];
-            }
-        } catch (RequestException $e) {
-            $clientArch = $availableArchitectures[0];
-        }
-
-        return $clientArch;
     }
 
     private function getRequest($name, $allowedValues, $default = null)
