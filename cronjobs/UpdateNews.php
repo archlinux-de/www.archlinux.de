@@ -58,10 +58,10 @@ class UpdateNews extends CronJob
                     author_uri = :author_uri,
                     updated = :updated
                 ON DUPLICATE KEY UPDATE
-                    title = :title,
-                    summary = :summary,
-                    author_name = :author_name,
-                    updated = :updated
+                    title = VALUES(title),
+                    summary = VALUES(summary),
+                    author_name = VALUES(author_name),
+                    updated = VALUES(updated)
             ');
             foreach ($newsEntries as $newsEntry) {
                 $stm->bindParam('id', $newsEntry->id, PDO::PARAM_STR);
