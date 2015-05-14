@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -35,6 +35,7 @@ class GetFileFromMirror extends Output
 
     public function prepare()
     {
+        $this->disallowCaching();
         $this->setContentType('text/plain; charset=UTF-8');
         $this->file = Input::get()->getString('file', '');
         if (!preg_match('#^[a-zA-Z0-9\.\-\+_/:]{1,255}$#', $this->file)) {

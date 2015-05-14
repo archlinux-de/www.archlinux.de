@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -38,14 +38,15 @@ Config::set('L10n', 'timezone', 'UTC');
 Config::set('packages', 'mirror', 'http://mirror.de.leaseweb.net/archlinux/');
 Config::set('packages', 'cgit', 'https://projects.archlinux.org/svntogit/');
 Config::set('packages', 'repositories', array(
-    'core' => array('i686', 'x86_64'),
-    'extra' => array('i686', 'x86_64'),
-    'testing' => array('i686', 'x86_64'),
-    'community' => array('i686', 'x86_64'),
-    'community-testing' => array('i686', 'x86_64'),
+    'core' => array('x86_64', 'i686'),
+    'extra' => array('x86_64', 'i686'),
+    'testing' => array('x86_64', 'i686'),
+    'community' => array('x86_64', 'i686'),
+    'community-testing' => array('x86_64', 'i686'),
     'multilib' => array('x86_64'),
     'multilib-testing' => array('x86_64')
 ));
+Config::set('packages', 'default_architecture', Config::get('packages', 'repositories')['core'][0]);
 Config::set('packages', 'files', true);
 Config::set('packages', 'delay', 120);
 

@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -110,21 +110,6 @@ class Input
         }
 
         return self::$countryCode;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getClientArchitecture()
-    {
-        $userAgent = self::server()->getString('HTTP_USER_AGENT');
-        if (preg_match('/x(86_)?64/', $userAgent)) {
-            return 'x86_64';
-        } elseif (preg_match('/i[3456]86/', $userAgent)) {
-            return 'i686';
-        } else {
-            return '';
-        }
     }
 
     /**

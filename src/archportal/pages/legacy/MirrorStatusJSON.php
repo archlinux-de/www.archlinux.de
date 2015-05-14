@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -33,6 +33,7 @@ class MirrorStatusJSON extends Page
 
     public function prepare()
     {
+        $this->disallowCaching();
         $mirrors = Database::query('
         SELECT
             mirrors.url,

@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -54,6 +54,7 @@ class Database
             self::$pdo = new PDO('mysql:dbname=' . Config::get('Database', 'database'), Config::get('Database', 'user'), Config::get('Database', 'password'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
             );
+            self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);
             if (Config::get('common', 'debug')) {
                 self::$pdo->exec('SET sql_mode="STRICT_ALL_TABLES"');
             }

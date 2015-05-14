@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -38,6 +38,7 @@ class PostPackageList extends Page
 
     public function prepare()
     {
+        $this->disallowCaching();
         $this->setContentType('text/plain; charset=UTF-8');
         try {
             # Can be rewritten once 2.0 is no longer in use

@@ -1,7 +1,7 @@
 <?php
 
 /*
-  Copyright 2002-2014 Pierre Schmitz <pierre@archlinux.de>
+  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
   This file is part of archlinux.de.
 
@@ -75,14 +75,8 @@ class FunStatistics extends StatisticsPage
                         'Chromium' => 'chromium',
                         'Konqueror' => 'kdebase-konqueror',
                         'Midori' => 'midori',
-                        'Arora' => 'arora',
                         'Epiphany' => 'epiphany',
-                        'Rekonq' => 'rekonq',
-                        'Uzbl' => 'uzbl-core',
-                        'Netsurf' => 'netsurf',
-                        'Dillo' => 'dillo',
-                        'Opera' => 'opera',
-                        'luakit' => 'luakit'
+                        'Opera' => 'opera'
                     )) . '
                 <tr>
                     <th colspan="2" class="packagedetailshead">Editors</th>
@@ -98,29 +92,24 @@ class FunStatistics extends StatisticsPage
                         ),
                         'Nano' => 'nano',
                         'Gedit' => 'gedit',
-                        'Kate' => 'kdesdk-kate',
-                        'Kwrite' => 'kdebase-kwrite',
-                        'Jedit' => 'jedit',
-                        'Ne' => 'ne',
-                        'Jed' => 'jed',
-                        'Medit' => 'medit',
+                        'Kate' => array('kdesdk-kate', 'kate'),
+                        'Kwrite' => array('kdebase-kwrite', 'kwrite'),
                         'Vi' => 'vi',
                         'Mousepad' => 'mousepad',
-                        'Nedit' => 'nedit',
-                        'Joe' => 'joe',
                         'Leafpad' => 'leafpad',
-                        'Geany' => 'geany'
+                        'Geany' => 'geany',
+                        'Pluma' => 'pluma'
                     )) . '
                     <th colspan="2" class="packagedetailshead">Desktop Environments</th>
                 </tr>
                     ' . self::getPackageStatistics($total, $stm, array(
-                        'KDE SC' => 'kdebase-workspace',
-                        'GNOME' => 'gnome-session',
+                        'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
+                        'GNOME' => 'gnome-shell',
                         'LXDE' => 'lxde-common',
                         'Xfce' => 'xfdesktop',
-                        'Enlightenment' => 'enlightenment',
-                        'MATE' => 'mate-desktop',
-                        'Cinnamon' => 'cinnamon-desktop'
+                        'Enlightenment' => array('enlightenment', 'enlightenment16'),
+                        'MATE' => 'mate-panel',
+                        'Cinnamon' => 'cinnamon'
                     )) . '
                     <th colspan="2" class="packagedetailshead">File Managers</th>
                 </tr>
@@ -129,10 +118,9 @@ class FunStatistics extends StatisticsPage
                         'Konqueror' => 'kdebase-konqueror',
                         'MC' => 'mc',
                         'Nautilus' => 'nautilus',
-                        'Gnome-Commander' => 'gnome-commander',
-                        'Krusader' => 'krusader',
                         'Pcmanfm' => 'pcmanfm',
-                        'Thunar' => 'thunar'
+                        'Thunar' => 'thunar',
+                        'Caja' => 'caja'
                     )) . '
                     <th colspan="2" class="packagedetailshead">Window Managers</th>
                 </tr>
@@ -140,13 +128,6 @@ class FunStatistics extends StatisticsPage
                         'Openbox' => 'openbox',
                         'Fluxbox' => 'fluxbox',
                         'I3' => 'i3-wm',
-                        'Compiz' => 'compiz-core',
-                        'FVWM' => 'fvwm',
-                        'Ratpoison' => 'ratpoison',
-                        'Wmii' => 'wmii',
-                        'Xmonad' => 'xmonad',
-                        'Window Maker' => 'windowmaker',
-                        'subtle' => 'subtle',
                         'awesome' => 'awesome'
                     )) . '
                     <th colspan="2" class="packagedetailshead">Media Players</th>
@@ -163,8 +144,7 @@ class FunStatistics extends StatisticsPage
                         'Dash' => 'dash',
                         'Zsh' => 'zsh',
                         'Fish' => 'fish',
-                        'Tcsh' => 'tcsh',
-                        'Pdksh' => 'pdksh'
+                        'Tcsh' => 'tcsh'
                     )) . '
                     <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
                 </tr>
