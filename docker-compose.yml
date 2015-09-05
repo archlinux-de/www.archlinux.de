@@ -1,0 +1,17 @@
+app:
+  build: .
+  command: php -S 0.0.0.0:8080 -t /app/web
+  user: www-data
+  links:
+    - db
+  ports:
+    - "80:8080"
+  volumes:
+    - .:/app:ro
+    - ./config/DockerConfig.php:/app/config/LocalConfig.php:ro
+
+db:
+  image: mariadb:10.0
+  environment:
+    MYSQL_ROOT_PASSWORD: "pw"
+    MYSQL_DATABASE: "archportal"
