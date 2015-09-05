@@ -51,7 +51,7 @@ class Database
     public static function __callStatic($name, $args)
     {
         if (is_null(self::$pdo)) {
-            self::$pdo = new PDO('mysql:dbname=' . Config::get('Database', 'database'), Config::get('Database', 'user'), Config::get('Database', 'password'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
+            self::$pdo = new PDO('mysql:'.(Config::has('Database', 'host') ? 'host='.Config::get('Database', 'host').';' : '').'dbname=' . Config::get('Database', 'database'), Config::get('Database', 'user'), Config::get('Database', 'password'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
             );
             self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);

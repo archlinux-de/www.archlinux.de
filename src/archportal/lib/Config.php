@@ -57,6 +57,15 @@ class Config
         }
     }
 
+    /**
+     * @param string $section
+     * @param string $key
+     * @return bool
+     */
+    public static function has($section, $key)
+    {
+        return isset(self::$config[$section][$key]);
+    }
 }
 
 require (__DIR__ . '/../../../config/DefaultConfig.php');
