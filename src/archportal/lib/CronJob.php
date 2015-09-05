@@ -43,6 +43,8 @@ abstract class CronJob
     public function __construct()
     {
         ini_set('max_execution_time', 0);
+        ini_set('memory_limit', -1);
+
         if (count(getopt('q', array('quiet'))) > 0) {
             $this->quiet = true;
         }

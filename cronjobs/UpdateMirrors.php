@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
