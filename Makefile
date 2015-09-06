@@ -1,30 +1,34 @@
-.DEFAULT: init
-.PHONY: init start stop status restart clean
+.PHONY: init start stop clean container
 
-init: .composer-install start
-	@docker-compose run --rm app /app/config/ImportSchema.php
-	@docker-compose run --rm app /app/config/UpdateCountries.php
-	@docker-compose run --rm app /app/cronjobs/UpdateMirrors.php
-	@docker-compose run --rm app /app/cronjobs/UpdateNews.php
-	@docker-compose run --rm app /app/cronjobs/UpdateReleases.php
-	@docker-compose run --rm app /app/cronjobs/UpdatePackages.php
-	@docker-compose run --rm app /app/cronjobs/UpdatePkgstats.php
+APP-RUN=docker-compose run --rm -u $$(id -u) app
 
-start:
+all: vendor
+
+init: start
+	@${APP-RUN} /app/config/ImportSchema.php
+	@${APP-RUN} /app/config/UpdateCountries.php
+	@${APP-RUN} /app/cronjobs/UpdateMirrors.php
+	@${APP-RUN} /app/cronjobs/UpdateNews.php
+	@${APP-RUN} /app/cronjobs/UpdateReleases.php
+	@${APP-RUN} /app/cronjobs/UpdatePackages.php
+	@${APP-RUN} /app/cronjobs/UpdatePkgstats.php
+
+start: vendor
 	@docker-compose up -d
-	@docker-compose run --rm app mysqladmin -hdb -uroot -ppw --wait=10 ping
+	@${APP-RUN} mysqladmin -hdb -uroot -ppw --wait=10 ping
 
 stop:
 	@docker-compose stop
 
-status:
-	@docker-compose ps
-
-restart: stop start
-
 clean: stop
 	@docker-compose rm -f
-	@rm -rf vendor
+	@git clean -fdqx
 
-.composer-install:
-	@docker run --rm -it -v $$(pwd):/app -u $$(id -u) composer/composer install
+container: clean
+	@docker-compose build
+
+composer.lock: composer.json
+	@${APP-RUN} composer update -o nothing
+
+vendor: composer.lock
+	@${APP-RUN} composer install -o
