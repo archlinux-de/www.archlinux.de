@@ -1,8 +1,8 @@
-.PHONY: init start stop clean container
+.PHONY: all init start stop restart clean rebuild
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 
-all: vendor
+all: init
 
 init: start
 	@${APP-RUN} /app/config/ImportSchema.php
@@ -20,12 +20,17 @@ start: vendor
 stop:
 	@docker-compose stop
 
+restart:
+	@${MAKE} stop
+	@${MAKE} start
+
 clean: stop
 	@docker-compose rm -f
 	@git clean -fdqx
 
-container: clean
+rebuild: clean
 	@docker-compose build
+	@${MAKE}
 
 composer.lock: composer.json
 	@${APP-RUN} composer update -o nothing
