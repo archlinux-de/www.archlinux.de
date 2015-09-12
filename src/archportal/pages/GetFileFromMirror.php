@@ -117,12 +117,18 @@ class GetFileFromMirror extends Output
         return array_keys($uniqueArchitectures);
     }
 
+    private function getClientId()
+    {
+        return crc32(Input::getClientIP());
+    }
+
     private function getMirror($lastsync)
     {
         $countryCode = Input::getClientCountryCode();
         if (empty($countryCode)) {
             $countryCode = Config::get('mirrors', 'country');
         }
+        $clientId = $this->getClientId();
         $stm = Database::prepare('
             SELECT
                 url
@@ -132,10 +138,11 @@ class GetFileFromMirror extends Output
                 lastsync > :lastsync
                 AND countryCode = :countryCode
                 AND protocol IN ("http", "htttps")
-            ORDER BY RAND() LIMIT 1
+            ORDER BY RAND(:clientId) LIMIT 1
             ');
         $stm->bindParam('lastsync', $lastsync, PDO::PARAM_INT);
         $stm->bindParam('countryCode', $countryCode, PDO::PARAM_STR);
+        $stm->bindParam('clientId', $clientId, PDO::PARAM_INT);
         $stm->execute();
         if ($stm->rowCount() == 0) {
             // Let's see if any mirror is recent enough
@@ -147,9 +154,10 @@ class GetFileFromMirror extends Output
                 WHERE
                     lastsync > :lastsync
                     AND protocol IN ("http", "htttps")
-                ORDER BY RAND() LIMIT 1
+                ORDER BY RAND(:clientId) LIMIT 1
                 ');
             $stm->bindParam('lastsync', $lastsync, PDO::PARAM_INT);
+            $stm->bindParam('clientId', $clientId, PDO::PARAM_INT);
             $stm->execute();
             if ($stm->rowCount() == 0) {
                 $this->setStatus(Output::NOT_FOUND);
