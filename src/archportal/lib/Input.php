@@ -98,15 +98,17 @@ class Input
             $isIPv6 = strpos($ip, ':') !== false;
             $dbFile = '/usr/share/GeoIP/GeoIP' . ($isIPv6 ? 'v6' : '') . '.dat';
 
-            $geoIp = geoip_open($dbFile, GEOIP_STANDARD);
-            if ($isIPv6) {
-                $countryCode = geoip_country_code_by_addr_v6($geoIp, $ip) ? : '';
-            } else {
-                $countryCode = geoip_country_code_by_addr($geoIp, $ip) ? : '';
-            }
-            geoip_close($geoIp);
+            if (file_exists($dbFile)) {
+                $geoIp = geoip_open($dbFile, GEOIP_STANDARD);
+                if ($isIPv6) {
+                    $countryCode = geoip_country_code_by_addr_v6($geoIp, $ip) ?: '';
+                } else {
+                    $countryCode = geoip_country_code_by_addr($geoIp, $ip) ?: '';
+                }
+                geoip_close($geoIp);
 
-            self::$countryCode = $countryCode;
+                self::$countryCode = $countryCode;
+            }
         }
 
         return self::$countryCode;
