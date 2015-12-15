@@ -27,7 +27,10 @@ use Exception;
 class Exceptions
 {
 
-    public static function ExceptionHandler(\Exception $e)
+    /**
+     * @param \Throwable $e
+     */
+    public static function ExceptionHandler($e)
     {
         try {
             $errorType = array(
