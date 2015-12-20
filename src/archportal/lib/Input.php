@@ -22,12 +22,12 @@
 namespace archportal\lib;
 
 /**
- * @method static Request get
- * @method static Request post
- * @method static Request cookie
- * @method static Request request
- * @method static Request server
- * @method static Request env
+ * @method static Request get()
+ * @method static Request post()
+ * @method static Request cookie()
+ * @method static Request request()
+ * @method static Request server()
+ * @method static Request env()
  */
 class Input
 {
