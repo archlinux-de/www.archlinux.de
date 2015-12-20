@@ -50,7 +50,7 @@ class RepositoryStatistics extends StatisticsPage
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
-                    <th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">Repositories</h1></th>
+                    <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Repositories</h1></th>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Overview</th>
@@ -238,7 +238,7 @@ class RepositoryStatistics extends StatisticsPage
             $data = $stm->fetch();
             $list.= '<tr>
                 <th>' . $repo . '</th>
-                <td style="padding:0px;margin:0px;">
+                <td style="padding:0;margin:0;">
                     <div style="overflow:auto; max-height: 800px;">
                     <table class="pretty-table" style="border:none;">
                     <tr>
