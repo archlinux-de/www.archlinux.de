@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
     "hash": "adcf8b3c22ed12c969c168aa4e97ca86",
+    "content-hash": "170b6d230ce20b0dc137d2632e33dc7a",
     "packages": [
         {
             "name": "geoip/geoip",
