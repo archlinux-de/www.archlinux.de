@@ -49,7 +49,10 @@ class UpdateReleases extends CronJob
         }
     }
 
-    private function updateRelengReleases($releases)
+    /**
+     * @param array $releases
+     */
+    private function updateRelengReleases(array $releases)
     {
         try {
             Database::beginTransaction();
@@ -90,15 +93,29 @@ class UpdateReleases extends CronJob
                 $stm->bindParam('release_date', $release['release_date'], PDO::PARAM_STR);
                 $stm->bindParam('torrent_url', $release['torrent_url'], PDO::PARAM_STR);
                 $stm->bindParam('sha1_sum', $release['sha1_sum'], PDO::PARAM_STR);
-                $stm->bindValue('torrent_comment', isset($release['torrent']['comment']) ? $release['torrent']['comment'] : null, PDO::PARAM_STR);
-                $stm->bindValue('torrent_info_hash', isset($release['torrent']['info_hash']) ? $release['torrent']['info_hash'] : null, PDO::PARAM_STR);
-                $stm->bindValue('torrent_piece_length', isset($release['torrent']['piece_length']) ? $release['torrent']['piece_length'] : null, PDO::PARAM_INT);
-                $stm->bindValue('torrent_file_name', isset($release['torrent']['file_name']) ? $release['torrent']['file_name'] : null, PDO::PARAM_STR);
-                $stm->bindValue('torrent_announce', isset($release['torrent']['announce']) ? $release['torrent']['announce'] : null, PDO::PARAM_STR);
-                $stm->bindValue('torrent_file_length', isset($release['torrent']['file_length']) ? $release['torrent']['file_length'] : null, PDO::PARAM_INT);
-                $stm->bindValue('torrent_piece_count', isset($release['torrent']['piece_count']) ? $release['torrent']['piece_count'] : null, PDO::PARAM_INT);
-                $stm->bindValue('torrent_created_by', isset($release['torrent']['created_by']) ? $release['torrent']['created_by'] : null, PDO::PARAM_STR);
-                $stm->bindValue('torrent_creation_date', isset($release['torrent']['creation_date']) ? $this->getTimestamp($release['torrent']['creation_date']) : null, PDO::PARAM_INT);
+                $stm->bindValue('torrent_comment',
+                    isset($release['torrent']['comment']) ? $release['torrent']['comment'] : null, PDO::PARAM_STR);
+                $stm->bindValue('torrent_info_hash',
+                    isset($release['torrent']['info_hash']) ? $release['torrent']['info_hash'] : null, PDO::PARAM_STR);
+                $stm->bindValue('torrent_piece_length',
+                    isset($release['torrent']['piece_length']) ? $release['torrent']['piece_length'] : null,
+                    PDO::PARAM_INT);
+                $stm->bindValue('torrent_file_name',
+                    isset($release['torrent']['file_name']) ? $release['torrent']['file_name'] : null, PDO::PARAM_STR);
+                $stm->bindValue('torrent_announce',
+                    isset($release['torrent']['announce']) ? $release['torrent']['announce'] : null, PDO::PARAM_STR);
+                $stm->bindValue('torrent_file_length',
+                    isset($release['torrent']['file_length']) ? $release['torrent']['file_length'] : null,
+                    PDO::PARAM_INT);
+                $stm->bindValue('torrent_piece_count',
+                    isset($release['torrent']['piece_count']) ? $release['torrent']['piece_count'] : null,
+                    PDO::PARAM_INT);
+                $stm->bindValue('torrent_created_by',
+                    isset($release['torrent']['created_by']) ? $release['torrent']['created_by'] : null,
+                    PDO::PARAM_STR);
+                $stm->bindValue('torrent_creation_date',
+                    isset($release['torrent']['creation_date']) ? $this->getTimestamp($release['torrent']['creation_date']) : null,
+                    PDO::PARAM_INT);
                 $stm->bindParam('magnet_uri', $release['magnet_uri'], PDO::PARAM_STR);
                 $stm->execute();
             }
@@ -109,6 +126,10 @@ class UpdateReleases extends CronJob
         }
     }
 
+    /**
+     * @param string|null $data
+     * @return int|null
+     */
     private function getTimestamp($data)
     {
         if (is_null($data)) {
@@ -118,7 +139,10 @@ class UpdateReleases extends CronJob
         }
     }
 
-    private function getRelengReleases()
+    /**
+     * @return mixed
+     */
+    private function getRelengReleases(): array
     {
         $download = new Download(Config::get('releng', 'releases'));
 
@@ -133,7 +157,6 @@ class UpdateReleases extends CronJob
 
         return $releng;
     }
-
 }
 
 UpdateReleases::run();

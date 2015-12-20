@@ -26,9 +26,11 @@ use RuntimeException;
 class RequestException extends RuntimeException
 {
 
-    public function __construct($message)
+    /**
+     * @param string $message
+     */
+    public function __construct(string $message)
     {
         parent::__construct('Parameter "' . $message . '" could not be read');
     }
-
 }

@@ -43,5 +43,4 @@ class Statistics extends Page
         ';
         $this->setBody($body);
     }
-
 }

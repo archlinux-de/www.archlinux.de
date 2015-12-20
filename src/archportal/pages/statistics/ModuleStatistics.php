@@ -89,7 +89,10 @@ class ModuleStatistics extends StatisticsPage
         }
     }
 
-    private static function getCommonModuleUsageStatistics()
+    /**
+     * @return array
+     */
+    private static function getCommonModuleUsageStatistics(): array
     {
         return Database::query('
         SELECT
@@ -105,7 +108,10 @@ class ModuleStatistics extends StatisticsPage
         ')->fetch();
     }
 
-    private static function getPopularModules()
+    /**
+     * @return string
+     */
+    private static function getPopularModules(): string
     {
         $total = Database::query('
             SELECT
@@ -134,11 +140,11 @@ class ModuleStatistics extends StatisticsPage
         ');
         $list = '<tr><td colspan="2"><div><table class="pretty-table" style="border:none;">';
         foreach ($modules as $module) {
-            $list.= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' . self::getBar($module['count'], $total) . '</td></tr>';
+            $list .= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' . self::getBar($module['count'],
+                    $total) . '</td></tr>';
         }
-        $list.= '</table></div></td></tr>';
+        $list .= '</table></div></td></tr>';
 
         return $list;
     }
-
 }

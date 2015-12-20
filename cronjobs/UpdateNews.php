@@ -42,7 +42,7 @@ class UpdateNews extends CronJob
         }
     }
 
-    private function updateNewsEntries(SimpleXMLElement $newsEntries)
+    private function updateNewsEntries(\SimpleXMLElement $newsEntries)
     {
         try {
             Database::beginTransaction();
@@ -83,14 +83,13 @@ class UpdateNews extends CronJob
     /**
      * @return \SimpleXMLElement
      */
-    private function getNewsEntries()
+    private function getNewsEntries(): \SimpleXMLElement
     {
         $download = new Download(Config::get('news', 'feed'));
         $feed = new SimpleXMLElement($download->getFile(), 0, true);
 
         return $feed->entry;
     }
-
 }
 
 UpdateNews::run();

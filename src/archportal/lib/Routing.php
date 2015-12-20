@@ -24,6 +24,7 @@ namespace archportal\lib;
 class Routing
 {
 
+    /** @var array */
     private static $pages = array(
         'GetFileFromMirror' => 'pages\GetFileFromMirror',
         'GetOpenSearch' => 'pages\GetOpenSearch',
@@ -37,6 +38,7 @@ class Routing
         'PackagesSuggest' => 'pages\PackagesSuggest',
         'Start' => 'pages\Start'
     );
+    /** @var array */
     private static $statisticsPages = array(
         'FunStatistics' => 'pages\statistics\FunStatistics',
         'ModuleStatistics' => 'pages\statistics\ModuleStatistics',
@@ -46,6 +48,7 @@ class Routing
         'Statistics' => 'pages\statistics\Statistics',
         'UserStatistics' => 'pages\statistics\UserStatistics'
     );
+    /** @var array */
     private static $legacyPages = array(
         'ArchitectureDifferences' => 'pages\legacy\ArchitectureDifferences',
         'MirrorProblems' => 'pages\legacy\MirrorProblems',
@@ -57,7 +60,7 @@ class Routing
      * @param string $page
      * @return string
      */
-    public static function getPageClass($page)
+    public static function getPageClass(string $page): string
     {
         if (Config::get('common', 'statistics')) {
             self::$pages = array_merge(self::$pages, self::$statisticsPages);
@@ -74,5 +77,4 @@ class Routing
 
         return 'archportal\\' . $class;
     }
-
 }

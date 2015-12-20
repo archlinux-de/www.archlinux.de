@@ -38,7 +38,7 @@ class Config
      * @param string $key
      * @param mixed $value
      */
-    public static function set($section, $key, $value)
+    public static function set(string $section, string $key, $value)
     {
         self::$config[$section][$key] = $value;
     }
@@ -48,7 +48,7 @@ class Config
      * @param string $key
      * @return mixed
      */
-    public static function get($section, $key)
+    public static function get(string $section, string $key)
     {
         if (isset(self::$config[$section][$key])) {
             return self::$config[$section][$key];
@@ -59,8 +59,8 @@ class Config
 
 }
 
-require (__DIR__ . '/../../../config/DefaultConfig.php');
+require(__DIR__ . '/../../../config/DefaultConfig.php');
 
 if (file_exists(__DIR__ . '/../../../config/LocalConfig.php')) {
-    include (__DIR__ . '/../../../config/LocalConfig.php');
+    include(__DIR__ . '/../../../config/LocalConfig.php');
 }

@@ -106,7 +106,10 @@ class PackageStatistics extends StatisticsPage
         }
     }
 
-    private static function getCommonPackageUsageStatistics()
+    /**
+     * @return array
+     */
+    private static function getCommonPackageUsageStatistics(): array
     {
         return Database::query('
         SELECT
@@ -122,7 +125,10 @@ class PackageStatistics extends StatisticsPage
         ')->fetch();
     }
 
-    private static function getSubmissionsPerArchitecture()
+    /**
+     * @return string
+     */
+    private static function getSubmissionsPerArchitecture(): string
     {
         $total = Database::query('
         SELECT
@@ -147,13 +153,16 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getSubmissionsPerCpuArchitecture()
+    /**
+     * @return string
+     */
+    private static function getSubmissionsPerCpuArchitecture(): string
     {
         $total = Database::query('
         SELECT
@@ -180,13 +189,16 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getPackagesPerRepository()
+    /**
+     * @return string
+     */
+    private static function getPackagesPerRepository(): string
     {
         $repos = Database::query('
             SELECT DISTINCT
@@ -269,7 +281,10 @@ class PackageStatistics extends StatisticsPage
         return $result;
     }
 
-    private static function getPopularPackagesPerRepository()
+    /**
+     * @return string
+     */
+    private static function getPopularPackagesPerRepository(): string
     {
         $repos = Database::query('
             SELECT DISTINCT
@@ -323,19 +338,23 @@ class PackageStatistics extends StatisticsPage
             $packages->bindParam('repositoryName', $repo, PDO::PARAM_STR);
             $packages->execute();
             if ($currentRepo != $repo) {
-                $list.= '<tr><th>' . $repo . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
+                $list .= '<tr><th>' . $repo . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
             }
             foreach ($packages as $package) {
-                $list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
+                $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'],
+                        $total) . '</td></tr>';
             }
-            $list.= '</table></div></td></tr>';
+            $list .= '</table></div></td></tr>';
             $currentRepo = $repo;
         }
 
         return $list;
     }
 
-    private static function getPopularUnofficialPackages()
+    /**
+     * @return string
+     */
+    private static function getPopularUnofficialPackages(): string
     {
         $total = Database::query('
             SELECT
@@ -364,11 +383,11 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
         foreach ($packages as $package) {
-            $list.= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'], $total) . '</td></tr>';
+            $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar($package['count'],
+                    $total) . '</td></tr>';
         }
-        $list.= '</table></div></td></tr>';
+        $list .= '</table></div></td></tr>';
 
         return $list;
     }
-
 }

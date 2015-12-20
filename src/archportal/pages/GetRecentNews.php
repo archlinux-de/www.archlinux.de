@@ -27,6 +27,7 @@ use archportal\lib\Page;
 class GetRecentNews extends Page
 {
 
+    /** @var string */
     private $url = '';
 
     public function prepare()
@@ -38,5 +39,4 @@ class GetRecentNews extends Page
     {
         $this->redirectToUrl($this->url);
     }
-
 }

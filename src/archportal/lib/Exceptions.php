@@ -21,16 +21,13 @@
 
 namespace archportal\lib;
 
-use ErrorException;
-use Exception;
-
 class Exceptions
 {
 
     /**
      * @param \Throwable $e
      */
-    public static function ExceptionHandler($e)
+    public static function ExceptionHandler(\Throwable $e)
     {
         try {
             $errorType = array(
@@ -56,27 +53,31 @@ class Exceptions
                 header('text/html; charset=UTF-8');
             }
             if (php_sapi_name() == 'cli') {
-                require (__DIR__ . '/../templates/ExceptionCliTemplate.php');
+                require(__DIR__ . '/../templates/ExceptionCliTemplate.php');
             } elseif (Config::get('common', 'debug')) {
-                require (__DIR__ . '/../templates/ExceptionDebugTemplate.php');
+                require(__DIR__ . '/../templates/ExceptionDebugTemplate.php');
             } else {
                 ob_start();
-                require (__DIR__ . '/../templates/ExceptionLogTemplate.php');
+                require(__DIR__ . '/../templates/ExceptionLogTemplate.php');
                 self::sendLog(ob_get_contents());
                 ob_end_clean();
                 $l10n = new L10n();
-                require (__DIR__ . '/../templates/ExceptionTemplate.php');
+                require(__DIR__ . '/../templates/ExceptionTemplate.php');
             }
-        } catch (Exception $d) {
+        } catch (\Exception $d) {
             echo $d->getMessage(), "<br />\n", $e->getMessage();
         }
         die();
     }
 
-    private static function sendLog($log)
+    /**
+     * @param string $log
+     */
+    private static function sendLog(string $log)
     {
         mail(
-                Config::get('common', 'email'), Config::get('common', 'sitename') . ': Exception', utf8_decode($log), 'From: ' . Config::get('common', 'email')
+            Config::get('common', 'email'), Config::get('common', 'sitename') . ': Exception', utf8_decode($log),
+            'From: ' . Config::get('common', 'email')
         );
     }
 
@@ -85,7 +86,6 @@ class Exceptions
         if (!(error_reporting() & $errno)) {
             return false;
         }
-        throw new ErrorException($errstr, $errno, \E_WARNING, $errfile, $errline);
+        throw new \ErrorException($errstr, $errno, \E_WARNING, $errfile, $errline);
     }
-
 }

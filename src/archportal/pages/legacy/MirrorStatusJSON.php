@@ -29,6 +29,7 @@ use PDO;
 class MirrorStatusJSON extends Page
 {
 
+    /** @var string */
     private $json = '';
 
     public function prepare()
@@ -57,14 +58,17 @@ class MirrorStatusJSON extends Page
                 'url' => $mirror['url'],
                 'location' => $mirror['country'],
                 'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
-                'average delay' => $mirror['delay'] ? : '',
-                'average performance' => $mirror['durationAvg'] ? : ''
+                'average delay' => $mirror['delay'] ?: '',
+                'average performance' => $mirror['durationAvg'] ?: ''
             );
         }
         $this->json = json_encode($json);
     }
 
-    private function getClientCountryName()
+    /**
+     * @return string
+     */
+    private function getClientCountryName(): string
     {
         $countryName = Database::prepare('
             SELECT
@@ -88,5 +92,4 @@ class MirrorStatusJSON extends Page
         $this->setContentType('application/json; charset=UTF-8');
         echo $this->json;
     }
-
 }

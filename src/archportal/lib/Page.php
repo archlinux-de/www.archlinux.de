@@ -24,11 +24,17 @@ namespace archportal\lib;
 abstract class Page extends Output
 {
 
+    /** @var string */
     private $title = '';
+    /** @var string */
     private $body = '';
+    /** @var string */
     private $metaRobots = 'index,follow';
+    /** @var array */
     private $cssFiles = array('arch', 'archnavbar');
+    /** @var array */
     private $jsFiles = array();
+    /** @var L10n|null */
     protected $l10n = null;
 
     public function __construct()
@@ -40,7 +46,7 @@ abstract class Page extends Output
     /**
      * @param string $title
      */
-    protected function setTitle($title)
+    protected function setTitle(string $title)
     {
         $this->title = $title;
     }
@@ -48,7 +54,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getTitle()
+    protected function getTitle(): string
     {
         return $this->title;
     }
@@ -56,7 +62,7 @@ abstract class Page extends Output
     /**
      * @param string $body
      */
-    protected function setBody($body)
+    protected function setBody(string $body)
     {
         $this->body = $body;
     }
@@ -64,7 +70,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getBody()
+    protected function getBody(): string
     {
         return $this->body;
     }
@@ -72,7 +78,7 @@ abstract class Page extends Output
     /**
      * @param string $metaRobots
      */
-    protected function setMetaRobots($metaRobots)
+    protected function setMetaRobots(string $metaRobots)
     {
         $this->metaRobots = $metaRobots;
     }
@@ -80,7 +86,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getMetaRobots()
+    protected function getMetaRobots(): string
     {
         return $this->metaRobots;
     }
@@ -88,7 +94,7 @@ abstract class Page extends Output
     /**
      * @param string $name
      */
-    protected function addCSS($name)
+    protected function addCSS(string $name)
     {
         $this->cssFiles[] = $name;
     }
@@ -96,7 +102,7 @@ abstract class Page extends Output
     /**
      * @return array
      */
-    protected function getCSS()
+    protected function getCSS():array
     {
         return $this->cssFiles;
     }
@@ -104,7 +110,7 @@ abstract class Page extends Output
     /**
      * @param string $name
      */
-    protected function addJS($name)
+    protected function addJS(string $name)
     {
         $this->jsFiles[] = $name;
     }
@@ -112,7 +118,7 @@ abstract class Page extends Output
     /**
      * @return array
      */
-    protected function getJS()
+    protected function getJS(): array
     {
         return $this->jsFiles;
     }
@@ -120,7 +126,7 @@ abstract class Page extends Output
     /**
      * @return string
      */
-    protected function getName()
+    protected function getName(): string
     {
         return get_class($this);
     }
@@ -128,12 +134,12 @@ abstract class Page extends Output
     /**
      * @param string $text
      */
-    protected function showFailure($text)
+    protected function showFailure(string $text)
     {
         $this->setMetaRobots('noindex,nofollow');
         $this->setTitle($this->l10n->getText('Error'));
         $this->setBody('<div id="warning">' . $text . '</div>');
-        require (__DIR__ . '/../templates/PageTemplate.php');
+        require(__DIR__ . '/../templates/PageTemplate.php');
         exit();
     }
 
@@ -148,18 +154,18 @@ abstract class Page extends Output
      * @param int $length
      * @return string
      */
-    protected function cutString($string, $length)
+    protected function cutString(string $string, int $length): string
     {
         // Verhindere das Abschneiden im Entity
         $string = htmlspecialchars_decode(trim($string));
-        $string = (mb_strlen($string, 'UTF-8') > $length ? mb_substr($string, 0, ($length - 3), 'UTF-8') . '...' : $string);
+        $string = (mb_strlen($string, 'UTF-8') > $length ? mb_substr($string, 0, ($length - 3),
+                'UTF-8') . '...' : $string);
 
         return htmlspecialchars($string);
     }
 
     public function printPage()
     {
-        require (__DIR__ . '/../templates/PageTemplate.php');
+        require(__DIR__ . '/../templates/PageTemplate.php');
     }
-
 }

@@ -28,7 +28,9 @@ use archportal\lib\Page;
 class MirrorStatusReflector extends Page
 {
 
+    /** @var int */
     private $range = 604800; // 1 week
+    /** @var string */
     private $text = '';
 
     public function prepare()
@@ -55,5 +57,4 @@ class MirrorStatusReflector extends Page
         $this->setContentType('text/plain; charset=UTF-8');
         echo $this->text;
     }
-
 }

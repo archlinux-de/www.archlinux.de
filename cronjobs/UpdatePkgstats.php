@@ -36,19 +36,18 @@ class UpdatePkgstats extends CronJob
     {
         if (Config::get('common', 'statistics')) {
             foreach (array(
-        'RepositoryStatistics',
-        'PackageStatistics',
-        'ModuleStatistics',
-        'UserStatistics',
-        'FunStatistics'
-            ) as $page) {
+                         'RepositoryStatistics',
+                         'PackageStatistics',
+                         'ModuleStatistics',
+                         'UserStatistics',
+                         'FunStatistics'
+                     ) as $page) {
                 /** @var StatisticsPage $pageClass */
                 $pageClass = Routing::getPageClass($page);
                 $pageClass::updateDatabaseCache();
             }
         }
     }
-
 }
 
 UpdatePkgstats::run();

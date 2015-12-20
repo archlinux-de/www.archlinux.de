@@ -29,6 +29,7 @@ use PDO;
 class Start extends Page
 {
 
+    /** @var int */
     private $architectureId = 0;
 
     public function prepare()
@@ -67,7 +68,8 @@ class Start extends Page
                     <script>
                         $(function () {
                             $("#searchfield").autocomplete({
-                                source: "' . $this->createUrl('PackagesSuggest', array('architecture' => $this->architectureId)) . '",
+                                source: "' . $this->createUrl('PackagesSuggest',
+                array('architecture' => $this->architectureId)) . '",
                                 minLength: 2,
                                 delay: 100
                             });
@@ -86,7 +88,11 @@ class Start extends Page
         $this->setBody($body);
     }
 
-    private function getArchitectureId($architectureName)
+    /**
+     * @param string $architectureName
+     * @return int
+     */
+    private function getArchitectureId(string $architectureName): int
     {
         $stm = Database::prepare('
             SELECT
@@ -102,9 +108,14 @@ class Start extends Page
         return $stm->fetchColumn();
     }
 
-    private function getNews()
+    /**
+     * @return string
+     */
+    private function getNews(): string
     {
-        $result = '<h3>' . $this->l10n->getText('Recent news') . ' <span class="more">(<a href="' . htmlspecialchars(Config::get('news', 'archive')) . '">mehr</a>)</span></h3><a href="' . htmlspecialchars(Config::get('news', 'feed')) . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
+        $result = '<h3>' . $this->l10n->getText('Recent news') . ' <span class="more">(<a href="' . htmlspecialchars(Config::get('news',
+                'archive')) . '">mehr</a>)</span></h3><a href="' . htmlspecialchars(Config::get('news',
+                'feed')) . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 
         $newsFeed = Database::query('
             SELECT
@@ -119,7 +130,7 @@ class Start extends Page
             LIMIT 6
             ');
         foreach ($newsFeed as $entry) {
-            $result.= '
+            $result .= '
             <h4><a href="' . htmlspecialchars($entry['link']) . '">' . $entry['title'] . '</a></h4>
             <p class="date">' . $this->l10n->getDate($entry['updated']) . '</p>
             ' . $entry['summary'] . '
@@ -129,7 +140,10 @@ class Start extends Page
         return $result;
     }
 
-    private function getRecentPackages()
+    /**
+     * @return string
+     */
+    private function getRecentPackages(): string
     {
         $packages = Database::prepare('
         SELECT
@@ -155,9 +169,13 @@ class Start extends Page
         $packages->execute();
         $result = '<h3>' . $this->l10n->getText('Recent packages') . ' <span class="more">(<a href="' . $this->createUrl('Packages') . '">mehr</a>)</span></h3><a href="' . $this->createUrl('GetRecentPackages') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
         foreach ($packages as $package) {
-            $result.= '
-            <tr' . ( $package['testing'] == 1 ? ' class="testing"' : '') . '>
-                <td class="pkgname"><a href="' . $this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $package['architecture'], 'pkgname' => $package['name'])) . '">' . $package['name'] . '</a></td>
+            $result .= '
+            <tr' . ($package['testing'] == 1 ? ' class="testing"' : '') . '>
+                <td class="pkgname"><a href="' . $this->createUrl('PackageDetails', array(
+                    'repo' => $package['repository'],
+                    'arch' => $package['architecture'],
+                    'pkgname' => $package['name']
+                )) . '">' . $package['name'] . '</a></td>
                 <td class="pkgver">' . $package['version'] . '</td>
             </tr>
             ';
@@ -165,5 +183,4 @@ class Start extends Page
 
         return $result . '</table>';
     }
-
 }

@@ -30,7 +30,9 @@ use PDO;
 class GetFileFromMirror extends Output
 {
 
+    /** @var int */
     private $lastsync = 0;
+    /** @var string */
     private $file = '';
 
     public function prepare()
@@ -48,7 +50,8 @@ class GetFileFromMirror extends Output
         $repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
         $architectures = implode('|', $this->getAvailableArchitectures());
         $pkgextension = '(?:' . $architectures . '|any).pkg.tar.(?:g|x)z';
-        if (preg_match('#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#', $this->file, $matches)) {
+        if (preg_match('#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#',
+            $this->file, $matches)) {
             $pkgdate = Database::prepare('
                 SELECT
                     packages.mtime
@@ -94,7 +97,10 @@ class GetFileFromMirror extends Output
         }
     }
 
-    private function showFailure($text)
+    /**
+     * @param string $text
+     */
+    private function showFailure(string $text)
     {
         echo $text;
         exit();
@@ -105,7 +111,10 @@ class GetFileFromMirror extends Output
         $this->redirectToUrl($this->getMirror($this->lastsync) . $this->file);
     }
 
-    private function getAvailableArchitectures()
+    /**
+     * @return array
+     */
+    private function getAvailableArchitectures(): array
     {
         $uniqueArchitectures = array();
         foreach (Config::get('packages', 'repositories') as $architectures) {
@@ -117,12 +126,19 @@ class GetFileFromMirror extends Output
         return array_keys($uniqueArchitectures);
     }
 
-    private function getClientId()
+    /**
+     * @return string
+     */
+    private function getClientId(): string
     {
         return crc32(Input::getClientIP());
     }
 
-    private function getMirror($lastsync)
+    /**
+     * @param int $lastsync
+     * @return string
+     */
+    private function getMirror(int $lastsync): string
     {
         $countryCode = Input::getClientCountryCode();
         if (empty($countryCode)) {
@@ -167,5 +183,4 @@ class GetFileFromMirror extends Output
 
         return $stm->fetchColumn();
     }
-
 }

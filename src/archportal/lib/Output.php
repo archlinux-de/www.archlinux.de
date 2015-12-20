@@ -31,11 +31,16 @@ abstract class Output
     const NOT_FOUND = 'HTTP/1.1 404 Not Found';
     const INTERNAL_SERVER_ERROR = 'HTTP/1.1 500 Internal Server Error';
 
+    /** @var string */
     private $contentType = 'text/html; charset=UTF-8';
+    /** @var string */
     private $status = Output::OK;
+    /** @var string */
     private $outputSeparator = '&';
+    /** @var string */
     private $outputSeparatorHtml = '&amp;';
 
+    /** @var array */
     private $headers = array();
 
     public function __construct()
@@ -50,14 +55,14 @@ abstract class Output
         header($this->status);
         header('Content-Type: ' . $this->contentType);
         foreach ($this->headers as $key => $value) {
-            header($key.': '.$value);
+            header($key . ': ' . $value);
         }
     }
 
     /**
      * @param string $code
      */
-    protected function setStatus($code)
+    protected function setStatus(string $code)
     {
         $this->status = $code;
     }
@@ -65,7 +70,7 @@ abstract class Output
     /**
      * @param string $type
      */
-    protected function setContentType($type)
+    protected function setContentType(string $type)
     {
         $this->contentType = $type;
     }
@@ -73,7 +78,7 @@ abstract class Output
     /**
      * @param string $url
      */
-    protected function redirectToUrl($url)
+    protected function redirectToUrl(string $url)
     {
         $this->setStatus(Output::FOUND);
         header('Location: ' . $url);
@@ -83,7 +88,7 @@ abstract class Output
     /**
      * @param string $url
      */
-    protected function redirectPermanentlyToUrl($url)
+    protected function redirectPermanentlyToUrl(string $url)
     {
         $this->setStatus(Output::MOVED_PERMANENTLY);
         header('Location: ' . $url);
@@ -98,13 +103,19 @@ abstract class Output
      * @param bool $urlencode
      * @return string
      */
-    protected function createUrl($page, $options = array(), $absolute = false, $html = true, $urlencode = true)
+    protected function createUrl(
+        string $page,
+        array $options = array(),
+        bool $absolute = false,
+        bool $html = true,
+        bool $urlencode = true
+    ): string
     {
         $separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
         $params = array();
         foreach (array_merge(array(
             'page' => $page
-                ), $options) as $key => $value) {
+        ), $options) as $key => $value) {
             $params[] = $key . '=' . ($urlencode ? urlencode($value) : $value);
         }
 

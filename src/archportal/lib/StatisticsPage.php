@@ -24,8 +24,11 @@ namespace archportal\lib;
 abstract class StatisticsPage extends Page implements IDatabaseCachable
 {
 
+    /** @var int */
     private static $rangeMonths = 3;
+    /** @var array */
     protected static $barColors = array();
+    /** @var array */
     protected static $barColorArray = array(
         '8B0000',
         'FF8800',
@@ -38,7 +41,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
      *
      * see http://at.php.net/manual/de/function.hexdec.php#66780
      */
-    protected static function MultiColorFade($hexarray)
+    protected static function MultiColorFade(array $hexarray): array
     {
         $steps = 101;
         $total = count($hexarray);
@@ -77,7 +80,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
                 $hex['r'] = sprintf('%02x', ($rgb['r']));
                 $hex['g'] = sprintf('%02x', ($rgb['g']));
                 $hex['b'] = sprintf('%02x', ($rgb['b']));
-                $gradient[] = strtoupper(implode(NULL, $hex));
+                $gradient[] = strtoupper(implode(null, $hex));
             }
         }
         $gradient[] = $hexarray[$total - 1];
@@ -90,7 +93,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
      * @param int $total
      * @return string
      */
-    protected static function getBar($value, $total)
+    protected static function getBar(int $value, int $total): string
     {
         if ($total <= 0) {
             return '';
@@ -99,7 +102,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         if ($percent > 100) {
             return '';
         }
-        $color = self::$barColors[(int) round($percent)];
+        $color = self::$barColors[(int)round($percent)];
 
         return '<table style="width:100%;">
             <tr>
@@ -119,7 +122,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     /**
      * @return int
      */
-    protected static function getRangeTime()
+    protected static function getRangeTime(): int
     {
         return strtotime(date('1-m-Y', strtotime('now -' . self::$rangeMonths . ' months')));
     }
@@ -127,9 +130,8 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     /**
      * @return string
      */
-    protected static function getRangeYearMonth()
+    protected static function getRangeYearMonth(): string
     {
         return date('Ym', self::getRangeTime());
     }
-
 }

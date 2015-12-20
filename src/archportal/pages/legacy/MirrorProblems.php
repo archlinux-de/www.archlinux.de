@@ -30,5 +30,4 @@ class MirrorProblems extends Page
     {
         $this->redirectPermanentlyToUrl('https://www.archlinux.org/mirrors/status/#outofsync');
     }
-
 }

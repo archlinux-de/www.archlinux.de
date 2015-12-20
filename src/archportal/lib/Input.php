@@ -32,10 +32,15 @@ namespace archportal\lib;
 class Input
 {
 
+    /** @var int|null */
     private static $time = null;
+    /** @var string|null */
     private static $host = null;
+    /** @var string|null */
     private static $ip = null;
+    /** @var string|null */
     private static $countryCode = null;
+    /** @var string|null */
     private static $path = null;
 
     private function __construct()
@@ -47,7 +52,7 @@ class Input
      * @param array $args
      * @return Request
      */
-    public static function __callStatic($name, $args)
+    public static function __callStatic(string $name, array $args): Request
     {
         return Request::getInstance($name);
     }
@@ -55,7 +60,7 @@ class Input
     /**
      * @return int
      */
-    public static function getTime()
+    public static function getTime(): int
     {
         if (self::$time == 0) {
             self::$time = self::server()->getInt('REQUEST_TIME', time());
@@ -67,7 +72,7 @@ class Input
     /**
      * @return string
      */
-    private static function getHost()
+    private static function getHost(): string
     {
         if (is_null(self::$host)) {
             self::$host = self::server()->getString('HTTP_HOST');
@@ -79,7 +84,7 @@ class Input
     /**
      * @return string
      */
-    public static function getClientIP()
+    public static function getClientIP(): string
     {
         if (is_null(self::$ip)) {
             self::$ip = self::server()->getString('REMOTE_ADDR', '127.0.0.1');
@@ -91,7 +96,7 @@ class Input
     /**
      * @return string
      */
-    public static function getClientCountryCode()
+    public static function getClientCountryCode(): string
     {
         if (is_null(self::$countryCode)) {
             $ip = self::getClientIP();
@@ -117,12 +122,11 @@ class Input
     /**
      * @return string
      */
-    public static function getPath()
+    public static function getPath(): string
     {
         if (is_null(self::$path)) {
             $directory = dirname(self::server()->getString('SCRIPT_NAME'));
-            self::$path = 'http' . (!self::server()->isString('HTTPS') ? '' : 's') . '://' . self::getHost(
-                ) . ($directory == '/' ? '' : $directory) . '/';
+            self::$path = 'http' . (!self::server()->isString('HTTPS') ? '' : 's') . '://' . self::getHost() . ($directory == '/' ? '' : $directory) . '/';
         }
 
         return self::$path;

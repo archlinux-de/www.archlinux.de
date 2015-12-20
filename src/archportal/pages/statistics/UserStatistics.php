@@ -120,7 +120,10 @@ class UserStatistics extends StatisticsPage
         }
     }
 
-    private static function getCommonPackageUsageStatistics()
+    /**
+     * @return array
+     */
+    private static function getCommonPackageUsageStatistics(): array
     {
         return Database::query('
         SELECT
@@ -136,7 +139,10 @@ class UserStatistics extends StatisticsPage
         ')->fetch();
     }
 
-    private static function getCountryStatistics()
+    /**
+     * @return string
+     */
+    private static function getCountryStatistics(): string
     {
         $total = Database::query('
         SELECT
@@ -165,13 +171,17 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list.= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'],
+                    $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getMirrorStatistics()
+    /**
+     * @return string
+     */
+    private static function getMirrorStatistics(): string
     {
         $total = Database::query('
         SELECT
@@ -201,7 +211,7 @@ class UserStatistics extends StatisticsPage
                 $host = 'unknown';
             }
             if (isset($hosts[$host])) {
-                $hosts[$host]+= $mirror['count'];
+                $hosts[$host] += $mirror['count'];
             } else {
                 $hosts[$host] = $mirror['count'];
             }
@@ -209,13 +219,16 @@ class UserStatistics extends StatisticsPage
         arsort($hosts);
         $list = '';
         foreach ($hosts as $host => $count) {
-            $list.= '<tr><th>' . $host . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>' . $host . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getMirrorCountryStatistics()
+    /**
+     * @return string
+     */
+    private static function getMirrorCountryStatistics(): string
     {
         $total = Database::query('
         SELECT
@@ -240,13 +253,17 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list.= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'],
+                    $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getMirrorProtocollStatistics()
+    /**
+     * @return string
+     */
+    private static function getMirrorProtocollStatistics(): string
     {
         $protocolls = array(
             'http' => 0,
@@ -274,13 +291,16 @@ class UserStatistics extends StatisticsPage
         arsort($protocolls);
         $list = '';
         foreach ($protocolls as $protocoll => $count) {
-            $list.= '<tr><th>' . $protocoll . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>' . $protocoll . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getSubmissionsPerArchitecture()
+    /**
+     * @return string
+     */
+    private static function getSubmissionsPerArchitecture(): string
     {
         $total = Database::query('
         SELECT
@@ -305,13 +325,16 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getSubmissionsPerCpuArchitecture()
+    /**
+     * @return string
+     */
+    private static function getSubmissionsPerCpuArchitecture(): string
     {
         $total = Database::query('
         SELECT
@@ -338,10 +361,9 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
     }
-
 }

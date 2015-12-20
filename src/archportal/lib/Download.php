@@ -34,7 +34,7 @@ class Download
     /**
      * @param string $url
      */
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->url = $url;
         $this->tmpFile = tempnam(Config::get('common', 'tmpdir'), strtolower(str_replace('\\', '/', get_class($this))));
@@ -50,7 +50,7 @@ class Download
     /**
      * @return int
      */
-    public function getMTime()
+    public function getMTime(): int
     {
         if (!$this->downloaded && $this->mtime == 0) {
             $curl = $this->curlInit($this->url);
@@ -75,7 +75,7 @@ class Download
     /**
      * @return string
      */
-    public function getFile()
+    public function getFile(): string
     {
         if (!$this->downloaded) {
             $fh = fopen($this->tmpFile, 'w');
@@ -99,6 +99,10 @@ class Download
         return $this->tmpFile;
     }
 
+    /**
+     * @param string $url
+     * @return resource
+     */
     private function curlInit($url)
     {
         $curlVersion = curl_version();
@@ -115,5 +119,4 @@ class Download
 
         return $curl;
     }
-
 }

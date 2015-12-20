@@ -32,8 +32,11 @@ use PDOException;
 class PostPackageList extends Page
 {
 
+    /** @var int */
     private $delay = 86400; // 24 hours
+    /** @var int */
     private $count = 10;
+    /** @var bool */
     private $quiet = false;
 
     public function prepare()
@@ -42,7 +45,8 @@ class PostPackageList extends Page
         $this->setContentType('text/plain; charset=UTF-8');
         try {
             # Can be rewritten once 2.0 is no longer in use
-            $pkgstatsver = Input::post()->getString('pkgstatsver', str_replace('pkgstats/', '', Input::server()->getString('HTTP_USER_AGENT')));
+            $pkgstatsver = Input::post()->getString('pkgstatsver',
+                str_replace('pkgstats/', '', Input::server()->getString('HTTP_USER_AGENT')));
         } catch (RequestException $e) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('Please make sure to use pkgstats to submit your data.');
@@ -50,12 +54,13 @@ class PostPackageList extends Page
             return;
         }
         if (!in_array($pkgstatsver, array(
-                    '1.0',
-                    '2.0',
-                    '2.1',
-                    '2.2',
-                    '2.3'
-                ))) {
+            '1.0',
+            '2.0',
+            '2.1',
+            '2.2',
+            '2.3'
+        ))
+        ) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure('Sorry, your version of pkgstats is not supported.');
 
@@ -94,19 +99,21 @@ class PostPackageList extends Page
             $mirror = null;
         }
         if (!in_array($arch, array(
-                    'i686',
-                    'x86_64'
-                ))) {
+            'i686',
+            'x86_64'
+        ))
+        ) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure(htmlspecialchars($arch) . ' is not a known architecture.');
 
             return;
         }
         if (!in_array($cpuArch, array(
-                    'i686',
-                    'x86_64',
-                    ''
-                ))) {
+            'i686',
+            'x86_64',
+            ''
+        ))
+        ) {
             $this->setStatus(Output::BAD_REQUEST);
             $this->showFailure(htmlspecialchars($cpuArch) . ' is not a known architecture.');
 
@@ -218,13 +225,19 @@ class PostPackageList extends Page
         }
     }
 
-    protected function showWarning($text)
+    /**
+     * @param string $text
+     */
+    protected function showWarning(string $text)
     {
         echo 'Warning: ' . $text . "\n";
         exit();
     }
 
-    protected function showFailure($text)
+    /**
+     * @param string $text
+     */
+    protected function showFailure(string $text)
     {
         echo 'Failure: ' . $text . "\n";
         exit();
@@ -261,5 +274,4 @@ class PostPackageList extends Page
             $this->showFailure('You already submitted your data ' . $this->count . ' times since ' . $this->l10n->getGmDateTime($log['mintime']) . ' using the IP ' . Input::getClientIP() . ".\n         You are blocked until " . $this->l10n->getGmDateTime($log['mintime'] + $this->delay));
         }
     }
-
 }

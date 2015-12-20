@@ -49,7 +49,7 @@ class UpdateMirrors extends CronJob
         }
     }
 
-    private function updateMirrorlist($mirrors)
+    private function updateMirrorlist(array $mirrors)
     {
         try {
             Database::beginTransaction();
@@ -93,7 +93,7 @@ class UpdateMirrors extends CronJob
         }
     }
 
-    private function getMirrorStatus()
+    private function getMirrorStatus(): array
     {
         $download = new Download(Config::get('mirrors', 'status'));
 
@@ -108,7 +108,6 @@ class UpdateMirrors extends CronJob
 
         return $mirrors;
     }
-
 }
 
 UpdateMirrors::run();

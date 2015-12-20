@@ -31,7 +31,7 @@ class ObjectStore
      * @param mixed $object
      * @param int $ttl
      */
-    public static function addObject($key, $object, $ttl = 0)
+    public static function addObject(string $key, $object, int $ttl = 0)
     {
         $stm = Database::prepare('
         REPLACE INTO
@@ -51,7 +51,7 @@ class ObjectStore
      * @param string $key
      * @return mixed
      */
-    public static function getObject($key)
+    public static function getObject(string $key)
     {
         self::collectGarbage();
         $stm = Database::prepare('
@@ -76,7 +76,7 @@ class ObjectStore
      * @param string $key
      * @return bool
      */
-    public static function isObject($key)
+    public static function isObject(string $key): bool
     {
         $stm = Database::prepare('
         SELECT
@@ -107,5 +107,4 @@ class ObjectStore
             $stm->execute();
         }
     }
-
 }

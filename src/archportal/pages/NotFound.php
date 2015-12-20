@@ -32,5 +32,4 @@ class NotFound extends Page
         $this->setStatus(Output::NOT_FOUND);
         $this->showFailure($this->l10n->getText('Page could not be found'));
     }
-
 }

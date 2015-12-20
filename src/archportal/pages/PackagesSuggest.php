@@ -31,6 +31,7 @@ use PDO;
 class PackagesSuggest extends Page
 {
 
+    /** @var array */
     private $suggestions = array();
 
     public function prepare()
@@ -50,7 +51,7 @@ class PackagesSuggest extends Page
                             packages.name
                         FROM
                             packages
-                            ' . ( $arch > 0 || $repo > 0 ? '
+                            ' . ($arch > 0 || $repo > 0 ? '
                                 JOIN repositories
                                 ON packages.repository = repositories.id' : '') . '
                         WHERE
@@ -100,5 +101,4 @@ class PackagesSuggest extends Page
         $this->setContentType('application/json; charset=UTF-8');
         echo json_encode($this->suggestions);
     }
-
 }

@@ -149,7 +149,10 @@ class RepositoryStatistics extends StatisticsPage
         }
     }
 
-    private static function getCommonRepositoryStatistics()
+    /**
+     * @return array
+     */
+    private static function getCommonRepositoryStatistics(): array
     {
         return Database::query('
         SELECT
@@ -199,7 +202,10 @@ class RepositoryStatistics extends StatisticsPage
         ')->fetch();
     }
 
-    private static function getRepositoryStatistics()
+    /**
+     * @return string
+     */
+    private static function getRepositoryStatistics(): string
     {
         $repos = Database::query('
             SELECT DISTINCT
@@ -236,7 +242,7 @@ class RepositoryStatistics extends StatisticsPage
             $stm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
             $stm->execute();
             $data = $stm->fetch();
-            $list.= '<tr>
+            $list .= '<tr>
                 <th>' . $repo . '</th>
                 <td style="padding:0;margin:0;">
                     <div style="overflow:auto; max-height: 800px;">
@@ -258,7 +264,11 @@ class RepositoryStatistics extends StatisticsPage
         return $list;
     }
 
-    private static function formatBytes($bytes)
+    /**
+     * @param int $bytes
+     * @return string
+     */
+    private static function formatBytes(int $bytes): string
     {
         $kb = 1024;
         $mb = $kb * 1024;
@@ -273,12 +283,11 @@ class RepositoryStatistics extends StatisticsPage
             $result = round($bytes / $kb, 2);
             $postfix = '&nbsp;K';
         } else {
-        //  B
+            //  B
             $result = $bytes;
             $postfix = '&nbsp;';
         }
 
         return number_format($result, 2) . $postfix;
     }
-
 }

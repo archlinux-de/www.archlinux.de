@@ -24,7 +24,9 @@ namespace archportal\lib;
 class L10n
 {
 
+    /** @var array */
     private $localeInfo = array();
+    /** @var string */
     private $locale = '';
 
     public function __construct()
@@ -39,7 +41,10 @@ class L10n
         textdomain('archportal');
     }
 
-    private function getLocalePath()
+    /**
+     * @return string
+     */
+    private function getLocalePath(): string
     {
         return __DIR__ . '/../l10n/' . strtok($this->locale, '.');
     }
@@ -48,7 +53,7 @@ class L10n
      * @param string $text
      * @return string
      */
-    public function getText($text)
+    public function getText(string $text): string
     {
         return gettext($text);
     }
@@ -59,7 +64,7 @@ class L10n
      * @param int $count
      * @return string
      */
-    public function ngetText($singular, $plural, $count)
+    public function ngetText(string $singular, string $plural, int $count): string
     {
         return ngettext($singular, $plural, $count);
     }
@@ -68,7 +73,7 @@ class L10n
      * @param string $name
      * @return string
      */
-    public function getTextFile($name)
+    public function getTextFile(string $name):string
     {
         $key = 'L10n:' . $this->locale . ':' . $name;
         if (!($text = ObjectCache::getObject($key))) {
@@ -80,28 +85,28 @@ class L10n
     }
 
     /**
-     * @param int $timestamp
+     * @param int|null $timestamp
      * @return string
      */
-    public function getDate($timestamp = null)
+    public function getDate($timestamp = null): string
     {
         return date($this->getText('Y-m-d'), $timestamp);
     }
 
     /**
-     * @param int $timestamp
+     * @param int|null $timestamp
      * @return string
      */
-    public function getDateTime($timestamp = null)
+    public function getDateTime($timestamp = null): string
     {
         return date($this->getText('Y-m-d H:i'), $timestamp);
     }
 
     /**
-     * @param int $timestamp
+     * @param int|null $timestamp
      * @return string
      */
-    public function getGmDateTime($timestamp = null)
+    public function getGmDateTime($timestamp = null): string
     {
         return gmdate('Y-m-d H:i', $timestamp);
     }
@@ -110,7 +115,7 @@ class L10n
      * @param int $seconds
      * @return string
      */
-    public function getEpoch($seconds)
+    public function getEpoch(int $seconds): string
     {
         $minutes = 60;
         $hours = 60 * $minutes;
@@ -148,5 +153,4 @@ class L10n
             return sprintf($this->getText('%.2f seconds'), $result);
         }
     }
-
 }

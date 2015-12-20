@@ -29,6 +29,7 @@ use DOMDocument;
 class GetOpenSearch extends Page
 {
 
+    /** @var string */
     private $opensearch = '';
 
     public function prepare()
@@ -40,12 +41,14 @@ class GetOpenSearch extends Page
         $description = $dom->createElement('Description', $this->l10n->getText('Search for Arch Linux packages'));
 
         $results = $dom->createElement('Url');
-        $results->setAttribute('template', $this->createUrl('Packages', array('submit' => '', 'search' => '{searchTerms}'), true, false, false));
+        $results->setAttribute('template',
+            $this->createUrl('Packages', array('submit' => '', 'search' => '{searchTerms}'), true, false, false));
         $results->setAttribute('type', 'text/html');
         $results->setAttribute('rel', 'results');
 
         $suggestions = $dom->createElement('Url');
-        $suggestions->setAttribute('template', $this->createUrl('PackagesSuggest', array('field' => '0', 'term' => '{searchTerms}'), true, false, false));
+        $suggestions->setAttribute('template',
+            $this->createUrl('PackagesSuggest', array('field' => '0', 'term' => '{searchTerms}'), true, false, false));
         $suggestions->setAttribute('type', 'application/json');
         $suggestions->setAttribute('rel', 'suggestions');
 
@@ -84,5 +87,4 @@ class GetOpenSearch extends Page
         $this->setContentType('application/opensearchdescription+xml; charset=UTF-8');
         echo $this->opensearch;
     }
-
 }
