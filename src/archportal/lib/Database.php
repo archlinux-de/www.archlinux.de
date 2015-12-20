@@ -25,7 +25,7 @@ use PDO;
 use PDOStatement;
 
 /**
- * @method static PDOStatement prepare(string $statement, array $driver_options)
+ * @method static PDOStatement prepare(string $statement, array $driver_options = array())
  * @method static int exec(string $statement)
  * @method static PDOStatement query(string $statement)
  * @method static mixed lastInsertId()
