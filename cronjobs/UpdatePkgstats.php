@@ -19,7 +19,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -31,7 +31,6 @@ set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdatePkgstats extends CronJob
 {
-
     public function execute()
     {
         if (Config::get('common', 'statistics')) {
@@ -40,7 +39,7 @@ class UpdatePkgstats extends CronJob
                          'PackageStatistics',
                          'ModuleStatistics',
                          'UserStatistics',
-                         'FunStatistics'
+                         'FunStatistics',
                      ) as $page) {
                 /** @var StatisticsPage $pageClass */
                 $pageClass = Routing::getPageClass($page);

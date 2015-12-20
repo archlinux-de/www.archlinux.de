@@ -23,7 +23,6 @@ namespace archportal\lib;
 
 class Exceptions
 {
-
     /**
      * @param \Throwable $e
      */
@@ -39,7 +38,7 @@ class Exceptions
                 \E_STRICT => 'STRICT NOTICE',
                 \E_RECOVERABLE_ERROR => 'RECOVERABLE ERROR',
                 \E_DEPRECATED => 'DEPRECATED',
-                \E_USER_DEPRECATED => 'USER_DEPRECATED'
+                \E_USER_DEPRECATED => 'USER_DEPRECATED',
             );
             $type = (isset($errorType[$e->getCode()]) ? $errorType[$e->getCode()] : $e->getCode());
             $files = get_included_files();
@@ -53,16 +52,16 @@ class Exceptions
                 header('text/html; charset=UTF-8');
             }
             if (php_sapi_name() == 'cli') {
-                require(__DIR__ . '/../templates/ExceptionCliTemplate.php');
+                require __DIR__.'/../templates/ExceptionCliTemplate.php';
             } elseif (Config::get('common', 'debug')) {
-                require(__DIR__ . '/../templates/ExceptionDebugTemplate.php');
+                require __DIR__.'/../templates/ExceptionDebugTemplate.php';
             } else {
                 ob_start();
-                require(__DIR__ . '/../templates/ExceptionLogTemplate.php');
+                require __DIR__.'/../templates/ExceptionLogTemplate.php';
                 self::sendLog(ob_get_contents());
                 ob_end_clean();
                 $l10n = new L10n();
-                require(__DIR__ . '/../templates/ExceptionTemplate.php');
+                require __DIR__.'/../templates/ExceptionTemplate.php';
             }
         } catch (\Exception $d) {
             echo $d->getMessage(), "<br />\n", $e->getMessage();
@@ -76,8 +75,8 @@ class Exceptions
     private static function sendLog(string $log)
     {
         mail(
-            Config::get('common', 'email'), Config::get('common', 'sitename') . ': Exception', utf8_decode($log),
-            'From: ' . Config::get('common', 'email')
+            Config::get('common', 'email'), Config::get('common', 'sitename').': Exception', utf8_decode($log),
+            'From: '.Config::get('common', 'email')
         );
     }
 

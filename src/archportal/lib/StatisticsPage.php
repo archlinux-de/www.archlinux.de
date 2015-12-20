@@ -23,7 +23,6 @@ namespace archportal\lib;
 
 abstract class StatisticsPage extends Page implements IDatabaseCachable
 {
-
     /** @var int */
     private static $rangeMonths = 3;
     /** @var array */
@@ -32,11 +31,12 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     protected static $barColorArray = array(
         '8B0000',
         'FF8800',
-        '006400'
+        '006400',
     );
 
     /**
      * @param array $hexarray
+     *
      * @return array
      *
      * see http://at.php.net/manual/de/function.hexdec.php#66780
@@ -51,7 +51,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         $stepsforpassage = floor($steps / $passages);
         $stepsremain = $steps - ($stepsforpassage * $passages);
         $stepsforthis = 0;
-        for ($pointer = 0; $pointer < $total - 1; $pointer++) {
+        for ($pointer = 0; $pointer < $total - 1; ++$pointer) {
             $hexstart = $hexarray[$pointer];
             $hexend = $hexarray[$pointer + 1];
             if ($stepsremain > 0) {
@@ -73,7 +73,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
             $step['r'] = ($start['r'] - $end['r']) / ($stepsforthis);
             $step['g'] = ($start['g'] - $end['g']) / ($stepsforthis);
             $step['b'] = ($start['b'] - $end['b']) / ($stepsforthis);
-            for ($i = 0; $i <= $stepsforthis - $fixend; $i++) {
+            for ($i = 0; $i <= $stepsforthis - $fixend; ++$i) {
                 $rgb['r'] = floor($start['r'] - ($step['r'] * $i));
                 $rgb['g'] = floor($start['g'] - ($step['g'] * $i));
                 $rgb['b'] = floor($start['b'] - ($step['b'] * $i));
@@ -91,6 +91,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     /**
      * @param int $value
      * @param int $total
+     *
      * @return string
      */
     protected static function getBar(int $value, int $total): string
@@ -102,18 +103,18 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         if ($percent > 100) {
             return '';
         }
-        $color = self::$barColors[(int)round($percent)];
+        $color = self::$barColors[(int) round($percent)];
 
         return '<table style="width:100%;">
             <tr>
                 <td style="padding:0;margin:0;">
-                    <div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
-        title="' . number_format($value) . ' of ' . number_format($total) . '">
+                    <div style="background-color:#'.$color.';width:'.round($percent).'%;"
+        title="'.number_format($value).' of '.number_format($total).'">
             &nbsp;
                 </div>
                 </td>
-                <td style="padding:0;margin:0;width:80px;text-align:right;color:#' . $color . ';">
-                    ' . number_format($percent, 2) . '&nbsp;%
+                <td style="padding:0;margin:0;width:80px;text-align:right;color:#'.$color.';">
+                    '.number_format($percent, 2).'&nbsp;%
                 </td>
             </tr>
         </table>';
@@ -124,7 +125,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
      */
     protected static function getRangeTime(): int
     {
-        return strtotime(date('1-m-Y', strtotime('now -' . self::$rangeMonths . ' months')));
+        return strtotime(date('1-m-Y', strtotime('now -'.self::$rangeMonths.' months')));
     }
 
     /**

@@ -25,11 +25,10 @@ use PDO;
 
 class ObjectStore
 {
-
     /**
      * @param string $key
-     * @param mixed $object
-     * @param int $ttl
+     * @param mixed  $object
+     * @param int    $ttl
      */
     public static function addObject(string $key, $object, int $ttl = 0)
     {
@@ -49,6 +48,7 @@ class ObjectStore
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
     public static function getObject(string $key)
@@ -74,6 +74,7 @@ class ObjectStore
 
     /**
      * @param string $key
+     *
      * @return bool
      */
     public static function isObject(string $key): bool

@@ -30,7 +30,6 @@ use RuntimeException;
 
 class RepositoryStatistics extends StatisticsPage
 {
-
     public function prepare()
     {
         $this->setTitle('Repository statistics');
@@ -57,87 +56,87 @@ class RepositoryStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Architectures</th>
-                    <td>' . $data['architectures'] . '</td>
+                    <td>'.$data['architectures'].'</td>
                 </tr>
                 <tr>
                     <th>Repositories</th>
-                    <td>' . $data['repositories'] . '</td>
+                    <td>'.$data['repositories'].'</td>
                 </tr>
                 <tr>
                     <th>Groups</th>
-                    <td>' . number_format($data['groups']) . '</td>
+                    <td>'.number_format($data['groups']).'</td>
                 </tr>
                 <tr>
                     <th>Packages</th>
-                    <td>' . number_format($data['packages']) . '</td>
+                    <td>'.number_format($data['packages']).'</td>
                 </tr>
                 <tr>
                     <th>Files</th>
-                    <td>' . number_format($data['files']) . '</td>
+                    <td>'.number_format($data['files']).'</td>
                 </tr>
                 <tr>
                     <th>Size of file index</th>
-                    <td>' . number_format($data['file_index']) . '</td>
+                    <td>'.number_format($data['file_index']).'</td>
                 </tr>
                 <tr>
                     <th>Licenses</th>
-                    <td>' . number_format($data['licenses']) . '</td>
+                    <td>'.number_format($data['licenses']).'</td>
                 </tr>
                 <tr>
                     <th>Dependencies</th>
-                    <td>' . number_format($data['depends']) . '</td>
+                    <td>'.number_format($data['depends']).'</td>
                 </tr>
                 <tr>
                     <th>Optional dependencies</th>
-                    <td>' . number_format($data['optdepends']) . '</td>
+                    <td>'.number_format($data['optdepends']).'</td>
                 </tr>
                 <tr>
                     <th>Provides</th>
-                    <td>' . number_format($data['provides']) . '</td>
+                    <td>'.number_format($data['provides']).'</td>
                 </tr>
                 <tr>
                     <th>Conflicts</th>
-                    <td>' . number_format($data['conflicts']) . '</td>
+                    <td>'.number_format($data['conflicts']).'</td>
                 </tr>
                 <tr>
                     <th>Replaces</th>
-                    <td>' . number_format($data['replaces']) . '</td>
+                    <td>'.number_format($data['replaces']).'</td>
                 </tr>
                 <tr>
                     <th>Total size of repositories</th>
-                    <td>' . self::formatBytes($data['csize']) . 'Byte</td>
+                    <td>'.self::formatBytes($data['csize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Total size of files</th>
-                    <td>' . self::formatBytes($data['isize']) . 'Byte</td>
+                    <td>'.self::formatBytes($data['isize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Packager</th>
-                    <td>' . $data['packagers'] . '</td>
+                    <td>'.$data['packagers'].'</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Averages</th>
                 </tr>
                 <tr>
                     <th>Size of packages</th>
-                    <td>&empty; ' . self::formatBytes($data['avgcsize']) . 'Byte</td>
+                    <td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Size of files</th>
-                    <td>&empty; ' . self::formatBytes($data['avgisize']) . 'Byte</td>
+                    <td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Files per package</th>
-                    <td>&empty; ' . number_format($data['avgfiles'], 2) . '</td>
+                    <td>&empty; '.number_format($data['avgfiles'], 2).'</td>
                 </tr>
                 <tr>
                     <th>Packages per packager</th>
-                    <td>&empty; ' . number_format($data['avgpkgperpackager'], 2) . '</td>
+                    <td>&empty; '.number_format($data['avgpkgperpackager'], 2).'</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Repositories</th>
                 </tr>
-                    ' . self::getRepositoryStatistics() . '
+                    '.self::getRepositoryStatistics().'
             </table>
             </div>
             ';
@@ -145,7 +144,7 @@ class RepositoryStatistics extends StatisticsPage
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            echo 'RepositoryStatistics failed:' . $e->getMessage();
+            echo 'RepositoryStatistics failed:'.$e->getMessage();
         }
     }
 
@@ -243,17 +242,17 @@ class RepositoryStatistics extends StatisticsPage
             $stm->execute();
             $data = $stm->fetch();
             $list .= '<tr>
-                <th>' . $repo . '</th>
+                <th>'.$repo.'</th>
                 <td style="padding:0;margin:0;">
                     <div style="overflow:auto; max-height: 800px;">
                     <table class="pretty-table" style="border:none;">
                     <tr>
                         <td style="width: 50px;">Packages</td>
-                        <td>' . self::getBar($data['packages'], $total['packages']) . '</td>
+                        <td>'.self::getBar($data['packages'], $total['packages']).'</td>
                     </tr>
                     <tr>
                         <td style="width: 50px;">Size</td>
-                        <td>' . self::getBar($data['size'], $total['size']) . '</td>
+                        <td>'.self::getBar($data['size'], $total['size']).'</td>
                     </tr>
                     </table>
                     </div>
@@ -266,6 +265,7 @@ class RepositoryStatistics extends StatisticsPage
 
     /**
      * @param int $bytes
+     *
      * @return string
      */
     private static function formatBytes(int $bytes): string
@@ -288,6 +288,6 @@ class RepositoryStatistics extends StatisticsPage
             $postfix = '&nbsp;';
         }
 
-        return number_format($result, 2) . $postfix;
+        return number_format($result, 2).$postfix;
     }
 }

@@ -25,7 +25,6 @@ use archportal\lib\Page;
 
 class MirrorProblems extends Page
 {
-
     public function prepare()
     {
         $this->redirectPermanentlyToUrl('https://www.archlinux.org/mirrors/status/#outofsync');

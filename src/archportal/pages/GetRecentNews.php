@@ -26,7 +26,6 @@ use archportal\lib\Page;
 
 class GetRecentNews extends Page
 {
-
     /** @var string */
     private $url = '';
 

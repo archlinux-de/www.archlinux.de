@@ -23,7 +23,6 @@ namespace archportal\lib;
 
 abstract class Page extends Output
 {
-
     /** @var string */
     private $title = '';
     /** @var string */
@@ -138,8 +137,8 @@ abstract class Page extends Output
     {
         $this->setMetaRobots('noindex,nofollow');
         $this->setTitle($this->l10n->getText('Error'));
-        $this->setBody('<div id="warning">' . $text . '</div>');
-        require(__DIR__ . '/../templates/PageTemplate.php');
+        $this->setBody('<div id="warning">'.$text.'</div>');
+        require __DIR__.'/../templates/PageTemplate.php';
         exit();
     }
 
@@ -151,7 +150,8 @@ abstract class Page extends Output
 
     /**
      * @param string $string
-     * @param int $length
+     * @param int    $length
+     *
      * @return string
      */
     protected function cutString(string $string, int $length): string
@@ -159,13 +159,13 @@ abstract class Page extends Output
         // Verhindere das Abschneiden im Entity
         $string = htmlspecialchars_decode(trim($string));
         $string = (mb_strlen($string, 'UTF-8') > $length ? mb_substr($string, 0, ($length - 3),
-                'UTF-8') . '...' : $string);
+                'UTF-8').'...' : $string);
 
         return htmlspecialchars($string);
     }
 
     public function printPage()
     {
-        require(__DIR__ . '/../templates/PageTemplate.php');
+        require __DIR__.'/../templates/PageTemplate.php';
     }
 }

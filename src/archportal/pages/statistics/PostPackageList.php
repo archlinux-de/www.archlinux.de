@@ -31,7 +31,6 @@ use PDOException;
 
 class PostPackageList extends Page
 {
-
     /** @var int */
     private $delay = 86400; // 24 hours
     /** @var int */
@@ -58,7 +57,7 @@ class PostPackageList extends Page
             '2.0',
             '2.1',
             '2.2',
-            '2.3'
+            '2.3',
         ))
         ) {
             $this->setStatus(Output::BAD_REQUEST);
@@ -92,7 +91,7 @@ class PostPackageList extends Page
             $mirror = null;
         } elseif (!empty($mirror) && Input::post()->getHtmlLength('mirror') > 255) {
             $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure($mirror . ' is too long.');
+            $this->showFailure($mirror.' is too long.');
 
             return;
         } elseif (empty($mirror)) {
@@ -100,22 +99,22 @@ class PostPackageList extends Page
         }
         if (!in_array($arch, array(
             'i686',
-            'x86_64'
+            'x86_64',
         ))
         ) {
             $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure(htmlspecialchars($arch) . ' is not a known architecture.');
+            $this->showFailure(htmlspecialchars($arch).' is not a known architecture.');
 
             return;
         }
         if (!in_array($cpuArch, array(
             'i686',
             'x86_64',
-            ''
+            '',
         ))
         ) {
             $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure(htmlspecialchars($cpuArch) . ' is not a known architecture.');
+            $this->showFailure(htmlspecialchars($cpuArch).' is not a known architecture.');
 
             return;
         }
@@ -137,7 +136,7 @@ class PostPackageList extends Page
         foreach ($packages as $package) {
             if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package))) {
                 $this->setStatus(Output::BAD_REQUEST);
-                $this->showFailure(htmlspecialchars($package) . ' does not look like a valid package');
+                $this->showFailure(htmlspecialchars($package).' does not look like a valid package');
 
                 return;
             }
@@ -151,7 +150,7 @@ class PostPackageList extends Page
         foreach ($modules as $module) {
             if (!preg_match('/^[\w\-]{1,254}$/', $module)) {
                 $this->setStatus(Output::BAD_REQUEST);
-                $this->showFailure($module . ' does not look like a valid module');
+                $this->showFailure($module.' does not look like a valid module');
 
                 return;
             }
@@ -230,7 +229,7 @@ class PostPackageList extends Page
      */
     protected function showWarning(string $text)
     {
-        echo 'Warning: ' . $text . "\n";
+        echo 'Warning: '.$text."\n";
         exit();
     }
 
@@ -239,15 +238,15 @@ class PostPackageList extends Page
      */
     protected function showFailure(string $text)
     {
-        echo 'Failure: ' . $text . "\n";
+        echo 'Failure: '.$text."\n";
         exit();
     }
 
     public function printPage()
     {
         if (!$this->quiet) {
-            echo 'Thanks for your submission. :-)' . "\n";
-            echo 'See results at ' . $this->createURL('Statistics', array(), true, false) . "\n";
+            echo 'Thanks for your submission. :-)'."\n";
+            echo 'See results at '.$this->createURL('Statistics', array(), true, false)."\n";
         }
     }
 
@@ -271,7 +270,7 @@ class PostPackageList extends Page
         $log = $stm->fetch();
         if ($log !== false && $log['count'] >= $this->count) {
             $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('You already submitted your data ' . $this->count . ' times since ' . $this->l10n->getGmDateTime($log['mintime']) . ' using the IP ' . Input::getClientIP() . ".\n         You are blocked until " . $this->l10n->getGmDateTime($log['mintime'] + $this->delay));
+            $this->showFailure('You already submitted your data '.$this->count.' times since '.$this->l10n->getGmDateTime($log['mintime']).' using the IP '.Input::getClientIP().".\n         You are blocked until ".$this->l10n->getGmDateTime($log['mintime'] + $this->delay));
         }
     }
 }

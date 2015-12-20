@@ -23,24 +23,24 @@ namespace archportal\lib;
 
 class ObjectCache
 {
-
     /**
      * @return string
      */
     private static function getPrefix(): string
     {
-        return Config::get('Database', 'database') . ':';
+        return Config::get('Database', 'database').':';
     }
 
     /**
      * @param string $key
-     * @param mixed $object
-     * @param int $ttl
+     * @param mixed  $object
+     * @param int    $ttl
+     *
      * @return bool
      */
     public static function addObject(string $key, $object, int $ttl = 0): bool
     {
-        $key = self::getPrefix() . $key;
+        $key = self::getPrefix().$key;
         if (function_exists('apc_store')) {
             return apc_store($key, $object, $ttl);
         } elseif (function_exists('xcache_set')) {
@@ -52,11 +52,12 @@ class ObjectCache
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
     public static function getObject(string $key)
     {
-        $key = self::getPrefix() . $key;
+        $key = self::getPrefix().$key;
         if (function_exists('apc_fetch')) {
             return apc_fetch($key);
         } elseif (function_exists('xcache_get')) {
@@ -73,11 +74,12 @@ class ObjectCache
 
     /**
      * @param string $key
+     *
      * @return bool
      */
     public static function isObject(string $key): bool
     {
-        $key = self::getPrefix() . $key;
+        $key = self::getPrefix().$key;
         if (function_exists('apc_exists')) {
             return apc_exists($key);
         } elseif (function_exists('apc_fetch')) {

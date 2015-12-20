@@ -25,7 +25,6 @@ use RuntimeException;
 
 class Download
 {
-
     private $downloaded = false;
     private $url = '';
     private $tmpFile = '';
@@ -63,7 +62,7 @@ class Download
             $mtime = curl_getinfo($curl, \CURLINFO_FILETIME);
             curl_close($curl);
             if ($mtime < 1) {
-                throw new RuntimeException('Invalid filetime "' . $mtime . '" for "' . $this->url . '"');
+                throw new RuntimeException('Invalid filetime "'.$mtime.'" for "'.$this->url.'"');
             } else {
                 $this->mtime = $mtime;
             }
@@ -101,6 +100,7 @@ class Download
 
     /**
      * @param string $url
+     *
      * @return resource
      */
     private function curlInit($url)
@@ -115,7 +115,7 @@ class Download
         curl_setopt($curl, \CURLOPT_LOW_SPEED_LIMIT, 5000);
         curl_setopt($curl, \CURLOPT_LOW_SPEED_TIME, 600);
         curl_setopt($curl, \CURLOPT_ENCODING, '');
-        curl_setopt($curl, \CURLOPT_USERAGENT, 'archportal/curl-' . $curlVersion['version']);
+        curl_setopt($curl, \CURLOPT_USERAGENT, 'archportal/curl-'.$curlVersion['version']);
 
         return $curl;
     }

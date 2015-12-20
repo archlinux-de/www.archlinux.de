@@ -28,7 +28,6 @@ use DOMDocument;
 
 class GetOpenSearch extends Page
 {
-
     /** @var string */
     private $opensearch = '';
 
@@ -59,12 +58,12 @@ class GetOpenSearch extends Page
 
         $contact = $dom->createElement('Contact', Config::get('common', 'email'));
 
-        $icon = $dom->createElement('Image', Input::getPath() . 'style/favicon.ico');
+        $icon = $dom->createElement('Image', Input::getPath().'style/favicon.ico');
         $icon->setAttribute('height', '16');
         $icon->setAttribute('width', '16');
         $icon->setAttribute('type', 'image/x-icon');
 
-        $image = $dom->createElement('Image', Input::getPath() . 'style/archlogo-64.png');
+        $image = $dom->createElement('Image', Input::getPath().'style/archlogo-64.png');
         $image->setAttribute('height', '64');
         $image->setAttribute('width', '64');
         $image->setAttribute('type', 'image/png');

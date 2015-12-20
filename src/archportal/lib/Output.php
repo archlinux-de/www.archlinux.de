@@ -23,7 +23,6 @@ namespace archportal\lib;
 
 abstract class Output
 {
-
     const OK = 'HTTP/1.1 200 OK';
     const FOUND = 'HTTP/1.1 302 Found';
     const MOVED_PERMANENTLY = 'HTTP/1.1 301 Moved Permanently';
@@ -34,7 +33,7 @@ abstract class Output
     /** @var string */
     private $contentType = 'text/html; charset=UTF-8';
     /** @var string */
-    private $status = Output::OK;
+    private $status = self::OK;
     /** @var string */
     private $outputSeparator = '&';
     /** @var string */
@@ -53,9 +52,9 @@ abstract class Output
     public function __destruct()
     {
         header($this->status);
-        header('Content-Type: ' . $this->contentType);
+        header('Content-Type: '.$this->contentType);
         foreach ($this->headers as $key => $value) {
-            header($key . ': ' . $value);
+            header($key.': '.$value);
         }
     }
 
@@ -80,8 +79,8 @@ abstract class Output
      */
     protected function redirectToUrl(string $url)
     {
-        $this->setStatus(Output::FOUND);
-        header('Location: ' . $url);
+        $this->setStatus(self::FOUND);
+        header('Location: '.$url);
         exit();
     }
 
@@ -90,17 +89,18 @@ abstract class Output
      */
     protected function redirectPermanentlyToUrl(string $url)
     {
-        $this->setStatus(Output::MOVED_PERMANENTLY);
-        header('Location: ' . $url);
+        $this->setStatus(self::MOVED_PERMANENTLY);
+        header('Location: '.$url);
         exit();
     }
 
     /**
      * @param string $page
-     * @param array $options
-     * @param bool $absolute
-     * @param bool $html
-     * @param bool $urlencode
+     * @param array  $options
+     * @param bool   $absolute
+     * @param bool   $html
+     * @param bool   $urlencode
+     *
      * @return string
      */
     protected function createUrl(
@@ -109,17 +109,16 @@ abstract class Output
         bool $absolute = false,
         bool $html = true,
         bool $urlencode = true
-    ): string
-    {
+    ): string {
         $separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
         $params = array();
         foreach (array_merge(array(
-            'page' => $page
+            'page' => $page,
         ), $options) as $key => $value) {
-            $params[] = $key . '=' . ($urlencode ? urlencode($value) : $value);
+            $params[] = $key.'='.($urlencode ? urlencode($value) : $value);
         }
 
-        return ($absolute ? Input::getPath() : '') . '?' . implode($separator, $params);
+        return ($absolute ? Input::getPath() : '').'?'.implode($separator, $params);
     }
 
     protected function disallowCaching()

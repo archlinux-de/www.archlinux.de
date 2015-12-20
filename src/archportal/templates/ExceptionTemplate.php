@@ -3,6 +3,7 @@
 namespace archportal\templates;
 
 use archportal\lib\Config;
+
 ?><!DOCTYPE HTML>
 <html>
 <head>
@@ -26,10 +27,10 @@ use archportal\lib\Config;
     <div id="error">
         <h2><?= get_class($e); ?></h2>
         <p><?= sprintf($l10n->getText('I am sorry, something went wrong while processing file %s'),
-                '<strong>' . basename($e->getFile(), '.php') . '</strong>.'); ?></p>
+                '<strong>'.basename($e->getFile(), '.php').'</strong>.'); ?></p>
         <p><?= sprintf($l10n->getText('Contact %s'),
-                '<a href="mailto:' . Config::get('common', 'email') . '">' . Config::get('common',
-                    'email') . '</a>'); ?></p>
+                '<a href="mailto:'.Config::get('common', 'email').'">'.Config::get('common',
+                    'email').'</a>'); ?></p>
     </div>
     <div id="footer">
         <?= $l10n->getTextFile('PageFooter'); ?>

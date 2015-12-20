@@ -23,7 +23,6 @@ namespace archportal\lib;
 
 class L10n
 {
-
     /** @var array */
     private $localeInfo = array();
     /** @var string */
@@ -33,11 +32,11 @@ class L10n
     {
         $this->locale = Config::get('L10n', 'locale');
 
-        putenv('LC_ALL=' . $this->locale);
+        putenv('LC_ALL='.$this->locale);
         setlocale(LC_ALL, $this->locale);
         date_default_timezone_set(Config::get('L10n', 'timezone'));
         $this->localeInfo = localeconv();
-        bindtextdomain('archportal', __DIR__ . '/../l10n');
+        bindtextdomain('archportal', __DIR__.'/../l10n');
         textdomain('archportal');
     }
 
@@ -46,11 +45,12 @@ class L10n
      */
     private function getLocalePath(): string
     {
-        return __DIR__ . '/../l10n/' . strtok($this->locale, '.');
+        return __DIR__.'/../l10n/'.strtok($this->locale, '.');
     }
 
     /**
      * @param string $text
+     *
      * @return string
      */
     public function getText(string $text): string
@@ -61,7 +61,8 @@ class L10n
     /**
      * @param string $singular
      * @param string $plural
-     * @param int $count
+     * @param int    $count
+     *
      * @return string
      */
     public function ngetText(string $singular, string $plural, int $count): string
@@ -71,13 +72,14 @@ class L10n
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function getTextFile(string $name):string
     {
-        $key = 'L10n:' . $this->locale . ':' . $name;
+        $key = 'L10n:'.$this->locale.':'.$name;
         if (!($text = ObjectCache::getObject($key))) {
-            $text = file_get_contents($this->getLocalePath() . '/' . $name . '.html');
+            $text = file_get_contents($this->getLocalePath().'/'.$name.'.html');
             ObjectCache::addObject($key, $text);
         }
 
@@ -86,6 +88,7 @@ class L10n
 
     /**
      * @param int|null $timestamp
+     *
      * @return string
      */
     public function getDate($timestamp = null): string
@@ -95,6 +98,7 @@ class L10n
 
     /**
      * @param int|null $timestamp
+     *
      * @return string
      */
     public function getDateTime($timestamp = null): string
@@ -104,6 +108,7 @@ class L10n
 
     /**
      * @param int|null $timestamp
+     *
      * @return string
      */
     public function getGmDateTime($timestamp = null): string
@@ -113,6 +118,7 @@ class L10n
 
     /**
      * @param int $seconds
+     *
      * @return string
      */
     public function getEpoch(int $seconds): string

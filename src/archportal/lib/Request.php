@@ -23,7 +23,6 @@ namespace archportal\lib;
 
 class Request
 {
-
     /** @var array */
     private static $instances = array();
     /** @var array */
@@ -58,6 +57,7 @@ class Request
 
     /**
      * @param string $type
+     *
      * @return Request
      */
     public static function getInstance(string $type): Request
@@ -71,6 +71,7 @@ class Request
 
     /**
      * @param string $input
+     *
      * @return bool
      */
     private function is_unicode(string $input): bool
@@ -80,6 +81,7 @@ class Request
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isString(string $name): bool
@@ -89,6 +91,7 @@ class Request
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isEmptyString(string $name): bool
@@ -98,6 +101,7 @@ class Request
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isRequest(string $name): bool
@@ -107,6 +111,7 @@ class Request
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isInt(string $name): bool
@@ -117,6 +122,7 @@ class Request
     /**
      * @param string $name
      * @param string $regex
+     *
      * @return bool
      */
     public function isRegex(string $name, string $regex): bool
@@ -126,6 +132,7 @@ class Request
 
     /**
      * @param string $name
+     *
      * @return int
      */
     public function getHtmlLength(string $name): int
@@ -134,8 +141,9 @@ class Request
     }
 
     /**
-     * @param string $name
+     * @param string      $name
      * @param bool|string $default
+     *
      * @return string
      */
     public function getString(string $name, $default = false): string
@@ -150,8 +158,9 @@ class Request
     }
 
     /**
-     * @param string $name
+     * @param string      $name
      * @param bool|string $default
+     *
      * @return int
      */
     public function getInt(string $name, $default = false): int
@@ -166,8 +175,9 @@ class Request
     }
 
     /**
-     * @param string $name
+     * @param string      $name
      * @param bool|string $default
+     *
      * @return string
      */
     public function getHtml(string $name, $default = false): string

@@ -1,6 +1,7 @@
 <?php
 
 namespace archportal\templates;
+
 ?><?= get_class($e); ?>
 <?= $e->getMessage(); ?>
 
@@ -11,7 +12,7 @@ Line: <?= $e->getLine(); ?>
 Context:
 <?php
 foreach ($context as $line => $content) {
-    echo ++$line . ' ' . $content . "\n";
+    echo ++$line.' '.$content."\n";
 }
 ?>
 
@@ -24,6 +25,6 @@ Files:
 Request:
 <?php
 foreach ($_REQUEST as $key => $value) {
-    echo '[' . $key . '] => ' . print_r($value, true) . "\n";
+    echo '['.$key.'] => '.print_r($value, true)."\n";
 }
 ?>

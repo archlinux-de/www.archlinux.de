@@ -3,6 +3,7 @@
 namespace archportal\templates;
 
 use archportal\lib\Config;
+
 ?><!DOCTYPE HTML>
 <html>
 <head>
@@ -31,9 +32,9 @@ use archportal\lib\Config;
         <h3>Context:</h3>
                 <pre id="error-context"><?php
                     foreach ($context as $line => $content) {
-                        echo ++$line . ' ';
+                        echo ++$line.' ';
                         if ($line === $e->getLine()) {
-                            echo '<strong>' . htmlspecialchars($content) . '</strong>';
+                            echo '<strong>'.htmlspecialchars($content).'</strong>';
                         } else {
                             echo htmlspecialchars($content);
                         }
@@ -47,9 +48,9 @@ use archportal\lib\Config;
         <h3>Request:</h3>
                 <pre><?php
                     foreach ($_REQUEST as $key => $value) {
-                        echo '<strong>[' . htmlspecialchars($key) . ']</strong> => '
-                            . htmlspecialchars(print_r($value, true))
-                            . '<br />';
+                        echo '<strong>['.htmlspecialchars($key).']</strong> => '
+                            .htmlspecialchars(print_r($value, true))
+                            .'<br />';
                     }
                     ?></pre>
     </div>

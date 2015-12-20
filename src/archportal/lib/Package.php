@@ -25,7 +25,6 @@ use RuntimeException;
 
 class Package
 {
-
     /** @var string */
     private $packageDir = '';
     /** @var array */
@@ -40,15 +39,16 @@ class Package
     {
         $this->packageDir = $packageDir;
 
-        if (!file_exists($this->packageDir . '/desc') || !file_exists($this->packageDir . '/depends')) {
+        if (!file_exists($this->packageDir.'/desc') || !file_exists($this->packageDir.'/depends')) {
             throw new RuntimeException('Invalid package data');
         }
-        $this->desc = $this->loadInfo($this->packageDir . '/desc');
-        $this->depends = $this->loadInfo($this->packageDir . '/depends');
+        $this->desc = $this->loadInfo($this->packageDir.'/desc');
+        $this->depends = $this->loadInfo($this->packageDir.'/depends');
     }
 
     /**
      * @param string $file
+     *
      * @return array
      */
     private function loadInfo(string $file): array
@@ -162,7 +162,7 @@ class Package
     {
         if (isset($this->desc['URL'][0])) {
             if (!preg_match('#^(https?|ftp)://#', $this->desc['URL'][0])) {
-                return 'http://' . $this->desc['URL'][0];
+                return 'http://'.$this->desc['URL'][0];
             } else {
                 return $this->desc['URL'][0];
             }
@@ -264,8 +264,8 @@ class Package
      */
     public function getFiles(): array
     {
-        if (Config::get('packages', 'files') && file_exists($this->packageDir . '/files')) {
-            $data = $this->loadInfo($this->packageDir . '/files');
+        if (Config::get('packages', 'files') && file_exists($this->packageDir.'/files')) {
+            $data = $this->loadInfo($this->packageDir.'/files');
 
             return $data['FILES'];
         } else {
@@ -278,6 +278,6 @@ class Package
      */
     public function getMTime(): int
     {
-        return filemtime($this->packageDir . '/desc');
+        return filemtime($this->packageDir.'/desc');
     }
 }

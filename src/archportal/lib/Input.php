@@ -31,7 +31,6 @@ namespace archportal\lib;
  */
 class Input
 {
-
     /** @var int|null */
     private static $time = null;
     /** @var string|null */
@@ -49,7 +48,8 @@ class Input
 
     /**
      * @param string $name
-     * @param array $args
+     * @param array  $args
+     *
      * @return Request
      */
     public static function __callStatic(string $name, array $args): Request
@@ -101,7 +101,7 @@ class Input
         if (is_null(self::$countryCode)) {
             $ip = self::getClientIP();
             $isIPv6 = strpos($ip, ':') !== false;
-            $dbFile = '/usr/share/GeoIP/GeoIP' . ($isIPv6 ? 'v6' : '') . '.dat';
+            $dbFile = '/usr/share/GeoIP/GeoIP'.($isIPv6 ? 'v6' : '').'.dat';
 
             if (file_exists($dbFile)) {
                 $geoIp = geoip_open($dbFile, GEOIP_STANDARD);
@@ -126,7 +126,7 @@ class Input
     {
         if (is_null(self::$path)) {
             $directory = dirname(self::server()->getString('SCRIPT_NAME'));
-            self::$path = 'http' . (!self::server()->isString('HTTPS') ? '' : 's') . '://' . self::getHost() . ($directory == '/' ? '' : $directory) . '/';
+            self::$path = 'http'.(!self::server()->isString('HTTPS') ? '' : 's').'://'.self::getHost().($directory == '/' ? '' : $directory).'/';
         }
 
         return self::$path;

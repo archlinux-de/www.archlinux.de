@@ -27,7 +27,6 @@ use archportal\lib\Page;
 
 class MirrorStatusReflector extends Page
 {
-
     /** @var int */
     private $range = 604800; // 1 week
     /** @var string */
@@ -42,13 +41,13 @@ class MirrorStatusReflector extends Page
         FROM
             mirrors
         WHERE
-            lastsync >= ' . (Input::getTime() - $this->range) . '
+            lastsync >= '.(Input::getTime() - $this->range).'
             AND protocol IN ("ftp", "http", "htttps")
         ORDER BY
             lastsync DESC
         ');
         foreach ($mirrors as $mirror) {
-            $this->text .= gmdate('Y-m-d H:i' . $mirror['lastsync']) . ' ' . $mirror['url'] . "\n";
+            $this->text .= gmdate('Y-m-d H:i'.$mirror['lastsync']).' '.$mirror['url']."\n";
         }
     }
 

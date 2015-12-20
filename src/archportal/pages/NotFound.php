@@ -26,7 +26,6 @@ use archportal\lib\Page;
 
 class NotFound extends Page
 {
-
     public function prepare()
     {
         $this->setStatus(Output::NOT_FOUND);

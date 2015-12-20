@@ -25,7 +25,6 @@ use RuntimeException;
 
 abstract class CronJob
 {
-
     private $lockName = 'cronjob';
     private $waitForLock = 600;
     private $quiet = false;
@@ -81,12 +80,12 @@ abstract class CronJob
      */
     protected function printError($text)
     {
-        file_put_contents('php://stderr', $text . "\n");
+        file_put_contents('php://stderr', $text."\n");
     }
 
     /**
-     * @param int $current
-     * @param int $total
+     * @param int           $current
+     * @param int           $total
      * @param string string $prefix
      */
     protected function printProgress($current, $total, $prefix = '')
@@ -98,5 +97,4 @@ abstract class CronJob
             }
         }
     }
-
 }

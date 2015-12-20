@@ -29,7 +29,6 @@ use PDO;
 
 class GetFileFromMirror extends Output
 {
-
     /** @var int */
     private $lastsync = 0;
     /** @var string */
@@ -49,8 +48,8 @@ class GetFileFromMirror extends Output
         }
         $repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
         $architectures = implode('|', $this->getAvailableArchitectures());
-        $pkgextension = '(?:' . $architectures . '|any).pkg.tar.(?:g|x)z';
-        if (preg_match('#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#',
+        $pkgextension = '(?:'.$architectures.'|any).pkg.tar.(?:g|x)z';
+        if (preg_match('#^('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'$#',
             $this->file, $matches)) {
             $pkgdate = Database::prepare('
                 SELECT
@@ -108,7 +107,7 @@ class GetFileFromMirror extends Output
 
     public function printPage()
     {
-        $this->redirectToUrl($this->getMirror($this->lastsync) . $this->file);
+        $this->redirectToUrl($this->getMirror($this->lastsync).$this->file);
     }
 
     /**
@@ -136,6 +135,7 @@ class GetFileFromMirror extends Output
 
     /**
      * @param int $lastsync
+     *
      * @return string
      */
     private function getMirror(int $lastsync): string

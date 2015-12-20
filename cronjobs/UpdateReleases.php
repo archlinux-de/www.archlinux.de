@@ -19,7 +19,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -31,7 +31,6 @@ set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdateReleases extends CronJob
 {
-
     public function execute()
     {
         try {
@@ -45,7 +44,7 @@ class UpdateReleases extends CronJob
             }
             $this->updateRelengReleases($releases);
         } catch (RuntimeException $e) {
-            $this->printError('Warning: UpdateReleases failed: ' . $e->getMessage());
+            $this->printError('Warning: UpdateReleases failed: '.$e->getMessage());
         }
     }
 
@@ -122,18 +121,19 @@ class UpdateReleases extends CronJob
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            $this->printError('Warning: UpdateReleases failed: ' . $e->getMessage());
+            $this->printError('Warning: UpdateReleases failed: '.$e->getMessage());
         }
     }
 
     /**
      * @param string|null $data
+     *
      * @return int|null
      */
     private function getTimestamp($data)
     {
         if (is_null($data)) {
-            return null;
+            return;
         } else {
             return (new DateTime($data))->getTimestamp();
         }

@@ -28,7 +28,6 @@ use PDO;
 
 class MirrorStatusJSON extends Page
 {
-
     /** @var string */
     private $json = '';
 
@@ -51,7 +50,7 @@ class MirrorStatusJSON extends Page
         ');
         $json = array(
             'status' => '200 OK',
-            'location' => $this->getClientCountryName()
+            'location' => $this->getClientCountryName(),
         );
         foreach ($mirrors as $mirror) {
             $json['servers'][] = array(
@@ -59,7 +58,7 @@ class MirrorStatusJSON extends Page
                 'location' => $mirror['country'],
                 'last update' => $mirror['lastsync'] > 0 ? gmdate('Y-m-d H:i', $mirror['lastsync']) : '',
                 'average delay' => $mirror['delay'] ?: '',
-                'average performance' => $mirror['durationAvg'] ?: ''
+                'average performance' => $mirror['durationAvg'] ?: '',
             );
         }
         $this->json = json_encode($json);

@@ -26,7 +26,6 @@ use RuntimeException;
 
 class PackageDatabase implements Iterator
 {
-
     /** @var string */
     private $dbext = '.db';
     /** @var int */
@@ -48,8 +47,8 @@ class PackageDatabase implements Iterator
     /**
      * @param string $repository
      * @param string $architecture
-     * @param int $repoMinMTime
-     * @param int $packageMinMTime
+     * @param int    $repoMinMTime
+     * @param int    $packageMinMTime
      */
     public function __construct(
         string $repository,
@@ -63,14 +62,14 @@ class PackageDatabase implements Iterator
         $this->repoMinMTime = $repoMinMTime;
         $this->packageMinMTime = $packageMinMTime;
         $download = new Download(Config::get('packages',
-                'mirror') . $repository . '/os/' . $architecture . '/' . $repository . $this->dbext);
+                'mirror').$repository.'/os/'.$architecture.'/'.$repository.$this->dbext);
         $this->mtime = $download->getMTime();
 
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
         if ($this->mtime > $this->repoMinMTime && Input::getTime() - $this->mtime > Config::get('packages', 'delay')) {
-            system('bsdtar -xf ' . $download->getFile() . ' -C ' . $this->dbDir, $return);
+            system('bsdtar -xf '.$download->getFile().' -C '.$this->dbDir, $return);
             if ($return !== 0) {
                 throw new RuntimeException('Could not extract Database');
             }
@@ -102,7 +101,7 @@ class PackageDatabase implements Iterator
      */
     public function current(): Package
     {
-        return new Package($this->dbDir . '/' . $this->currentDir);
+        return new Package($this->dbDir.'/'.$this->currentDir);
     }
 
     /**
@@ -117,9 +116,9 @@ class PackageDatabase implements Iterator
     {
         do {
             $this->currentDir = readdir($this->dbHandle);
-        } while ($this->currentDir == '.' || $this->currentDir == '..' || filemtime($this->dbDir . '/' . $this->currentDir) <= $this->packageMinMTime
+        } while ($this->currentDir == '.' || $this->currentDir == '..' || filemtime($this->dbDir.'/'.$this->currentDir) <= $this->packageMinMTime
         );
-        $this->currentKey++;
+        ++$this->currentKey;
     }
 
     public function rewind()
@@ -148,6 +147,7 @@ class PackageDatabase implements Iterator
 
     /**
      * @param string $dir
+     *
      * @return bool
      */
     private function rmrf(string $dir): bool
@@ -156,8 +156,8 @@ class PackageDatabase implements Iterator
             $dh = opendir($dir);
             while (false !== ($file = readdir($dh))) {
                 if ($file != '.' && $file != '..') {
-                    if (!$this->rmrf($dir . '/' . $file)) {
-                        throw new RuntimeException('Could not remove ' . $dir . '/' . $file);
+                    if (!$this->rmrf($dir.'/'.$file)) {
+                        throw new RuntimeException('Could not remove '.$dir.'/'.$file);
                     }
                 }
             }
@@ -179,9 +179,9 @@ class PackageDatabase implements Iterator
             if (is_dir($this->dbDir)) {
                 $dh = opendir($this->dbDir);
                 while (false !== ($dir = readdir($dh))) {
-                    if (is_dir($this->dbDir . '/' . $dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir . '/' . $dir) > $this->packageMinMTime
+                    if (is_dir($this->dbDir.'/'.$dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir.'/'.$dir) > $this->packageMinMTime
                     ) {
-                        $packages++;
+                        ++$packages;
                     }
                 }
                 closedir($dh);
@@ -201,13 +201,13 @@ class PackageDatabase implements Iterator
         if (is_dir($this->dbDir)) {
             $dh = opendir($this->dbDir);
             while (false !== ($dir = readdir($dh))) {
-                if (is_dir($this->dbDir . '/' . $dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir . '/' . $dir) <= $this->packageMinMTime
+                if (is_dir($this->dbDir.'/'.$dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir.'/'.$dir) <= $this->packageMinMTime
                 ) {
                     $matches = array();
                     if (preg_match('/^([^\-].*)-[^\-]+?-[^\-]+?$/', $dir, $matches) == 1) {
                         $packages[] = $matches[1];
                     } else {
-                        throw new RuntimeException('Could not read package ' . $dir);
+                        throw new RuntimeException('Could not read package '.$dir);
                     }
                 }
             }

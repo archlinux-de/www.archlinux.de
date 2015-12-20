@@ -3,6 +3,7 @@
 namespace archportal\templates;
 
 use archportal\lib\Config;
+
 ?><!DOCTYPE HTML>
 <html>
 <head>
@@ -14,11 +15,13 @@ use archportal\lib\Config;
         ?>
         <link rel="stylesheet" media="screen" href="style/<?= $cssFile ?>.css"/>
         <?php
+
     }
     foreach ($this->getJS() as $jsFile) {
         ?>
         <script type="text/javascript" src="style/<?= $jsFile ?>.js"></script>
         <?php
+
     }
     ?>
     <link rel="alternate" type="application/atom+xml" title="<?= $this->l10n->getText('Recent news'); ?>"

@@ -29,7 +29,6 @@ use PDO;
 
 class Packages extends Page
 {
-
     /** @var int */
     private $page = 1;
     /** @var int */
@@ -87,21 +86,21 @@ class Packages extends Page
                     JOIN architectures repoarch
                     ON repoarch.id = repositories.arch,
                 architectures pkgarch
-                ' . (!empty($this->group) ? ',package_group, groups' : '') . '
-                ' . (!empty($this->search) && $this->searchField == 'file' ? ',file_index, package_file_index' : '') . '
+                '.(!empty($this->group) ? ',package_group, groups' : '').'
+                '.(!empty($this->search) && $this->searchField == 'file' ? ',file_index, package_file_index' : '').'
             WHERE
                 packages.repository = repositories.id
-                ' . (!empty($this->repository['name']) ? 'AND repositories.name = :repositoryName' : '') . '
+                '.(!empty($this->repository['name']) ? 'AND repositories.name = :repositoryName' : '').'
                 AND packages.arch = pkgarch.id
-                ' . (!empty($this->architecture['id']) ? 'AND repositories.arch = :architectureId' : '') . '
-                ' . (!empty($this->group) ? 'AND package_group.package = packages.id AND package_group.group = groups.id AND groups.name = :group' : '') . '
-                ' . (empty($this->search) ? '' : $this->getSearchStatement()) . '
-                ' . (!empty($this->search) && $this->searchField == 'file' ? ' GROUP BY packages.id ' : ' ') . '
-                ' . ($this->packager > 0 ? ' AND packages.packager = ' . $this->packager : '') . '
+                '.(!empty($this->architecture['id']) ? 'AND repositories.arch = :architectureId' : '').'
+                '.(!empty($this->group) ? 'AND package_group.package = packages.id AND package_group.group = groups.id AND groups.name = :group' : '').'
+                '.(empty($this->search) ? '' : $this->getSearchStatement()).'
+                '.(!empty($this->search) && $this->searchField == 'file' ? ' GROUP BY packages.id ' : ' ').'
+                '.($this->packager > 0 ? ' AND packages.packager = '.$this->packager : '').'
             ORDER BY
-                ' . $this->orderby . ' ' . $this->sort . '
+                '.$this->orderby.' '.$this->sort.'
             LIMIT
-                ' . (($this->page - 1) * $this->packagesPerPage) . ', ' . $this->packagesPerPage . '
+                '.(($this->page - 1) * $this->packagesPerPage).', '.$this->packagesPerPage.'
             ');
         !empty($this->repository['name']) && $packages->bindValue('repositoryName', $this->repository['name'],
             PDO::PARAM_STR);
@@ -113,46 +112,46 @@ class Packages extends Page
 
         $body = '
         <div class="box">
-        <h2>' . $this->getTitle() . '</h2>
+        <h2>'.$this->getTitle().'</h2>
         <form method="get">
         <input type="hidden" name="page" value="Packages" />
         <table id="searchbox">
             <tr>
-                <th>' . $this->l10n->getText('Repository') . '</th>
-                <th>' . $this->l10n->getText('Architecture') . '</th>
-                <th>' . $this->l10n->getText('Group') . '</th>
-                <th>' . $this->l10n->getText('Keywords') . '</th>
+                <th>'.$this->l10n->getText('Repository').'</th>
+                <th>'.$this->l10n->getText('Architecture').'</th>
+                <th>'.$this->l10n->getText('Group').'</th>
+                <th>'.$this->l10n->getText('Keywords').'</th>
             </tr>
             <tr>
                 <td>
-                    ' . $this->getRepositoryList() . '
+                    '.$this->getRepositoryList().'
                 </td>
                 <td>
-                    ' . $this->getArchitectureList() . '
+                    '.$this->getArchitectureList().'
                 </td>
                 <td>
-                    ' . $this->getGroupList() . '
+                    '.$this->getGroupList().'
                 </td>
                 <td>
-                    <input type="text" name="search" id="searchfield" class="ui-autocomplete-input" value="' . $this->search . '" size="34" maxlength="50" autocomplete="off" />
-                    <div style="padding-top: 5px;">' . $this->getSearchFields() . '</div>
-                    ' . (in_array($this->searchField, array(
+                    <input type="text" name="search" id="searchfield" class="ui-autocomplete-input" value="'.$this->search.'" size="34" maxlength="50" autocomplete="off" />
+                    <div style="padding-top: 5px;">'.$this->getSearchFields().'</div>
+                    '.(in_array($this->searchField, array(
                 'name',
-                'file'
+                'file',
             )) ? '			<script>
                         $(function () {
                             $("#searchfield").autocomplete({
-                                source: "' . $this->createUrl('PackagesSuggest', array(
+                                source: "'.$this->createUrl('PackagesSuggest', array(
                     'repository' => $this->repository['id'],
                     'architecture' => $this->architecture['id'],
-                    'field' => $this->searchField
-                )) . '",
+                    'field' => $this->searchField,
+                )).'",
                                 minLength: 2,
                                 delay: 100
                             });
                         });
-                    </script>' : '') . '
-                    <input type="hidden" name="packager" value="' . $this->packager . '" />
+                    </script>' : '').'
+                    <input type="hidden" name="packager" value="'.$this->packager.'" />
                 </td>
             </tr>
         </table>
@@ -164,6 +163,7 @@ class Packages extends Page
 
     /**
      * @param string $architecture
+     *
      * @return array
      */
     private function getAvailableRepositories(string $architecture = ''): array
@@ -184,7 +184,8 @@ class Packages extends Page
 
     /**
      * @param string $repositoryName
-     * @param int $architectureId
+     * @param int    $architectureId
+     *
      * @return int
      */
     private function getRepositoryId(string $repositoryName, int $architectureId): int
@@ -207,6 +208,7 @@ class Packages extends Page
 
     /**
      * @param string $repository
+     *
      * @return array
      */
     private function getAvailableArchitectures(string $repository = ''): array
@@ -229,6 +231,7 @@ class Packages extends Page
 
     /**
      * @param string $architectureName
+     *
      * @return int
      */
     private function getArchitectureId(string $architectureName): int
@@ -253,11 +256,11 @@ class Packages extends Page
             'builddate',
             'name',
             'repository',
-            'architecture'
+            'architecture',
         ));
         $this->sort = $this->getRequest('sort', array(
             'desc',
-            'asc'
+            'asc',
         ));
         $this->page = Input::get()->getInt('p', 1);
 
@@ -286,9 +289,10 @@ class Packages extends Page
     }
 
     /**
-     * @param string $name
-     * @param array $allowedValues
+     * @param string      $name
+     * @param array       $allowedValues
      * @param string|null $default
+     *
      * @return string
      */
     private function getRequest(string $name, array $allowedValues, $default = null): string
@@ -312,19 +316,19 @@ class Packages extends Page
         switch ($this->searchField) {
             case 'name':
                 // FIXME: this cannot use any index
-                $this->searchString = '%' . $this->search . '%';
+                $this->searchString = '%'.$this->search.'%';
 
                 return 'AND packages.name LIKE :search';
                 break;
             case 'description':
                 // FIXME: this cannot use any index
-                $this->searchString = '%' . $this->search . '%';
+                $this->searchString = '%'.$this->search.'%';
 
                 return 'AND packages.desc LIKE :search';
                 break;
             case 'file':
                 // FIXME: this is a very expensive query
-                $this->searchString = $this->search . '%';
+                $this->searchString = $this->search.'%';
 
                 return 'AND file_index.name LIKE :search AND file_index.id = package_file_index.file_index AND package_file_index.package = packages.id';
                 break;
@@ -341,7 +345,7 @@ class Packages extends Page
         $options = '';
         $searchFields = array(
             'name' => $this->l10n->getText('Name'),
-            'description' => $this->l10n->getText('Description')
+            'description' => $this->l10n->getText('Description'),
         );
         if (Config::get('packages', 'files')) {
             $searchFields['file'] = $this->l10n->getText('File');
@@ -352,7 +356,7 @@ class Packages extends Page
             } else {
                 $selected = '';
             }
-            $options .= ' <input type="radio" id="searchfield_' . $key . '" name="searchfield" value="' . $key . '"' . $selected . '  onchange="this.form.submit()" /> <label for="searchfield_' . $key . '">' . $value . '</label>';
+            $options .= ' <input type="radio" id="searchfield_'.$key.'" name="searchfield" value="'.$key.'"'.$selected.'  onchange="this.form.submit()" /> <label for="searchfield_'.$key.'">'.$value.'</label>';
         }
 
         return $options;
@@ -367,10 +371,10 @@ class Packages extends Page
             <option value="">&nbsp;</option>';
 
         foreach ($this->getAvailableRepositories($this->architecture['name']) as $repository) {
-            $options .= '<option value="' . $repository . '"' . ($this->repository['name'] == $repository ? ' selected="selected"' : '') . '>' . $repository . '</option>';
+            $options .= '<option value="'.$repository.'"'.($this->repository['name'] == $repository ? ' selected="selected"' : '').'>'.$repository.'</option>';
         }
 
-        return $options . '</select>';
+        return $options.'</select>';
     }
 
     /**
@@ -382,10 +386,10 @@ class Packages extends Page
             <option value="">&nbsp;</option>';
 
         foreach ($this->getAvailableArchitectures($this->repository['name']) as $architecture) {
-            $options .= '<option value="' . $architecture . '"' . ($this->architecture['name'] == $architecture ? ' selected="selected"' : '') . '>' . $architecture . '</option>';
+            $options .= '<option value="'.$architecture.'"'.($this->architecture['name'] == $architecture ? ' selected="selected"' : '').'>'.$architecture.'</option>';
         }
 
-        return $options . '</select>';
+        return $options.'</select>';
     }
 
     /**
@@ -405,14 +409,15 @@ class Packages extends Page
                 name ASC
             ');
         while (($group = $groups->fetchColumn())) {
-            $options .= '<option value="' . $group . '"' . ($this->group == $group ? ' selected="selected"' : '') . '>' . $group . '</option>';
+            $options .= '<option value="'.$group.'"'.($this->group == $group ? ' selected="selected"' : '').'>'.$group.'</option>';
         }
 
-        return $options . '</select>';
+        return $options.'</select>';
     }
 
     /**
      * @param \Traversable $packages
+     *
      * @return string
      */
     private function showPackageList(\Traversable $packages): string
@@ -423,50 +428,50 @@ class Packages extends Page
             'group' => $this->group,
             'packager' => $this->packager,
             'search' => $this->search,
-            'searchfield' => $this->searchField
+            'searchfield' => $this->searchField,
         );
 
         $newSort = ($this->sort == 'asc' ? 'desc' : 'asc');
 
-        $next = ' <a href="' . $this->createUrl('Packages', array_merge($parameters,
-                array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => ($this->page + 1)))) . '">&#187;</a>';
-        $prev = ($this->page > 1 ? '<a href="' . $this->createUrl('Packages', array_merge($parameters, array(
+        $next = ' <a href="'.$this->createUrl('Packages', array_merge($parameters,
+                array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => ($this->page + 1)))).'">&#187;</a>';
+        $prev = ($this->page > 1 ? '<a href="'.$this->createUrl('Packages', array_merge($parameters, array(
                 'orderby' => $this->orderby,
                 'sort' => $this->sort,
-                'p' => max(1, $this->page - 1)
-            ))) . '">&#171;</a>' : '');
+                'p' => max(1, $this->page - 1),
+            ))).'">&#171;</a>' : '');
 
         $body = '<table class="pretty-table">
             <tr>
-                <td class="pages" colspan="6">' . $prev . $next . '</td>
+                <td class="pages" colspan="6">'.$prev.$next.'</td>
             </tr>
             <tr>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
-                array('orderby' => 'repository', 'sort' => $newSort))) . '">' . $this->l10n->getText('Repository') . '</a></th>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
-                array('orderby' => 'architecture', 'sort' => $newSort))) . '">' . $this->l10n->getText('Architecture') . '</a></th>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
-                array('orderby' => 'name', 'sort' => $newSort))) . '">' . $this->l10n->getText('Name') . '</a></th>
-                <th>' . $this->l10n->getText('Version') . '</th>
-                <th>' . $this->l10n->getText('Description') . '</th>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
-                array('orderby' => 'builddate', 'sort' => $newSort))) . '">' . $this->l10n->getText('Last update') . '</a></th>
+                <th><a href="'.$this->createUrl('Packages', array_merge($parameters,
+                array('orderby' => 'repository', 'sort' => $newSort))).'">'.$this->l10n->getText('Repository').'</a></th>
+                <th><a href="'.$this->createUrl('Packages', array_merge($parameters,
+                array('orderby' => 'architecture', 'sort' => $newSort))).'">'.$this->l10n->getText('Architecture').'</a></th>
+                <th><a href="'.$this->createUrl('Packages', array_merge($parameters,
+                array('orderby' => 'name', 'sort' => $newSort))).'">'.$this->l10n->getText('Name').'</a></th>
+                <th>'.$this->l10n->getText('Version').'</th>
+                <th>'.$this->l10n->getText('Description').'</th>
+                <th><a href="'.$this->createUrl('Packages', array_merge($parameters,
+                array('orderby' => 'builddate', 'sort' => $newSort))).'">'.$this->l10n->getText('Last update').'</a></th>
             </tr>';
         foreach ($packages as $package) {
             $style = ($package['testing'] == 1 ? ' class="less"' : '');
-            $body .= '<tr' . $style . '>
-                <td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="' . $this->createUrl('PackageDetails',
+            $body .= '<tr'.$style.'>
+                <td>'.$package['repository'].'</td><td>'.$package['architecture'].'</td><td><a href="'.$this->createUrl('PackageDetails',
                     array(
                         'repo' => $package['repository'],
                         'arch' => $package['repositoryArchitecture'],
-                        'pkgname' => $package['name']
-                    )) . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . $this->cutString($package['desc'],
-                    70) . '</td><td>' . $this->l10n->getDateTime($package['builddate']) . '</td>
+                        'pkgname' => $package['name'],
+                    )).'">'.$package['name'].'</a></td><td>'.$package['version'].'</td><td>'.$this->cutString($package['desc'],
+                    70).'</td><td>'.$this->l10n->getDateTime($package['builddate']).'</td>
             </tr>';
         }
         $body .= '
             <tr>
-                <td class="pages" colspan="6">' . $prev . $next . '</td>
+                <td class="pages" colspan="6">'.$prev.$next.'</td>
             </tr>
         </table>';
 

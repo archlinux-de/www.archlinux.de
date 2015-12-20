@@ -25,7 +25,6 @@ use archportal\lib\Page;
 
 class Statistics extends Page
 {
-
     public function prepare()
     {
         $this->setTitle('Statistics');
@@ -33,11 +32,11 @@ class Statistics extends Page
         <div class="box">
             <h2>Statistics</h2>
             <ul>
-                <li><a href="' . $this->createUrl('RepositoryStatistics') . '">Repository statistics</a></li>
-                <li><a href="' . $this->createUrl('UserStatistics') . '">User statistics</a></li>
-                <li><a href="' . $this->createUrl('PackageStatistics') . '">Package statistics</a></li>
-                <li><a href="' . $this->createUrl('ModuleStatistics') . '">Module statistics</a></li>
-                <li><a href="' . $this->createUrl('FunStatistics') . '">Fun statistics</a></li>
+                <li><a href="'.$this->createUrl('RepositoryStatistics').'">Repository statistics</a></li>
+                <li><a href="'.$this->createUrl('UserStatistics').'">User statistics</a></li>
+                <li><a href="'.$this->createUrl('PackageStatistics').'">Package statistics</a></li>
+                <li><a href="'.$this->createUrl('ModuleStatistics').'">Module statistics</a></li>
+                <li><a href="'.$this->createUrl('FunStatistics').'">Fun statistics</a></li>
             </ul>
         </div>
         ';

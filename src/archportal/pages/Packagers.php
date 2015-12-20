@@ -28,7 +28,6 @@ use archportal\lib\RequestException;
 
 class Packagers extends Page
 {
-
     /** @var string */
     private $orderby = 'name';
     /** @var int */
@@ -41,12 +40,11 @@ class Packagers extends Page
             if (in_array(Input::get()->getString('orderby'), array(
                 'name',
                 'lastbuilddate',
-                'packages'
+                'packages',
             ))) {
                 $this->orderby = Input::get()->getString('orderby');
             }
         } catch (RequestException $e) {
-
         }
         $this->sort = Input::get()->getInt('sort', 0) > 0 ? 1 : 0;
         $packages = Database::query('SELECT COUNT(*) FROM packages')->fetchColumn();
@@ -74,32 +72,32 @@ class Packagers extends Page
             FROM
             packagers
             ORDER BY
-            ' . $this->orderby . ' ' . ($this->sort > 0 ? 'DESC' : 'ASC') . '
+            '.$this->orderby.' '.($this->sort > 0 ? 'DESC' : 'ASC').'
         ');
         $body = '
         <table class="pretty-table">
             <tr>
-                <th><a href="' . $this->createUrl('Packagers',
-                array('orderby' => 'name', 'sort' => abs($this->sort - 1))) . '">' . $this->l10n->getText('Name') . '</a></th>
-                <th>' . $this->l10n->getText('Email') . '</th>
-                <th colspan="2"><a href="' . $this->createUrl('Packagers', array(
+                <th><a href="'.$this->createUrl('Packagers',
+                array('orderby' => 'name', 'sort' => abs($this->sort - 1))).'">'.$this->l10n->getText('Name').'</a></th>
+                <th>'.$this->l10n->getText('Email').'</th>
+                <th colspan="2"><a href="'.$this->createUrl('Packagers', array(
                 'orderby' => 'packages',
-                'sort' => abs($this->sort - 1)
-            )) . '">' . $this->l10n->getText('Packages') . '</a></th>
-                <th><a href="' . $this->createUrl('Packagers', array(
+                'sort' => abs($this->sort - 1),
+            )).'">'.$this->l10n->getText('Packages').'</a></th>
+                <th><a href="'.$this->createUrl('Packagers', array(
                 'orderby' => 'lastbuilddate',
-                'sort' => abs($this->sort - 1)
-            )) . '">' . $this->l10n->getText('Last update') . '</a></th>
+                'sort' => abs($this->sort - 1),
+            )).'">'.$this->l10n->getText('Last update').'</a></th>
             </tr>';
         foreach ($packagers as $packager) {
             $percent = round(($packager['packages'] / $packages) * 100);
             $body .= '<tr>
-                <td>' . $packager['name'] . '</td>
-                <td>' . (empty($packager['email']) ? '' : '<a href="mailto:' . $packager['email'] . '">' . $packager['email'] . '</a>') . '</td>
-                <td style="text-align:right;"><a href="' . $this->createUrl('Packages',
-                    array('packager' => $packager['id'])) . '">' . $packager['packages'] . '</a></td>
-                <td style="width:100px;"><div style="background-color:#1793d1;width:' . $percent . 'px;">&nbsp;</div></td>
-                <td>' . $this->l10n->getDateTime($packager['lastbuilddate']) . '</td>
+                <td>'.$packager['name'].'</td>
+                <td>'.(empty($packager['email']) ? '' : '<a href="mailto:'.$packager['email'].'">'.$packager['email'].'</a>').'</td>
+                <td style="text-align:right;"><a href="'.$this->createUrl('Packages',
+                    array('packager' => $packager['id'])).'">'.$packager['packages'].'</a></td>
+                <td style="width:100px;"><div style="background-color:#1793d1;width:'.$percent.'px;">&nbsp;</div></td>
+                <td>'.$this->l10n->getDateTime($packager['lastbuilddate']).'</td>
             </tr>';
         }
         $body .= '</table>';

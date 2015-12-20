@@ -29,7 +29,6 @@ use DOMDocument;
 
 class GetRecentPackages extends Page
 {
-
     /** @var string */
     private $feed = '';
 
@@ -60,8 +59,8 @@ class GetRecentPackages extends Page
         $self->setAttribute('rel', 'self');
         $self->setAttribute('type', 'application/atom+xml');
 
-        $icon = $dom->createElement('icon', Input::getPath() . 'style/favicon.ico');
-        $logo = $dom->createElement('logo', Input::getPath() . 'style/archlogo-64.png');
+        $icon = $dom->createElement('icon', Input::getPath().'style/favicon.ico');
+        $logo = $dom->createElement('logo', Input::getPath().'style/archlogo-64.png');
 
         $body->appendChild($id);
         $body->appendChild($title);
@@ -106,10 +105,10 @@ class GetRecentPackages extends Page
             $entryId = $dom->createElement('id', $this->createUrl('PackageDetails', array(
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
-                'pkgname' => $package['name']
+                'pkgname' => $package['name'],
             ), true));
             $entryTitle = $dom->createElement('title',
-                $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')');
+                $package['name'].' '.$package['version'].' ('.$package['architecture'].')');
             $entryUpdated = $dom->createElement('updated', date('c', $package['builddate']));
 
             $entryAuthor = $dom->createElement('author');
@@ -122,7 +121,7 @@ class GetRecentPackages extends Page
             $entryLink->setAttribute('href', $this->createUrl('PackageDetails', array(
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
-                'pkgname' => $package['name']
+                'pkgname' => $package['name'],
             ), true));
             $entryLink->setAttribute('rel', 'alternate');
             $entryLink->setAttribute('type', 'text/html');

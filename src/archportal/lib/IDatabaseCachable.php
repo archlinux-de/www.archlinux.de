@@ -23,6 +23,5 @@ namespace archportal\lib;
 
 interface IDatabaseCachable
 {
-
     public static function updateDatabaseCache();
 }

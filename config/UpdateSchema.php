@@ -19,7 +19,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 
@@ -27,11 +27,11 @@ set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 system('mysqldump -d --compact -u'
-    . '\'' . escapeshellcmd(Config::get('Database', 'user')) . '\''
-    . ' '
-    . escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\'' . Config::get('Database',
-            'password') . '\'' : '')
-    . ' '
-    . '\'' . escapeshellcmd(Config::get('Database', 'database')) . '\''
-    . ' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > ' . __DIR__ . '/archportal_schema.sql'
+    .'\''.escapeshellcmd(Config::get('Database', 'user')).'\''
+    .' '
+    .escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\''.Config::get('Database',
+            'password').'\'' : '')
+    .' '
+    .'\''.escapeshellcmd(Config::get('Database', 'database')).'\''
+    .' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > '.__DIR__.'/archportal_schema.sql'
 );

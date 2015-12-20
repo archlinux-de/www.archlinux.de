@@ -19,7 +19,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -31,7 +31,6 @@ set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdateMirrors extends CronJob
 {
-
     public function execute()
     {
         try {
@@ -45,7 +44,7 @@ class UpdateMirrors extends CronJob
             }
             $this->updateMirrorlist($mirrors);
         } catch (RuntimeException $e) {
-            $this->printError('Warning: UpdateMirrors failed: ' . $e->getMessage());
+            $this->printError('Warning: UpdateMirrors failed: '.$e->getMessage());
         }
     }
 
@@ -89,7 +88,7 @@ class UpdateMirrors extends CronJob
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            $this->printError('Warning: updateMirrorlist failed: ' . $e->getMessage());
+            $this->printError('Warning: updateMirrorlist failed: '.$e->getMessage());
         }
     }
 
