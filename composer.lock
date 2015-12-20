@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "850fd77f892932280964f13bcf5524b7",
-    "content-hash": "e4f11fad5abdbf054db4d2bf0b23438c",
+    "hash": "3de7ea2d92914d9003f71aaf39d9a769",
+    "content-hash": "368d7dabc039b9ea9e19f4edbf878936",
     "packages": [
         {
             "name": "geoip/geoip",
@@ -542,6 +542,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7"
+    },
     "platform-dev": []
 }
