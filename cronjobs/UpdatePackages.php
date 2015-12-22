@@ -50,7 +50,7 @@ class UpdatePackages extends CronJob
     private $selectArchId = null;
     /** @var \PDOStatement */
     private $insertArchName = null;
-    /** @var \PDOStatement */
+    /** @var array */
     private $arches = array();
     /** @var \PDOStatement */
     private $selectRepoId = null;
@@ -200,7 +200,7 @@ class UpdatePackages extends CronJob
     {
         $lastLocalUpdate = ObjectStore::getObject('UpdatePackages:lastupdate');
         $download = new Download(Config::get('packages', 'mirror').'lastupdate');
-        $this->lastMirrorUpdate = file_get_contents($download->getFile());
+        $this->lastMirrorUpdate = (int) file_get_contents($download->getFile());
 
         return $this->lastMirrorUpdate !== $lastLocalUpdate;
     }

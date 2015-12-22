@@ -287,7 +287,7 @@ class Packages extends Page
         if (Config::get('packages', 'files')) {
             $searchFields[] = 'file';
         }
-        $this->searchField = $this->getRequest('searchfield', $searchFields);
+        $this->searchField = (int) $this->getRequest('searchfield', $searchFields);
     }
 
     /**

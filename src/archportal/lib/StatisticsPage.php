@@ -48,6 +48,11 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         $steps = 101;
         $total = count($hexarray);
         $gradient = array();
+        $start = array();
+        $end = array();
+        $step = array();
+        $rgb = array();
+        $hex = array();
         $fixend = 2;
         $passages = $total - 1;
         $stepsforpassage = floor($steps / $passages);

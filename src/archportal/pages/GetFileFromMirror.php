@@ -128,9 +128,9 @@ class GetFileFromMirror extends Output
     }
 
     /**
-     * @return string
+     * @return int
      */
-    private function getClientId(): string
+    private function getClientId(): int
     {
         return crc32(Input::getClientIP());
     }
