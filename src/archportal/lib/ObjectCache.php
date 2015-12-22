@@ -43,8 +43,8 @@ class ObjectCache
     public static function addObject(string $key, $object, int $ttl = 0): bool
     {
         $key = self::getPrefix().$key;
-        if (function_exists('apc_store')) {
-            return apc_store($key, $object, $ttl);
+        if (function_exists('apcu_store')) {
+            return apcu_store($key, $object, $ttl);
         } else {
             return false;
         }
@@ -58,8 +58,8 @@ class ObjectCache
     public static function getObject(string $key)
     {
         $key = self::getPrefix().$key;
-        if (function_exists('apc_fetch')) {
-            return apc_fetch($key);
+        if (function_exists('apcu_fetch')) {
+            return apcu_fetch($key);
         } else {
             return false;
         }
@@ -73,12 +73,8 @@ class ObjectCache
     public static function isObject(string $key): bool
     {
         $key = self::getPrefix().$key;
-        if (function_exists('apc_exists')) {
-            return apc_exists($key);
-        } elseif (function_exists('apc_fetch')) {
-            apc_fetch($key, $success);
-
-            return $success;
+        if (function_exists('apcu_exists')) {
+            return apcu_exists($key);
         } else {
             return false;
         }
