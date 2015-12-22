@@ -1,5 +1,8 @@
 #!/usr/bin/php
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -69,7 +72,7 @@ class UpdateNews extends CronJob
                 $stm->bindParam('summary', $newsEntry->summary, PDO::PARAM_STR);
                 $stm->bindParam('author_name', $newsEntry->author->name, PDO::PARAM_STR);
                 $stm->bindParam('author_uri', $newsEntry->author->uri, PDO::PARAM_STR);
-                $stm->bindValue('updated', (new DateTime($newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
+                $stm->bindValue('updated', (new DateTime((string) $newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
                 $stm->execute();
             }
             Database::commit();

@@ -1,5 +1,8 @@
 #!/usr/bin/php -d memory_limit=256M
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -145,7 +148,7 @@ class UpdatePackages extends CronJob
 
                     $this->selectPackageMTime->bindParam('repoId', $repoId, PDO::PARAM_INT);
                     $this->selectPackageMTime->execute();
-                    $packageMTime = $this->selectPackageMTime->fetchColumn();
+                    $packageMTime = (int) $this->selectPackageMTime->fetchColumn();
 
                     $this->printDebug("\tDownloading...");
                     $packages = new PackageDatabase($repo, $arch, $repoMTime, $packageMTime);
@@ -511,7 +514,7 @@ class UpdatePackages extends CronJob
                 $this->insertArchName->execute();
                 $id = Database::lastInsertId();
             }
-            $this->arches[$archName] = $id;
+            $this->arches[$archName] = (int) $id;
         }
 
         return $this->arches[$archName];
@@ -539,7 +542,7 @@ class UpdatePackages extends CronJob
             $id = Database::lastInsertId();
         }
 
-        return $id;
+        return (int) $id;
     }
 
     /**
@@ -563,7 +566,7 @@ class UpdatePackages extends CronJob
                 $this->insertPackager->execute();
                 $id = Database::lastInsertId();
             }
-            $this->packagers[$packager] = $id;
+            $this->packagers[$packager] = (int) $id;
         }
 
         return $this->packagers[$packager];
@@ -601,7 +604,7 @@ class UpdatePackages extends CronJob
                 $this->insertGroup->execute();
                 $id = Database::lastInsertId();
             }
-            $this->groups[$groupName] = $id;
+            $this->groups[$groupName] = (int) $id;
         }
 
         return $this->groups[$groupName];
@@ -639,7 +642,7 @@ class UpdatePackages extends CronJob
                 $this->insertLicense->execute();
                 $id = Database::lastInsertId();
             }
-            $this->licenses[$licenseName] = $id;
+            $this->licenses[$licenseName] = (int) $id;
         }
 
         return $this->licenses[$licenseName];
@@ -691,7 +694,7 @@ class UpdatePackages extends CronJob
                 $this->insertFileIndex->execute();
                 $id = Database::lastInsertId();
             }
-            $this->files[$fileName] = $id;
+            $this->files[$fileName] = (int) $id;
         }
 
         return $this->files[$fileName];
@@ -768,6 +771,8 @@ class UpdatePackages extends CronJob
         if ($packageId === false) {
             $packageId = Database::lastInsertId();
         }
+
+        $packageId = (int) $packageId;
 
         $this->addPackageToGroups($packageId, $package->getGroups());
         $this->addPackageToLicenses($packageId, $package->getLicenses());

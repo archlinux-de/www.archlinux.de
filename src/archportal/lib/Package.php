@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -120,7 +122,7 @@ class Package
      */
     public function getCompressedSize(): int
     {
-        return isset($this->desc['CSIZE'][0]) ? $this->desc['CSIZE'][0] : 0;
+        return isset($this->desc['CSIZE'][0]) ? (int) $this->desc['CSIZE'][0] : 0;
     }
 
     /**
@@ -128,7 +130,7 @@ class Package
      */
     public function getInstalledSize(): int
     {
-        return isset($this->desc['ISIZE'][0]) ? $this->desc['ISIZE'][0] : 0;
+        return isset($this->desc['ISIZE'][0]) ? (int) $this->desc['ISIZE'][0] : 0;
     }
 
     /**
@@ -192,7 +194,7 @@ class Package
      */
     public function getBuildDate(): int
     {
-        return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : 0;
+        return isset($this->desc['BUILDDATE'][0]) ? (int) $this->desc['BUILDDATE'][0] : 0;
     }
 
     /**

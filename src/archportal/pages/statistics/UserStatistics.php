@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -90,23 +92,23 @@ class UserStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Sum of submitted packages</th>
-                    <td>'.number_format($log['sumcount']).'</td>
+                    <td>'.number_format((float) $log['sumcount']).'</td>
                 </tr>
                 <tr>
                     <th>Number of different packages</th>
-                    <td>'.number_format($log['diffcount']).'</td>
+                    <td>'.number_format((float) $log['diffcount']).'</td>
                 </tr>
                 <tr>
                     <th>Lowest number of installed packages</th>
-                    <td>'.number_format($log['mincount']).'</td>
+                    <td>'.number_format((float) $log['mincount']).'</td>
                 </tr>
                 <tr>
                     <th>Highest number of installed packages</th>
-                    <td>'.number_format($log['maxcount']).'</td>
+                    <td>'.number_format((float) $log['maxcount']).'</td>
                 </tr>
                 <tr>
                     <th>Average number of installed packages</th>
-                    <td>'.number_format($log['avgcount']).'</td>
+                    <td>'.number_format((float) $log['avgcount']).'</td>
                 </tr>
             </table>
             </div>

@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -130,31 +132,31 @@ class L10n
         $months = 4 * $weeks;
         $years = 12 * $months;
         if ($seconds >= $years) {
-            $result = round($seconds / $years);
+            $result = intval(round($seconds / $years));
 
             return sprintf($this->ngetText('%d year', '%d years', $result), $result);
         } elseif ($seconds >= $months) {
-            $result = round($seconds / $months);
+            $result = (int) round($seconds / $months);
 
             return sprintf($this->ngetText('%d month', '%d months', $result), $result);
         } elseif ($seconds >= $weeks) {
-            $result = round($seconds / $weeks);
+            $result = (int) round($seconds / $weeks);
 
             return sprintf($this->ngetText('%d week', '%d weeks', $result), $result);
         } elseif ($seconds >= $days) {
-            $result = round($seconds / $days);
+            $result = (int) round($seconds / $days);
 
             return sprintf($this->ngetText('%d day', '%d days', $result), $result);
         } elseif ($seconds >= $hours) {
-            $result = round($seconds / $hours, 2);
+            $result = (int) round($seconds / $hours, 2);
 
             return sprintf($this->getText('%.2f hours'), $result);
         } elseif ($seconds >= $minutes) {
-            $result = round($seconds / $minutes, 2);
+            $result = (int) round($seconds / $minutes, 2);
 
             return sprintf($this->getText('%.2f minutes'), $result);
         } else {
-            $result = round($seconds, 2);
+            $result = (int) round($seconds, 2);
 
             return sprintf($this->getText('%.2f seconds'), $result);
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -166,7 +168,7 @@ class Request
     public function getInt(string $name, $default = false): int
     {
         if ($this->isInt($name)) {
-            return $this->request[$name];
+            return (int) $this->request[$name];
         } elseif ($default !== false) {
             return $default;
         } else {

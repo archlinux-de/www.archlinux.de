@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -41,7 +43,7 @@ abstract class CronJob
 
     public function __construct()
     {
-        ini_set('max_execution_time', 0);
+        ini_set('max_execution_time', '0');
         if (count(getopt('q', array('quiet'))) > 0) {
             $this->quiet = true;
         }

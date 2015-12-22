@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -64,51 +66,51 @@ class RepositoryStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Groups</th>
-                    <td>'.number_format($data['groups']).'</td>
+                    <td>'.number_format((float) $data['groups']).'</td>
                 </tr>
                 <tr>
                     <th>Packages</th>
-                    <td>'.number_format($data['packages']).'</td>
+                    <td>'.number_format((float) $data['packages']).'</td>
                 </tr>
                 <tr>
                     <th>Files</th>
-                    <td>'.number_format($data['files']).'</td>
+                    <td>'.number_format((float) $data['files']).'</td>
                 </tr>
                 <tr>
                     <th>Size of file index</th>
-                    <td>'.number_format($data['file_index']).'</td>
+                    <td>'.number_format((float) $data['file_index']).'</td>
                 </tr>
                 <tr>
                     <th>Licenses</th>
-                    <td>'.number_format($data['licenses']).'</td>
+                    <td>'.number_format((float) $data['licenses']).'</td>
                 </tr>
                 <tr>
                     <th>Dependencies</th>
-                    <td>'.number_format($data['depends']).'</td>
+                    <td>'.number_format((float) $data['depends']).'</td>
                 </tr>
                 <tr>
                     <th>Optional dependencies</th>
-                    <td>'.number_format($data['optdepends']).'</td>
+                    <td>'.number_format((float) $data['optdepends']).'</td>
                 </tr>
                 <tr>
                     <th>Provides</th>
-                    <td>'.number_format($data['provides']).'</td>
+                    <td>'.number_format((float) $data['provides']).'</td>
                 </tr>
                 <tr>
                     <th>Conflicts</th>
-                    <td>'.number_format($data['conflicts']).'</td>
+                    <td>'.number_format((float) $data['conflicts']).'</td>
                 </tr>
                 <tr>
                     <th>Replaces</th>
-                    <td>'.number_format($data['replaces']).'</td>
+                    <td>'.number_format((float) $data['replaces']).'</td>
                 </tr>
                 <tr>
                     <th>Total size of repositories</th>
-                    <td>'.self::formatBytes($data['csize']).'Byte</td>
+                    <td>'.self::formatBytes((int) $data['csize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Total size of files</th>
-                    <td>'.self::formatBytes($data['isize']).'Byte</td>
+                    <td>'.self::formatBytes((int) $data['isize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Packager</th>
@@ -119,19 +121,19 @@ class RepositoryStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Size of packages</th>
-                    <td>&empty; '.self::formatBytes($data['avgcsize']).'Byte</td>
+                    <td>&empty; '.self::formatBytes((int) $data['avgcsize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Size of files</th>
-                    <td>&empty; '.self::formatBytes($data['avgisize']).'Byte</td>
+                    <td>&empty; '.self::formatBytes((int) $data['avgisize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Files per package</th>
-                    <td>&empty; '.number_format($data['avgfiles'], 2).'</td>
+                    <td>&empty; '.number_format((float) $data['avgfiles'], 2).'</td>
                 </tr>
                 <tr>
                     <th>Packages per packager</th>
-                    <td>&empty; '.number_format($data['avgpkgperpackager'], 2).'</td>
+                    <td>&empty; '.number_format((float) $data['avgpkgperpackager'], 2).'</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Repositories</th>
@@ -252,7 +254,7 @@ class RepositoryStatistics extends StatisticsPage
                     </tr>
                     <tr>
                         <td style="width: 50px;">Size</td>
-                        <td>'.self::getBar($data['size'], $total['size']).'</td>
+                        <td>'.self::getBar((int) $data['size'], (int) $total['size']).'</td>
                     </tr>
                     </table>
                     </div>
