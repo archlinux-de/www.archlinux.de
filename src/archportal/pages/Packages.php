@@ -205,7 +205,7 @@ class Packages extends Page
         $stm->bindParam('architectureId', $architectureId, PDO::PARAM_INT);
         $stm->execute();
 
-        return $stm->fetchColumn();
+        return (int) $stm->fetchColumn();
     }
 
     /**
