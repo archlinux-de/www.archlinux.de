@@ -45,8 +45,6 @@ class ObjectCache
         $key = self::getPrefix().$key;
         if (function_exists('apc_store')) {
             return apc_store($key, $object, $ttl);
-        } elseif (function_exists('xcache_set')) {
-            return xcache_set($key, $object, $ttl);
         } else {
             return false;
         }
@@ -62,13 +60,6 @@ class ObjectCache
         $key = self::getPrefix().$key;
         if (function_exists('apc_fetch')) {
             return apc_fetch($key);
-        } elseif (function_exists('xcache_get')) {
-            $result = xcache_get($key);
-            if (is_null($result)) {
-                return false;
-            }
-
-            return $result;
         } else {
             return false;
         }
@@ -88,8 +79,6 @@ class ObjectCache
             apc_fetch($key, $success);
 
             return $success;
-        } elseif (function_exists('xcache_isset')) {
-            return xcache_isset($key);
         } else {
             return false;
         }
