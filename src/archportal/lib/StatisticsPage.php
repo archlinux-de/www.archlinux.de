@@ -103,13 +103,13 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
 
         return '<table style="width:100%;">
             <tr>
-                <td style="padding:0px;margin:0px;">
+                <td style="padding:0;margin:0;">
                     <div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
         title="' . number_format($value) . ' of ' . number_format($total) . '">
             &nbsp;
                 </div>
                 </td>
-                <td style="padding:0px;margin:0px;width:80px;text-align:right;color:#' . $color . ';">
+                <td style="padding:0;margin:0;width:80px;text-align:right;color:#' . $color . ';">
                     ' . number_format($percent, 2) . '&nbsp;%
                 </td>
             </tr>

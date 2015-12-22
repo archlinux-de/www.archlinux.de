@@ -49,7 +49,7 @@ class UserStatistics extends StatisticsPage
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
-                    <th colspan="2" style="margin:0px;padding:0px;"><h1 id="packagename">User statistics</h1></th>
+                    <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">User statistics</h1></th>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Common statistics</th>
