@@ -106,7 +106,7 @@ class MirrorStatus extends Page
             $body .= '<tr>
                 <td><a href="'.$mirror['url'].'" rel="nofollow">'.$mirror['url'].'</a></td>
                 <td>'.$mirror['country'].'</td>
-                <td>'.$this->l10n->getEpoch($mirror['durationAvg']).'</td>
+                <td>'.$this->l10n->getEpoch((int) round($mirror['durationAvg'])).'</td>
                 <td>'.$this->l10n->getEpoch($mirror['delay']).'</td>
                 <td>'.$this->l10n->getGmDateTime($mirror['lastsync']).'</td>
             </tr>';
