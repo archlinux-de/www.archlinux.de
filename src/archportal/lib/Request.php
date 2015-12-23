@@ -143,16 +143,16 @@ class Request
     }
 
     /**
-     * @param string      $name
-     * @param bool|string $default
+     * @param string $name
+     * @param string $default
      *
      * @return string
      */
-    public function getString(string $name, $default = false): string
+    public function getString(string $name, string $default = null): string
     {
         if (!$this->isEmptyString($name)) {
             return $this->request[$name];
-        } elseif ($default !== false) {
+        } elseif ($default !== null) {
             return $default;
         } else {
             throw new RequestException($name);
@@ -160,16 +160,16 @@ class Request
     }
 
     /**
-     * @param string      $name
-     * @param bool|string $default
+     * @param string $name
+     * @param string $default
      *
      * @return int
      */
-    public function getInt(string $name, $default = false): int
+    public function getInt(string $name, string $default = null): int
     {
         if ($this->isInt($name)) {
             return (int) $this->request[$name];
-        } elseif ($default !== false) {
+        } elseif ($default !== null) {
             return $default;
         } else {
             throw new RequestException($name);
@@ -177,12 +177,12 @@ class Request
     }
 
     /**
-     * @param string      $name
-     * @param bool|string $default
+     * @param string $name
+     * @param string $default
      *
      * @return string
      */
-    public function getHtml(string $name, $default = false): string
+    public function getHtml(string $name, string $default = null): string
     {
         return htmlspecialchars($this->getString($name, $default), ENT_COMPAT);
     }
