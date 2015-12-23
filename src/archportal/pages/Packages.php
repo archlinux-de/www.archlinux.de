@@ -264,7 +264,7 @@ class Packages extends Page
             'desc',
             'asc',
         ));
-        $this->page = Input::get()->getInt('p', 1);
+        $this->page = max(Input::get()->getInt('p', 1), 1);
 
         $this->repository['name'] = $this->getRequest('repository', $this->getAvailableRepositories(), '');
         $this->architecture['name'] = $this->getRequest('architecture',
