@@ -161,11 +161,11 @@ class Request
 
     /**
      * @param string $name
-     * @param string $default
+     * @param int $default
      *
      * @return int
      */
-    public function getInt(string $name, string $default = null): int
+    public function getInt(string $name, int $default = null): int
     {
         if ($this->isInt($name)) {
             return (int) $this->request[$name];
