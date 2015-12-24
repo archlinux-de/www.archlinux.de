@@ -249,7 +249,7 @@ class Packages extends Page
         $stm->bindParam('architectureName', $architectureName, PDO::PARAM_STR);
         $stm->execute();
 
-        return $stm->fetchColumn();
+        return (int) $stm->fetchColumn();
     }
 
     private function initParameters()
