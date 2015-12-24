@@ -51,8 +51,8 @@ class Packages extends Page
     private $search = '';
     /** @var string */
     private $searchString = '';
-    /** @var int */
-    private $searchField = 0;
+    /** @var string */
+    private $searchField = '';
 
     public function prepare()
     {
@@ -287,7 +287,7 @@ class Packages extends Page
         if (Config::get('packages', 'files')) {
             $searchFields[] = 'file';
         }
-        $this->searchField = (int) $this->getRequest('searchfield', $searchFields);
+        $this->searchField = $this->getRequest('searchfield', $searchFields);
     }
 
     /**
