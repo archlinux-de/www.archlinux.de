@@ -53,10 +53,12 @@ abstract class Output
 
     public function __destruct()
     {
-        header($this->status);
-        header('Content-Type: '.$this->contentType);
-        foreach ($this->headers as $key => $value) {
-            header($key.': '.$value);
+        if (!headers_sent()) {
+            header($this->status);
+            header('Content-Type: '.$this->contentType);
+            foreach ($this->headers as $key => $value) {
+                header($key.': '.$value);
+            }
         }
     }
 
