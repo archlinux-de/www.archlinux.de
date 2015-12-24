@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 

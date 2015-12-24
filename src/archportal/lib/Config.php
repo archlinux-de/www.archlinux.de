@@ -63,7 +63,7 @@ class Config
      *
      * @return bool
      */
-    public static function has($section, $key)
+    public static function has(string $section, string $key): bool
     {
         return isset(self::$config[$section][$key]);
     }
