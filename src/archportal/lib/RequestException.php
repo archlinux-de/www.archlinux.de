@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -25,10 +27,11 @@ use RuntimeException;
 
 class RequestException extends RuntimeException
 {
-
-    public function __construct($message)
+    /**
+     * @param string $message
+     */
+    public function __construct(string $message)
     {
-        parent::__construct('Parameter "' . $message . '" could not be read');
+        parent::__construct('Parameter "'.$message.'" could not be read');
     }
-
 }

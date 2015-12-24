@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -19,7 +22,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -31,7 +34,6 @@ set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdateMirrors extends CronJob
 {
-
     public function execute()
     {
         try {
@@ -45,11 +47,11 @@ class UpdateMirrors extends CronJob
             }
             $this->updateMirrorlist($mirrors);
         } catch (RuntimeException $e) {
-            $this->printError('Warning: UpdateMirrors failed: ' . $e->getMessage());
+            $this->printError('Warning: UpdateMirrors failed: '.$e->getMessage());
         }
     }
 
-    private function updateMirrorlist($mirrors)
+    private function updateMirrorlist(array $mirrors)
     {
         try {
             Database::beginTransaction();
@@ -89,11 +91,11 @@ class UpdateMirrors extends CronJob
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            $this->printError('Warning: updateMirrorlist failed: ' . $e->getMessage());
+            $this->printError('Warning: updateMirrorlist failed: '.$e->getMessage());
         }
     }
 
-    private function getMirrorStatus()
+    private function getMirrorStatus(): array
     {
         $download = new Download(Config::get('mirrors', 'status'));
 
@@ -108,7 +110,6 @@ class UpdateMirrors extends CronJob
 
         return $mirrors;
     }
-
 }
 
 UpdateMirrors::run();

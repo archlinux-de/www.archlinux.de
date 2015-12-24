@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -25,10 +27,8 @@ use archportal\lib\Page;
 
 class MirrorProblems extends Page
 {
-
     public function prepare()
     {
         $this->redirectPermanentlyToUrl('https://www.archlinux.org/mirrors/status/#outofsync');
     }
-
 }

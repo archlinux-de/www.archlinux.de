@@ -17,7 +17,7 @@ Config::set('mirrors', 'default', 'http://mirror.de.leaseweb.net/archlinux/');
 Config::set('mirrors', 'country', 'DE');
 
 Config::set('packages', 'repositories', array(
-    'core' => array('x86_64')
+    'core' => array('x86_64'),
 ));
 Config::set('packages', 'cgit', 'https://projects.archlinux.de/svntogit/');
 

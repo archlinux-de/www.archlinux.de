@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,7 +25,7 @@ namespace archportal\lib;
 
 class Routing
 {
-
+    /** @var array */
     private static $pages = array(
         'GetFileFromMirror' => 'pages\GetFileFromMirror',
         'GetOpenSearch' => 'pages\GetOpenSearch',
@@ -35,8 +37,9 @@ class Routing
         'Packagers' => 'pages\Packagers',
         'Packages' => 'pages\Packages',
         'PackagesSuggest' => 'pages\PackagesSuggest',
-        'Start' => 'pages\Start'
+        'Start' => 'pages\Start',
     );
+    /** @var array */
     private static $statisticsPages = array(
         'FunStatistics' => 'pages\statistics\FunStatistics',
         'ModuleStatistics' => 'pages\statistics\ModuleStatistics',
@@ -44,20 +47,22 @@ class Routing
         'PostPackageList' => 'pages\statistics\PostPackageList',
         'RepositoryStatistics' => 'pages\statistics\RepositoryStatistics',
         'Statistics' => 'pages\statistics\Statistics',
-        'UserStatistics' => 'pages\statistics\UserStatistics'
+        'UserStatistics' => 'pages\statistics\UserStatistics',
     );
+    /** @var array */
     private static $legacyPages = array(
         'ArchitectureDifferences' => 'pages\legacy\ArchitectureDifferences',
         'MirrorProblems' => 'pages\legacy\MirrorProblems',
         'MirrorStatusJSON' => 'pages\legacy\MirrorStatusJSON',
-        'MirrorStatusReflector' => 'pages\legacy\MirrorStatusReflector'
+        'MirrorStatusReflector' => 'pages\legacy\MirrorStatusReflector',
     );
 
     /**
      * @param string $page
+     *
      * @return string
      */
-    public static function getPageClass($page)
+    public static function getPageClass(string $page): string
     {
         if (Config::get('common', 'statistics')) {
             self::$pages = array_merge(self::$pages, self::$statisticsPages);
@@ -72,7 +77,6 @@ class Routing
             $class = self::$pages['NotFound'];
         }
 
-        return 'archportal\\' . $class;
+        return 'archportal\\'.$class;
     }
-
 }

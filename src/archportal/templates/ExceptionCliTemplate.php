@@ -1,6 +1,9 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace archportal\templates;
+
 ?><?= get_class($e); ?>
 
 <?= $e->getMessage(); ?>
@@ -16,7 +19,7 @@ Line: <?= $e->getLine(); ?>
 Context:
 <?php
 foreach ($context as $line => $content) {
-    echo ++$line . ' ' . $content . "\n";
+    echo ++$line.' '.$content."\n";
 }
 ?>
 

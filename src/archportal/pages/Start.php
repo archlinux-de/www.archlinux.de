@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -28,7 +30,7 @@ use PDO;
 
 class Start extends Page
 {
-
+    /** @var int */
     private $architectureId = 0;
 
     public function prepare()
@@ -51,10 +53,10 @@ class Start extends Page
         $body = '<div id="left-wrapper">
             <div id="left">
                 <div id="intro" class="box">
-                    ' . $this->l10n->getTextFile('StartWelcome') . '
+                    '.$this->l10n->getTextFile('StartWelcome').'
                 </div>
                 <div id="news">
-                ' . $this->getNews() . '
+                '.$this->getNews().'
                 </div>
             </div>
         </div>
@@ -62,12 +64,13 @@ class Start extends Page
             <div id="pkgsearch">
                 <form method="get">
                     <input type="hidden" name="page" value="Packages" />
-                    <label for="searchfield">' . $this->l10n->getText('Package search') . ':</label>
+                    <label for="searchfield">'.$this->l10n->getText('Package search').':</label>
                     <input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off" />
                     <script>
                         $(function () {
                             $("#searchfield").autocomplete({
-                                source: "' . $this->createUrl('PackagesSuggest', array('architecture' => $this->architectureId)) . '",
+                                source: "'.$this->createUrl('PackagesSuggest',
+                array('architecture' => $this->architectureId)).'",
                                 minLength: 2,
                                 delay: 100
                             });
@@ -76,17 +79,22 @@ class Start extends Page
                 </form>
             </div>
             <div id="pkgrecent" class="box">
-                ' . $this->getRecentPackages() . '
+                '.$this->getRecentPackages().'
             </div>
             <div id="sidebar">
-                ' . $this->l10n->getTextFile('StartSidebar') . '
+                '.$this->l10n->getTextFile('StartSidebar').'
             </div>
         </div>
     ';
         $this->setBody($body);
     }
 
-    private function getArchitectureId($architectureName)
+    /**
+     * @param string $architectureName
+     *
+     * @return int
+     */
+    private function getArchitectureId(string $architectureName): int
     {
         $stm = Database::prepare('
             SELECT
@@ -102,9 +110,14 @@ class Start extends Page
         return $stm->fetchColumn();
     }
 
-    private function getNews()
+    /**
+     * @return string
+     */
+    private function getNews(): string
     {
-        $result = '<h3>' . $this->l10n->getText('Recent news') . ' <span class="more">(<a href="' . htmlspecialchars(Config::get('news', 'archive')) . '">mehr</a>)</span></h3><a href="' . htmlspecialchars(Config::get('news', 'feed')) . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
+        $result = '<h3>'.$this->l10n->getText('Recent news').' <span class="more">(<a href="'.htmlspecialchars(Config::get('news',
+                'archive')).'">mehr</a>)</span></h3><a href="'.htmlspecialchars(Config::get('news',
+                'feed')).'" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 
         $newsFeed = Database::query('
             SELECT
@@ -119,17 +132,20 @@ class Start extends Page
             LIMIT 6
             ');
         foreach ($newsFeed as $entry) {
-            $result.= '
-            <h4><a href="' . htmlspecialchars($entry['link']) . '">' . $entry['title'] . '</a></h4>
-            <p class="date">' . $this->l10n->getDate($entry['updated']) . '</p>
-            ' . $entry['summary'] . '
+            $result .= '
+            <h4><a href="'.htmlspecialchars($entry['link']).'">'.$entry['title'].'</a></h4>
+            <p class="date">'.$this->l10n->getDate($entry['updated']).'</p>
+            '.$entry['summary'].'
             ';
         }
 
         return $result;
     }
 
-    private function getRecentPackages()
+    /**
+     * @return string
+     */
+    private function getRecentPackages(): string
     {
         $packages = Database::prepare('
         SELECT
@@ -153,17 +169,20 @@ class Start extends Page
         ');
         $packages->bindParam('architectureId', $this->architectureId, PDO::PARAM_INT);
         $packages->execute();
-        $result = '<h3>' . $this->l10n->getText('Recent packages') . ' <span class="more">(<a href="' . $this->createUrl('Packages') . '">mehr</a>)</span></h3><a href="' . $this->createUrl('GetRecentPackages') . '" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
+        $result = '<h3>'.$this->l10n->getText('Recent packages').' <span class="more">(<a href="'.$this->createUrl('Packages').'">mehr</a>)</span></h3><a href="'.$this->createUrl('GetRecentPackages').'" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a><table>';
         foreach ($packages as $package) {
-            $result.= '
-            <tr' . ( $package['testing'] == 1 ? ' class="testing"' : '') . '>
-                <td class="pkgname"><a href="' . $this->createUrl('PackageDetails', array('repo' => $package['repository'], 'arch' => $package['architecture'], 'pkgname' => $package['name'])) . '">' . $package['name'] . '</a></td>
-                <td class="pkgver">' . $package['version'] . '</td>
+            $result .= '
+            <tr'.($package['testing'] == 1 ? ' class="testing"' : '').'>
+                <td class="pkgname"><a href="'.$this->createUrl('PackageDetails', array(
+                    'repo' => $package['repository'],
+                    'arch' => $package['architecture'],
+                    'pkgname' => $package['name'],
+                )).'">'.$package['name'].'</a></td>
+                <td class="pkgver">'.$package['version'].'</td>
             </tr>
             ';
         }
 
-        return $result . '</table>';
+        return $result.'</table>';
     }
-
 }

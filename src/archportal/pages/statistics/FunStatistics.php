@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -30,7 +32,6 @@ use RuntimeException;
 
 class FunStatistics extends StatisticsPage
 {
-
     public function prepare()
     {
         $this->setTitle('Fun statistics');
@@ -51,7 +52,7 @@ class FunStatistics extends StatisticsPage
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . self::getRangeTime() . '
+                time >= '.self::getRangeTime().'
             ')->fetchColumn();
             $stm = Database::prepare('
             SELECT
@@ -60,7 +61,7 @@ class FunStatistics extends StatisticsPage
                 pkgstats_packages
             WHERE
                 pkgname = :pkgname
-                AND month >= ' . self::getRangeYearMonth() . '
+                AND month >= '.self::getRangeYearMonth().'
             GROUP BY
                 pkgname
             ');
@@ -70,101 +71,101 @@ class FunStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Browsers</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'Mozilla Firefox' => 'firefox',
-                        'Chromium' => 'chromium',
-                        'Konqueror' => 'kdebase-konqueror',
-                        'Midori' => 'midori',
-                        'Epiphany' => 'epiphany',
-                        'Opera' => 'opera'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'Mozilla Firefox' => 'firefox',
+                    'Chromium' => 'chromium',
+                    'Konqueror' => 'kdebase-konqueror',
+                    'Midori' => 'midori',
+                    'Epiphany' => 'epiphany',
+                    'Opera' => 'opera',
+                )).'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Editors</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'Vim' => array(
-                            'vim',
-                            'gvim'
-                        ),
-                        'Emacs' => array(
-                            'emacs',
-                            'xemacs'
-                        ),
-                        'Nano' => 'nano',
-                        'Gedit' => 'gedit',
-                        'Kate' => array('kdesdk-kate', 'kate'),
-                        'Kwrite' => array('kdebase-kwrite', 'kwrite'),
-                        'Vi' => 'vi',
-                        'Mousepad' => 'mousepad',
-                        'Leafpad' => 'leafpad',
-                        'Geany' => 'geany',
-                        'Pluma' => 'pluma'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'Vim' => array(
+                        'vim',
+                        'gvim',
+                    ),
+                    'Emacs' => array(
+                        'emacs',
+                        'xemacs',
+                    ),
+                    'Nano' => 'nano',
+                    'Gedit' => 'gedit',
+                    'Kate' => array('kdesdk-kate', 'kate'),
+                    'Kwrite' => array('kdebase-kwrite', 'kwrite'),
+                    'Vi' => 'vi',
+                    'Mousepad' => 'mousepad',
+                    'Leafpad' => 'leafpad',
+                    'Geany' => 'geany',
+                    'Pluma' => 'pluma',
+                )).'
                     <th colspan="2" class="packagedetailshead">Desktop Environments</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
-                        'GNOME' => 'gnome-shell',
-                        'LXDE' => 'lxde-common',
-                        'Xfce' => 'xfdesktop',
-                        'Enlightenment' => array('enlightenment', 'enlightenment16'),
-                        'MATE' => 'mate-panel',
-                        'Cinnamon' => 'cinnamon'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
+                    'GNOME' => 'gnome-shell',
+                    'LXDE' => 'lxde-common',
+                    'Xfce' => 'xfdesktop',
+                    'Enlightenment' => array('enlightenment', 'enlightenment16'),
+                    'MATE' => 'mate-panel',
+                    'Cinnamon' => 'cinnamon',
+                )).'
                     <th colspan="2" class="packagedetailshead">File Managers</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'Dolphin' => 'kdebase-dolphin',
-                        'Konqueror' => 'kdebase-konqueror',
-                        'MC' => 'mc',
-                        'Nautilus' => 'nautilus',
-                        'Pcmanfm' => 'pcmanfm',
-                        'Thunar' => 'thunar',
-                        'Caja' => 'caja'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'Dolphin' => 'kdebase-dolphin',
+                    'Konqueror' => 'kdebase-konqueror',
+                    'MC' => 'mc',
+                    'Nautilus' => 'nautilus',
+                    'Pcmanfm' => 'pcmanfm',
+                    'Thunar' => 'thunar',
+                    'Caja' => 'caja',
+                )).'
                     <th colspan="2" class="packagedetailshead">Window Managers</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'Openbox' => 'openbox',
-                        'Fluxbox' => 'fluxbox',
-                        'I3' => 'i3-wm',
-                        'awesome' => 'awesome'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'Openbox' => 'openbox',
+                    'Fluxbox' => 'fluxbox',
+                    'I3' => 'i3-wm',
+                    'awesome' => 'awesome',
+                )).'
                     <th colspan="2" class="packagedetailshead">Media Players</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'Mplayer' => 'mplayer',
-                        'Xine' => 'xine-lib',
-                        'VLC' => 'vlc'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'Mplayer' => 'mplayer',
+                    'Xine' => 'xine-lib',
+                    'VLC' => 'vlc',
+                )).'
                     <th colspan="2" class="packagedetailshead">Shells</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'Bash' => 'bash',
-                        'Dash' => 'dash',
-                        'Zsh' => 'zsh',
-                        'Fish' => 'fish',
-                        'Tcsh' => 'tcsh'
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'Bash' => 'bash',
+                    'Dash' => 'dash',
+                    'Zsh' => 'zsh',
+                    'Fish' => 'fish',
+                    'Tcsh' => 'tcsh',
+                )).'
                     <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
                 </tr>
-                    ' . self::getPackageStatistics($total, $stm, array(
-                        'ATI' => array(
-                            'xf86-video-ati',
-                            'xf86-video-r128',
-                            'xf86-video-mach64'
-                        ),
-                        'NVIDIA' => array(
-                            'nvidia-304xx-utils',
-                            'nvidia-utils',
-                            'xf86-video-nouveau',
-                            'xf86-video-nv'
-                        ),
-                        'Intel' => array(
-                            'xf86-video-intel',
-                            'xf86-video-i740'
-                        )
-                    )) . '
+                    '.self::getPackageStatistics($total, $stm, array(
+                    'ATI' => array(
+                        'xf86-video-ati',
+                        'xf86-video-r128',
+                        'xf86-video-mach64',
+                    ),
+                    'NVIDIA' => array(
+                        'nvidia-304xx-utils',
+                        'nvidia-utils',
+                        'xf86-video-nouveau',
+                        'xf86-video-nv',
+                    ),
+                    'Intel' => array(
+                        'xf86-video-intel',
+                        'xf86-video-i740',
+                    ),
+                )).'
             </table>
             </div>
             ';
@@ -172,26 +173,33 @@ class FunStatistics extends StatisticsPage
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            echo 'FunStatistics failed:' . $e->getMessage();
+            echo 'FunStatistics failed:'.$e->getMessage();
         }
     }
 
-    private static function getPackageStatistics($total, \PDOStatement $stm, $packages)
+    /**
+     * @param int           $total
+     * @param \PDOStatement $stm
+     * @param array         $packages
+     *
+     * @return string
+     */
+    private static function getPackageStatistics(int $total, \PDOStatement $stm, array $packages): string
     {
         $packageArray = array();
         $list = '';
         foreach ($packages as $package => $pkgnames) {
             if (!is_array($pkgnames)) {
                 $pkgnames = array(
-                    $pkgnames
+                    $pkgnames,
                 );
             }
             foreach ($pkgnames as $pkgname) {
                 $stm->bindValue('pkgname', htmlspecialchars($pkgname), PDO::PARAM_STR);
                 $stm->execute();
-                $count = $stm->fetchColumn() ? : 0;
+                $count = $stm->fetchColumn() ?: 0;
                 if (isset($packageArray[htmlspecialchars($package)])) {
-                    $packageArray[htmlspecialchars($package)]+= $count;
+                    $packageArray[htmlspecialchars($package)] += $count;
                 } else {
                     $packageArray[htmlspecialchars($package)] = $count;
                 }
@@ -202,10 +210,9 @@ class FunStatistics extends StatisticsPage
             // FIXME: calculation of totals is not that accurate
             // e.g. one person might have installed several nvidia drivers
             $count = min($count, $total);
-            $list.= '<tr><th>' . $name . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>'.$name.'</th><td>'.self::getBar($count, $total).'</td></tr>';
         }
 
         return $list;
     }
-
 }

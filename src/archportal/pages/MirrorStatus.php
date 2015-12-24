@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -28,20 +30,24 @@ use archportal\lib\RequestException;
 
 class MirrorStatus extends Page
 {
-
+    /** @var string */
     private $orderby = 'lastsync';
+    /** @var string */
     private $sort = 'desc';
+    /** @var int */
     private $range = 604800; // 1 week
+    /** @var array */
     private $orders = array(
         'url',
         'country',
         'lastsync',
         'delay',
-        'durationAvg'
+        'durationAvg',
     );
+    /** @var array */
     private $sorts = array(
         'asc',
-        'desc'
+        'desc',
     );
 
     public function prepare()
@@ -52,26 +58,33 @@ class MirrorStatus extends Page
                 $this->orderby = Input::get()->getString('orderby');
             }
         } catch (RequestException $e) {
-
         }
         try {
             if (in_array(Input::get()->getString('sort'), $this->sorts)) {
                 $this->sort = Input::get()->getString('sort');
             }
         } catch (RequestException $e) {
-
         }
         $reverseSort = ($this->sort == 'desc' ? 'asc' : 'desc');
         $body = '<div class="box">
-        <h2>' . $this->l10n->getText('Mirror status') . '</h2>
+        <h2>'.$this->l10n->getText('Mirror status').'</h2>
         </div>
         <table class="pretty-table">
             <tr>
-                <th><a href="' . $this->createUrl('MirrorStatus', array('orderby' => 'url', 'sort' => $reverseSort)) . '">' . $this->l10n->getText('url') . '</a></th>
-                <th><a href="' . $this->createUrl('MirrorStatus', array('orderby' => 'country', 'sort' => $reverseSort)) . '">' . $this->l10n->getText('Country') . '</a></th>
-                <th style="width:140px;"><a href="' . $this->createUrl('MirrorStatus', array('orderby' => 'durationAvg', 'sort' => $reverseSort)) . '">&empty;&nbsp;' . $this->l10n->getText('Response time') . '</a></th>
-                <th style="width:140px;"><a href="' . $this->createUrl('MirrorStatus', array('orderby' => 'delay', 'sort' => $reverseSort)) . '">&empty;&nbsp;' . $this->l10n->getText('Delay') . '</a></th>
-                <th><a href="' . $this->createUrl('MirrorStatus', array('orderby' => 'lastsync', 'sort' => $reverseSort)) . '">' . $this->l10n->getText('Last update') . '</a></th>
+                <th><a href="'.$this->createUrl('MirrorStatus',
+                array('orderby' => 'url', 'sort' => $reverseSort)).'">'.$this->l10n->getText('url').'</a></th>
+                <th><a href="'.$this->createUrl('MirrorStatus',
+                array('orderby' => 'country', 'sort' => $reverseSort)).'">'.$this->l10n->getText('Country').'</a></th>
+                <th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array(
+                'orderby' => 'durationAvg',
+                'sort' => $reverseSort,
+            )).'">&empty;&nbsp;'.$this->l10n->getText('Response time').'</a></th>
+                <th style="width:140px;"><a href="'.$this->createUrl('MirrorStatus', array(
+                'orderby' => 'delay',
+                'sort' => $reverseSort,
+            )).'">&empty;&nbsp;'.$this->l10n->getText('Delay').'</a></th>
+                <th><a href="'.$this->createUrl('MirrorStatus',
+                array('orderby' => 'lastsync', 'sort' => $reverseSort)).'">'.$this->l10n->getText('Last update').'</a></th>
             </tr>';
         $mirrors = Database::query('
         SELECT
@@ -85,21 +98,20 @@ class MirrorStatus extends Page
             JOIN countries
             ON mirrors.countryCode = countries.code
         WHERE
-            mirrors.lastsync >= ' . (Input::getTime() - $this->range) . '
+            mirrors.lastsync >= '.(Input::getTime() - $this->range).'
         ORDER BY
-            ' . $this->orderby . ' ' . $this->sort . '
+            '.$this->orderby.' '.$this->sort.'
         ');
         foreach ($mirrors as $mirror) {
-            $body.= '<tr>
-                <td><a href="' . $mirror['url'] . '" rel="nofollow">' . $mirror['url'] . '</a></td>
-                <td>' . $mirror['country'] . '</td>
-                <td>' . $this->l10n->getEpoch($mirror['durationAvg']) . '</td>
-                <td>' . $this->l10n->getEpoch($mirror['delay']) . '</td>
-                <td>' . $this->l10n->getGmDateTime($mirror['lastsync']) . '</td>
+            $body .= '<tr>
+                <td><a href="'.$mirror['url'].'" rel="nofollow">'.$mirror['url'].'</a></td>
+                <td>'.$mirror['country'].'</td>
+                <td>'.$this->l10n->getEpoch((int) round($mirror['durationAvg'])).'</td>
+                <td>'.$this->l10n->getEpoch($mirror['delay']).'</td>
+                <td>'.$this->l10n->getGmDateTime($mirror['lastsync']).'</td>
             </tr>';
         }
-        $body.= '</table>';
+        $body .= '</table>';
         $this->setBody($body);
     }
-
 }

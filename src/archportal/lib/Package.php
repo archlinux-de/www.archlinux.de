@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -25,26 +27,33 @@ use RuntimeException;
 
 class Package
 {
-
+    /** @var string */
     private $packageDir = '';
+    /** @var array */
     private $desc = array();
+    /** @var array */
     private $depends = array();
 
     /**
      * @param string $packageDir
      */
-    public function __construct($packageDir)
+    public function __construct(string $packageDir)
     {
         $this->packageDir = $packageDir;
 
-        if (!file_exists($this->packageDir . '/desc') || !file_exists($this->packageDir . '/depends')) {
+        if (!file_exists($this->packageDir.'/desc') || !file_exists($this->packageDir.'/depends')) {
             throw new RuntimeException('Invalid package data');
         }
-        $this->desc = $this->loadInfo($this->packageDir . '/desc');
-        $this->depends = $this->loadInfo($this->packageDir . '/depends');
+        $this->desc = $this->loadInfo($this->packageDir.'/desc');
+        $this->depends = $this->loadInfo($this->packageDir.'/depends');
     }
 
-    private function loadInfo($file)
+    /**
+     * @param string $file
+     *
+     * @return array
+     */
+    private function loadInfo(string $file): array
     {
         $index = '';
         $data = array();
@@ -63,7 +72,7 @@ class Package
     /**
      * @return string
      */
-    public function getFileName()
+    public function getFileName(): string
     {
         return $this->desc['FILENAME'][0];
     }
@@ -71,7 +80,7 @@ class Package
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->desc['NAME'][0];
     }
@@ -79,7 +88,7 @@ class Package
     /**
      * @return string
      */
-    public function getBase()
+    public function getBase(): string
     {
         return isset($this->desc['BASE'][0]) ? $this->desc['BASE'][0] : $this->getName();
     }
@@ -87,7 +96,7 @@ class Package
     /**
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->desc['VERSION'][0];
     }
@@ -95,7 +104,7 @@ class Package
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return isset($this->desc['DESC'][0]) ? $this->desc['DESC'][0] : '';
     }
@@ -103,7 +112,7 @@ class Package
     /**
      * @return array
      */
-    public function getGroups()
+    public function getGroups(): array
     {
         return isset($this->desc['GROUPS']) ? $this->desc['GROUPS'] : array();
     }
@@ -111,23 +120,23 @@ class Package
     /**
      * @return int
      */
-    public function getCompressedSize()
+    public function getCompressedSize(): int
     {
-        return isset($this->desc['CSIZE'][0]) ? $this->desc['CSIZE'][0] : 0;
+        return isset($this->desc['CSIZE'][0]) ? (int) $this->desc['CSIZE'][0] : 0;
     }
 
     /**
      * @return int
      */
-    public function getInstalledSize()
+    public function getInstalledSize(): int
     {
-        return isset($this->desc['ISIZE'][0]) ? $this->desc['ISIZE'][0] : 0;
+        return isset($this->desc['ISIZE'][0]) ? (int) $this->desc['ISIZE'][0] : 0;
     }
 
     /**
      * @return string
      */
-    public function getMD5SUM()
+    public function getMD5SUM(): string
     {
         return $this->desc['MD5SUM'][0];
     }
@@ -135,7 +144,7 @@ class Package
     /**
      * @return string
      */
-    public function getSHA256SUM()
+    public function getSHA256SUM(): string
     {
         return isset($this->desc['SHA256SUM'][0]) ? $this->desc['SHA256SUM'][0] : null;
     }
@@ -143,7 +152,7 @@ class Package
     /**
      * @return string
      */
-    public function getPGPSignature()
+    public function getPGPSignature(): string
     {
         return isset($this->desc['PGPSIG'][0]) ? $this->desc['PGPSIG'][0] : null;
     }
@@ -151,11 +160,11 @@ class Package
     /**
      * @return string
      */
-    public function getURL()
+    public function getURL(): string
     {
         if (isset($this->desc['URL'][0])) {
             if (!preg_match('#^(https?|ftp)://#', $this->desc['URL'][0])) {
-                return 'http://' . $this->desc['URL'][0];
+                return 'http://'.$this->desc['URL'][0];
             } else {
                 return $this->desc['URL'][0];
             }
@@ -167,7 +176,7 @@ class Package
     /**
      * @return array
      */
-    public function getLicenses()
+    public function getLicenses(): array
     {
         return isset($this->desc['LICENSE']) ? $this->desc['LICENSE'] : array();
     }
@@ -175,7 +184,7 @@ class Package
     /**
      * @return string
      */
-    public function getArch()
+    public function getArch(): string
     {
         return isset($this->desc['ARCH'][0]) ? $this->desc['ARCH'][0] : '';
     }
@@ -183,15 +192,15 @@ class Package
     /**
      * @return int
      */
-    public function getBuildDate()
+    public function getBuildDate(): int
     {
-        return isset($this->desc['BUILDDATE'][0]) ? $this->desc['BUILDDATE'][0] : 0;
+        return isset($this->desc['BUILDDATE'][0]) ? (int) $this->desc['BUILDDATE'][0] : 0;
     }
 
     /**
      * @return string
      */
-    public function getPackager()
+    public function getPackager(): string
     {
         return isset($this->desc['PACKAGER'][0]) ? $this->desc['PACKAGER'][0] : '';
     }
@@ -199,7 +208,7 @@ class Package
     /**
      * @return array
      */
-    public function getReplaces()
+    public function getReplaces(): array
     {
         return isset($this->desc['REPLACES']) ? $this->desc['REPLACES'] : array();
     }
@@ -207,7 +216,7 @@ class Package
     /**
      * @return array
      */
-    public function getDepends()
+    public function getDepends(): array
     {
         return isset($this->depends['DEPENDS']) ? $this->depends['DEPENDS'] : array();
     }
@@ -215,7 +224,7 @@ class Package
     /**
      * @return array
      */
-    public function getConflicts()
+    public function getConflicts(): array
     {
         return isset($this->depends['CONFLICTS']) ? $this->depends['CONFLICTS'] : array();
     }
@@ -223,7 +232,7 @@ class Package
     /**
      * @return array
      */
-    public function getProvides()
+    public function getProvides(): array
     {
         return isset($this->depends['PROVIDES']) ? $this->depends['PROVIDES'] : array();
     }
@@ -231,7 +240,7 @@ class Package
     /**
      * @return array
      */
-    public function getOptDepends()
+    public function getOptDepends(): array
     {
         return isset($this->depends['OPTDEPENDS']) ? $this->depends['OPTDEPENDS'] : array();
     }
@@ -239,7 +248,7 @@ class Package
     /**
      * @return array
      */
-    public function getMakeDepends()
+    public function getMakeDepends(): array
     {
         return isset($this->depends['MAKEDEPENDS']) ? $this->depends['MAKEDEPENDS'] : array();
     }
@@ -247,7 +256,7 @@ class Package
     /**
      * @return array
      */
-    public function getCheckDepends()
+    public function getCheckDepends(): array
     {
         return isset($this->depends['CHECKDEPENDS']) ? $this->depends['CHECKDEPENDS'] : array();
     }
@@ -255,10 +264,10 @@ class Package
     /**
      * @return array
      */
-    public function getFiles()
+    public function getFiles(): array
     {
-        if (Config::get('packages', 'files') && file_exists($this->packageDir . '/files')) {
-            $data = $this->loadInfo($this->packageDir . '/files');
+        if (Config::get('packages', 'files') && file_exists($this->packageDir.'/files')) {
+            $data = $this->loadInfo($this->packageDir.'/files');
 
             return $data['FILES'];
         } else {
@@ -269,9 +278,8 @@ class Package
     /**
      * @return int
      */
-    public function getMTime()
+    public function getMTime(): int
     {
-        return filemtime($this->packageDir . '/desc');
+        return filemtime($this->packageDir.'/desc');
     }
-
 }

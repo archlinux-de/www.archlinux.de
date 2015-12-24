@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -44,7 +46,7 @@ Config::set('packages', 'repositories', array(
     'community' => array('x86_64', 'i686'),
     'community-testing' => array('x86_64', 'i686'),
     'multilib' => array('x86_64'),
-    'multilib-testing' => array('x86_64')
+    'multilib-testing' => array('x86_64'),
 ));
 Config::set('packages', 'default_architecture', Config::get('packages', 'repositories')['core'][0]);
 Config::set('packages', 'files', true);

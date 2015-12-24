@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,7 +25,6 @@ namespace archportal\lib;
 
 abstract class Output
 {
-
     const OK = 'HTTP/1.1 200 OK';
     const FOUND = 'HTTP/1.1 302 Found';
     const MOVED_PERMANENTLY = 'HTTP/1.1 301 Moved Permanently';
@@ -31,11 +32,16 @@ abstract class Output
     const NOT_FOUND = 'HTTP/1.1 404 Not Found';
     const INTERNAL_SERVER_ERROR = 'HTTP/1.1 500 Internal Server Error';
 
+    /** @var string */
     private $contentType = 'text/html; charset=UTF-8';
-    private $status = Output::OK;
+    /** @var string */
+    private $status = self::OK;
+    /** @var string */
     private $outputSeparator = '&';
+    /** @var string */
     private $outputSeparatorHtml = '&amp;';
 
+    /** @var array */
     private $headers = array();
 
     public function __construct()
@@ -48,7 +54,7 @@ abstract class Output
     public function __destruct()
     {
         header($this->status);
-        header('Content-Type: ' . $this->contentType);
+        header('Content-Type: '.$this->contentType);
         foreach ($this->headers as $key => $value) {
             header($key.': '.$value);
         }
@@ -57,7 +63,7 @@ abstract class Output
     /**
      * @param string $code
      */
-    protected function setStatus($code)
+    protected function setStatus(string $code)
     {
         $this->status = $code;
     }
@@ -65,7 +71,7 @@ abstract class Output
     /**
      * @param string $type
      */
-    protected function setContentType($type)
+    protected function setContentType(string $type)
     {
         $this->contentType = $type;
     }
@@ -73,42 +79,48 @@ abstract class Output
     /**
      * @param string $url
      */
-    protected function redirectToUrl($url)
+    protected function redirectToUrl(string $url)
     {
-        $this->setStatus(Output::FOUND);
-        header('Location: ' . $url);
+        $this->setStatus(self::FOUND);
+        header('Location: '.$url);
         exit();
     }
 
     /**
      * @param string $url
      */
-    protected function redirectPermanentlyToUrl($url)
+    protected function redirectPermanentlyToUrl(string $url)
     {
-        $this->setStatus(Output::MOVED_PERMANENTLY);
-        header('Location: ' . $url);
+        $this->setStatus(self::MOVED_PERMANENTLY);
+        header('Location: '.$url);
         exit();
     }
 
     /**
      * @param string $page
-     * @param array $options
-     * @param bool $absolute
-     * @param bool $html
-     * @param bool $urlencode
+     * @param array  $options
+     * @param bool   $absolute
+     * @param bool   $html
+     * @param bool   $urlencode
+     *
      * @return string
      */
-    protected function createUrl($page, $options = array(), $absolute = false, $html = true, $urlencode = true)
-    {
+    protected function createUrl(
+        string $page,
+        array $options = array(),
+        bool $absolute = false,
+        bool $html = true,
+        bool $urlencode = true
+    ): string {
         $separator = ($html ? $this->outputSeparatorHtml : $this->outputSeparator);
         $params = array();
         foreach (array_merge(array(
-            'page' => $page
-                ), $options) as $key => $value) {
-            $params[] = $key . '=' . ($urlencode ? urlencode($value) : $value);
+            'page' => $page,
+        ), $options) as $key => $value) {
+            $params[] = $key.'='.($urlencode ? urlencode((string) $value) : $value);
         }
 
-        return ($absolute ? Input::getPath() : '') . '?' . implode($separator, $params);
+        return ($absolute ? Input::getPath() : '').'?'.implode($separator, $params);
     }
 
     protected function disallowCaching()

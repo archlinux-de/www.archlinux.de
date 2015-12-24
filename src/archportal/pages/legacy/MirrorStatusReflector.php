@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -27,8 +29,9 @@ use archportal\lib\Page;
 
 class MirrorStatusReflector extends Page
 {
-
+    /** @var int */
     private $range = 604800; // 1 week
+    /** @var string */
     private $text = '';
 
     public function prepare()
@@ -40,13 +43,13 @@ class MirrorStatusReflector extends Page
         FROM
             mirrors
         WHERE
-            lastsync >= ' . (Input::getTime() - $this->range) . '
+            lastsync >= '.(Input::getTime() - $this->range).'
             AND protocol IN ("ftp", "http", "htttps")
         ORDER BY
             lastsync DESC
         ');
         foreach ($mirrors as $mirror) {
-            $this->text .= gmdate('Y-m-d H:i' . $mirror['lastsync']) . ' ' . $mirror['url'] . "\n";
+            $this->text .= gmdate('Y-m-d H:i'.$mirror['lastsync']).' '.$mirror['url']."\n";
         }
     }
 
@@ -55,5 +58,4 @@ class MirrorStatusReflector extends Page
         $this->setContentType('text/plain; charset=UTF-8');
         echo $this->text;
     }
-
 }

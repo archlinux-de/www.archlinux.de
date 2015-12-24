@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -19,7 +22,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Database;
 

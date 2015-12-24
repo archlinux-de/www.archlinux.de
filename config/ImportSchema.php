@@ -19,11 +19,11 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Database;
 
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
-Database::exec(file_get_contents(__DIR__ . '/archportal_schema.sql'));
+Database::exec(file_get_contents(__DIR__.'/archportal_schema.sql'));

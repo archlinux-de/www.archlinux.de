@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -29,7 +31,7 @@ use DOMDocument;
 
 class GetRecentPackages extends Page
 {
-
+    /** @var string */
     private $feed = '';
 
     public function prepare()
@@ -39,7 +41,8 @@ class GetRecentPackages extends Page
 
         $id = $dom->createElement('id', Input::getPath());
         $title = $dom->createElement('title', $this->l10n->getText('Recent Arch Linux packages'));
-        $updated = $dom->createElement('updated', date('c', Database::query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
+        $updated = $dom->createElement('updated',
+            date('c', Database::query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
 
         $author = $dom->createElement('author');
         $authorName = $dom->createElement('name', Config::get('common', 'sitename'));
@@ -58,8 +61,8 @@ class GetRecentPackages extends Page
         $self->setAttribute('rel', 'self');
         $self->setAttribute('type', 'application/atom+xml');
 
-        $icon = $dom->createElement('icon', Input::getPath() . 'style/favicon.ico');
-        $logo = $dom->createElement('logo', Input::getPath() . 'style/archlogo-64.png');
+        $icon = $dom->createElement('icon', Input::getPath().'style/favicon.ico');
+        $logo = $dom->createElement('logo', Input::getPath().'style/archlogo-64.png');
 
         $body->appendChild($id);
         $body->appendChild($title);
@@ -102,11 +105,12 @@ class GetRecentPackages extends Page
         foreach ($packages as $package) {
             $entry = $dom->createElement('entry');
             $entryId = $dom->createElement('id', $this->createUrl('PackageDetails', array(
-                        'repo' => $package['repository'],
-                        'arch' => $package['architecture'],
-                        'pkgname' => $package['name']
-                            ), true));
-            $entryTitle = $dom->createElement('title', $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')');
+                'repo' => $package['repository'],
+                'arch' => $package['architecture'],
+                'pkgname' => $package['name'],
+            ), true));
+            $entryTitle = $dom->createElement('title',
+                $package['name'].' '.$package['version'].' ('.$package['architecture'].')');
             $entryUpdated = $dom->createElement('updated', date('c', $package['builddate']));
 
             $entryAuthor = $dom->createElement('author');
@@ -117,10 +121,10 @@ class GetRecentPackages extends Page
 
             $entryLink = $dom->createElement('link');
             $entryLink->setAttribute('href', $this->createUrl('PackageDetails', array(
-                        'repo' => $package['repository'],
-                        'arch' => $package['architecture'],
-                        'pkgname' => $package['name']
-                            ), true));
+                'repo' => $package['repository'],
+                'arch' => $package['architecture'],
+                'pkgname' => $package['name'],
+            ), true));
             $entryLink->setAttribute('rel', 'alternate');
             $entryLink->setAttribute('type', 'text/html');
 
@@ -146,5 +150,4 @@ class GetRecentPackages extends Page
         $this->setContentType('application/atom+xml; charset=UTF-8');
         echo $this->feed;
     }
-
 }

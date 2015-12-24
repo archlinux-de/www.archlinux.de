@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -35,25 +37,27 @@ use PDOStatement;
  */
 class Database
 {
-
     private static $pdo = null;
 
     private function __construct()
     {
-
     }
 
     /**
      * @param string $name
-     * @param array $args
+     * @param array  $args
+     *
      * @return mixed
      */
-    public static function __callStatic($name, $args)
+    public static function __callStatic(string $name, array $args)
     {
         if (is_null(self::$pdo)) {
-            self::$pdo = new PDO('mysql:'.(Config::has('Database', 'host') ? 'host='.Config::get('Database', 'host').';' : '').'dbname=' . Config::get('Database', 'database'), Config::get('Database', 'user'), Config::get('Database', 'password'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-            );
+            self::$pdo = new PDO('mysql:'.(Config::has('Database', 'host') ? 'host='.Config::get('Database', 'host').';' : '').'dbname='.Config::get('Database', 'database'), Config::get('Database', 'user'), Config::get('Database', 'password'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
+                Config::get('Database', 'password'), array(
+                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"',
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                ),
+            ));
             self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);
             if (Config::get('common', 'debug')) {
                 self::$pdo->exec('SET sql_mode="STRICT_ALL_TABLES"');
@@ -65,13 +69,14 @@ class Database
 
     /**
      * @param string $name
-     * @param int $timeout
+     * @param int    $timeout
+     *
      * @return bool
      */
-    public static function aquireLock($name, $timeout = 0)
+    public static function aquireLock(string $name, int $timeout = 0): bool
     {
         $stm = self::prepare('SELECT GET_LOCK(:name, :timeout)');
-        $stm->bindValue('name', Config::get('Database', 'database') . ':' . $name, PDO::PARAM_STR);
+        $stm->bindValue('name', Config::get('Database', 'database').':'.$name, PDO::PARAM_STR);
         $stm->bindParam('timeout', $timeout, PDO::PARAM_INT);
         $stm->execute();
 
@@ -81,11 +86,10 @@ class Database
     /**
      * @param string $name
      */
-    public static function releaseLock($name)
+    public static function releaseLock(string $name)
     {
         $stm = self::prepare('DO RELEASE_LOCK(:name)');
-        $stm->bindValue('name', Config::get('Database', 'database') . ':' . $name, PDO::PARAM_STR);
+        $stm->bindValue('name', Config::get('Database', 'database').':'.$name, PDO::PARAM_STR);
         $stm->execute();
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -29,7 +31,6 @@ use RuntimeException;
 
 class UserStatistics extends StatisticsPage
 {
-
     public function prepare()
     {
         $this->setTitle('User statistics');
@@ -56,58 +57,58 @@ class UserStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Submissions</th>
-                    <td>' . number_format($log['submissions']) . '</td>
+                    <td>'.number_format($log['submissions']).'</td>
                 </tr>
                 <tr>
                     <th>Different IPs</th>
-                    <td>' . number_format($log['differentips']) . '</td>
+                    <td>'.number_format($log['differentips']).'</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Countries</th>
                 </tr>
-                    ' . self::getCountryStatistics() . '
+                    '.self::getCountryStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Mirrors</th>
                 </tr>
-                    ' . self::getMirrorStatistics() . '
+                    '.self::getMirrorStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Mirrors per Country</th>
                 </tr>
-                    ' . self::getMirrorCountryStatistics() . '
+                    '.self::getMirrorCountryStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Mirror protocolls</th>
                 </tr>
-                    ' . self::getMirrorProtocollStatistics() . '
+                    '.self::getMirrorProtocollStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Submissions per architectures</th>
                 </tr>
-                    ' . self::getSubmissionsPerArchitecture() . '
+                    '.self::getSubmissionsPerArchitecture().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Submissions per CPU architectures</th>
                 </tr>
-                    ' . self::getSubmissionsPerCpuArchitecture() . '
+                    '.self::getSubmissionsPerCpuArchitecture().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Common statistics</th>
                 </tr>
                 <tr>
                     <th>Sum of submitted packages</th>
-                    <td>' . number_format($log['sumcount']) . '</td>
+                    <td>'.number_format((float) $log['sumcount']).'</td>
                 </tr>
                 <tr>
                     <th>Number of different packages</th>
-                    <td>' . number_format($log['diffcount']) . '</td>
+                    <td>'.number_format((float) $log['diffcount']).'</td>
                 </tr>
                 <tr>
                     <th>Lowest number of installed packages</th>
-                    <td>' . number_format($log['mincount']) . '</td>
+                    <td>'.number_format((float) $log['mincount']).'</td>
                 </tr>
                 <tr>
                     <th>Highest number of installed packages</th>
-                    <td>' . number_format($log['maxcount']) . '</td>
+                    <td>'.number_format((float) $log['maxcount']).'</td>
                 </tr>
                 <tr>
                     <th>Average number of installed packages</th>
-                    <td>' . number_format($log['avgcount']) . '</td>
+                    <td>'.number_format((float) $log['avgcount']).'</td>
                 </tr>
             </table>
             </div>
@@ -116,27 +117,33 @@ class UserStatistics extends StatisticsPage
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            echo 'UserStatistics failed:' . $e->getMessage();
+            echo 'UserStatistics failed:'.$e->getMessage();
         }
     }
 
-    private static function getCommonPackageUsageStatistics()
+    /**
+     * @return array
+     */
+    private static function getCommonPackageUsageStatistics(): array
     {
         return Database::query('
         SELECT
-            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS submissions,
-            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS minvisited,
-            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS maxvisited,
-            (SELECT SUM(count) FROM pkgstats_packages WHERE month >= ' . self::getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= ' . self::getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(packages) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS mincount,
-            (SELECT MAX(packages) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS maxcount,
-            (SELECT AVG(packages) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS avgcount
+            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS submissions,
+            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= '.self::getRangeTime().' GROUP BY ip) AS temp) AS differentips,
+            (SELECT MIN(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS minvisited,
+            (SELECT MAX(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxvisited,
+            (SELECT SUM(count) FROM pkgstats_packages WHERE month >= '.self::getRangeYearMonth().') AS sumcount,
+            (SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= '.self::getRangeYearMonth().') AS diffpkgs) AS diffcount,
+            (SELECT MIN(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS mincount,
+            (SELECT MAX(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxcount,
+            (SELECT AVG(packages) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS avgcount
         ')->fetch();
     }
 
-    private static function getCountryStatistics()
+    /**
+     * @return string
+     */
+    private static function getCountryStatistics(): string
     {
         $total = Database::query('
         SELECT
@@ -144,7 +151,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
         ')->fetchColumn();
         $countries = Database::query('
         SELECT
@@ -155,23 +162,27 @@ class UserStatistics extends StatisticsPage
             JOIN countries
             ON pkgstats_users.countryCode = countries.code
         WHERE
-            pkgstats_users.time >= ' . self::getRangeTime() . '
+            pkgstats_users.time >= '.self::getRangeTime().'
         GROUP BY
             pkgstats_users.countryCode
         HAVING
-            count >= ' . (floor($total / 100)) . '
+            count >= '.(floor($total / 100)).'
         ORDER BY
             count DESC
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list.= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar($country['count'],
+                    $total).'</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getMirrorStatistics()
+    /**
+     * @return string
+     */
+    private static function getMirrorStatistics(): string
     {
         $total = Database::query('
         SELECT
@@ -179,7 +190,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
         ')->fetchColumn();
         $mirrors = Database::query('
         SELECT
@@ -188,11 +199,11 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
         GROUP BY
             mirror
         HAVING
-            count >= ' . (floor($total / 100)) . '
+            count >= '.(floor($total / 100)).'
         ');
         $hosts = array();
         foreach ($mirrors as $mirror) {
@@ -201,7 +212,7 @@ class UserStatistics extends StatisticsPage
                 $host = 'unknown';
             }
             if (isset($hosts[$host])) {
-                $hosts[$host]+= $mirror['count'];
+                $hosts[$host] += $mirror['count'];
             } else {
                 $hosts[$host] = $mirror['count'];
             }
@@ -209,13 +220,16 @@ class UserStatistics extends StatisticsPage
         arsort($hosts);
         $list = '';
         foreach ($hosts as $host => $count) {
-            $list.= '<tr><th>' . $host . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>'.$host.'</th><td>'.self::getBar($count, $total).'</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getMirrorCountryStatistics()
+    /**
+     * @return string
+     */
+    private static function getMirrorCountryStatistics(): string
     {
         $total = Database::query('
         SELECT
@@ -234,23 +248,27 @@ class UserStatistics extends StatisticsPage
         GROUP BY
             mirrors.countryCode
         HAVING
-            count > ' . (floor($total / 100)) . '
+            count > '.(floor($total / 100)).'
         ORDER BY
             count DESC
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list.= '<tr><th>' . $country['country'] . '</th><td>' . self::getBar($country['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar($country['count'],
+                    $total).'</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getMirrorProtocollStatistics()
+    /**
+     * @return string
+     */
+    private static function getMirrorProtocollStatistics(): string
     {
         $protocolls = array(
             'http' => 0,
-            'ftp' => 0
+            'ftp' => 0,
         );
         $total = Database::query('
         SELECT
@@ -258,7 +276,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
         ')->fetchColumn();
         foreach ($protocolls as $protocoll => $count) {
             $protocolls[$protocoll] = Database::query('
@@ -267,20 +285,23 @@ class UserStatistics extends StatisticsPage
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . self::getRangeTime() . '
-                AND mirror LIKE \'' . $protocoll . '%\'
+                time >= '.self::getRangeTime().'
+                AND mirror LIKE \''.$protocoll.'%\'
             ')->fetchColumn();
         }
         arsort($protocolls);
         $list = '';
         foreach ($protocolls as $protocoll => $count) {
-            $list.= '<tr><th>' . $protocoll . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>'.$protocoll.'</th><td>'.self::getBar($count, $total).'</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getSubmissionsPerArchitecture()
+    /**
+     * @return string
+     */
+    private static function getSubmissionsPerArchitecture(): string
     {
         $total = Database::query('
         SELECT
@@ -288,7 +309,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
         ')->fetchColumn();
         $arches = Database::query('
         SELECT
@@ -297,7 +318,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
         GROUP BY
             arch
         ORDER BY
@@ -305,13 +326,16 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar($arch['count'], $total).'</td></tr>';
         }
 
         return $list;
     }
 
-    private static function getSubmissionsPerCpuArchitecture()
+    /**
+     * @return string
+     */
+    private static function getSubmissionsPerCpuArchitecture(): string
     {
         $total = Database::query('
         SELECT
@@ -319,7 +343,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
             AND cpuarch IS NOT NULL
         ')->fetchColumn();
         $arches = Database::query('
@@ -329,7 +353,7 @@ class UserStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= '.self::getRangeTime().'
             AND cpuarch IS NOT NULL
         GROUP BY
             cpuarch
@@ -338,10 +362,9 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list.= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar($arch['count'], $total).'</td></tr>';
         }
 
         return $list;
     }
-
 }

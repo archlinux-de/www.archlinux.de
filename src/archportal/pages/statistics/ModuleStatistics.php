@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -29,7 +31,6 @@ use RuntimeException;
 
 class ModuleStatistics extends StatisticsPage
 {
-
     public function prepare()
     {
         $this->setTitle('Module statistics');
@@ -56,28 +57,28 @@ class ModuleStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Sum of submitted modules</th>
-                    <td>' . number_format($log['sumcount']) . '</td>
+                    <td>'.number_format((float) $log['sumcount']).'</td>
                 </tr>
                 <tr>
                     <th>Number of different modules</th>
-                    <td>' . number_format($log['diffcount']) . '</td>
+                    <td>'.number_format((float) $log['diffcount']).'</td>
                 </tr>
                 <tr>
                     <th>Lowest number of installed modules</th>
-                    <td>' . number_format($log['mincount']) . '</td>
+                    <td>'.number_format((float) $log['mincount']).'</td>
                 </tr>
                 <tr>
                     <th>Highest number of installed modules</th>
-                    <td>' . number_format($log['maxcount']) . '</td>
+                    <td>'.number_format((float) $log['maxcount']).'</td>
                 </tr>
                 <tr>
                     <th>Average number of installed modules</th>
-                    <td>' . number_format($log['avgcount']) . '</td>
+                    <td>'.number_format((float) $log['avgcount']).'</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Popular modules</th>
                 </tr>
-                ' . self::getPopularModules() . '
+                '.self::getPopularModules().'
             </table>
             </div>
             ';
@@ -85,27 +86,33 @@ class ModuleStatistics extends StatisticsPage
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            echo 'ModuleStatistics failed:' . $e->getMessage();
+            echo 'ModuleStatistics failed:'.$e->getMessage();
         }
     }
 
-    private static function getCommonModuleUsageStatistics()
+    /**
+     * @return array
+     */
+    private static function getCommonModuleUsageStatistics(): array
     {
         return Database::query('
         SELECT
-            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ' AND modules IS NOT NULL) AS submissions,
-            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ' AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ' AND modules IS NOT NULL) AS minvisited,
-            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ' AND modules IS NOT NULL) AS maxvisited,
-            (SELECT SUM(count) FROM pkgstats_modules WHERE month >= ' . self::getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*) FROM (SELECT DISTINCT name FROM pkgstats_modules WHERE month >= ' . self::getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(modules) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS mincount,
-            (SELECT MAX(modules) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS maxcount,
-            (SELECT AVG(modules) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS avgcount
+            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= '.self::getRangeTime().' AND modules IS NOT NULL) AS submissions,
+            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= '.self::getRangeTime().' AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
+            (SELECT MIN(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().' AND modules IS NOT NULL) AS minvisited,
+            (SELECT MAX(time) FROM pkgstats_users WHERE time >= '.self::getRangeTime().' AND modules IS NOT NULL) AS maxvisited,
+            (SELECT SUM(count) FROM pkgstats_modules WHERE month >= '.self::getRangeYearMonth().') AS sumcount,
+            (SELECT COUNT(*) FROM (SELECT DISTINCT name FROM pkgstats_modules WHERE month >= '.self::getRangeYearMonth().') AS diffpkgs) AS diffcount,
+            (SELECT MIN(modules) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS mincount,
+            (SELECT MAX(modules) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS maxcount,
+            (SELECT AVG(modules) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS avgcount
         ')->fetch();
     }
 
-    private static function getPopularModules()
+    /**
+     * @return string
+     */
+    private static function getPopularModules(): string
     {
         $total = Database::query('
             SELECT
@@ -113,7 +120,7 @@ class ModuleStatistics extends StatisticsPage
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . self::getRangeTime() . '
+                time >= '.self::getRangeTime().'
                 AND modules IS NOT NULL
         ')->fetchColumn();
         $modules = Database::query('
@@ -123,22 +130,22 @@ class ModuleStatistics extends StatisticsPage
             FROM
                 pkgstats_modules
             WHERE
-                month >= ' . self::getRangeYearMonth() . '
+                month >= '.self::getRangeYearMonth().'
             GROUP BY
                 name
             HAVING
-                count >= ' . (floor($total / 100)) . '
+                count >= '.(floor($total / 100)).'
             ORDER BY
                 count DESC,
                 name ASC
         ');
         $list = '<tr><td colspan="2"><div><table class="pretty-table" style="border:none;">';
         foreach ($modules as $module) {
-            $list.= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' . self::getBar($module['count'], $total) . '</td></tr>';
+            $list .= '<tr><td style="width: 200px;">'.$module['name'].'</td><td>'.self::getBar($module['count'],
+                    $total).'</td></tr>';
         }
-        $list.= '</table></div></td></tr>';
+        $list .= '</table></div></td></tr>';
 
         return $list;
     }
-
 }

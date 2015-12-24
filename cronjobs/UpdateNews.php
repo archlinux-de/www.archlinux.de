@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -19,7 +22,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -31,18 +34,17 @@ set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdateNews extends CronJob
 {
-
     public function execute()
     {
         try {
             $newsEntries = $this->getNewsEntries();
             $this->updateNewsEntries($newsEntries);
         } catch (RuntimeException $e) {
-            $this->printError('Warning: UpdateNews failed: ' . $e->getMessage());
+            $this->printError('Warning: UpdateNews failed: '.$e->getMessage());
         }
     }
 
-    private function updateNewsEntries(SimpleXMLElement $newsEntries)
+    private function updateNewsEntries(\SimpleXMLElement $newsEntries)
     {
         try {
             Database::beginTransaction();
@@ -70,27 +72,26 @@ class UpdateNews extends CronJob
                 $stm->bindParam('summary', $newsEntry->summary, PDO::PARAM_STR);
                 $stm->bindParam('author_name', $newsEntry->author->name, PDO::PARAM_STR);
                 $stm->bindParam('author_uri', $newsEntry->author->uri, PDO::PARAM_STR);
-                $stm->bindValue('updated', (new DateTime($newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
+                $stm->bindValue('updated', (new DateTime((string) $newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
                 $stm->execute();
             }
             Database::commit();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            $this->printError('Warning: updateNews failed: ' . $e->getMessage());
+            $this->printError('Warning: updateNews failed: '.$e->getMessage());
         }
     }
 
     /**
      * @return \SimpleXMLElement
      */
-    private function getNewsEntries()
+    private function getNewsEntries(): \SimpleXMLElement
     {
         $download = new Download(Config::get('news', 'feed'));
         $feed = new SimpleXMLElement($download->getFile(), 0, true);
 
         return $feed->entry;
     }
-
 }
 
 UpdateNews::run();

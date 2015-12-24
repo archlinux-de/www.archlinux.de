@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -30,7 +32,7 @@ use PDO;
 
 class PackagesSuggest extends Page
 {
-
+    /** @var array */
     private $suggestions = array();
 
     public function prepare()
@@ -50,18 +52,18 @@ class PackagesSuggest extends Page
                             packages.name
                         FROM
                             packages
-                            ' . ( $arch > 0 || $repo > 0 ? '
+                            '.($arch > 0 || $repo > 0 ? '
                                 JOIN repositories
-                                ON packages.repository = repositories.id' : '') . '
+                                ON packages.repository = repositories.id' : '').'
                         WHERE
                             packages.name LIKE :name
-                            ' . ($arch > 0 ? 'AND repositories.arch = :arch' : '') . '
-                            ' . ($repo > 0 ? 'AND repositories.id = :repository' : '') . '
+                            '.($arch > 0 ? 'AND repositories.arch = :arch' : '').'
+                            '.($repo > 0 ? 'AND repositories.id = :repository' : '').'
                         ORDER BY
                             packages.name ASC
                         LIMIT 20
                     ');
-                    $stm->bindValue('name', $term . '%', PDO::PARAM_STR);
+                    $stm->bindValue('name', $term.'%', PDO::PARAM_STR);
                     $arch > 0 && $stm->bindParam('arch', $arch, PDO::PARAM_INT);
                     $repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
                     break;
@@ -78,7 +80,7 @@ class PackagesSuggest extends Page
                                 name ASC
                             LIMIT 20
                         ');
-                        $stm->bindValue('name', $term . '%', PDO::PARAM_STR);
+                        $stm->bindValue('name', $term.'%', PDO::PARAM_STR);
                     } else {
                         return;
                     }
@@ -91,7 +93,6 @@ class PackagesSuggest extends Page
                 $this->suggestions[] = $suggestion;
             }
         } catch (RequestException $e) {
-
         }
     }
 
@@ -100,5 +101,4 @@ class PackagesSuggest extends Page
         $this->setContentType('application/json; charset=UTF-8');
         echo json_encode($this->suggestions);
     }
-
 }

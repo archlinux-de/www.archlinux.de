@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -26,11 +28,9 @@ use archportal\lib\Page;
 
 class NotFound extends Page
 {
-
     public function prepare()
     {
         $this->setStatus(Output::NOT_FOUND);
         $this->showFailure($this->l10n->getText('Page could not be found'));
     }
-
 }

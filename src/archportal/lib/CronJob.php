@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -25,7 +27,6 @@ use RuntimeException;
 
 abstract class CronJob
 {
-
     private $lockName = 'cronjob';
     private $waitForLock = 600;
     private $quiet = false;
@@ -42,7 +43,7 @@ abstract class CronJob
 
     public function __construct()
     {
-        ini_set('max_execution_time', 0);
+        ini_set('max_execution_time', '0');
         ini_set('memory_limit', -1);
 
         if (count(getopt('q', array('quiet'))) > 0) {
@@ -83,12 +84,12 @@ abstract class CronJob
      */
     protected function printError($text)
     {
-        file_put_contents('php://stderr', $text . "\n");
+        file_put_contents('php://stderr', $text."\n");
     }
 
     /**
-     * @param int $current
-     * @param int $total
+     * @param int           $current
+     * @param int           $total
      * @param string string $prefix
      */
     protected function printProgress($current, $total, $prefix = '')
@@ -100,5 +101,4 @@ abstract class CronJob
             }
         }
     }
-
 }

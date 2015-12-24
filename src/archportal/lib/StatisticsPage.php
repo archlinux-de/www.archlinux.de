@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,32 +25,40 @@ namespace archportal\lib;
 
 abstract class StatisticsPage extends Page implements IDatabaseCachable
 {
-
+    /** @var int */
     private static $rangeMonths = 3;
+    /** @var array */
     protected static $barColors = array();
+    /** @var array */
     protected static $barColorArray = array(
         '8B0000',
         'FF8800',
-        '006400'
+        '006400',
     );
 
     /**
      * @param array $hexarray
+     *
      * @return array
      *
      * see http://at.php.net/manual/de/function.hexdec.php#66780
      */
-    protected static function MultiColorFade($hexarray)
+    protected static function MultiColorFade(array $hexarray): array
     {
         $steps = 101;
         $total = count($hexarray);
         $gradient = array();
+        $start = array();
+        $end = array();
+        $step = array();
+        $rgb = array();
+        $hex = array();
         $fixend = 2;
         $passages = $total - 1;
         $stepsforpassage = floor($steps / $passages);
         $stepsremain = $steps - ($stepsforpassage * $passages);
         $stepsforthis = 0;
-        for ($pointer = 0; $pointer < $total - 1; $pointer++) {
+        for ($pointer = 0; $pointer < $total - 1; ++$pointer) {
             $hexstart = $hexarray[$pointer];
             $hexend = $hexarray[$pointer + 1];
             if ($stepsremain > 0) {
@@ -70,14 +80,14 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
             $step['r'] = ($start['r'] - $end['r']) / ($stepsforthis);
             $step['g'] = ($start['g'] - $end['g']) / ($stepsforthis);
             $step['b'] = ($start['b'] - $end['b']) / ($stepsforthis);
-            for ($i = 0; $i <= $stepsforthis - $fixend; $i++) {
+            for ($i = 0; $i <= $stepsforthis - $fixend; ++$i) {
                 $rgb['r'] = floor($start['r'] - ($step['r'] * $i));
                 $rgb['g'] = floor($start['g'] - ($step['g'] * $i));
                 $rgb['b'] = floor($start['b'] - ($step['b'] * $i));
                 $hex['r'] = sprintf('%02x', ($rgb['r']));
                 $hex['g'] = sprintf('%02x', ($rgb['g']));
                 $hex['b'] = sprintf('%02x', ($rgb['b']));
-                $gradient[] = strtoupper(implode(NULL, $hex));
+                $gradient[] = strtoupper(implode(null, $hex));
             }
         }
         $gradient[] = $hexarray[$total - 1];
@@ -88,9 +98,10 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     /**
      * @param int $value
      * @param int $total
+     *
      * @return string
      */
-    protected static function getBar($value, $total)
+    protected static function getBar(int $value, int $total): string
     {
         if ($total <= 0) {
             return '';
@@ -104,13 +115,13 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         return '<table style="width:100%;">
             <tr>
                 <td style="padding:0;margin:0;">
-                    <div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
-        title="' . number_format($value) . ' of ' . number_format($total) . '">
+                    <div style="background-color:#'.$color.';width:'.round($percent).'%;"
+        title="'.number_format($value).' of '.number_format($total).'">
             &nbsp;
                 </div>
                 </td>
-                <td style="padding:0;margin:0;width:80px;text-align:right;color:#' . $color . ';">
-                    ' . number_format($percent, 2) . '&nbsp;%
+                <td style="padding:0;margin:0;width:80px;text-align:right;color:#'.$color.';">
+                    '.number_format($percent, 2).'&nbsp;%
                 </td>
             </tr>
         </table>';
@@ -119,17 +130,16 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     /**
      * @return int
      */
-    protected static function getRangeTime()
+    protected static function getRangeTime(): int
     {
-        return strtotime(date('1-m-Y', strtotime('now -' . self::$rangeMonths . ' months')));
+        return strtotime(date('1-m-Y', strtotime('now -'.self::$rangeMonths.' months')));
     }
 
     /**
      * @return string
      */
-    protected static function getRangeYearMonth()
+    protected static function getRangeYearMonth(): string
     {
         return date('Ym', self::getRangeTime());
     }
-
 }

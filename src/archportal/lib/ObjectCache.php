@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,25 +25,26 @@ namespace archportal\lib;
 
 class ObjectCache
 {
-
-    private static function getPrefix()
+    /**
+     * @return string
+     */
+    private static function getPrefix(): string
     {
-        return Config::get('Database', 'database') . ':';
+        return Config::get('Database', 'database').':';
     }
 
     /**
      * @param string $key
-     * @param mixed $object
-     * @param int $ttl
+     * @param mixed  $object
+     * @param int    $ttl
+     *
      * @return bool
      */
-    public static function addObject($key, $object, $ttl = 0)
+    public static function addObject(string $key, $object, int $ttl = 0): bool
     {
-        $key = self::getPrefix() . $key;
-        if (function_exists('apc_store')) {
-            return apc_store($key, $object, $ttl);
-        } elseif (function_exists('xcache_set')) {
-            return xcache_set($key, $object, $ttl);
+        $key = self::getPrefix().$key;
+        if (function_exists('apcu_store')) {
+            return apcu_store($key, $object, $ttl);
         } else {
             return false;
         }
@@ -49,20 +52,14 @@ class ObjectCache
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
-    public static function getObject($key)
+    public static function getObject(string $key)
     {
-        $key = self::getPrefix() . $key;
-        if (function_exists('apc_fetch')) {
-            return apc_fetch($key);
-        } elseif (function_exists('xcache_get')) {
-            $result = xcache_get($key);
-            if (is_null($result)) {
-                return false;
-            }
-
-            return $result;
+        $key = self::getPrefix().$key;
+        if (function_exists('apcu_fetch')) {
+            return apcu_fetch($key);
         } else {
             return false;
         }
@@ -70,22 +67,16 @@ class ObjectCache
 
     /**
      * @param string $key
+     *
      * @return bool
      */
-    public static function isObject($key)
+    public static function isObject(string $key): bool
     {
-        $key = self::getPrefix() . $key;
-        if (function_exists('apc_exists')) {
-            return apc_exists($key);
-        } elseif (function_exists('apc_fetch')) {
-            apc_fetch($key, $success);
-
-            return $success;
-        } elseif (function_exists('xcache_isset')) {
-            return xcache_isset($key);
+        $key = self::getPrefix().$key;
+        if (function_exists('apcu_exists')) {
+            return apcu_exists($key);
         } else {
             return false;
         }
     }
-
 }

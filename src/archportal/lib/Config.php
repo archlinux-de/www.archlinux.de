@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -25,20 +27,18 @@ use RuntimeException;
 
 class Config
 {
-
     private static $config = array();
 
     private function __construct()
     {
-
     }
 
     /**
      * @param string $section
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      */
-    public static function set($section, $key, $value)
+    public static function set(string $section, string $key, $value)
     {
         self::$config[$section][$key] = $value;
     }
@@ -46,20 +46,21 @@ class Config
     /**
      * @param string $section
      * @param string $key
+     *
      * @return mixed
      */
-    public static function get($section, $key)
+    public static function get(string $section, string $key)
     {
         if (isset(self::$config[$section][$key])) {
             return self::$config[$section][$key];
         } else {
-            throw new RuntimeException('No configuration entry was found for key "' . $key . '" in section "' . $section . '"');
+            throw new RuntimeException('No configuration entry was found for key "'.$key.'" in section "'.$section.'"');
         }
     }
-
     /**
      * @param string $section
      * @param string $key
+     *
      * @return bool
      */
     public static function has($section, $key)
@@ -68,8 +69,8 @@ class Config
     }
 }
 
-require (__DIR__ . '/../../../config/DefaultConfig.php');
+require __DIR__.'/../../../config/DefaultConfig.php';
 
-if (file_exists(__DIR__ . '/../../../config/LocalConfig.php')) {
-    include (__DIR__ . '/../../../config/LocalConfig.php');
+if (file_exists(__DIR__.'/../../../config/LocalConfig.php')) {
+    include __DIR__.'/../../../config/LocalConfig.php';
 }

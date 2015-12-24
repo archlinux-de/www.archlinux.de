@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -25,7 +27,6 @@ use RuntimeException;
 
 class Download
 {
-
     private $downloaded = false;
     private $url = '';
     private $tmpFile = '';
@@ -34,7 +35,7 @@ class Download
     /**
      * @param string $url
      */
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->url = $url;
         $this->tmpFile = tempnam(Config::get('common', 'tmpdir'), strtolower(str_replace('\\', '/', get_class($this))));
@@ -50,7 +51,7 @@ class Download
     /**
      * @return int
      */
-    public function getMTime()
+    public function getMTime(): int
     {
         if (!$this->downloaded && $this->mtime == 0) {
             $curl = $this->curlInit($this->url);
@@ -63,7 +64,7 @@ class Download
             $mtime = curl_getinfo($curl, \CURLINFO_FILETIME);
             curl_close($curl);
             if ($mtime < 1) {
-                throw new RuntimeException('Invalid filetime "' . $mtime . '" for "' . $this->url . '"');
+                throw new RuntimeException('Invalid filetime "'.$mtime.'" for "'.$this->url.'"');
             } else {
                 $this->mtime = $mtime;
             }
@@ -75,7 +76,7 @@ class Download
     /**
      * @return string
      */
-    public function getFile()
+    public function getFile(): string
     {
         if (!$this->downloaded) {
             $fh = fopen($this->tmpFile, 'w');
@@ -99,6 +100,11 @@ class Download
         return $this->tmpFile;
     }
 
+    /**
+     * @param string $url
+     *
+     * @return resource
+     */
     private function curlInit($url)
     {
         $curlVersion = curl_version();
@@ -111,9 +117,8 @@ class Download
         curl_setopt($curl, \CURLOPT_LOW_SPEED_LIMIT, 5000);
         curl_setopt($curl, \CURLOPT_LOW_SPEED_TIME, 600);
         curl_setopt($curl, \CURLOPT_ENCODING, '');
-        curl_setopt($curl, \CURLOPT_USERAGENT, 'archportal/curl-' . $curlVersion['version']);
+        curl_setopt($curl, \CURLOPT_USERAGENT, 'archportal/curl-'.$curlVersion['version']);
 
         return $curl;
     }
-
 }

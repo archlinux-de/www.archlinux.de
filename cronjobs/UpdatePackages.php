@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -19,7 +22,7 @@
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(__DIR__ . '/../vendor/autoload.php');
+require __DIR__.'/../vendor/autoload.php';
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -35,69 +38,68 @@ set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdatePackages extends CronJob
 {
-
     private $lastMirrorUpdate = 0;
     private $updatedPackages = false;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectRepoMTime = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectPackageMTime = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $updateRepoMTime = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectArchId = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertArchName = null;
-    /** @var \PDOStatement  */
+    /** @var array */
     private $arches = array();
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectRepoId = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertRepoName = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectPackageId = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $updatePackage = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertPackage = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectPackager = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertPackager = null;
     private $packagers = array();
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectGroup = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertGroup = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $cleanupPackageGroup = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertPackageGroup = null;
     private $groups = array();
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectLicense = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertLicense = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $cleanupPackageLicense = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertPackageLicense = null;
     private $licenses = array();
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $cleanupRelation = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertRelation = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $selectFileIndex = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertFileIndex = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $cleanupFiles = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertFiles = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $insertPackageFileIndex = null;
-    /** @var \PDOStatement  */
+    /** @var \PDOStatement */
     private $cleanupPackageFileIndex = null;
     private $files = array();
     private $contentTables = array(
@@ -112,13 +114,13 @@ class UpdatePackages extends CronJob
         'package_group',
         'package_license',
         'package_relation',
-        'repositories'
+        'repositories',
     );
 
     public function execute()
     {
         if (count(getopt('pr', array('purge', 'reset'))) == 0 && !$this->checkLastMirrorUpdate()) {
-            $this->printDebug("No updated packages available...");
+            $this->printDebug('No updated packages available...');
 
             return;
         }
@@ -136,7 +138,7 @@ class UpdatePackages extends CronJob
 
             foreach (Config::get('packages', 'repositories') as $repo => $arches) {
                 foreach ($arches as $arch) {
-                    $this->printDebug('Processing [' . $repo . '] (' . $arch . ')');
+                    $this->printDebug('Processing ['.$repo.'] ('.$arch.')');
                     $archId = $this->getArchId($arch);
                     $repoId = $this->getRepoId($repo, $archId);
 
@@ -146,15 +148,18 @@ class UpdatePackages extends CronJob
 
                     $this->selectPackageMTime->bindParam('repoId', $repoId, PDO::PARAM_INT);
                     $this->selectPackageMTime->execute();
-                    $packageMTime = $this->selectPackageMTime->fetchColumn();
+                    $packageMTime = (int) $this->selectPackageMTime->fetchColumn();
 
                     $this->printDebug("\tDownloading...");
                     $packages = new PackageDatabase($repo, $arch, $repoMTime, $packageMTime);
 
-                    if ($packages->getMTime() > $repoMTime && Input::getTime() - $packages->getMTime() > Config::get('packages', 'delay')) {
+                    if ($packages->getMTime() > $repoMTime && Input::getTime() - $packages->getMTime() > Config::get('packages',
+                            'delay')
+                    ) {
                         $packageCount = 0;
                         foreach ($packages as $package) {
-                            $this->printProgress(++$packageCount, $packages->getNewPackageCount(), "\tReading packages: ");
+                            $this->printProgress(++$packageCount, $packages->getNewPackageCount(),
+                                "\tReading packages: ");
                             $this->updatePackage($repoId, $package);
                         }
 
@@ -170,13 +175,13 @@ class UpdatePackages extends CronJob
                 $this->files = array();
             }
 
-            $this->printDebug("Cleaning up obsolete repositories...");
+            $this->printDebug('Cleaning up obsolete repositories...');
             $this->cleanupObsoleteRepositories();
 
             if ($this->updatedPackages) {
-                $this->printDebug("Cleaning up obsolete database entries...");
+                $this->printDebug('Cleaning up obsolete database entries...');
                 $this->cleanupDatabase();
-                $this->printDebug("Resolving package relations...");
+                $this->printDebug('Resolving package relations...');
                 $this->resolveRelations();
             }
 
@@ -184,15 +189,18 @@ class UpdatePackages extends CronJob
             $this->updateLastMirrorUpdate();
         } catch (RuntimeException $e) {
             Database::rollBack();
-            $this->printError('UpdatePackages failed at ' . $e->getFile() . ' on line ' . $e->getLine() . ': ' . $e->getMessage());
+            $this->printError('UpdatePackages failed at '.$e->getFile().' on line '.$e->getLine().': '.$e->getMessage());
         }
     }
 
-    private function checkLastMirrorUpdate()
+    /**
+     * @return bool
+     */
+    private function checkLastMirrorUpdate(): bool
     {
         $lastLocalUpdate = ObjectStore::getObject('UpdatePackages:lastupdate');
-        $download = new Download(Config::get('packages', 'mirror') . 'lastupdate');
-        $this->lastMirrorUpdate = file_get_contents($download->getFile());
+        $download = new Download(Config::get('packages', 'mirror').'lastupdate');
+        $this->lastMirrorUpdate = (int) file_get_contents($download->getFile());
 
         return $this->lastMirrorUpdate !== $lastLocalUpdate;
     }
@@ -206,12 +214,12 @@ class UpdatePackages extends CronJob
     {
         $rowsTotal = 0;
         foreach ($this->contentTables as $table) {
-            $rowsTotal += (int) Database::query('SELECT COUNT(*) FROM `' . $table . '`')->fetchColumn();
+            $rowsTotal += (int) Database::query('SELECT COUNT(*) FROM `'.$table.'`')->fetchColumn();
         }
         $rowCount = 0;
         foreach ($this->contentTables as $table) {
-            $rowCount += Database::exec('DELETE FROM `' . $table . '`');
-            $this->printProgress($rowCount, $rowsTotal, "Purging database: ");
+            $rowCount += Database::exec('DELETE FROM `'.$table.'`');
+            $this->printProgress($rowCount, $rowsTotal, 'Purging database: ');
         }
         ObjectStore::addObject('UpdatePackages:lastupdate', 0);
     }
@@ -223,8 +231,8 @@ class UpdatePackages extends CronJob
         $tablesTotal = count($this->contentTables);
         $tableCount = 0;
         foreach ($this->contentTables as $table) {
-            Database::exec('TRUNCATE TABLE `' . $table . '`');
-            $this->printProgress( ++$tableCount, $tablesTotal, "Resetting database: ");
+            Database::exec('TRUNCATE TABLE `'.$table.'`');
+            $this->printProgress(++$tableCount, $tablesTotal, 'Resetting database: ');
         }
         ObjectStore::addObject('UpdatePackages:lastupdate', 0);
 
@@ -287,7 +295,7 @@ class UpdatePackages extends CronJob
             ');
         $this->selectPackageMTime = Database::prepare('
             SELECT
-                MAX(mtime)
+                COALESCE(MAX(mtime), 0)
             FROM
                 packages
             WHERE
@@ -489,7 +497,12 @@ class UpdatePackages extends CronJob
             ');
     }
 
-    private function getArchId($archName)
+    /**
+     * @param string $archName
+     *
+     * @return int
+     */
+    private function getArchId(string $archName): int
     {
         if (!isset($this->arches[$archName])) {
             $archHtml = htmlspecialchars($archName);
@@ -501,13 +514,19 @@ class UpdatePackages extends CronJob
                 $this->insertArchName->execute();
                 $id = Database::lastInsertId();
             }
-            $this->arches[$archName] = $id;
+            $this->arches[$archName] = (int) $id;
         }
 
         return $this->arches[$archName];
     }
 
-    private function getRepoId($repoName, $archId)
+    /**
+     * @param string $repoName
+     * @param int    $archId
+     *
+     * @return int
+     */
+    private function getRepoId(string $repoName, int $archId): int
     {
         $repoName = htmlspecialchars($repoName);
         $this->selectRepoId->bindParam('name', $repoName, PDO::PARAM_STR);
@@ -517,15 +536,21 @@ class UpdatePackages extends CronJob
         if ($id === false) {
             $this->insertRepoName->bindParam('name', $repoName, PDO::PARAM_STR);
             $this->insertRepoName->bindParam('arch', $archId, PDO::PARAM_INT);
-            $this->insertRepoName->bindValue('testing', (preg_match('/(-|^)testing$/', $repoName) > 0 ? 1 : 0), PDO::PARAM_INT);
+            $this->insertRepoName->bindValue('testing', (preg_match('/(-|^)testing$/', $repoName) > 0 ? 1 : 0),
+                PDO::PARAM_INT);
             $this->insertRepoName->execute();
             $id = Database::lastInsertId();
         }
 
-        return $id;
+        return (int) $id;
     }
 
-    private function getPackagerId($packager)
+    /**
+     * @param string $packager
+     *
+     * @return int
+     */
+    private function getPackagerId(string $packager): int
     {
         if (!isset($this->packagers[$packager])) {
             preg_match('/([^<>]+)(?:<(.+?)>)?/', $packager, $matches);
@@ -541,13 +566,17 @@ class UpdatePackages extends CronJob
                 $this->insertPackager->execute();
                 $id = Database::lastInsertId();
             }
-            $this->packagers[$packager] = $id;
+            $this->packagers[$packager] = (int) $id;
         }
 
         return $this->packagers[$packager];
     }
 
-    private function addPackageToGroups($packageId, $groups)
+    /**
+     * @param int   $packageId
+     * @param array $groups
+     */
+    private function addPackageToGroups(int $packageId, array $groups)
     {
         $this->cleanupPackageGroup->bindParam('package', $packageId, PDO::PARAM_INT);
         $this->cleanupPackageGroup->execute();
@@ -558,7 +587,12 @@ class UpdatePackages extends CronJob
         }
     }
 
-    private function getGroupID($groupName)
+    /**
+     * @param string $groupName
+     *
+     * @return int
+     */
+    private function getGroupID(string $groupName): int
     {
         if (!isset($this->groups[$groupName])) {
             $htmlGroup = htmlspecialchars($groupName);
@@ -570,13 +604,17 @@ class UpdatePackages extends CronJob
                 $this->insertGroup->execute();
                 $id = Database::lastInsertId();
             }
-            $this->groups[$groupName] = $id;
+            $this->groups[$groupName] = (int) $id;
         }
 
         return $this->groups[$groupName];
     }
 
-    private function addPackageToLicenses($packageId, $licenses)
+    /**
+     * @param int   $packageId
+     * @param array $licenses
+     */
+    private function addPackageToLicenses(int $packageId, array $licenses)
     {
         $this->cleanupPackageLicense->bindParam('package', $packageId, PDO::PARAM_INT);
         $this->cleanupPackageLicense->execute();
@@ -587,7 +625,12 @@ class UpdatePackages extends CronJob
         }
     }
 
-    private function getLicenseID($licenseName)
+    /**
+     * @param string $licenseName
+     *
+     * @return int
+     */
+    private function getLicenseID(string $licenseName): int
     {
         if (!isset($this->licenses[$licenseName])) {
             $htmlLicense = htmlspecialchars($licenseName);
@@ -599,13 +642,18 @@ class UpdatePackages extends CronJob
                 $this->insertLicense->execute();
                 $id = Database::lastInsertId();
             }
-            $this->licenses[$licenseName] = $id;
+            $this->licenses[$licenseName] = (int) $id;
         }
 
         return $this->licenses[$licenseName];
     }
 
-    private function addRelation($relations, $packageId, $type)
+    /**
+     * @param array  $relations
+     * @param int    $packageId
+     * @param string $type
+     */
+    private function addRelation(array $relations, int $packageId, string $type)
     {
         $this->cleanupRelation->bindParam('packageId', $packageId, PDO::PARAM_INT);
         $this->cleanupRelation->bindParam('type', $type, PDO::PARAM_STR);
@@ -629,7 +677,12 @@ class UpdatePackages extends CronJob
         }
     }
 
-    private function getFileIndexID($fileName)
+    /**
+     * @param string $fileName
+     *
+     * @return int
+     */
+    private function getFileIndexID(string $fileName): int
     {
         if (!isset($this->files[$fileName])) {
             $htmlFile = htmlspecialchars($fileName);
@@ -641,13 +694,17 @@ class UpdatePackages extends CronJob
                 $this->insertFileIndex->execute();
                 $id = Database::lastInsertId();
             }
-            $this->files[$fileName] = $id;
+            $this->files[$fileName] = (int) $id;
         }
 
         return $this->files[$fileName];
     }
 
-    private function insertFiles($files, $packageId)
+    /**
+     * @param array $files
+     * @param int   $packageId
+     */
+    private function insertFiles(array $files, int $packageId)
     {
         $this->cleanupPackageFileIndex->bindParam('package', $packageId, PDO::PARAM_INT);
         $this->cleanupPackageFileIndex->execute();
@@ -671,7 +728,11 @@ class UpdatePackages extends CronJob
         }
     }
 
-    private function updatePackage($repoId, Package $package)
+    /**
+     * @param int     $repoId
+     * @param Package $package
+     */
+    private function updatePackage(int $repoId, Package $package)
     {
         $packageName = htmlspecialchars($package->getName());
         $packageArch = $this->getArchId($package->getArch());
@@ -710,6 +771,8 @@ class UpdatePackages extends CronJob
         if ($packageId === false) {
             $packageId = Database::lastInsertId();
         }
+
+        $packageId = (int) $packageId;
 
         $this->addPackageToGroups($packageId, $package->getGroups());
         $this->addPackageToLicenses($packageId, $package->getLicenses());
@@ -777,7 +840,12 @@ class UpdatePackages extends CronJob
             ');
     }
 
-    private function cleanupObsoletePackages($repoId, $packageMTime, $allPackages)
+    /**
+     * @param int   $repoId
+     * @param int   $packageMTime
+     * @param array $allPackages
+     */
+    private function cleanupObsoletePackages(int $repoId, int $packageMTime, array $allPackages)
     {
         $cleanupPackages = Database::prepare('
             DELETE FROM
@@ -872,7 +940,7 @@ class UpdatePackages extends CronJob
                     DELETE FROM
                         repositories
                     WHERE
-                        id = ' . $repo['id'] . '
+                        id = '.$repo['id'].'
                     ');
                 $this->updatedPackages = true;
             }
@@ -924,7 +992,6 @@ class UpdatePackages extends CronJob
                 ');
         }
     }
-
 }
 
 UpdatePackages::run();

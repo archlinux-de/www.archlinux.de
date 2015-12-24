@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,32 +25,37 @@ namespace archportal\lib;
 
 class L10n
 {
-
+    /** @var array */
     private $localeInfo = array();
+    /** @var string */
     private $locale = '';
 
     public function __construct()
     {
         $this->locale = Config::get('L10n', 'locale');
 
-        putenv('LC_ALL=' . $this->locale);
+        putenv('LC_ALL='.$this->locale);
         setlocale(LC_ALL, $this->locale);
         date_default_timezone_set(Config::get('L10n', 'timezone'));
         $this->localeInfo = localeconv();
-        bindtextdomain('archportal', __DIR__ . '/../l10n');
+        bindtextdomain('archportal', __DIR__.'/../l10n');
         textdomain('archportal');
     }
 
-    private function getLocalePath()
+    /**
+     * @return string
+     */
+    private function getLocalePath(): string
     {
-        return __DIR__ . '/../l10n/' . strtok($this->locale, '.');
+        return __DIR__.'/../l10n/'.strtok($this->locale, '.');
     }
 
     /**
      * @param string $text
+     *
      * @return string
      */
-    public function getText($text)
+    public function getText(string $text): string
     {
         return gettext($text);
     }
@@ -56,23 +63,25 @@ class L10n
     /**
      * @param string $singular
      * @param string $plural
-     * @param int $count
+     * @param int    $count
+     *
      * @return string
      */
-    public function ngetText($singular, $plural, $count)
+    public function ngetText(string $singular, string $plural, int $count): string
     {
         return ngettext($singular, $plural, $count);
     }
 
     /**
      * @param string $name
+     *
      * @return string
      */
-    public function getTextFile($name)
+    public function getTextFile(string $name):string
     {
-        $key = 'L10n:' . $this->locale . ':' . $name;
+        $key = 'L10n:'.$this->locale.':'.$name;
         if (!($text = ObjectCache::getObject($key))) {
-            $text = file_get_contents($this->getLocalePath() . '/' . $name . '.html');
+            $text = file_get_contents($this->getLocalePath().'/'.$name.'.html');
             ObjectCache::addObject($key, $text);
         }
 
@@ -80,37 +89,41 @@ class L10n
     }
 
     /**
-     * @param int $timestamp
+     * @param int|null $timestamp
+     *
      * @return string
      */
-    public function getDate($timestamp = null)
+    public function getDate($timestamp = null): string
     {
         return date($this->getText('Y-m-d'), $timestamp);
     }
 
     /**
-     * @param int $timestamp
+     * @param int|null $timestamp
+     *
      * @return string
      */
-    public function getDateTime($timestamp = null)
+    public function getDateTime($timestamp = null): string
     {
         return date($this->getText('Y-m-d H:i'), $timestamp);
     }
 
     /**
-     * @param int $timestamp
+     * @param int|null $timestamp
+     *
      * @return string
      */
-    public function getGmDateTime($timestamp = null)
+    public function getGmDateTime($timestamp = null): string
     {
         return gmdate('Y-m-d H:i', $timestamp);
     }
 
     /**
      * @param int $seconds
+     *
      * @return string
      */
-    public function getEpoch($seconds)
+    public function getEpoch(int $seconds): string
     {
         $minutes = 60;
         $hours = 60 * $minutes;
@@ -119,34 +132,33 @@ class L10n
         $months = 4 * $weeks;
         $years = 12 * $months;
         if ($seconds >= $years) {
-            $result = round($seconds / $years);
+            $result = intval(round($seconds / $years));
 
             return sprintf($this->ngetText('%d year', '%d years', $result), $result);
         } elseif ($seconds >= $months) {
-            $result = round($seconds / $months);
+            $result = (int) round($seconds / $months);
 
             return sprintf($this->ngetText('%d month', '%d months', $result), $result);
         } elseif ($seconds >= $weeks) {
-            $result = round($seconds / $weeks);
+            $result = (int) round($seconds / $weeks);
 
             return sprintf($this->ngetText('%d week', '%d weeks', $result), $result);
         } elseif ($seconds >= $days) {
-            $result = round($seconds / $days);
+            $result = (int) round($seconds / $days);
 
             return sprintf($this->ngetText('%d day', '%d days', $result), $result);
         } elseif ($seconds >= $hours) {
-            $result = round($seconds / $hours, 2);
+            $result = (int) round($seconds / $hours, 2);
 
             return sprintf($this->getText('%.2f hours'), $result);
         } elseif ($seconds >= $minutes) {
-            $result = round($seconds / $minutes, 2);
+            $result = (int) round($seconds / $minutes, 2);
 
             return sprintf($this->getText('%.2f minutes'), $result);
         } else {
-            $result = round($seconds, 2);
+            $result = (int) round($seconds, 2);
 
             return sprintf($this->getText('%.2f seconds'), $result);
         }
     }
-
 }

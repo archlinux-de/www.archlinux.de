@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,33 +25,44 @@ namespace archportal\lib;
 
 class Request
 {
-
+    /** @var array */
     private static $instances = array();
+    /** @var array */
     private $request = array();
 
-    private function __construct($type)
+    /**
+     * @param string $type
+     */
+    private function __construct(string $type)
     {
         switch ($type) {
-            case 'get': $this->request = & $_GET;
+            case 'get':
+                $this->request = &$_GET;
                 break;
-            case 'post': $this->request = & $_POST;
+            case 'post':
+                $this->request = &$_POST;
                 break;
-            case 'cookie': $this->request = & $_COOKIE;
+            case 'cookie':
+                $this->request = &$_COOKIE;
                 break;
-            case 'request': $this->request = & $_REQUEST;
+            case 'request':
+                $this->request = &$_REQUEST;
                 break;
-            case 'server': $this->request = & $_SERVER;
+            case 'server':
+                $this->request = &$_SERVER;
                 break;
-            case 'env': $this->request = & $_ENV;
+            case 'env':
+                $this->request = &$_ENV;
                 break;
         }
     }
 
     /**
      * @param string $type
+     *
      * @return Request
      */
-    public static function getInstance($type)
+    public static function getInstance(string $type): Request
     {
         if (!isset(self::$instances[$type])) {
             self::$instances[$type] = new self($type);
@@ -60,45 +73,50 @@ class Request
 
     /**
      * @param string $input
+     *
      * @return bool
      */
-    private function is_unicode($input)
+    private function is_unicode(string $input): bool
     {
         return mb_check_encoding($input, 'UTF-8');
     }
 
     /**
      * @param string $name
+     *
      * @return bool
      */
-    public function isString($name)
+    public function isString(string $name): bool
     {
         return isset($this->request[$name]) && is_string($this->request[$name]) && $this->is_unicode($this->request[$name]);
     }
 
     /**
      * @param string $name
+     *
      * @return bool
      */
-    public function isEmptyString($name)
+    public function isEmptyString(string $name): bool
     {
         return !$this->isString($name) || !$this->isRegex($name, '/\S+/');
     }
 
     /**
      * @param string $name
+     *
      * @return bool
      */
-    public function isRequest($name)
+    public function isRequest(string $name): bool
     {
         return isset($this->request[$name]);
     }
 
     /**
      * @param string $name
+     *
      * @return bool
      */
-    public function isInt($name)
+    public function isInt(string $name): bool
     {
         return $this->isRegex($name, '/^-?[0-9]+$/');
     }
@@ -106,32 +124,35 @@ class Request
     /**
      * @param string $name
      * @param string $regex
+     *
      * @return bool
      */
-    public function isRegex($name, $regex)
+    public function isRegex(string $name, string $regex): bool
     {
         return $this->isString($name) && preg_match($regex, $this->request[$name]);
     }
 
     /**
      * @param string $name
+     *
      * @return int
      */
-    public function getHtmlLength($name)
+    public function getHtmlLength(string $name): int
     {
         return $this->isEmptyString($name) ? 0 : strlen(htmlspecialchars($this->request[$name], ENT_COMPAT));
     }
 
     /**
      * @param string $name
-     * @param bool $default
+     * @param string $default
+     *
      * @return string
      */
-    public function getString($name, $default = false)
+    public function getString(string $name, string $default = null): string
     {
         if (!$this->isEmptyString($name)) {
             return $this->request[$name];
-        } elseif ($default !== false) {
+        } elseif ($default !== null) {
             return $default;
         } else {
             throw new RequestException($name);
@@ -140,14 +161,15 @@ class Request
 
     /**
      * @param string $name
-     * @param bool $default
+     * @param int    $default
+     *
      * @return int
      */
-    public function getInt($name, $default = false)
+    public function getInt(string $name, int $default = null): int
     {
         if ($this->isInt($name)) {
-            return $this->request[$name];
-        } elseif ($default !== false) {
+            return (int) $this->request[$name];
+        } elseif ($default !== null) {
             return $default;
         } else {
             throw new RequestException($name);
@@ -156,12 +178,12 @@ class Request
 
     /**
      * @param string $name
-     * @param bool $default
+     * @param string $default
+     *
      * @return string
      */
-    public function getHtml($name, $default = false)
+    public function getHtml(string $name, string $default = null): string
     {
         return htmlspecialchars($this->getString($name, $default), ENT_COMPAT);
     }
-
 }

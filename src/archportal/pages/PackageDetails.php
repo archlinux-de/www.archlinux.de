@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -32,10 +34,13 @@ use RuntimeException;
 
 class PackageDetails extends Page
 {
-
+    /** @var int */
     private $pkgid = 0;
+    /** @var string */
     private $repo = '';
+    /** @var string */
     private $arch = '';
+    /** @var string */
     private $pkgname = '';
 
     public function prepare()
@@ -106,150 +111,154 @@ class PackageDetails extends Page
         }
         $this->pkgid = $data['id'];
         $this->setTitle($data['name']);
-        $cgitUrl = Config::get('packages', 'cgit') . (in_array($data['repository'], array(
-                    'community',
-                    'community-testing',
-                    'multilib',
-                    'multilib-testing'
-                )) ? 'community' : 'packages')
-                . '.git/';
+        $cgitUrl = Config::get('packages', 'cgit').(in_array($data['repository'], array(
+                'community',
+                'community-testing',
+                'multilib',
+                'multilib-testing',
+            )) ? 'community' : 'packages')
+            .'.git/';
         $body = '<div class="box">
-        <h2>' . $data['name'] . '</h2>
+        <h2>'.$data['name'].'</h2>
         <table id="packagedetails">
             <tr>
-                <th colspan="2" class="packagedetailshead">' . $this->l10n->getText('Package details') . '</th>
+                <th colspan="2" class="packagedetailshead">'.$this->l10n->getText('Package details').'</th>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Name') . '</th>
-                <td>' . $data['name'] . '</td>
+                <th>'.$this->l10n->getText('Name').'</th>
+                <td>'.$data['name'].'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Version') . '</th>
-                <td>' . $data['version'] . '</td>
+                <th>'.$this->l10n->getText('Version').'</th>
+                <td>'.$data['version'].'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Description') . '</th>
-                <td>' . $data['desc'] . '</td>
+                <th>'.$this->l10n->getText('Description').'</th>
+                <td>'.$data['desc'].'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('URL') . '</th>
-                <td><a rel="nofollow" href="' . $data['url'] . '">' . $data['url'] . '</a></td>
+                <th>'.$this->l10n->getText('URL').'</th>
+                <td><a rel="nofollow" href="'.$data['url'].'">'.$data['url'].'</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Licenses') . '</th>
-                <td>' . $this->getLicenses() . '</td>
+                <th>'.$this->l10n->getText('Licenses').'</th>
+                <td>'.$this->getLicenses().'</td>
             </tr>
             <tr>
-                <th colspan="2" class="packagedetailshead">' . $this->l10n->getText('Package details') . '</th>
+                <th colspan="2" class="packagedetailshead">'.$this->l10n->getText('Package details').'</th>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Repository') . '</th>
-                <td><a href="' . $this->createUrl('Packages', array('repository' => $data['repository'])) . '">' . $data['repository'] . '</a></td>
+                <th>'.$this->l10n->getText('Repository').'</th>
+                <td><a href="'.$this->createUrl('Packages',
+                array('repository' => $data['repository'])).'">'.$data['repository'].'</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Architecture') . '</th>
-                <td><a href="' . $this->createUrl('Packages', array('architecture' => $data['architecture'])) . '">' . $data['architecture'] . '</a></td>
+                <th>'.$this->l10n->getText('Architecture').'</th>
+                <td><a href="'.$this->createUrl('Packages',
+                array('architecture' => $data['architecture'])).'">'.$data['architecture'].'</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Groups') . '</th>
-                <td>' . $this->getGroups() . '</td>
+                <th>'.$this->l10n->getText('Groups').'</th>
+                <td>'.$this->getGroups().'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Packager') . '</th>
-                <td><a href="' . $this->createUrl('Packages', array('packager' => $data['packagerid'])) . '">' . $data['packager'] . '</a>' . (!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:' . $data['packageremail'] . '">@</a>' : '') . '</td>
+                <th>'.$this->l10n->getText('Packager').'</th>
+                <td><a href="'.$this->createUrl('Packages',
+                array('packager' => $data['packagerid'])).'">'.$data['packager'].'</a>'.(!empty($data['packageremail']) ? ' <a rel="nofollow" href="mailto:'.$data['packageremail'].'">@</a>' : '').'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Build date') . '</th>
-                <td>' . $this->l10n->getDateTime($data['builddate']) . '</td>
+                <th>'.$this->l10n->getText('Build date').'</th>
+                <td>'.$this->l10n->getDateTime($data['builddate']).'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Publish date') . '</th>
-                <td>' . $this->l10n->getDateTime($data['mtime']) . '</td>
+                <th>'.$this->l10n->getText('Publish date').'</th>
+                <td>'.$this->l10n->getDateTime($data['mtime']).'</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Source code') . '</th>
-                <td><a href="' . $cgitUrl . 'tree/trunk?h=packages/' . $data['base'] . '">' . $this->l10n->getText('Source Files') . '</a>,
-                <a href="' . $cgitUrl . 'log/trunk?h=packages/' . $data['base'] . '">' . $this->l10n->getText('Changelog') . '</a></td>
+                <th>'.$this->l10n->getText('Source code').'</th>
+                <td><a href="'.$cgitUrl.'tree/trunk?h=packages/'.$data['base'].'">'.$this->l10n->getText('Source Files').'</a>,
+                <a href="'.$cgitUrl.'log/trunk?h=packages/'.$data['base'].'">'.$this->l10n->getText('Changelog').'</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Bugs') . '</th>
-                <td><a href="https://bugs.archlinux.org/index.php?string=%5B' . $data['name'] . '%5D">' . $this->l10n->getText('Bug Tracker') . '</a></td>
+                <th>'.$this->l10n->getText('Bugs').'</th>
+                <td><a href="https://bugs.archlinux.org/index.php?string=%5B'.$data['name'].'%5D">'.$this->l10n->getText('Bug Tracker').'</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Package') . '</th>
-                <td><a href="' . $this->createUrl('GetFileFromMirror', array('file' => $data['repository'] . '/os/' . $this->arch . '/' . $data['filename'])) . '">' . $data['filename'] . '</a></td>
+                <th>'.$this->l10n->getText('Package').'</th>
+                <td><a href="'.$this->createUrl('GetFileFromMirror',
+                array('file' => $data['repository'].'/os/'.$this->arch.'/'.$data['filename'])).'">'.$data['filename'].'</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('MD5 checksum') . '</th>
-                <td><code>' . $data['md5sum'] . '</code></td>
+                <th>'.$this->l10n->getText('MD5 checksum').'</th>
+                <td><code>'.$data['md5sum'].'</code></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('SHA256 checksum') . '</th>
-                <td><code>' . $data['sha256sum'] . '</code></td>
+                <th>'.$this->l10n->getText('SHA256 checksum').'</th>
+                <td><code>'.$data['sha256sum'].'</code></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('PGP signature') . '</th>
-                <td><a href="data:application/pgp-signature;base64,' . base64_encode($data['pgpsig']) . '" download="' . $data['filename'] . '.sig">' . $data['filename'] . '.sig</a></td>
+                <th>'.$this->l10n->getText('PGP signature').'</th>
+                <td><a href="data:application/pgp-signature;base64,'.base64_encode($data['pgpsig']).'" download="'.$data['filename'].'.sig">'.$data['filename'].'.sig</a></td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Package size') . '</th>
-                <td>' . $this->formatBytes($data['csize']) . 'Byte</td>
+                <th>'.$this->l10n->getText('Package size').'</th>
+                <td>'.$this->formatBytes($data['csize']).'Byte</td>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('Installation size') . '</th>
-                <td>' . $this->formatBytes($data['isize']) . 'Byte</td>
+                <th>'.$this->l10n->getText('Installation size').'</th>
+                <td>'.$this->formatBytes($data['isize']).'Byte</td>
             </tr>
         </table>
         <table id="packagedependencies">
             <tr>
-                <th colspan="5" class="packagedependencieshead">' . $this->l10n->getText('Dependencies') . '</th>
+                <th colspan="5" class="packagedependencieshead">'.$this->l10n->getText('Dependencies').'</th>
             </tr>
             <tr>
-                <th>' . $this->l10n->getText('depends on') . '</th>
-                <th>' . $this->l10n->getText('required by') . '</th>
-                <th>' . $this->l10n->getText('provides') . '</th>
-                <th>' . $this->l10n->getText('conflicts with') . '</th>
-                <th>' . $this->l10n->getText('replaces') . '</th>
-            </tr>
-            <tr>
-                <td>
-                    ' . $this->getRelations('depends') . '
-                </td>
-                <td>
-                    ' . $this->getInverseRelations('depends') . '
-                </td>
-                <td>
-                    ' . $this->getRelations('provides') . '
-                </td>
-                <td>
-                    ' . $this->getRelations('conflicts') . '
-                </td>
-                <td>
-                    ' . $this->getRelations('replaces') . '
-                </td>
-            </tr>
-            <tr>
-                <th>' . $this->l10n->getText('optionally depends on') . '</th>
-                <th>' . $this->l10n->getText('optionally required by') . '</th>
-                <th>' . $this->l10n->getText('make depends on') . '</th>
-                <th>' . $this->l10n->getText('make required by') . '</th>
-                <th>' . $this->l10n->getText('check depends on') . '</th>
+                <th>'.$this->l10n->getText('depends on').'</th>
+                <th>'.$this->l10n->getText('required by').'</th>
+                <th>'.$this->l10n->getText('provides').'</th>
+                <th>'.$this->l10n->getText('conflicts with').'</th>
+                <th>'.$this->l10n->getText('replaces').'</th>
             </tr>
             <tr>
                 <td>
-                    ' . $this->getRelations('optdepends') . '
+                    '.$this->getRelations('depends').'
                 </td>
                 <td>
-                    ' . $this->getInverseRelations('optdepends') . '
+                    '.$this->getInverseRelations('depends').'
                 </td>
                 <td>
-                    ' . $this->getRelations('makedepends') . '
+                    '.$this->getRelations('provides').'
                 </td>
                 <td>
-                    ' . $this->getInverseRelations('makedepends') . '
+                    '.$this->getRelations('conflicts').'
                 </td>
                 <td>
-                    ' . $this->getRelations('checkdepends') . '
+                    '.$this->getRelations('replaces').'
+                </td>
+            </tr>
+            <tr>
+                <th>'.$this->l10n->getText('optionally depends on').'</th>
+                <th>'.$this->l10n->getText('optionally required by').'</th>
+                <th>'.$this->l10n->getText('make depends on').'</th>
+                <th>'.$this->l10n->getText('make required by').'</th>
+                <th>'.$this->l10n->getText('check depends on').'</th>
+            </tr>
+            <tr>
+                <td>
+                    '.$this->getRelations('optdepends').'
+                </td>
+                <td>
+                    '.$this->getInverseRelations('optdepends').'
+                </td>
+                <td>
+                    '.$this->getRelations('makedepends').'
+                </td>
+                <td>
+                    '.$this->getInverseRelations('makedepends').'
+                </td>
+                <td>
+                    '.$this->getRelations('checkdepends').'
                 </td>
             </tr>
         </table>';
@@ -257,11 +266,17 @@ class PackageDetails extends Page
         if (Config::get('packages', 'files')) {
             $body .= '<table id="packagefiles">
                 <tr>
-                    <th class="packagefileshead">' . $this->l10n->getText('Files') . '</th>
+                    <th class="packagefileshead">'.$this->l10n->getText('Files').'</th>
                 </tr>
                 <tr>
                     <td>
-                        ' . (Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="' . $this->createUrl('PackageDetails', array('repo' => $this->repo, 'arch' => $this->arch, 'pkgname' => $this->pkgname, 'showfiles' => '1')) . '">' . $this->l10n->getText('Show files') . '</a>') . '
+                        '.(Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="'.$this->createUrl('PackageDetails',
+                        array(
+                            'repo' => $this->repo,
+                            'arch' => $this->arch,
+                            'pkgname' => $this->pkgname,
+                            'showfiles' => '1',
+                        )).'">'.$this->l10n->getText('Show files').'</a>').'
                     </td>
                 </tr>
             </table>';
@@ -271,27 +286,35 @@ class PackageDetails extends Page
         $this->setBody($body);
     }
 
-    private function formatBytes($bytes)
+    /**
+     * @param int $bytes
+     *
+     * @return string
+     */
+    private function formatBytes(int $bytes): string
     {
         $kb = 1024;
         $mb = $kb * 1024;
         $gb = $mb * 1024;
         if ($bytes >= $gb) { // GB
 
-            return round($bytes / $gb, 2) . ' G';
+            return round($bytes / $gb, 2).' G';
         } elseif ($bytes >= $mb) { // MB
 
-            return round($bytes / $mb, 2) . ' M';
+            return round($bytes / $mb, 2).' M';
         } elseif ($bytes >= $kb) { // KB
 
-            return round($bytes / $kb, 2) . ' K';
+            return round($bytes / $kb, 2).' K';
         } else {
-        //  B
-            return $bytes . ' ';
+            //  B
+            return $bytes.' ';
         }
     }
 
-    private function getLicenses()
+    /**
+     * @return string
+     */
+    private function getLicenses(): string
     {
         $stm = Database::prepare('
         SELECT
@@ -313,7 +336,10 @@ class PackageDetails extends Page
         return implode(', ', $list);
     }
 
-    private function getGroups()
+    /**
+     * @return string
+     */
+    private function getGroups(): string
     {
         $groups = Database::prepare('
             SELECT
@@ -329,13 +355,16 @@ class PackageDetails extends Page
         $groups->execute();
         $list = array();
         while (($group = $groups->fetchColumn())) {
-            $list[] = '<a href="' . $this->createUrl('Packages', array('group' => $group)) . '">' . $group . '</a>';
+            $list[] = '<a href="'.$this->createUrl('Packages', array('group' => $group)).'">'.$group.'</a>';
         }
 
         return implode(', ', $list);
     }
 
-    private function getFiles()
+    /**
+     * @return string
+     */
+    private function getFiles(): string
     {
         $stm = Database::prepare('
             SELECT
@@ -357,20 +386,20 @@ class PackageDetails extends Page
             while (($path = $stm->fetchColumn())) {
                 $cur = substr_count($path, '/');
                 if (substr($path, -1) != '/') {
-                    $cur++;
+                    ++$cur;
                 }
 
                 if ($cur == $last + 1) {
                     $list .= '<ul>';
                 } elseif ($cur < $last) {
-                    $list .= '</li>' . str_repeat('</ul></li>', $last - $cur);
+                    $list .= '</li>'.str_repeat('</ul></li>', $last - $cur);
                 } elseif ($cur > $last + 1) {
                     throw new RuntimeException('incorrect list depth');
                 } else {
                     $list .= '</li>';
                 }
 
-                $list .= '<li>' . basename($path);
+                $list .= '<li>'.basename($path);
                 $last = $cur;
             }
 
@@ -380,7 +409,12 @@ class PackageDetails extends Page
         return $list;
     }
 
-    private function getRelations($type)
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    private function getRelations(string $type): string
     {
         $stm = Database::prepare('
         SELECT
@@ -409,17 +443,26 @@ class PackageDetails extends Page
         $list = '<ul>';
         foreach ($stm as $dependency) {
             if (is_null($dependency['id'])) {
-                $list.= '<li>' . $dependency['name'] . $dependency['version'] . '</li>';
+                $list .= '<li>'.$dependency['name'].$dependency['version'].'</li>';
             } else {
-                $list.= '<li><a href="' . $this->createUrl('PackageDetails', array('repo' => $dependency['repo'], 'arch' => $dependency['arch'], 'pkgname' => $dependency['name'])) . '">' . $dependency['name'] . '</a>' . $dependency['version'] . '</li>';
+                $list .= '<li><a href="'.$this->createUrl('PackageDetails', array(
+                        'repo' => $dependency['repo'],
+                        'arch' => $dependency['arch'],
+                        'pkgname' => $dependency['name'],
+                    )).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
             }
         }
-        $list.= '</ul>';
+        $list .= '</ul>';
 
         return $list;
     }
 
-    private function getInverseRelations($type)
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    private function getInverseRelations(string $type): string
     {
         $stm = Database::prepare('
         SELECT
@@ -446,11 +489,14 @@ class PackageDetails extends Page
         $stm->execute();
         $list = '<ul>';
         foreach ($stm as $dependency) {
-            $list.= '<li><a href="' . $this->createUrl('PackageDetails', array('repo' => $dependency['repo'], 'arch' => $dependency['arch'], 'pkgname' => $dependency['name'])) . '">' . $dependency['name'] . '</a>' . $dependency['version'] . '</li>';
+            $list .= '<li><a href="'.$this->createUrl('PackageDetails', array(
+                    'repo' => $dependency['repo'],
+                    'arch' => $dependency['arch'],
+                    'pkgname' => $dependency['name'],
+                )).'">'.$dependency['name'].'</a>'.$dependency['version'].'</li>';
         }
-        $list.= '</ul>';
+        $list .= '</ul>';
 
         return $list;
     }
-
 }
