@@ -9,6 +9,7 @@ app:
   volumes:
     - .:/app
     - ./config/DockerConfig.php:/app/config/LocalConfig.php
+    - ~/.composer/cache:/.composer/cache
 
 db:
   image: mariadb:10.0
