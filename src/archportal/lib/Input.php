@@ -96,9 +96,9 @@ class Input
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public static function getClientCountryCode(): string
+    public static function getClientCountryCode()
     {
         if (is_null(self::$countryCode)) {
             $ip = self::getClientIP();
@@ -108,9 +108,9 @@ class Input
             if (file_exists($dbFile)) {
                 $geoIp = geoip_open($dbFile, GEOIP_STANDARD);
                 if ($isIPv6) {
-                    $countryCode = geoip_country_code_by_addr_v6($geoIp, $ip) ?: '';
+                    $countryCode = geoip_country_code_by_addr_v6($geoIp, $ip) ?: null;
                 } else {
-                    $countryCode = geoip_country_code_by_addr($geoIp, $ip) ?: '';
+                    $countryCode = geoip_country_code_by_addr($geoIp, $ip) ?: null;
                 }
                 geoip_close($geoIp);
 
