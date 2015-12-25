@@ -1,7 +1,10 @@
 FROM php:7.0
 
 RUN apt-get update && apt-get install -yq bsdtar mariadb-client locales zlib1g-dev
-RUN docker-php-ext-install gettext pdo_mysql mbstring zip
+RUN docker-php-ext-install gettext pdo_mysql mbstring zip opcache
+
+RUN pecl install apcu
+RUN echo 'extension=apcu.so' > /usr/local/etc/php/conf.d/apcu.ini
 
 RUN echo "date.timezone=UTC" > /usr/local/etc/php/conf.d/timezone.ini
 RUN echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
