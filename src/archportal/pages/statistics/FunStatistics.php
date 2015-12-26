@@ -209,7 +209,7 @@ class FunStatistics extends StatisticsPage
         foreach ($packageArray as $name => $count) {
             // FIXME: calculation of totals is not that accurate
             // e.g. one person might have installed several nvidia drivers
-            $count = min($count, $total);
+            $count = (int) min($count, $total);
             $list .= '<tr><th>'.$name.'</th><td>'.self::getBar($count, $total).'</td></tr>';
         }
 

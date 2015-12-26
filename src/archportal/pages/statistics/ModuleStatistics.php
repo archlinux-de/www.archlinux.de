@@ -141,7 +141,7 @@ class ModuleStatistics extends StatisticsPage
         ');
         $list = '<tr><td colspan="2"><div><table class="pretty-table" style="border:none;">';
         foreach ($modules as $module) {
-            $list .= '<tr><td style="width: 200px;">'.$module['name'].'</td><td>'.self::getBar($module['count'],
+            $list .= '<tr><td style="width: 200px;">'.$module['name'].'</td><td>'.self::getBar((int) $module['count'],
                     $total).'</td></tr>';
         }
         $list .= '</table></div></td></tr>';
