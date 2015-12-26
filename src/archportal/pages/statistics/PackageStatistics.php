@@ -342,7 +342,7 @@ class PackageStatistics extends StatisticsPage
                 $list .= '<tr><th>'.$repo.'</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
             }
             foreach ($packages as $package) {
-                $list .= '<tr><td style="width: 200px;">'.$package['pkgname'].'</td><td>'.self::getBar($package['count'],
+                $list .= '<tr><td style="width: 200px;">'.$package['pkgname'].'</td><td>'.self::getBar((int) $package['count'],
                         $total).'</td></tr>';
             }
             $list .= '</table></div></td></tr>';
@@ -384,7 +384,7 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
         foreach ($packages as $package) {
-            $list .= '<tr><td style="width: 200px;">'.$package['pkgname'].'</td><td>'.self::getBar($package['count'],
+            $list .= '<tr><td style="width: 200px;">'.$package['pkgname'].'</td><td>'.self::getBar((int) $package['count'],
                     $total).'</td></tr>';
         }
         $list .= '</table></div></td></tr>';
