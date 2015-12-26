@@ -172,7 +172,7 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar($country['count'],
+            $list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar((int) $country['count'],
                     $total).'</td></tr>';
         }
 
@@ -254,7 +254,7 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar($country['count'],
+            $list .= '<tr><th>'.$country['country'].'</th><td>'.self::getBar((int) $country['count'],
                     $total).'</td></tr>';
         }
 
@@ -326,7 +326,7 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar($arch['count'], $total).'</td></tr>';
+            $list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar((int) $arch['count'], $total).'</td></tr>';
         }
 
         return $list;
@@ -362,7 +362,7 @@ class UserStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar($arch['count'], $total).'</td></tr>';
+            $list .= '<tr><th>'.$arch['name'].'</th><td>'.self::getBar((int) $arch['count'], $total).'</td></tr>';
         }
 
         return $list;
