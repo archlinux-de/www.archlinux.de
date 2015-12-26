@@ -79,13 +79,7 @@ class L10n
      */
     public function getTextFile(string $name):string
     {
-        $key = 'L10n:'.$this->locale.':'.$name;
-        if (!($text = ObjectCache::getObject($key))) {
-            $text = file_get_contents($this->getLocalePath().'/'.$name.'.html');
-            ObjectCache::addObject($key, $text);
-        }
-
-        return $text;
+        return file_get_contents($this->getLocalePath().'/'.$name.'.html');
     }
 
     /**
