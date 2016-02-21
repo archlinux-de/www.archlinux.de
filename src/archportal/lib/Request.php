@@ -161,7 +161,7 @@ class Request
 
     /**
      * @param string $name
-     * @param int $default
+     * @param int    $default
      *
      * @return int
      */
