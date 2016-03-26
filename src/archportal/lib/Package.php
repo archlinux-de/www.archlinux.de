@@ -31,8 +31,6 @@ class Package
     private $packageDir = '';
     /** @var array */
     private $desc = array();
-    /** @var array */
-    private $depends = array();
 
     /**
      * @param string $packageDir
@@ -41,11 +39,13 @@ class Package
     {
         $this->packageDir = $packageDir;
 
-        if (!file_exists($this->packageDir.'/desc') || !file_exists($this->packageDir.'/depends')) {
+        if (!file_exists($this->packageDir.'/desc')) {
             throw new RuntimeException('Invalid package data');
         }
         $this->desc = $this->loadInfo($this->packageDir.'/desc');
-        $this->depends = $this->loadInfo($this->packageDir.'/depends');
+        if (file_exists($this->packageDir.'/depends')) {
+            $this->desc = array_merge($this->desc, $this->loadInfo($this->packageDir.'/depends'));
+        }
     }
 
     /**
@@ -218,7 +218,7 @@ class Package
      */
     public function getDepends(): array
     {
-        return isset($this->depends['DEPENDS']) ? $this->depends['DEPENDS'] : array();
+        return isset($this->desc['DEPENDS']) ? $this->desc['DEPENDS'] : array();
     }
 
     /**
@@ -226,7 +226,7 @@ class Package
      */
     public function getConflicts(): array
     {
-        return isset($this->depends['CONFLICTS']) ? $this->depends['CONFLICTS'] : array();
+        return isset($this->desc['CONFLICTS']) ? $this->desc['CONFLICTS'] : array();
     }
 
     /**
@@ -234,7 +234,7 @@ class Package
      */
     public function getProvides(): array
     {
-        return isset($this->depends['PROVIDES']) ? $this->depends['PROVIDES'] : array();
+        return isset($this->desc['PROVIDES']) ? $this->desc['PROVIDES'] : array();
     }
 
     /**
@@ -242,7 +242,7 @@ class Package
      */
     public function getOptDepends(): array
     {
-        return isset($this->depends['OPTDEPENDS']) ? $this->depends['OPTDEPENDS'] : array();
+        return isset($this->desc['OPTDEPENDS']) ? $this->desc['OPTDEPENDS'] : array();
     }
 
     /**
@@ -250,7 +250,7 @@ class Package
      */
     public function getMakeDepends(): array
     {
-        return isset($this->depends['MAKEDEPENDS']) ? $this->depends['MAKEDEPENDS'] : array();
+        return isset($this->desc['MAKEDEPENDS']) ? $this->desc['MAKEDEPENDS'] : array();
     }
 
     /**
@@ -258,7 +258,7 @@ class Package
      */
     public function getCheckDepends(): array
     {
-        return isset($this->depends['CHECKDEPENDS']) ? $this->depends['CHECKDEPENDS'] : array();
+        return isset($this->desc['CHECKDEPENDS']) ? $this->desc['CHECKDEPENDS'] : array();
     }
 
     /**
