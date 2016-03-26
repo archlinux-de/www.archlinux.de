@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild csfix
+.PHONY: all init start stop restart clean rebuild
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 
@@ -38,6 +38,3 @@ composer.lock: composer.json
 vendor: composer.lock
 	@mkdir -p ~/.composer/cache
 	@${APP-RUN} composer install
-
-csfix: vendor
-	@${APP-RUN} vendor/bin/php-cs-fixer fix . || true
