@@ -18,8 +18,5 @@
   "require": {
     "php": ">=7",
     "geoip/geoip": "~1.14"
-  },
-  "require-dev": {
-    "fabpot/php-cs-fixer": "^1.11"
   }
 }
