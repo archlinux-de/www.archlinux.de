@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "geoip/geoip",
-            "version": "v1.16",
+            "version": "v1.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maxmind/geoip-api-php.git",
-                "reference": "74462459a6281125408afb1ef63e3fcaa2cccd3d"
+                "reference": "2053a85c2ed3e7adcbaf0117e26832f57366e370"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maxmind/geoip-api-php/zipball/74462459a6281125408afb1ef63e3fcaa2cccd3d",
-                "reference": "74462459a6281125408afb1ef63e3fcaa2cccd3d",
+                "url": "https://api.github.com/repos/maxmind/geoip-api-php/zipball/2053a85c2ed3e7adcbaf0117e26832f57366e370",
+                "reference": "2053a85c2ed3e7adcbaf0117e26832f57366e370",
                 "shasum": ""
             },
             "conflict": {
@@ -54,7 +54,7 @@
                 "geolocation",
                 "maxmind"
             ],
-            "time": "2016-01-29 17:19:46"
+            "time": "2016-05-16 19:06:50"
         }
     ],
     "packages-dev": [],
