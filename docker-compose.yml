@@ -12,7 +12,7 @@ app:
     - ~/.composer/cache:/.composer/cache
 
 db:
-  image: mariadb:10.0
+  image: mariadb:10.1
   environment:
     MYSQL_ROOT_PASSWORD: "pw"
     MYSQL_DATABASE: "archportal"
