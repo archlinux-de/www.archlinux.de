@@ -7,13 +7,10 @@ Config::set('common', 'legacysites', true);
 Config::set('common', 'debug', true);
 Config::set('common', 'sitename', 'archlinux.de');
 
-Config::set('Database', 'host', 'db');
-Config::set('Database', 'password', 'pw');
-
 Config::set('L10n', 'locale', 'de_DE.utf8');
 Config::set('L10n', 'timezone', 'Europe/Berlin');
 
-Config::set('mirrors', 'default', 'http://mirror.de.leaseweb.net/archlinux/');
+Config::set('mirrors', 'default', 'http://mirror.leaseweb.net/archlinux/');
 Config::set('mirrors', 'country', 'DE');
 
 Config::set('packages', 'repositories', array(

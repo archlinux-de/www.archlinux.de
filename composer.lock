@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0c158eac1f6dfc9672daf19dae919ca7",
-    "content-hash": "8a55017ba9028f2e7130eec5cd4b05f7",
+    "content-hash": "183b32c791e22cbf3565bcd27ba0e046",
     "packages": [
         {
             "name": "geoip/geoip",
@@ -54,7 +53,7 @@
                 "geolocation",
                 "maxmind"
             ],
-            "time": "2016-05-16 19:06:50"
+            "time": "2016-05-16T19:06:50+00:00"
         }
     ],
     "packages-dev": [],
@@ -64,7 +63,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7"
+        "php": "^7.0",
+        "ext-pdo_mysql": "*",
+        "ext-gettext": "*"
     },
     "platform-dev": []
 }
