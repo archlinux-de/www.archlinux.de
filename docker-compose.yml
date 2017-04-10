@@ -11,7 +11,7 @@ services:
     command: php -S 0.0.0.0:8080 -t /app/web
     user: http
     ports:
-      - "80:8080"
+      - "${PORT:-8080}:8080"
     volumes:
       - .:/app
       - ./config/DevConfig.php:/app/config/LocalConfig.php
