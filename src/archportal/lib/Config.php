@@ -57,6 +57,16 @@ class Config
             throw new RuntimeException('No configuration entry was found for key "'.$key.'" in section "'.$section.'"');
         }
     }
+    /**
+     * @param string $section
+     * @param string $key
+     *
+     * @return bool
+     */
+    public static function has(string $section, string $key): bool
+    {
+        return isset(self::$config[$section][$key]);
+    }
 }
 
 require __DIR__.'/../../../config/DefaultConfig.php';

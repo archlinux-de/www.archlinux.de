@@ -16,7 +16,9 @@
     }
   },
   "require": {
-    "php": ">=7",
+    "php": "^7.0",
+    "ext-pdo_mysql": "*",
+    "ext-gettext": "*",
     "geoip/geoip": "~1.14"
   }
 }

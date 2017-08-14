@@ -29,26 +29,4 @@ use archportal\lib\Database;
 set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
 set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
-$geoIP = new \GeoIP();
-$countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
-
-Database::beginTransaction();
-Database::query('DELETE FROM countries');
-
-$insertCountry = Database::prepare(
-    '
-        INSERT INTO
-            countries
-        SET
-            code = :code,
-            name = :name
-        '
-);
-
-foreach ($countries as $code => $name) {
-    $insertCountry->bindValue('code', $code, PDO::PARAM_STR);
-    $insertCountry->bindValue('name', $name, PDO::PARAM_STR);
-    $insertCountry->execute();
-}
-
-Database::commit();
+Database::exec(file_get_contents(__DIR__.'/archportal_schema.sql'));
