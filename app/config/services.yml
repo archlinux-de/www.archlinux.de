@@ -33,3 +33,9 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+
+    AppBundle\Service\LegacyEnvironment:
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%database_name%'

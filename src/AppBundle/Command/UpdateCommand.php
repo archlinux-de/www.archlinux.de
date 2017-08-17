@@ -7,7 +7,6 @@ use archportal\cronjobs\UpdateNews;
 use archportal\cronjobs\UpdatePackages;
 use archportal\cronjobs\UpdatePkgstats;
 use archportal\cronjobs\UpdateReleases;
-use archportal\lib\Database;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,10 +24,7 @@ class UpdateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        Database::setPdo(
-            $this->getContainer()->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection()
-        );
-        Database::setDatabase($this->getContainer()->getParameter('database_name'));
+        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
         $job = $input->getArgument('job');
         switch ($job) {

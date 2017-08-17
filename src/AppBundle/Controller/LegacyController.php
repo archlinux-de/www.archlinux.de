@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\Routing;
@@ -18,7 +17,8 @@ class LegacyController extends Controller
      */
     public function indexAction(Request $request): Response
     {
-        Database::setPdo($this->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection());
+        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
+
         $page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
         /** @var Page $thisPage */
         $thisPage = new $page();

@@ -15,8 +15,6 @@ class UpdateSchemaCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $databseUsername = $this->getContainer()->getParameter('database_name');
-
         system('mysqldump -d --compact -u'
             . '\'' . escapeshellcmd($this->getContainer()->getParameter('database_user')) . '\''
             . ' '

@@ -16,9 +16,7 @@ class ImportSchemaCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        Database::setPdo(
-            $this->getContainer()->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection()
-        );
+        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
         Database::exec(
             file_get_contents(
                 $this->getContainer()->getParameter('kernel.project_dir') . '/config/archportal_schema.sql'

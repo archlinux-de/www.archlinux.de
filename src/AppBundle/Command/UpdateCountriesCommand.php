@@ -16,9 +16,8 @@ class UpdateCountriesCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        Database::setPdo(
-            $this->getContainer()->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection()
-        );
+        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
+
         $geoIP = new \GeoIP();
         $countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
 
