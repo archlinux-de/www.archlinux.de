@@ -12,7 +12,7 @@ init: start
 	${MAKE} update-data
 
 update-data:
-	${APP-RUN} bin/console app:update mirrors
+	${APP-RUN} bin/console app:update:mirrors
 	${APP-RUN} bin/console app:update news
 	${APP-RUN} bin/console app:update releases
 	${APP-RUN} bin/console app:update packages
