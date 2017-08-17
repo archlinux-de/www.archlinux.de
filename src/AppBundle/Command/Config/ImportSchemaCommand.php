@@ -19,8 +19,7 @@ class ImportSchemaCommand extends ContainerAwareCommand
         $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
         Database::exec(
             file_get_contents(
-                $this->getContainer()->getParameter('kernel.project_dir') . '/config/archportal_schema.sql'
-            )
+                $this->getContainer()->getParameter('kernel.project_dir') . '/app/config/archportal_schema.sql')
         );
     }
 }
