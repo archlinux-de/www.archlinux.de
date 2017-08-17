@@ -7,8 +7,8 @@ all: init
 
 init: start
 	${DB-RUN} mysqladmin -uroot create archportal
-	${APP-RUN} config/ImportSchema.php
-	${APP-RUN} config/UpdateCountries.php
+	${APP-RUN} bin/console app:config:import-schema
+	${APP-RUN} bin/console app:config:update-countries
 	${MAKE} update-data
 
 update-data:
