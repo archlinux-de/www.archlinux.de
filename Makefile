@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data
+.PHONY: all init start stop restart clean rebuild composer-update update-data bash test
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
@@ -46,3 +46,9 @@ composer.lock: composer.json
 vendor: composer.lock
 	mkdir -p ~/.composer/cache
 	${APP-RUN} composer install
+
+shell:
+	${APP-RUN} bash
+
+test:
+	${APP-RUN} vendor/bin/phpunit
