@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Command;
+namespace AppBundle\Command\Config;
 
 use archportal\lib\Database;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

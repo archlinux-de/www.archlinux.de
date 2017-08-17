@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Command;
+namespace AppBundle\Command\Update;
 
 use archportal\cronjobs\UpdateMirrors;
 use archportal\cronjobs\UpdateNews;
@@ -36,9 +36,6 @@ class UpdateCommand extends ContainerAwareCommand
                 break;
             case 'packages':
                 UpdatePackages::run();
-                break;
-            case 'pkgstats':
-                UpdatePkgstats::run();
                 break;
             case 'releases':
                 UpdateReleases::run();

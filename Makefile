@@ -16,7 +16,7 @@ update-data:
 	${APP-RUN} bin/console app:update news
 	${APP-RUN} bin/console app:update releases
 	${APP-RUN} bin/console app:update packages
-	${APP-RUN} bin/console app:update pkgstats
+	${APP-RUN} bin/console app:update:pkgstats
 
 start: vendor
 	docker-compose up -d
