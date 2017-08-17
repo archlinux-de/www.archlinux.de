@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use archportal\lib\Input;
+use archportal\lib\Output;
 use archportal\lib\Page;
 use archportal\lib\Routing;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,9 +23,14 @@ class LegacyController extends Controller
         $thisPage = new $page();
 
         $thisPage->prepare();
+        ob_start();
         $thisPage->printPage();
         $pageContent = ob_get_clean();
 
-        return new Response($pageContent);
+        return new Response(
+            $pageContent,
+            $thisPage->getStatus(),
+            array_merge(['Content-Type' => $thisPage->getContentType()], $thisPage->getHeaders())
+        );
     }
 }

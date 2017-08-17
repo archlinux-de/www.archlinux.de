@@ -25,11 +25,12 @@ namespace archportal\pages\statistics;
 
 use archportal\lib\Database;
 use archportal\lib\Input;
-use archportal\lib\Output;
 use archportal\lib\Page;
 use archportal\lib\RequestException;
 use PDO;
 use PDOException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PostPackageList extends Page
 {
@@ -49,10 +50,7 @@ class PostPackageList extends Page
             $pkgstatsver = Input::post()->getString('pkgstatsver',
                 str_replace('pkgstats/', '', Input::server()->getString('HTTP_USER_AGENT')));
         } catch (RequestException $e) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('Please make sure to use pkgstats to submit your data.');
-
-            return;
+            throw new BadRequestHttpException('Please make sure to use pkgstats to submit your data.', $e);
         }
         if (!in_array($pkgstatsver, array(
             '1.0',
@@ -62,10 +60,7 @@ class PostPackageList extends Page
             '2.3',
         ))
         ) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('Sorry, your version of pkgstats is not supported.');
-
-            return;
+            throw new BadRequestHttpException('Sorry, your version of pkgstats is not supported.');
         }
         try {
             $packages = array_unique(explode("\n", trim(Input::post()->getString('packages'))));
@@ -84,18 +79,12 @@ class PostPackageList extends Page
             # Can be rewritten once 2.0 is no longer in use
             $this->quiet = (Input::post()->getString('quiet', 'false') == 'true');
         } catch (RequestException $e) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure($e->getMessage());
-
-            return;
+            throw new BadRequestHttpException($e->getMessage(), $e);
         }
         if (!empty($mirror) && !preg_match('#^(https?|ftp)://\S+/#', $mirror)) {
             $mirror = null;
         } elseif (!empty($mirror) && Input::post()->getHtmlLength('mirror') > 255) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure($mirror.' is too long.');
-
-            return;
+            throw new BadRequestHttpException($mirror.' is too long.');
         } elseif (empty($mirror)) {
             $mirror = null;
         }
@@ -104,10 +93,7 @@ class PostPackageList extends Page
             'x86_64',
         ))
         ) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure(htmlspecialchars($arch).' is not a known architecture.');
-
-            return;
+            throw new BadRequestHttpException(htmlspecialchars($arch).' is not a known architecture.');
         }
         if (!in_array($cpuArch, array(
             'i686',
@@ -115,46 +101,28 @@ class PostPackageList extends Page
             '',
         ))
         ) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure(htmlspecialchars($cpuArch).' is not a known architecture.');
-
-            return;
+            throw new BadRequestHttpException(htmlspecialchars($cpuArch).' is not a known architecture.');
         }
         if ($cpuArch == '') {
             $cpuArch = null;
         }
         if ($packageCount == 0) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('Your package list is empty.');
-
-            return;
+            throw new BadRequestHttpException('Your package list is empty.');
         }
         if ($packageCount > 10000) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('So, you have installed more than 10,000 packages?');
-
-            return;
+            throw new BadRequestHttpException('So, you have installed more than 10,000 packages?');
         }
         foreach ($packages as $package) {
             if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package))) {
-                $this->setStatus(Output::BAD_REQUEST);
-                $this->showFailure(htmlspecialchars($package).' does not look like a valid package');
-
-                return;
+                throw new BadRequestHttpException(htmlspecialchars($package).' does not look like a valid package');
             }
         }
         if ($moduleCount > 5000) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('So, you have loaded more than 5,000 modules?');
-
-            return;
+            throw new BadRequestHttpException('So, you have loaded more than 5,000 modules?');
         }
         foreach ($modules as $module) {
             if (!preg_match('/^[\w\-]{1,254}$/', $module)) {
-                $this->setStatus(Output::BAD_REQUEST);
-                $this->showFailure($module.' does not look like a valid module');
-
-                return;
+                throw new BadRequestHttpException($module.' does not look like a valid module');
             }
         }
         $this->checkIfAlreadySubmitted();
@@ -219,29 +187,8 @@ class PostPackageList extends Page
             Database::commit();
         } catch (PDOException $e) {
             Database::rollBack();
-            $this->setStatus(Output::INTERNAL_SERVER_ERROR);
-            $this->showFailure($e->getMessage());
-
-            return;
+            throw new HttpException(500, $e->getMessage(), $e);
         }
-    }
-
-    /**
-     * @param string $text
-     */
-    protected function showWarning(string $text)
-    {
-        echo 'Warning: '.$text."\n";
-        exit();
-    }
-
-    /**
-     * @param string $text
-     */
-    protected function showFailure(string $text)
-    {
-        echo 'Failure: '.$text."\n";
-        exit();
     }
 
     public function printPage()
@@ -271,8 +218,7 @@ class PostPackageList extends Page
         $stm->execute();
         $log = $stm->fetch();
         if ($log !== false && $log['count'] >= $this->count) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('You already submitted your data '.$this->count.' times since '.$this->l10n->getGmDateTime($log['mintime']).' using the IP '.Input::getClientIP().".\n         You are blocked until ".$this->l10n->getGmDateTime($log['mintime'] + $this->delay));
+            throw new BadRequestHttpException('You already submitted your data '.$this->count.' times since '.$this->l10n->getGmDateTime($log['mintime']).' using the IP '.Input::getClientIP().".\n         You are blocked until ".$this->l10n->getGmDateTime($log['mintime'] + $this->delay));
         }
     }
 }

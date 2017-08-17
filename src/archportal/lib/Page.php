@@ -23,6 +23,8 @@ declare (strict_types = 1);
 
 namespace archportal\lib;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 abstract class Page extends Output
 {
     /** @var string */
@@ -130,18 +132,6 @@ abstract class Page extends Output
     protected function getName(): string
     {
         return get_class($this);
-    }
-
-    /**
-     * @param string $text
-     */
-    protected function showFailure(string $text)
-    {
-        $this->setMetaRobots('noindex,nofollow');
-        $this->setTitle($this->l10n->getText('Error'));
-        $this->setBody('<div id="warning">'.$text.'</div>');
-        require __DIR__.'/../templates/PageTemplate.php';
-        exit();
     }
 
     public function prepare()

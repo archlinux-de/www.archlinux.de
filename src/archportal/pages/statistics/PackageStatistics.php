@@ -25,10 +25,10 @@ namespace archportal\pages\statistics;
 
 use archportal\lib\Database;
 use archportal\lib\ObjectStore;
-use archportal\lib\Output;
 use archportal\lib\StatisticsPage;
 use PDO;
 use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageStatistics extends StatisticsPage
 {
@@ -36,8 +36,7 @@ class PackageStatistics extends StatisticsPage
     {
         $this->setTitle('Package statistics');
         if (!($body = ObjectStore::getObject('PackageStatistics'))) {
-            $this->setStatus(Output::NOT_FOUND);
-            $this->showFailure('No data found!');
+            throw new NotFoundHttpException('No data found!');
         }
         $this->setBody($body);
     }

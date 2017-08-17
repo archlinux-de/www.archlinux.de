@@ -25,9 +25,9 @@ namespace archportal\pages\statistics;
 
 use archportal\lib\Database;
 use archportal\lib\ObjectStore;
-use archportal\lib\Output;
 use archportal\lib\StatisticsPage;
 use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModuleStatistics extends StatisticsPage
 {
@@ -35,8 +35,7 @@ class ModuleStatistics extends StatisticsPage
     {
         $this->setTitle('Module statistics');
         if (!($body = ObjectStore::getObject('ModuleStatistics'))) {
-            $this->setStatus(Output::NOT_FOUND);
-            $this->showFailure('No data found!');
+            throw new NotFoundHttpException('No data found!');
         }
         $this->setBody($body);
     }

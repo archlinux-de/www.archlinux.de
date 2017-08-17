@@ -26,11 +26,12 @@ namespace archportal\pages;
 use archportal\lib\Config;
 use archportal\lib\Database;
 use archportal\lib\Input;
-use archportal\lib\Output;
 use archportal\lib\Page;
 use archportal\lib\RequestException;
 use PDO;
 use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageDetails extends Page
 {
@@ -51,7 +52,7 @@ class PackageDetails extends Page
             $this->arch = Input::get()->getString('arch');
             $this->pkgname = Input::get()->getString('pkgname');
         } catch (RequestException $e) {
-            $this->showFailure($this->l10n->getText('No package specified'));
+            throw new BadRequestHttpException('No package specified', $e);
         }
 
         $repository = Database::prepare('
@@ -106,8 +107,7 @@ class PackageDetails extends Page
         $stm->execute();
         $data = $stm->fetch();
         if ($data === false) {
-            $this->setStatus(Output::NOT_FOUND);
-            $this->showFailure($this->l10n->getText('Package was not found'));
+            throw new NotFoundHttpException($this->l10n->getText('Package was not found'));
         }
         $this->pkgid = $data['id'];
         $this->setTitle($data['name']);

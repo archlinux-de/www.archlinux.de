@@ -23,19 +23,14 @@ declare (strict_types = 1);
 
 namespace archportal\lib;
 
+use Symfony\Component\HttpFoundation\Response;
+
 abstract class Output
 {
-    const OK = 'HTTP/1.1 200 OK';
-    const FOUND = 'HTTP/1.1 302 Found';
-    const MOVED_PERMANENTLY = 'HTTP/1.1 301 Moved Permanently';
-    const BAD_REQUEST = 'HTTP/1.1 400 Bad Request';
-    const NOT_FOUND = 'HTTP/1.1 404 Not Found';
-    const INTERNAL_SERVER_ERROR = 'HTTP/1.1 500 Internal Server Error';
-
     /** @var string */
     private $contentType = 'text/html; charset=UTF-8';
-    /** @var string */
-    private $status = self::OK;
+    /** @var int */
+    private $status = Response::HTTP_OK;
     /** @var string */
     private $outputSeparator = '&';
     /** @var string */
@@ -48,24 +43,12 @@ abstract class Output
     {
         $this->outputSeparator = ini_get('arg_separator.output');
         $this->outputSeparatorHtml = htmlspecialchars($this->outputSeparator);
-        ob_start();
-    }
-
-    public function __destruct()
-    {
-        if (!headers_sent()) {
-            header($this->status);
-            header('Content-Type: '.$this->contentType);
-            foreach ($this->headers as $key => $value) {
-                header($key.': '.$value);
-            }
-        }
     }
 
     /**
-     * @param string $code
+     * @param int $code
      */
-    protected function setStatus(string $code)
+    protected function setStatus(int $code)
     {
         $this->status = $code;
     }
@@ -83,9 +66,8 @@ abstract class Output
      */
     protected function redirectToUrl(string $url)
     {
-        $this->setStatus(self::FOUND);
-        header('Location: '.$url);
-        exit();
+        $this->setStatus(Response::HTTP_FOUND);
+        $this->headers = ['Location' => $url];
     }
 
     /**
@@ -93,9 +75,8 @@ abstract class Output
      */
     protected function redirectPermanentlyToUrl(string $url)
     {
-        $this->setStatus(self::MOVED_PERMANENTLY);
-        header('Location: '.$url);
-        exit();
+        $this->setStatus(Response::HTTP_MOVED_PERMANENTLY);
+        $this->headers = ['Location' => $url];
     }
 
     /**
@@ -131,5 +112,29 @@ abstract class Output
         $this->headers['Pragma'] = 'no-cache'; // HTTP 1.0
         $this->headers['Expires'] = '0'; // Proxies
         $this->headers['X-Accel-Expires'] = '0'; // Nginx
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 }

@@ -28,6 +28,8 @@ use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Output;
 use PDO;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GetFileFromMirror extends Output
 {
@@ -42,8 +44,7 @@ class GetFileFromMirror extends Output
         $this->setContentType('text/plain; charset=UTF-8');
         $this->file = Input::get()->getString('file', '');
         if (!preg_match('#^[a-zA-Z0-9\.\-\+_/:]{1,255}$#', $this->file)) {
-            $this->setStatus(Output::BAD_REQUEST);
-            $this->showFailure('Invalid file name');
+            throw new BadRequestHttpException('Invalid file name');
         }
         if (strpos($this->file, '/') === 0) {
             $this->file = substr($this->file, 1);
@@ -72,8 +73,7 @@ class GetFileFromMirror extends Output
             $pkgdate->bindParam('architecture', $matches[2], PDO::PARAM_STR);
             $pkgdate->execute();
             if ($pkgdate->rowCount() == 0) {
-                $this->setStatus(Output::NOT_FOUND);
-                $this->showFailure('Package was not found');
+                throw new NotFoundHttpException('Package was not found');
             }
             $this->lastsync = $pkgdate->fetchColumn();
         } elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $this->file, $matches)) {
@@ -89,22 +89,12 @@ class GetFileFromMirror extends Output
             $releasedate->bindParam('version', $matches[1], PDO::PARAM_STR);
             $releasedate->execute();
             if ($releasedate->rowCount() == 0) {
-                $this->setStatus(Output::NOT_FOUND);
-                $this->showFailure('ISO image was not found');
+                throw new NotFoundHttpException('ISO image was not found');
             }
             $this->lastsync = $releasedate->fetchColumn();
         } else {
             $this->lastsync = Input::getTime() - (60 * 60 * 24);
         }
-    }
-
-    /**
-     * @param string $text
-     */
-    private function showFailure(string $text)
-    {
-        echo $text;
-        exit();
     }
 
     public function printPage()
@@ -178,8 +168,7 @@ class GetFileFromMirror extends Output
             $stm->bindParam('clientId', $clientId, PDO::PARAM_INT);
             $stm->execute();
             if ($stm->rowCount() == 0) {
-                $this->setStatus(Output::NOT_FOUND);
-                $this->showFailure('File was not found');
+                throw new NotFoundHttpException('File was not found');
             }
         }
 

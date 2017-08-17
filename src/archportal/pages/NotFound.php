@@ -23,14 +23,13 @@ declare (strict_types = 1);
 
 namespace archportal\pages;
 
-use archportal\lib\Output;
 use archportal\lib\Page;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NotFound extends Page
 {
     public function prepare()
     {
-        $this->setStatus(Output::NOT_FOUND);
-        $this->showFailure($this->l10n->getText('Page could not be found'));
+        throw new NotFoundHttpException('Page could not be found');
     }
 }
