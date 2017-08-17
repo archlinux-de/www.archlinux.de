@@ -51,4 +51,5 @@ shell:
 	${APP-RUN} bash
 
 test:
+	${APP-RUN} vendor/bin/phpcs
 	${APP-RUN} vendor/bin/phpunit
