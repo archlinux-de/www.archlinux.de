@@ -3,12 +3,12 @@
 namespace AppBundle\Command\Update;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Download;
 use archportal\lib\Input;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -99,6 +99,21 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         'package_relation',
         'repositories',
     );
+    /** @var Connection */
+    private $database;
+    /** @var ObjectStore */
+    private $objectStore;
+
+    /**
+     * @param Connection $connection
+     * @param ObjectStore $objectStore
+     */
+    public function __construct(Connection $connection, ObjectStore $objectStore)
+    {
+        parent::__construct();
+        $this->database = $connection;
+        $this->objectStore = $objectStore;
+    }
 
     protected function configure()
     {
@@ -121,7 +136,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
         try {
             ini_set('memory_limit', '-1');
-            Database::beginTransaction();
+            $this->database->beginTransaction();
 
             if ($input->getOption('purge')) {
                 $this->purgeDatabase($output);
@@ -192,10 +207,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $this->resolveRelations();
             }
 
-            Database::commit();
+            $this->database->commit();
             $this->updateLastMirrorUpdate();
         } catch (\RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             $this->printError(
                 'UpdatePackages failed at ' . $e->getFile() . ' on line ' . $e->getLine() . ': ' . $e->getMessage(),
                 $output
@@ -228,7 +243,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function checkLastMirrorUpdate(): bool
     {
-        $lastLocalUpdate = ObjectStore::getObject('UpdatePackages:lastupdate');
+        $lastLocalUpdate = $this->objectStore->getObject('UpdatePackages:lastupdate');
         $download = new Download(Config::get('packages', 'mirror') . 'lastupdate');
         $this->lastMirrorUpdate = (int)file_get_contents($download->getFile());
 
@@ -237,7 +252,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     private function updateLastMirrorUpdate()
     {
-        ObjectStore::addObject('UpdatePackages:lastupdate', $this->lastMirrorUpdate);
+        $this->objectStore->addObject('UpdatePackages:lastupdate', $this->lastMirrorUpdate);
     }
 
     private function purgeDatabase(OutputInterface $output)
@@ -245,7 +260,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         if (!$output->isQuiet()) {
             $rowsTotal = 0;
             foreach ($this->contentTables as $table) {
-                $rowsTotal += (int)Database::query('SELECT COUNT(*) FROM `' . $table . '`')->fetchColumn();
+                $rowsTotal += (int)$this->database->query('SELECT COUNT(*) FROM `' . $table . '`')->fetchColumn();
             }
             $progress = new ProgressBar($output, $rowsTotal);
             $progress->setFormatDefinition('minimal', 'Purging databas: %percent%%');
@@ -253,7 +268,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->start();
         }
         foreach ($this->contentTables as $table) {
-            $rowCount = Database::exec('DELETE FROM `' . $table . '`');
+            $rowCount = $this->database->exec('DELETE FROM `' . $table . '`');
             if (isset($progress)) {
                 $progress->advance($rowCount);
             }
@@ -262,12 +277,12 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->finish();
             $output->writeln('');
         }
-        ObjectStore::addObject('UpdatePackages:lastupdate', 0);
+        $this->objectStore->addObject('UpdatePackages:lastupdate', 0);
     }
 
     private function resetDatabase(OutputInterface $output)
     {
-        Database::commit();
+        $this->database->commit();
 
         if (!$output->isQuiet()) {
             $tablesTotal = count($this->contentTables);
@@ -277,7 +292,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->start();
         }
         foreach ($this->contentTables as $table) {
-            Database::exec('TRUNCATE TABLE `' . $table . '`');
+            $this->database->exec('TRUNCATE TABLE `' . $table . '`');
             if (isset($progress)) {
                 $progress->advance();
             }
@@ -286,15 +301,15 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->finish();
             $output->writeln('');
         }
-        ObjectStore::addObject('UpdatePackages:lastupdate', 0);
+        $this->objectStore->addObject('UpdatePackages:lastupdate', 0);
 
-        Database::beginTransaction();
+        $this->database->beginTransaction();
     }
 
     private function prepareQueries()
     {
         // arches
-        $this->selectArchId = Database::prepare('
+        $this->selectArchId = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -302,7 +317,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 name = :name
             ');
-        $this->insertArchName = Database::prepare('
+        $this->insertArchName = $this->database->prepare('
             INSERT INTO
                 architectures
             SET
@@ -310,7 +325,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         //repos
-        $this->selectRepoId = Database::prepare('
+        $this->selectRepoId = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -319,7 +334,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 name = :name
                 AND arch = :arch
             ');
-        $this->insertRepoName = Database::prepare('
+        $this->insertRepoName = $this->database->prepare('
             INSERT INTO
                 repositories
             SET
@@ -329,7 +344,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // mtime
-        $this->selectRepoMTime = Database::prepare('
+        $this->selectRepoMTime = $this->database->prepare('
             SELECT
                 mtime
             FROM
@@ -337,7 +352,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 id = :repoId
             ');
-        $this->updateRepoMTime = Database::prepare('
+        $this->updateRepoMTime = $this->database->prepare('
             UPDATE
                 repositories
             SET
@@ -345,7 +360,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 id = :repoId
             ');
-        $this->selectPackageMTime = Database::prepare('
+        $this->selectPackageMTime = $this->database->prepare('
             SELECT
                 COALESCE(MAX(mtime), 0)
             FROM
@@ -355,7 +370,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // packages
-        $this->selectPackageId = Database::prepare('
+        $this->selectPackageId = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -365,7 +380,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 AND arch = :archId
                 AND name = :pkgname
             ');
-        $this->updatePackage = Database::prepare('
+        $this->updatePackage = $this->database->prepare('
             UPDATE
                 packages
             SET
@@ -388,7 +403,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 id = :id
             ');
-        $this->insertPackage = Database::prepare('
+        $this->insertPackage = $this->database->prepare('
             INSERT INTO
                 packages
             SET
@@ -411,7 +426,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // packagers
-        $this->selectPackager = Database::prepare('
+        $this->selectPackager = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -420,7 +435,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 name = :name
                 AND email = :email
             ');
-        $this->insertPackager = Database::prepare('
+        $this->insertPackager = $this->database->prepare('
             INSERT INTO
                 packagers
             SET
@@ -429,7 +444,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // groups
-        $this->selectGroup = Database::prepare('
+        $this->selectGroup = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -437,19 +452,19 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 name = :name
             ');
-        $this->insertGroup = Database::prepare('
+        $this->insertGroup = $this->database->prepare('
             INSERT INTO
                 groups
             SET
                 name = :name
             ');
-        $this->cleanupPackageGroup = Database::prepare('
+        $this->cleanupPackageGroup = $this->database->prepare('
             DELETE FROM
                 package_group
             WHERE
                 package = :package
             ');
-        $this->insertPackageGroup = Database::prepare('
+        $this->insertPackageGroup = $this->database->prepare('
             INSERT INTO
                 package_group
             SET
@@ -458,7 +473,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // licenses
-        $this->selectLicense = Database::prepare('
+        $this->selectLicense = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -466,19 +481,19 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 name = :name
             ');
-        $this->insertLicense = Database::prepare('
+        $this->insertLicense = $this->database->prepare('
             INSERT INTO
                 licenses
             SET
                 name = :name
             ');
-        $this->cleanupPackageLicense = Database::prepare('
+        $this->cleanupPackageLicense = $this->database->prepare('
             DELETE FROM
                 package_license
             WHERE
                 package = :package
             ');
-        $this->insertPackageLicense = Database::prepare('
+        $this->insertPackageLicense = $this->database->prepare('
             INSERT INTO
                 package_license
             SET
@@ -488,7 +503,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
         // files
         if (Config::get('packages', 'files')) {
-            $this->selectFileIndex = Database::prepare('
+            $this->selectFileIndex = $this->database->prepare('
                 SELECT
                     id
                 FROM
@@ -496,32 +511,32 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 WHERE
                     name = :name
                 ');
-            $this->insertFileIndex = Database::prepare('
+            $this->insertFileIndex = $this->database->prepare('
                 INSERT INTO
                     file_index
                 SET
                     name = :name
                 ');
-            $this->cleanupPackageFileIndex = Database::prepare('
+            $this->cleanupPackageFileIndex = $this->database->prepare('
                 DELETE FROM
                     package_file_index
                 WHERE
                     package = :package
                 ');
-            $this->cleanupFiles = Database::prepare('
+            $this->cleanupFiles = $this->database->prepare('
                 DELETE FROM
                     files
                 WHERE
                     package = :package
                 ');
-            $this->insertFiles = Database::prepare('
+            $this->insertFiles = $this->database->prepare('
                 INSERT INTO
                     files
                 SET
                     package = :package,
                     path = :path
                 ');
-            $this->insertPackageFileIndex = Database::prepare('
+            $this->insertPackageFileIndex = $this->database->prepare('
                 INSERT INTO
                     package_file_index
                 SET
@@ -531,14 +546,14 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         }
 
         // relations
-        $this->cleanupRelation = Database::prepare('
+        $this->cleanupRelation = $this->database->prepare('
             DELETE FROM
                 package_relation
             WHERE
                 packageId = :packageId
                 AND type = :type
             ');
-        $this->insertRelation = Database::prepare('
+        $this->insertRelation = $this->database->prepare('
             INSERT INTO
                 package_relation
             SET
@@ -564,7 +579,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             if ($id === false) {
                 $this->insertArchName->bindParam('name', $archHtml, PDO::PARAM_STR);
                 $this->insertArchName->execute();
-                $id = Database::lastInsertId();
+                $id = $this->database->lastInsertId();
             }
             $this->arches[$archName] = (int)$id;
         }
@@ -594,7 +609,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 PDO::PARAM_INT
             );
             $this->insertRepoName->execute();
-            $id = Database::lastInsertId();
+            $id = $this->database->lastInsertId();
         }
 
         return (int)$id;
@@ -619,7 +634,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $this->insertPackager->bindParam('name', $name, PDO::PARAM_STR);
                 $this->insertPackager->bindParam('email', $email, PDO::PARAM_STR);
                 $this->insertPackager->execute();
-                $id = Database::lastInsertId();
+                $id = $this->database->lastInsertId();
             }
             $this->packagers[$packager] = (int)$id;
         }
@@ -657,7 +672,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             if ($id === false) {
                 $this->insertGroup->bindParam('name', $htmlGroup, PDO::PARAM_STR);
                 $this->insertGroup->execute();
-                $id = Database::lastInsertId();
+                $id = $this->database->lastInsertId();
             }
             $this->groups[$groupName] = (int)$id;
         }
@@ -695,7 +710,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             if ($id === false) {
                 $this->insertLicense->bindParam('name', $htmlLicense, PDO::PARAM_STR);
                 $this->insertLicense->execute();
-                $id = Database::lastInsertId();
+                $id = $this->database->lastInsertId();
             }
             $this->licenses[$licenseName] = (int)$id;
         }
@@ -747,7 +762,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             if ($id === false) {
                 $this->insertFileIndex->bindParam('name', $htmlFile, PDO::PARAM_STR);
                 $this->insertFileIndex->execute();
-                $id = Database::lastInsertId();
+                $id = $this->database->lastInsertId();
             }
             $this->files[$fileName] = (int)$id;
         }
@@ -824,7 +839,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $packageStm->execute();
 
         if ($packageId === false) {
-            $packageId = Database::lastInsertId();
+            $packageId = $this->database->lastInsertId();
         }
 
         $packageId = (int)$packageId;
@@ -850,7 +865,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function resolveRelations()
     {
         // Reset all relations
-        Database::query('
+        $this->database->query('
             UPDATE
                 package_relation
             SET
@@ -858,7 +873,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // Look for depends within the same repo
-        Database::query('
+        $this->database->query('
             UPDATE
                 package_relation,
                 packages,
@@ -875,7 +890,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // Look for depends in other repos except testing repos
-        Database::query('
+        $this->database->query('
             UPDATE
                 package_relation,
                 packages,
@@ -902,45 +917,45 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function cleanupObsoletePackages(int $repoId, int $packageMTime, array $allPackages)
     {
-        $cleanupPackages = Database::prepare('
+        $cleanupPackages = $this->database->prepare('
             DELETE FROM
                 packages
             WHERE
                 id = :packageId
             ');
-        $cleanupRelations = Database::prepare('
+        $cleanupRelations = $this->database->prepare('
             DELETE FROM
                 package_relation
             WHERE
                 packageId = :packageId
             ');
         if (Config::get('packages', 'files')) {
-            $cleanupFiles = Database::prepare('
+            $cleanupFiles = $this->database->prepare('
                 DELETE FROM
                     files
                 WHERE
                     package = :packageId
                 ');
-            $cleanupPackageFileIndex = Database::prepare('
+            $cleanupPackageFileIndex = $this->database->prepare('
                 DELETE FROM
                     package_file_index
                 WHERE
                     package = :packageId
                 ');
         }
-        $cleanupPackageGroup = Database::prepare('
+        $cleanupPackageGroup = $this->database->prepare('
             DELETE FROM
                 package_group
             WHERE
                 package = :packageId
             ');
-        $cleanupPackageLicense = Database::prepare('
+        $cleanupPackageLicense = $this->database->prepare('
             DELETE FROM
                 package_license
             WHERE
                 package = :packageId
             ');
-        $repoPackages = Database::prepare('
+        $repoPackages = $this->database->prepare('
             SELECT
                 id,
                 name
@@ -976,7 +991,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     private function cleanupObsoleteRepositories(OutputInterface $output)
     {
-        $repos = Database::query('
+        $repos = $this->database->query('
             SELECT
                 repositories.id,
                 repositories.name,
@@ -991,7 +1006,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             if (!isset($configRepos[$repo['name']]) || !in_array($repo['arch'], $configRepos[$repo['name']])) {
                 $this->printDebug("\tRemoving repository [$repo[name]] ($repo[arch])", $output);
                 $this->cleanupObsoletePackages($repo['id'], time(), array());
-                Database::query('
+                $this->database->query('
                     DELETE FROM
                         repositories
                     WHERE
@@ -1004,7 +1019,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     private function cleanupDatabase()
     {
-        Database::query('
+        $this->database->query('
             DELETE FROM
                 groups
             WHERE
@@ -1012,7 +1027,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     SELECT * FROM package_group WHERE package_group.group = groups.id
                 )
             ');
-        Database::query('
+        $this->database->query('
             DELETE FROM
                 licenses
             WHERE
@@ -1020,7 +1035,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     SELECT * FROM package_license WHERE package_license.license = licenses.id
                 )
             ');
-        Database::query('
+        $this->database->query('
             DELETE FROM
                 packagers
             WHERE
@@ -1028,7 +1043,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     SELECT * FROM packages WHERE packages.packager = packagers.id
                 )
             ');
-        Database::query('
+        $this->database->query('
             DELETE FROM
                 architectures
             WHERE
@@ -1037,7 +1052,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 )
             ');
         if (Config::get('packages', 'files')) {
-            Database::query('
+            $this->database->query('
                 DELETE FROM
                     file_index
                 WHERE

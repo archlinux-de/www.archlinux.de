@@ -20,9 +20,9 @@
 
 namespace archportal\pages\legacy;
 
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
+use Doctrine\DBAL\Driver\Connection;
 
 class MirrorStatusReflector extends Page
 {
@@ -30,10 +30,21 @@ class MirrorStatusReflector extends Page
     private $range = 604800; // 1 week
     /** @var string */
     private $text = '';
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
-        $mirrors = Database::query('
+        $mirrors = $this->database->query('
         SELECT
             url,
             lastsync

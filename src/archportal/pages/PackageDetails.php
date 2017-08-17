@@ -21,10 +21,10 @@
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\RequestException;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -40,6 +40,17 @@ class PackageDetails extends Page
     private $arch = '';
     /** @var string */
     private $pkgname = '';
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -52,7 +63,7 @@ class PackageDetails extends Page
             throw new BadRequestHttpException('No package specified', $e);
         }
 
-        $repository = Database::prepare('
+        $repository = $this->database->prepare('
             SELECT
                 repositories.id
             FROM
@@ -67,7 +78,7 @@ class PackageDetails extends Page
         $repository->bindParam('architectureName', $this->arch, PDO::PARAM_STR);
         $repository->execute();
 
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 packages.id,
                 packages.filename,
@@ -313,7 +324,7 @@ class PackageDetails extends Page
      */
     private function getLicenses(): string
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         SELECT
             licenses.name
         FROM
@@ -338,7 +349,7 @@ class PackageDetails extends Page
      */
     private function getGroups(): string
     {
-        $groups = Database::prepare('
+        $groups = $this->database->prepare('
             SELECT
                 groups.name
             FROM
@@ -363,7 +374,7 @@ class PackageDetails extends Page
      */
     private function getFiles(): string
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 path
             FROM
@@ -413,7 +424,7 @@ class PackageDetails extends Page
      */
     private function getRelations(string $type): string
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         SELECT
             packages.id,
             package_relation.dependsName AS name,
@@ -461,7 +472,7 @@ class PackageDetails extends Page
      */
     private function getInverseRelations(string $type): string
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         SELECT
             packages.name,
             package_relation.dependsVersion AS version,

@@ -3,7 +3,6 @@
 namespace AppBundle\Service;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Input;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,8 +22,6 @@ class LegacyEnvironment
 
     public function initialize(Request $request = null)
     {
-        Database::setConnection($this->container->get('doctrine.dbal.default_connection'));
-
         foreach ($this->container->getParameterBag()->all() as $key => $value) {
             if (strpos($key, 'app.') === 0) {
                 $sections = explode('.', $key);

@@ -3,8 +3,8 @@
 namespace AppBundle\Command\Update;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Download;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -14,6 +14,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateMirrorsCommand extends ContainerAwareCommand
 {
     use LockableTrait;
+
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     protected function configure()
     {
@@ -34,19 +46,19 @@ class UpdateMirrorsCommand extends ContainerAwareCommand
             if (empty($mirrors)) {
                 throw new \RuntimeException('mirrorlist is empty');
             }
-            Database::beginTransaction();
+            $this->database->beginTransaction();
             $this->updateMirrorlist($mirrors);
-            Database::commit();
+            $this->database->commit();
         } catch (\RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             $output->writeln('Warning: UpdateMirrors failed: ' . $e->getMessage());
         }
     }
 
     private function updateMirrorlist(array $mirrors)
     {
-        Database::query('DELETE FROM mirrors');
-        $stm = Database::prepare('
+        $this->database->query('DELETE FROM mirrors');
+        $stm = $this->database->prepare('
             INSERT INTO
                 mirrors
             SET

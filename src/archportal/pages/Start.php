@@ -21,14 +21,25 @@
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Page;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 
 class Start extends Page
 {
     /** @var int */
     private $architectureId = 0;
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -93,7 +104,7 @@ class Start extends Page
      */
     private function getArchitectureId(string $architectureName): int
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -116,7 +127,7 @@ class Start extends Page
                 'archive')).'">mehr</a>)</span></h3><a href="'.htmlspecialchars(Config::get('news',
                 'feed')).'" class="rss-icon"><img src="style/rss.png" alt="RSS Feed" /></a>';
 
-        $newsFeed = Database::query('
+        $newsFeed = $this->database->query('
             SELECT
                 link,
                 title,
@@ -144,7 +155,7 @@ class Start extends Page
      */
     private function getRecentPackages(): string
     {
-        $packages = Database::prepare('
+        $packages = $this->database->prepare('
         SELECT
             packages.name,
             packages.version,

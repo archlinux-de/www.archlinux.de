@@ -20,10 +20,10 @@
 
 namespace archportal\pages;
 
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\RequestException;
+use Doctrine\DBAL\Driver\Connection;
 
 class MirrorStatus extends Page
 {
@@ -46,6 +46,17 @@ class MirrorStatus extends Page
         'asc',
         'desc',
     );
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -83,7 +94,7 @@ class MirrorStatus extends Page
                 <th><a href="'.$this->createUrl('MirrorStatus',
                 array('orderby' => 'lastsync', 'sort' => $reverseSort)).'">'.$this->l10n->getText('Last update').'</a></th>
             </tr>';
-        $mirrors = Database::query('
+        $mirrors = $this->database->query('
         SELECT
             mirrors.url,
             countries.name AS country,

@@ -2,13 +2,25 @@
 
 namespace AppBundle\Command\Config;
 
-use archportal\lib\Database;
+use Doctrine\DBAL\Driver\Connection;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCountriesCommand extends ContainerAwareCommand
 {
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
+
     protected function configure()
     {
         $this->setName('app:config:update-countries');
@@ -21,10 +33,10 @@ class UpdateCountriesCommand extends ContainerAwareCommand
         $geoIP = new \GeoIP();
         $countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
 
-        Database::beginTransaction();
-        Database::query('DELETE FROM countries');
+        $this->database->beginTransaction();
+        $this->database->query('DELETE FROM countries');
 
-        $insertCountry = Database::prepare(
+        $insertCountry = $this->database->prepare(
             '
         INSERT INTO
             countries
@@ -40,6 +52,6 @@ class UpdateCountriesCommand extends ContainerAwareCommand
             $insertCountry->execute();
         }
 
-        Database::commit();
+        $this->database->commit();
     }
 }

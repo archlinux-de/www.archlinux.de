@@ -22,7 +22,7 @@ class LegacyController extends Controller
 
         $page = Routing::getPageClass($request->get('page', 'Start'));
         /** @var Page $thisPage */
-        $thisPage = new $page();
+        $thisPage = $this->get($page);
 
         $thisPage->prepare();
         ob_start();

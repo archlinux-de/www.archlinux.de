@@ -1,48 +1,46 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\pages\statistics;
 
-use archportal\lib\Database;
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
+use Doctrine\DBAL\Driver\Connection;
 use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModuleStatistics extends StatisticsPage
 {
+    /** @var Connection */
+    private $database;
+    /** @var ObjectStore */
+    private $objectStore;
+
+    /**
+     * @param Connection $connection
+     * @param ObjectStore $objectStore
+     */
+    public function __construct(Connection $connection, ObjectStore $objectStore)
+    {
+        parent::__construct();
+        $this->database = $connection;
+        $this->objectStore = $objectStore;
+    }
+
     public function prepare()
     {
         $this->setTitle('Module statistics');
-        if (!($body = ObjectStore::getObject('ModuleStatistics'))) {
+        if (!($body = $this->objectStore->getObject('ModuleStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
         $this->setBody($body);
     }
 
-    public static function updateDatabaseCache()
+    public function updateDatabaseCache()
     {
         try {
-            Database::beginTransaction();
+            $this->database->beginTransaction();
             self::$barColors = self::MultiColorFade(self::$barColorArray);
-            $log = self::getCommonModuleUsageStatistics();
+            $log = $this->getCommonModuleUsageStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
@@ -74,14 +72,14 @@ class ModuleStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Popular modules</th>
                 </tr>
-                '.self::getPopularModules().'
+                '.$this->getPopularModules().'
             </table>
             </div>
             ';
-            ObjectStore::addObject('ModuleStatistics', $body);
-            Database::commit();
+            $this->objectStore->addObject('ModuleStatistics', $body);
+            $this->database->commit();
         } catch (RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             echo 'ModuleStatistics failed:'.$e->getMessage();
         }
     }
@@ -89,9 +87,9 @@ class ModuleStatistics extends StatisticsPage
     /**
      * @return array
      */
-    private static function getCommonModuleUsageStatistics(): array
+    private function getCommonModuleUsageStatistics(): array
     {
-        return Database::query('
+        return $this->database->query('
         SELECT
             (SELECT COUNT(*) FROM pkgstats_users WHERE time >= '.self::getRangeTime().' AND modules IS NOT NULL) AS submissions,
             (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= '.self::getRangeTime().' AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
@@ -108,9 +106,9 @@ class ModuleStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getPopularModules(): string
+    private function getPopularModules(): string
     {
-        $total = Database::query('
+        $total = $this->database->query('
             SELECT
                 COUNT(*)
             FROM
@@ -119,7 +117,7 @@ class ModuleStatistics extends StatisticsPage
                 time >= '.self::getRangeTime().'
                 AND modules IS NOT NULL
         ')->fetchColumn();
-        $modules = Database::query('
+        $modules = $this->database->query('
             SELECT
                 name,
                 SUM(count) AS count

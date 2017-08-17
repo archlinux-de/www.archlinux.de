@@ -21,9 +21,9 @@
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Output;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -34,6 +34,17 @@ class GetFileFromMirror extends Output
     private $lastsync = 0;
     /** @var string */
     private $file = '';
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -51,7 +62,7 @@ class GetFileFromMirror extends Output
         $pkgextension = '(?:'.$architectures.'|any).pkg.tar.(?:g|x)z';
         if (preg_match('#^('.$repositories.')/os/('.$architectures.')/([^-]+.*)-[^-]+-[^-]+-'.$pkgextension.'$#',
             $this->file, $matches)) {
-            $pkgdate = Database::prepare('
+            $pkgdate = $this->database->prepare('
                 SELECT
                     packages.mtime
                 FROM
@@ -74,7 +85,7 @@ class GetFileFromMirror extends Output
             }
             $this->lastsync = $pkgdate->fetchColumn();
         } elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $this->file, $matches)) {
-            $releasedate = Database::prepare('
+            $releasedate = $this->database->prepare('
                 SELECT
                     created
                 FROM
@@ -134,7 +145,7 @@ class GetFileFromMirror extends Output
             $countryCode = Config::get('mirrors', 'country');
         }
         $clientId = $this->getClientId();
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 url
             FROM
@@ -151,7 +162,7 @@ class GetFileFromMirror extends Output
         $stm->execute();
         if ($stm->rowCount() == 0) {
             // Let's see if any mirror is recent enough
-            $stm = Database::prepare('
+            $stm = $this->database->prepare('
                 SELECT
                     url
                 FROM

@@ -20,10 +20,10 @@
 
 namespace archportal\pages\statistics;
 
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\RequestException;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use PDOException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -37,6 +37,17 @@ class PostPackageList extends Page
     private $count = 10;
     /** @var bool */
     private $quiet = false;
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -128,8 +139,8 @@ class PostPackageList extends Page
             $countryCode = null;
         }
         try {
-            Database::beginTransaction();
-            $stm = Database::prepare('
+            $this->database->beginTransaction();
+            $stm = $this->database->prepare('
             INSERT INTO
                 pkgstats_users
             SET
@@ -151,7 +162,7 @@ class PostPackageList extends Page
             $stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
             $stm->bindParam('modules', $moduleCount, PDO::PARAM_INT);
             $stm->execute();
-            $stm = Database::prepare('
+            $stm = $this->database->prepare('
             INSERT INTO
                 pkgstats_packages
             SET
@@ -166,7 +177,7 @@ class PostPackageList extends Page
                 $stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
                 $stm->execute();
             }
-            $stm = Database::prepare('
+            $stm = $this->database->prepare('
             INSERT INTO
                 pkgstats_modules
             SET
@@ -181,9 +192,9 @@ class PostPackageList extends Page
                 $stm->bindValue('month', date('Ym', Input::getTime()), PDO::PARAM_INT);
                 $stm->execute();
             }
-            Database::commit();
+            $this->database->commit();
         } catch (PDOException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             throw new HttpException(500, $e->getMessage(), $e);
         }
     }
@@ -198,7 +209,7 @@ class PostPackageList extends Page
 
     private function checkIfAlreadySubmitted()
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         SELECT
             COUNT(*) AS count,
             MIN(time) AS mintime

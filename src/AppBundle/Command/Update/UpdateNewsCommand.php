@@ -3,8 +3,8 @@
 namespace AppBundle\Command\Update;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Download;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -14,6 +14,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateNewsCommand extends ContainerAwareCommand
 {
     use LockableTrait;
+
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     protected function configure()
     {
@@ -27,18 +39,18 @@ class UpdateNewsCommand extends ContainerAwareCommand
 
         try {
             $newsEntries = $this->getNewsEntries();
-            Database::beginTransaction();
+            $this->database->beginTransaction();
             $this->updateNewsEntries($newsEntries);
-            Database::commit();
+            $this->database->commit();
         } catch (\RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             $output->writeln('Warning: UpdateNews failed: ' . $e->getMessage());
         }
     }
 
     private function updateNewsEntries(\SimpleXMLElement $newsEntries)
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
                 INSERT INTO
                     news_feed
                 SET

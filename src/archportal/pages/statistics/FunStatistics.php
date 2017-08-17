@@ -20,9 +20,9 @@
 
 namespace archportal\pages\statistics;
 
-use archportal\lib\Database;
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use PDO;
 use RuntimeException;
@@ -30,20 +30,36 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FunStatistics extends StatisticsPage
 {
+    /** @var Connection */
+    private $database;
+    /** @var ObjectStore */
+    private $objectStore;
+
+    /**
+     * @param Connection $connection
+     * @param ObjectStore $objectStore
+     */
+    public function __construct(Connection $connection, ObjectStore $objectStore)
+    {
+        parent::__construct();
+        $this->database = $connection;
+        $this->objectStore = $objectStore;
+    }
+
     public function prepare()
     {
         $this->setTitle('Fun statistics');
-        if (!($body = ObjectStore::getObject('FunStatistics'))) {
+        if (!($body = $this->objectStore->getObject('FunStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
         $this->setBody($body);
     }
 
-    public static function updateDatabaseCache()
+    public function updateDatabaseCache()
     {
         try {
-            Database::beginTransaction();
-            $total = Database::query('
+            $this->database->beginTransaction();
+            $total = $this->database->query('
             SELECT
                 COUNT(*)
             FROM
@@ -51,7 +67,7 @@ class FunStatistics extends StatisticsPage
             WHERE
                 time >= '.self::getRangeTime().'
             ')->fetchColumn();
-            $stm = Database::prepare('
+            $stm = $this->database->prepare('
             SELECT
                 SUM(count)
             FROM
@@ -68,7 +84,7 @@ class FunStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Browsers</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'Mozilla Firefox' => 'firefox',
                     'Chromium' => 'chromium',
                     'Konqueror' => 'kdebase-konqueror',
@@ -79,7 +95,7 @@ class FunStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Editors</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'Vim' => array(
                         'vim',
                         'gvim',
@@ -100,7 +116,7 @@ class FunStatistics extends StatisticsPage
                 )).'
                     <th colspan="2" class="packagedetailshead">Desktop Environments</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
                     'GNOME' => 'gnome-shell',
                     'LXDE' => 'lxde-common',
@@ -111,7 +127,7 @@ class FunStatistics extends StatisticsPage
                 )).'
                     <th colspan="2" class="packagedetailshead">File Managers</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'Dolphin' => 'kdebase-dolphin',
                     'Konqueror' => 'kdebase-konqueror',
                     'MC' => 'mc',
@@ -122,7 +138,7 @@ class FunStatistics extends StatisticsPage
                 )).'
                     <th colspan="2" class="packagedetailshead">Window Managers</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'Openbox' => 'openbox',
                     'Fluxbox' => 'fluxbox',
                     'I3' => 'i3-wm',
@@ -130,14 +146,14 @@ class FunStatistics extends StatisticsPage
                 )).'
                     <th colspan="2" class="packagedetailshead">Media Players</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'Mplayer' => 'mplayer',
                     'Xine' => 'xine-lib',
                     'VLC' => 'vlc',
                 )).'
                     <th colspan="2" class="packagedetailshead">Shells</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'Bash' => 'bash',
                     'Dash' => 'dash',
                     'Zsh' => 'zsh',
@@ -146,7 +162,7 @@ class FunStatistics extends StatisticsPage
                 )).'
                     <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
                 </tr>
-                    '.self::getPackageStatistics($total, $stm, array(
+                    '.$this->getPackageStatistics($total, $stm, array(
                     'ATI' => array(
                         'xf86-video-ati',
                         'xf86-video-r128',
@@ -166,10 +182,10 @@ class FunStatistics extends StatisticsPage
             </table>
             </div>
             ';
-            ObjectStore::addObject('FunStatistics', $body);
-            Database::commit();
+            $this->objectStore->addObject('FunStatistics', $body);
+            $this->database->commit();
         } catch (RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             echo 'FunStatistics failed:'.$e->getMessage();
         }
     }
@@ -181,7 +197,7 @@ class FunStatistics extends StatisticsPage
      *
      * @return string
      */
-    private static function getPackageStatistics(int $total, Statement $stm, array $packages): string
+    private function getPackageStatistics(int $total, Statement $stm, array $packages): string
     {
         $packageArray = array();
         $list = '';

@@ -20,18 +20,30 @@
 
 namespace archportal\lib;
 
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 
 class ObjectStore
 {
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        $this->database = $connection;
+    }
+
     /**
      * @param string $key
-     * @param mixed  $object
-     * @param int    $ttl
+     * @param mixed $object
+     * @param int $ttl
      */
-    public static function addObject(string $key, $object, int $ttl = 0)
+    public function addObject(string $key, $object, int $ttl = 0)
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         REPLACE INTO
             cache
         SET
@@ -50,10 +62,10 @@ class ObjectStore
      *
      * @return mixed
      */
-    public static function getObject(string $key)
+    public function getObject(string $key)
     {
-        self::collectGarbage();
-        $stm = Database::prepare('
+        $this->collectGarbage();
+        $stm = $this->database->prepare('
         SELECT
             value
         FROM
@@ -76,9 +88,9 @@ class ObjectStore
      *
      * @return bool
      */
-    public static function isObject(string $key): bool
+    public function isObject(string $key): bool
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         SELECT
             value
         FROM
@@ -93,11 +105,11 @@ class ObjectStore
         return $value !== false;
     }
 
-    private static function collectGarbage()
+    private function collectGarbage()
     {
         /* Ignore 49% of requests */
         if (!mt_rand(0, 50)) {
-            $stm = Database::prepare('
+            $stm = $this->database->prepare('
             DELETE FROM
                 cache
             WHERE

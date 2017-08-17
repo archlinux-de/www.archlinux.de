@@ -20,30 +20,46 @@
 
 namespace archportal\pages\statistics;
 
-use archportal\lib\Database;
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RepositoryStatistics extends StatisticsPage
 {
+    /** @var Connection */
+    private $database;
+    /** @var ObjectStore */
+    private $objectStore;
+
+    /**
+     * @param Connection $connection
+     * @param ObjectStore $objectStore
+     */
+    public function __construct(Connection $connection, ObjectStore $objectStore)
+    {
+        parent::__construct();
+        $this->database = $connection;
+        $this->objectStore = $objectStore;
+    }
+
     public function prepare()
     {
         $this->setTitle('Repository statistics');
-        if (!($body = ObjectStore::getObject('RepositoryStatistics'))) {
+        if (!($body = $this->objectStore->getObject('RepositoryStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
         $this->setBody($body);
     }
 
-    public static function updateDatabaseCache()
+    public function updateDatabaseCache()
     {
         try {
-            Database::beginTransaction();
+            $this->database->beginTransaction();
             self::$barColors = self::MultiColorFade(self::$barColorArray);
-            $data = self::getCommonRepositoryStatistics();
+            $data = $this->getCommonRepositoryStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
@@ -102,11 +118,11 @@ class RepositoryStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Total size of repositories</th>
-                    <td>'.self::formatBytes((int) $data['csize']).'Byte</td>
+                    <td>'.$this->formatBytes((int) $data['csize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Total size of files</th>
-                    <td>'.self::formatBytes((int) $data['isize']).'Byte</td>
+                    <td>'.$this->formatBytes((int) $data['isize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Packager</th>
@@ -117,11 +133,11 @@ class RepositoryStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Size of packages</th>
-                    <td>&empty; '.self::formatBytes((int) $data['avgcsize']).'Byte</td>
+                    <td>&empty; '.$this->formatBytes((int) $data['avgcsize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Size of files</th>
-                    <td>&empty; '.self::formatBytes((int) $data['avgisize']).'Byte</td>
+                    <td>&empty; '.$this->formatBytes((int) $data['avgisize']).'Byte</td>
                 </tr>
                 <tr>
                     <th>Files per package</th>
@@ -134,14 +150,14 @@ class RepositoryStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Repositories</th>
                 </tr>
-                    '.self::getRepositoryStatistics().'
+                    '.$this->getRepositoryStatistics().'
             </table>
             </div>
             ';
-            ObjectStore::addObject('RepositoryStatistics', $body);
-            Database::commit();
+            $this->objectStore->addObject('RepositoryStatistics', $body);
+            $this->database->commit();
         } catch (RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             echo 'RepositoryStatistics failed:'.$e->getMessage();
         }
     }
@@ -149,9 +165,9 @@ class RepositoryStatistics extends StatisticsPage
     /**
      * @return array
      */
-    private static function getCommonRepositoryStatistics(): array
+    private function getCommonRepositoryStatistics(): array
     {
-        return Database::query('
+        return $this->database->query('
         SELECT
             (SELECT COUNT(*) FROM architectures) AS architectures,
             (SELECT COUNT(*) FROM repositories) AS repositories,
@@ -202,9 +218,9 @@ class RepositoryStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getRepositoryStatistics(): string
+    private function getRepositoryStatistics(): string
     {
-        $repos = Database::query('
+        $repos = $this->database->query('
             SELECT DISTINCT
                 name
             FROM
@@ -216,14 +232,14 @@ class RepositoryStatistics extends StatisticsPage
             ORDER BY
                 id
             ')->fetchAll(PDO::FETCH_COLUMN);
-        $total = Database::query('
+        $total = $this->database->query('
             SELECT
                 COUNT(id) AS packages,
                 SUM(csize) AS size
             FROM
                 packages
             ')->fetch();
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 COUNT(packages.id) AS packages,
                 SUM(packages.csize) AS size
@@ -266,7 +282,7 @@ class RepositoryStatistics extends StatisticsPage
      *
      * @return string
      */
-    private static function formatBytes(int $bytes): string
+    private function formatBytes(int $bytes): string
     {
         $kb = 1024;
         $mb = $kb * 1024;

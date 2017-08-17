@@ -20,10 +20,10 @@
 
 namespace archportal\pages;
 
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\RequestException;
+use Doctrine\DBAL\Driver\Connection;
 
 class Packagers extends Page
 {
@@ -31,6 +31,17 @@ class Packagers extends Page
     private $orderby = 'name';
     /** @var int */
     private $sort = 0;
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -46,8 +57,8 @@ class Packagers extends Page
         } catch (RequestException $e) {
         }
         $this->sort = Input::get()->getInt('sort', 0) > 0 ? 1 : 0;
-        $packages = Database::query('SELECT COUNT(*) FROM packages')->fetchColumn();
-        $packagers = Database::query('
+        $packages = $this->database->query('SELECT COUNT(*) FROM packages')->fetchColumn();
+        $packagers = $this->database->query('
             SELECT
             packagers.id,
             packagers.name,

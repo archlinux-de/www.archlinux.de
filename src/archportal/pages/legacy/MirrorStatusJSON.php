@@ -20,20 +20,31 @@
 
 namespace archportal\pages\legacy;
 
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 
 class MirrorStatusJSON extends Page
 {
     /** @var string */
     private $json = '';
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
         $this->disallowCaching();
-        $mirrors = Database::query('
+        $mirrors = $this->database->query('
         SELECT
             mirrors.url,
             countries.name AS country,
@@ -68,7 +79,7 @@ class MirrorStatusJSON extends Page
      */
     private function getClientCountryName(): string
     {
-        $countryName = Database::prepare('
+        $countryName = $this->database->prepare('
             SELECT
                 name
             FROM

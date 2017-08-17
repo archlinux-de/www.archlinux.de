@@ -21,9 +21,9 @@
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Input;
 use archportal\lib\Page;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 
 class Packages extends Page
@@ -50,6 +50,17 @@ class Packages extends Page
     private $searchString = '';
     /** @var string */
     private $searchField = '';
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     public function prepare()
     {
@@ -68,7 +79,7 @@ class Packages extends Page
 
         $this->initParameters();
 
-        $packages = Database::prepare('
+        $packages = $this->database->prepare('
             SELECT
                 packages.id,
                 packages.name,
@@ -189,7 +200,7 @@ class Packages extends Page
      */
     private function getRepositoryId(string $repositoryName, int $architectureId): int
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -235,7 +246,7 @@ class Packages extends Page
      */
     private function getArchitectureId(string $architectureName): int
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
             SELECT
                 id
             FROM
@@ -399,7 +410,7 @@ class Packages extends Page
         $options = '<select name="group" onchange="this.form.submit()">
             <option value="">&nbsp;</option>';
 
-        $groups = Database::query('
+        $groups = $this->database->query('
             SELECT
                 name
             FROM

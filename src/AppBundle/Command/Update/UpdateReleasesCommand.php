@@ -3,8 +3,8 @@
 namespace AppBundle\Command\Update;
 
 use archportal\lib\Config;
-use archportal\lib\Database;
 use archportal\lib\Download;
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -14,6 +14,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateReleasesCommand extends ContainerAwareCommand
 {
     use LockableTrait;
+
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        parent::__construct();
+        $this->database = $connection;
+    }
 
     protected function configure()
     {
@@ -34,11 +46,11 @@ class UpdateReleasesCommand extends ContainerAwareCommand
             if (empty($releases)) {
                 throw new \RuntimeException('there are no releases');
             }
-            Database::beginTransaction();
+            $this->database->beginTransaction();
             $this->updateRelengReleases($releases);
-            Database::commit();
+            $this->database->commit();
         } catch (\RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             $output->writeln('Warning: UpdateReleases failed: ' . $e->getMessage());
         }
     }
@@ -48,8 +60,8 @@ class UpdateReleasesCommand extends ContainerAwareCommand
      */
     private function updateRelengReleases(array $releases)
     {
-        Database::query('DELETE FROM releng_releases');
-        $stm = Database::prepare('
+        $this->database->query('DELETE FROM releng_releases');
+        $stm = $this->database->prepare('
                 INSERT INTO
                     releng_releases
                 SET

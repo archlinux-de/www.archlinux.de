@@ -32,9 +32,10 @@ class UpdatePkgstatsCommand extends ContainerAwareCommand
                          'UserStatistics',
                          'FunStatistics',
                      ) as $page) {
-                /** @var StatisticsPage $pageClass */
                 $pageClass = Routing::getPageClass($page);
-                $pageClass::updateDatabaseCache();
+                /** @var StatisticsPage $pageObject */
+                $pageObject = $this->getContainer()->get($pageClass);
+                $pageObject->updateDatabaseCache();
             }
         }
     }

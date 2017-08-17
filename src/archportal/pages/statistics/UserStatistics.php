@@ -20,29 +20,45 @@
 
 namespace archportal\pages\statistics;
 
-use archportal\lib\Database;
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
+use Doctrine\DBAL\Driver\Connection;
 use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserStatistics extends StatisticsPage
 {
+    /** @var Connection */
+    private $database;
+    /** @var ObjectStore */
+    private $objectStore;
+
+    /**
+     * @param Connection $connection
+     * @param ObjectStore $objectStore
+     */
+    public function __construct(Connection $connection, ObjectStore $objectStore)
+    {
+        parent::__construct();
+        $this->database = $connection;
+        $this->objectStore = $objectStore;
+    }
+
     public function prepare()
     {
         $this->setTitle('User statistics');
-        if (!($body = ObjectStore::getObject('UserStatistics'))) {
+        if (!($body = $this->objectStore->getObject('UserStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
         $this->setBody($body);
     }
 
-    public static function updateDatabaseCache()
+    public function updateDatabaseCache()
     {
         try {
-            Database::beginTransaction();
+            $this->database->beginTransaction();
             self::$barColors = self::MultiColorFade(self::$barColorArray);
-            $log = self::getCommonPackageUsageStatistics();
+            $log = $this->getCommonPackageUsageStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
@@ -62,27 +78,27 @@ class UserStatistics extends StatisticsPage
                 <tr>
                     <th colspan="2" class="packagedetailshead">Countries</th>
                 </tr>
-                    '.self::getCountryStatistics().'
+                    '.$this->getCountryStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Mirrors</th>
                 </tr>
-                    '.self::getMirrorStatistics().'
+                    '.$this->getMirrorStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Mirrors per Country</th>
                 </tr>
-                    '.self::getMirrorCountryStatistics().'
+                    '.$this->getMirrorCountryStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Mirror protocolls</th>
                 </tr>
-                    '.self::getMirrorProtocollStatistics().'
+                    '.$this->getMirrorProtocollStatistics().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Submissions per architectures</th>
                 </tr>
-                    '.self::getSubmissionsPerArchitecture().'
+                    '.$this->getSubmissionsPerArchitecture().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Submissions per CPU architectures</th>
                 </tr>
-                    '.self::getSubmissionsPerCpuArchitecture().'
+                    '.$this->getSubmissionsPerCpuArchitecture().'
                 <tr>
                     <th colspan="2" class="packagedetailshead">Common statistics</th>
                 </tr>
@@ -109,10 +125,10 @@ class UserStatistics extends StatisticsPage
             </table>
             </div>
             ';
-            ObjectStore::addObject('UserStatistics', $body);
-            Database::commit();
+            $this->objectStore->addObject('UserStatistics', $body);
+            $this->database->commit();
         } catch (RuntimeException $e) {
-            Database::rollBack();
+            $this->database->rollBack();
             echo 'UserStatistics failed:'.$e->getMessage();
         }
     }
@@ -120,9 +136,9 @@ class UserStatistics extends StatisticsPage
     /**
      * @return array
      */
-    private static function getCommonPackageUsageStatistics(): array
+    private function getCommonPackageUsageStatistics(): array
     {
-        return Database::query('
+        return $this->database->query('
         SELECT
             (SELECT COUNT(*) FROM pkgstats_users WHERE time >= '.self::getRangeTime().') AS submissions,
             (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= '.self::getRangeTime().' GROUP BY ip) AS temp) AS differentips,
@@ -139,9 +155,9 @@ class UserStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getCountryStatistics(): string
+    private function getCountryStatistics(): string
     {
-        $total = Database::query('
+        $total = $this->database->query('
         SELECT
             COUNT(countryCode)
         FROM
@@ -149,7 +165,7 @@ class UserStatistics extends StatisticsPage
         WHERE
             time >= '.self::getRangeTime().'
         ')->fetchColumn();
-        $countries = Database::query('
+        $countries = $this->database->query('
         SELECT
             countries.name AS country,
             COUNT(countryCode) AS count
@@ -178,9 +194,9 @@ class UserStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getMirrorStatistics(): string
+    private function getMirrorStatistics(): string
     {
-        $total = Database::query('
+        $total = $this->database->query('
         SELECT
             COUNT(mirror)
         FROM
@@ -188,7 +204,7 @@ class UserStatistics extends StatisticsPage
         WHERE
             time >= '.self::getRangeTime().'
         ')->fetchColumn();
-        $mirrors = Database::query('
+        $mirrors = $this->database->query('
         SELECT
             mirror,
             COUNT(mirror) AS count
@@ -225,15 +241,15 @@ class UserStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getMirrorCountryStatistics(): string
+    private function getMirrorCountryStatistics(): string
     {
-        $total = Database::query('
+        $total = $this->database->query('
         SELECT
             COUNT(countryCode)
         FROM
             mirrors
         ')->fetchColumn();
-        $countries = Database::query('
+        $countries = $this->database->query('
         SELECT
             countries.name AS country,
             COUNT(countryCode) AS count
@@ -260,13 +276,13 @@ class UserStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getMirrorProtocollStatistics(): string
+    private function getMirrorProtocollStatistics(): string
     {
         $protocolls = array(
             'http' => 0,
             'ftp' => 0,
         );
-        $total = Database::query('
+        $total = $this->database->query('
         SELECT
             COUNT(mirror)
         FROM
@@ -275,7 +291,7 @@ class UserStatistics extends StatisticsPage
             time >= '.self::getRangeTime().'
         ')->fetchColumn();
         foreach ($protocolls as $protocoll => $count) {
-            $protocolls[$protocoll] = Database::query('
+            $protocolls[$protocoll] = $this->database->query('
             SELECT
                 COUNT(mirror)
             FROM
@@ -297,9 +313,9 @@ class UserStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getSubmissionsPerArchitecture(): string
+    private function getSubmissionsPerArchitecture(): string
     {
-        $total = Database::query('
+        $total = $this->database->query('
         SELECT
             COUNT(*)
         FROM
@@ -307,7 +323,7 @@ class UserStatistics extends StatisticsPage
         WHERE
             time >= '.self::getRangeTime().'
         ')->fetchColumn();
-        $arches = Database::query('
+        $arches = $this->database->query('
         SELECT
             COUNT(*) AS count,
             arch AS name
@@ -331,9 +347,9 @@ class UserStatistics extends StatisticsPage
     /**
      * @return string
      */
-    private static function getSubmissionsPerCpuArchitecture(): string
+    private function getSubmissionsPerCpuArchitecture(): string
     {
-        $total = Database::query('
+        $total = $this->database->query('
         SELECT
             COUNT(*)
         FROM
@@ -342,7 +358,7 @@ class UserStatistics extends StatisticsPage
             time >= '.self::getRangeTime().'
             AND cpuarch IS NOT NULL
         ')->fetchColumn();
-        $arches = Database::query('
+        $arches = $this->database->query('
         SELECT
             COUNT(cpuarch) AS count,
             cpuarch AS name
