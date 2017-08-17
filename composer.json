@@ -1,24 +1,70 @@
 {
-  "name": "archportal",
-  "description": "A portal website for lcoal Arch Linux communities",
-  "minimum-stability": "stable",
-  "license": "GPL",
-  "type": "project",
-  "authors": [
-    {
-      "name": "Pierre Schmitz",
-      "email": "pierre@archlinux.de"
+    "name": "archportal",
+    "license": "GPL",
+    "type": "project",
+    "description": "A portal website for lcoal Arch Linux communities",
+    "autoload": {
+        "psr-4": {
+            "AppBundle\\": "src/AppBundle",
+            "archportal\\": "src/archportal"
+        },
+        "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
+    },
+    "autoload-dev": {
+        "psr-4": { "Tests\\": "tests/" },
+        "files": [ "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php" ]
+    },
+    "require": {
+        "php": "^7.1",
+        "ext-pdo_mysql": "*",
+        "ext-gettext": "*",
+        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/orm": "^2.5",
+        "geoip/geoip": "^1.17",
+        "incenteev/composer-parameter-handler": "^2.0",
+        "sensio/distribution-bundle": "^5.0.19",
+        "sensio/framework-extra-bundle": "^3.0.2",
+        "symfony/monolog-bundle": "^3.1.0",
+        "symfony/polyfill-apcu": "^1.0",
+        "symfony/swiftmailer-bundle": "^2.3.10",
+        "symfony/symfony": "3.3.*",
+        "twig/twig": "^1.0||^2.0"
+    },
+    "require-dev": {
+        "sensio/generator-bundle": "^3.0",
+        "symfony/phpunit-bridge": "^3.0"
+    },
+    "scripts": {
+        "symfony-scripts": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-install-cmd": [
+            "@symfony-scripts"
+        ],
+        "post-update-cmd": [
+            "@symfony-scripts"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-bin-dir": "bin",
+        "symfony-var-dir": "var",
+        "symfony-web-dir": "web",
+        "symfony-tests-dir": "tests",
+        "symfony-assets-install": "relative",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
+        "branch-alias": {
+            "dev-master": "3.3-dev"
+        }
     }
-  ],
-  "autoload": {
-    "psr-0": {
-      "": "src/"
-    }
-  },
-  "require": {
-    "php": "^7.0",
-    "ext-pdo_mysql": "*",
-    "ext-gettext": "*",
-    "geoip/geoip": "~1.14"
-  }
 }
