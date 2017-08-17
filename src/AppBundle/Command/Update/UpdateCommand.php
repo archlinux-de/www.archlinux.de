@@ -3,7 +3,6 @@
 namespace AppBundle\Command\Update;
 
 use archportal\cronjobs\UpdatePackages;
-use archportal\cronjobs\UpdateReleases;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -31,9 +30,6 @@ class UpdateCommand extends ContainerAwareCommand
         switch ($job) {
             case 'packages':
                 UpdatePackages::run();
-                break;
-            case 'releases':
-                UpdateReleases::run();
                 break;
             default:
                 throw new InvalidArgumentException($job);
