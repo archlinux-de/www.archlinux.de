@@ -1,7 +1,4 @@
 <?php
-
-declare (strict_types = 1);
-
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -29,10 +26,6 @@ Config::set('common', 'debug', false);
 Config::set('common', 'email', 'webmaster@localhost');
 Config::set('common', 'tmpdir', '/tmp');
 Config::set('common', 'sitename', 'archportal');
-
-Config::set('Database', 'database', 'archportal');
-Config::set('Database', 'user', 'root');
-Config::set('Database', 'password', '');
 
 Config::set('L10n', 'locale', 'en_US.utf8');
 Config::set('L10n', 'timezone', 'UTC');

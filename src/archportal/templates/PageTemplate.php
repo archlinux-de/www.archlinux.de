@@ -1,7 +1,5 @@
 <?php
 
-declare (strict_types = 1);
-
 namespace archportal\templates;
 
 use archportal\lib\Config;

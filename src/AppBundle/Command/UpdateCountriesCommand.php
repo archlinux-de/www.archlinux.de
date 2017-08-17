@@ -3,11 +3,11 @@
 namespace AppBundle\Command;
 
 use archportal\lib\Database;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateCountriesCommand extends Command
+class UpdateCountriesCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -16,6 +16,9 @@ class UpdateCountriesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        Database::setPdo(
+            $this->getContainer()->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection()
+        );
         $geoIP = new \GeoIP();
         $countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
 

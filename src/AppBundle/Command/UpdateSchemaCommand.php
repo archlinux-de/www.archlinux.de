@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command;
 
-use archportal\lib\Config;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,15 +15,15 @@ class UpdateSchemaCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $databseUsername = $this->getContainer()->getParameter('database_name');
+
         system('mysqldump -d --compact -u'
-            . '\'' . escapeshellcmd(Config::get('Database', 'user')) . '\''
+            . '\'' . escapeshellcmd($this->getContainer()->getParameter('database_user')) . '\''
             . ' '
-            . escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\'' . Config::get(
-                'Database',
-                'password'
-            ) . '\'' : '')
+            . escapeshellcmd(strlen($this->getContainer()->getParameter('database_password')) > 0
+                ? '-p\'' . $this->getContainer()->getParameter('database_password') . '\'' : '')
             . ' '
-            . '\'' . escapeshellcmd(Config::get('Database', 'database')) . '\''
+            . '\'' . escapeshellcmd($this->getContainer()->getParameter('database_name')) . '\''
             . ' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > '
             . $this->getContainer()->getParameter('kernel.project_dir') . '/config/archportal_schema.sql');
     }
