@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\cronjobs\UpdateNews;
 use archportal\cronjobs\UpdatePackages;
 use archportal\cronjobs\UpdateReleases;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -30,9 +29,6 @@ class UpdateCommand extends ContainerAwareCommand
 
         $job = $input->getArgument('job');
         switch ($job) {
-            case 'news':
-                UpdateNews::run();
-                break;
             case 'packages':
                 UpdatePackages::run();
                 break;
