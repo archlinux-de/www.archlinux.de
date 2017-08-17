@@ -2,29 +2,35 @@
 
 namespace AppBundle\Service;
 
+use archportal\lib\Config;
 use archportal\lib\Database;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 class LegacyEnvironment
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-    /** @var string */
-    private $databaseName;
+    /** @var Container */
+    private $container;
 
     /**
-     * @param EntityManagerInterface $entityManager
-     * @param string $databaseName
+     * @param Container $container
      */
-    public function __construct(EntityManagerInterface $entityManager, string $databaseName)
+    public function __construct(Container $container)
     {
-        $this->entityManager = $entityManager;
-        $this->databaseName = $databaseName;
+        $this->container = $container;
     }
 
     public function initialize()
     {
-        Database::setPdo($this->entityManager->getConnection()->getWrappedConnection());
-        Database::setDatabase($this->databaseName);
+        Database::setPdo($this->container->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection());
+        Database::setDatabase($this->container->getParameter('database_name'));
+
+        foreach ($this->container->getParameterBag()->all() as $key => $value) {
+            if (strpos($key, 'app.') === 0) {
+                $sections = explode('.', $key);
+                if (isset($sections[1]) && isset($sections[2])) {
+                    Config::set($sections[1], $sections[2], $value);
+                }
+            }
+        }
     }
 }

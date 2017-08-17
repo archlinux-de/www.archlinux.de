@@ -6,6 +6,32 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    app.common.statistics: false
+    app.common.legacysites: false
+    app.common.email: 'webmaster@localhost'
+    app.common.tmpdir: '/tmp'
+    app.common.sitename: 'archportal'
+    app.l10n.locale: 'en_US.utf8'
+    app.l10n.timezone: 'UTC'
+    app.packages.mirror: 'http://mirror.leaseweb.net/archlinux/'
+    app.packages.cgit: 'https://projects.archlinux.org/svntogit/'
+    app.packages.repositories:
+        core: ['x86_64', 'i686']
+        extra: ['x86_64', 'i686']
+        testing: ['x86_64', 'i686']
+        community: ['x86_64', 'i686']
+        community-testing: ['x86_64', 'i686']
+        multilib: ['x86_64']
+        multilib-testing: ['x86_64']
+    app.packages.default_architecture: 'x86_64'
+    app.packages.files: true
+    app.packages.delay: 120
+    app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
+    app.mirrors.default: '%app.packages.mirror%'
+    app.mirrors.country: 'DE'
+    app.news.feed: ''
+    app.news.archive: ''
+    app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
 
 framework:
     #esi: ~

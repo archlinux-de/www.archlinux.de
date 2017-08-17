@@ -14,7 +14,6 @@ services:
       - "${PORT:-8080}:8080"
     volumes:
       - .:/app
-      - ./config/DevConfig.php:/app/config/LocalConfig.php
       - ~/.composer/cache:/.composer/cache
       - db-socket:/run/mysqld
     depends_on:

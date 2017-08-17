@@ -29,11 +29,11 @@ class L10n
 
     public function __construct()
     {
-        $this->locale = Config::get('L10n', 'locale');
+        $this->locale = Config::get('l10n', 'locale');
 
         putenv('LC_ALL='.$this->locale);
         setlocale(LC_ALL, $this->locale);
-        date_default_timezone_set(Config::get('L10n', 'timezone'));
+        date_default_timezone_set(Config::get('l10n', 'timezone'));
         $this->localeInfo = localeconv();
         bindtextdomain('archportal', __DIR__.'/../l10n');
         textdomain('archportal');

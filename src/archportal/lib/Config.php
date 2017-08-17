@@ -65,9 +65,3 @@ class Config
         return isset(self::$config[$section][$key]);
     }
 }
-
-require __DIR__.'/../../../config/DefaultConfig.php';
-
-if (file_exists(__DIR__.'/../../../config/LocalConfig.php')) {
-    include __DIR__.'/../../../config/LocalConfig.php';
-}

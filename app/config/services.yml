@@ -37,5 +37,4 @@ services:
     AppBundle\Service\LegacyEnvironment:
         public: true
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - '%database_name%'
+            - '@service_container'
