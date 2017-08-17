@@ -23,6 +23,7 @@ namespace archportal\pages\statistics;
 use archportal\lib\Database;
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
+use Doctrine\DBAL\Driver\Statement;
 use PDO;
 use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -175,12 +176,12 @@ class FunStatistics extends StatisticsPage
 
     /**
      * @param int           $total
-     * @param \PDOStatement $stm
+     * @param Statement $stm
      * @param array         $packages
      *
      * @return string
      */
-    private static function getPackageStatistics(int $total, \PDOStatement $stm, array $packages): string
+    private static function getPackageStatistics(int $total, Statement $stm, array $packages): string
     {
         $packageArray = array();
         $list = '';

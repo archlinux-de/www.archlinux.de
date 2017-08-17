@@ -2,13 +2,13 @@
 
 namespace archportal\lib;
 
-use PDO;
-use PDOStatement;
+use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
- * @method static PDOStatement prepare(string $statement, array $driver_options = array())
+ * @method static Statement prepare(string $statement, array $driver_options = array())
  * @method static int exec(string $statement)
- * @method static PDOStatement query(string $statement)
+ * @method static Statement query(string $statement)
  * @method static mixed lastInsertId()
  * @method static bool beginTransaction()
  * @method static bool commit()
@@ -16,8 +16,8 @@ use PDOStatement;
  */
 class Database
 {
-    /** @var PDO */
-    private static $pdo = null;
+    /** @var Connection */
+    private static $connection = null;
 
     private function __construct()
     {
@@ -31,14 +31,14 @@ class Database
      */
     public static function __callStatic(string $name, array $args)
     {
-        return call_user_func_array(array(self::$pdo, $name), $args);
+        return call_user_func_array(array(self::$connection, $name), $args);
     }
 
     /**
-     * @param PDO $pdo
+     * @param Connection $connection
      */
-    public static function setPdo(PDO $pdo)
+    public static function setConnection(Connection $connection)
     {
-        self::$pdo = $pdo;
+        self::$connection = $connection;
     }
 }

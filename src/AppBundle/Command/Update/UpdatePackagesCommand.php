@@ -9,6 +9,7 @@ use archportal\lib\Input;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
+use Doctrine\DBAL\Driver\Statement;
 use PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -22,66 +23,66 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     private $lastMirrorUpdate = 0;
     private $updatedPackages = false;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectRepoMTime = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectPackageMTime = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $updateRepoMTime = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectArchId = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertArchName = null;
     /** @var array */
     private $arches = array();
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectRepoId = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertRepoName = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectPackageId = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $updatePackage = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertPackage = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectPackager = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertPackager = null;
     private $packagers = array();
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectGroup = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertGroup = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $cleanupPackageGroup = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertPackageGroup = null;
     private $groups = array();
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectLicense = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertLicense = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $cleanupPackageLicense = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertPackageLicense = null;
     private $licenses = array();
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $cleanupRelation = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertRelation = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $selectFileIndex = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertFileIndex = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $cleanupFiles = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertFiles = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $insertPackageFileIndex = null;
-    /** @var \PDOStatement */
+    /** @var Statement */
     private $cleanupPackageFileIndex = null;
     private $files = array();
     private $contentTables = array(
@@ -119,6 +120,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         }
 
         try {
+            ini_set('memory_limit', '-1');
             Database::beginTransaction();
 
             if ($input->getOption('purge')) {
@@ -179,7 +181,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             }
 
             $this->printDebug('Cleaning up obsolete repositories...', $output);
-            $this->cleanupObsoleteRepositories();
+            $this->cleanupObsoleteRepositories($output);
 
             if ($this->updatedPackages) {
                 $this->printDebug('Cleaning up obsolete database entries...', $output);
@@ -964,7 +966,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         }
     }
 
-    private function cleanupObsoleteRepositories()
+    private function cleanupObsoleteRepositories(OutputInterface $output)
     {
         $repos = Database::query('
             SELECT

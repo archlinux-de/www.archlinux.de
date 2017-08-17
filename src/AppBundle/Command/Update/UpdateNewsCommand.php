@@ -56,13 +56,13 @@ class UpdateNewsCommand extends ContainerAwareCommand
                     updated = VALUES(updated)
             ');
         foreach ($newsEntries as $newsEntry) {
-            $stm->bindParam('id', $newsEntry->id, PDO::PARAM_STR);
-            $stm->bindParam('title', $newsEntry->title, PDO::PARAM_STR);
-            $stm->bindParam('link', $newsEntry->link->attributes()->href, PDO::PARAM_STR);
-            $stm->bindParam('summary', $newsEntry->summary, PDO::PARAM_STR);
-            $stm->bindParam('author_name', $newsEntry->author->name, PDO::PARAM_STR);
-            $stm->bindParam('author_uri', $newsEntry->author->uri, PDO::PARAM_STR);
-            $stm->bindValue('updated', (new \DateTime((string)$newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
+            $stm->bindValue('id', (string) $newsEntry->id, PDO::PARAM_STR);
+            $stm->bindValue('title', (string) $newsEntry->title, PDO::PARAM_STR);
+            $stm->bindValue('link', (string) $newsEntry->link->attributes()->href, PDO::PARAM_STR);
+            $stm->bindValue('summary', (string) $newsEntry->summary, PDO::PARAM_STR);
+            $stm->bindValue('author_name', (string) $newsEntry->author->name, PDO::PARAM_STR);
+            $stm->bindValue('author_uri', (string) $newsEntry->author->uri, PDO::PARAM_STR);
+            $stm->bindValue('updated', (new \DateTime((string) $newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
             $stm->execute();
         }
     }

@@ -21,7 +21,7 @@ class LegacyEnvironment
 
     public function initialize()
     {
-        Database::setPdo($this->container->get('doctrine.orm.entity_manager')->getConnection()->getWrappedConnection());
+        Database::setConnection($this->container->get('doctrine.dbal.default_connection'));
 
         foreach ($this->container->getParameterBag()->all() as $key => $value) {
             if (strpos($key, 'app.') === 0) {
