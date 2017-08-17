@@ -148,8 +148,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     $this->printDebug("\tDownloading...", $output);
                     $packages = new PackageDatabase($repo, $arch, $repoMTime, $packageMTime);
 
-                    if ($packages->getMTime() > $repoMTime && Input::getTime() - $packages->getMTime() > Config::get('packages',
-                            'delay')
+                    if ($packages->getMTime() > $repoMTime && Input::getTime() - $packages->getMTime() > Config::get(
+                        'packages',
+                        'delay'
+                    )
                     ) {
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, $packages->getNewPackageCount());
@@ -194,7 +196,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $this->updateLastMirrorUpdate();
         } catch (\RuntimeException $e) {
             Database::rollBack();
-            $this->printError('UpdatePackages failed at ' . $e->getFile() . ' on line ' . $e->getLine() . ': ' . $e->getMessage(), $output);
+            $this->printError(
+                'UpdatePackages failed at ' . $e->getFile() . ' on line ' . $e->getLine() . ': ' . $e->getMessage(),
+                $output
+            );
         }
     }
 
@@ -583,8 +588,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         if ($id === false) {
             $this->insertRepoName->bindParam('name', $repoName, PDO::PARAM_STR);
             $this->insertRepoName->bindParam('arch', $archId, PDO::PARAM_INT);
-            $this->insertRepoName->bindValue('testing', (preg_match('/(-|^)testing$/', $repoName) > 0 ? 1 : 0),
-                PDO::PARAM_INT);
+            $this->insertRepoName->bindValue(
+                'testing',
+                (preg_match('/(-|^)testing$/', $repoName) > 0 ? 1 : 0),
+                PDO::PARAM_INT
+            );
             $this->insertRepoName->execute();
             $id = Database::lastInsertId();
         }
