@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare (strict_types = 1);
@@ -22,15 +21,13 @@ declare (strict_types = 1);
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require __DIR__.'/../vendor/autoload.php';
+namespace archportal\cronjobs;
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
 use archportal\lib\Database;
 use archportal\lib\Download;
-
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
+use PDO;
 
 class UpdateMirrors extends CronJob
 {
@@ -39,14 +36,14 @@ class UpdateMirrors extends CronJob
         try {
             $status = $this->getMirrorStatus();
             if ($status['version'] != 3) {
-                throw new RuntimeException('incompatible mirrorstatus version');
+                throw new \RuntimeException('incompatible mirrorstatus version');
             }
             $mirrors = $status['urls'];
             if (empty($mirrors)) {
-                throw new RuntimeException('mirrorlist is empty');
+                throw new \RuntimeException('mirrorlist is empty');
             }
             $this->updateMirrorlist($mirrors);
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->printError('Warning: UpdateMirrors failed: '.$e->getMessage());
         }
     }
@@ -77,7 +74,7 @@ class UpdateMirrors extends CronJob
                 if (is_null($mirror['last_sync'])) {
                     $lastSync = null;
                 } else {
-                    $lastSyncDate = new DateTime($mirror['last_sync']);
+                    $lastSyncDate = new \DateTime($mirror['last_sync']);
                     $lastSync = $lastSyncDate->getTimestamp();
                 }
                 $stm->bindParam('lastsync', $lastSync, PDO::PARAM_INT);
@@ -89,7 +86,7 @@ class UpdateMirrors extends CronJob
                 $stm->execute();
             }
             Database::commit();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             Database::rollBack();
             $this->printError('Warning: updateMirrorlist failed: '.$e->getMessage());
         }
@@ -101,15 +98,13 @@ class UpdateMirrors extends CronJob
 
         $content = file_get_contents($download->getFile());
         if (empty($content)) {
-            throw new RuntimeException('empty mirrorstatus', 1);
+            throw new \RuntimeException('empty mirrorstatus', 1);
         }
         $mirrors = json_decode($content, true);
         if (json_last_error() != JSON_ERROR_NONE) {
-            throw new RuntimeException('could not decode mirrorstatus', 1);
+            throw new \RuntimeException('could not decode mirrorstatus', 1);
         }
 
         return $mirrors;
     }
 }
-
-UpdateMirrors::run();

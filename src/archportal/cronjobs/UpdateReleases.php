@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare (strict_types = 1);
@@ -22,15 +21,13 @@ declare (strict_types = 1);
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require __DIR__.'/../vendor/autoload.php';
+namespace archportal\cronjobs;
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
 use archportal\lib\Database;
 use archportal\lib\Download;
-
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
+use PDO;
 
 class UpdateReleases extends CronJob
 {
@@ -39,14 +36,14 @@ class UpdateReleases extends CronJob
         try {
             $releng = $this->getRelengReleases();
             if ($releng['version'] != 1) {
-                throw new RuntimeException('incompatible releng/releases version');
+                throw new \RuntimeException('incompatible releng/releases version');
             }
             $releases = $releng['releases'];
             if (empty($releases)) {
-                throw new RuntimeException('there are no releases');
+                throw new \RuntimeException('there are no releases');
             }
             $this->updateRelengReleases($releases);
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->printError('Warning: UpdateReleases failed: '.$e->getMessage());
         }
     }
@@ -122,7 +119,7 @@ class UpdateReleases extends CronJob
                 $stm->execute();
             }
             Database::commit();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             Database::rollBack();
             $this->printError('Warning: UpdateReleases failed: '.$e->getMessage());
         }
@@ -138,7 +135,7 @@ class UpdateReleases extends CronJob
         if (is_null($data)) {
             return;
         } else {
-            return (new DateTime($data))->getTimestamp();
+            return (new \DateTime($data))->getTimestamp();
         }
     }
 
@@ -151,15 +148,13 @@ class UpdateReleases extends CronJob
 
         $content = file_get_contents($download->getFile());
         if (empty($content)) {
-            throw new RuntimeException('empty releng releases', 1);
+            throw new \RuntimeException('empty releng releases', 1);
         }
         $releng = json_decode($content, true);
         if (json_last_error() != JSON_ERROR_NONE) {
-            throw new RuntimeException('could not decode releng releases', 1);
+            throw new \RuntimeException('could not decode releng releases', 1);
         }
 
         return $releng;
     }
 }
-
-UpdateReleases::run();

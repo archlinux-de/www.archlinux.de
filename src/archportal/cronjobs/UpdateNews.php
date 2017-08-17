@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare (strict_types = 1);
@@ -22,15 +21,13 @@ declare (strict_types = 1);
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require __DIR__.'/../vendor/autoload.php';
+namespace archportal\cronjobs;
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
 use archportal\lib\Database;
 use archportal\lib\Download;
-
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
+use PDO;
 
 class UpdateNews extends CronJob
 {
@@ -39,7 +36,7 @@ class UpdateNews extends CronJob
         try {
             $newsEntries = $this->getNewsEntries();
             $this->updateNewsEntries($newsEntries);
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->printError('Warning: UpdateNews failed: '.$e->getMessage());
         }
     }
@@ -72,11 +69,11 @@ class UpdateNews extends CronJob
                 $stm->bindParam('summary', $newsEntry->summary, PDO::PARAM_STR);
                 $stm->bindParam('author_name', $newsEntry->author->name, PDO::PARAM_STR);
                 $stm->bindParam('author_uri', $newsEntry->author->uri, PDO::PARAM_STR);
-                $stm->bindValue('updated', (new DateTime((string) $newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
+                $stm->bindValue('updated', (new \DateTime((string) $newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
                 $stm->execute();
             }
             Database::commit();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             Database::rollBack();
             $this->printError('Warning: updateNews failed: '.$e->getMessage());
         }
@@ -88,10 +85,8 @@ class UpdateNews extends CronJob
     private function getNewsEntries(): \SimpleXMLElement
     {
         $download = new Download(Config::get('news', 'feed'));
-        $feed = new SimpleXMLElement($download->getFile(), 0, true);
+        $feed = new \SimpleXMLElement($download->getFile(), 0, true);
 
         return $feed->entry;
     }
 }
-
-UpdateNews::run();

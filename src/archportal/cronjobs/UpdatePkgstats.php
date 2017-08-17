@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare (strict_types = 1);
@@ -22,15 +21,12 @@ declare (strict_types = 1);
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require __DIR__.'/../vendor/autoload.php';
+namespace archportal\cronjobs;
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
 use archportal\lib\Routing;
 use archportal\lib\StatisticsPage;
-
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
 
 class UpdatePkgstats extends CronJob
 {
@@ -51,5 +47,3 @@ class UpdatePkgstats extends CronJob
         }
     }
 }
-
-UpdatePkgstats::run();

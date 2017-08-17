@@ -12,11 +12,11 @@ init: start
 	${MAKE} update-data
 
 update-data:
-	${APP-RUN} cronjobs/UpdateMirrors.php
-	${APP-RUN} cronjobs/UpdateNews.php
-	${APP-RUN} cronjobs/UpdateReleases.php
-	${APP-RUN} cronjobs/UpdatePackages.php
-	${APP-RUN} cronjobs/UpdatePkgstats.php
+	${APP-RUN} bin/console app:update mirrors
+	${APP-RUN} bin/console app:update news
+	${APP-RUN} bin/console app:update releases
+	${APP-RUN} bin/console app:update packages
+	${APP-RUN} bin/console app:update pkgstats
 
 start: vendor
 	docker-compose up -d

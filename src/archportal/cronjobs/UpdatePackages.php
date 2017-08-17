@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare (strict_types = 1);
@@ -22,7 +21,7 @@ declare (strict_types = 1);
   along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require __DIR__.'/../vendor/autoload.php';
+namespace archportal\cronjobs;
 
 use archportal\lib\Config;
 use archportal\lib\CronJob;
@@ -32,9 +31,7 @@ use archportal\lib\Input;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
-
-set_exception_handler('archportal\lib\Exceptions::ExceptionHandler');
-set_error_handler('archportal\lib\Exceptions::ErrorHandler');
+use PDO;
 
 class UpdatePackages extends CronJob
 {
@@ -187,7 +184,7 @@ class UpdatePackages extends CronJob
 
             Database::commit();
             $this->updateLastMirrorUpdate();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             Database::rollBack();
             $this->printError('UpdatePackages failed at '.$e->getFile().' on line '.$e->getLine().': '.$e->getMessage());
         }
@@ -993,5 +990,3 @@ class UpdatePackages extends CronJob
         }
     }
 }
-
-UpdatePackages::run();
