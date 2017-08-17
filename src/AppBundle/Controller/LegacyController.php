@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Input;
 use archportal\lib\Page;
 use archportal\lib\Routing;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -19,9 +18,9 @@ class LegacyController extends Controller
      */
     public function indexAction(Request $request): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
+        $this->get('AppBundle\Service\LegacyEnvironment')->initialize($request);
 
-        $page = Routing::getPageClass(Input::get()->getString('page', 'Start'));
+        $page = Routing::getPageClass($request->get('page', 'Start'));
         /** @var Page $thisPage */
         $thisPage = new $page();
 

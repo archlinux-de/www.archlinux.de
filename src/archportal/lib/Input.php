@@ -1,35 +1,18 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\lib;
+
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
 /**
  * @method static Request get()
  * @method static Request post()
- * @method static Request cookie()
- * @method static Request request()
  * @method static Request server()
- * @method static Request env()
  */
 class Input
 {
+    /** @var HttpRequest */
+    private static $httpRequest;
     /** @var int|null */
     private static $time = null;
     /** @var string|null */
@@ -53,7 +36,7 @@ class Input
      */
     public static function __callStatic(string $name, array $args): Request
     {
-        return Request::getInstance($name);
+        return Request::getInstance($name, self::$httpRequest);
     }
 
     /**
@@ -129,5 +112,13 @@ class Input
         }
 
         return self::$path;
+    }
+
+    /**
+     * @param HttpRequest $httpRequest
+     */
+    public static function setHttpRequest(HttpRequest $httpRequest)
+    {
+        self::$httpRequest = $httpRequest;
     }
 }

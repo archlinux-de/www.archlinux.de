@@ -4,7 +4,9 @@ namespace AppBundle\Service;
 
 use archportal\lib\Config;
 use archportal\lib\Database;
+use archportal\lib\Input;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\Request;
 
 class LegacyEnvironment
 {
@@ -19,7 +21,7 @@ class LegacyEnvironment
         $this->container = $container;
     }
 
-    public function initialize()
+    public function initialize(Request $request = null)
     {
         Database::setConnection($this->container->get('doctrine.dbal.default_connection'));
 
@@ -31,5 +33,10 @@ class LegacyEnvironment
                 }
             }
         }
+
+        if (is_null($request)) {
+            $request = Request::createFromGlobals();
+        }
+        Input::setHttpRequest($request);
     }
 }

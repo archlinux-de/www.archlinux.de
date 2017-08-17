@@ -1,55 +1,31 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\lib;
+
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
 class Request
 {
     /** @var array */
     private static $instances = array();
-    /** @var array */
+    /** @var ParameterBag */
     private $request = array();
 
     /**
      * @param string $type
      */
-    private function __construct(string $type)
+    private function __construct(string $type, HttpRequest $httpRequest)
     {
         switch ($type) {
             case 'get':
-                $this->request = &$_GET;
+                $this->request = $httpRequest->query;
                 break;
             case 'post':
-                $this->request = &$_POST;
-                break;
-            case 'cookie':
-                $this->request = &$_COOKIE;
-                break;
-            case 'request':
-                $this->request = &$_REQUEST;
+                $this->request = $httpRequest->request;
                 break;
             case 'server':
-                $this->request = &$_SERVER;
-                break;
-            case 'env':
-                $this->request = &$_ENV;
+                $this->request = $httpRequest->server;
                 break;
         }
     }
@@ -59,10 +35,10 @@ class Request
      *
      * @return Request
      */
-    public static function getInstance(string $type): Request
+    public static function getInstance(string $type, HttpRequest $httpRequest): Request
     {
         if (!isset(self::$instances[$type])) {
-            self::$instances[$type] = new self($type);
+            self::$instances[$type] = new self($type, $httpRequest);
         }
 
         return self::$instances[$type];
@@ -85,7 +61,7 @@ class Request
      */
     public function isString(string $name): bool
     {
-        return isset($this->request[$name]) && is_string($this->request[$name]) && $this->is_unicode($this->request[$name]);
+        return $this->request->has($name) && is_string($this->request->get($name)) && $this->is_unicode($this->request->get($name));
     }
 
     /**
@@ -105,7 +81,7 @@ class Request
      */
     public function isRequest(string $name): bool
     {
-        return isset($this->request[$name]);
+        return $this->request->has($name);
     }
 
     /**
@@ -126,7 +102,7 @@ class Request
      */
     public function isRegex(string $name, string $regex): bool
     {
-        return $this->isString($name) && preg_match($regex, $this->request[$name]);
+        return $this->isString($name) && preg_match($regex, $this->request->get($name));
     }
 
     /**
@@ -136,7 +112,7 @@ class Request
      */
     public function getHtmlLength(string $name): int
     {
-        return $this->isEmptyString($name) ? 0 : strlen(htmlspecialchars($this->request[$name], ENT_COMPAT));
+        return $this->isEmptyString($name) ? 0 : strlen(htmlspecialchars($this->request->get($name), ENT_COMPAT));
     }
 
     /**
@@ -148,7 +124,7 @@ class Request
     public function getString(string $name, string $default = null): string
     {
         if (!$this->isEmptyString($name)) {
-            return $this->request[$name];
+            return $this->request->get($name);
         } elseif ($default !== null) {
             return $default;
         } else {
@@ -165,7 +141,7 @@ class Request
     public function getInt(string $name, int $default = null): int
     {
         if ($this->isInt($name)) {
-            return (int) $this->request[$name];
+            return (int) $this->request->get($name);
         } elseif ($default !== null) {
             return $default;
         } else {
