@@ -20,8 +20,6 @@
 
 namespace archportal\lib;
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 abstract class Page extends Output
 {
     /** @var string */

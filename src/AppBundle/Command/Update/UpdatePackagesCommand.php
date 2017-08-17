@@ -981,7 +981,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $configRepos = Config::get('packages', 'repositories');
         foreach ($repos as $repo) {
             if (!isset($configRepos[$repo['name']]) || !in_array($repo['arch'], $configRepos[$repo['name']])) {
-                $this->printDebug("\tRemoving repository [$repo[name]] ($repo[arch])");
+                $this->printDebug("\tRemoving repository [$repo[name]] ($repo[arch])", $output);
                 $this->cleanupObsoletePackages($repo['id'], time(), array());
                 Database::query('
                     DELETE FROM

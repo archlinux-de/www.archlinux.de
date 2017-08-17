@@ -14,6 +14,8 @@ class LegacyController extends Controller
 {
     /**
      * @Route("/", name="legacy")
+     * @param Request $request
+     * @return Response
      */
     public function indexAction(Request $request): Response
     {

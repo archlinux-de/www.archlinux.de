@@ -121,7 +121,7 @@ class UpdateReleasesCommand extends ContainerAwareCommand
     private function getTimestamp($data)
     {
         if (is_null($data)) {
-            return;
+            return null;
         } else {
             return (new \DateTime($data))->getTimestamp();
         }
