@@ -19,12 +19,13 @@ class UpdateSchemaCommand extends ContainerAwareCommand
         system('mysqldump -d --compact -u'
             . '\'' . escapeshellcmd(Config::get('Database', 'user')) . '\''
             . ' '
-            . escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\'' . Config::get('Database',
-                    'password') . '\'' : '')
+            . escapeshellcmd(strlen(Config::get('Database', 'password')) > 0 ? '-p\'' . Config::get(
+                'Database',
+                'password'
+            ) . '\'' : '')
             . ' '
             . '\'' . escapeshellcmd(Config::get('Database', 'database')) . '\''
             . ' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > '
-            . $this->getContainer()->getParameter('kernel.project_dir') . '/config/archportal_schema.sql'
-        );
+            . $this->getContainer()->getParameter('kernel.project_dir') . '/config/archportal_schema.sql');
     }
 }
