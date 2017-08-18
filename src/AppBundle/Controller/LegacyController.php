@@ -24,7 +24,7 @@ class LegacyController extends Controller
         /** @var Page $thisPage */
         $thisPage = $this->get($page);
 
-        $thisPage->prepare();
+        $thisPage->prepare($request);
         ob_start();
         $thisPage->printPage();
         $pageContent = ob_get_clean();

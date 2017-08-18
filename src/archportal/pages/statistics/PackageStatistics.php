@@ -7,6 +7,7 @@ use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageStatistics extends StatisticsPage
@@ -27,7 +28,7 @@ class PackageStatistics extends StatisticsPage
         $this->objectStore = $objectStore;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle('Package statistics');
         if (!($body = $this->objectStore->getObject('PackageStatistics'))) {

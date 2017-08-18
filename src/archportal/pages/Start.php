@@ -24,6 +24,7 @@ use archportal\lib\Config;
 use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
 use PDO;
+use Symfony\Component\HttpFoundation\Request;
 
 class Start extends Page
 {
@@ -41,7 +42,7 @@ class Start extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->architectureId = $this->getArchitectureId(Config::get('packages', 'default_architecture'));
 

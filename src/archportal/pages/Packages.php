@@ -1,30 +1,12 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Input;
 use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
 use PDO;
+use Symfony\Component\HttpFoundation\Request;
 
 class Packages extends Page
 {
@@ -62,7 +44,7 @@ class Packages extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle($this->l10n->getText('Package search'));
 
@@ -77,7 +59,7 @@ class Packages extends Page
         $this->addCSS('jquery.ui.menu.min');
         $this->addCSS('jquery.ui.autocomplete.min');
 
-        $this->initParameters();
+        $this->initParameters($request);
 
         $packages = $this->database->prepare('
             SELECT
@@ -260,33 +242,33 @@ class Packages extends Page
         return (int) $stm->fetchColumn();
     }
 
-    private function initParameters()
+    private function initParameters(Request $request)
     {
-        $this->orderby = $this->getRequest('orderby', array(
+        $this->orderby = $this->getRequest($request, 'orderby', array(
             'builddate',
             'name',
             'repository',
             'architecture',
         ));
-        $this->sort = $this->getRequest('sort', array(
+        $this->sort = $this->getRequest($request, 'sort', array(
             'desc',
             'asc',
         ));
-        $this->page = max(Input::get()->getInt('p', 1), 1);
+        $this->page = max($request->get('p', 1), 1);
 
-        $this->repository['name'] = $this->getRequest('repository', $this->getAvailableRepositories(), '');
-        $this->architecture['name'] = $this->getRequest('architecture',
+        $this->repository['name'] = $this->getRequest($request, 'repository', $this->getAvailableRepositories(), '');
+        $this->architecture['name'] = $this->getRequest($request, 'architecture',
             $this->getAvailableArchitectures($this->repository['name']),
-            (Input::get()->isRequest('architecture') ? '' : Config::get('packages', 'default_architecture'))
+            ($request->query->has('architecture') ? '' : Config::get('packages', 'default_architecture'))
         );
         $this->architecture['id'] = $this->getArchitectureId($this->architecture['name']);
         $this->repository['id'] = $this->getRepositoryId($this->repository['name'], $this->architecture['id']);
 
-        $this->group = Input::get()->getString('group', '');
-        $this->packager = Input::get()->getInt('packager', 0);
+        $this->group = $request->get('group', '');
+        $this->packager = $request->get('packager', 0);
 
         $this->search = $this->cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '',
-            Input::get()->getString('search', ''))), 50);
+            $request->get('search', ''))), 50);
         if (strlen($this->search) < 2) {
             $this->search = '';
         }
@@ -295,7 +277,7 @@ class Packages extends Page
         if (Config::get('packages', 'files')) {
             $searchFields[] = 'file';
         }
-        $this->searchField = $this->getRequest('searchfield', $searchFields);
+        $this->searchField = $this->getRequest($request, 'searchfield', $searchFields);
     }
 
     /**
@@ -305,12 +287,12 @@ class Packages extends Page
      *
      * @return string
      */
-    private function getRequest(string $name, array $allowedValues, $default = null): string
+    private function getRequest(Request $request, string $name, array $allowedValues, $default = null): string
     {
         if (is_null($default)) {
             $default = $allowedValues[0];
         }
-        $request = Input::get()->getString($name, $default);
+        $request = $request->get($name, $default);
         if (in_array($request, $allowedValues)) {
             return $request;
         } else {

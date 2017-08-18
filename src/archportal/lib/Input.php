@@ -2,19 +2,12 @@
 
 namespace archportal\lib;
 
-use Symfony\Component\HttpFoundation\Request as HttpRequest;
+use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @method static Request get()
- * @method static Request post()
- * @method static Request server()
- */
 class Input
 {
-    /** @var HttpRequest */
-    private static $httpRequest;
-    /** @var int|null */
-    private static $time = null;
+    /** @var Request */
+    private static $request;
     /** @var string|null */
     private static $host = null;
     /** @var string|null */
@@ -29,35 +22,12 @@ class Input
     }
 
     /**
-     * @param string $name
-     * @param array  $args
-     *
-     * @return Request
-     */
-    public static function __callStatic(string $name, array $args): Request
-    {
-        return Request::getInstance($name, self::$httpRequest);
-    }
-
-    /**
-     * @return int
-     */
-    public static function getTime(): int
-    {
-        if (self::$time == 0) {
-            self::$time = self::server()->getInt('REQUEST_TIME', time());
-        }
-
-        return self::$time;
-    }
-
-    /**
      * @return string
      */
     private static function getHost(): string
     {
         if (is_null(self::$host)) {
-            self::$host = self::server()->getString('HTTP_HOST');
+            self::$host = self::$request->getHttpHost();
         }
 
         return self::$host;
@@ -66,10 +36,10 @@ class Input
     /**
      * @return string
      */
-    public static function getClientIP(): string
+    private static function getClientIP(): string
     {
         if (is_null(self::$ip)) {
-            self::$ip = self::server()->getString('REMOTE_ADDR', '127.0.0.1');
+            self::$ip = self::$request->getClientIp() ?: '127.0.0.1';
         }
 
         return self::$ip;
@@ -107,18 +77,18 @@ class Input
     public static function getPath(): string
     {
         if (is_null(self::$path)) {
-            $directory = dirname(self::server()->getString('SCRIPT_NAME'));
-            self::$path = 'http'.(!self::server()->isString('HTTPS') ? '' : 's').'://'.self::getHost().($directory == '/' ? '' : $directory).'/';
+            $directory = dirname(self::$request->getScriptName());
+            self::$path = 'http'.(!self::$request->isSecure() ? '' : 's').'://'.self::getHost().($directory == '/' ? '' : $directory).'/';
         }
 
         return self::$path;
     }
 
     /**
-     * @param HttpRequest $httpRequest
+     * @param Request $request
      */
-    public static function setHttpRequest(HttpRequest $httpRequest)
+    public static function setRequest(Request $request)
     {
-        self::$httpRequest = $httpRequest;
+        self::$request = $request;
     }
 }

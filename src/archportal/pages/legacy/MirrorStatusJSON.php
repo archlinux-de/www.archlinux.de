@@ -24,6 +24,7 @@ use archportal\lib\Input;
 use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
 use PDO;
+use Symfony\Component\HttpFoundation\Request;
 
 class MirrorStatusJSON extends Page
 {
@@ -41,7 +42,7 @@ class MirrorStatusJSON extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->disallowCaching();
         $mirrors = $this->database->query('

@@ -67,7 +67,7 @@ class PackageDatabase implements Iterator
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
-        if ($this->mtime > $this->repoMinMTime && Input::getTime() - $this->mtime > Config::get('packages', 'delay')) {
+        if ($this->mtime > $this->repoMinMTime && time() - $this->mtime > Config::get('packages', 'delay')) {
             system('bsdtar -xf '.$download->getFile().' -C '.$this->dbDir, $return);
             if ($return !== 0) {
                 throw new RuntimeException('Could not extract Database');

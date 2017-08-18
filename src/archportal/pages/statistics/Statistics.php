@@ -21,10 +21,11 @@
 namespace archportal\pages\statistics;
 
 use archportal\lib\Page;
+use Symfony\Component\HttpFoundation\Request;
 
 class Statistics extends Page
 {
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle('Statistics');
         $body = '

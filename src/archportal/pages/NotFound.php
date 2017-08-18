@@ -21,11 +21,12 @@
 namespace archportal\pages;
 
 use archportal\lib\Page;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NotFound extends Page
 {
-    public function prepare()
+    public function prepare(Request $request)
     {
         throw new NotFoundHttpException('Page could not be found');
     }

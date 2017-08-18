@@ -53,7 +53,7 @@ class ObjectStore
         ');
         $stm->bindParam('key', $key, PDO::PARAM_STR);
         $stm->bindValue('value', serialize($object), PDO::PARAM_STR);
-        $stm->bindValue('expires', ($ttl > 0 ? Input::getTime() + $ttl : null), PDO::PARAM_INT);
+        $stm->bindValue('expires', ($ttl > 0 ? time() + $ttl : null), PDO::PARAM_INT);
         $stm->execute();
     }
 
@@ -115,7 +115,7 @@ class ObjectStore
             WHERE
                 expires < :expires
             ');
-            $stm->bindValue('expires', Input::getTime(), PDO::PARAM_INT);
+            $stm->bindValue('expires', time(), PDO::PARAM_INT);
             $stm->execute();
         }
     }

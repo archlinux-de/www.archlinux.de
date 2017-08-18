@@ -34,6 +34,6 @@ class LegacyEnvironment
         if (is_null($request)) {
             $request = Request::createFromGlobals();
         }
-        Input::setHttpRequest($request);
+        Input::setRequest($request);
     }
 }

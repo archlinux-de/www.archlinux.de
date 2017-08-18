@@ -6,6 +6,7 @@ use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModuleStatistics extends StatisticsPage
@@ -26,7 +27,7 @@ class ModuleStatistics extends StatisticsPage
         $this->objectStore = $objectStore;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle('Module statistics');
         if (!($body = $this->objectStore->getObject('ModuleStatistics'))) {

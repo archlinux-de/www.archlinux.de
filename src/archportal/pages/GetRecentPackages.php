@@ -1,30 +1,12 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Input;
 use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
 use DOMDocument;
+use Symfony\Component\HttpFoundation\Request;
 
 class GetRecentPackages extends Page
 {
@@ -42,12 +24,13 @@ class GetRecentPackages extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
+        $path = $request->getSchemeAndHttpHost().'/';
         $dom = new DOMDocument('1.0', 'UTF-8');
         $body = $dom->createElementNS('http://www.w3.org/2005/Atom', 'feed');
 
-        $id = $dom->createElement('id', Input::getPath());
+        $id = $dom->createElement('id', $path);
         $title = $dom->createElement('title', $this->l10n->getText('Recent Arch Linux packages'));
         $updated = $dom->createElement('updated',
             date('c', $this->database->query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
@@ -55,7 +38,7 @@ class GetRecentPackages extends Page
         $author = $dom->createElement('author');
         $authorName = $dom->createElement('name', Config::get('common', 'sitename'));
         $authorEmail = $dom->createElement('email', Config::get('common', 'email'));
-        $authorUri = $dom->createElement('uri', Input::getPath());
+        $authorUri = $dom->createElement('uri', $path);
         $author->appendChild($authorName);
         $author->appendChild($authorEmail);
         $author->appendChild($authorUri);
@@ -69,8 +52,8 @@ class GetRecentPackages extends Page
         $self->setAttribute('rel', 'self');
         $self->setAttribute('type', 'application/atom+xml');
 
-        $icon = $dom->createElement('icon', Input::getPath().'style/favicon.ico');
-        $logo = $dom->createElement('logo', Input::getPath().'style/archlogo-64.png');
+        $icon = $dom->createElement('icon', $path.'style/favicon.ico');
+        $logo = $dom->createElement('logo', $path.'style/archlogo-64.png');
 
         $body->appendChild($id);
         $body->appendChild($title);

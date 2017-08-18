@@ -1,33 +1,13 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\pages;
 
 use archportal\lib\Config;
-use archportal\lib\Input;
 use archportal\lib\Page;
-use archportal\lib\RequestException;
 use Doctrine\DBAL\Driver\Connection;
 use PDO;
 use RuntimeException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageDetails extends Page
@@ -52,16 +32,12 @@ class PackageDetails extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle($this->l10n->getText('Package details'));
-        try {
-            $this->repo = Input::get()->getString('repo');
-            $this->arch = Input::get()->getString('arch');
-            $this->pkgname = Input::get()->getString('pkgname');
-        } catch (RequestException $e) {
-            throw new BadRequestHttpException('No package specified', $e);
-        }
+        $this->repo = $request->get('repo');
+        $this->arch = $request->get('arch');
+        $this->pkgname = $request->get('pkgname');
 
         $repository = $this->database->prepare('
             SELECT
@@ -278,7 +254,7 @@ class PackageDetails extends Page
                 </tr>
                 <tr>
                     <td>
-                        '.(Input::get()->isInt('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="'.$this->createUrl('PackageDetails',
+                        '.($request->query->has('showfiles') ? $this->getFiles() : '<a style="font-size:10px;margin:10px;" href="'.$this->createUrl('PackageDetails',
                         array(
                             'repo' => $this->repo,
                             'arch' => $this->arch,

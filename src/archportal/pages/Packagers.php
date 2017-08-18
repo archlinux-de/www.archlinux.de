@@ -1,29 +1,10 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\pages;
 
-use archportal\lib\Input;
 use archportal\lib\Page;
-use archportal\lib\RequestException;
 use Doctrine\DBAL\Driver\Connection;
+use Symfony\Component\HttpFoundation\Request;
 
 class Packagers extends Page
 {
@@ -43,20 +24,19 @@ class Packagers extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle($this->l10n->getText('Packagers'));
-        try {
-            if (in_array(Input::get()->getString('orderby'), array(
-                'name',
-                'lastbuilddate',
-                'packages',
-            ))) {
-                $this->orderby = Input::get()->getString('orderby');
-            }
-        } catch (RequestException $e) {
+
+        if (in_array($request->get('orderby'), array(
+            'name',
+            'lastbuilddate',
+            'packages',
+        ))) {
+            $this->orderby = $request->get('orderby');
         }
-        $this->sort = Input::get()->getInt('sort', 0) > 0 ? 1 : 0;
+
+        $this->sort = $request->get('sort', 0) > 0 ? 1 : 0;
         $packages = $this->database->query('SELECT COUNT(*) FROM packages')->fetchColumn();
         $packagers = $this->database->query('
             SELECT

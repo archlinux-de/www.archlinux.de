@@ -1,29 +1,10 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\pages;
 
-use archportal\lib\Input;
 use archportal\lib\Page;
-use archportal\lib\RequestException;
 use Doctrine\DBAL\Driver\Connection;
+use Symfony\Component\HttpFoundation\Request;
 
 class MirrorStatus extends Page
 {
@@ -58,21 +39,17 @@ class MirrorStatus extends Page
         $this->database = $connection;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle($this->l10n->getText('Mirror status'));
-        try {
-            if (in_array(Input::get()->getString('orderby'), $this->orders)) {
-                $this->orderby = Input::get()->getString('orderby');
-            }
-        } catch (RequestException $e) {
+
+        if (in_array($request->get('orderby'), $this->orders)) {
+            $this->orderby = $request->get('orderby');
         }
-        try {
-            if (in_array(Input::get()->getString('sort'), $this->sorts)) {
-                $this->sort = Input::get()->getString('sort');
-            }
-        } catch (RequestException $e) {
+        if (in_array($request->get('sort'), $this->sorts)) {
+            $this->sort = $request->get('sort');
         }
+
         $reverseSort = ($this->sort == 'desc' ? 'asc' : 'desc');
         $body = '<div class="box">
         <h2>'.$this->l10n->getText('Mirror status').'</h2>
@@ -106,7 +83,7 @@ class MirrorStatus extends Page
             JOIN countries
             ON mirrors.countryCode = countries.code
         WHERE
-            mirrors.lastsync >= '.(Input::getTime() - $this->range).'
+            mirrors.lastsync >= '.(time() - $this->range).'
         ORDER BY
             '.$this->orderby.' '.$this->sort.'
         ');

@@ -22,13 +22,14 @@ namespace archportal\pages;
 
 use archportal\lib\Config;
 use archportal\lib\Page;
+use Symfony\Component\HttpFoundation\Request;
 
 class GetRecentNews extends Page
 {
     /** @var string */
     private $url = '';
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->url = Config::get('news', 'feed');
     }

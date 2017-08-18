@@ -26,6 +26,7 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use PDO;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FunStatistics extends StatisticsPage
@@ -46,7 +47,7 @@ class FunStatistics extends StatisticsPage
         $this->objectStore = $objectStore;
     }
 
-    public function prepare()
+    public function prepare(Request $request)
     {
         $this->setTitle('Fun statistics');
         if (!($body = $this->objectStore->getObject('FunStatistics'))) {
