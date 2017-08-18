@@ -1,59 +1,73 @@
 <?php
 
-namespace archportal\pages;
+namespace AppBundle\Controller;
 
 use archportal\lib\Config;
-use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
 use DOMDocument;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Asset\Packages;
 
-class GetRecentPackages extends Page
+class RecentPackagesController extends Controller
 {
-    /** @var string */
-    private $feed = '';
     /** @var Connection */
     private $database;
+    /** @var RouterInterface */
+    private $router;
+    /** @var Packages */
+    private $assetPackages;
 
     /**
      * @param Connection $connection
+     * @param RouterInterface $router
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, RouterInterface $router, Packages $assetPackages)
     {
-        parent::__construct();
         $this->database = $connection;
+        $this->router = $router;
+        $this->assetPackages = $assetPackages;
     }
 
-    public function prepare(Request $request)
+    /**
+     * @Route("/feed/packages")
+     * @return Response
+     */
+    public function indexAction(Request $request): Response
     {
-        $path = $request->getSchemeAndHttpHost().'/';
+        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
+
         $dom = new DOMDocument('1.0', 'UTF-8');
         $body = $dom->createElementNS('http://www.w3.org/2005/Atom', 'feed');
 
-        $id = $dom->createElement('id', $path);
-        $title = $dom->createElement('title', $this->l10n->getText('Recent Arch Linux packages'));
+        $id = $dom->createElement('id', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $title = $dom->createElement('title', 'Aktuelle Arch Linux Pakete');
         $updated = $dom->createElement('updated',
             date('c', $this->database->query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
 
         $author = $dom->createElement('author');
         $authorName = $dom->createElement('name', Config::get('common', 'sitename'));
         $authorEmail = $dom->createElement('email', Config::get('common', 'email'));
-        $authorUri = $dom->createElement('uri', $path);
+        $authorUri = $dom->createElement('uri', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $author->appendChild($authorName);
         $author->appendChild($authorEmail);
         $author->appendChild($authorUri);
 
         $alternate = $dom->createElement('link');
-        $alternate->setAttribute('href', $this->createUrl('Packages', array(), true, false));
+        $alternate->setAttribute('href', $this->router->generate('app_packages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $alternate->setAttribute('rel', 'alternate');
         $alternate->setAttribute('type', 'text/html');
         $self = $dom->createElement('link');
-        $self->setAttribute('href', $this->createUrl($this->getName(), array(), true, false));
+        $self->setAttribute('href', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $self->setAttribute('rel', 'self');
         $self->setAttribute('type', 'application/atom+xml');
 
-        $icon = $dom->createElement('icon', $path.'style/favicon.ico');
-        $logo = $dom->createElement('logo', $path.'style/archlogo-64.png');
+        $icon = $dom->createElement('icon', $this->assetPackages->getUrl('style/favicon.ico'));
+        $logo = $dom->createElement('logo', $this->assetPackages->getUrl('style/archlogo-64.png'));
 
         $body->appendChild($id);
         $body->appendChild($title);
@@ -95,13 +109,14 @@ class GetRecentPackages extends Page
         ');
         foreach ($packages as $package) {
             $entry = $dom->createElement('entry');
-            $entryId = $dom->createElement('id', $this->createUrl('PackageDetails', array(
+            $entryId = $dom->createElement('id', htmlspecialchars($this->router->generate('app_legacy_page', [
+                'page' => 'PackageDetails',
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
                 'pkgname' => $package['name'],
-            ), true));
+            ], UrlGeneratorInterface::ABSOLUTE_URL)));
             $entryTitle = $dom->createElement('title',
-                $package['name'].' '.$package['version'].' ('.$package['architecture'].')');
+                $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')');
             $entryUpdated = $dom->createElement('updated', date('c', $package['builddate']));
 
             $entryAuthor = $dom->createElement('author');
@@ -111,11 +126,12 @@ class GetRecentPackages extends Page
             $entryAuthor->appendChild($entryAuthorEmail);
 
             $entryLink = $dom->createElement('link');
-            $entryLink->setAttribute('href', $this->createUrl('PackageDetails', array(
+            $entryLink->setAttribute('href', $this->router->generate('app_legacy_page', [
+                'page' => 'PackageDetails',
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
                 'pkgname' => $package['name'],
-            ), true));
+            ], UrlGeneratorInterface::ABSOLUTE_URL));
             $entryLink->setAttribute('rel', 'alternate');
             $entryLink->setAttribute('type', 'text/html');
 
@@ -133,12 +149,10 @@ class GetRecentPackages extends Page
 
         $dom->appendChild($body);
 
-        $this->feed = $dom->saveXML();
-    }
-
-    public function printPage()
-    {
-        $this->setContentType('application/atom+xml; charset=UTF-8');
-        echo $this->feed;
+        return new Response(
+            $dom->saveXML(),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/atom+xml; charset=UTF-8']
+        );
     }
 }
