@@ -1,17 +1,17 @@
 <?php
 
-namespace archportal\pages;
+namespace AppBundle\Controller;
 
 use archportal\lib\Config;
-use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
-use PDO;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class PackagesSuggest extends Page
+class PackagesSuggestController extends Controller
 {
-    /** @var array */
-    private $suggestions = array();
     /** @var Connection */
     private $database;
 
@@ -20,15 +20,20 @@ class PackagesSuggest extends Page
      */
     public function __construct(Connection $connection)
     {
-        parent::__construct();
         $this->database = $connection;
     }
 
-    public function prepare(Request $request)
+    /**
+     * @Route("/api/packages/suggest")
+     * @return Response
+     */
+    public function suggestAction(Request $request): Response
     {
+        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
+
         $term = $request->get('term');
         if (strlen($term) < 2 || strlen($term) > 20) {
-            return;
+            throw new BadRequestHttpException();
         }
         $arch = $request->get('architecture', 0);
         $repo = $request->get('repository', 0);
@@ -51,9 +56,9 @@ class PackagesSuggest extends Page
                             packages.name ASC
                         LIMIT 20
                     ');
-                $stm->bindValue('name', $term . '%', PDO::PARAM_STR);
-                $arch > 0 && $stm->bindParam('arch', $arch, PDO::PARAM_INT);
-                $repo > 0 && $stm->bindParam('repository', $repo, PDO::PARAM_INT);
+                $stm->bindValue('name', $term . '%', \PDO::PARAM_STR);
+                $arch > 0 && $stm->bindParam('arch', $arch, \PDO::PARAM_INT);
+                $repo > 0 && $stm->bindParam('repository', $repo, \PDO::PARAM_INT);
                 break;
             case 'file':
                 if (Config::get('packages', 'files')) {
@@ -68,23 +73,20 @@ class PackagesSuggest extends Page
                                 name ASC
                             LIMIT 20
                         ');
-                    $stm->bindValue('name', $term . '%', PDO::PARAM_STR);
+                    $stm->bindValue('name', $term . '%', \PDO::PARAM_STR);
                 } else {
-                    return;
+                    throw new BadRequestHttpException();
                 }
                 break;
             default:
-                return;
+                throw new BadRequestHttpException();
         }
         $stm->execute();
+        $suggestions = [];
         while (($suggestion = $stm->fetchColumn())) {
-            $this->suggestions[] = $suggestion;
+            $suggestions[] = $suggestion;
         }
-    }
 
-    public function printPage()
-    {
-        $this->setContentType('application/json; charset=UTF-8');
-        echo json_encode($this->suggestions);
+        return $this->json($suggestions);
     }
 }
