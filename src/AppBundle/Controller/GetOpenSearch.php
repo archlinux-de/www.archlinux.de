@@ -33,7 +33,7 @@ class GetOpenSearch extends Controller
      * @Route("/feed/search")
      * @return Response
      */
-    public function indexAction(Request $request): Response
+    public function indexAction(): Response
     {
         $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
