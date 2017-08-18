@@ -16,7 +16,7 @@
     <script>
         window.addEventListener('load', function () {
             $("#searchfield").autocomplete({
-                source: "{{ path('app_packagessuggest_suggest', {'architecture': architecture_id}) }}",
+                source: "{{ path('app_packagessuggest_suggest', {'architecture': architecture_id}) | raw }}",
                 minLength: 2,
                 delay: 100
             });

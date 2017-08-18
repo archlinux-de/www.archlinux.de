@@ -100,22 +100,6 @@ abstract class Page extends Output
      */
     abstract public function prepare(Request $request);
 
-    /**
-     * @param string $string
-     * @param int    $length
-     *
-     * @return string
-     */
-    protected function cutString(string $string, int $length): string
-    {
-        // Verhindere das Abschneiden im Entity
-        $string = htmlspecialchars_decode(trim($string));
-        $string = (mb_strlen($string, 'UTF-8') > $length ? mb_substr($string, 0, ($length - 3),
-                'UTF-8').'...' : $string);
-
-        return htmlspecialchars($string);
-    }
-
     public function printPage()
     {
         require __DIR__.'/../templates/PageTemplate.php';
