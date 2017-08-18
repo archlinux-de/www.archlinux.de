@@ -13,6 +13,15 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script>
+        window.addEventListener('load', function () {
+            $("#searchfield").autocomplete({
+                source: "{{ path('app_packagessuggest_suggest', {'architecture': architecture_id}) }}",
+                minLength: 2,
+                delay: 100
+            });
+        });
+    </script>
     {% for script in [
     'jquery.min',
     'jquery.ui.core.min',
@@ -63,15 +72,6 @@
                 <label for="searchfield">Paket-Suche:</label>
                 <input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200"
                        id="searchfield" autocomplete="off"/>
-                <script>
-                    window.addEventListener('load', function () {
-                        $("#searchfield").autocomplete({
-                            source: "{{ path('app_packagessuggest_suggest', {'architecture': architecture_id}) }}",
-                            minLength: 2,
-                            delay: 100
-                        });
-                    });
-                </script>
             </form>
         </div>
         <div id="pkgrecent" class="box">
