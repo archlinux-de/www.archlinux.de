@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 class LegacyController extends Controller
 {
     /**
-     * @Route("/", name="legacy")
+     * @Route("/", condition="request.query.has('page')")
      * @param Request $request
      * @return Response
      */
-    public function indexAction(Request $request): Response
+    public function pageAction(Request $request): Response
     {
         $this->get('AppBundle\Service\LegacyEnvironment')->initialize($request);
 

@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% for style in [
+    'jquery.ui.core.min',
+    'jquery.ui.theme.min',
+    'jquery.ui.menu.min',
+    'jquery.ui.autocomplete.min',
+    ] %}
+        <link rel="stylesheet" media="screen" href="{{ asset('style/'~style~'.css') }}"/>
+    {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    {% for script in [
+    'jquery.min',
+    'jquery.ui.core.min',
+    'jquery.ui.widget.min',
+    'jquery.ui.position.min',
+    'jquery.ui.menu.min',
+    'jquery.ui.autocomplete.min'
+    ] %}
+        <script type="text/javascript" src="{{ asset('style/'~script~'.js') }}"></script>
+    {% endfor %}
+{% endblock %}
+
+{% block title %}Start!{% endblock %}
+
+{% block body %}
+    <div id="left-wrapper">
+        <div id="left">
+            <div id="intro" class="box">
+                <h2>Willkommen bei Arch Linux</h2>
+                <p>
+                    <strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em> Distribution
+                    für jeden
+                    erdenklichen Einsatz-Zweck. Ein einfaches Grundsystem kann nach den Bedürfnissen des jeweiligen
+                    Nutzers nahezu
+                    beliebig erweitert werden.
+                </p>
+                <p>
+                    Nach einem gleitenden Release-System bieten wir zur Zeit vorkompilierte Pakete für die
+                    <code>i686</code>- und <code>x86_64</code>-Architekturen
+                    an. Zusätzliche Werkzeuge ermöglichen zudem den schnellen Eigenbau von Paketen.
+                </p>
+                <p>
+                    Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es
+                    werden wollen...
+                </p>
+                <p class="readmore"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">mehr über Arch
+                        Linux</a></p>
+            </div>
+            <div id="news">
+                {{ render(controller('AppBundle:Start:news')) }}
+            </div>
+        </div>
+    </div>
+    <div id="right">
+        <div id="pkgsearch">
+            <form method="get">
+                <input type="hidden" name="page" value="Packages"/>
+                <label for="searchfield">Paket-Suche:</label>
+                <input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200"
+                       id="searchfield" autocomplete="off"/>
+                <script>
+                    window.addEventListener('load', function () {
+                        $("#searchfield").autocomplete({
+                            source: "{{ path('app_legacy_page', {'page': 'PackagesSuggest', 'architecture': architecture_id}) }}",
+                            minLength: 2,
+                            delay: 100
+                        });
+                    });
+                </script>
+            </form>
+        </div>
+        <div id="pkgrecent" class="box">
+            {{ render(controller('AppBundle:Start:recentPackages')) }}
+        </div>
+        <div id="sidebar">
+            <h4>Dokumentation</h4>
+            <ul>
+                <li><a href="https://wiki.archlinux.de/">Wiki</a></li>
+                <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Arch Install Scripts</a></li>
+                <li><a href="https://wiki.archlinux.de/title/Anleitung_f%C3%BCr_Einsteiger">Anleitung für Einsteiger</a>
+                </li>
+            </ul>
+            <h4>Gemeinschaft</h4>
+            <ul>
+                <li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
+                <li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
+                <li><a href="https://wiki.archlinux.org/index.php/International_Communities">Internationale
+                        Gemeinschaft</a></li>
+            </ul>
+            <h4>Unterstützung</h4>
+            <ul>
+                <li><a href="https://wiki.archlinux.de/title/Spenden">Spenden (archlinux.de)</a></li>
+                <li><a href="https://www.archlinux.org/donate/">Spenden (international)</a></li>
+            </ul>
+            <h4>Entwicklung</h4>
+            <ul>
+                <li><a href="?page=Packages">Pakete</a></li>
+                <li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
+                <li><a href="https://aur.archlinux.de/">AUR</a></li>
+                <li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
+                <li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
+                <li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>
+                <li><a href="https://projects.archlinux.de/">archlinux.de Projekte in Git</a></li>
+                <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki">Entwickler-Wiki</a></li>
+            </ul>
+            <h4>Informationen</h4>
+            <ul>
+                <li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
+                <li><a href="https://wiki.archlinux.de/title/Download">Arch herunterladen</a></li>
+                <li><a href="https://wiki.archlinux.de/title/Arch_in_den_Medien">Arch in den Medien</a></li>
+                <li><a href="https://www.archlinux.org/art/">Logos</a></li>
+                <li><a href="https://www.archlinux.org/developers/">Entwickler</a></li>
+                <li><a href="https://www.archlinux.org/trustedusers/">Trusted Users</a></li>
+                <li><a href="https://www.archlinux.org/fellows/">Ehemalige</a></li>
+                <li><a href="?page=MirrorStatus">Mirror-Status</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

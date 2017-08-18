@@ -9,7 +9,7 @@ use archportal\lib\Config;
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><?= Config::get('common', 'sitename'); ?> - <?= $this->getTitle(); ?></title>
-    <meta name="robots" content="<?= $this->getMetaRobots(); ?>"/>
+    <meta name="robots" content="index,follow"/>
     <?php
     foreach ($this->getCSS() as $cssFile) {
         ?>

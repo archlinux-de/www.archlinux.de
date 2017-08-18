@@ -10,8 +10,6 @@ abstract class Page extends Output
     private $title = '';
     /** @var string */
     private $body = '';
-    /** @var string */
-    private $metaRobots = 'index,follow';
     /** @var array */
     private $cssFiles = array('arch', 'archnavbar');
     /** @var array */
@@ -55,22 +53,6 @@ abstract class Page extends Output
     protected function getBody(): string
     {
         return $this->body;
-    }
-
-    /**
-     * @param string $metaRobots
-     */
-    protected function setMetaRobots(string $metaRobots)
-    {
-        $this->metaRobots = $metaRobots;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getMetaRobots(): string
-    {
-        return $this->metaRobots;
     }
 
     /**

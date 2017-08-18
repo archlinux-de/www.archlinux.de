@@ -5,7 +5,7 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: en
+    locale: de
     app.common.statistics: false
     app.common.legacysites: false
     app.common.email: 'webmaster@localhost'
@@ -62,6 +62,9 @@ framework:
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    globals:
+        site_name: '%app.common.sitename%'
+        news_feed_url: '%app.news.feed%'
 
 # Doctrine Configuration
 doctrine:
