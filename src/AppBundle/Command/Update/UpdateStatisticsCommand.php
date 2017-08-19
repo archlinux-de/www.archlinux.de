@@ -13,13 +13,13 @@ use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdatePkgstatsCommand extends ContainerAwareCommand
+class UpdateStatisticsCommand extends ContainerAwareCommand
 {
     use LockableTrait;
 
     protected function configure()
     {
-        $this->setName('app:update:pkgstats');
+        $this->setName('app:update:statistics');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
