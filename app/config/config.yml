@@ -6,13 +6,9 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: de
-    app.common.statistics: false
-    app.common.legacysites: false
-    app.common.email: 'webmaster@localhost'
-    app.common.tmpdir: '/tmp'
-    app.common.sitename: 'archportal'
+    app.common.email: 'bob@archlinux.de'
     app.packages.mirror: 'http://mirror.leaseweb.net/archlinux/'
-    app.packages.cgit: 'https://projects.archlinux.org/svntogit/'
+    app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
     app.packages.repositories:
         core: ['x86_64', 'i686']
         extra: ['x86_64', 'i686']
@@ -22,13 +18,11 @@ parameters:
         multilib: ['x86_64']
         multilib-testing: ['x86_64']
     app.packages.default_architecture: 'x86_64'
-    app.packages.files: true
-    app.packages.delay: 120
     app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
     app.mirrors.default: '%app.packages.mirror%'
     app.mirrors.country: 'DE'
-    app.news.feed: ''
-    app.news.archive: ''
+    app.news.feed: 'https://bbs.archlinux.de/extern.php?action=feed&fid=257&type=atom&order=posted&show=15'
+    app.news.archive: 'https://bbs.archlinux.de/viewforum.php?id=257'
     app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
 
 framework:
@@ -61,7 +55,6 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     globals:
-        site_name: '%app.common.sitename%'
         news_feed_url: '%app.news.feed%'
     date:
         format: 'd.m.Y H:i'

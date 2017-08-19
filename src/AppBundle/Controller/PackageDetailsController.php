@@ -103,7 +103,6 @@ class PackageDetailsController extends Controller
         return $this->render('package/index.html.twig', [
             'package' => $data,
             'cgit_url' => $cgitUrl,
-            'packages_files' => Config::get('packages', 'files'),
             'show_files' => $request->query->has('showfiles'),
             'arch' => $arch,
             'pgpsig_base64' => base64_encode($data['pgpsig']),

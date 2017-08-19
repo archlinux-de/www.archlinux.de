@@ -38,11 +38,5 @@ monolog:
         #    level: info
 
 parameters:
-    app.common.statistics: true
-    app.common.legacysites: true
-    app.common.sitename: 'archlinux.de'
-    app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
     app.packages.repositories:
         core: ['x86_64', 'i686']
-    app.news.feed: 'https://bbs.archlinux.de/extern.php?action=feed&fid=257&type=atom&order=posted&show=15'
-    app.news.archive: 'https://bbs.archlinux.de/viewforum.php?id=257'

@@ -35,7 +35,7 @@ class Download
     public function __construct(string $url)
     {
         $this->url = $url;
-        $this->tmpFile = tempnam(Config::get('common', 'tmpdir'), strtolower(str_replace('\\', '/', get_class($this))));
+        $this->tmpFile = tempnam(sys_get_temp_dir(), strtolower(str_replace('\\', '/', get_class($this))));
     }
 
     public function __destruct()

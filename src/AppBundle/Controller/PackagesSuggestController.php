@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -61,22 +60,18 @@ class PackagesSuggestController extends Controller
                 $repo > 0 && $stm->bindParam('repository', $repo, \PDO::PARAM_INT);
                 break;
             case 'file':
-                if (Config::get('packages', 'files')) {
-                    $stm = $this->database->prepare('
-                            SELECT DISTINCT
-                                name
-                            FROM
-                                file_index
-                            WHERE
-                                name LIKE :name
-                            ORDER BY
-                                name ASC
-                            LIMIT 20
-                        ');
-                    $stm->bindValue('name', $term . '%', \PDO::PARAM_STR);
-                } else {
-                    throw new BadRequestHttpException();
-                }
+                $stm = $this->database->prepare('
+                        SELECT DISTINCT
+                            name
+                        FROM
+                            file_index
+                        WHERE
+                            name LIKE :name
+                        ORDER BY
+                            name ASC
+                        LIMIT 20
+                    ');
+                $stm->bindValue('name', $term . '%', \PDO::PARAM_STR);
                 break;
             default:
                 throw new BadRequestHttpException();

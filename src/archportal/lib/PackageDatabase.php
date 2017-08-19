@@ -26,7 +26,7 @@ use RuntimeException;
 class PackageDatabase implements Iterator
 {
     /** @var string */
-    private $dbext = '.db';
+    private $dbext = '.files';
     /** @var int */
     private $mtime = 0;
     /** @var int */
@@ -43,6 +43,8 @@ class PackageDatabase implements Iterator
     /** @var null|int */
     private $packageCount = null;
 
+    private const DELAY = 120;
+
     /**
      * @param string $repository
      * @param string $architecture
@@ -55,9 +57,6 @@ class PackageDatabase implements Iterator
         int $repoMinMTime = 0,
         int $packageMinMTime = 0
     ) {
-        if (Config::get('packages', 'files')) {
-            $this->dbext = '.files';
-        }
         $this->repoMinMTime = $repoMinMTime;
         $this->packageMinMTime = $packageMinMTime;
         $download = new Download(Config::get('packages',
@@ -67,7 +66,7 @@ class PackageDatabase implements Iterator
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
-        if ($this->mtime > $this->repoMinMTime && time() - $this->mtime > Config::get('packages', 'delay')) {
+        if ($this->mtime > $this->repoMinMTime && time() - $this->mtime > self::DELAY) {
             system('bsdtar -xf '.$download->getFile().' -C '.$this->dbDir, $return);
             if ($return !== 0) {
                 throw new RuntimeException('Could not extract Database');
@@ -80,7 +79,7 @@ class PackageDatabase implements Iterator
      */
     private function makeTempDir(): string
     {
-        $tmp = tempnam(Config::get('common', 'tmpdir'), strtolower(str_replace('\\', '/', get_class($this))));
+        $tmp = tempnam(sys_get_temp_dir(), strtolower(str_replace('\\', '/', get_class($this))));
         unlink($tmp);
         mkdir($tmp, 0700);
 

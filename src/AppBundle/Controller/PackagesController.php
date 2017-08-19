@@ -236,9 +236,8 @@ class PackagesController extends Controller
         }
 
         $searchFields = array('name', 'description');
-        if (Config::get('packages', 'files')) {
-            $searchFields[] = 'file';
-        }
+        $searchFields[] = 'file';
+
         $this->searchField = $this->getRequest($request, 'searchfield', $searchFields);
     }
 
@@ -300,10 +299,8 @@ class PackagesController extends Controller
         $searchFields = array(
             'name' => 'Name',
             'description' => 'Beschreibung',
+            'file' => 'Datei'
         );
-        if (Config::get('packages', 'files')) {
-            $searchFields['file'] = 'Datei';
-        }
         foreach ($searchFields as $key => $value) {
             if ($key == $this->searchField) {
                 $selected = ' checked="checked"';

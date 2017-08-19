@@ -501,48 +501,46 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ');
 
         // files
-        if (Config::get('packages', 'files')) {
-            $this->selectFileIndex = $this->database->prepare('
-                SELECT
-                    id
-                FROM
-                    file_index
-                WHERE
-                    name = :name
-                ');
-            $this->insertFileIndex = $this->database->prepare('
-                INSERT INTO
-                    file_index
-                SET
-                    name = :name
-                ');
-            $this->cleanupPackageFileIndex = $this->database->prepare('
-                DELETE FROM
-                    package_file_index
-                WHERE
-                    package = :package
-                ');
-            $this->cleanupFiles = $this->database->prepare('
-                DELETE FROM
-                    files
-                WHERE
-                    package = :package
-                ');
-            $this->insertFiles = $this->database->prepare('
-                INSERT INTO
-                    files
-                SET
-                    package = :package,
-                    path = :path
-                ');
-            $this->insertPackageFileIndex = $this->database->prepare('
-                INSERT INTO
-                    package_file_index
-                SET
-                    package = :package,
-                    file_index = :file
-                ');
-        }
+        $this->selectFileIndex = $this->database->prepare('
+            SELECT
+                id
+            FROM
+                file_index
+            WHERE
+                name = :name
+            ');
+        $this->insertFileIndex = $this->database->prepare('
+            INSERT INTO
+                file_index
+            SET
+                name = :name
+            ');
+        $this->cleanupPackageFileIndex = $this->database->prepare('
+            DELETE FROM
+                package_file_index
+            WHERE
+                package = :package
+            ');
+        $this->cleanupFiles = $this->database->prepare('
+            DELETE FROM
+                files
+            WHERE
+                package = :package
+            ');
+        $this->insertFiles = $this->database->prepare('
+            INSERT INTO
+                files
+            SET
+                package = :package,
+                path = :path
+            ');
+        $this->insertPackageFileIndex = $this->database->prepare('
+            INSERT INTO
+                package_file_index
+            SET
+                package = :package,
+                file_index = :file
+            ');
 
         // relations
         $this->cleanupRelation = $this->database->prepare('
@@ -853,10 +851,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->addRelation($package->getProvides(), $packageId, 'provides');
         $this->addRelation($package->getMakeDepends(), $packageId, 'makedepends');
         $this->addRelation($package->getCheckDepends(), $packageId, 'checkdepends');
-
-        if (Config::get('packages', 'files')) {
-            $this->insertFiles($package->getFiles(), $packageId);
-        }
+        $this->insertFiles($package->getFiles(), $packageId);
 
         $this->updatedPackages = true;
     }
@@ -928,20 +923,18 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 packageId = :packageId
             ');
-        if (Config::get('packages', 'files')) {
-            $cleanupFiles = $this->database->prepare('
-                DELETE FROM
-                    files
-                WHERE
-                    package = :packageId
-                ');
-            $cleanupPackageFileIndex = $this->database->prepare('
-                DELETE FROM
-                    package_file_index
-                WHERE
-                    package = :packageId
-                ');
-        }
+        $cleanupFiles = $this->database->prepare('
+            DELETE FROM
+                files
+            WHERE
+                package = :packageId
+            ');
+        $cleanupPackageFileIndex = $this->database->prepare('
+            DELETE FROM
+                package_file_index
+            WHERE
+                package = :packageId
+            ');
         $cleanupPackageGroup = $this->database->prepare('
             DELETE FROM
                 package_group
@@ -1050,15 +1043,13 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     SELECT * FROM packages WHERE packages.arch = architectures.id
                 )
             ');
-        if (Config::get('packages', 'files')) {
-            $this->database->query('
-                DELETE FROM
-                    file_index
-                WHERE
-                    NOT EXISTS (
-                        SELECT * FROM package_file_index WHERE package_file_index.file_index = file_index.id
-                    )
-                ');
-        }
+        $this->database->query('
+            DELETE FROM
+                file_index
+            WHERE
+                NOT EXISTS (
+                    SELECT * FROM package_file_index WHERE package_file_index.file_index = file_index.id
+                )
+            ');
     }
 }

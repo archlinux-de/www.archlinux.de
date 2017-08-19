@@ -7,7 +7,6 @@ use AppBundle\Controller\Statistics\ModuleStatisticsController;
 use AppBundle\Controller\Statistics\PackageStatisticsController;
 use AppBundle\Controller\Statistics\RepositoryStatisticsController;
 use AppBundle\Controller\Statistics\UserStatisticsController;
-use archportal\lib\Config;
 use archportal\lib\IDatabaseCachable;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -28,18 +27,16 @@ class UpdatePkgstatsCommand extends ContainerAwareCommand
         $this->lock('cron.lock', true);
         $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
-        if (Config::get('common', 'statistics')) {
-            foreach (array(
-                         RepositoryStatisticsController::class,
-                         PackageStatisticsController::class,
-                         ModuleStatisticsController::class,
-                         UserStatisticsController::class,
-                         FunStatisticsController::class,
-                     ) as $statisticsControllerName) {
-                /** @var IDatabaseCachable $statisticsController */
-                $statisticsController = $this->getContainer()->get($statisticsControllerName);
-                $statisticsController->updateDatabaseCache();
-            }
+        foreach (array(
+                     RepositoryStatisticsController::class,
+                     PackageStatisticsController::class,
+                     ModuleStatisticsController::class,
+                     UserStatisticsController::class,
+                     FunStatisticsController::class,
+                 ) as $statisticsControllerName) {
+            /** @var IDatabaseCachable $statisticsController */
+            $statisticsController = $this->getContainer()->get($statisticsControllerName);
+            $statisticsController->updateDatabaseCache();
         }
     }
 }

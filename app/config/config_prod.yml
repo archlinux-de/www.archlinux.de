@@ -22,12 +22,5 @@ monolog:
             process_psr_3_messages: false
 
 parameters:
-    app.common.statistics: true
-    app.common.legacysites: true
-    app.common.email: 'bob@archlinux.de'
-    app.common.sitename: 'archlinux.de'
-    app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
     app.packages.mirror: 'http://repos.archlinux.org/'
     app.mirrors.default: 'http://mirror.leaseweb.net/archlinux/'
-    app.news.feed: 'https://bbs.archlinux.de/extern.php?action=feed&fid=257&type=atom&order=posted&show=15'
-    app.news.archive: 'https://bbs.archlinux.de/viewforum.php?id=257'
