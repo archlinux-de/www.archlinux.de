@@ -164,10 +164,10 @@ class RecentPackagesController extends Controller
 
         $dom->appendChild($body);
 
-        return new Response(
+        return (new Response(
             $dom->saveXML(),
             Response::HTTP_OK,
             ['Content-Type' => 'application/atom+xml; charset=UTF-8']
-        );
+        ))->setSharedMaxAge(600);
     }
 }

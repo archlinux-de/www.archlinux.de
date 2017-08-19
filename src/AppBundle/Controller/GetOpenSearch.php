@@ -94,10 +94,10 @@ class GetOpenSearch extends Controller
         $body->appendChild($image);
         $dom->appendChild($body);
 
-        return new Response(
+        return (new Response(
             $dom->saveXML(),
             Response::HTTP_OK,
             ['Content-Type' => 'application/opensearchdescription+xml; charset=UTF-8']
-        );
+        ))->setSharedMaxAge(600);
     }
 }

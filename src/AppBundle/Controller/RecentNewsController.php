@@ -14,6 +14,6 @@ class RecentNewsController extends Controller
      */
     public function indexAction(): Response
     {
-        return $this->redirect($this->getParameter('app.news.feed'));
+        return $this->redirect($this->getParameter('app.news.feed'))->setSharedMaxAge(600);
     }
 }

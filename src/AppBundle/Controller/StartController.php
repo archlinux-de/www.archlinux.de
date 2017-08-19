@@ -30,7 +30,7 @@ class StartController extends Controller
 
         return $this->render('start/index.html.twig', [
             'architecture_id' => $architectureId
-        ]);
+        ])->setSharedMaxAge(600);
     }
 
     /**
