@@ -1,17 +1,19 @@
 <?php
 
-namespace archportal\pages\statistics;
+namespace AppBundle\Controller\Statistics;
 
 use archportal\lib\Input;
-use archportal\lib\Page;
 use Doctrine\DBAL\Driver\Connection;
-use PDO;
-use PDOException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
-class PostPackageList extends Page
+class PostPackageListController extends Controller
 {
     /** @var int */
     private $delay = 86400; // 24 hours
@@ -21,21 +23,25 @@ class PostPackageList extends Page
     private $quiet = false;
     /** @var Connection */
     private $database;
+    /** @var RouterInterface */
+    private $router;
 
     /**
      * @param Connection $connection
+     * @param RouterInterface $router
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, RouterInterface $router)
     {
-        parent::__construct();
         $this->database = $connection;
+        $this->router = $router;
     }
 
-    public function prepare(Request $request)
+    /**
+     * @Route("/statistics/post", methods={"POST"})
+     * @return Response
+     */
+    public function postAction(Request $request): Response
     {
-        $this->disallowCaching();
-        $this->setContentType('text/plain; charset=UTF-8');
-
         # Can be rewritten once 2.0 is no longer in use
         $pkgstatsver = $request->request->get('pkgstatsver',
             str_replace('pkgstats/', '', $request->server->get('HTTP_USER_AGENT')));
@@ -131,14 +137,14 @@ class PostPackageList extends Page
                 packages = :packages,
                 modules = :modules
             ');
-            $stm->bindValue('ip', sha1($request->getClientIp()), PDO::PARAM_STR);
-            $stm->bindValue('time', time(), PDO::PARAM_INT);
-            $stm->bindParam('arch', $arch, PDO::PARAM_STR);
-            $stm->bindParam('cpuarch', $cpuArch, PDO::PARAM_STR);
-            $stm->bindParam('countryCode', $countryCode, PDO::PARAM_STR);
-            $stm->bindParam('mirror', $mirror, PDO::PARAM_STR);
-            $stm->bindParam('packages', $packageCount, PDO::PARAM_INT);
-            $stm->bindParam('modules', $moduleCount, PDO::PARAM_INT);
+            $stm->bindValue('ip', sha1($request->getClientIp()), \PDO::PARAM_STR);
+            $stm->bindValue('time', time(), \PDO::PARAM_INT);
+            $stm->bindParam('arch', $arch, \PDO::PARAM_STR);
+            $stm->bindParam('cpuarch', $cpuArch, \PDO::PARAM_STR);
+            $stm->bindParam('countryCode', $countryCode, \PDO::PARAM_STR);
+            $stm->bindParam('mirror', $mirror, \PDO::PARAM_STR);
+            $stm->bindParam('packages', $packageCount, \PDO::PARAM_INT);
+            $stm->bindParam('modules', $moduleCount, \PDO::PARAM_INT);
             $stm->execute();
             $stm = $this->database->prepare('
             INSERT INTO
@@ -151,8 +157,8 @@ class PostPackageList extends Page
                 count = count + 1
             ');
             foreach ($packages as $package) {
-                $stm->bindValue('pkgname', htmlspecialchars($package), PDO::PARAM_STR);
-                $stm->bindValue('month', date('Ym', time()), PDO::PARAM_INT);
+                $stm->bindValue('pkgname', htmlspecialchars($package), \PDO::PARAM_STR);
+                $stm->bindValue('month', date('Ym', time()), \PDO::PARAM_INT);
                 $stm->execute();
             }
             $stm = $this->database->prepare('
@@ -166,23 +172,27 @@ class PostPackageList extends Page
                 count = count + 1
             ');
             foreach ($modules as $module) {
-                $stm->bindParam('module', $module, PDO::PARAM_STR);
-                $stm->bindValue('month', date('Ym', time()), PDO::PARAM_INT);
+                $stm->bindParam('module', $module, \PDO::PARAM_STR);
+                $stm->bindValue('month', date('Ym', time()), \PDO::PARAM_INT);
                 $stm->execute();
             }
             $this->database->commit();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->database->rollBack();
             throw new HttpException(500, $e->getMessage(), $e);
         }
-    }
 
-    public function printPage()
-    {
         if (!$this->quiet) {
-            echo 'Thanks for your submission. :-)' . "\n";
-            echo 'See results at ' . $this->createURL('Statistics', array(), true, false) . "\n";
+            $body = 'Thanks for your submission. :-)' . "\n" . 'See results at ' . $this->router->generate(
+                    'app_statistics_statistics_index',
+                    [],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ) . "\n";
+        } else {
+            $body = '';
         }
+
+        return new Response($body, Response::HTTP_OK, ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 
     private function checkIfAlreadySubmitted(Request $request)
@@ -199,12 +209,21 @@ class PostPackageList extends Page
         GROUP BY
             ip
         ');
-        $stm->bindValue('time', time() - $this->delay, PDO::PARAM_INT);
-        $stm->bindValue('ip', sha1($request->getClientIp()), PDO::PARAM_STR);
+        $stm->bindValue('time', time() - $this->delay, \PDO::PARAM_INT);
+        $stm->bindValue('ip', sha1($request->getClientIp()), \PDO::PARAM_STR);
         $stm->execute();
         $log = $stm->fetch();
         if ($log !== false && $log['count'] >= $this->count) {
-            throw new BadRequestHttpException('You already submitted your data ' . $this->count . ' times since ' . $this->l10n->getGmDateTime($log['mintime']) . ' using the IP ' . $request->getClientIp() . ".\n         You are blocked until " . $this->l10n->getGmDateTime($log['mintime'] + $this->delay));
+            throw new BadRequestHttpException('You already submitted your data ' . $this->count . ' times since ' . $this->getGmDateTime($log['mintime']) . ' using the IP ' . $request->getClientIp() . ".\n         You are blocked until " . $this->getGmDateTime($log['mintime'] + $this->delay));
         }
+    }
+
+    /**
+     * @param int $timestamp
+     * @return string
+     */
+    private function getGmDateTime($timestamp): string
+    {
+        return gmdate('Y-m-d H:i', $timestamp);
     }
 }
