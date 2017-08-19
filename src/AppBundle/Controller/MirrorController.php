@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use archportal\lib\Config;
-use archportal\lib\Input;
+use archportal\lib\GeoIP;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -15,13 +15,16 @@ class MirrorController extends Controller
 {
     /** @var Connection */
     private $database;
+    /** @var GeoIP */
+    private $geoIP;
 
     /**
      * @param Connection $connection
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, GeoIP $geoIP)
     {
         $this->database = $connection;
+        $this->geoIP = $geoIP;
     }
 
     /**
@@ -108,7 +111,7 @@ class MirrorController extends Controller
     {
         $clientId = crc32($clientIp);
 
-        $countryCode = Input::getClientCountryCode($clientIp);
+        $countryCode = $this->geoIP->getClientCountryCode($clientIp);
         if (empty($countryCode)) {
             $countryCode = Config::get('mirrors', 'country');
         }

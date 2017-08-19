@@ -44,3 +44,6 @@ services:
 
     archportal\lib\StatisticsPage:
         public: true
+
+    archportal\lib\GeoIP:
+        public: true
