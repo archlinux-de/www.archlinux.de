@@ -1,59 +1,51 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-namespace archportal\pages\statistics;
+namespace AppBundle\Controller\Statistics;
 
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
-use PDO;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use archportal\lib\IDatabaseCachable;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
-class FunStatistics extends StatisticsPage
+class FunStatisticsController extends Controller implements IDatabaseCachable
 {
     /** @var Connection */
     private $database;
     /** @var ObjectStore */
     private $objectStore;
+    /** @var StatisticsPage */
+    private $statisticsPage;
 
     /**
      * @param Connection $connection
      * @param ObjectStore $objectStore
+     * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore)
+    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
     {
-        parent::__construct();
         $this->database = $connection;
         $this->objectStore = $objectStore;
+        $this->statisticsPage = $statisticsPage;
     }
 
-    public function prepare(Request $request)
+    /**
+     * @Route("/statistics/fun")
+     * @return Response
+     */
+    public function funAction(): Response
     {
-        $this->setTitle('Fun statistics');
         if (!($body = $this->objectStore->getObject('FunStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
-        $this->setBody($body);
+        return $this->render('statistics/statistic.html.twig', [
+            'title' => 'Fun statistics',
+            'body' => $body
+        ]);
     }
 
     public function updateDatabaseCache()
@@ -66,7 +58,7 @@ class FunStatistics extends StatisticsPage
             FROM
                 pkgstats_users
             WHERE
-                time >= '.self::getRangeTime().'
+                time >= ' . $this->statisticsPage->getRangeTime() . '
             ')->fetchColumn();
             $stm = $this->database->prepare('
             SELECT
@@ -75,28 +67,27 @@ class FunStatistics extends StatisticsPage
                 pkgstats_packages
             WHERE
                 pkgname = :pkgname
-                AND month >= '.self::getRangeYearMonth().'
+                AND month >= ' . $this->statisticsPage->getRangeYearMonth() . '
             GROUP BY
                 pkgname
             ');
-            self::$barColors = self::MultiColorFade(self::$barColorArray);
             $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" class="packagedetailshead">Browsers</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'Mozilla Firefox' => 'firefox',
                     'Chromium' => 'chromium',
                     'Konqueror' => 'kdebase-konqueror',
                     'Midori' => 'midori',
                     'Epiphany' => 'epiphany',
                     'Opera' => 'opera',
-                )).'
+                )) . '
                 <tr>
                     <th colspan="2" class="packagedetailshead">Editors</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'Vim' => array(
                         'vim',
                         'gvim',
@@ -114,10 +105,10 @@ class FunStatistics extends StatisticsPage
                     'Leafpad' => 'leafpad',
                     'Geany' => 'geany',
                     'Pluma' => 'pluma',
-                )).'
+                )) . '
                     <th colspan="2" class="packagedetailshead">Desktop Environments</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
                     'GNOME' => 'gnome-shell',
                     'LXDE' => 'lxde-common',
@@ -125,10 +116,10 @@ class FunStatistics extends StatisticsPage
                     'Enlightenment' => array('enlightenment', 'enlightenment16'),
                     'MATE' => 'mate-panel',
                     'Cinnamon' => 'cinnamon',
-                )).'
+                )) . '
                     <th colspan="2" class="packagedetailshead">File Managers</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'Dolphin' => 'kdebase-dolphin',
                     'Konqueror' => 'kdebase-konqueror',
                     'MC' => 'mc',
@@ -136,34 +127,34 @@ class FunStatistics extends StatisticsPage
                     'Pcmanfm' => 'pcmanfm',
                     'Thunar' => 'thunar',
                     'Caja' => 'caja',
-                )).'
+                )) . '
                     <th colspan="2" class="packagedetailshead">Window Managers</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'Openbox' => 'openbox',
                     'Fluxbox' => 'fluxbox',
                     'I3' => 'i3-wm',
                     'awesome' => 'awesome',
-                )).'
+                )) . '
                     <th colspan="2" class="packagedetailshead">Media Players</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'Mplayer' => 'mplayer',
                     'Xine' => 'xine-lib',
                     'VLC' => 'vlc',
-                )).'
+                )) . '
                     <th colspan="2" class="packagedetailshead">Shells</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'Bash' => 'bash',
                     'Dash' => 'dash',
                     'Zsh' => 'zsh',
                     'Fish' => 'fish',
                     'Tcsh' => 'tcsh',
-                )).'
+                )) . '
                     <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
                 </tr>
-                    '.$this->getPackageStatistics($total, $stm, array(
+                    ' . $this->getPackageStatistics($total, $stm, array(
                     'ATI' => array(
                         'xf86-video-ati',
                         'xf86-video-r128',
@@ -179,22 +170,22 @@ class FunStatistics extends StatisticsPage
                         'xf86-video-intel',
                         'xf86-video-i740',
                     ),
-                )).'
+                )) . '
             </table>
             </div>
             ';
             $this->objectStore->addObject('FunStatistics', $body);
             $this->database->commit();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->database->rollBack();
-            echo 'FunStatistics failed:'.$e->getMessage();
+            echo 'FunStatistics failed:' . $e->getMessage();
         }
     }
 
     /**
-     * @param int           $total
+     * @param int $total
      * @param Statement $stm
-     * @param array         $packages
+     * @param array $packages
      *
      * @return string
      */
@@ -209,7 +200,7 @@ class FunStatistics extends StatisticsPage
                 );
             }
             foreach ($pkgnames as $pkgname) {
-                $stm->bindValue('pkgname', htmlspecialchars($pkgname), PDO::PARAM_STR);
+                $stm->bindValue('pkgname', htmlspecialchars($pkgname), \PDO::PARAM_STR);
                 $stm->execute();
                 $count = $stm->fetchColumn() ?: 0;
                 if (isset($packageArray[htmlspecialchars($package)])) {
@@ -223,8 +214,8 @@ class FunStatistics extends StatisticsPage
         foreach ($packageArray as $name => $count) {
             // FIXME: calculation of totals is not that accurate
             // e.g. one person might have installed several nvidia drivers
-            $count = (int) min($count, $total);
-            $list .= '<tr><th>'.$name.'</th><td>'.self::getBar($count, $total).'</td></tr>';
+            $count = (int)min($count, $total);
+            $list .= '<tr><th>' . $name . '</th><td>' . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
         }
 
         return $list;

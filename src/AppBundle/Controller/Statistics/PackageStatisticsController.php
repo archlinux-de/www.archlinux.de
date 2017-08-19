@@ -1,47 +1,56 @@
 <?php
 
-namespace archportal\pages\statistics;
+namespace AppBundle\Controller\Statistics;
 
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
-use PDO;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use archportal\lib\IDatabaseCachable;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
-class PackageStatistics extends StatisticsPage
+class PackageStatisticsController extends Controller implements IDatabaseCachable
 {
     /** @var Connection */
     private $database;
     /** @var ObjectStore */
     private $objectStore;
+    /** @var StatisticsPage */
+    private $statisticsPage;
 
     /**
      * @param Connection $connection
      * @param ObjectStore $objectStore
+     * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore)
+    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
     {
-        parent::__construct();
         $this->database = $connection;
         $this->objectStore = $objectStore;
+        $this->statisticsPage = $statisticsPage;
     }
 
-    public function prepare(Request $request)
+    /**
+     * @Route("/statistics/package")
+     * @return Response
+     */
+    public function packageAction(): Response
     {
-        $this->setTitle('Package statistics');
         if (!($body = $this->objectStore->getObject('PackageStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
-        $this->setBody($body);
+        return $this->render('statistics/statistic.html.twig', [
+            'title' => 'Package statistics',
+            'body' => $body
+        ]);
     }
 
     public function updateDatabaseCache()
     {
         try {
             $this->database->beginTransaction();
-            self::$barColors = self::MultiColorFade(self::$barColorArray);
             $log = $this->getCommonPackageUsageStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
@@ -96,7 +105,7 @@ class PackageStatistics extends StatisticsPage
             ';
             $this->objectStore->addObject('PackageStatistics', $body);
             $this->database->commit();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->database->rollBack();
             echo 'PackageStatistics failed:' . $e->getMessage();
         }
@@ -109,15 +118,15 @@ class PackageStatistics extends StatisticsPage
     {
         return $this->database->query('
         SELECT
-            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS submissions,
-            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS minvisited,
-            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS maxvisited,
-            (SELECT SUM(count) FROM pkgstats_packages WHERE month >= ' . self::getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= ' . self::getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(packages) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS mincount,
-            (SELECT MAX(packages) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS maxcount,
-            (SELECT AVG(packages) FROM pkgstats_users WHERE time >= ' . self::getRangeTime() . ') AS avgcount
+            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
+            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
+            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
+            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
+            (SELECT SUM(count) FROM pkgstats_packages WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+            (SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+            (SELECT MIN(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+            (SELECT MAX(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+            (SELECT AVG(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -132,7 +141,7 @@ class PackageStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= ' . $this->statisticsPage->getRangeTime() . '
         ')->fetchColumn();
         $arches = $this->database->query('
         SELECT
@@ -141,7 +150,7 @@ class PackageStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= ' . $this->statisticsPage->getRangeTime() . '
         GROUP BY
             arch
         ORDER BY
@@ -149,7 +158,7 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -166,7 +175,7 @@ class PackageStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= ' . $this->statisticsPage->getRangeTime() . '
             AND cpuarch IS NOT NULL
         ')->fetchColumn();
         $arches = $this->database->query('
@@ -176,7 +185,7 @@ class PackageStatistics extends StatisticsPage
         FROM
             pkgstats_users
         WHERE
-            time >= ' . self::getRangeTime() . '
+            time >= ' . $this->statisticsPage->getRangeTime() . '
             AND cpuarch IS NOT NULL
         GROUP BY
             cpuarch
@@ -185,7 +194,7 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . self::getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -205,14 +214,14 @@ class PackageStatistics extends StatisticsPage
                 testing = 0
                 AND name NOT LIKE "%unstable"
                 AND name NOT LIKE "%staging"
-            ')->fetchAll(PDO::FETCH_COLUMN);
+            ')->fetchAll(\PDO::FETCH_COLUMN);
         $total = $this->database->query('
             SELECT
                 COUNT(*)
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . self::getRangeTime() . '
+                time >= ' . $this->statisticsPage->getRangeTime() . '
         ')->fetchColumn();
         $countStm = $this->database->prepare('
             SELECT
@@ -235,7 +244,7 @@ class PackageStatistics extends StatisticsPage
                 FROM
                     pkgstats_packages
                 WHERE
-                    month >= ' . self::getRangeYearMonth() . '
+                    month >= ' . $this->statisticsPage->getRangeYearMonth() . '
                     AND count >= ' . (floor($total / 100)) . '
                 ) AS used
                 ON total.name = used.pkgname
@@ -260,14 +269,14 @@ class PackageStatistics extends StatisticsPage
         $sortList = array();
         $id = 0;
         foreach ($repos as $repo) {
-            $countStm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
+            $countStm->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
             $countStm->execute();
             $count = $countStm->fetchColumn();
-            $totalStm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
+            $totalStm->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
             $totalStm->execute();
             $total = $totalStm->fetchColumn();
             $sortList[$id] = $count / $total;
-            $list[$id++] = '<tr><th>' . $repo . '</th><td>' . self::getBar($count, $total) . '</td></tr>';
+            $list[$id++] = '<tr><th>' . $repo . '</th><td>' . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
         }
         arsort($sortList);
         foreach (array_keys($sortList) as $id) {
@@ -293,14 +302,14 @@ class PackageStatistics extends StatisticsPage
                 AND name NOT LIKE "%staging"
             ORDER BY
                 id
-            ')->fetchAll(PDO::FETCH_COLUMN);
+            ')->fetchAll(\PDO::FETCH_COLUMN);
         $total = $this->database->query('
             SELECT
                 COUNT(*)
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . self::getRangeTime() . '
+                time >= ' . $this->statisticsPage->getRangeTime() . '
         ')->fetchColumn();
         $packages = $this->database->prepare('
             SELECT
@@ -309,7 +318,7 @@ class PackageStatistics extends StatisticsPage
             FROM
                 pkgstats_packages
             WHERE
-                month >= ' . self::getRangeYearMonth() . '
+                month >= ' . $this->statisticsPage->getRangeYearMonth() . '
                 AND pkgname IN (
                     SELECT
                         packages.name
@@ -331,13 +340,13 @@ class PackageStatistics extends StatisticsPage
         $list = '';
         $currentRepo = '';
         foreach ($repos as $repo) {
-            $packages->bindParam('repositoryName', $repo, PDO::PARAM_STR);
+            $packages->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
             $packages->execute();
             if ($currentRepo != $repo) {
                 $list .= '<tr><th>' . $repo . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
             }
             foreach ($packages as $package) {
-                $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar((int)$package['count'],
+                $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . $this->statisticsPage->getBar((int)$package['count'],
                         $total) . '</td></tr>';
             }
             $list .= '</table></div></td></tr>';
@@ -358,7 +367,7 @@ class PackageStatistics extends StatisticsPage
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . self::getRangeTime() . '
+                time >= ' . $this->statisticsPage->getRangeTime() . '
         ')->fetchColumn();
         $packages = $this->database->query('
             SELECT
@@ -367,7 +376,7 @@ class PackageStatistics extends StatisticsPage
             FROM
                 pkgstats_packages
             WHERE
-                month >= ' . self::getRangeYearMonth() . '
+                month >= ' . $this->statisticsPage->getRangeYearMonth() . '
                 AND pkgname NOT IN (SELECT name FROM packages)
             GROUP BY
                 pkgname
@@ -379,7 +388,7 @@ class PackageStatistics extends StatisticsPage
         ');
         $list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
         foreach ($packages as $package) {
-            $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . self::getBar((int)$package['count'],
+            $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . $this->statisticsPage->getBar((int)$package['count'],
                     $total) . '</td></tr>';
         }
         $list .= '</table></div></td></tr>';

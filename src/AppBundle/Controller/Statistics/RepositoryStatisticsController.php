@@ -1,65 +1,56 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
-  This file is part of archlinux.de.
+namespace AppBundle\Controller\Statistics;
 
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-namespace archportal\pages\statistics;
-
+use archportal\lib\IDatabaseCachable;
 use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
-use PDO;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
-class RepositoryStatistics extends StatisticsPage
+class RepositoryStatisticsController extends Controller implements IDatabaseCachable
 {
     /** @var Connection */
     private $database;
     /** @var ObjectStore */
     private $objectStore;
+    /** @var StatisticsPage */
+    private $statisticsPage;
 
     /**
      * @param Connection $connection
      * @param ObjectStore $objectStore
+     * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore)
+    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
     {
-        parent::__construct();
         $this->database = $connection;
         $this->objectStore = $objectStore;
+        $this->statisticsPage = $statisticsPage;
     }
 
-    public function prepare(Request $request)
+    /**
+     * @Route("/statistics/repository")
+     * @return Response
+     */
+    public function repositoryAction(): Response
     {
-        $this->setTitle('Repository statistics');
         if (!($body = $this->objectStore->getObject('RepositoryStatistics'))) {
             throw new NotFoundHttpException('No data found!');
         }
-        $this->setBody($body);
+        return $this->render('statistics/statistic.html.twig', [
+            'title' => 'Repository statistics',
+            'body' => $body
+        ]);
     }
 
     public function updateDatabaseCache()
     {
         try {
             $this->database->beginTransaction();
-            self::$barColors = self::MultiColorFade(self::$barColorArray);
             $data = $this->getCommonRepositoryStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
@@ -71,95 +62,95 @@ class RepositoryStatistics extends StatisticsPage
                 </tr>
                 <tr>
                     <th>Architectures</th>
-                    <td>'.$data['architectures'].'</td>
+                    <td>' . $data['architectures'] . '</td>
                 </tr>
                 <tr>
                     <th>Repositories</th>
-                    <td>'.$data['repositories'].'</td>
+                    <td>' . $data['repositories'] . '</td>
                 </tr>
                 <tr>
                     <th>Groups</th>
-                    <td>'.number_format((float) $data['groups']).'</td>
+                    <td>' . number_format((float)$data['groups']) . '</td>
                 </tr>
                 <tr>
                     <th>Packages</th>
-                    <td>'.number_format((float) $data['packages']).'</td>
+                    <td>' . number_format((float)$data['packages']) . '</td>
                 </tr>
                 <tr>
                     <th>Files</th>
-                    <td>'.number_format((float) $data['files']).'</td>
+                    <td>' . number_format((float)$data['files']) . '</td>
                 </tr>
                 <tr>
                     <th>Size of file index</th>
-                    <td>'.number_format((float) $data['file_index']).'</td>
+                    <td>' . number_format((float)$data['file_index']) . '</td>
                 </tr>
                 <tr>
                     <th>Licenses</th>
-                    <td>'.number_format((float) $data['licenses']).'</td>
+                    <td>' . number_format((float)$data['licenses']) . '</td>
                 </tr>
                 <tr>
                     <th>Dependencies</th>
-                    <td>'.number_format((float) $data['depends']).'</td>
+                    <td>' . number_format((float)$data['depends']) . '</td>
                 </tr>
                 <tr>
                     <th>Optional dependencies</th>
-                    <td>'.number_format((float) $data['optdepends']).'</td>
+                    <td>' . number_format((float)$data['optdepends']) . '</td>
                 </tr>
                 <tr>
                     <th>Provides</th>
-                    <td>'.number_format((float) $data['provides']).'</td>
+                    <td>' . number_format((float)$data['provides']) . '</td>
                 </tr>
                 <tr>
                     <th>Conflicts</th>
-                    <td>'.number_format((float) $data['conflicts']).'</td>
+                    <td>' . number_format((float)$data['conflicts']) . '</td>
                 </tr>
                 <tr>
                     <th>Replaces</th>
-                    <td>'.number_format((float) $data['replaces']).'</td>
+                    <td>' . number_format((float)$data['replaces']) . '</td>
                 </tr>
                 <tr>
                     <th>Total size of repositories</th>
-                    <td>'.$this->formatBytes((int) $data['csize']).'Byte</td>
+                    <td>' . $this->formatBytes((int)$data['csize']) . 'Byte</td>
                 </tr>
                 <tr>
                     <th>Total size of files</th>
-                    <td>'.$this->formatBytes((int) $data['isize']).'Byte</td>
+                    <td>' . $this->formatBytes((int)$data['isize']) . 'Byte</td>
                 </tr>
                 <tr>
                     <th>Packager</th>
-                    <td>'.$data['packagers'].'</td>
+                    <td>' . $data['packagers'] . '</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Averages</th>
                 </tr>
                 <tr>
                     <th>Size of packages</th>
-                    <td>&empty; '.$this->formatBytes((int) $data['avgcsize']).'Byte</td>
+                    <td>&empty; ' . $this->formatBytes((int)$data['avgcsize']) . 'Byte</td>
                 </tr>
                 <tr>
                     <th>Size of files</th>
-                    <td>&empty; '.$this->formatBytes((int) $data['avgisize']).'Byte</td>
+                    <td>&empty; ' . $this->formatBytes((int)$data['avgisize']) . 'Byte</td>
                 </tr>
                 <tr>
                     <th>Files per package</th>
-                    <td>&empty; '.number_format((float) $data['avgfiles'], 2).'</td>
+                    <td>&empty; ' . number_format((float)$data['avgfiles'], 2) . '</td>
                 </tr>
                 <tr>
                     <th>Packages per packager</th>
-                    <td>&empty; '.number_format((float) $data['avgpkgperpackager'], 2).'</td>
+                    <td>&empty; ' . number_format((float)$data['avgpkgperpackager'], 2) . '</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="packagedetailshead">Repositories</th>
                 </tr>
-                    '.$this->getRepositoryStatistics().'
+                    ' . $this->getRepositoryStatistics() . '
             </table>
             </div>
             ';
             $this->objectStore->addObject('RepositoryStatistics', $body);
             $this->database->commit();
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->database->rollBack();
-            echo 'RepositoryStatistics failed:'.$e->getMessage();
+            echo 'RepositoryStatistics failed:' . $e->getMessage();
         }
     }
 
@@ -232,7 +223,7 @@ class RepositoryStatistics extends StatisticsPage
                 AND name NOT LIKE "%staging"
             ORDER BY
                 id
-            ')->fetchAll(PDO::FETCH_COLUMN);
+            ')->fetchAll(\PDO::FETCH_COLUMN);
         $total = $this->database->query('
             SELECT
                 COUNT(id) AS packages,
@@ -253,21 +244,21 @@ class RepositoryStatistics extends StatisticsPage
             ');
         $list = '';
         foreach ($repos as $repo) {
-            $stm->bindParam('repositoryName', $repo, PDO::PARAM_STR);
+            $stm->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
             $stm->execute();
             $data = $stm->fetch();
             $list .= '<tr>
-                <th>'.$repo.'</th>
+                <th>' . $repo . '</th>
                 <td style="padding:0;margin:0;">
                     <div style="overflow:auto; max-height: 800px;">
                     <table class="pretty-table" style="border:none;">
                     <tr>
                         <td style="width: 50px;">Packages</td>
-                        <td>'.self::getBar($data['packages'], $total['packages']).'</td>
+                        <td>' . $this->statisticsPage->getBar($data['packages'], $total['packages']) . '</td>
                     </tr>
                     <tr>
                         <td style="width: 50px;">Size</td>
-                        <td>'.self::getBar((int) $data['size'], (int) $total['size']).'</td>
+                        <td>' . $this->statisticsPage->getBar((int)$data['size'], (int)$total['size']) . '</td>
                     </tr>
                     </table>
                     </div>
@@ -303,6 +294,6 @@ class RepositoryStatistics extends StatisticsPage
             $postfix = '&nbsp;';
         }
 
-        return number_format($result, 2).$postfix;
+        return number_format($result, 2) . $postfix;
     }
 }
