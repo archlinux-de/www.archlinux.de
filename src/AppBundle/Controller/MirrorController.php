@@ -6,7 +6,6 @@ use archportal\lib\Config;
 use archportal\lib\Input;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -32,16 +31,12 @@ class MirrorController extends Controller
     }
 
     /**
-     * @Route("/mirror/{file}")
+     * @Route("/mirror/{file}", requirements={"file": "^[a-zA-Z0-9\.\-\+_/:]{1,255}$"})
      * @return Response
      */
     public function indexAction(string $file, Request $request): Response
     {
         $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
-        if (!preg_match('#^[a-zA-Z0-9\.\-\+_/:]{1,255}$#', $file)) {
-            throw new BadRequestHttpException('Invalid file name');
-        }
 
         $repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
         $architectures = implode('|', $this->getAvailableArchitectures());
