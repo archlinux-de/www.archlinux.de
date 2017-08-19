@@ -46,8 +46,10 @@ class PostPackageListController extends Controller
     public function postAction(Request $request): Response
     {
         # Can be rewritten once 2.0 is no longer in use
-        $pkgstatsver = $request->request->get('pkgstatsver',
-            str_replace('pkgstats/', '', $request->server->get('HTTP_USER_AGENT')));
+        $pkgstatsver = $request->request->get(
+            'pkgstatsver',
+            str_replace('pkgstats/', '', $request->server->get('HTTP_USER_AGENT'))
+        );
 
         if (!in_array($pkgstatsver, array(
             '1.0',
@@ -187,11 +189,9 @@ class PostPackageListController extends Controller
         }
 
         if (!$this->quiet) {
-            $body = 'Thanks for your submission. :-)' . "\n" . 'See results at ' . $this->router->generate(
-                    'app_statistics_statistics_index',
-                    [],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                ) . "\n";
+            $body = 'Thanks for your submission. :-)' . "\n" . 'See results at '
+                . $this->router->generate('app_statistics_statistics_index', [], UrlGeneratorInterface::ABSOLUTE_URL)
+                . "\n";
         } else {
             $body = '';
         }
@@ -218,7 +218,14 @@ class PostPackageListController extends Controller
         $stm->execute();
         $log = $stm->fetch();
         if ($log !== false && $log['count'] >= $this->count) {
-            throw new BadRequestHttpException('You already submitted your data ' . $this->count . ' times since ' . $this->getGmDateTime($log['mintime']) . ' using the IP ' . $request->getClientIp() . ".\n         You are blocked until " . $this->getGmDateTime($log['mintime'] + $this->delay));
+            throw new BadRequestHttpException(
+                'You already submitted your data '
+                . $this->count . ' times since '
+                . $this->getGmDateTime($log['mintime'])
+                . ' using the IP ' . $request->getClientIp()
+                . ".\n         You are blocked until "
+                . $this->getGmDateTime($log['mintime'] + $this->delay)
+            );
         }
     }
 

@@ -79,7 +79,10 @@ class PackagesController extends Controller
                 ' . (!empty($this->repository['name']) ? 'AND repositories.name = :repositoryName' : '') . '
                 AND packages.arch = pkgarch.id
                 ' . (!empty($this->architecture['id']) ? 'AND repositories.arch = :architectureId' : '') . '
-                ' . (!empty($this->group) ? 'AND package_group.package = packages.id AND package_group.group = groups.id AND groups.name = :group' : '') . '
+                ' . (!empty($this->group)
+                ? 'AND package_group.package = packages.id'
+                . 'AND package_group.group = groups.id'
+                . 'AND groups.name = :group' : '') . '
                 ' . (empty($this->search) ? '' : $this->getSearchStatement()) . '
                 ' . (!empty($this->search) && $this->searchField == 'file' ? ' GROUP BY packages.id ' : ' ') . '
                 ' . ($this->packager > 0 ? ' AND packages.packager = ' . $this->packager : '') . '
@@ -88,10 +91,10 @@ class PackagesController extends Controller
             LIMIT
                 ' . (($this->page - 1) * $this->packagesPerPage) . ', ' . $this->packagesPerPage . '
             ');
-        !empty($this->repository['name']) && $packages->bindValue('repositoryName', $this->repository['name'],
-            \PDO::PARAM_STR);
-        !empty($this->architecture['id']) && $packages->bindValue('architectureId', $this->architecture['id'],
-            \PDO::PARAM_INT);
+        !empty($this->repository['name'])
+        && $packages->bindValue('repositoryName', $this->repository['name'], \PDO::PARAM_STR);
+        !empty($this->architecture['id'])
+        && $packages->bindValue('architectureId', $this->architecture['id'], \PDO::PARAM_INT);
         !empty($this->group) && $packages->bindValue('group', $this->group, \PDO::PARAM_STR);
         !empty($this->search) && $packages->bindValue('search', $this->searchString, \PDO::PARAM_STR);
         $packages->execute();
@@ -216,7 +219,9 @@ class PackagesController extends Controller
         $this->page = max($request->get('p', 1), 1);
 
         $this->repository['name'] = $this->getRequest($request, 'repository', $this->getAvailableRepositories(), '');
-        $this->architecture['name'] = $this->getRequest($request, 'architecture',
+        $this->architecture['name'] = $this->getRequest(
+            $request,
+            'architecture',
             $this->getAvailableArchitectures($this->repository['name']),
             ($request->query->has('architecture') ? '' : $this->getParameter('app.packages.default_architecture'))
         );
@@ -226,8 +231,14 @@ class PackagesController extends Controller
         $this->group = $request->get('group', '');
         $this->packager = $request->get('packager', 0);
 
-        $this->search = $this->cutString(htmlspecialchars(preg_replace('/[^\w\.\+\- ]/', '',
-            $request->get('search', ''))), 50);
+        $this->search = $this->cutString(
+            htmlspecialchars(preg_replace(
+                '/[^\w\.\+\- ]/',
+                '',
+                $request->get('search', '')
+            )),
+            50
+        );
         if (strlen($this->search) < 2) {
             $this->search = '';
         }
@@ -280,7 +291,9 @@ class PackagesController extends Controller
                 // FIXME: this is a very expensive query
                 $this->searchString = $this->search . '%';
 
-                return 'AND file_index.name LIKE :search AND file_index.id = package_file_index.file_index AND package_file_index.package = packages.id';
+                return 'AND file_index.name LIKE :search '
+                    . 'AND file_index.id = package_file_index.file_index '
+                    . 'AND package_file_index.package = packages.id';
                 break;
             default:
                 return '';
@@ -304,7 +317,9 @@ class PackagesController extends Controller
             } else {
                 $selected = '';
             }
-            $options .= ' <input type="radio" id="searchfield_' . $key . '" name="searchfield" value="' . $key . '"' . $selected . '  onchange="this.form.submit()" /> <label for="searchfield_' . $key . '">' . $value . '</label>';
+            $options .= ' <input type="radio" id="searchfield_'
+                . $key . '" name="searchfield" value="' . $key . '"' . $selected . '  onchange="this.form.submit()" /> '
+                . '<label for="searchfield_' . $key . '">' . $value . '</label>';
         }
 
         return $options;
@@ -319,7 +334,9 @@ class PackagesController extends Controller
             <option value="">&nbsp;</option>';
 
         foreach ($this->getAvailableRepositories($this->architecture['name']) as $repository) {
-            $options .= '<option value="' . $repository . '"' . ($this->repository['name'] == $repository ? ' selected="selected"' : '') . '>' . $repository . '</option>';
+            $options .= '<option value="' . $repository . '"'
+                . ($this->repository['name'] == $repository ? ' selected="selected"' : '') . '>'
+                . $repository . '</option>';
         }
 
         return $options . '</select>';
@@ -334,7 +351,9 @@ class PackagesController extends Controller
             <option value="">&nbsp;</option>';
 
         foreach ($this->getAvailableArchitectures($this->repository['name']) as $architecture) {
-            $options .= '<option value="' . $architecture . '"' . ($this->architecture['name'] == $architecture ? ' selected="selected"' : '') . '>' . $architecture . '</option>';
+            $options .= '<option value="' . $architecture . '"'
+                . ($this->architecture['name'] == $architecture ? ' selected="selected"' : '') . '>'
+                . $architecture . '</option>';
         }
 
         return $options . '</select>';
@@ -357,7 +376,9 @@ class PackagesController extends Controller
                 name ASC
             ');
         while (($group = $groups->fetchColumn())) {
-            $options .= '<option value="' . $group . '"' . ($this->group == $group ? ' selected="selected"' : '') . '>' . $group . '</option>';
+            $options .= '<option value="' . $group . '"'
+                . ($this->group == $group ? ' selected="selected"' : '') . '>'
+                . $group . '</option>';
         }
 
         return $options . '</select>';
@@ -381,40 +402,82 @@ class PackagesController extends Controller
 
         $newSort = ($this->sort == 'asc' ? 'desc' : 'asc');
 
-        $next = ' <a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => ($this->page + 1)))) . '">&#187;</a>';
-        $prev = ($this->page > 1 ? '<a href="' . $this->router->generate('app_packages_index', array_merge($parameters, array(
-                'orderby' => $this->orderby,
-                'sort' => $this->sort,
-                'p' => max(1, $this->page - 1),
-            ))) . '">&#171;</a>' : '');
+        $next = ' <a href="'
+            . $this->router->generate(
+                'app_packages_index',
+                array_merge(
+                    $parameters,
+                    array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => ($this->page + 1))
+                )
+            ) . '">&#187;</a>';
+        $prev = ($this->page > 1 ? '<a href="'
+            . $this->router->generate(
+                'app_packages_index',
+                array_merge(
+                    $parameters,
+                    array(
+                        'orderby' => $this->orderby,
+                        'sort' => $this->sort,
+                        'p' => max(1, $this->page - 1),
+                    )
+                )
+            ) . '">&#171;</a>' : '');
 
         $body = '<table class="pretty-table">
             <tr>
                 <td class="pages" colspan="6">' . $prev . $next . '</td>
             </tr>
             <tr>
-                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'repository', 'sort' => $newSort))) . '">Repositorium</a></th>
-                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'architecture', 'sort' => $newSort))) . '">Architektur</a></th>
-                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'name', 'sort' => $newSort))) . '">Name</a></th>
+                <th><a href="'
+            . $this->router->generate(
+                'app_packages_index',
+                array_merge(
+                    $parameters,
+                    array('orderby' => 'repository', 'sort' => $newSort)
+                )
+            ) . '">Repositorium</a></th>
+                <th><a href="'
+            . $this->router->generate(
+                'app_packages_index',
+                array_merge(
+                    $parameters,
+                    array('orderby' => 'architecture', 'sort' => $newSort)
+                )
+            ) . '">Architektur</a></th>
+                <th><a href="'
+            . $this->router->generate(
+                'app_packages_index',
+                array_merge(
+                    $parameters,
+                    array('orderby' => 'name', 'sort' => $newSort)
+                )
+            ) . '">Name</a></th>
                 <th>Version</th>
                 <th>Beschreibung</th>
-                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'builddate', 'sort' => $newSort))) . '">Letzte Aktualisierung</a></th>
+                <th><a href="'
+            . $this->router->generate(
+                'app_packages_index',
+                array_merge(
+                    $parameters,
+                    array('orderby' => 'builddate', 'sort' => $newSort)
+                )
+            ) . '">Letzte Aktualisierung</a></th>
             </tr>';
         foreach ($packages as $package) {
             $style = ($package['testing'] == 1 ? ' class="less"' : '');
             $body .= '<tr' . $style . '>
-                <td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="' . $this->router->generate('app_packagedetails_index',
+                <td>' . $package['repository'] . '</td><td>' . $package['architecture']
+                . '</td><td><a href="' . $this->router->generate(
+                    'app_packagedetails_index',
                     array(
                         'repo' => $package['repository'],
                         'arch' => $package['repositoryArchitecture'],
                         'pkgname' => $package['name'],
-                    )) . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . $this->cutString($package['desc'],
-                    70) . '</td><td>' . date('d.m.Y H:i', $package['builddate']) . '</td>
+                    )
+                ) . '">' . $package['name']
+                . '</a></td><td>' . $package['version'] . '</td><td>'
+                . $this->cutString($package['desc'], 70)
+                . '</td><td>' . date('d.m.Y H:i', $package['builddate']) . '</td>
             </tr>';
         }
         $body .= '
@@ -436,8 +499,9 @@ class PackagesController extends Controller
     {
         // Verhindere das Abschneiden im Entity
         $string = htmlspecialchars_decode(trim($string));
-        $string = (mb_strlen($string, 'UTF-8') > $length ? mb_substr($string, 0, ($length - 3),
-                'UTF-8') . '...' : $string);
+        $string = (mb_strlen($string, 'UTF-8') > $length
+            ? mb_substr($string, 0, ($length - 3), 'UTF-8') . '...'
+            : $string);
 
         return htmlspecialchars($string);
     }

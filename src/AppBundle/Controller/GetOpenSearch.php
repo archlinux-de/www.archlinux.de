@@ -40,19 +40,35 @@ class GetOpenSearch extends Controller
         $description = $dom->createElement('Description', 'Suche nach Arch Linux Paketen');
 
         $results = $dom->createElement('Url');
-        $results->setAttribute('template',
-            $this->router->generate('app_packages_index', ['submit' => '', 'search' => '{searchTerms}'], UrlGeneratorInterface::ABSOLUTE_URL));
+        $results->setAttribute(
+            'template',
+            $this->router->generate(
+                'app_packages_index',
+                ['submit' => '', 'search' => '{searchTerms}'],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )
+        );
         $results->setAttribute('type', 'text/html');
         $results->setAttribute('rel', 'results');
 
         $suggestions = $dom->createElement('Url');
-        $suggestions->setAttribute('template',
-            $this->router->generate('app_packagessuggest_suggest', ['field' => '0', 'term' => '{searchTerms}'], UrlGeneratorInterface::ABSOLUTE_URL));
+        $suggestions->setAttribute(
+            'template',
+            $this->router->generate(
+                'app_packagessuggest_suggest',
+                ['field' => '0', 'term' => '{searchTerms}'],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )
+        );
         $suggestions->setAttribute('type', 'application/json');
         $suggestions->setAttribute('rel', 'suggestions');
 
         $self = $dom->createElement('Url');
-        $self->setAttribute('template', $this->router->generate('app_getopensearch_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $self->setAttribute('template', $this->router->generate(
+            'app_getopensearch_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
         $self->setAttribute('type', 'application/opensearchdescription+xml');
         $self->setAttribute('rel', 'self');
 

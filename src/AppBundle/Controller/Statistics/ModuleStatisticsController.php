@@ -102,15 +102,34 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
     {
         return $this->database->query('
         SELECT
-            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS submissions,
-            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS minvisited,
-            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS maxvisited,
-            (SELECT SUM(count) FROM pkgstats_modules WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*) FROM (SELECT DISTINCT name FROM pkgstats_modules WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(modules) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
-            (SELECT MAX(modules) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
-            (SELECT AVG(modules) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
+            (SELECT COUNT(*)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS submissions,
+            (SELECT COUNT(*)
+                FROM (SELECT * FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . '
+                 AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
+            (SELECT MIN(time)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS minvisited,
+            (SELECT MAX(time)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS maxvisited,
+            (SELECT SUM(count)
+                FROM pkgstats_modules
+                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+            (SELECT COUNT(*)
+                FROM (SELECT DISTINCT name FROM pkgstats_modules
+                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+            (SELECT MIN(modules)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+            (SELECT MAX(modules)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+            (SELECT AVG(modules)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -146,8 +165,8 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
         ');
         $list = '<tr><td colspan="2"><div><table class="pretty-table" style="border:none;">';
         foreach ($modules as $module) {
-            $list .= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' . $this->statisticsPage->getBar((int)$module['count'],
-                    $total) . '</td></tr>';
+            $list .= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' .
+                $this->statisticsPage->getBar((int)$module['count'], $total) . '</td></tr>';
         }
         $list .= '</table></div></td></tr>';
 

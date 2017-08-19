@@ -40,8 +40,7 @@ class PackageDatabase implements Iterator
         string $architecture,
         int $repoMinMTime = 0,
         int $packageMinMTime = 0
-    )
-    {
+    ) {
         $this->repoMinMTime = $repoMinMTime;
         $this->packageMinMTime = $packageMinMTime;
         $download = new Download($mirror . $repository . '/os/' . $architecture . '/' . $repository . $this->dbext);
@@ -98,7 +97,9 @@ class PackageDatabase implements Iterator
     {
         do {
             $this->currentDir = readdir($this->dbHandle);
-        } while ($this->currentDir == '.' || $this->currentDir == '..' || filemtime($this->dbDir . '/' . $this->currentDir) <= $this->packageMinMTime
+        } while ($this->currentDir == '.'
+        || $this->currentDir == '..'
+        || filemtime($this->dbDir . '/' . $this->currentDir) <= $this->packageMinMTime
         );
         ++$this->currentKey;
     }
@@ -161,7 +162,10 @@ class PackageDatabase implements Iterator
             if (is_dir($this->dbDir)) {
                 $dh = opendir($this->dbDir);
                 while (false !== ($dir = readdir($dh))) {
-                    if (is_dir($this->dbDir . '/' . $dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir . '/' . $dir) > $this->packageMinMTime
+                    if (is_dir($this->dbDir . '/' . $dir)
+                        && $dir != '.'
+                        && $dir != '..'
+                        && filemtime($this->dbDir . '/' . $dir) > $this->packageMinMTime
                     ) {
                         ++$packages;
                     }
@@ -183,7 +187,10 @@ class PackageDatabase implements Iterator
         if (is_dir($this->dbDir)) {
             $dh = opendir($this->dbDir);
             while (false !== ($dir = readdir($dh))) {
-                if (is_dir($this->dbDir . '/' . $dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir . '/' . $dir) <= $this->packageMinMTime
+                if (is_dir($this->dbDir . '/' . $dir)
+                    && $dir != '.'
+                    && $dir != '..'
+                    && filemtime($this->dbDir . '/' . $dir) <= $this->packageMinMTime
                 ) {
                     $matches = array();
                     if (preg_match('/^([^\-].*)-[^\-]+?-[^\-]+?$/', $dir, $matches) == 1) {

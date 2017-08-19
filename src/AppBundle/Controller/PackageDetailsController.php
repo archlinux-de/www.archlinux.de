@@ -165,7 +165,9 @@ class PackageDetailsController extends Controller
         $groups->execute();
         $list = array();
         while (($group = $groups->fetchColumn())) {
-            $list[] = '<a href="' . $this->router->generate('app_packages_index', array('group' => $group)) . '">' . $group . '</a>';
+            $list[] = '<a href="' .
+                $this->router->generate('app_packages_index', ['group' => $group])
+                . '">' . $group . '</a>';
         }
 
         return implode(', ', $list);

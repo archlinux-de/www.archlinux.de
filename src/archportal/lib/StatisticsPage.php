@@ -17,7 +17,7 @@ class StatisticsPage
 
     public function __construct()
     {
-        $this->barColors = $this->MultiColorFade($this->barColorArray);
+        $this->barColors = $this->createMultiColorFade($this->barColorArray);
     }
 
     /**
@@ -27,7 +27,7 @@ class StatisticsPage
      *
      * see http://at.php.net/manual/de/function.hexdec.php#66780
      */
-    private function MultiColorFade(array $hexarray): array
+    private function createMultiColorFade(array $hexarray): array
     {
         $steps = 101;
         $total = count($hexarray);

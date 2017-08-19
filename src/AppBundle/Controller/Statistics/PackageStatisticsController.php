@@ -118,15 +118,35 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
     {
         return $this->database->query('
         SELECT
-            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
-            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
-            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
-            (SELECT SUM(count) FROM pkgstats_packages WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
-            (SELECT MAX(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
-            (SELECT AVG(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
+            (SELECT COUNT(*)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
+            (SELECT COUNT(*)
+                FROM (SELECT *
+                    FROM pkgstats_users
+                    WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
+            (SELECT MIN(time)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
+            (SELECT MAX(time)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
+            (SELECT SUM(count)
+                FROM pkgstats_packages
+                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+            (SELECT COUNT(*)
+                FROM (SELECT DISTINCT pkgname
+                    FROM pkgstats_packages
+                    WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+            (SELECT MIN(packages)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+            (SELECT MAX(packages)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+            (SELECT AVG(packages)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -158,7 +178,8 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>'
+                . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -194,7 +215,8 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>'
+                . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -276,7 +298,8 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             $totalStm->execute();
             $total = $totalStm->fetchColumn();
             $sortList[$id] = $count / $total;
-            $list[$id++] = '<tr><th>' . $repo . '</th><td>' . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
+            $list[$id++] = '<tr><th>' . $repo . '</th><td>'
+                . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
         }
         arsort($sortList);
         foreach (array_keys($sortList) as $id) {
@@ -343,11 +366,14 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             $packages->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
             $packages->execute();
             if ($currentRepo != $repo) {
-                $list .= '<tr><th>' . $repo . '</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
+                $list .= '<tr><th>' . $repo . '</th>'
+                    . '<td><div style="overflow:auto; max-height: 800px;">'
+                    . '<table class="pretty-table" style="border:none;">';
             }
             foreach ($packages as $package) {
-                $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . $this->statisticsPage->getBar((int)$package['count'],
-                        $total) . '</td></tr>';
+                $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>'
+                    . $this->statisticsPage->getBar((int)$package['count'], $total)
+                    . '</td></tr>';
             }
             $list .= '</table></div></td></tr>';
             $currentRepo = $repo;
@@ -386,10 +412,12 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                 count DESC,
                 pkgname ASC
         ');
-        $list = '<tr><th>unknown</th><td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
+        $list = '<tr><th>unknown</th>'
+            . '<td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
         foreach ($packages as $package) {
-            $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>' . $this->statisticsPage->getBar((int)$package['count'],
-                    $total) . '</td></tr>';
+            $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>'
+                . $this->statisticsPage->getBar((int)$package['count'], $total)
+                . '</td></tr>';
         }
         $list .= '</table></div></td></tr>';
 

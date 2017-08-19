@@ -35,8 +35,11 @@ class MirrorController extends Controller
         $repositories = implode('|', array_keys($this->getParameter('app.packages.repositories')));
         $architectures = implode('|', $this->getAvailableArchitectures());
         $pkgextension = '(?:' . $architectures . '|any).pkg.tar.(?:g|x)z';
-        if (preg_match('#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#',
-            $file, $matches)) {
+        if (preg_match(
+            '#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#',
+            $file,
+            $matches
+        )) {
             $pkgdate = $this->database->prepare('
                 SELECT
                     packages.mtime

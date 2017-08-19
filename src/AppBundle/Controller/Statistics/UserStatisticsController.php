@@ -133,15 +133,36 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
     {
         return $this->database->query('
         SELECT
-            (SELECT COUNT(*) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
-            (SELECT COUNT(*) FROM (SELECT * FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
-            (SELECT MAX(time) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
-            (SELECT SUM(count) FROM pkgstats_packages WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*) FROM (SELECT DISTINCT pkgname FROM pkgstats_packages WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
-            (SELECT MAX(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
-            (SELECT AVG(packages) FROM pkgstats_users WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
+            (SELECT COUNT(*)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
+            (SELECT COUNT(*)
+                FROM (SELECT *
+                    FROM pkgstats_users
+                    WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip
+                    ) AS temp) AS differentips,
+            (SELECT MIN(time)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
+            (SELECT MAX(time)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
+            (SELECT SUM(count)
+                FROM pkgstats_packages
+                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+            (SELECT COUNT(*)
+                FROM (SELECT DISTINCT pkgname
+                    FROM pkgstats_packages
+                    WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+            (SELECT MIN(packages)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+            (SELECT MAX(packages)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+            (SELECT AVG(packages)
+                FROM pkgstats_users
+                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -177,8 +198,8 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list .= '<tr><th>' . $country['country'] . '</th><td>' . $this->statisticsPage->getBar((int)$country['count'],
-                    $total) . '</td></tr>';
+            $list .= '<tr><th>' . $country['country'] . '</th><td>' .
+                $this->statisticsPage->getBar((int)$country['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -259,8 +280,8 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         ');
         $list = '';
         foreach ($countries as $country) {
-            $list .= '<tr><th>' . $country['country'] . '</th><td>' . $this->statisticsPage->getBar((int)$country['count'],
-                    $total) . '</td></tr>';
+            $list .= '<tr><th>' . $country['country'] . '</th><td>' .
+                $this->statisticsPage->getBar((int)$country['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -297,7 +318,8 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         arsort($protocolls);
         $list = '';
         foreach ($protocolls as $protocoll => $count) {
-            $list .= '<tr><th>' . $protocoll . '</th><td>' . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>' . $protocoll . '</th><td>'
+                . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
         }
 
         return $list;
@@ -331,7 +353,8 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . $this->statisticsPage->getBar((int)$arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>'
+                . $this->statisticsPage->getBar((int)$arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -367,7 +390,8 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         ');
         $list = '';
         foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>' . $this->statisticsPage->getBar((int)$arch['count'], $total) . '</td></tr>';
+            $list .= '<tr><th>' . $arch['name'] . '</th><td>'
+                . $this->statisticsPage->getBar((int)$arch['count'], $total) . '</td></tr>';
         }
 
         return $list;

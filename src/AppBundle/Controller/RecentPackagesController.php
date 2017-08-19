@@ -40,25 +40,43 @@ class RecentPackagesController extends Controller
         $dom = new DOMDocument('1.0', 'UTF-8');
         $body = $dom->createElementNS('http://www.w3.org/2005/Atom', 'feed');
 
-        $id = $dom->createElement('id', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $id = $dom->createElement('id', $this->router->generate(
+            'app_recentpackages_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
         $title = $dom->createElement('title', 'Aktuelle Arch Linux Pakete');
-        $updated = $dom->createElement('updated',
-            date('c', $this->database->query('SELECT MAX(builddate) FROM packages')->fetchColumn()));
+        $updated = $dom->createElement(
+            'updated',
+            date('c', $this->database->query('SELECT MAX(builddate) FROM packages')->fetchColumn())
+        );
 
         $author = $dom->createElement('author');
         $authorName = $dom->createElement('name', 'archlinux.de');
         $authorEmail = $dom->createElement('email', $this->getParameter('app.common.email'));
-        $authorUri = $dom->createElement('uri', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $authorUri = $dom->createElement('uri', $this->router->generate(
+            'app_recentpackages_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
         $author->appendChild($authorName);
         $author->appendChild($authorEmail);
         $author->appendChild($authorUri);
 
         $alternate = $dom->createElement('link');
-        $alternate->setAttribute('href', $this->router->generate('app_packages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $alternate->setAttribute('href', $this->router->generate(
+            'app_packages_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
         $alternate->setAttribute('rel', 'alternate');
         $alternate->setAttribute('type', 'text/html');
         $self = $dom->createElement('link');
-        $self->setAttribute('href', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+        $self->setAttribute('href', $this->router->generate(
+            'app_recentpackages_index',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        ));
         $self->setAttribute('rel', 'self');
         $self->setAttribute('type', 'application/atom+xml');
 
@@ -110,8 +128,10 @@ class RecentPackagesController extends Controller
                 'arch' => $package['architecture'],
                 'pkgname' => $package['name'],
             ], UrlGeneratorInterface::ABSOLUTE_URL)));
-            $entryTitle = $dom->createElement('title',
-                $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')');
+            $entryTitle = $dom->createElement(
+                'title',
+                $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')'
+            );
             $entryUpdated = $dom->createElement('updated', date('c', $package['builddate']));
 
             $entryAuthor = $dom->createElement('author');
