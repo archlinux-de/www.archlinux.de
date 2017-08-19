@@ -23,9 +23,9 @@
             <tr>
                 <td><a href="{{ mirror.url }}" rel="nofollow">{{ mirror.url }}</a></td>
                 <td>{{ mirror.country }}</td>
-                <td>{{ mirror.durationAvg | number_format(4, ',', '.') }}s</td>
-                <td>{{ mirror.delay | number_format(0, ',', '.') }}s</td>
-                <td>{{ mirror.lastsync | date('d.m.Y H:i') }}</td>
+                <td>{{ mirror.durationAvg | number_format(4) }}s</td>
+                <td>{{ mirror.delay | number_format }}s</td>
+                <td>{{ mirror.lastsync | date }}</td>
             </tr>
         {% endfor %}
     </table>

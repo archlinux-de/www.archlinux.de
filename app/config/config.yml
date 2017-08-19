@@ -65,6 +65,11 @@ twig:
     globals:
         site_name: '%app.common.sitename%'
         news_feed_url: '%app.news.feed%'
+    date:
+        format: 'd.m.Y H:i'
+    number_format:
+        decimal_point: ','
+        thousands_separator: '.'
 
 # Doctrine Configuration
 doctrine:
