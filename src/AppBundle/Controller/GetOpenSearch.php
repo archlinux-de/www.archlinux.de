@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use archportal\lib\Config;
 use DOMDocument;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
