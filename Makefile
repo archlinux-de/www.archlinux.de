@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data bash test
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
