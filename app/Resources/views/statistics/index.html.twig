@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistics{% endblock %}
+
+{% block body %}
+    <div class="box">
+        <h2>Statistics</h2>
+        <ul>
+            <li><a href="{{ path('app_legacy_page', {'page': 'RepositoryStatistics'}) }}">Repository statistics</a></li>
+            <li><a href="{{ path('app_legacy_page', {'page': 'UserStatistics'}) }}">User statistics</a></li>
+            <li><a href="{{ path('app_legacy_page', {'page': 'PackageStatistics'}) }}">Package statistics</a></li>
+            <li><a href="{{ path('app_legacy_page', {'page': 'ModuleStatistics'}) }}">Module statistics</a></li>
+            <li><a href="{{ path('app_legacy_page', {'page': 'FunStatistics'}) }}">Fun statistics</a></li>
+        </ul>
+    </div>
+{% endblock %}
