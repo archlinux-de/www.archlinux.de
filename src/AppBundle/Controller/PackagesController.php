@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use archportal\lib\Config;
-use archportal\lib\L10n;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -56,7 +55,6 @@ class PackagesController extends Controller
     public function indexAction(Request $request): Response
     {
         $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-        $this->l10n = new L10n();
 
         $this->initParameters($request);
 
@@ -300,11 +298,11 @@ class PackagesController extends Controller
     {
         $options = '';
         $searchFields = array(
-            'name' => $this->l10n->getText('Name'),
-            'description' => $this->l10n->getText('Description'),
+            'name' => 'Name',
+            'description' => 'Beschreibung',
         );
         if (Config::get('packages', 'files')) {
-            $searchFields['file'] = $this->l10n->getText('File');
+            $searchFields['file'] = 'Datei';
         }
         foreach ($searchFields as $key => $value) {
             if ($key == $this->searchField) {
@@ -403,15 +401,15 @@ class PackagesController extends Controller
             </tr>
             <tr>
                 <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'repository', 'sort' => $newSort))) . '">' . $this->l10n->getText('Repository') . '</a></th>
+                array('orderby' => 'repository', 'sort' => $newSort))) . '">Repositorium</a></th>
                 <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'architecture', 'sort' => $newSort))) . '">' . $this->l10n->getText('Architecture') . '</a></th>
+                array('orderby' => 'architecture', 'sort' => $newSort))) . '">Architektur</a></th>
                 <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'name', 'sort' => $newSort))) . '">' . $this->l10n->getText('Name') . '</a></th>
-                <th>' . $this->l10n->getText('Version') . '</th>
-                <th>' . $this->l10n->getText('Description') . '</th>
+                array('orderby' => 'name', 'sort' => $newSort))) . '">Name</a></th>
+                <th>Version</th>
+                <th>Beschreibung</th>
                 <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
-                array('orderby' => 'builddate', 'sort' => $newSort))) . '">' . $this->l10n->getText('Last update') . '</a></th>
+                array('orderby' => 'builddate', 'sort' => $newSort))) . '">Letzte Aktualisierung</a></th>
             </tr>';
         foreach ($packages as $package) {
             $style = ($package['testing'] == 1 ? ' class="less"' : '');
@@ -422,7 +420,7 @@ class PackagesController extends Controller
                         'arch' => $package['repositoryArchitecture'],
                         'pkgname' => $package['name'],
                     )) . '">' . $package['name'] . '</a></td><td>' . $package['version'] . '</td><td>' . $this->cutString($package['desc'],
-                    70) . '</td><td>' . $this->l10n->getDateTime($package['builddate']) . '</td>
+                    70) . '</td><td>' . date('d.m.Y H:i', $package['builddate']) . '</td>
             </tr>';
         }
         $body .= '
