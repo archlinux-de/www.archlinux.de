@@ -82,9 +82,9 @@ class PackagesController extends Controller
                 AND packages.arch = pkgarch.id
                 ' . (!empty($this->architecture['id']) ? 'AND repositories.arch = :architectureId' : '') . '
                 ' . (!empty($this->group)
-                ? 'AND package_group.package = packages.id'
-                . 'AND package_group.group = groups.id'
-                . 'AND groups.name = :group' : '') . '
+                ? 'AND package_group.package = packages.id '
+                . 'AND package_group.group = groups.id '
+                . 'AND groups.name = :group ' : '') . '
                 ' . (empty($this->search) ? '' : $this->getSearchStatement()) . '
                 ' . (!empty($this->search) && $this->searchField == 'file' ? ' GROUP BY packages.id ' : ' ') . '
                 ' . ($this->packager > 0 ? ' AND packages.packager = ' . $this->packager : '') . '
