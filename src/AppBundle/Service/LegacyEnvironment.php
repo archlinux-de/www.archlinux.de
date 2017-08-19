@@ -3,9 +3,7 @@
 namespace AppBundle\Service;
 
 use archportal\lib\Config;
-use archportal\lib\Input;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpFoundation\Request;
 
 class LegacyEnvironment
 {
@@ -20,7 +18,7 @@ class LegacyEnvironment
         $this->container = $container;
     }
 
-    public function initialize(Request $request = null)
+    public function initialize()
     {
         foreach ($this->container->getParameterBag()->all() as $key => $value) {
             if (strpos($key, 'app.') === 0) {
@@ -30,10 +28,5 @@ class LegacyEnvironment
                 }
             }
         }
-
-        if (is_null($request)) {
-            $request = Request::createFromGlobals();
-        }
-        Input::setRequest($request);
     }
 }

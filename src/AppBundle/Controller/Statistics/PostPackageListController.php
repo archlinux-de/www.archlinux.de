@@ -118,7 +118,8 @@ class PostPackageListController extends Controller
             }
         }
         $this->checkIfAlreadySubmitted($request);
-        $countryCode = Input::getClientCountryCode();
+        $clientIp = $request->getClientIp();
+        $countryCode = Input::getClientCountryCode($clientIp);
         if (empty($countryCode)) {
             $countryCode = null;
         }
@@ -137,7 +138,7 @@ class PostPackageListController extends Controller
                 packages = :packages,
                 modules = :modules
             ');
-            $stm->bindValue('ip', sha1($request->getClientIp()), \PDO::PARAM_STR);
+            $stm->bindValue('ip', sha1($clientIp), \PDO::PARAM_STR);
             $stm->bindValue('time', time(), \PDO::PARAM_INT);
             $stm->bindParam('arch', $arch, \PDO::PARAM_STR);
             $stm->bindParam('cpuarch', $cpuArch, \PDO::PARAM_STR);

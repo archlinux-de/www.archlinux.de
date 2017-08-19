@@ -13,14 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MirrorController extends Controller
 {
-    /** @var int */
-    private $lastsync = 0;
     /** @var Connection */
     private $database;
-    /** @var string */
-    private $targetUrl;
-    /** @var string */
-    private $clientId;
 
     /**
      * @param Connection $connection
@@ -64,7 +58,7 @@ class MirrorController extends Controller
             if ($pkgdate->rowCount() == 0) {
                 throw new NotFoundHttpException('Package was not found');
             }
-            $this->lastsync = $pkgdate->fetchColumn();
+            $lastsync = $pkgdate->fetchColumn();
         } elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $file, $matches)) {
             $releasedate = $this->database->prepare('
                 SELECT
@@ -80,15 +74,14 @@ class MirrorController extends Controller
             if ($releasedate->rowCount() == 0) {
                 throw new NotFoundHttpException('ISO image was not found');
             }
-            $this->lastsync = $releasedate->fetchColumn();
+            $lastsync = $releasedate->fetchColumn();
         } else {
-            $this->lastsync = time() - (60 * 60 * 24);
+            $lastsync = time() - (60 * 60 * 24);
         }
 
-        $this->clientId = crc32($request->getClientIp());
-        $this->targetUrl = $this->getMirror($this->lastsync) . $file;
+        $targetUrl = $this->getMirror($lastsync, $request->getClientIp()) . $file;
 
-        return $this->redirect($this->targetUrl);
+        return $this->redirect($targetUrl);
     }
 
     /**
@@ -111,9 +104,11 @@ class MirrorController extends Controller
      *
      * @return string
      */
-    private function getMirror(int $lastsync): string
+    private function getMirror(int $lastsync, string $clientIp): string
     {
-        $countryCode = Input::getClientCountryCode();
+        $clientId = crc32($clientIp);
+
+        $countryCode = Input::getClientCountryCode($clientIp);
         if (empty($countryCode)) {
             $countryCode = Config::get('mirrors', 'country');
         }
@@ -130,7 +125,7 @@ class MirrorController extends Controller
             ');
         $stm->bindParam('lastsync', $lastsync, \PDO::PARAM_INT);
         $stm->bindParam('countryCode', $countryCode, \PDO::PARAM_STR);
-        $stm->bindParam('clientId', $this->clientId, \PDO::PARAM_INT);
+        $stm->bindParam('clientId', $clientId, \PDO::PARAM_INT);
         $stm->execute();
         if ($stm->rowCount() == 0) {
             // Let's see if any mirror is recent enough
@@ -145,7 +140,7 @@ class MirrorController extends Controller
                 ORDER BY RAND(:clientId) LIMIT 1
                 ');
             $stm->bindParam('lastsync', $lastsync, \PDO::PARAM_INT);
-            $stm->bindParam('clientId', $this->clientId, \PDO::PARAM_INT);
+            $stm->bindParam('clientId', $clientId, \PDO::PARAM_INT);
             $stm->execute();
             if ($stm->rowCount() == 0) {
                 throw new NotFoundHttpException('File was not found');
