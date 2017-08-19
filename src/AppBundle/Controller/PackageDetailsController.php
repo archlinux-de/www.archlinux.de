@@ -21,6 +21,7 @@ class PackageDetailsController extends Controller
 
     /**
      * @param Connection $connection
+     * @param RouterInterface $router
      */
     public function __construct(Connection $connection, RouterInterface $router)
     {
@@ -29,10 +30,14 @@ class PackageDetailsController extends Controller
     }
 
     /**
-     * @Route("/packages/{repo}/{arch}/{pkgname}")
+     * @Route("/packages/{repo}/{arch}/{pkgname}", methods={"GET"})
+     * @param string $repo
+     * @param string $arch
+     * @param string $pkgname
+     * @param Request $request
      * @return Response
      */
-    public function indexAction($repo, $arch, $pkgname, Request $request): Response
+    public function indexAction(string $repo, string $arch, string $pkgname, Request $request): Response
     {
         $repository = $this->database->prepare('
             SELECT

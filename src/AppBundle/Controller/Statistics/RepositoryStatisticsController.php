@@ -33,7 +33,7 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
     }
 
     /**
-     * @Route("/statistics/repository")
+     * @Route("/statistics/repository", methods={"GET"})
      * @return Response
      */
     public function repositoryAction(): Response

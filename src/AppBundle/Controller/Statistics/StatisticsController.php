@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class StatisticsController extends Controller
 {
     /**
-     * @Route("/statistics")
+     * @Route("/statistics", methods={"GET"})
      * @return Response
      */
     public function indexAction(): Response

@@ -23,7 +23,8 @@ class PackagesSuggestController extends Controller
     }
 
     /**
-     * @Route("/api/packages/suggest")
+     * @Route("/packages/suggest", methods={"GET"})
+     * @param Request $request
      * @return Response
      */
     public function suggestAction(Request $request): Response

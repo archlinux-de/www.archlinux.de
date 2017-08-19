@@ -33,7 +33,7 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
     }
 
     /**
-     * @Route("/statistics/module")
+     * @Route("/statistics/module", methods={"GET"})
      * @return Response
      */
     public function moduleAction(): Response

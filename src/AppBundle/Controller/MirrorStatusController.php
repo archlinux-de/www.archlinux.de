@@ -41,7 +41,8 @@ class MirrorStatusController extends Controller
     }
 
     /**
-     * @Route("/mirrors")
+     * @Route("/mirrors", methods={"GET"})
+     * @param Request $request
      * @return Response
      */
     public function indexAction(Request $request): Response

@@ -19,6 +19,7 @@ class MirrorController extends Controller
 
     /**
      * @param Connection $connection
+     * @param GeoIP $geoIP
      */
     public function __construct(Connection $connection, GeoIP $geoIP)
     {
@@ -27,7 +28,9 @@ class MirrorController extends Controller
     }
 
     /**
-     * @Route("/mirror/{file}", requirements={"file": "^[a-zA-Z0-9\.\-\+_/:]{1,255}$"})
+     * @Route("/download/{file}", requirements={"file": "^[a-zA-Z0-9\.\-\+_/:]{1,255}$"}, methods={"GET"})
+     * @param string $file
+     * @param Request $request
      * @return Response
      */
     public function indexAction(string $file, Request $request): Response
@@ -105,6 +108,7 @@ class MirrorController extends Controller
     /**
      * @param int $lastsync
      *
+     * @param string $clientIp
      * @return string
      */
     private function getMirror(int $lastsync, string $clientIp): string

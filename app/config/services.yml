@@ -35,10 +35,5 @@ services:
     #         $someArgument: 'some_value'
 
     archportal\lib\ObjectStore:
-        public: true
-
     archportal\lib\StatisticsPage:
-        public: true
-
     archportal\lib\GeoIP:
-        public: true

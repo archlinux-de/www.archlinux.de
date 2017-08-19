@@ -34,7 +34,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
     }
 
     /**
-     * @Route("/statistics/fun")
+     * @Route("/statistics/fun", methods={"GET"})
      * @return Response
      */
     public function funAction(): Response

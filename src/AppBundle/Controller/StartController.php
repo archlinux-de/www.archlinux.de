@@ -21,7 +21,7 @@ class StartController extends Controller
     }
 
     /**
-     * @Route("/")
+     * @Route("/", methods={"GET"})
      * @return Response
      */
     public function indexAction(): Response

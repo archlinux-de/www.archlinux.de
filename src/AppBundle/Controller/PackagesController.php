@@ -40,6 +40,7 @@ class PackagesController extends Controller
 
     /**
      * @param Connection $connection
+     * @param RouterInterface $router
      */
     public function __construct(Connection $connection, RouterInterface $router)
     {
@@ -48,7 +49,8 @@ class PackagesController extends Controller
     }
 
     /**
-     * @Route("/packages")
+     * @Route("/packages", methods={"GET"})
+     * @param Request $request
      * @return Response
      */
     public function indexAction(Request $request): Response
@@ -250,10 +252,10 @@ class PackagesController extends Controller
     }
 
     /**
+     * @param Request $request
      * @param string $name
      * @param array $allowedValues
      * @param string|null $default
-     *
      * @return string
      */
     private function getRequest(Request $request, string $name, array $allowedValues, $default = null): string

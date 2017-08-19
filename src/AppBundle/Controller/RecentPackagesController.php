@@ -23,6 +23,7 @@ class RecentPackagesController extends Controller
     /**
      * @param Connection $connection
      * @param RouterInterface $router
+     * @param Packages $assetPackages
      */
     public function __construct(Connection $connection, RouterInterface $router, Packages $assetPackages)
     {
@@ -32,7 +33,7 @@ class RecentPackagesController extends Controller
     }
 
     /**
-     * @Route("/feed/packages")
+     * @Route("/packages/feed", methods={"GET"})
      * @return Response
      */
     public function indexAction(): Response

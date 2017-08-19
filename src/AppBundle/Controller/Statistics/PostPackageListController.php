@@ -31,6 +31,7 @@ class PostPackageListController extends Controller
     /**
      * @param Connection $connection
      * @param RouterInterface $router
+     * @param GeoIP $geoIP
      */
     public function __construct(Connection $connection, RouterInterface $router, GeoIP $geoIP)
     {
@@ -40,7 +41,8 @@ class PostPackageListController extends Controller
     }
 
     /**
-     * @Route("/statistics/post", methods={"POST"})
+     * @Route("/statistics", methods={"POST"})
+     * @param Request $request
      * @return Response
      */
     public function postAction(Request $request): Response

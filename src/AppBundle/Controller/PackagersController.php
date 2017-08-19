@@ -22,7 +22,8 @@ class PackagersController extends Controller
     }
 
     /**
-     * @Route("/packagers")
+     * @Route("/packages/packagers", methods={"GET"})
+     * @param Request $request
      * @return Response
      */
     public function indexAction(Request $request): Response

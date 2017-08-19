@@ -33,7 +33,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
     }
 
     /**
-     * @Route("/statistics/user")
+     * @Route("/statistics/user", methods={"GET"})
      * @return Response
      */
     public function userAction(): Response

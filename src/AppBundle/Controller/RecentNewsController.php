@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RecentNewsController extends Controller
 {
     /**
-     * @Route("/feed/news")
+     * @Route("/news/feed", methods={"GET"})
      * @return Response
      */
     public function indexAction(): Response

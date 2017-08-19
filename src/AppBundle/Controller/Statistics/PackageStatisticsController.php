@@ -33,7 +33,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
     }
 
     /**
-     * @Route("/statistics/package")
+     * @Route("/statistics/package", methods={"GET"})
      * @return Response
      */
     public function packageAction(): Response

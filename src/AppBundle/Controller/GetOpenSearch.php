@@ -28,7 +28,7 @@ class GetOpenSearch extends Controller
     }
 
     /**
-     * @Route("/feed/search")
+     * @Route("/packages/opensearch", methods={"GET"})
      * @return Response
      */
     public function indexAction(): Response
