@@ -160,12 +160,12 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     $packageMTime = (int)$this->selectPackageMTime->fetchColumn();
 
                     $this->printDebug("\tDownloading...", $output);
-                    $packages = new PackageDatabase($repo, $arch, $repoMTime, $packageMTime);
+                    $packages = new PackageDatabase(Config::get('packages', 'mirror'), $repo, $arch, $repoMTime, $packageMTime);
 
                     if ($packages->getMTime() > $repoMTime && time() - $packages->getMTime() > Config::get(
-                        'packages',
-                        'delay'
-                    )
+                            'packages',
+                            'delay'
+                        )
                     ) {
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, $packages->getNewPackageCount());

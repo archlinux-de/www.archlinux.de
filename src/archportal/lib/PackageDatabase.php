@@ -1,22 +1,4 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\lib;
 
@@ -46,28 +28,30 @@ class PackageDatabase implements Iterator
     private const DELAY = 120;
 
     /**
+     * @param string $mirror
      * @param string $repository
      * @param string $architecture
-     * @param int    $repoMinMTime
-     * @param int    $packageMinMTime
+     * @param int $repoMinMTime
+     * @param int $packageMinMTime
      */
     public function __construct(
+        string $mirror,
         string $repository,
         string $architecture,
         int $repoMinMTime = 0,
         int $packageMinMTime = 0
-    ) {
+    )
+    {
         $this->repoMinMTime = $repoMinMTime;
         $this->packageMinMTime = $packageMinMTime;
-        $download = new Download(Config::get('packages',
-                'mirror').$repository.'/os/'.$architecture.'/'.$repository.$this->dbext);
+        $download = new Download($mirror . $repository . '/os/' . $architecture . '/' . $repository . $this->dbext);
         $this->mtime = $download->getMTime();
 
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
         if ($this->mtime > $this->repoMinMTime && time() - $this->mtime > self::DELAY) {
-            system('bsdtar -xf '.$download->getFile().' -C '.$this->dbDir, $return);
+            system('bsdtar -xf ' . $download->getFile() . ' -C ' . $this->dbDir, $return);
             if ($return !== 0) {
                 throw new RuntimeException('Could not extract Database');
             }
@@ -99,7 +83,7 @@ class PackageDatabase implements Iterator
      */
     public function current(): Package
     {
-        return new Package($this->dbDir.'/'.$this->currentDir);
+        return new Package($this->dbDir . '/' . $this->currentDir);
     }
 
     /**
@@ -114,7 +98,7 @@ class PackageDatabase implements Iterator
     {
         do {
             $this->currentDir = readdir($this->dbHandle);
-        } while ($this->currentDir == '.' || $this->currentDir == '..' || filemtime($this->dbDir.'/'.$this->currentDir) <= $this->packageMinMTime
+        } while ($this->currentDir == '.' || $this->currentDir == '..' || filemtime($this->dbDir . '/' . $this->currentDir) <= $this->packageMinMTime
         );
         ++$this->currentKey;
     }
@@ -154,8 +138,8 @@ class PackageDatabase implements Iterator
             $dh = opendir($dir);
             while (false !== ($file = readdir($dh))) {
                 if ($file != '.' && $file != '..') {
-                    if (!$this->rmrf($dir.'/'.$file)) {
-                        throw new RuntimeException('Could not remove '.$dir.'/'.$file);
+                    if (!$this->rmrf($dir . '/' . $file)) {
+                        throw new RuntimeException('Could not remove ' . $dir . '/' . $file);
                     }
                 }
             }
@@ -177,7 +161,7 @@ class PackageDatabase implements Iterator
             if (is_dir($this->dbDir)) {
                 $dh = opendir($this->dbDir);
                 while (false !== ($dir = readdir($dh))) {
-                    if (is_dir($this->dbDir.'/'.$dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir.'/'.$dir) > $this->packageMinMTime
+                    if (is_dir($this->dbDir . '/' . $dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir . '/' . $dir) > $this->packageMinMTime
                     ) {
                         ++$packages;
                     }
@@ -199,13 +183,13 @@ class PackageDatabase implements Iterator
         if (is_dir($this->dbDir)) {
             $dh = opendir($this->dbDir);
             while (false !== ($dir = readdir($dh))) {
-                if (is_dir($this->dbDir.'/'.$dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir.'/'.$dir) <= $this->packageMinMTime
+                if (is_dir($this->dbDir . '/' . $dir) && $dir != '.' && $dir != '..' && filemtime($this->dbDir . '/' . $dir) <= $this->packageMinMTime
                 ) {
                     $matches = array();
                     if (preg_match('/^([^\-].*)-[^\-]+?-[^\-]+?$/', $dir, $matches) == 1) {
                         $packages[] = $matches[1];
                     } else {
-                        throw new RuntimeException('Could not read package '.$dir);
+                        throw new RuntimeException('Could not read package ' . $dir);
                     }
                 }
             }
