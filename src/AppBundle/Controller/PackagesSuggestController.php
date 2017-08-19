@@ -28,8 +28,6 @@ class PackagesSuggestController extends Controller
      */
     public function suggestAction(Request $request): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $term = $request->get('term');
         if (strlen($term) < 2 || strlen($term) > 20) {
             throw new BadRequestHttpException();

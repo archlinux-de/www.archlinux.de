@@ -25,7 +25,7 @@ class PackageDatabase implements Iterator
     /** @var null|int */
     private $packageCount = null;
 
-    private const DELAY = 120;
+    public const DELAY = 120;
 
     /**
      * @param string $mirror

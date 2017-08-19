@@ -25,7 +25,6 @@ class UpdatePkgstatsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
         foreach (array(
                      RepositoryStatisticsController::class,

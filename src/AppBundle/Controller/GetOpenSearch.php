@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use DOMDocument;
 use Symfony\Component\Asset\Packages;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -34,8 +33,6 @@ class GetOpenSearch extends Controller
      */
     public function indexAction(): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $dom = new DOMDocument('1.0', 'UTF-8');
         $body = $dom->createElementNS('http://a9.com/-/spec/opensearch/1.1/', 'OpenSearchDescription');
 
@@ -59,7 +56,7 @@ class GetOpenSearch extends Controller
         $self->setAttribute('type', 'application/opensearchdescription+xml');
         $self->setAttribute('rel', 'self');
 
-        $contact = $dom->createElement('Contact', Config::get('common', 'email'));
+        $contact = $dom->createElement('Contact', $this->getParameter('app.common.email'));
 
         $icon = $dom->createElement('Image', $this->assetPackages->getUrl('style/favicon.ico'));
         $icon->setAttribute('height', '16');

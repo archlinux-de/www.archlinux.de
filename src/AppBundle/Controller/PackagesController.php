@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -54,8 +53,6 @@ class PackagesController extends Controller
      */
     public function indexAction(Request $request): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $this->initParameters($request);
 
         $packages = $this->database->prepare('
@@ -123,10 +120,10 @@ class PackagesController extends Controller
     private function getAvailableRepositories(string $architecture = ''): array
     {
         if (empty($architecture)) {
-            return array_keys(Config::get('packages', 'repositories'));
+            return array_keys($this->getParameter('app.packages.repositories'));
         } else {
             $repositories = array();
-            foreach (Config::get('packages', 'repositories') as $repository => $architectures) {
+            foreach ($this->getParameter('app.packages.repositories') as $repository => $architectures) {
                 if (in_array($architecture, $architectures)) {
                     $repositories[] = $repository;
                 }
@@ -169,7 +166,7 @@ class PackagesController extends Controller
     {
         if (empty($repository)) {
             $uniqueArchitectures = array();
-            foreach (Config::get('packages', 'repositories') as $architectures) {
+            foreach ($this->getParameter('app.packages.repositories') as $architectures) {
                 foreach ($architectures as $architecture) {
                     $uniqueArchitectures[$architecture] = 1;
                 }
@@ -177,7 +174,7 @@ class PackagesController extends Controller
 
             return array_keys($uniqueArchitectures);
         } else {
-            $repositories = Config::get('packages', 'repositories');
+            $repositories = $this->getParameter('app.packages.repositories');
 
             return $repositories[$repository];
         }
@@ -221,7 +218,7 @@ class PackagesController extends Controller
         $this->repository['name'] = $this->getRequest($request, 'repository', $this->getAvailableRepositories(), '');
         $this->architecture['name'] = $this->getRequest($request, 'architecture',
             $this->getAvailableArchitectures($this->repository['name']),
-            ($request->query->has('architecture') ? '' : Config::get('packages', 'default_architecture'))
+            ($request->query->has('architecture') ? '' : $this->getParameter('app.packages.default_architecture'))
         );
         $this->architecture['id'] = $this->getArchitectureId($this->architecture['name']);
         $this->repository['id'] = $this->getRepositoryId($this->repository['name'], $this->architecture['id']);

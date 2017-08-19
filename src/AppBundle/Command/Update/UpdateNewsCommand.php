@@ -2,10 +2,8 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Config;
 use archportal\lib\Download;
 use Doctrine\DBAL\Driver\Connection;
-use PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +33,6 @@ class UpdateNewsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
         try {
             $newsEntries = $this->getNewsEntries();
@@ -68,13 +65,13 @@ class UpdateNewsCommand extends ContainerAwareCommand
                     updated = VALUES(updated)
             ');
         foreach ($newsEntries as $newsEntry) {
-            $stm->bindValue('id', (string) $newsEntry->id, PDO::PARAM_STR);
-            $stm->bindValue('title', (string) $newsEntry->title, PDO::PARAM_STR);
-            $stm->bindValue('link', (string) $newsEntry->link->attributes()->href, PDO::PARAM_STR);
-            $stm->bindValue('summary', (string) $newsEntry->summary, PDO::PARAM_STR);
-            $stm->bindValue('author_name', (string) $newsEntry->author->name, PDO::PARAM_STR);
-            $stm->bindValue('author_uri', (string) $newsEntry->author->uri, PDO::PARAM_STR);
-            $stm->bindValue('updated', (new \DateTime((string) $newsEntry->updated))->getTimestamp(), PDO::PARAM_INT);
+            $stm->bindValue('id', (string)$newsEntry->id, \PDO::PARAM_STR);
+            $stm->bindValue('title', (string)$newsEntry->title, \PDO::PARAM_STR);
+            $stm->bindValue('link', (string)$newsEntry->link->attributes()->href, \PDO::PARAM_STR);
+            $stm->bindValue('summary', (string)$newsEntry->summary, \PDO::PARAM_STR);
+            $stm->bindValue('author_name', (string)$newsEntry->author->name, \PDO::PARAM_STR);
+            $stm->bindValue('author_uri', (string)$newsEntry->author->uri, \PDO::PARAM_STR);
+            $stm->bindValue('updated', (new \DateTime((string)$newsEntry->updated))->getTimestamp(), \PDO::PARAM_INT);
             $stm->execute();
         }
     }
@@ -84,7 +81,7 @@ class UpdateNewsCommand extends ContainerAwareCommand
      */
     private function getNewsEntries(): \SimpleXMLElement
     {
-        $download = new Download(Config::get('news', 'feed'));
+        $download = new Download($this->getContainer()->getParameter('app.news.feed'));
         $feed = new \SimpleXMLElement($download->getFile(), 0, true);
 
         return $feed->entry;

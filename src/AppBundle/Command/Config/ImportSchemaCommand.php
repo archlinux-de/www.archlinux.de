@@ -28,7 +28,6 @@ class ImportSchemaCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
         $this->database->exec(
             file_get_contents(
                 $this->getContainer()->getParameter('kernel.project_dir') . '/app/config/archportal_schema.sql'

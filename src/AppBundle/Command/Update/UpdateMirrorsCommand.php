@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Config;
 use archportal\lib\Download;
 use Doctrine\DBAL\Driver\Connection;
 use PDO;
@@ -35,7 +34,6 @@ class UpdateMirrorsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
         try {
             $status = $this->getMirrorStatus();
@@ -94,7 +92,7 @@ class UpdateMirrorsCommand extends ContainerAwareCommand
 
     private function getMirrorStatus(): array
     {
-        $download = new Download(Config::get('mirrors', 'status'));
+        $download = new Download($this->getContainer()->getParameter('app.mirrors.status'));
 
         $content = file_get_contents($download->getFile());
         if (empty($content)) {

@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use Doctrine\DBAL\Driver\Connection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,8 +26,7 @@ class StartController extends Controller
      */
     public function indexAction(): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-        $architectureId = $this->getArchitectureId(Config::get('packages', 'default_architecture'));
+        $architectureId = $this->getArchitectureId($this->getParameter('app.packages.default_architecture'));
 
         return $this->render('start/index.html.twig', [
             'architecture_id' => $architectureId
@@ -61,8 +59,6 @@ class StartController extends Controller
      */
     public function newsAction(): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $newsFeed = $this->database->query('
             SELECT
                 link,
@@ -78,8 +74,8 @@ class StartController extends Controller
 
         return $this->render('start/news.html.twig', [
             'news_feed' => $newsFeed,
-            'news_feed_url' => Config::get('news', 'feed'),
-            'news_archive_url' => Config::get('news', 'archive')
+            'news_feed_url' => $this->getParameter('app.news.feed'),
+            'news_archive_url' => $this->getParameter('app.news.archive')
         ]);
     }
 
@@ -88,8 +84,7 @@ class StartController extends Controller
      */
     public function recentPackagesAction(): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-        $architectureId = $this->getArchitectureId(Config::get('packages', 'default_architecture'));
+        $architectureId = $this->getArchitectureId($this->getParameter('app.packages.default_architecture'));
 
         $packages = $this->database->prepare('
         SELECT

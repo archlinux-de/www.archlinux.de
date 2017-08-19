@@ -34,11 +34,6 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
-    AppBundle\Service\LegacyEnvironment:
-        public: true
-        arguments:
-            - '@service_container'
-
     archportal\lib\ObjectStore:
         public: true
 

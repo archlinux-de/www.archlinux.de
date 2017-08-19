@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -35,8 +34,6 @@ class PackageDetailsController extends Controller
      */
     public function indexAction($repo, $arch, $pkgname, Request $request): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $repository = $this->database->prepare('
             SELECT
                 repositories.id
@@ -92,7 +89,7 @@ class PackageDetailsController extends Controller
             throw new NotFoundHttpException('Paket wurde nicht gefunden');
         }
         $this->pkgid = $data['id'];
-        $cgitUrl = Config::get('packages', 'cgit') . (in_array($data['repository'], array(
+        $cgitUrl = $this->getParameter('app.packages.cgit') . (in_array($data['repository'], array(
                 'community',
                 'community-testing',
                 'multilib',

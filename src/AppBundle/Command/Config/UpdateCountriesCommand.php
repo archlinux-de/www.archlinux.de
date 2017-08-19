@@ -28,8 +28,6 @@ class UpdateCountriesCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $geoIP = new \GeoIP();
         $countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
 

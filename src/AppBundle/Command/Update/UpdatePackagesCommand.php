@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Config;
 use archportal\lib\Download;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
@@ -125,7 +124,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-        $this->getContainer()->get('AppBundle\Service\LegacyEnvironment')->initialize();
 
         if (!$input->getOption('purge') && !$input->getOption('reset') && !$this->checkLastMirrorUpdate()) {
             $this->printDebug('No updated packages available...', $output);
@@ -145,7 +143,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
             $this->prepareQueries();
 
-            foreach (Config::get('packages', 'repositories') as $repo => $arches) {
+            foreach ($this->getContainer()->getParameter('app.packages.repositories') as $repo => $arches) {
                 foreach ($arches as $arch) {
                     $this->printDebug('Processing [' . $repo . '] (' . $arch . ')', $output);
                     $archId = $this->getArchId($arch);
@@ -160,13 +158,9 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     $packageMTime = (int)$this->selectPackageMTime->fetchColumn();
 
                     $this->printDebug("\tDownloading...", $output);
-                    $packages = new PackageDatabase(Config::get('packages', 'mirror'), $repo, $arch, $repoMTime, $packageMTime);
+                    $packages = new PackageDatabase($this->getContainer()->getParameter('app.packages.mirror'), $repo, $arch, $repoMTime, $packageMTime);
 
-                    if ($packages->getMTime() > $repoMTime && time() - $packages->getMTime() > Config::get(
-                            'packages',
-                            'delay'
-                        )
-                    ) {
+                    if ($packages->getMTime() > $repoMTime && time() - $packages->getMTime() > PackageDatabase::DELAY) {
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, $packages->getNewPackageCount());
                             $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
@@ -243,7 +237,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function checkLastMirrorUpdate(): bool
     {
         $lastLocalUpdate = $this->objectStore->getObject('UpdatePackages:lastupdate');
-        $download = new Download(Config::get('packages', 'mirror') . 'lastupdate');
+        $download = new Download($this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate');
         $this->lastMirrorUpdate = (int)file_get_contents($download->getFile());
 
         return $this->lastMirrorUpdate !== $lastLocalUpdate;
@@ -993,7 +987,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 JOIN architectures
                 ON architectures.id = repositories.arch
             ')->fetchAll();
-        $configRepos = Config::get('packages', 'repositories');
+        $configRepos = $this->getContainer()->getParameter('app.packages.repositories');
         foreach ($repos as $repo) {
             if (!isset($configRepos[$repo['name']]) || !in_array($repo['arch'], $configRepos[$repo['name']])) {
                 $this->printDebug("\tRemoving repository [$repo[name]] ($repo[arch])", $output);

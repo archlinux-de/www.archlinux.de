@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use archportal\lib\GeoIP;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,9 +32,7 @@ class MirrorController extends Controller
      */
     public function indexAction(string $file, Request $request): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
-        $repositories = implode('|', array_keys(Config::get('packages', 'repositories')));
+        $repositories = implode('|', array_keys($this->getParameter('app.packages.repositories')));
         $architectures = implode('|', $this->getAvailableArchitectures());
         $pkgextension = '(?:' . $architectures . '|any).pkg.tar.(?:g|x)z';
         if (preg_match('#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#',
@@ -93,7 +90,7 @@ class MirrorController extends Controller
     private function getAvailableArchitectures(): array
     {
         $uniqueArchitectures = array();
-        foreach (Config::get('packages', 'repositories') as $architectures) {
+        foreach ($this->getParameter('app.packages.repositories') as $architectures) {
             foreach ($architectures as $architecture) {
                 $uniqueArchitectures[$architecture] = 1;
             }
@@ -113,7 +110,7 @@ class MirrorController extends Controller
 
         $countryCode = $this->geoIP->getClientCountryCode($clientIp);
         if (empty($countryCode)) {
-            $countryCode = Config::get('mirrors', 'country');
+            $countryCode = $this->getParameter('app.mirrors.country');
         }
         $stm = $this->database->prepare('
             SELECT

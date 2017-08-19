@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\Config;
 use Doctrine\DBAL\Driver\Connection;
 use DOMDocument;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -38,8 +37,6 @@ class RecentPackagesController extends Controller
      */
     public function indexAction(): Response
     {
-        $this->get('AppBundle\Service\LegacyEnvironment')->initialize();
-
         $dom = new DOMDocument('1.0', 'UTF-8');
         $body = $dom->createElementNS('http://www.w3.org/2005/Atom', 'feed');
 
@@ -50,7 +47,7 @@ class RecentPackagesController extends Controller
 
         $author = $dom->createElement('author');
         $authorName = $dom->createElement('name', 'archlinux.de');
-        $authorEmail = $dom->createElement('email', Config::get('common', 'email'));
+        $authorEmail = $dom->createElement('email', $this->getParameter('app.common.email'));
         $authorUri = $dom->createElement('uri', $this->router->generate('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $author->appendChild($authorName);
         $author->appendChild($authorEmail);
