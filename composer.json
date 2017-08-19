@@ -16,8 +16,8 @@
     },
     "require": {
         "php": "^7.1",
-        "ext-pdo_mysql": "*",
         "ext-gettext": "*",
+        "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
         "geoip/geoip": "^1.17",
