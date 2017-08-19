@@ -2,6 +2,7 @@
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
+COMPOSER=composer --no-interaction
 
 all: init
 
@@ -38,14 +39,14 @@ rebuild: clean
 	${MAKE}
 
 composer-update:
-	${APP-RUN} composer update
+	${APP-RUN} ${COMPOSER} update
 
 composer.lock: composer.json
-	${APP-RUN} composer update nothing
+	${APP-RUN} ${COMPOSER} update nothing
 
 vendor: composer.lock
 	mkdir -p ~/.composer/cache
-	${APP-RUN} composer install
+	${APP-RUN} ${COMPOSER} install
 
 shell:
 	${APP-RUN} bash
