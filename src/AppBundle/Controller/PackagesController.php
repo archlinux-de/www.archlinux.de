@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 class PackagesController extends Controller
 {
@@ -36,13 +37,16 @@ class PackagesController extends Controller
     private $searchField = '';
     /** @var Connection */
     private $database;
+    /** @var RouterInterface */
+    private $router;
 
     /**
      * @param Connection $connection
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, RouterInterface $router)
     {
         $this->database = $connection;
+        $this->router = $router;
     }
 
     /**
@@ -385,9 +389,9 @@ class PackagesController extends Controller
 
         $newSort = ($this->sort == 'asc' ? 'desc' : 'asc');
 
-        $next = ' <a href="' . $this->createUrl('Packages', array_merge($parameters,
+        $next = ' <a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
                 array('orderby' => $this->orderby, 'sort' => $this->sort, 'p' => ($this->page + 1)))) . '">&#187;</a>';
-        $prev = ($this->page > 1 ? '<a href="' . $this->createUrl('Packages', array_merge($parameters, array(
+        $prev = ($this->page > 1 ? '<a href="' . $this->router->generate('app_packages_index', array_merge($parameters, array(
                 'orderby' => $this->orderby,
                 'sort' => $this->sort,
                 'p' => max(1, $this->page - 1),
@@ -398,21 +402,21 @@ class PackagesController extends Controller
                 <td class="pages" colspan="6">' . $prev . $next . '</td>
             </tr>
             <tr>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
+                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
                 array('orderby' => 'repository', 'sort' => $newSort))) . '">' . $this->l10n->getText('Repository') . '</a></th>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
+                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
                 array('orderby' => 'architecture', 'sort' => $newSort))) . '">' . $this->l10n->getText('Architecture') . '</a></th>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
+                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
                 array('orderby' => 'name', 'sort' => $newSort))) . '">' . $this->l10n->getText('Name') . '</a></th>
                 <th>' . $this->l10n->getText('Version') . '</th>
                 <th>' . $this->l10n->getText('Description') . '</th>
-                <th><a href="' . $this->createUrl('Packages', array_merge($parameters,
+                <th><a href="' . $this->router->generate('app_packages_index', array_merge($parameters,
                 array('orderby' => 'builddate', 'sort' => $newSort))) . '">' . $this->l10n->getText('Last update') . '</a></th>
             </tr>';
         foreach ($packages as $package) {
             $style = ($package['testing'] == 1 ? ' class="less"' : '');
             $body .= '<tr' . $style . '>
-                <td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="' . $this->createUrl('PackageDetails',
+                <td>' . $package['repository'] . '</td><td>' . $package['architecture'] . '</td><td><a href="' . $this->router->generate('app_packagedetails_index',
                     array(
                         'repo' => $package['repository'],
                         'arch' => $package['repositoryArchitecture'],
@@ -444,21 +448,5 @@ class PackagesController extends Controller
                 'UTF-8') . '...' : $string);
 
         return htmlspecialchars($string);
-    }
-
-    /**
-     * @param string $page
-     * @param array $options
-     *
-     * @return string
-     */
-    protected function createUrl(string $page, array $options = array()): string
-    {
-        $router = $this->get('router');
-        if ($page == 'Packages') {
-            return $router->generate('app_packages_index', $options);
-        } else {
-            return $router->generate('app_legacy_page', array_merge(['page' => $page], $options));
-        }
     }
 }

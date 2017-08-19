@@ -19,7 +19,7 @@
                 <td>{% if packager.email %}<a href="mailto:{{ packager.email }}">{{ packager.email }}</a>{% endif %}
                 </td>
                 <td style="text-align:right;"><a
-                            href="{{ path('app_legacy_page', {'page': 'Packages', 'packager': packager.id}) }}">{{ packager.packages }}</a>
+                            href="{{ path('app_packages_index', {'packager': packager.id}) }}">{{ packager.packages }}</a>
                 </td>
                 <td style="width:100px;">
                     <div style="background-color:#1793d1;width:{{ 100 * packager.packages / packages | round }}px;">

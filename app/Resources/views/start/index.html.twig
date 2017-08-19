@@ -67,8 +67,7 @@
     </div>
     <div id="right">
         <div id="pkgsearch">
-            <form method="get">
-                <input type="hidden" name="page" value="Packages"/>
+            <form method="get" action="{{ path('app_packages_index') }}">
                 <label for="searchfield">Paket-Suche:</label>
                 <input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200"
                        id="searchfield" autocomplete="off"/>
@@ -99,7 +98,7 @@
             </ul>
             <h4>Entwicklung</h4>
             <ul>
-                <li><a href="?page=Packages">Pakete</a></li>
+                <li><a href="{{ path('app_packages_index') }}">Pakete</a></li>
                 <li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
                 <li><a href="https://aur.archlinux.de/">AUR</a></li>
                 <li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
@@ -117,7 +116,7 @@
                 <li><a href="https://www.archlinux.org/developers/">Entwickler</a></li>
                 <li><a href="https://www.archlinux.org/trustedusers/">Trusted Users</a></li>
                 <li><a href="https://www.archlinux.org/fellows/">Ehemalige</a></li>
-                <li><a href="?page=MirrorStatus">Mirror-Status</a></li>
+                <li><a href="{{ path('app_mirrorstatus_index') }}">Mirror-Status</a></li>
             </ul>
         </div>
     </div>

@@ -108,8 +108,7 @@ class RecentPackagesController extends Controller
         ');
         foreach ($packages as $package) {
             $entry = $dom->createElement('entry');
-            $entryId = $dom->createElement('id', htmlspecialchars($this->router->generate('app_legacy_page', [
-                'page' => 'PackageDetails',
+            $entryId = $dom->createElement('id', htmlspecialchars($this->router->generate('app_packagedetails_index', [
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
                 'pkgname' => $package['name'],
@@ -125,8 +124,7 @@ class RecentPackagesController extends Controller
             $entryAuthor->appendChild($entryAuthorEmail);
 
             $entryLink = $dom->createElement('link');
-            $entryLink->setAttribute('href', $this->router->generate('app_legacy_page', [
-                'page' => 'PackageDetails',
+            $entryLink->setAttribute('href', $this->router->generate('app_packagedetails_index', [
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
                 'pkgname' => $package['name'],

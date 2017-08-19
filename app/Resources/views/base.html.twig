@@ -13,10 +13,10 @@
           href="{{ news_feed_url }}"/>
     <link rel="alternate" type="application/atom+xml"
           title="Aktuelle Arch Linux Pakete"
-          href="{{ path('app_legacy_page', {'page': 'GetRecentPackages'}) }}"/>
+          href="{{ path('app_recentpackages_index') }}"/>
     <link rel="search" type="application/opensearchdescription+xml"
           title="Suche nach Arch Linux Paketen"
-          href="{{ path('app_legacy_page', {'page': 'GetOpenSearch'}) }}"/>
+          href="{{ path('app_getopensearch_index') }}"/>
     <meta name="robots" content="index,follow"/>
 </head>
 <body>
@@ -24,8 +24,8 @@
     <div id="archnavbarlogo"><h1><a href="{{ path('app_start_index') }}">Arch Linux</a></h1></div>
     <div id="archnavbarmenu">
         <ul id="archnavbarlist">
-            <li id="anb-start"><a href="?page=Start">Start</a></li>
-            <li id="anb-packages"><a href="?page=Packages">Pakete</a></li>
+            <li id="anb-start"><a href="{{ path('app_start_index') }}">Start</a></li>
+            <li id="anb-packages"><a href="{{ path('app_packages_index') }}">Pakete</a></li>
             <li id="anb-forum"><a href="https://bbs.archlinux.de/">Forum</a></li>
             <li id="anb-wiki"><a href="https://wiki.archlinux.de/">Wiki</a></li>
             <li id="anb-aur"><a href="https://aur.archlinux.de/">AUR</a></li>
