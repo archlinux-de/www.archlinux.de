@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data shell test
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
@@ -53,3 +53,6 @@ shell:
 test:
 	${APP-RUN} vendor/bin/phpcs
 	${APP-RUN} vendor/bin/phpunit
+
+ci-test: init
+	${MAKE} test
