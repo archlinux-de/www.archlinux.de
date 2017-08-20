@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
@@ -57,3 +57,11 @@ test:
 
 ci-test: init
 	${MAKE} test
+
+deploy:
+	chmod o-x .
+	SYMFONY_ENV=prod composer --no-interaction install --no-dev --optimize-autoloader
+	bin/console cache:clear --env=prod --no-debug --no-warmup
+	bin/console cache:warmup --env=prod
+	sudo systemctl restart php-fpm@www
+	chmod o+x .
