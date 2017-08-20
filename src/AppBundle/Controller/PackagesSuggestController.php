@@ -30,7 +30,7 @@ class PackagesSuggestController extends Controller
     public function suggestAction(Request $request): Response
     {
         $term = $request->get('term');
-        if (strlen($term) < 2 || strlen($term) > 20) {
+        if (strlen($term) < 2 || strlen($term) > 50) {
             throw new BadRequestHttpException();
         }
         $arch = $request->get('architecture', 0);
