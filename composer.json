@@ -16,6 +16,7 @@
     },
     "require": {
         "php": "^7.1",
+        "ext-apcu": "^5.1",
         "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
