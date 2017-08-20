@@ -16,6 +16,8 @@ services:
       - .:/app
       - ~/.composer/cache:/.composer/cache
       - db-socket:/run/mysqld
+    tmpfs:
+      - /tmp
     depends_on:
       - db
 
