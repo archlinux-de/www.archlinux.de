@@ -1,7 +1,4 @@
 <?php
-
-declare (strict_types = 1);
-
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -266,7 +263,7 @@ class Package
      */
     public function getFiles(): array
     {
-        if (Config::get('packages', 'files') && file_exists($this->packageDir.'/files')) {
+        if (file_exists($this->packageDir.'/files')) {
             $data = $this->loadInfo($this->packageDir.'/files');
 
             return $data['FILES'];

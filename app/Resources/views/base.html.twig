@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>archlinux.de - {% block title %}{% endblock %}</title>
+    {% block stylesheets %}
+        {% for style in ['arch', 'archnavbar'] %}
+            <link rel="stylesheet" media="screen" href="{{ asset('style/'~style~'.css') }}"/>
+        {% endfor %}
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('style/favicon.ico') }}"/>
+    <link rel="alternate" type="application/atom+xml" title="Aktuelle Neuigkeiten"
+          href="{{ news_feed_url }}"/>
+    <link rel="alternate" type="application/atom+xml"
+          title="Aktuelle Arch Linux Pakete"
+          href="{{ path('app_recentpackages_index') }}"/>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Suche nach Arch Linux Paketen"
+          href="{{ path('app_getopensearch_index') }}"/>
+    <meta name="robots" content="index,follow"/>
+</head>
+<body>
+<div id="archnavbar" class="anb-{{ app.request.attributes.get('_route') }}">
+    <div id="archnavbarlogo"><h1><a href="{{ path('app_start_index') }}">Arch Linux</a></h1></div>
+    <div id="archnavbarmenu">
+        <ul id="archnavbarlist">
+            <li id="anb-start"><a href="{{ path('app_start_index') }}">Start</a></li>
+            <li id="anb-packages"><a href="{{ path('app_packages_index') }}">Pakete</a></li>
+            <li id="anb-forum"><a href="https://bbs.archlinux.de/">Forum</a></li>
+            <li id="anb-wiki"><a href="https://wiki.archlinux.de/">Wiki</a></li>
+            <li id="anb-aur"><a href="https://aur.archlinux.de/">AUR</a></li>
+            <li id="anb-download"><a href="https://wiki.archlinux.de/title/Download">Download</a></li>
+            <li id="anb-spenden"><a href="https://wiki.archlinux.de/title/Spenden">Spenden</a></li>
+        </ul>
+    </div>
+</div>
+<div id="content">
+    {% block body %}{% endblock %}
+    <div id="footer">
+        <a href="https://wiki.archlinux.de/title/wiki.archlinux.de:Datenschutz">Datenschutz</a> &ndash;
+        <a href="https://wiki.archlinux.de/title/wiki.archlinux.de:Impressum">Impressum</a>
+    </div>
+</div>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

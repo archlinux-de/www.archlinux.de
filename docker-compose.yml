@@ -9,14 +9,15 @@ services:
     build: docker/php
     working_dir: /app
     command: php -S 0.0.0.0:8080 -t /app/web
-    user: http
+    user: "1000"
     ports:
       - "${PORT:-8080}:8080"
     volumes:
       - .:/app
-      - ./config/DevConfig.php:/app/config/LocalConfig.php
       - ~/.composer/cache:/.composer/cache
       - db-socket:/run/mysqld
+    tmpfs:
+      - /tmp
     depends_on:
       - db
 

@@ -1,22 +1,23 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
+COMPOSER=composer --no-interaction
 
 all: init
 
 init: start
 	${DB-RUN} mysqladmin -uroot create archportal
-	${APP-RUN} config/ImportSchema.php
-	${APP-RUN} config/UpdateCountries.php
+	${APP-RUN} bin/console app:config:import-schema
+	${APP-RUN} bin/console app:config:update-countries
 	${MAKE} update-data
 
 update-data:
-	${APP-RUN} cronjobs/UpdateMirrors.php
-	${APP-RUN} cronjobs/UpdateNews.php
-	${APP-RUN} cronjobs/UpdateReleases.php
-	${APP-RUN} cronjobs/UpdatePackages.php
-	${APP-RUN} cronjobs/UpdatePkgstats.php
+	${APP-RUN} bin/console app:update:mirrors
+	${APP-RUN} bin/console app:update:news
+	${APP-RUN} bin/console app:update:releases
+	${APP-RUN} bin/console app:update:packages
+	${APP-RUN} bin/console app:update:statistics
 
 start: vendor
 	docker-compose up -d
@@ -31,18 +32,36 @@ restart:
 
 clean:
 	docker-compose down -v
-	git clean -fdqx
+	git clean -fdqx -e .idea
 
 rebuild: clean
 	docker-compose build --no-cache --pull
 	${MAKE}
 
 composer-update:
-	${APP-RUN} composer update
+	${APP-RUN} ${COMPOSER} update
 
 composer.lock: composer.json
-	${APP-RUN} composer update nothing
+	${APP-RUN} ${COMPOSER} update nothing
 
 vendor: composer.lock
 	mkdir -p ~/.composer/cache
-	${APP-RUN} composer install
+	${APP-RUN} ${COMPOSER} install
+
+shell:
+	${APP-RUN} bash
+
+test:
+	${APP-RUN} vendor/bin/phpcs
+	${APP-RUN} vendor/bin/phpunit
+
+ci-test: init
+	${MAKE} test
+
+deploy:
+	chmod o-x .
+	SYMFONY_ENV=prod composer --no-interaction install --no-dev --optimize-autoloader
+	bin/console cache:clear --env=prod --no-debug --no-warmup
+	bin/console cache:warmup --env=prod
+	sudo systemctl restart php-fpm@www
+	chmod o+x .

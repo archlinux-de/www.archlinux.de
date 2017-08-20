@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mirror-Status{% endblock %}
+
+{% block body %}
+    <div class="box">
+        <h2>Mirror-Status</h2>
+    </div>
+    <table class="pretty-table">
+        <tr>
+            <th><a href="{{ path('app_mirrorstatus_index', { 'orderby': 'url', 'sort': sort }) }}">URL</a></th>
+            <th><a href="{{ path('app_mirrorstatus_index', { 'orderby': 'country', 'sort': sort }) }}">Land</a></th>
+            <th style="width:140px;"><a
+                        href="{{ path('app_mirrorstatus_index', { 'orderby': 'durationAvg', 'sort': sort }) }}">&empty;&nbsp;Antwortzeit</a>
+            </th>
+            <th style="width:140px;"><a
+                        href="{{ path('app_mirrorstatus_index', { 'orderby': 'delay', 'sort': sort }) }}">&empty;&nbsp;Verzögerung</a>
+            </th>
+            <th><a href="{{ path('app_mirrorstatus_index', { 'orderby': 'lastsync', 'sort': sort }) }}">Letzte
+                    Aktualisierung</a></th>
+        </tr>
+        {% for mirror in mirrors %}
+            <tr>
+                <td><a href="{{ mirror.url }}" rel="nofollow">{{ mirror.url }}</a></td>
+                <td>{{ mirror.country }}</td>
+                <td>{{ mirror.durationAvg | number_format(4) }}s</td>
+                <td>{{ mirror.delay | number_format }}s</td>
+                <td>{{ mirror.lastsync | date }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

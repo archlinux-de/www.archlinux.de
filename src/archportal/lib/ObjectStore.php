@@ -1,7 +1,4 @@
 <?php
-
-declare (strict_types = 1);
-
 /*
   Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
 
@@ -23,18 +20,30 @@ declare (strict_types = 1);
 
 namespace archportal\lib;
 
+use Doctrine\DBAL\Driver\Connection;
 use PDO;
 
 class ObjectStore
 {
+    /** @var Connection */
+    private $database;
+
+    /**
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection)
+    {
+        $this->database = $connection;
+    }
+
     /**
      * @param string $key
-     * @param mixed  $object
-     * @param int    $ttl
+     * @param mixed $object
+     * @param int $ttl
      */
-    public static function addObject(string $key, $object, int $ttl = 0)
+    public function addObject(string $key, $object, int $ttl = 0)
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         REPLACE INTO
             cache
         SET
@@ -44,7 +53,7 @@ class ObjectStore
         ');
         $stm->bindParam('key', $key, PDO::PARAM_STR);
         $stm->bindValue('value', serialize($object), PDO::PARAM_STR);
-        $stm->bindValue('expires', ($ttl > 0 ? Input::getTime() + $ttl : null), PDO::PARAM_INT);
+        $stm->bindValue('expires', ($ttl > 0 ? time() + $ttl : null), PDO::PARAM_INT);
         $stm->execute();
     }
 
@@ -53,10 +62,10 @@ class ObjectStore
      *
      * @return mixed
      */
-    public static function getObject(string $key)
+    public function getObject(string $key)
     {
-        self::collectGarbage();
-        $stm = Database::prepare('
+        $this->collectGarbage();
+        $stm = $this->database->prepare('
         SELECT
             value
         FROM
@@ -79,9 +88,9 @@ class ObjectStore
      *
      * @return bool
      */
-    public static function isObject(string $key): bool
+    public function isObject(string $key): bool
     {
-        $stm = Database::prepare('
+        $stm = $this->database->prepare('
         SELECT
             value
         FROM
@@ -96,17 +105,17 @@ class ObjectStore
         return $value !== false;
     }
 
-    private static function collectGarbage()
+    private function collectGarbage()
     {
         /* Ignore 49% of requests */
         if (!mt_rand(0, 50)) {
-            $stm = Database::prepare('
+            $stm = $this->database->prepare('
             DELETE FROM
                 cache
             WHERE
                 expires < :expires
             ');
-            $stm->bindValue('expires', Input::getTime(), PDO::PARAM_INT);
+            $stm->bindValue('expires', time(), PDO::PARAM_INT);
             $stm->execute();
         }
     }

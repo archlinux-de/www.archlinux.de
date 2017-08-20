@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% for style in [
+    'jquery.ui.core.min',
+    'jquery.ui.theme.min',
+    'jquery.ui.menu.min',
+    'jquery.ui.autocomplete.min',
+    ] %}
+        <link rel="stylesheet" media="screen" href="{{ asset('style/'~style~'.css') }}"/>
+    {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    {% if autocomplete %}
+        <script>
+            window.addEventListener('load', function () {
+                $("#searchfield").autocomplete({
+                    source: "{{ path('app_packagessuggest_suggest', {
+                        'repository': repository.id,
+                        'architecture': architecture.id,
+                        'field': search_field
+                    }) | raw }}",
+                    minLength: 2,
+                    delay: 100
+                });
+            });
+        </script>
+    {% endif %}
+    {% for script in [
+    'jquery.min',
+    'jquery.ui.core.min',
+    'jquery.ui.widget.min',
+    'jquery.ui.position.min',
+    'jquery.ui.menu.min',
+    'jquery.ui.autocomplete.min'
+    ] %}
+        <script type="text/javascript" src="{{ asset('style/'~script~'.js') }}"></script>
+    {% endfor %}
+{% endblock %}
+
+{% block title %}Paket-Suche{% endblock %}
+
+{% block body %}
+    <div class="box">
+        <h2>Paket-Suche</h2>
+        <form method="get">
+            <table id="searchbox">
+                <tr>
+                    <th>Repositorium</th>
+                    <th>Architektur</th>
+                    <th>Gruppe</th>
+                    <th>Schlüsselwörter</th>
+                </tr>
+                <tr>
+                    <td>
+                        {{ repository_list | raw }}
+                    </td>
+                    <td>
+                        {{ architecture_list | raw }}
+                    </td>
+                    <td>
+                        {{ group_list | raw }}
+                    </td>
+                    <td>
+                        <input type="text" name="search" id="searchfield" class="ui-autocomplete-input"
+                               value="{{ search }}" size="34" maxlength="50" autocomplete="off"/>
+                        <div style="padding-top: 5px;">{{ search_fields | raw }}</div>
+                        <input type="hidden" name="packager" value="{{ packager }}"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {{ package_list | raw }}
+{% endblock %}

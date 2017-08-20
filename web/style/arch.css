@@ -219,11 +219,9 @@ h5 {
     padding: 0;
 }
 
-#archnavbar.anb-start ul li#anb-start a {
-    color: white !important;
-}
-
-#archnavbar.anb-packages ul li#anb-packages a, #archnavbar.anb-packagedetails ul li#anb-packages a {
+#archnavbar.anb-app_start_index ul li#anb-start a,
+#archnavbar.anb-app_packages_index ul li#anb-packages a,
+#archnavbar.anb-app_packagedetails_index ul li#anb-packages a {
     color: white !important;
 }
 

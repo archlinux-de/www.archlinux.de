@@ -1,0 +1,16 @@
+<h3>Aktuelle Pakete <span class="more">(<a href="{{ path('app_packages_index') }}">mehr</a>)</span>
+</h3><a
+        href="{{ path('app_recentpackages_index') }}" class="rss-icon"><img
+            src="{{ asset('style/rss.png') }}" alt="RSS Feed"/></a>
+<table>
+    {% for package in packages %}
+        <tr{% if package.testing == 1 %} class="testing"{% endif %}>
+            <td class="pkgname"><a href="{{ path('app_packagedetails_index', {
+                    'repo': package.repository,
+                    'arch': package.architecture,
+                    'pkgname': package.name
+                }) }}">{{ package.name }}</a></td>
+            <td class="pkgver">{{ package.version }}</td>
+        </tr>
+    {% endfor %}
+</table>

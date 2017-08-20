@@ -1,40 +1,24 @@
 <?php
 
-declare (strict_types = 1);
-
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace archportal\lib;
 
-abstract class StatisticsPage extends Page implements IDatabaseCachable
+class StatisticsPage
 {
     /** @var int */
-    private static $rangeMonths = 3;
+    private $rangeMonths = 3;
     /** @var array */
-    protected static $barColors = array();
+    private $barColors = array();
     /** @var array */
-    protected static $barColorArray = array(
+    private $barColorArray = array(
         '8B0000',
         'FF8800',
         '006400',
     );
+
+    public function __construct()
+    {
+        $this->barColors = $this->createMultiColorFade($this->barColorArray);
+    }
 
     /**
      * @param array $hexarray
@@ -43,7 +27,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
      *
      * see http://at.php.net/manual/de/function.hexdec.php#66780
      */
-    protected static function MultiColorFade(array $hexarray): array
+    private function createMultiColorFade(array $hexarray): array
     {
         $steps = 101;
         $total = count($hexarray);
@@ -101,7 +85,7 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
      *
      * @return string
      */
-    protected static function getBar(int $value, int $total): string
+    public function getBar(int $value, int $total): string
     {
         if ($total <= 0) {
             return '';
@@ -110,18 +94,18 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
         if ($percent > 100) {
             return '';
         }
-        $color = self::$barColors[(int) round($percent)];
+        $color = $this->barColors[(int)round($percent)];
 
         return '<table style="width:100%;">
             <tr>
                 <td style="padding:0;margin:0;">
-                    <div style="background-color:#'.$color.';width:'.round($percent).'%;"
-        title="'.number_format($value).' of '.number_format($total).'">
+                    <div style="background-color:#' . $color . ';width:' . round($percent) . '%;"
+        title="' . number_format($value) . ' of ' . number_format($total) . '">
             &nbsp;
                 </div>
                 </td>
-                <td style="padding:0;margin:0;width:80px;text-align:right;color:#'.$color.';">
-                    '.number_format($percent, 2).'&nbsp;%
+                <td style="padding:0;margin:0;width:80px;text-align:right;color:#' . $color . ';">
+                    ' . number_format($percent, 2) . '&nbsp;%
                 </td>
             </tr>
         </table>';
@@ -130,16 +114,16 @@ abstract class StatisticsPage extends Page implements IDatabaseCachable
     /**
      * @return int
      */
-    protected static function getRangeTime(): int
+    public function getRangeTime(): int
     {
-        return strtotime(date('1-m-Y', strtotime('now -'.self::$rangeMonths.' months')));
+        return strtotime(date('1-m-Y', strtotime('now -' . $this->rangeMonths . ' months')));
     }
 
     /**
      * @return string
      */
-    protected static function getRangeYearMonth(): string
+    public function getRangeYearMonth(): string
     {
-        return date('Ym', self::getRangeTime());
+        return date('Ym', $this->getRangeTime());
     }
 }
