@@ -32,7 +32,7 @@ restart:
 
 clean:
 	docker-compose down -v
-	git clean -fdqx
+	git clean -fdqx -e .idea
 
 rebuild: clean
 	docker-compose build --no-cache --pull
