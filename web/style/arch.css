@@ -221,7 +221,8 @@ h5 {
 
 #archnavbar.anb-app_start_index ul li#anb-start a,
 #archnavbar.anb-app_packages_index ul li#anb-packages a,
-#archnavbar.anb-app_packagedetails_index ul li#anb-packages a {
+#archnavbar.anb-app_packagedetails_index ul li#anb-packages a,
+#archnavbar.anb-app_download_index ul li#anb-download a {
     color: white !important;
 }
 
@@ -365,4 +366,22 @@ h5 {
     text-align: left;
     font-size: 12px;
     vertical-align: top;
+}
+
+#arch-downloads p {
+    margin: .33em 0 1em;
+}
+
+#arch-downloads ol,
+#arch-downloads ul {
+    margin-bottom: 1em;
+    padding-left: 2em;
+}
+
+#arch-downloads ul {
+    list-style: square;
+}
+
+#arch-downloads h3 {
+    border-bottom: 1px dotted #bbb;
 }

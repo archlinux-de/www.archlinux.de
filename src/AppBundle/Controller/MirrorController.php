@@ -127,7 +127,7 @@ class MirrorController extends Controller
             WHERE
                 lastsync > :lastsync
                 AND countryCode = :countryCode
-                AND protocol IN ("http", "htttps")
+                AND protocol = "https"
             ORDER BY RAND(:clientId) LIMIT 1
             ');
         $stm->bindParam('lastsync', $lastsync, \PDO::PARAM_INT);
@@ -143,7 +143,7 @@ class MirrorController extends Controller
                     mirrors
                 WHERE
                     lastsync > :lastsync
-                    AND protocol IN ("http", "htttps")
+                    AND protocol = "https"
                 ORDER BY RAND(:clientId) LIMIT 1
                 ');
             $stm->bindParam('lastsync', $lastsync, \PDO::PARAM_INT);
