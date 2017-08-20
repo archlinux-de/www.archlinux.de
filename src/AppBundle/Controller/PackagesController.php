@@ -118,6 +118,21 @@ class PackagesController extends Controller
     }
 
     /**
+     * @Route("/packages/datatables", methods={"GET"})
+     * @param Request $request
+     * @return Response
+     */
+    public function datatablesAction(Request $request): Response
+    {
+        return $this->json([
+            'draw' => $request->query->getInt('draw'),
+            'recordsTotal' => 0,
+            'recordsFiltered' => 0,
+            'data' => []
+        ]);
+    }
+
+    /**
      * @param string $architecture
      *
      * @return array
