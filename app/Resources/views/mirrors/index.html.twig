@@ -1,32 +1,74 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" media="screen" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#mirrors').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+                },
+                "lengthMenu": [25, 50, 100],
+                "pageLength": 25,
+                "order": [[4, "desc"]],
+                "data": {{ mirrors | json_encode | raw }},
+                "columns": [
+                    {
+                        "data": "url",
+                        "render": function (data, type, row) {
+                            return '<a href="' + row.url + '" rel="nofollow">' + data + '</a>';
+                        }
+                    },
+                    {
+                        "data": "country"
+                    },
+                    {
+                        "data": "durationAvg",
+                        "searchable": false
+                    },
+                    {
+                        "data": "delay",
+                        "searchable": false
+                    },
+                    {
+                        "data": "lastsync",
+                        "searchable": false,
+                        "render": function (data, type, row) {
+                            if (data) {
+                                return new Date(data * 1000).toLocaleString('de-DE');
+                            } else {
+                                return '';
+                            }
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block title %}Mirror-Status{% endblock %}
 
 {% block body %}
     <div class="box">
         <h2>Mirror-Status</h2>
-    </div>
-    <table class="pretty-table">
-        <tr>
-            <th><a href="{{ path('app_mirrorstatus_index', { 'orderby': 'url', 'sort': sort }) }}">URL</a></th>
-            <th><a href="{{ path('app_mirrorstatus_index', { 'orderby': 'country', 'sort': sort }) }}">Land</a></th>
-            <th style="width:140px;"><a
-                        href="{{ path('app_mirrorstatus_index', { 'orderby': 'durationAvg', 'sort': sort }) }}">&empty;&nbsp;Antwortzeit</a>
-            </th>
-            <th style="width:140px;"><a
-                        href="{{ path('app_mirrorstatus_index', { 'orderby': 'delay', 'sort': sort }) }}">&empty;&nbsp;Verzögerung</a>
-            </th>
-            <th><a href="{{ path('app_mirrorstatus_index', { 'orderby': 'lastsync', 'sort': sort }) }}">Letzte
-                    Aktualisierung</a></th>
-        </tr>
-        {% for mirror in mirrors %}
+        <table id="mirrors" class="pretty-table compact">
+            <thead>
             <tr>
-                <td><a href="{{ mirror.url }}" rel="nofollow">{{ mirror.url }}</a></td>
-                <td>{{ mirror.country }}</td>
-                <td>{{ mirror.durationAvg | number_format(4) }}s</td>
-                <td>{{ mirror.delay | number_format }}s</td>
-                <td>{{ mirror.lastsync | date }}</td>
+                <th>URL</th>
+                <th>Land</th>
+                <th>&empty;&nbsp;Antwortzeit</th>
+                <th>&empty;&nbsp;Verzögerung</th>
+                <th>Letzte Aktualisierung</th>
             </tr>
-        {% endfor %}
-    </table>
+            </thead>
+        </table>
+    </div>
 {% endblock %}
