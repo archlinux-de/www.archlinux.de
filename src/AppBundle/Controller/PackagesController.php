@@ -30,14 +30,24 @@ class PackagesController extends Controller
      */
     public function datatablesAction(DatatablesRequest $request): Response
     {
-        $columnMap = [
+        $compareableColumns = [
             'repository' => 'repositories.name',
-            'architecture' => 'architectures.name',
-            'name' => 'packages.name',
-            'version' => 'packages.version',
-            'description' => 'packages.desc',
-            'builddate' => 'packages.builddate'
+            'architecture' => 'architectures.name'
         ];
+        $searchableColumns = array_merge(
+            $compareableColumns,
+            [
+                'name' => 'packages.name',
+                'description' => 'packages.desc'
+            ]
+        );
+        $orderableColumns = array_merge(
+            $compareableColumns,
+            [
+                'builddate' => 'packages.builddate',
+                'name' => 'packages.name'
+            ]
+        );
 
         $connection = $this->getDoctrine()->getConnection();
         /** @var QueryBuilder $queryBuilder */
@@ -62,7 +72,7 @@ class PackagesController extends Controller
 
         foreach ($request->getOrders() as $order) {
             $orderColumnName = $order->getColumn()->getData();
-            if (isset($columnMap[$orderColumnName])) {
+            if (isset($orderableColumns[$orderColumnName])) {
                 $queryBuilder->orderBy($orderColumnName, $order->getDir());
             }
         }
@@ -75,11 +85,16 @@ class PackagesController extends Controller
         foreach ($request->getColumns() as $column) {
             if ($column->isSearchable()) {
                 $columnName = $column->getData();
-                if (isset($columnMap[$columnName])) {
+                if (isset($searchableColumns[$columnName])) {
                     if (!$column->getSearch()->isRegex() && $column->getSearch()->isValid()) {
-                        $queryBuilder->andWhere($columnMap[$columnName] . ' LIKE :columnSearch' . $column->getId());
-                        //@TODO Langsam; ggf. Heuristic für architecture, repo etc.
-                        $queryBuilder->setParameter(':columnSearch' . $column->getId(), '%' . $column->getSearch()->getValue() . '%');
+                        $queryBuilder->andWhere(
+                            $searchableColumns[$columnName] . ' LIKE :columnSearch' . $column->getId()
+                        );
+                        $searchValue = $column->getSearch()->getValue();
+                        if (!isset($compareableColumns[$columnName])) {
+                            $searchValue = '%' . $searchValue . '%';
+                        }
+                        $queryBuilder->setParameter(':columnSearch' . $column->getId(), $searchValue);
                     }
                 }
             }
@@ -89,7 +104,8 @@ class PackagesController extends Controller
 
         array_walk($packages, function (&$package) {
             $package['url'] = $this->generateUrl(
-                'app_packagedetails_index', [
+                'app_packagedetails_index',
+                [
                     'repo' => $package['repository'],
                     'arch' => $package['architecture'],
                     'pkgname' => $package['name']
@@ -97,8 +113,10 @@ class PackagesController extends Controller
             );
         });
 
-        $packagesFiltered = $connection->createQueryBuilder()->select('FOUND_ROWS()')->execute()->fetchColumn();
-        $totalPackages = $connection->createQueryBuilder()->select('COUNT(*)')->from('packages')->execute()->fetchColumn();
+        $packagesFiltered = $connection->createQueryBuilder()
+            ->select('FOUND_ROWS()')->execute()->fetchColumn();
+        $totalPackages = $connection->createQueryBuilder()
+            ->select('COUNT(*)')->from('packages')->execute()->fetchColumn();
 
         return $this->json([
             'draw' => $request->getDraw(),
