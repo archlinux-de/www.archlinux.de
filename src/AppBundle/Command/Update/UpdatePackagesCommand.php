@@ -2,12 +2,12 @@
 
 namespace AppBundle\Command\Update;
 
+use AppBundle\Service\PackageDatabaseDownloader;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
-use \PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -103,18 +103,26 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private $objectStore;
     /** @var Client */
     private $guzzleClient;
+    /** @var PackageDatabaseDownloader */
+    private $packageDatabaseDownloader;
 
     /**
+     * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param Connection $connection
      * @param ObjectStore $objectStore
      * @param Client $guzzleClient
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore, Client $guzzleClient)
-    {
+    public function __construct(
+        PackageDatabaseDownloader $packageDatabaseDownloader,
+        Connection $connection,
+        ObjectStore $objectStore,
+        Client $guzzleClient
+    ) {
         parent::__construct();
         $this->database = $connection;
         $this->objectStore = $objectStore;
         $this->guzzleClient = $guzzleClient;
+        $this->packageDatabaseDownloader = $packageDatabaseDownloader;
     }
 
     protected function configure()
@@ -162,15 +170,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     $packageMTime = (int)$this->selectPackageMTime->fetchColumn();
 
                     $this->printDebug("\tDownloading...", $output);
-                    $packages = new PackageDatabase(
-                        $this->guzzleClient,
-                        $this->getContainer()->getParameter('app.packages.mirror'),
-                        $repo,
-                        $arch,
-                        $repoMTime,
-                        $packageMTime
-                    );
+                    $packageDatabaseFile = $this->packageDatabaseDownloader
+                        ->download($this->getContainer()->getParameter('app.packages.mirror'), $repo, $arch);
 
+                    $packages = new PackageDatabase($packageDatabaseFile, $repoMTime, $packageMTime);
                     if ($packages->getMTime() > $repoMTime && time() - $packages->getMTime() > PackageDatabase::DELAY) {
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, $packages->getNewPackageCount());
