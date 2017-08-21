@@ -17,7 +17,7 @@
     <link rel="search" type="application/opensearchdescription+xml"
           title="Suche nach Arch Linux Paketen"
           href="{{ path('app_getopensearch_index') }}"/>
-    <meta name="robots" content="index,follow"/>
+    <meta name="robots" content="{% block robots %}index,follow{% endblock %}"/>
 </head>
 <body>
 <div id="archnavbar" class="anb-{{ app.request.attributes.get('_route') }}">
@@ -36,8 +36,8 @@
 <div id="content">
     {% block body %}{% endblock %}
     <div id="footer">
-        <a href="https://wiki.archlinux.de/title/wiki.archlinux.de:Datenschutz">Datenschutz</a> &ndash;
-        <a href="https://wiki.archlinux.de/title/wiki.archlinux.de:Impressum">Impressum</a>
+        <a href="{{ path('app_legal_privacypolicy') }}">Datenschutz</a> &ndash;
+        <a href="{{ path('app_legal_impressum') }}">Impressum</a>
     </div>
 </div>
 {% block javascripts %}{% endblock %}
