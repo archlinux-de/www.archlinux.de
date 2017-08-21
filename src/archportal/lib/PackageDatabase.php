@@ -2,17 +2,10 @@
 
 namespace archportal\lib;
 
-use Iterator;
-use RuntimeException;
-
-class PackageDatabase implements Iterator
+class PackageDatabase implements \Iterator
 {
-    /** @var string */
-    private $dbext = '.files';
     /** @var int */
     private $mtime = 0;
-    /** @var int */
-    private $repoMinMTime = 0;
     /** @var int */
     private $packageMinMTime = 0;
     /** @var int */
@@ -28,31 +21,22 @@ class PackageDatabase implements Iterator
     public const DELAY = 120;
 
     /**
-     * @param string $mirror
-     * @param string $repository
-     * @param string $architecture
+     * @param \SplFileInfo $packageDatabaseFile
      * @param int $repoMinMTime
      * @param int $packageMinMTime
      */
-    public function __construct(
-        string $mirror,
-        string $repository,
-        string $architecture,
-        int $repoMinMTime = 0,
-        int $packageMinMTime = 0
-    ) {
-        $this->repoMinMTime = $repoMinMTime;
+    public function __construct(\SplFileInfo $packageDatabaseFile, int $repoMinMTime, int $packageMinMTime)
+    {
         $this->packageMinMTime = $packageMinMTime;
-        $download = new Download($mirror . $repository . '/os/' . $architecture . '/' . $repository . $this->dbext);
-        $this->mtime = $download->getMTime();
+        $this->mtime = $packageDatabaseFile->getMTime();
 
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
-        if ($this->mtime > $this->repoMinMTime && time() - $this->mtime > self::DELAY) {
-            system('bsdtar -xf ' . $download->getFile() . ' -C ' . $this->dbDir, $return);
+        if ($this->mtime > $repoMinMTime && time() - $this->mtime > self::DELAY) {
+            system('bsdtar -xf ' . $packageDatabaseFile->getRealPath() . ' -C ' . $this->dbDir, $return);
             if ($return !== 0) {
-                throw new RuntimeException('Could not extract Database');
+                throw new \RuntimeException('Could not extract Database');
             }
         }
     }
@@ -140,7 +124,7 @@ class PackageDatabase implements Iterator
             while (false !== ($file = readdir($dh))) {
                 if ($file != '.' && $file != '..') {
                     if (!$this->rmrf($dir . '/' . $file)) {
-                        throw new RuntimeException('Could not remove ' . $dir . '/' . $file);
+                        throw new \RuntimeException('Could not remove ' . $dir . '/' . $file);
                     }
                 }
             }
@@ -196,7 +180,7 @@ class PackageDatabase implements Iterator
                     if (preg_match('/^([^\-].*)-[^\-]+?-[^\-]+?$/', $dir, $matches) == 1) {
                         $packages[] = $matches[1];
                     } else {
-                        throw new RuntimeException('Could not read package ' . $dir);
+                        throw new \RuntimeException('Could not read package ' . $dir);
                     }
                 }
             }

@@ -2,12 +2,12 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Download;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use GuzzleHttp\Client;
 
 class UpdateReleasesCommand extends ContainerAwareCommand
 {
@@ -15,14 +15,18 @@ class UpdateReleasesCommand extends ContainerAwareCommand
 
     /** @var Connection */
     private $database;
+    /** @var Client */
+    private $guzzleClient;
 
     /**
      * @param Connection $connection
+     * @param Client $guzzleClient
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, Client $guzzleClient)
     {
         parent::__construct();
         $this->database = $connection;
+        $this->guzzleClient = $guzzleClient;
     }
 
     protected function configure()
@@ -164,9 +168,11 @@ class UpdateReleasesCommand extends ContainerAwareCommand
      */
     private function getRelengReleases(): array
     {
-        $download = new Download($this->getContainer()->getParameter('app.releng.releases'));
-
-        $content = file_get_contents($download->getFile());
+        $response = $this->guzzleClient->request(
+            'GET',
+            $this->getContainer()->getParameter('app.releng.releases')
+        );
+        $content = $response->getBody()->getContents();
         if (empty($content)) {
             throw new \RuntimeException('empty releng releases', 1);
         }

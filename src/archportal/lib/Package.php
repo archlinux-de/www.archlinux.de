@@ -1,22 +1,4 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\lib;
 
@@ -36,12 +18,12 @@ class Package
     {
         $this->packageDir = $packageDir;
 
-        if (!file_exists($this->packageDir.'/desc')) {
+        if (!file_exists($this->packageDir . '/desc')) {
             throw new RuntimeException('Invalid package data');
         }
-        $this->desc = $this->loadInfo($this->packageDir.'/desc');
-        if (file_exists($this->packageDir.'/depends')) {
-            $this->desc = array_merge($this->desc, $this->loadInfo($this->packageDir.'/depends'));
+        $this->desc = $this->loadInfo($this->packageDir . '/desc');
+        if (file_exists($this->packageDir . '/depends')) {
+            $this->desc = array_merge($this->desc, $this->loadInfo($this->packageDir . '/depends'));
         }
     }
 
@@ -119,7 +101,7 @@ class Package
      */
     public function getCompressedSize(): int
     {
-        return isset($this->desc['CSIZE'][0]) ? (int) $this->desc['CSIZE'][0] : 0;
+        return isset($this->desc['CSIZE'][0]) ? (int)$this->desc['CSIZE'][0] : 0;
     }
 
     /**
@@ -127,7 +109,7 @@ class Package
      */
     public function getInstalledSize(): int
     {
-        return isset($this->desc['ISIZE'][0]) ? (int) $this->desc['ISIZE'][0] : 0;
+        return isset($this->desc['ISIZE'][0]) ? (int)$this->desc['ISIZE'][0] : 0;
     }
 
     /**
@@ -161,7 +143,7 @@ class Package
     {
         if (isset($this->desc['URL'][0])) {
             if (!preg_match('#^(https?|ftp)://#', $this->desc['URL'][0])) {
-                return 'http://'.$this->desc['URL'][0];
+                return 'http://' . $this->desc['URL'][0];
             } else {
                 return $this->desc['URL'][0];
             }
@@ -191,7 +173,7 @@ class Package
      */
     public function getBuildDate(): int
     {
-        return isset($this->desc['BUILDDATE'][0]) ? (int) $this->desc['BUILDDATE'][0] : 0;
+        return isset($this->desc['BUILDDATE'][0]) ? (int)$this->desc['BUILDDATE'][0] : 0;
     }
 
     /**
@@ -263,8 +245,8 @@ class Package
      */
     public function getFiles(): array
     {
-        if (file_exists($this->packageDir.'/files')) {
-            $data = $this->loadInfo($this->packageDir.'/files');
+        if (file_exists($this->packageDir . '/files')) {
+            $data = $this->loadInfo($this->packageDir . '/files');
 
             return $data['FILES'];
         } else {
@@ -277,6 +259,6 @@ class Package
      */
     public function getMTime(): int
     {
-        return filemtime($this->packageDir.'/desc');
+        return filemtime($this->packageDir . '/desc');
     }
 }
