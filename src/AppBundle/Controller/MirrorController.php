@@ -150,7 +150,8 @@ class MirrorController extends Controller
             $stm->bindParam('clientId', $clientId, \PDO::PARAM_INT);
             $stm->execute();
             if ($stm->rowCount() == 0) {
-                throw new NotFoundHttpException('File was not found');
+                // Fallback to the default mirror
+                return $this->getParameter('app.mirrors.default');
             }
         }
 
