@@ -70,7 +70,6 @@ class StartController extends Controller
 
         return $this->render('start/news.html.twig', [
             'news_feed' => $newsFeed,
-            'news_feed_url' => $this->getParameter('app.news.feed'),
             'news_archive_url' => $this->getParameter('app.news.archive')
         ])->setSharedMaxAge(600);
     }

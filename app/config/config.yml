@@ -54,8 +54,6 @@ framework:
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
-    globals:
-        news_feed_url: '%app.news.feed%'
     date:
         format: 'd.m.Y H:i'
     number_format:

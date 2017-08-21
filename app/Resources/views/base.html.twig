@@ -9,8 +9,8 @@
         {% endfor %}
     {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('style/favicon.ico') }}"/>
-    <link rel="alternate" type="application/atom+xml" title="Aktuelle Neuigkeiten"
-          href="{{ news_feed_url }}"/>
+    <link rel="alternate" type="application/atom+xml" title="Aktuelle Arch Linux Neuigkeiten"
+          href="{{ path('app_recentnews_index') }}"/>
     <link rel="alternate" type="application/atom+xml"
           title="Aktuelle Arch Linux Pakete"
           href="{{ path('app_recentpackages_index') }}"/>

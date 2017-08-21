@@ -3,97 +3,43 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
-use DOMDocument;
+use FeedIo\Factory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Asset\Packages;
 
 class RecentPackagesController extends Controller
 {
     /** @var Connection */
     private $database;
-    /** @var RouterInterface */
-    private $router;
     /** @var Packages */
     private $assetPackages;
 
     /**
      * @param Connection $connection
-     * @param RouterInterface $router
      * @param Packages $assetPackages
      */
-    public function __construct(Connection $connection, RouterInterface $router, Packages $assetPackages)
+    public function __construct(Connection $connection, Packages $assetPackages)
     {
         $this->database = $connection;
-        $this->router = $router;
         $this->assetPackages = $assetPackages;
     }
 
     /**
-     * @Route("/packages/feed", methods={"GET"})
+     * @Route(
+     *     "/packages/feed.{_format}",
+     *     methods={"GET"},
+     *     defaults={"_format": "atom"},
+     *     requirements={"_format": "atom|rss|json"}
+     * )
+     * @param string $_format
      * @return Response
      */
-    public function indexAction(): Response
+    public function indexAction(string $_format): Response
     {
-        $dom = new DOMDocument('1.0', 'UTF-8');
-        $body = $dom->createElementNS('http://www.w3.org/2005/Atom', 'feed');
-
-        $id = $dom->createElement('id', $this->router->generate(
-            'app_recentpackages_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-        $title = $dom->createElement('title', 'Aktuelle Arch Linux Pakete');
-        $updated = $dom->createElement(
-            'updated',
-            date('c', $this->database->query('SELECT MAX(builddate) FROM packages')->fetchColumn())
-        );
-
-        $author = $dom->createElement('author');
-        $authorName = $dom->createElement('name', 'archlinux.de');
-        $authorEmail = $dom->createElement('email', $this->getParameter('app.common.email'));
-        $authorUri = $dom->createElement('uri', $this->router->generate(
-            'app_recentpackages_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-        $author->appendChild($authorName);
-        $author->appendChild($authorEmail);
-        $author->appendChild($authorUri);
-
-        $alternate = $dom->createElement('link');
-        $alternate->setAttribute('href', $this->router->generate(
-            'app_packages_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-        $alternate->setAttribute('rel', 'alternate');
-        $alternate->setAttribute('type', 'text/html');
-        $self = $dom->createElement('link');
-        $self->setAttribute('href', $this->router->generate(
-            'app_recentpackages_index',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        ));
-        $self->setAttribute('rel', 'self');
-        $self->setAttribute('type', 'application/atom+xml');
-
-        $icon = $dom->createElement('icon', $this->assetPackages->getUrl('style/favicon.ico'));
-        $logo = $dom->createElement('logo', $this->assetPackages->getUrl('style/archlogo-64.png'));
-
-        $body->appendChild($id);
-        $body->appendChild($title);
-        $body->appendChild($updated);
-        $body->appendChild($author);
-        $body->appendChild($alternate);
-        $body->appendChild($self);
-        $body->appendChild($icon);
-        $body->appendChild($logo);
-
-        $packages = $this->database->query('
+        $packages = $this->database->prepare('
         SELECT
             packages.name,
             packages.builddate,
@@ -117,57 +63,55 @@ class RecentPackagesController extends Controller
                     repositories
                 ON
                     packages.repository = repositories.id
+                JOIN
+                    architectures repoarch
+                ON
+                    repoarch.id = repositories.arch
+        WHERE
+            repoarch.name = :architecture
         ORDER BY
             packages.builddate DESC
         LIMIT
             25
         ');
+        $packages->bindValue('architecture', $this->getParameter('app.packages.default_architecture'), \PDO::PARAM_STR);
+        $packages->execute();
+
+        $feed = new \FeedIo\Feed();
+        $feedUrl = $this->generateUrl('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $feed->setUrl($feedUrl);
+        $feed->setTitle('Aktuelle Arch Linux Pakete');
+        $feed->setPublicId($feedUrl);
+        $feed->setLink($this->generateUrl('app_packages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+
+        $icon = $feed->newElement();
+        $icon->setName('icon')->setValue($this->assetPackages->getUrl('style/favicon.ico'));
+        $feed->addElement($icon);
+
+        $logo = $feed->newElement();
+        $logo->setName('logo')->setValue($this->assetPackages->getUrl('style/archlogo-64.png'));
+        $feed->addElement($logo);
         foreach ($packages as $package) {
-            $entry = $dom->createElement('entry');
-            $entryId = $dom->createElement('id', htmlspecialchars($this->router->generate('app_packagedetails_index', [
+            $packageUrl = $this->generateUrl('app_packagedetails_index', [
                 'repo' => $package['repository'],
                 'arch' => $package['architecture'],
                 'pkgname' => $package['name'],
-            ], UrlGeneratorInterface::ABSOLUTE_URL)));
-            $entryTitle = $dom->createElement(
-                'title',
-                $package['name'] . ' ' . $package['version'] . ' (' . $package['architecture'] . ')'
-            );
-            $entryUpdated = $dom->createElement('updated', date('c', $package['builddate']));
+            ], UrlGeneratorInterface::ABSOLUTE_URL);
+            $item = $feed->newItem();
+            $item->setPublicId($packageUrl);
+            $item->setTitle($package['name'] . ' ' . $package['version']);
+            $item->setLastModified((new \DateTime())->setTimestamp($package['builddate']));
+            $author = $item->newAuthor();
+            $author->setName($package['packager']);
+            $author->setEmail($package['email']);
+            $item->setAuthor($author);
+            $item->setLink($packageUrl);
+            $item->setDescription($package['desc']);
 
-            $entryAuthor = $dom->createElement('author');
-            $entryAuthorName = $dom->createElement('name', $package['packager']);
-            $entryAuthorEmail = $dom->createElement('email', $package['email']);
-            $entryAuthor->appendChild($entryAuthorName);
-            $entryAuthor->appendChild($entryAuthorEmail);
-
-            $entryLink = $dom->createElement('link');
-            $entryLink->setAttribute('href', $this->router->generate('app_packagedetails_index', [
-                'repo' => $package['repository'],
-                'arch' => $package['architecture'],
-                'pkgname' => $package['name'],
-            ], UrlGeneratorInterface::ABSOLUTE_URL));
-            $entryLink->setAttribute('rel', 'alternate');
-            $entryLink->setAttribute('type', 'text/html');
-
-            $entrySummary = $dom->createElement('summary', $package['desc']);
-
-            $entry->appendChild($entryId);
-            $entry->appendChild($entryTitle);
-            $entry->appendChild($entryUpdated);
-            $entry->appendChild($entryAuthor);
-            $entry->appendChild($entryLink);
-            $entry->appendChild($entrySummary);
-
-            $body->appendChild($entry);
+            $feed->add($item);
         }
 
-        $dom->appendChild($body);
-
-        return (new Response(
-            $dom->saveXML(),
-            Response::HTTP_OK,
-            ['Content-Type' => 'application/atom+xml; charset=UTF-8']
-        ))->setSharedMaxAge(600);
+        $feedIo = Factory::create()->getFeedIo();
+        return (new Response($feedIo->format($feed, $_format)))->setSharedMaxAge(600);
     }
 }

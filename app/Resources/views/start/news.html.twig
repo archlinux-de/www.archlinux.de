@@ -1,5 +1,5 @@
 <h3>Aktuelle Neuigkeiten <span class="more">(<a href="{{ news_archive_url }}">mehr</a>)</span></h3><a
-        href="{{ news_feed_url }}" class="rss-icon"><img src="{{ asset('style/rss.png') }}" alt="RSS Feed"/></a>
+        href="{{ path('app_recentnews_index') }}" class="rss-icon"><img src="{{ asset('style/rss.png') }}" alt="RSS Feed"/></a>
 {% for entry in news_feed %}
     <h4><a href="{{ entry.link }}">{{ entry.title }}</a></h4>
     <p class="date">{{ entry.updated | date('d.m.Y') }}</p>

@@ -63,7 +63,8 @@ class SmokeTest extends WebTestCase
             ['/statistics/user'],
             ['/download'],
             ['/packages/datatables'],
-            ['/sitemap.xml']
+            ['/sitemap.xml'],
+            ['/news/feed']
         ];
     }
 
@@ -73,8 +74,7 @@ class SmokeTest extends WebTestCase
     public function provideRedirectUrls(): array
     {
         return [
-            ['/download/foo'],
-            ['/news/feed']
+            ['/download/foo']
         ];
     }
 }
