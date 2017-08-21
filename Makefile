@@ -57,6 +57,7 @@ test:
 
 ci-test: init
 	${MAKE} test
+	${APP-RUN} vendor/bin/security-checker security:check
 
 deploy:
 	chmod o-x .
