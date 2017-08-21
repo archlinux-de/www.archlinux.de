@@ -1,37 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {% for style in [
-    'jquery.ui.core.min',
-    'jquery.ui.theme.min',
-    'jquery.ui.menu.min',
-    'jquery.ui.autocomplete.min',
-    ] %}
-        <link rel="stylesheet" media="screen" href="{{ asset('style/'~style~'.css') }}"/>
-    {% endfor %}
-{% endblock %}
-
 {% block javascripts %}
+    <script src="{{ asset('style/auto-complete.min.js') }}"></script>
     <script>
         window.addEventListener('load', function () {
-            $("#searchfield").autocomplete({
-                source: "{{ path('app_packagessuggest_suggest', {'architecture': architecture_id}) | raw }}",
-                minLength: 2,
-                delay: 100
+            new autoComplete({
+                selector: '#searchfield',
+                delay: 100,
+                minChars: 1,
+                source: function (term, callback) {
+                    fetch('{{ path('app_packagessuggest_suggest') }}?term=' + encodeURI(term))
+                        .then(function (response) {
+                            if (!response.ok) {
+                                throw new Error();
+                            }
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            return callback(data);
+                        })
+                        .catch(function () {
+                            return callback([]);
+                        });
+                }
             });
         });
     </script>
-    {% for script in [
-    'jquery.min',
-    'jquery.ui.core.min',
-    'jquery.ui.widget.min',
-    'jquery.ui.position.min',
-    'jquery.ui.menu.min',
-    'jquery.ui.autocomplete.min'
-    ] %}
-        <script type="text/javascript" src="{{ asset('style/'~script~'.js') }}"></script>
-    {% endfor %}
 {% endblock %}
 
 {% block title %}Start{% endblock %}
@@ -69,8 +63,7 @@
         <div id="pkgsearch">
             <form method="get" action="{{ path('app_packages_index') }}">
                 <label for="searchfield">Paket-Suche:</label>
-                <input type="text" class="ui-autocomplete-input" name="search" size="20" maxlength="200"
-                       id="searchfield" autocomplete="off"/>
+                <input type="text" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off"/>
             </form>
         </div>
         <div id="pkgrecent" class="box">

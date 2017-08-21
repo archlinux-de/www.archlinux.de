@@ -2,42 +2,82 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    {% for style in [
-    'jquery.ui.core.min',
-    'jquery.ui.theme.min',
-    'jquery.ui.menu.min',
-    'jquery.ui.autocomplete.min',
-    ] %}
-        <link rel="stylesheet" media="screen" href="{{ asset('style/'~style~'.css') }}"/>
-    {% endfor %}
+    <link rel="stylesheet" media="screen" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"/>
 {% endblock %}
 
 {% block javascripts %}
-    {% if autocomplete %}
-        <script>
-            window.addEventListener('load', function () {
-                $("#searchfield").autocomplete({
-                    source: "{{ path('app_packagessuggest_suggest', {
-                        'repository': repository.id,
-                        'architecture': architecture.id,
-                        'field': search_field
-                    }) | raw }}",
-                    minLength: 2,
-                    delay: 100
-                });
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#packages').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+                },
+                "lengthMenu": [25, 50, 100],
+                "pageLength": 25,
+                "processing": false,
+                "serverSide": true,
+                "order": [[5, "desc"]],
+                "ajax": "{{ path('app_packages_datatables') }}",
+                {% if search %}"search": {"search": "{{ search }}"},{% endif %}
+                "searchDelay": 100,
+                "searchCols": [
+                    null,
+                    {"search": "{{ default_architecture }}"},
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                "columns": [
+                    {
+                        "data": "repository",
+                        "orderable": true,
+                        "searchable": true
+                    },
+                    {
+                        "data": "architecture",
+                        "orderable": true,
+                        "searchable": true
+                    },
+                    {
+                        "data": "name",
+                        "orderable": true,
+                        "searchable": true,
+                        "render": function (data, type, row) {
+                            return '<a href="' + row.url + '">' + data + '</a>';
+                        }
+                    },
+                    {
+                        "data": "version",
+                        "orderable": false,
+                        "searchable": false
+                    },
+                    {
+                        "data": "description",
+                        "orderable": false,
+                        "searchable": true,
+                        "className": "packages-description"
+                    },
+                    {
+                        "data": "builddate",
+                        "orderable": true,
+                        "searchable": false,
+                        "render": function (data, type, row) {
+                            return new Date(data * 1000).toLocaleString('de-DE');
+                        }
+                    }
+                ],
+                "createdRow": function (row, data, index) {
+                    if (row.testing) {
+                        $(row).addClass('less');
+                    }
+                }
             });
-        </script>
-    {% endif %}
-    {% for script in [
-    'jquery.min',
-    'jquery.ui.core.min',
-    'jquery.ui.widget.min',
-    'jquery.ui.position.min',
-    'jquery.ui.menu.min',
-    'jquery.ui.autocomplete.min'
-    ] %}
-        <script type="text/javascript" src="{{ asset('style/'~script~'.js') }}"></script>
-    {% endfor %}
+        });
+    </script>
 {% endblock %}
 
 {% block title %}Paket-Suche{% endblock %}
@@ -45,33 +85,17 @@
 {% block body %}
     <div class="box">
         <h2>Paket-Suche</h2>
-        <form method="get">
-            <table id="searchbox">
-                <tr>
-                    <th>Repositorium</th>
-                    <th>Architektur</th>
-                    <th>Gruppe</th>
-                    <th>Schlüsselwörter</th>
-                </tr>
-                <tr>
-                    <td>
-                        {{ repository_list | raw }}
-                    </td>
-                    <td>
-                        {{ architecture_list | raw }}
-                    </td>
-                    <td>
-                        {{ group_list | raw }}
-                    </td>
-                    <td>
-                        <input type="text" name="search" id="searchfield" class="ui-autocomplete-input"
-                               value="{{ search }}" size="34" maxlength="50" autocomplete="off"/>
-                        <div style="padding-top: 5px;">{{ search_fields | raw }}</div>
-                        <input type="hidden" name="packager" value="{{ packager }}"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <table id="packages" class="pretty-table compact">
+            <thead>
+            <tr>
+                <th>Repositorium</th>
+                <th>Architektur</th>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Beschreibung</th>
+                <th>Letzte Aktualisierung</th>
+            </tr>
+            </thead>
+        </table>
     </div>
-    {{ package_list | raw }}
 {% endblock %}

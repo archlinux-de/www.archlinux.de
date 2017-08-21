@@ -1,0 +1,83 @@
+<?php
+
+namespace AppBundle\Request\ParamConverter;
+
+use AppBundle\Request\Datatables\Column;
+use AppBundle\Request\Datatables\Order;
+use AppBundle\Request\Datatables\Search;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
+use Symfony\Component\HttpFoundation\Request;
+use \AppBundle\Request\Datatables\Request as DatatablesRequest;
+
+class DatatablesRequestParamConverter implements ParamConverterInterface
+{
+    /**
+     * @param Request $request
+     * @param ParamConverter $configuration
+     * @return bool
+     */
+    public function apply(Request $request, ParamConverter $configuration)
+    {
+        //@TODO: Use SF Validation
+        $datatablesRequest = new DatatablesRequest(
+            $request->query->getInt('draw'),
+            $request->query->getInt('start'),
+            $request->query->getInt('length')
+        );
+        if ($request->query->has('search')) {
+            $datatablesRequest->setSearch(
+                new Search(
+                    $request->query->get('search')['value'],
+                    $request->query->get('search')['regex'] == 'true'
+                )
+            );
+        }
+        if ($request->query->has('columns')) {
+            foreach ($request->query->get('columns') as $columnId => $column) {
+                $datatablesRequest->addColumn(
+                    new Column(
+                        $columnId,
+                        $column['data'],
+                        $column['name'],
+                        $column['searchable'] == 'true',
+                        $column['orderable'] == 'true',
+                        new Search(
+                            $column['search']['value'],
+                            $column['search']['regex'] == 'true'
+                        )
+                    )
+                );
+            }
+            if ($request->query->has('order')) {
+                foreach ($request->query->get('order') as $order) {
+                    $orderColumn = $datatablesRequest->getColumn($order['column']);
+                    if ($orderColumn->isOrderable()) {
+                        $datatablesRequest->addOrder(
+                            new Order(
+                                $orderColumn,
+                                $order['dir'] == Order::DESC ? Order::DESC : Order::ASC
+                            )
+                        );
+                    }
+                }
+            }
+        }
+
+        $request->attributes->set(
+            $configuration->getName(),
+            $datatablesRequest
+        );
+
+        return true;
+    }
+
+    /**
+     * @param ParamConverter $configuration
+     * @return bool
+     */
+    public function supports(ParamConverter $configuration)
+    {
+        return $configuration->getClass() == DatatablesRequest::class;
+    }
+}

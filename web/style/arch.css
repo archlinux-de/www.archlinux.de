@@ -385,3 +385,45 @@ h5 {
 #arch-downloads h3 {
     border-bottom: 1px dotted #bbb;
 }
+
+#packages .packages-description {
+    max-width: 400px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip ellipsis;
+}
+
+.autocomplete-suggestions {
+    text-align: left;
+    cursor: default;
+    border: 1px solid #bcd;
+    border-top: 0;
+    background: #fff;
+    position: absolute;
+    display: none;
+    z-index: 9999;
+    max-height: 254px;
+    overflow: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.autocomplete-suggestion {
+    position: relative;
+    padding: 0 .6em;
+    line-height: 23px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.02em;
+    color: #222;
+}
+
+.autocomplete-suggestion b {
+    font-weight: normal;
+    color: #07b;
+}
+
+.autocomplete-suggestion.selected {
+    background: #efefef;
+}
