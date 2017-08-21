@@ -26,11 +26,7 @@ class StartController extends Controller
      */
     public function indexAction(): Response
     {
-        $architectureId = $this->getArchitectureId($this->getParameter('app.packages.default_architecture'));
-
-        return $this->render('start/index.html.twig', [
-            'architecture_id' => $architectureId
-        ])->setSharedMaxAge(600);
+        return $this->render('start/index.html.twig')->setSharedMaxAge(600);
     }
 
     /**
@@ -76,7 +72,7 @@ class StartController extends Controller
             'news_feed' => $newsFeed,
             'news_feed_url' => $this->getParameter('app.news.feed'),
             'news_archive_url' => $this->getParameter('app.news.archive')
-        ]);
+        ])->setSharedMaxAge(600);
     }
 
     /**
@@ -111,6 +107,6 @@ class StartController extends Controller
 
         return $this->render('start/recent_packages.html.twig', [
             'packages' => $packages
-        ]);
+        ])->setSharedMaxAge(600);
     }
 }
