@@ -1,0 +1,47 @@
+{% spaceless %}
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>{{ absolute_url(path('app_download_index')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_mirrorstatus_index')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_packagers_index')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_packages_index')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_start_index')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_statistics_funstatistics_fun')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_statistics_modulestatistics_module')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_statistics_packagestatistics_package')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_statistics_repositorystatistics_repository')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_statistics_statistics_index')) }}</loc>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('app_statistics_userstatistics_user')) }}</loc>
+    </url>
+    {% for package in packages %}
+        <url>
+            <loc>{{ absolute_url(path(
+                'app_packagedetails_index',
+                {'repo': package.repository, 'arch': package.architecture, 'pkgname': package.name}
+                )) }}</loc>
+            <lastmod>{{ package.mtime | date('Y-m-d') }}</lastmod>
+        </url>
+    {% endfor %}
+</urlset>
+{% endspaceless %}
