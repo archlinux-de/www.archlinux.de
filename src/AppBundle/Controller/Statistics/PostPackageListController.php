@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\GeoIP;
+use AppBundle\Service\GeoIp;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -25,19 +25,19 @@ class PostPackageListController extends Controller
     private $database;
     /** @var RouterInterface */
     private $router;
-    /** @var GeoIP */
-    private $geoIP;
+    /** @var GeoIp */
+    private $geoIp;
 
     /**
      * @param Connection $connection
      * @param RouterInterface $router
-     * @param GeoIP $geoIP
+     * @param GeoIp $geoIp
      */
-    public function __construct(Connection $connection, RouterInterface $router, GeoIP $geoIP)
+    public function __construct(Connection $connection, RouterInterface $router, GeoIp $geoIp)
     {
         $this->database = $connection;
         $this->router = $router;
-        $this->geoIP = $geoIP;
+        $this->geoIp = $geoIp;
     }
 
     /**
@@ -126,7 +126,7 @@ class PostPackageListController extends Controller
         }
         $this->checkIfAlreadySubmitted($request);
         $clientIp = $request->getClientIp();
-        $countryCode = $this->geoIP->getClientCountryCode($clientIp);
+        $countryCode = $this->geoIp->getCountryCode($clientIp);
         if (empty($countryCode)) {
             $countryCode = null;
         }

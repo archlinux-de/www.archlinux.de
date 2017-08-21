@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use archportal\lib\GeoIP;
+use AppBundle\Service\GeoIp;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -14,17 +14,17 @@ class MirrorController extends Controller
 {
     /** @var Connection */
     private $database;
-    /** @var GeoIP */
-    private $geoIP;
+    /** @var GeoIp */
+    private $geoIp;
 
     /**
      * @param Connection $connection
-     * @param GeoIP $geoIP
+     * @param GeoIp $geoIp
      */
-    public function __construct(Connection $connection, GeoIP $geoIP)
+    public function __construct(Connection $connection, GeoIp $geoIp)
     {
         $this->database = $connection;
-        $this->geoIP = $geoIP;
+        $this->geoIp = $geoIp;
     }
 
     /**
@@ -115,7 +115,7 @@ class MirrorController extends Controller
     {
         $clientId = crc32($clientIp);
 
-        $countryCode = $this->geoIP->getClientCountryCode($clientIp);
+        $countryCode = $this->geoIp->getCountryCode($clientIp);
         if (empty($countryCode)) {
             $countryCode = $this->getParameter('app.mirrors.country');
         }

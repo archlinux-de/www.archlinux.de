@@ -47,5 +47,9 @@ services:
         arguments:
             - '@database_connection'
 
+    MaxMind\Db\Reader:
+        arguments:
+            - '/usr/share/GeoIP/GeoLite2-Country.mmdb'
+
     archportal\lib\StatisticsPage:
     archportal\lib\GeoIP:

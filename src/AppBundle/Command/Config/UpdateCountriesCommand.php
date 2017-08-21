@@ -3,6 +3,7 @@
 namespace AppBundle\Command\Config;
 
 use Doctrine\DBAL\Driver\Connection;
+use League\ISO3166\ISO3166;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,9 +29,6 @@ class UpdateCountriesCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $geoIP = new \GeoIP();
-        $countries = array_combine($geoIP->GEOIP_COUNTRY_CODES, $geoIP->GEOIP_COUNTRY_NAMES);
-
         $this->database->beginTransaction();
         $this->database->query('DELETE FROM countries');
 
@@ -44,9 +42,9 @@ class UpdateCountriesCommand extends ContainerAwareCommand
         '
         );
 
-        foreach ($countries as $code => $name) {
-            $insertCountry->bindValue('code', $code, \PDO::PARAM_STR);
-            $insertCountry->bindValue('name', $name, \PDO::PARAM_STR);
+        foreach (new ISO3166() as $country) {
+            $insertCountry->bindValue('code', $country['alpha2'], \PDO::PARAM_STR);
+            $insertCountry->bindValue('name', $country['name'], \PDO::PARAM_STR);
             $insertCountry->execute();
         }
 

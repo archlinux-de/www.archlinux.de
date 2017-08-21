@@ -20,6 +20,7 @@ class LegalController extends Controller
 
     /**
      * @Route("/privacy-policy", methods={"GET"})
+     * @param Request $request
      * @return Response
      */
     public function privacyPolicyAction(Request $request): Response
