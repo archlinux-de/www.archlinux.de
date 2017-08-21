@@ -15,8 +15,8 @@
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
                 },
-                "lengthMenu": [20, 50, 100],
-                "pageLength": 20,
+                "lengthMenu": [25, 50, 100],
+                "pageLength": 25,
                 "processing": false,
                 "serverSide": true,
                 "order": [[5, "desc"]],
@@ -74,7 +74,10 @@
                     if (row.testing) {
                         $(row).addClass('less');
                     }
-                }
+                },
+                "columnDefs": [
+                    {className: "packages-description", "targets": [4]}
+                ]
             });
         });
     </script>
@@ -85,7 +88,7 @@
 {% block body %}
     <div class="box">
         <h2>Paket-Suche</h2>
-        <table id="packages" class="pretty-table compact nowrap">
+        <table id="packages" class="pretty-table compact">
             <thead>
             <tr>
                 <th>Repositorium</th>

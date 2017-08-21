@@ -385,3 +385,10 @@ h5 {
 #arch-downloads h3 {
     border-bottom: 1px dotted #bbb;
 }
+
+#packages .packages-description {
+    max-width:400px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:clip ellipsis;
+}
