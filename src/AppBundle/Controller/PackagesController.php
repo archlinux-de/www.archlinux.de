@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Request\Datatables\Request as DatatablesRequest;
 
@@ -12,14 +13,16 @@ class PackagesController extends Controller
 {
     /**
      * @Route("/packages", methods={"GET"})
+     * @param Request $request
      * @return Response
      */
-    public function indexAction(): Response
+    public function indexAction(Request $request): Response
     {
         return $this->render('packages/index.html.twig', [
             'default_architecture' => $this->getParameter('app.packages.default_architecture'),
             'architectures' => $this->getAvailableArchitectures(),
-            'repositories' => $this->getAvailableRepositories()
+            'repositories' => $this->getAvailableRepositories(),
+            'search' => $request->get('search')
         ])->setSharedMaxAge(600);
     }
 

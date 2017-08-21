@@ -21,6 +21,7 @@
                 "serverSide": true,
                 "order": [[5, "desc"]],
                 "ajax": "{{ path('app_packages_datatables') }}",
+                {% if search %}"search": {"search": "{{ search }}"},{% endif %}
                 "searchDelay": 100,
                 "searchCols": [
                     null,
