@@ -2,9 +2,8 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Download;
 use Doctrine\DBAL\Driver\Connection;
-use PDO;
+use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,14 +15,18 @@ class UpdateMirrorsCommand extends ContainerAwareCommand
 
     /** @var Connection */
     private $database;
+    /** @var Client */
+    private $guzzleClient;
 
     /**
      * @param Connection $connection
+     * @param Client $guzzleClient
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, Client $guzzleClient)
     {
         parent::__construct();
         $this->database = $connection;
+        $this->guzzleClient = $guzzleClient;
     }
 
     protected function configure()
@@ -71,30 +74,32 @@ class UpdateMirrorsCommand extends ContainerAwareCommand
                 durationStddev = :durationStddev
             ');
         foreach ($mirrors as $mirror) {
-            $stm->bindParam('url', $mirror['url'], PDO::PARAM_STR);
-            $stm->bindParam('protocol', $mirror['protocol'], PDO::PARAM_STR);
-            $stm->bindParam('countryCode', $mirror['country_code'], PDO::PARAM_STR);
+            $stm->bindParam('url', $mirror['url'], \PDO::PARAM_STR);
+            $stm->bindParam('protocol', $mirror['protocol'], \PDO::PARAM_STR);
+            $stm->bindParam('countryCode', $mirror['country_code'], \PDO::PARAM_STR);
             if (is_null($mirror['last_sync'])) {
                 $lastSync = null;
             } else {
                 $lastSyncDate = new \DateTime($mirror['last_sync']);
                 $lastSync = $lastSyncDate->getTimestamp();
             }
-            $stm->bindParam('lastsync', $lastSync, PDO::PARAM_INT);
-            $stm->bindParam('delay', $mirror['delay'], PDO::PARAM_INT);
-            $stm->bindParam('durationAvg', $mirror['duration_avg'], PDO::PARAM_STR);
-            $stm->bindParam('score', $mirror['score'], PDO::PARAM_STR);
-            $stm->bindParam('completionPct', $mirror['completion_pct'], PDO::PARAM_STR);
-            $stm->bindParam('durationStddev', $mirror['duration_stddev'], PDO::PARAM_STR);
+            $stm->bindParam('lastsync', $lastSync, \PDO::PARAM_INT);
+            $stm->bindParam('delay', $mirror['delay'], \PDO::PARAM_INT);
+            $stm->bindParam('durationAvg', $mirror['duration_avg'], \PDO::PARAM_STR);
+            $stm->bindParam('score', $mirror['score'], \PDO::PARAM_STR);
+            $stm->bindParam('completionPct', $mirror['completion_pct'], \PDO::PARAM_STR);
+            $stm->bindParam('durationStddev', $mirror['duration_stddev'], \PDO::PARAM_STR);
             $stm->execute();
         }
     }
 
     private function getMirrorStatus(): array
     {
-        $download = new Download($this->getContainer()->getParameter('app.mirrors.status'));
-
-        $content = file_get_contents($download->getFile());
+        $response = $this->guzzleClient->request(
+            'GET',
+            $this->getContainer()->getParameter('app.mirrors.status')
+        );
+        $content = $response->getBody()->getContents();
         if (empty($content)) {
             throw new \RuntimeException('empty mirrorstatus', 1);
         }

@@ -37,6 +37,11 @@ services:
     AppBundle\Request\ParamConverter\DatatablesRequestParamConverter:
         tags: ['request.param_converter']
 
+    GuzzleHttp\Client:
+        arguments:
+            - connect_timeout: 60
+              timeout: 1800
+
     archportal\lib\ObjectStore:
     archportal\lib\StatisticsPage:
     archportal\lib\GeoIP:
