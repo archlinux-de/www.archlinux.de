@@ -13,7 +13,7 @@ class Request
     /** @var Search */
     private $search;
     /** @var Order[] */
-    private $order;
+    private $order = [];
     /** @var Column[] */
     private $columns = [];
 
@@ -84,11 +84,19 @@ class Request
     }
 
     /**
-     * @return Search
+     * @return Search|null
      */
-    public function getSearch(): Search
+    public function getSearch(): ?Search
     {
         return $this->search;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSearch(): bool
+    {
+        return !is_null($this->search) && $this->search->isValid();
     }
 
     /**

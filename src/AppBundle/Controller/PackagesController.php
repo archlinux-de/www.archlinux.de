@@ -80,7 +80,7 @@ class PackagesController extends Controller
             }
         }
 
-        if (!$request->getSearch()->isRegex() && $request->getSearch()->isValid()) {
+        if ($request->hasSearch() && !$request->getSearch()->isRegex()) {
             $queryBuilder->andWhere('(packages.name LIKE :search OR packages.desc LIKE :search)');
             $queryBuilder->setParameter(':search', '%' . $request->getSearch()->getValue() . '%');
         }
@@ -123,8 +123,8 @@ class PackagesController extends Controller
 
         return $this->json([
             'draw' => $request->getDraw(),
-            'recordsTotal' => $totalPackages,
-            'recordsFiltered' => $packagesFiltered,
+            'recordsTotal' => (int)$totalPackages,
+            'recordsFiltered' => (int)$packagesFiltered,
             'data' => $packages
         ])->setSharedMaxAge(600);
     }
