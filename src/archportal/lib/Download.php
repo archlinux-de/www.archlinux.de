@@ -1,40 +1,30 @@
 <?php
-/*
-  Copyright 2002-2015 Pierre Schmitz <pierre@archlinux.de>
-
-  This file is part of archlinux.de.
-
-  archlinux.de is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  archlinux.de is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with archlinux.de.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace archportal\lib;
 
-use RuntimeException;
+use GuzzleHttp\Client;
 
 class Download
 {
+    /** @var bool */
     private $downloaded = false;
+    /** @var string */
     private $url = '';
+    /** @var string */
     private $tmpFile = '';
+    /** @var int */
     private $mtime = 0;
+    /** @var Client */
+    private $guzzleClient;
 
     /**
+     * @param Client $guzzleClient
      * @param string $url
      */
-    public function __construct(string $url)
+    public function __construct(Client $guzzleClient, string $url)
     {
         $this->url = $url;
+        $this->guzzleClient = $guzzleClient;
         $this->tmpFile = tempnam(sys_get_temp_dir(), strtolower(str_replace('\\', '/', get_class($this))));
     }
 
@@ -51,17 +41,11 @@ class Download
     public function getMTime(): int
     {
         if (!$this->downloaded && $this->mtime == 0) {
-            $curl = $this->curlInit($this->url);
-            curl_setopt($curl, \CURLOPT_NOBODY, true);
-            curl_setopt($curl, \CURLOPT_FILETIME, true);
-            $ret = curl_exec($curl);
-            if ($ret === false) {
-                throw new RuntimeException(curl_error($curl), curl_errno($curl));
-            }
-            $mtime = curl_getinfo($curl, \CURLINFO_FILETIME);
-            curl_close($curl);
+            $response = $this->guzzleClient->request('HEAD', $this->url);
+            $mtime = strtotime($response->getHeaderLine('Last-Modified'));
+
             if ($mtime < 1) {
-                throw new RuntimeException('Invalid filetime "'.$mtime.'" for "'.$this->url.'"');
+                throw new \RuntimeException('Invalid filetime "' . $mtime . '" for "' . $this->url . '"');
             } else {
                 $this->mtime = $mtime;
             }
@@ -79,14 +63,8 @@ class Download
             $fh = fopen($this->tmpFile, 'w');
             flock($fh, \LOCK_EX);
 
-            $curl = $this->curlInit($this->url);
-            curl_setopt($curl, \CURLOPT_FILE, $fh);
-            $ret = curl_exec($curl);
-            if ($ret === false) {
-                throw new RuntimeException(curl_error($curl), curl_errno($curl));
-            }
-            $this->mtime = curl_getinfo($curl, \CURLINFO_FILETIME);
-            curl_close($curl);
+            $response = $this->guzzleClient->request('GET', $this->url, ['sink' => $fh]);
+            $this->mtime = strtotime($response->getHeaderLine('Last-Modified'));
 
             flock($fh, \LOCK_UN);
             fclose($fh);
@@ -95,27 +73,5 @@ class Download
         }
 
         return $this->tmpFile;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return resource
-     */
-    private function curlInit($url)
-    {
-        $curlVersion = curl_version();
-        $curl = curl_init($url);
-        curl_setopt($curl, \CURLOPT_FAILONERROR, true);
-        curl_setopt($curl, \CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, \CURLOPT_MAXREDIRS, 3);
-        curl_setopt($curl, \CURLOPT_TIMEOUT, 1800);
-        curl_setopt($curl, \CURLOPT_CONNECTTIMEOUT, 60);
-        curl_setopt($curl, \CURLOPT_LOW_SPEED_LIMIT, 5000);
-        curl_setopt($curl, \CURLOPT_LOW_SPEED_TIME, 600);
-        curl_setopt($curl, \CURLOPT_ENCODING, '');
-        curl_setopt($curl, \CURLOPT_USERAGENT, 'archportal/curl-'.$curlVersion['version']);
-
-        return $curl;
     }
 }

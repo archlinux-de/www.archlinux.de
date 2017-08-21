@@ -163,6 +163,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
                     $this->printDebug("\tDownloading...", $output);
                     $packages = new PackageDatabase(
+                        $this->guzzleClient,
                         $this->getContainer()->getParameter('app.packages.mirror'),
                         $repo,
                         $arch,

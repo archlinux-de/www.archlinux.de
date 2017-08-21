@@ -4,6 +4,7 @@ namespace archportal\lib;
 
 use Iterator;
 use RuntimeException;
+use GuzzleHttp\Client;
 
 class PackageDatabase implements Iterator
 {
@@ -11,8 +12,6 @@ class PackageDatabase implements Iterator
     private $dbext = '.files';
     /** @var int */
     private $mtime = 0;
-    /** @var int */
-    private $repoMinMTime = 0;
     /** @var int */
     private $packageMinMTime = 0;
     /** @var int */
@@ -28,6 +27,7 @@ class PackageDatabase implements Iterator
     public const DELAY = 120;
 
     /**
+     * @param Client $guzzleClient
      * @param string $mirror
      * @param string $repository
      * @param string $architecture
@@ -35,21 +35,24 @@ class PackageDatabase implements Iterator
      * @param int $packageMinMTime
      */
     public function __construct(
+        Client $guzzleClient,
         string $mirror,
         string $repository,
         string $architecture,
         int $repoMinMTime = 0,
         int $packageMinMTime = 0
     ) {
-        $this->repoMinMTime = $repoMinMTime;
         $this->packageMinMTime = $packageMinMTime;
-        $download = new Download($mirror . $repository . '/os/' . $architecture . '/' . $repository . $this->dbext);
+        $download = new Download(
+            $guzzleClient,
+            $mirror . $repository . '/os/' . $architecture . '/' . $repository . $this->dbext
+        );
         $this->mtime = $download->getMTime();
 
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
-        if ($this->mtime > $this->repoMinMTime && time() - $this->mtime > self::DELAY) {
+        if ($this->mtime > $repoMinMTime && time() - $this->mtime > self::DELAY) {
             system('bsdtar -xf ' . $download->getFile() . ' -C ' . $this->dbDir, $return);
             if ($return !== 0) {
                 throw new RuntimeException('Could not extract Database');
