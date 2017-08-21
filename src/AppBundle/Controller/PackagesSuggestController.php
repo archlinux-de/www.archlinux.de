@@ -29,7 +29,7 @@ class PackagesSuggestController extends Controller
     public function suggestAction(Request $request): Response
     {
         $term = $request->get('term');
-        if (strlen($term) < 2 || strlen($term) > 50) {
+        if (strlen($term) < 1 || strlen($term) > 50) {
             return $this->json([]);
         }
         $suggestions = $this->database->prepare('

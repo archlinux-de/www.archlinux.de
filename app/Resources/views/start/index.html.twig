@@ -7,7 +7,7 @@
             new autoComplete({
                 selector: '#searchfield',
                 delay: 100,
-                minChars: 2,
+                minChars: 1,
                 source: function (term, callback) {
                     fetch('{{ path('app_packagessuggest_suggest') }}?term=' + encodeURI(term))
                         .then(function (response) {
