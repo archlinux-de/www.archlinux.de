@@ -2,8 +2,10 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Download;
 use Doctrine\DBAL\Driver\Connection;
+use FeedIo\Factory;
+use FeedIo\Feed\ItemInterface;
+use FeedIo\FeedInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,9 +37,8 @@ class UpdateNewsCommand extends ContainerAwareCommand
         $this->lock('cron.lock', true);
 
         try {
-            $newsEntries = $this->getNewsEntries();
             $this->database->beginTransaction();
-            $this->updateNewsEntries($newsEntries);
+            $this->updateNewsEntries($this->getNewsFeed());
             $this->database->commit();
         } catch (\RuntimeException $e) {
             $this->database->rollBack();
@@ -45,7 +46,7 @@ class UpdateNewsCommand extends ContainerAwareCommand
         }
     }
 
-    private function updateNewsEntries(\SimpleXMLElement $newsEntries)
+    private function updateNewsEntries(FeedInterface $newsFeed)
     {
         $stm = $this->database->prepare('
                 INSERT INTO
@@ -64,26 +65,27 @@ class UpdateNewsCommand extends ContainerAwareCommand
                     author_name = VALUES(author_name),
                     updated = VALUES(updated)
             ');
-        foreach ($newsEntries as $newsEntry) {
-            $stm->bindValue('id', (string)$newsEntry->id, \PDO::PARAM_STR);
-            $stm->bindValue('title', (string)$newsEntry->title, \PDO::PARAM_STR);
-            $stm->bindValue('link', (string)$newsEntry->link->attributes()->href, \PDO::PARAM_STR);
-            $stm->bindValue('summary', (string)$newsEntry->summary, \PDO::PARAM_STR);
-            $stm->bindValue('author_name', (string)$newsEntry->author->name, \PDO::PARAM_STR);
-            $stm->bindValue('author_uri', (string)$newsEntry->author->uri, \PDO::PARAM_STR);
-            $stm->bindValue('updated', (new \DateTime((string)$newsEntry->updated))->getTimestamp(), \PDO::PARAM_INT);
+        /** @var ItemInterface $newsEntry */
+        foreach ($newsFeed as $newsEntry) {
+            $stm->bindValue('id', $newsEntry->getPublicId(), \PDO::PARAM_STR);
+            $stm->bindValue('title', $newsEntry->getTitle(), \PDO::PARAM_STR);
+            $stm->bindValue('link', $newsEntry->getLink(), \PDO::PARAM_STR);
+            $stm->bindValue('summary', $newsEntry->getDescription(), \PDO::PARAM_STR);
+            $stm->bindValue('author_name', $newsEntry->getAuthor()->getName(), \PDO::PARAM_STR);
+            $stm->bindValue('author_uri', $newsEntry->getAuthor()->getUri(), \PDO::PARAM_STR);
+            $stm->bindValue('updated', $newsEntry->getLastModified()->getTimestamp(), \PDO::PARAM_INT);
             $stm->execute();
         }
     }
 
     /**
-     * @return \SimpleXMLElement
+     * @return FeedInterface
      */
-    private function getNewsEntries(): \SimpleXMLElement
+    private function getNewsFeed(): FeedInterface
     {
-        $download = new Download($this->getContainer()->getParameter('app.news.feed'));
-        $feed = new \SimpleXMLElement($download->getFile(), 0, true);
-
-        return $feed->entry;
+        return Factory::create()
+            ->getFeedIo()
+            ->read($this->getContainer()->getParameter('app.news.feed'))
+            ->getFeed();
     }
 }
