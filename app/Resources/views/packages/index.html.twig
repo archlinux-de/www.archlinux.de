@@ -21,9 +21,7 @@
                 "serverSide": true,
                 "order": [[5, "desc"]],
                 "ajax": "{{ path('app_packages_datatables') }}",
-                "buttons": [
-                    "collection"
-                ],
+                "searchDelay": 100,
                 "searchCols": [
                     null,
                     {"search": "{{ default_architecture }}"},
@@ -59,7 +57,8 @@
                     {
                         "data": "description",
                         "orderable": false,
-                        "searchable": true
+                        "searchable": true,
+                        "className": "packages-description"
                     },
                     {
                         "data": "builddate",
@@ -74,10 +73,7 @@
                     if (row.testing) {
                         $(row).addClass('less');
                     }
-                },
-                "columnDefs": [
-                    {className: "packages-description", "targets": [4]}
-                ]
+                }
             });
         });
     </script>
