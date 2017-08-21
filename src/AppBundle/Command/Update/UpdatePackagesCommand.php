@@ -2,18 +2,18 @@
 
 namespace AppBundle\Command\Update;
 
-use archportal\lib\Download;
 use archportal\lib\ObjectStore;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
-use PDO;
+use \PDO;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use GuzzleHttp\Client;
 
 class UpdatePackagesCommand extends ContainerAwareCommand
 {
@@ -101,16 +101,20 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private $database;
     /** @var ObjectStore */
     private $objectStore;
+    /** @var Client */
+    private $guzzleClient;
 
     /**
      * @param Connection $connection
      * @param ObjectStore $objectStore
+     * @param Client $guzzleClient
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore)
+    public function __construct(Connection $connection, ObjectStore $objectStore, Client $guzzleClient)
     {
         parent::__construct();
         $this->database = $connection;
         $this->objectStore = $objectStore;
+        $this->guzzleClient = $guzzleClient;
     }
 
     protected function configure()
@@ -149,11 +153,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     $archId = $this->getArchId($arch);
                     $repoId = $this->getRepoId($repo, $archId);
 
-                    $this->selectRepoMTime->bindParam('repoId', $repoId, PDO::PARAM_INT);
+                    $this->selectRepoMTime->bindParam('repoId', $repoId, \PDO::PARAM_INT);
                     $this->selectRepoMTime->execute();
                     $repoMTime = $this->selectRepoMTime->fetchColumn();
 
-                    $this->selectPackageMTime->bindParam('repoId', $repoId, PDO::PARAM_INT);
+                    $this->selectPackageMTime->bindParam('repoId', $repoId, \PDO::PARAM_INT);
                     $this->selectPackageMTime->execute();
                     $packageMTime = (int)$this->selectPackageMTime->fetchColumn();
 
@@ -187,8 +191,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                         $this->printDebug("\tCleaning up obsolete packages...", $output);
                         $this->cleanupObsoletePackages($repoId, $packageMTime, $packages->getOldPackageNames());
 
-                        $this->updateRepoMTime->bindValue('mtime', $packages->getMTime(), PDO::PARAM_INT);
-                        $this->updateRepoMTime->bindParam('repoId', $repoId, PDO::PARAM_INT);
+                        $this->updateRepoMTime->bindValue('mtime', $packages->getMTime(), \PDO::PARAM_INT);
+                        $this->updateRepoMTime->bindParam('repoId', $repoId, \PDO::PARAM_INT);
                         $this->updateRepoMTime->execute();
                     }
                 }
@@ -243,8 +247,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function checkLastMirrorUpdate(): bool
     {
         $lastLocalUpdate = $this->objectStore->getObject('UpdatePackages:lastupdate');
-        $download = new Download($this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate');
-        $this->lastMirrorUpdate = (int)file_get_contents($download->getFile());
+        $content = $this->guzzleClient->request(
+            'GET',
+            $this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate'
+        )->getBody()->getContents();
+        $this->lastMirrorUpdate = (int)$content;
 
         return $this->lastMirrorUpdate !== $lastLocalUpdate;
     }
@@ -570,11 +577,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         if (!isset($this->arches[$archName])) {
             $archHtml = htmlspecialchars($archName);
-            $this->selectArchId->bindParam('name', $archHtml, PDO::PARAM_STR);
+            $this->selectArchId->bindParam('name', $archHtml, \PDO::PARAM_STR);
             $this->selectArchId->execute();
             $id = $this->selectArchId->fetchColumn();
             if ($id === false) {
-                $this->insertArchName->bindParam('name', $archHtml, PDO::PARAM_STR);
+                $this->insertArchName->bindParam('name', $archHtml, \PDO::PARAM_STR);
                 $this->insertArchName->execute();
                 $id = $this->database->lastInsertId();
             }
@@ -593,17 +600,17 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function getRepoId(string $repoName, int $archId): int
     {
         $repoName = htmlspecialchars($repoName);
-        $this->selectRepoId->bindParam('name', $repoName, PDO::PARAM_STR);
-        $this->selectRepoId->bindParam('arch', $archId, PDO::PARAM_INT);
+        $this->selectRepoId->bindParam('name', $repoName, \PDO::PARAM_STR);
+        $this->selectRepoId->bindParam('arch', $archId, \PDO::PARAM_INT);
         $this->selectRepoId->execute();
         $id = $this->selectRepoId->fetchColumn();
         if ($id === false) {
-            $this->insertRepoName->bindParam('name', $repoName, PDO::PARAM_STR);
-            $this->insertRepoName->bindParam('arch', $archId, PDO::PARAM_INT);
+            $this->insertRepoName->bindParam('name', $repoName, \PDO::PARAM_STR);
+            $this->insertRepoName->bindParam('arch', $archId, \PDO::PARAM_INT);
             $this->insertRepoName->bindValue(
                 'testing',
                 (preg_match('/(-|^)testing$/', $repoName) > 0 ? 1 : 0),
-                PDO::PARAM_INT
+                \PDO::PARAM_INT
             );
             $this->insertRepoName->execute();
             $id = $this->database->lastInsertId();
@@ -623,13 +630,13 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             preg_match('/([^<>]+)(?:<(.+?)>)?/', $packager, $matches);
             $name = htmlspecialchars(trim(!empty($matches[1]) ? $matches[1] : $packager));
             $email = htmlspecialchars(trim(isset($matches[2]) ? $matches[2] : ''));
-            $this->selectPackager->bindParam('name', $name, PDO::PARAM_STR);
-            $this->selectPackager->bindParam('email', $email, PDO::PARAM_STR);
+            $this->selectPackager->bindParam('name', $name, \PDO::PARAM_STR);
+            $this->selectPackager->bindParam('email', $email, \PDO::PARAM_STR);
             $this->selectPackager->execute();
             $id = $this->selectPackager->fetchColumn();
             if ($id === false) {
-                $this->insertPackager->bindParam('name', $name, PDO::PARAM_STR);
-                $this->insertPackager->bindParam('email', $email, PDO::PARAM_STR);
+                $this->insertPackager->bindParam('name', $name, \PDO::PARAM_STR);
+                $this->insertPackager->bindParam('email', $email, \PDO::PARAM_STR);
                 $this->insertPackager->execute();
                 $id = $this->database->lastInsertId();
             }
@@ -645,11 +652,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function addPackageToGroups(int $packageId, array $groups)
     {
-        $this->cleanupPackageGroup->bindParam('package', $packageId, PDO::PARAM_INT);
+        $this->cleanupPackageGroup->bindParam('package', $packageId, \PDO::PARAM_INT);
         $this->cleanupPackageGroup->execute();
         foreach ($groups as $group) {
-            $this->insertPackageGroup->bindParam('package', $packageId, PDO::PARAM_INT);
-            $this->insertPackageGroup->bindValue('group', $this->getGroupID($group), PDO::PARAM_INT);
+            $this->insertPackageGroup->bindParam('package', $packageId, \PDO::PARAM_INT);
+            $this->insertPackageGroup->bindValue('group', $this->getGroupID($group), \PDO::PARAM_INT);
             $this->insertPackageGroup->execute();
         }
     }
@@ -663,11 +670,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         if (!isset($this->groups[$groupName])) {
             $htmlGroup = htmlspecialchars($groupName);
-            $this->selectGroup->bindParam('name', $htmlGroup, PDO::PARAM_STR);
+            $this->selectGroup->bindParam('name', $htmlGroup, \PDO::PARAM_STR);
             $this->selectGroup->execute();
             $id = $this->selectGroup->fetchColumn();
             if ($id === false) {
-                $this->insertGroup->bindParam('name', $htmlGroup, PDO::PARAM_STR);
+                $this->insertGroup->bindParam('name', $htmlGroup, \PDO::PARAM_STR);
                 $this->insertGroup->execute();
                 $id = $this->database->lastInsertId();
             }
@@ -683,11 +690,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function addPackageToLicenses(int $packageId, array $licenses)
     {
-        $this->cleanupPackageLicense->bindParam('package', $packageId, PDO::PARAM_INT);
+        $this->cleanupPackageLicense->bindParam('package', $packageId, \PDO::PARAM_INT);
         $this->cleanupPackageLicense->execute();
         foreach ($licenses as $license) {
-            $this->insertPackageLicense->bindParam('package', $packageId, PDO::PARAM_INT);
-            $this->insertPackageLicense->bindValue('license', $this->getLicenseID($license), PDO::PARAM_INT);
+            $this->insertPackageLicense->bindParam('package', $packageId, \PDO::PARAM_INT);
+            $this->insertPackageLicense->bindValue('license', $this->getLicenseID($license), \PDO::PARAM_INT);
             $this->insertPackageLicense->execute();
         }
     }
@@ -701,11 +708,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         if (!isset($this->licenses[$licenseName])) {
             $htmlLicense = htmlspecialchars($licenseName);
-            $this->selectLicense->bindParam('name', $htmlLicense, PDO::PARAM_STR);
+            $this->selectLicense->bindParam('name', $htmlLicense, \PDO::PARAM_STR);
             $this->selectLicense->execute();
             $id = $this->selectLicense->fetchColumn();
             if ($id === false) {
-                $this->insertLicense->bindParam('name', $htmlLicense, PDO::PARAM_STR);
+                $this->insertLicense->bindParam('name', $htmlLicense, \PDO::PARAM_STR);
                 $this->insertLicense->execute();
                 $id = $this->database->lastInsertId();
             }
@@ -722,8 +729,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function addRelation(array $relations, int $packageId, string $type)
     {
-        $this->cleanupRelation->bindParam('packageId', $packageId, PDO::PARAM_INT);
-        $this->cleanupRelation->bindParam('type', $type, PDO::PARAM_STR);
+        $this->cleanupRelation->bindParam('packageId', $packageId, \PDO::PARAM_INT);
+        $this->cleanupRelation->bindParam('type', $type, \PDO::PARAM_STR);
         $this->cleanupRelation->execute();
         foreach ($relations as $relation) {
             if (preg_match('/^([\w-]+?)((?:<|<=|=|>=|>)+[\w\.:]+)/', $relation, $matches) > 0) {
@@ -736,10 +743,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $relationName = htmlspecialchars($relation);
                 $relationVersion = null;
             }
-            $this->insertRelation->bindParam('packageId', $packageId, PDO::PARAM_INT);
-            $this->insertRelation->bindParam('dependsName', $relationName, PDO::PARAM_STR);
-            $this->insertRelation->bindParam('dependsVersion', $relationVersion, PDO::PARAM_STR);
-            $this->insertRelation->bindParam('type', $type, PDO::PARAM_STR);
+            $this->insertRelation->bindParam('packageId', $packageId, \PDO::PARAM_INT);
+            $this->insertRelation->bindParam('dependsName', $relationName, \PDO::PARAM_STR);
+            $this->insertRelation->bindParam('dependsVersion', $relationVersion, \PDO::PARAM_STR);
+            $this->insertRelation->bindParam('type', $type, \PDO::PARAM_STR);
             $this->insertRelation->execute();
         }
     }
@@ -753,11 +760,11 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         if (!isset($this->files[$fileName])) {
             $htmlFile = htmlspecialchars($fileName);
-            $this->selectFileIndex->bindParam('name', $htmlFile, PDO::PARAM_STR);
+            $this->selectFileIndex->bindParam('name', $htmlFile, \PDO::PARAM_STR);
             $this->selectFileIndex->execute();
             $id = $this->selectFileIndex->fetchColumn();
             if ($id === false) {
-                $this->insertFileIndex->bindParam('name', $htmlFile, PDO::PARAM_STR);
+                $this->insertFileIndex->bindParam('name', $htmlFile, \PDO::PARAM_STR);
                 $this->insertFileIndex->execute();
                 $id = $this->database->lastInsertId();
             }
@@ -773,22 +780,22 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function insertFiles(array $files, int $packageId)
     {
-        $this->cleanupPackageFileIndex->bindParam('package', $packageId, PDO::PARAM_INT);
+        $this->cleanupPackageFileIndex->bindParam('package', $packageId, \PDO::PARAM_INT);
         $this->cleanupPackageFileIndex->execute();
 
-        $this->cleanupFiles->bindParam('package', $packageId, PDO::PARAM_INT);
+        $this->cleanupFiles->bindParam('package', $packageId, \PDO::PARAM_INT);
         $this->cleanupFiles->execute();
 
         foreach ($files as $file) {
-            $this->insertFiles->bindParam('package', $packageId, PDO::PARAM_INT);
-            $this->insertFiles->bindValue('path', htmlspecialchars($file), PDO::PARAM_STR);
+            $this->insertFiles->bindParam('package', $packageId, \PDO::PARAM_INT);
+            $this->insertFiles->bindValue('path', htmlspecialchars($file), \PDO::PARAM_STR);
             $this->insertFiles->execute();
             // skip directories (which end with /)
             if (substr($file, -1) != '/') {
                 $filename = basename($file);
                 if (strlen($filename) > 2) {
-                    $this->insertPackageFileIndex->bindParam('package', $packageId, PDO::PARAM_INT);
-                    $this->insertPackageFileIndex->bindValue('file', $this->getFileIndexID($filename), PDO::PARAM_INT);
+                    $this->insertPackageFileIndex->bindParam('package', $packageId, \PDO::PARAM_INT);
+                    $this->insertPackageFileIndex->bindValue('file', $this->getFileIndexID($filename), \PDO::PARAM_INT);
                     $this->insertPackageFileIndex->execute();
                 }
             }
@@ -804,35 +811,35 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $packageName = htmlspecialchars($package->getName());
         $packageArch = $this->getArchId($package->getArch());
 
-        $this->selectPackageId->bindParam('archId', $packageArch, PDO::PARAM_INT);
-        $this->selectPackageId->bindParam('repoId', $repoId, PDO::PARAM_INT);
-        $this->selectPackageId->bindParam('pkgname', $packageName, PDO::PARAM_STR);
+        $this->selectPackageId->bindParam('archId', $packageArch, \PDO::PARAM_INT);
+        $this->selectPackageId->bindParam('repoId', $repoId, \PDO::PARAM_INT);
+        $this->selectPackageId->bindParam('pkgname', $packageName, \PDO::PARAM_STR);
         $this->selectPackageId->execute();
         $packageId = $this->selectPackageId->fetchColumn();
 
         if ($packageId !== false) {
             $packageStm = $this->updatePackage;
-            $packageStm->bindParam('id', $packageId, PDO::PARAM_INT);
+            $packageStm->bindParam('id', $packageId, \PDO::PARAM_INT);
         } else {
             $packageStm = $this->insertPackage;
         }
 
-        $packageStm->bindValue('filename', htmlspecialchars($package->getFileName()), PDO::PARAM_STR);
-        $packageStm->bindParam('name', $packageName, PDO::PARAM_STR);
-        $packageStm->bindValue('base', htmlspecialchars($package->getBase()), PDO::PARAM_STR);
-        $packageStm->bindValue('version', htmlspecialchars($package->getVersion()), PDO::PARAM_STR);
-        $packageStm->bindValue('desc', htmlspecialchars($package->getDescription()), PDO::PARAM_STR);
-        $packageStm->bindValue('csize', $package->getCompressedSize(), PDO::PARAM_INT);
-        $packageStm->bindValue('isize', $package->getInstalledSize(), PDO::PARAM_INT);
-        $packageStm->bindValue('md5sum', $package->getMD5SUM(), PDO::PARAM_STR);
-        $packageStm->bindValue('sha256sum', $package->getSHA256SUM(), PDO::PARAM_STR);
-        $packageStm->bindValue('pgpsig', base64_decode($package->getPGPSignature(), true), PDO::PARAM_STR);
-        $packageStm->bindValue('url', htmlspecialchars($package->getURL()), PDO::PARAM_STR);
-        $packageStm->bindParam('arch', $packageArch, PDO::PARAM_INT);
-        $packageStm->bindValue('builddate', $package->getBuildDate(), PDO::PARAM_INT);
-        $packageStm->bindValue('mtime', $package->getMTime(), PDO::PARAM_INT);
-        $packageStm->bindValue('packager', $this->getPackagerId($package->getPackager()), PDO::PARAM_INT);
-        $packageStm->bindParam('repoId', $repoId, PDO::PARAM_INT);
+        $packageStm->bindValue('filename', htmlspecialchars($package->getFileName()), \PDO::PARAM_STR);
+        $packageStm->bindParam('name', $packageName, \PDO::PARAM_STR);
+        $packageStm->bindValue('base', htmlspecialchars($package->getBase()), \PDO::PARAM_STR);
+        $packageStm->bindValue('version', htmlspecialchars($package->getVersion()), \PDO::PARAM_STR);
+        $packageStm->bindValue('desc', htmlspecialchars($package->getDescription()), \PDO::PARAM_STR);
+        $packageStm->bindValue('csize', $package->getCompressedSize(), \PDO::PARAM_INT);
+        $packageStm->bindValue('isize', $package->getInstalledSize(), \PDO::PARAM_INT);
+        $packageStm->bindValue('md5sum', $package->getMD5SUM(), \PDO::PARAM_STR);
+        $packageStm->bindValue('sha256sum', $package->getSHA256SUM(), \PDO::PARAM_STR);
+        $packageStm->bindValue('pgpsig', base64_decode($package->getPGPSignature(), true), \PDO::PARAM_STR);
+        $packageStm->bindValue('url', htmlspecialchars($package->getURL()), \PDO::PARAM_STR);
+        $packageStm->bindParam('arch', $packageArch, \PDO::PARAM_INT);
+        $packageStm->bindValue('builddate', $package->getBuildDate(), \PDO::PARAM_INT);
+        $packageStm->bindValue('mtime', $package->getMTime(), \PDO::PARAM_INT);
+        $packageStm->bindValue('packager', $this->getPackagerId($package->getPackager()), \PDO::PARAM_INT);
+        $packageStm->bindParam('repoId', $repoId, \PDO::PARAM_INT);
         $packageStm->execute();
 
         if ($packageId === false) {
@@ -957,24 +964,24 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 repository = :repoId
                 AND mtime <= :mtime
             ');
-        $repoPackages->bindValue('repoId', $repoId, PDO::PARAM_INT);
-        $repoPackages->bindValue('mtime', $packageMTime, PDO::PARAM_INT);
+        $repoPackages->bindValue('repoId', $repoId, \PDO::PARAM_INT);
+        $repoPackages->bindValue('mtime', $packageMTime, \PDO::PARAM_INT);
         $repoPackages->execute();
         foreach ($repoPackages as $repoPackage) {
             if (!in_array($repoPackage['name'], $allPackages)) {
-                $cleanupPackages->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+                $cleanupPackages->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                 $cleanupPackages->execute();
-                $cleanupRelations->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+                $cleanupRelations->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                 $cleanupRelations->execute();
                 if (isset($cleanupFiles) && isset($cleanupPackageFileIndex)) {
-                    $cleanupFiles->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+                    $cleanupFiles->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                     $cleanupFiles->execute();
-                    $cleanupPackageFileIndex->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+                    $cleanupPackageFileIndex->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                     $cleanupPackageFileIndex->execute();
                 }
-                $cleanupPackageGroup->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+                $cleanupPackageGroup->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                 $cleanupPackageGroup->execute();
-                $cleanupPackageLicense->bindValue('packageId', $repoPackage['id'], PDO::PARAM_INT);
+                $cleanupPackageLicense->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                 $cleanupPackageLicense->execute();
                 $this->updatedPackages = true;
             }
