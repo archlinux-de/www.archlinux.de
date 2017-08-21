@@ -108,6 +108,7 @@ class Request
     }
 
     /**
+     * @param int $id
      * @return Column
      */
     public function getColumn(int $id): Column

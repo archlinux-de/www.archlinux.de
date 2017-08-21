@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
 use FeedIo\Factory;
+use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -77,7 +78,7 @@ class RecentPackagesController extends Controller
         $packages->bindValue('architecture', $this->getParameter('app.packages.default_architecture'), \PDO::PARAM_STR);
         $packages->execute();
 
-        $feed = new \FeedIo\Feed();
+        $feed = new Feed();
         $feedUrl = $this->generateUrl('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $feed->setUrl($feedUrl);
         $feed->setTitle('Aktuelle Arch Linux Pakete');

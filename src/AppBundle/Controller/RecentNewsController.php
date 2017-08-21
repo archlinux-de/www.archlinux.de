@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use FeedIo\Factory;
+use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,7 +51,7 @@ class RecentNewsController extends Controller
             LIMIT 25
             ');
 
-        $feed = new \FeedIo\Feed();
+        $feed = new Feed();
         $feedUrl = $this->generateUrl('app_recentnews_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $feed->setUrl($feedUrl);
         $feed->setTitle('Aktuelle Arch Linux Neuigkeiten');
