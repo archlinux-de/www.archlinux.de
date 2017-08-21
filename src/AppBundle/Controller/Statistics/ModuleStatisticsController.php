@@ -3,54 +3,56 @@
 namespace AppBundle\Controller\Statistics;
 
 use archportal\lib\IDatabaseCachable;
-use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
+use Psr\SimpleCache\CacheInterface;
+
 class ModuleStatisticsController extends Controller implements IDatabaseCachable
 {
     /** @var Connection */
     private $database;
-    /** @var ObjectStore */
-    private $objectStore;
     /** @var StatisticsPage */
     private $statisticsPage;
+    /** @var CacheInterface */
+    private $cache;
 
     /**
      * @param Connection $connection
-     * @param ObjectStore $objectStore
+     * @param CacheInterface $cache
      * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
+    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
     {
         $this->database = $connection;
-        $this->objectStore = $objectStore;
+        $this->cache = $cache;
         $this->statisticsPage = $statisticsPage;
     }
 
     /**
      * @Route("/statistics/module", methods={"GET"})
+     * @Cache(smaxage="900")
      * @return Response
      */
     public function moduleAction(): Response
     {
-        if (!($body = $this->objectStore->getObject('ModuleStatistics'))) {
+        if (!$this->cache->has('ModuleStatistics')) {
             throw new NotFoundHttpException('No data found!');
         }
         return $this->render('statistics/statistic.html.twig', [
             'title' => 'Module statistics',
-            'body' => $body
+            'body' => $this->cache->get('ModuleStatistics')
         ]);
     }
 
     public function updateDatabaseCache()
     {
         try {
-            $this->database->beginTransaction();
             $log = $this->getCommonModuleUsageStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
@@ -87,10 +89,8 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
             </table>
             </div>
             ';
-            $this->objectStore->addObject('ModuleStatistics', $body);
-            $this->database->commit();
+            $this->cache->set('ModuleStatistics', $body);
         } catch (\RuntimeException $e) {
-            $this->database->rollBack();
             echo 'ModuleStatistics failed:' . $e->getMessage();
         }
     }

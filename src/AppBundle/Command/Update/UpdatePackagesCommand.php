@@ -3,7 +3,7 @@
 namespace AppBundle\Command\Update;
 
 use AppBundle\Service\PackageDatabaseDownloader;
-use archportal\lib\ObjectStore;
+use Psr\SimpleCache\CacheInterface;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
 use Doctrine\DBAL\Driver\Connection;
@@ -99,8 +99,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     );
     /** @var Connection */
     private $database;
-    /** @var ObjectStore */
-    private $objectStore;
+    /** @var CacheInterface */
+    private $cache;
     /** @var Client */
     private $guzzleClient;
     /** @var PackageDatabaseDownloader */
@@ -109,18 +109,18 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param Connection $connection
-     * @param ObjectStore $objectStore
+     * @param CacheInterface $cache
      * @param Client $guzzleClient
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
         Connection $connection,
-        ObjectStore $objectStore,
+        CacheInterface $cache,
         Client $guzzleClient
     ) {
         parent::__construct();
         $this->database = $connection;
-        $this->objectStore = $objectStore;
+        $this->cache = $cache;
         $this->guzzleClient = $guzzleClient;
         $this->packageDatabaseDownloader = $packageDatabaseDownloader;
     }
@@ -250,7 +250,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
      */
     private function checkLastMirrorUpdate(): bool
     {
-        $lastLocalUpdate = $this->objectStore->getObject('UpdatePackages:lastupdate');
+        $lastLocalUpdate = $this->cache->get('UpdatePackages-lastupdate');
         $content = $this->guzzleClient->request(
             'GET',
             $this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate'
@@ -262,7 +262,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     private function updateLastMirrorUpdate()
     {
-        $this->objectStore->addObject('UpdatePackages:lastupdate', $this->lastMirrorUpdate);
+        $this->cache->set('UpdatePackages-lastupdate', $this->lastMirrorUpdate);
     }
 
     private function purgeDatabase(OutputInterface $output)
@@ -287,7 +287,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->finish();
             $output->writeln('');
         }
-        $this->objectStore->addObject('UpdatePackages:lastupdate', 0);
+        $this->cache->set('UpdatePackages-lastupdate', 0);
     }
 
     private function resetDatabase(OutputInterface $output)
@@ -311,7 +311,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->finish();
             $output->writeln('');
         }
-        $this->objectStore->addObject('UpdatePackages:lastupdate', 0);
+        $this->cache->set('UpdatePackages-lastupdate', 0);
 
         $this->database->beginTransaction();
     }

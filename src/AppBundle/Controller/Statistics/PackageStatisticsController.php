@@ -2,9 +2,10 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
+use Psr\SimpleCache\CacheInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -15,42 +16,42 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
 {
     /** @var Connection */
     private $database;
-    /** @var ObjectStore */
-    private $objectStore;
     /** @var StatisticsPage */
     private $statisticsPage;
+    /** @var CacheInterface */
+    private $cache;
 
     /**
      * @param Connection $connection
-     * @param ObjectStore $objectStore
+     * @param CacheInterface $cache
      * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
+    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
     {
         $this->database = $connection;
-        $this->objectStore = $objectStore;
+        $this->cache = $cache;
         $this->statisticsPage = $statisticsPage;
     }
 
     /**
      * @Route("/statistics/package", methods={"GET"})
+     * @Cache(smaxage="900")
      * @return Response
      */
     public function packageAction(): Response
     {
-        if (!($body = $this->objectStore->getObject('PackageStatistics'))) {
+        if (!$this->cache->has('PackageStatistics')) {
             throw new NotFoundHttpException('No data found!');
         }
         return $this->render('statistics/statistic.html.twig', [
             'title' => 'Package statistics',
-            'body' => $body
+            'body' => $this->cache->get('PackageStatistics')
         ]);
     }
 
     public function updateDatabaseCache()
     {
         try {
-            $this->database->beginTransaction();
             $log = $this->getCommonPackageUsageStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
@@ -103,10 +104,8 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             </table>
             </div>
             ';
-            $this->objectStore->addObject('PackageStatistics', $body);
-            $this->database->commit();
+            $this->cache->set('PackageStatistics', $body);
         } catch (\RuntimeException $e) {
-            $this->database->rollBack();
             echo 'PackageStatistics failed:' . $e->getMessage();
         }
     }

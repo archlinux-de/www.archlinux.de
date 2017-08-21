@@ -42,6 +42,10 @@ services:
             - connect_timeout: 60
               timeout: 1800
 
-    archportal\lib\ObjectStore:
+    Psr\SimpleCache\CacheInterface:
+        class: Symfony\Component\Cache\Simple\PdoCache
+        arguments:
+            - '@database_connection'
+
     archportal\lib\StatisticsPage:
     archportal\lib\GeoIP:

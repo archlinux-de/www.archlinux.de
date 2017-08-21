@@ -9,16 +9,6 @@ CREATE TABLE `architectures` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cache` (
-  `key` varchar(100) NOT NULL,
-  `value` mediumblob NOT NULL,
-  `expires` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`key`),
-  KEY `expires` (`expires`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `countries` (
   `code` char(2) NOT NULL,
   `name` varchar(50) NOT NULL,

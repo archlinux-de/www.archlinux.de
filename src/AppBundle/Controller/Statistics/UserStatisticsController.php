@@ -2,9 +2,10 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
+use Psr\SimpleCache\CacheInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -15,42 +16,42 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
 {
     /** @var Connection */
     private $database;
-    /** @var ObjectStore */
-    private $objectStore;
     /** @var StatisticsPage */
     private $statisticsPage;
+    /** @var CacheInterface */
+    private $cache;
 
     /**
      * @param Connection $connection
-     * @param ObjectStore $objectStore
+     * @param CacheInterface $cache
      * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
+    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
     {
         $this->database = $connection;
-        $this->objectStore = $objectStore;
+        $this->cache = $cache;
         $this->statisticsPage = $statisticsPage;
     }
 
     /**
      * @Route("/statistics/user", methods={"GET"})
+     * @Cache(smaxage="900")
      * @return Response
      */
     public function userAction(): Response
     {
-        if (!($body = $this->objectStore->getObject('UserStatistics'))) {
+        if (!$this->cache->has('UserStatistics')) {
             throw new NotFoundHttpException('No data found!');
         }
         return $this->render('statistics/statistic.html.twig', [
             'title' => 'User statistics',
-            'body' => $body
+            'body' => $this->cache->get('UserStatistics')
         ]);
     }
 
     public function updateDatabaseCache()
     {
         try {
-            $this->database->beginTransaction();
             $log = $this->getCommonPackageUsageStatistics();
             $body = '<div class="box">
             <table id="packagedetails">
@@ -118,10 +119,8 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
             </table>
             </div>
             ';
-            $this->objectStore->addObject('UserStatistics', $body);
-            $this->database->commit();
+            $this->cache->set('UserStatistics', $body);
         } catch (\RuntimeException $e) {
-            $this->database->rollBack();
             echo 'UserStatistics failed:' . $e->getMessage();
         }
     }

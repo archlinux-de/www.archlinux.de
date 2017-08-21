@@ -2,10 +2,11 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\ObjectStore;
 use archportal\lib\StatisticsPage;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
+use Psr\SimpleCache\CacheInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -16,42 +17,42 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
 {
     /** @var Connection */
     private $database;
-    /** @var ObjectStore */
-    private $objectStore;
     /** @var StatisticsPage */
     private $statisticsPage;
+    /** @var CacheInterface */
+    private $cache;
 
     /**
      * @param Connection $connection
-     * @param ObjectStore $objectStore
+     * @param CacheInterface $cache
      * @param StatisticsPage $statisticsPage
      */
-    public function __construct(Connection $connection, ObjectStore $objectStore, StatisticsPage $statisticsPage)
+    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
     {
         $this->database = $connection;
-        $this->objectStore = $objectStore;
+        $this->cache = $cache;
         $this->statisticsPage = $statisticsPage;
     }
 
     /**
      * @Route("/statistics/fun", methods={"GET"})
+     * @Cache(smaxage="900")
      * @return Response
      */
     public function funAction(): Response
     {
-        if (!($body = $this->objectStore->getObject('FunStatistics'))) {
+        if (!$this->cache->has('FunStatistics')) {
             throw new NotFoundHttpException('No data found!');
         }
         return $this->render('statistics/statistic.html.twig', [
             'title' => 'Fun statistics',
-            'body' => $body
+            'body' => $this->cache->get('FunStatistics')
         ]);
     }
 
     public function updateDatabaseCache()
     {
         try {
-            $this->database->beginTransaction();
             $total = $this->database->query('
             SELECT
                 COUNT(*)
@@ -174,10 +175,8 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
             </table>
             </div>
             ';
-            $this->objectStore->addObject('FunStatistics', $body);
-            $this->database->commit();
+            $this->cache->set('FunStatistics', $body);
         } catch (\RuntimeException $e) {
-            $this->database->rollBack();
             echo 'FunStatistics failed:' . $e->getMessage();
         }
     }
