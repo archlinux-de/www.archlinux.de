@@ -1,2 +1,5 @@
 User-agent: *
+sitemap: /sitemap.xml
 Allow: /
+Disallow: /index.php
+Disallow: /download
