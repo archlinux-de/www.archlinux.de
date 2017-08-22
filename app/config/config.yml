@@ -50,6 +50,11 @@ framework:
     assets: ~
     php_errors:
         log: true
+    cache:
+        pools:
+            cache.database:
+                adapter: cache.adapter.pdo
+                public: true
 
 # Twig Configuration
 twig:
