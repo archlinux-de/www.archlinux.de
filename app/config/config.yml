@@ -7,7 +7,7 @@ imports:
 parameters:
     locale: de
     app.common.email: 'bob@archlinux.de'
-    app.packages.mirror: 'http://mirror.leaseweb.net/archlinux/'
+    app.packages.mirror: 'https://mirror.leaseweb.net/archlinux/'
     app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
     app.packages.repositories:
         core: ['x86_64', 'i686']

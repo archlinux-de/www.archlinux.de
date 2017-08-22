@@ -25,5 +25,5 @@ monolog:
             process_psr_3_messages: false
 
 parameters:
-    app.packages.mirror: 'http://repos.archlinux.org/'
-    app.mirrors.default: 'http://mirror.leaseweb.net/archlinux/'
+    app.packages.mirror: 'https://repos.archlinux.org/'
+    app.mirrors.default: 'https://mirror.leaseweb.net/archlinux/'
