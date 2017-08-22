@@ -82,6 +82,10 @@
 
 {% block title %}Paket-Suche{% endblock %}
 
+{% if search %}
+    {% block canonical %}{{ absolute_url(path('app_packages_index', {'search': search})) }}{% endblock %}
+{% endif %}
+
 {% block body %}
     <div class="box">
         <h2>Paket-Suche</h2>
