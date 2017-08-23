@@ -7,12 +7,10 @@ Encore
     .cleanupOutputBeforeBuild()
 
     .addEntry('start', './assets/js/start.js')
-    // .addEntry('packages', './assets/js/packages.js')
-    // .addEntry('mirrors', './assets/js/mirrors.js')
+    .addEntry('packages', ['./assets/js/packages.js', './assets/css/packages.scss'])
 
     .addStyleEntry('app', './assets/css/app.scss')
     .enableSassLoader()
-    .autoProvidejQuery()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning()
 ;

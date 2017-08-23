@@ -1,6 +1,6 @@
 {
     "name": "archportal",
-    "license": "GPL",
+    "license": "GPL-3.0",
     "type": "project",
     "description": "A portal website for lcoal Arch Linux communities",
     "autoload": {
