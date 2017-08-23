@@ -4,9 +4,7 @@
     <meta charset="UTF-8"/>
     <title>archlinux.de - {% block title %}{% endblock %}</title>
     {% block stylesheets %}
-        {% for style in ['arch', 'archnavbar'] %}
-            <link rel="stylesheet" media="screen" href="{{ asset('style/'~style~'.css') }}"/>
-        {% endfor %}
+        <link rel="stylesheet" media="screen" href="{{ asset('build/app.css') }}"/>
     {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('style/favicon.ico') }}"/>
     <link rel="alternate" type="application/atom+xml" title="Aktuelle Arch Linux Neuigkeiten"
