@@ -7,7 +7,7 @@ Encore
     .cleanupOutputBeforeBuild()
 
     .addEntry('start', './assets/js/start.js')
-    .addEntry('packages', ['./assets/js/packages.js', './assets/css/packages.scss'])
+    .addEntry('packages', './assets/js/packages.js')
 
     .addStyleEntry('app', './assets/css/app.scss')
     .enableSassLoader()

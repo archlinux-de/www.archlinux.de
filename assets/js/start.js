@@ -1,4 +1,5 @@
-require(['js-autocomplete'], function (autoComplete) {
+var autoComplete = require('js-autocomplete');
+window.addEventListener('load', function () {
     new autoComplete({
         selector: '#searchfield',
         delay: 100,

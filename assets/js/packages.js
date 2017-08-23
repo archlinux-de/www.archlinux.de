@@ -1,4 +1,9 @@
-require(['jquery', 'datatables.net', './lang-loader!datatables.net-plugins/i18n/German.lang'], function ($, dt, language) {
+require('../css/packages.scss');
+var $ = require('jquery');
+require('datatables.net');
+var language = './lang-loader!datatables.net-plugins/i18n/German.lang';
+
+$(document).ready(function () {
         $('#packages').DataTable({
             "language": language,
             "lengthMenu": [25, 50, 100],
