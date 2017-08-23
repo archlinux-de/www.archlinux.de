@@ -8,6 +8,7 @@ Encore
 
     .addEntry('start', './assets/js/start.js')
     .addEntry('packages', './assets/js/packages.js')
+    .addEntry('mirrors', './assets/js/mirrors.js')
 
     .addStyleEntry('app', './assets/css/app.scss')
     .addStyleEntry('rss', './assets/images/rss.png')
