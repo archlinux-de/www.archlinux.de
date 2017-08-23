@@ -45,7 +45,6 @@ composer.lock: composer.json
 	${APP-RUN} ${COMPOSER} update nothing
 
 vendor: composer.lock
-	mkdir -p ~/.composer/cache
 	${APP-RUN} ${COMPOSER} install
 
 shell:
