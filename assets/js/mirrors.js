@@ -14,7 +14,10 @@ $(document).ready(function () {
             {
                 "data": "url",
                 "render": function (data, type, row) {
-                    return '<a href="' + row.url + '" rel="nofollow">' + data + '</a>';
+                    if (type == 'display') {
+                        return '<a href="' + row.url + '" rel="nofollow">' + data + '</a>';
+                    }
+                    return data;
                 }
             },
             {
@@ -32,11 +35,10 @@ $(document).ready(function () {
                 "data": "lastsync",
                 "searchable": false,
                 "render": function (data, type, row) {
-                    if (data) {
+                    if (type == 'display' && data) {
                         return new Date(data * 1000).toLocaleString('de-DE');
-                    } else {
-                        return '';
                     }
+                    return data;
                 }
             }
         ]

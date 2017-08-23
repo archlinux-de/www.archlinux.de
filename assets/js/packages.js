@@ -38,7 +38,10 @@ $(document).ready(function () {
                     "orderable": true,
                     "searchable": true,
                     "render": function (data, type, row) {
-                        return '<a href="' + row.url + '">' + data + '</a>';
+                        if (type == 'display') {
+                            return '<a href="' + row.url + '">' + data + '</a>';
+                        }
+                        return data;
                     }
                 },
                 {
@@ -57,7 +60,10 @@ $(document).ready(function () {
                     "orderable": true,
                     "searchable": false,
                     "render": function (data, type, row) {
-                        return new Date(data * 1000).toLocaleString('de-DE');
+                        if (type == 'display') {
+                            return new Date(data * 1000).toLocaleString('de-DE');
+                        }
+                        return data;
                     }
                 }
             ],

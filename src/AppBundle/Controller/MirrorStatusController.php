@@ -32,11 +32,11 @@ class MirrorStatusController extends Controller
     }
 
     /**
-     * @Route("/mirrors/ajax", methods={"GET"})
+     * @Route("/mirrors/datatables", methods={"GET"})
      * @Cache(smaxage="600")
      * @return Response
      */
-    public function ajaxAction(): Response
+    public function datatablesAction(): Response
     {
         $mirrors = $this->database->query('
         SELECT

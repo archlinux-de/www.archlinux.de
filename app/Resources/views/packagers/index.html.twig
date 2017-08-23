@@ -1,33 +1,31 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" media="screen" href="{{ asset('build/packagers.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var ajax = '{{ path('app_packagers_datatables') }}';
+    </script>
+    <script src="{{ asset('build/packagers.js') }}"></script>
+{% endblock %}
+
 {% block title %}Packer{% endblock %}
 
 {% block body %}
-    <table class="pretty-table">
-        <tr>
-            <th><a href="{{ path('app_packagers_index', {'orderby': 'name', 'sort': sort}) }}">Name</a></th>
-            <th>E-Mail</th>
-            <th colspan="2"><a
-                        href="{{ path('app_packagers_index', {'orderby': 'packages', 'sort': sort}) }}">Pakete</a>
-            </th>
-            <th><a href="{{ path('app_packagers_index', {'orderby': 'lastbuilddate', 'sort': sort}) }}">Letzte
-                    Aktualisierung</a></th>
-        </tr>
-        {% for packager in packagers %}
+    <div class="box">
+        <table id="packagers" class="pretty-table compact">
+            <thead>
             <tr>
-                <td>{{ packager.name }}</td>
-                <td>{% if packager.email %}<a href="mailto:{{ packager.email }}">{{ packager.email }}</a>{% endif %}
-                </td>
-                <td style="text-align:right;"><a
-                            href="{{ path('app_packages_index', {'packager': packager.id}) }}">{{ packager.packages }}</a>
-                </td>
-                <td style="width:100px;">
-                    <div style="background-color:#1793d1;width:{{ 100 * packager.packages / packages | round }}px;">
-                        &nbsp;
-                    </div>
-                </td>
-                <td>{{ packager.lastbuilddate | date('d.m.Y') }}</td>
+                <th>Name</th>
+                <th>E-Mail</th>
+                <th>Pakete</th>
+                <th>Letzte Aktualisierung</th>
             </tr>
-        {% endfor %}
-    </table>
+            </thead>
+        </table>
+    </div>
 {% endblock %}

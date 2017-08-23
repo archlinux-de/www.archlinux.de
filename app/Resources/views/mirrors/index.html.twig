@@ -8,7 +8,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        var ajax = '{{ path('app_mirrorstatus_ajax') }}';
+        var ajax = '{{ path('app_mirrorstatus_datatables') }}';
     </script>
     <script src="{{ asset('build/mirrors.js') }}"></script>
 {% endblock %}
