@@ -1,31 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block javascripts %}
-    <script src="{{ asset('style/auto-complete.min.js') }}"></script>
     <script>
-        window.addEventListener('load', function () {
-            new autoComplete({
-                selector: '#searchfield',
-                delay: 100,
-                minChars: 1,
-                source: function (term, callback) {
-                    fetch('{{ path('app_packagessuggest_suggest') }}?term=' + encodeURI(term))
-                        .then(function (response) {
-                            if (!response.ok) {
-                                throw new Error();
-                            }
-                            return response.json();
-                        })
-                        .then(function (data) {
-                            return callback(data);
-                        })
-                        .catch(function () {
-                            return callback([]);
-                        });
-                }
-            });
-        });
+        var autoSuggestRoute = '{{ path('app_packagessuggest_suggest') }}';
     </script>
+    <script src="{{ asset('build/start.js') }}"></script>
 {% endblock %}
 
 {% block title %}Start{% endblock %}

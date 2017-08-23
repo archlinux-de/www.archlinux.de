@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,22 +24,22 @@ class PackagersController extends Controller
 
     /**
      * @Route("/packages/packagers", methods={"GET"})
+     * @Cache(smaxage="900")
+     * @return Response
+     */
+    public function indexAction(): Response
+    {
+        return $this->render('packagers/index.html.twig');
+    }
+
+    /**
+     * @Route("/packages/packagers/datatables", methods={"GET"})
+     * @Cache(smaxage="600")
      * @param Request $request
      * @return Response
      */
-    public function indexAction(Request $request): Response
+    public function datatablesAction(Request $request): Response
     {
-        $orderBy = 'name';
-        if (in_array($request->get('orderby'), array(
-            'name',
-            'lastbuilddate',
-            'packages',
-        ))) {
-            $orderBy = $request->get('orderby');
-        }
-
-        $sort = $request->get('sort', 0) > 0 ? 1 : 0;
-        $packages = $this->database->query('SELECT COUNT(*) FROM packages')->fetchColumn();
         $packagers = $this->database->query('
             SELECT
             packagers.id,
@@ -62,14 +63,8 @@ class PackagersController extends Controller
             ) AS lastbuilddate
             FROM
             packagers
-            ORDER BY
-            ' . $orderBy . ' ' . ($sort > 0 ? 'DESC' : 'ASC') . '
-        ');
+        ')->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->render('packagers/index.html.twig', [
-            'packages' => $packages,
-            'packagers' => $packagers,
-            'sort' => abs($sort - 1)
-        ]);
+        return $this->json(['data' => $packagers]);
     }
 }

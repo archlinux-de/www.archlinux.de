@@ -6,15 +6,16 @@ volumes:
 
 services:
   app:
-    build: docker/php
+    build: docker/app
     working_dir: /app
+    environment:
+      - HOME=/app
     command: php -S 0.0.0.0:8080 -t /app/web
     user: "1000"
     ports:
       - "${PORT:-8080}:8080"
     volumes:
       - .:/app
-      - ~/.composer/cache:/.composer/cache
       - db-socket:/run/mysqld
     tmpfs:
       - /tmp
@@ -22,7 +23,7 @@ services:
       - db
 
   db:
-    build: docker/mariadb
+    build: docker/db
     command: mysqld
     user: mysql
     network_mode: none
