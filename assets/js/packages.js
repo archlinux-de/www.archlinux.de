@@ -1,7 +1,7 @@
 require('../css/packages.scss');
 var $ = require('jquery');
 require('datatables.net');
-var language = './lang-loader!datatables.net-plugins/i18n/German.lang';
+var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
 
 $(document).ready(function () {
         $('#packages').DataTable({
