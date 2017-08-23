@@ -19,3 +19,4 @@
 /web/bundles/
 /node_modules
 /web/build
+/.yarnrc

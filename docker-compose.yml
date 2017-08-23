@@ -6,8 +6,10 @@ volumes:
 
 services:
   app:
-    build: docker/php
+    build: docker/app
     working_dir: /app
+    environment:
+      - HOME=/app
     command: php -S 0.0.0.0:8080 -t /app/web
     user: "1000"
     ports:
