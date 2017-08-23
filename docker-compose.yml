@@ -16,7 +16,6 @@ services:
       - "${PORT:-8080}:8080"
     volumes:
       - .:/app
-      - ~/.composer/cache:/.composer/cache
       - db-socket:/run/mysqld
     tmpfs:
       - /tmp
