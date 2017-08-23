@@ -22,7 +22,7 @@ services:
       - db
 
   db:
-    build: docker/mariadb
+    build: docker/db
     command: mysqld
     user: mysql
     network_mode: none

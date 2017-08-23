@@ -60,8 +60,8 @@ ci-test: init
 	${APP-RUN} vendor/bin/security-checker security:check
 
 assets:
-	yarn install
-	yarn run encore dev
+	${APP-RUN} yarn install
+	${APP-RUN} yarn run encore dev
 
 deploy:
 	chmod o-x .
