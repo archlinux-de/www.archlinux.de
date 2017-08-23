@@ -10,6 +10,9 @@ Encore
     .addEntry('packages', './assets/js/packages.js')
 
     .addStyleEntry('app', './assets/css/app.scss')
+    .addStyleEntry('rss', './assets/images/rss.png')
+    .addStyleEntry('favicon', './assets/images/favicon.ico')
+    .addStyleEntry('archlogo-64', './assets/images/archlogo-64.png')
     .enableSassLoader()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning()
