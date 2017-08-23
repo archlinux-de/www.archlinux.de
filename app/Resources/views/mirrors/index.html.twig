@@ -7,9 +7,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-        var ajax = '{{ path('app_mirrorstatus_datatables') }}';
-    </script>
     <script src="{{ asset('build/mirrors.js') }}"></script>
 {% endblock %}
 
@@ -18,7 +15,7 @@
 {% block body %}
     <div class="box">
         <h2>Mirror-Status</h2>
-        <table id="mirrors" class="pretty-table compact">
+        <table id="mirrors" class="pretty-table compact" data-ajax="{{ path('app_mirrorstatus_datatables') }}">
             <thead>
             <tr>
                 <th>URL</th>

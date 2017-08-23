@@ -40,7 +40,6 @@ class PackagersController extends Controller
      */
     public function datatablesAction(Request $request): Response
     {
-        $packages = $this->database->query('SELECT COUNT(*) FROM packages')->fetchColumn();
         $packagers = $this->database->query('
             SELECT
             packagers.id,
@@ -66,9 +65,6 @@ class PackagersController extends Controller
             packagers
         ')->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->json([
-            'data' => $packagers,
-            'packages' => $packages
-        ]);
+        return $this->json(['data' => $packagers]);
     }
 }

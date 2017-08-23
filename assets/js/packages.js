@@ -11,17 +11,7 @@ $(document).ready(function () {
             "processing": false,
             "serverSide": true,
             "order": [[5, "desc"]],
-            "ajax": ajax,
-            "search": search,
             "searchDelay": 100,
-            "searchCols": [
-                null,
-                {"search": default_architecture},
-                null,
-                null,
-                null,
-                null
-            ],
             "columns": [
                 {
                     "data": "repository",
