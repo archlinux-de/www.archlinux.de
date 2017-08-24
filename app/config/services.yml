@@ -42,13 +42,10 @@ services:
             - connect_timeout: 60
               timeout: 1800
 
-    Psr\SimpleCache\CacheInterface:
-        class: Symfony\Component\Cache\Simple\PdoCache
+    Symfony\Component\Cache\Adapter\PdoAdapter:
         arguments:
             - '@database_connection'
 
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
-
-    archportal\lib\StatisticsPage:

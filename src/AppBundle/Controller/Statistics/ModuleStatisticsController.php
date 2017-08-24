@@ -3,36 +3,15 @@
 namespace AppBundle\Controller\Statistics;
 
 use archportal\lib\IDatabaseCachable;
-use archportal\lib\StatisticsPage;
-use Doctrine\DBAL\Driver\Connection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-use Psr\SimpleCache\CacheInterface;
-
 class ModuleStatisticsController extends Controller implements IDatabaseCachable
 {
-    /** @var Connection */
-    private $database;
-    /** @var StatisticsPage */
-    private $statisticsPage;
-    /** @var CacheInterface */
-    private $cache;
-
-    /**
-     * @param Connection $connection
-     * @param CacheInterface $cache
-     * @param StatisticsPage $statisticsPage
-     */
-    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
-    {
-        $this->database = $connection;
-        $this->cache = $cache;
-        $this->statisticsPage = $statisticsPage;
-    }
+    use StatisticsControllerTrait;
+    private const TITLE = 'Module statistics';
 
     /**
      * @Route("/statistics/module", methods={"GET"})
@@ -41,20 +20,13 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
      */
     public function moduleAction(): Response
     {
-        if (!$this->cache->has('ModuleStatistics')) {
-            throw new NotFoundHttpException('No data found!');
-        }
-        return $this->render('statistics/statistic.html.twig', [
-            'title' => 'Module statistics',
-            'body' => $this->cache->get('ModuleStatistics')
-        ]);
+        return $this->renderPage(self::TITLE);
     }
 
     public function updateDatabaseCache()
     {
-        try {
-            $log = $this->getCommonModuleUsageStatistics();
-            $body = '<div class="box">
+        $log = $this->getCommonModuleUsageStatistics();
+        $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Module usage</h1></th>
@@ -89,10 +61,7 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
             </table>
             </div>
             ';
-            $this->cache->set('ModuleStatistics', $body);
-        } catch (\RuntimeException $e) {
-            echo 'ModuleStatistics failed:' . $e->getMessage();
-        }
+        $this->savePage(self::TITLE, $body);
     }
 
     /**
@@ -104,32 +73,32 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
         SELECT
             (SELECT COUNT(*)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS submissions,
+                WHERE time >= ' . $this->getRangeTime() . ' AND modules IS NOT NULL) AS submissions,
             (SELECT COUNT(*)
                 FROM (SELECT * FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . '
+                WHERE time >= ' . $this->getRangeTime() . '
                  AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
             (SELECT MIN(time)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS minvisited,
+                WHERE time >= ' . $this->getRangeTime() . ' AND modules IS NOT NULL) AS minvisited,
             (SELECT MAX(time)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' AND modules IS NOT NULL) AS maxvisited,
+                WHERE time >= ' . $this->getRangeTime() . ' AND modules IS NOT NULL) AS maxvisited,
             (SELECT SUM(count)
                 FROM pkgstats_modules
-                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+                WHERE month >= ' . $this->getRangeYearMonth() . ') AS sumcount,
             (SELECT COUNT(*)
                 FROM (SELECT DISTINCT name FROM pkgstats_modules
-                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+                WHERE month >= ' . $this->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
             (SELECT MIN(modules)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+                WHERE time >= ' . $this->getRangeTime() . ') AS mincount,
             (SELECT MAX(modules)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+                WHERE time >= ' . $this->getRangeTime() . ') AS maxcount,
             (SELECT AVG(modules)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
+                WHERE time >= ' . $this->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -144,7 +113,7 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . $this->statisticsPage->getRangeTime() . '
+                time >= ' . $this->getRangeTime() . '
                 AND modules IS NOT NULL
         ')->fetchColumn();
         $modules = $this->database->query('
@@ -154,7 +123,7 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
             FROM
                 pkgstats_modules
             WHERE
-                month >= ' . $this->statisticsPage->getRangeYearMonth() . '
+                month >= ' . $this->getRangeYearMonth() . '
             GROUP BY
                 name
             HAVING
@@ -166,7 +135,7 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
         $list = '<tr><td colspan="2"><div><table class="pretty-table" style="border:none;">';
         foreach ($modules as $module) {
             $list .= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' .
-                $this->statisticsPage->getBar((int)$module['count'], $total) . '</td></tr>';
+                $this->getBar((int)$module['count'], $total) . '</td></tr>';
         }
         $list .= '</table></div></td></tr>';
 

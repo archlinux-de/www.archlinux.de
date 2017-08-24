@@ -2,11 +2,7 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\StatisticsPage;
-use Doctrine\DBAL\Driver\Connection;
-use Psr\SimpleCache\CacheInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,24 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PackageStatisticsController extends Controller implements IDatabaseCachable
 {
-    /** @var Connection */
-    private $database;
-    /** @var StatisticsPage */
-    private $statisticsPage;
-    /** @var CacheInterface */
-    private $cache;
-
-    /**
-     * @param Connection $connection
-     * @param CacheInterface $cache
-     * @param StatisticsPage $statisticsPage
-     */
-    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
-    {
-        $this->database = $connection;
-        $this->cache = $cache;
-        $this->statisticsPage = $statisticsPage;
-    }
+    use StatisticsControllerTrait;
+    private const TITLE = 'Package statistics';
 
     /**
      * @Route("/statistics/package", methods={"GET"})
@@ -40,20 +20,13 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
      */
     public function packageAction(): Response
     {
-        if (!$this->cache->has('PackageStatistics')) {
-            throw new NotFoundHttpException('No data found!');
-        }
-        return $this->render('statistics/statistic.html.twig', [
-            'title' => 'Package statistics',
-            'body' => $this->cache->get('PackageStatistics')
-        ]);
+        return $this->renderPage(self::TITLE);
     }
 
     public function updateDatabaseCache()
     {
-        try {
-            $log = $this->getCommonPackageUsageStatistics();
-            $body = '<div class="box">
+        $log = $this->getCommonPackageUsageStatistics();
+        $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Package usage</h1></th>
@@ -104,10 +77,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             </table>
             </div>
             ';
-            $this->cache->set('PackageStatistics', $body);
-        } catch (\RuntimeException $e) {
-            echo 'PackageStatistics failed:' . $e->getMessage();
-        }
+        $this->savePage(self::TITLE, $body);
     }
 
     /**
@@ -119,33 +89,33 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         SELECT
             (SELECT COUNT(*)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
+                WHERE time >= ' . $this->getRangeTime() . ') AS submissions,
             (SELECT COUNT(*)
                 FROM (SELECT *
                     FROM pkgstats_users
-                    WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
+                    WHERE time >= ' . $this->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
             (SELECT MIN(time)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
+                WHERE time >= ' . $this->getRangeTime() . ') AS minvisited,
             (SELECT MAX(time)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
+                WHERE time >= ' . $this->getRangeTime() . ') AS maxvisited,
             (SELECT SUM(count)
                 FROM pkgstats_packages
-                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+                WHERE month >= ' . $this->getRangeYearMonth() . ') AS sumcount,
             (SELECT COUNT(*)
                 FROM (SELECT DISTINCT pkgname
                     FROM pkgstats_packages
-                    WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+                    WHERE month >= ' . $this->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
             (SELECT MIN(packages)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+                WHERE time >= ' . $this->getRangeTime() . ') AS mincount,
             (SELECT MAX(packages)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+                WHERE time >= ' . $this->getRangeTime() . ') AS maxcount,
             (SELECT AVG(packages)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
+                WHERE time >= ' . $this->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -160,7 +130,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $arches = $this->database->query('
         SELECT
@@ -169,7 +139,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         GROUP BY
             arch
         ORDER BY
@@ -178,7 +148,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         $list = '';
         foreach ($arches as $arch) {
             $list .= '<tr><th>' . $arch['name'] . '</th><td>'
-                . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
+                . $this->getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -195,7 +165,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
             AND cpuarch IS NOT NULL
         ')->fetchColumn();
         $arches = $this->database->query('
@@ -205,7 +175,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
             AND cpuarch IS NOT NULL
         GROUP BY
             cpuarch
@@ -215,7 +185,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
         $list = '';
         foreach ($arches as $arch) {
             $list .= '<tr><th>' . $arch['name'] . '</th><td>'
-                . $this->statisticsPage->getBar($arch['count'], $total) . '</td></tr>';
+                . $this->getBar($arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -242,7 +212,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . $this->statisticsPage->getRangeTime() . '
+                time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $countStm = $this->database->prepare('
             SELECT
@@ -265,7 +235,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                 FROM
                     pkgstats_packages
                 WHERE
-                    month >= ' . $this->statisticsPage->getRangeYearMonth() . '
+                    month >= ' . $this->getRangeYearMonth() . '
                     AND count >= ' . (floor($total / 100)) . '
                 ) AS used
                 ON total.name = used.pkgname
@@ -298,7 +268,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             $total = $totalStm->fetchColumn();
             $sortList[$id] = $count / $total;
             $list[$id++] = '<tr><th>' . $repo . '</th><td>'
-                . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
+                . $this->getBar($count, $total) . '</td></tr>';
         }
         arsort($sortList);
         foreach (array_keys($sortList) as $id) {
@@ -331,7 +301,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . $this->statisticsPage->getRangeTime() . '
+                time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $packages = $this->database->prepare('
             SELECT
@@ -340,7 +310,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             FROM
                 pkgstats_packages
             WHERE
-                month >= ' . $this->statisticsPage->getRangeYearMonth() . '
+                month >= ' . $this->getRangeYearMonth() . '
                 AND pkgname IN (
                     SELECT
                         packages.name
@@ -371,7 +341,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             }
             foreach ($packages as $package) {
                 $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>'
-                    . $this->statisticsPage->getBar((int)$package['count'], $total)
+                    . $this->getBar((int)$package['count'], $total)
                     . '</td></tr>';
             }
             $list .= '</table></div></td></tr>';
@@ -392,7 +362,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . $this->statisticsPage->getRangeTime() . '
+                time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $packages = $this->database->query('
             SELECT
@@ -401,7 +371,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             FROM
                 pkgstats_packages
             WHERE
-                month >= ' . $this->statisticsPage->getRangeYearMonth() . '
+                month >= ' . $this->getRangeYearMonth() . '
                 AND pkgname NOT IN (SELECT name FROM packages)
             GROUP BY
                 pkgname
@@ -415,7 +385,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             . '<td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
         foreach ($packages as $package) {
             $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>'
-                . $this->statisticsPage->getBar((int)$package['count'], $total)
+                . $this->getBar((int)$package['count'], $total)
                 . '</td></tr>';
         }
         $list .= '</table></div></td></tr>';
