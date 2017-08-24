@@ -3,35 +3,16 @@
 namespace AppBundle\Controller\Statistics;
 
 use archportal\lib\IDatabaseCachable;
-use archportal\lib\StatisticsPage;
-use Doctrine\DBAL\Driver\Connection;
-use Psr\SimpleCache\CacheInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RepositoryStatisticsController extends Controller implements IDatabaseCachable
 {
-    /** @var Connection */
-    private $database;
-    /** @var StatisticsPage */
-    private $statisticsPage;
-    /** @var CacheInterface */
-    private $cache;
+    use StatisticsControllerTrait;
+    private const TITLE = 'Repository statistics';
 
-    /**
-     * @param Connection $connection
-     * @param CacheInterface $cache
-     * @param StatisticsPage $statisticsPage
-     */
-    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
-    {
-        $this->database = $connection;
-        $this->cache = $cache;
-        $this->statisticsPage = $statisticsPage;
-    }
 
     /**
      * @Route("/statistics/repository", methods={"GET"})
@@ -40,20 +21,13 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
      */
     public function repositoryAction(): Response
     {
-        if (!$this->cache->has('RepositoryStatistics')) {
-            throw new NotFoundHttpException('No data found!');
-        }
-        return $this->render('statistics/statistic.html.twig', [
-            'title' => 'Repository statistics',
-            'body' => $this->cache->get('RepositoryStatistics')
-        ]);
+        return $this->renderPage(self::TITLE);
     }
 
     public function updateDatabaseCache()
     {
-        try {
-            $data = $this->getCommonRepositoryStatistics();
-            $body = '<div class="box">
+        $data = $this->getCommonRepositoryStatistics();
+        $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Repositories</h1></th>
@@ -147,10 +121,7 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
             </table>
             </div>
             ';
-            $this->cache->set('RepositoryStatistics', $body);
-        } catch (\RuntimeException $e) {
-            echo 'RepositoryStatistics failed:' . $e->getMessage();
-        }
+        $this->savePage(self::TITLE, $body);
     }
 
     /**
@@ -253,11 +224,11 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
                     <table class="pretty-table" style="border:none;">
                     <tr>
                         <td style="width: 50px;">Packages</td>
-                        <td>' . $this->statisticsPage->getBar($data['packages'], $total['packages']) . '</td>
+                        <td>' . $this->getBar($data['packages'], $total['packages']) . '</td>
                     </tr>
                     <tr>
                         <td style="width: 50px;">Size</td>
-                        <td>' . $this->statisticsPage->getBar((int)$data['size'], (int)$total['size']) . '</td>
+                        <td>' . $this->getBar((int)$data['size'], (int)$total['size']) . '</td>
                     </tr>
                     </table>
                     </div>

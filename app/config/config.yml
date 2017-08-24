@@ -51,11 +51,6 @@ framework:
         json_manifest_path: '%kernel.project_dir%/web/build/manifest.json'
     php_errors:
         log: true
-    cache:
-        pools:
-            cache.database:
-                adapter: cache.adapter.pdo
-                public: true
 
 # Twig Configuration
 twig:

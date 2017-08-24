@@ -46,16 +46,6 @@ services:
         arguments:
             - '@database_connection'
 
-    cache.adapter.pdo:
-        alias: 'Symfony\Component\Cache\Adapter\PdoAdapter'
-
-    Psr\SimpleCache\CacheInterface:
-        class: Symfony\Component\Cache\Simple\PdoCache
-        arguments:
-            - '@database_connection'
-
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
-
-    archportal\lib\StatisticsPage:

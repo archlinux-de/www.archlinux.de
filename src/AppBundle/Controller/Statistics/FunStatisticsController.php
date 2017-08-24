@@ -2,12 +2,8 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\StatisticsPage;
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
-use Psr\SimpleCache\CacheInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -15,24 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FunStatisticsController extends Controller implements IDatabaseCachable
 {
-    /** @var Connection */
-    private $database;
-    /** @var StatisticsPage */
-    private $statisticsPage;
-    /** @var CacheInterface */
-    private $cache;
-
-    /**
-     * @param Connection $connection
-     * @param CacheInterface $cache
-     * @param StatisticsPage $statisticsPage
-     */
-    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
-    {
-        $this->database = $connection;
-        $this->cache = $cache;
-        $this->statisticsPage = $statisticsPage;
-    }
+    use StatisticsControllerTrait;
+    private const TITLE = 'Fun statistics';
 
     /**
      * @Route("/statistics/fun", methods={"GET"})
@@ -41,144 +21,134 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
      */
     public function funAction(): Response
     {
-        if (!$this->cache->has('FunStatistics')) {
-            throw new NotFoundHttpException('No data found!');
-        }
-        return $this->render('statistics/statistic.html.twig', [
-            'title' => 'Fun statistics',
-            'body' => $this->cache->get('FunStatistics')
-        ]);
+        return $this->renderPage(self::TITLE);
     }
 
     public function updateDatabaseCache()
     {
-        try {
-            $total = $this->database->query('
+        $total = $this->database->query('
             SELECT
                 COUNT(*)
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . $this->statisticsPage->getRangeTime() . '
+                time >= ' . $this->getRangeTime() . '
             ')->fetchColumn();
-            $stm = $this->database->prepare('
+        $stm = $this->database->prepare('
             SELECT
                 SUM(count)
             FROM
                 pkgstats_packages
             WHERE
                 pkgname = :pkgname
-                AND month >= ' . $this->statisticsPage->getRangeYearMonth() . '
+                AND month >= ' . $this->getRangeYearMonth() . '
             GROUP BY
                 pkgname
             ');
-            $body = '<div class="box">
+        $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" class="packagedetailshead">Browsers</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'Mozilla Firefox' => 'firefox',
-                    'Chromium' => 'chromium',
-                    'Konqueror' => 'kdebase-konqueror',
-                    'Midori' => 'midori',
-                    'Epiphany' => 'epiphany',
-                    'Opera' => 'opera',
-                )) . '
+                'Mozilla Firefox' => 'firefox',
+                'Chromium' => 'chromium',
+                'Konqueror' => 'kdebase-konqueror',
+                'Midori' => 'midori',
+                'Epiphany' => 'epiphany',
+                'Opera' => 'opera',
+            )) . '
                 <tr>
                     <th colspan="2" class="packagedetailshead">Editors</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'Vim' => array(
-                        'vim',
-                        'gvim',
-                    ),
-                    'Emacs' => array(
-                        'emacs',
-                        'xemacs',
-                    ),
-                    'Nano' => 'nano',
-                    'Gedit' => 'gedit',
-                    'Kate' => array('kdesdk-kate', 'kate'),
-                    'Kwrite' => array('kdebase-kwrite', 'kwrite'),
-                    'Vi' => 'vi',
-                    'Mousepad' => 'mousepad',
-                    'Leafpad' => 'leafpad',
-                    'Geany' => 'geany',
-                    'Pluma' => 'pluma',
-                )) . '
+                'Vim' => array(
+                    'vim',
+                    'gvim',
+                ),
+                'Emacs' => array(
+                    'emacs',
+                    'xemacs',
+                ),
+                'Nano' => 'nano',
+                'Gedit' => 'gedit',
+                'Kate' => array('kdesdk-kate', 'kate'),
+                'Kwrite' => array('kdebase-kwrite', 'kwrite'),
+                'Vi' => 'vi',
+                'Mousepad' => 'mousepad',
+                'Leafpad' => 'leafpad',
+                'Geany' => 'geany',
+                'Pluma' => 'pluma',
+            )) . '
                     <th colspan="2" class="packagedetailshead">Desktop Environments</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
-                    'GNOME' => 'gnome-shell',
-                    'LXDE' => 'lxde-common',
-                    'Xfce' => 'xfdesktop',
-                    'Enlightenment' => array('enlightenment', 'enlightenment16'),
-                    'MATE' => 'mate-panel',
-                    'Cinnamon' => 'cinnamon',
-                )) . '
+                'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
+                'GNOME' => 'gnome-shell',
+                'LXDE' => 'lxde-common',
+                'Xfce' => 'xfdesktop',
+                'Enlightenment' => array('enlightenment', 'enlightenment16'),
+                'MATE' => 'mate-panel',
+                'Cinnamon' => 'cinnamon',
+            )) . '
                     <th colspan="2" class="packagedetailshead">File Managers</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'Dolphin' => 'kdebase-dolphin',
-                    'Konqueror' => 'kdebase-konqueror',
-                    'MC' => 'mc',
-                    'Nautilus' => 'nautilus',
-                    'Pcmanfm' => 'pcmanfm',
-                    'Thunar' => 'thunar',
-                    'Caja' => 'caja',
-                )) . '
+                'Dolphin' => 'kdebase-dolphin',
+                'Konqueror' => 'kdebase-konqueror',
+                'MC' => 'mc',
+                'Nautilus' => 'nautilus',
+                'Pcmanfm' => 'pcmanfm',
+                'Thunar' => 'thunar',
+                'Caja' => 'caja',
+            )) . '
                     <th colspan="2" class="packagedetailshead">Window Managers</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'Openbox' => 'openbox',
-                    'Fluxbox' => 'fluxbox',
-                    'I3' => 'i3-wm',
-                    'awesome' => 'awesome',
-                )) . '
+                'Openbox' => 'openbox',
+                'Fluxbox' => 'fluxbox',
+                'I3' => 'i3-wm',
+                'awesome' => 'awesome',
+            )) . '
                     <th colspan="2" class="packagedetailshead">Media Players</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'Mplayer' => 'mplayer',
-                    'Xine' => 'xine-lib',
-                    'VLC' => 'vlc',
-                )) . '
+                'Mplayer' => 'mplayer',
+                'Xine' => 'xine-lib',
+                'VLC' => 'vlc',
+            )) . '
                     <th colspan="2" class="packagedetailshead">Shells</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'Bash' => 'bash',
-                    'Dash' => 'dash',
-                    'Zsh' => 'zsh',
-                    'Fish' => 'fish',
-                    'Tcsh' => 'tcsh',
-                )) . '
+                'Bash' => 'bash',
+                'Dash' => 'dash',
+                'Zsh' => 'zsh',
+                'Fish' => 'fish',
+                'Tcsh' => 'tcsh',
+            )) . '
                     <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
-                    'ATI' => array(
-                        'xf86-video-ati',
-                        'xf86-video-r128',
-                        'xf86-video-mach64',
-                    ),
-                    'NVIDIA' => array(
-                        'nvidia-304xx-utils',
-                        'nvidia-utils',
-                        'xf86-video-nouveau',
-                        'xf86-video-nv',
-                    ),
-                    'Intel' => array(
-                        'xf86-video-intel',
-                        'xf86-video-i740',
-                    ),
-                )) . '
+                'ATI' => array(
+                    'xf86-video-ati',
+                    'xf86-video-r128',
+                    'xf86-video-mach64',
+                ),
+                'NVIDIA' => array(
+                    'nvidia-304xx-utils',
+                    'nvidia-utils',
+                    'xf86-video-nouveau',
+                    'xf86-video-nv',
+                ),
+                'Intel' => array(
+                    'xf86-video-intel',
+                    'xf86-video-i740',
+                ),
+            )) . '
             </table>
             </div>
             ';
-            $this->cache->set('FunStatistics', $body);
-        } catch (\RuntimeException $e) {
-            echo 'FunStatistics failed:' . $e->getMessage();
-        }
+        $this->savePage(self::TITLE, $body);
     }
 
     /**
@@ -214,7 +184,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
             // FIXME: calculation of totals is not that accurate
             // e.g. one person might have installed several nvidia drivers
             $count = (int)min($count, $total);
-            $list .= '<tr><th>' . $name . '</th><td>' . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>' . $name . '</th><td>' . $this->getBar($count, $total) . '</td></tr>';
         }
 
         return $list;
