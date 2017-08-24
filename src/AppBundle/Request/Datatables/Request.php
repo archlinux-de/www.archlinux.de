@@ -2,7 +2,7 @@
 
 namespace AppBundle\Request\Datatables;
 
-class Request
+class Request implements \JsonSerializable
 {
     /** @var int */
     private $draw;
@@ -122,5 +122,24 @@ class Request
     public function getColumns(): array
     {
         return $this->columns;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'start' => $this->start,
+            'length' => $this->length,
+            'search' => $this->search,
+            'order' => $this->order,
+            'columns' => $this->columns
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return sha1(json_encode($this));
     }
 }

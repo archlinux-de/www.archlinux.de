@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy assets
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
@@ -19,7 +19,7 @@ update-data:
 	${APP-RUN} bin/console app:update:packages
 	${APP-RUN} bin/console app:update:statistics
 
-start: vendor
+start: vendor assets
 	docker-compose up -d
 	${DB-RUN} mysqladmin -uroot --wait=10 ping
 
@@ -45,7 +45,6 @@ composer.lock: composer.json
 	${APP-RUN} ${COMPOSER} update nothing
 
 vendor: composer.lock
-	mkdir -p ~/.composer/cache
 	${APP-RUN} ${COMPOSER} install
 
 shell:
@@ -59,10 +58,16 @@ ci-test: init
 	${MAKE} test
 	${APP-RUN} vendor/bin/security-checker security:check
 
+assets:
+	${APP-RUN} yarn install
+	${APP-RUN} yarn run encore dev
+
 deploy:
 	chmod o-x .
 	SYMFONY_ENV=prod composer --no-interaction install --no-dev --optimize-autoloader
 	bin/console cache:clear --env=prod --no-debug --no-warmup
 	bin/console cache:warmup --env=prod
+	yarn install
+	yarn run encore production
 	sudo systemctl restart php-fpm@www
 	chmod o+x .

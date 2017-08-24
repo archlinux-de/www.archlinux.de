@@ -3,7 +3,7 @@
 namespace AppBundle\Command\Update;
 
 use AppBundle\Service\PackageDatabaseDownloader;
-use Psr\SimpleCache\CacheInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use archportal\lib\Package;
 use archportal\lib\PackageDatabase;
 use Doctrine\DBAL\Driver\Connection;
@@ -83,7 +83,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     );
     /** @var Connection */
     private $database;
-    /** @var CacheInterface */
+    /** @var CacheItemPoolInterface */
     private $cache;
     /** @var Client */
     private $guzzleClient;
@@ -93,13 +93,13 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param Connection $connection
-     * @param CacheInterface $cache
+     * @param CacheItemPoolInterface $cache
      * @param Client $guzzleClient
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
         Connection $connection,
-        CacheInterface $cache,
+        CacheItemPoolInterface $cache,
         Client $guzzleClient
     ) {
         parent::__construct();
@@ -121,7 +121,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         $this->lock('cron.lock', true);
 
-        if (!$input->getOption('purge') && !$input->getOption('reset') && !$this->checkLastMirrorUpdate()) {
+        if (!$input->getOption('purge') && !$input->getOption('reset') && !$this->hasMirrorUpdated()) {
             $this->printDebug('No updated packages available...', $output);
 
             return;
@@ -231,21 +231,26 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     /**
      * @return bool
      */
-    private function checkLastMirrorUpdate(): bool
+    private function hasMirrorUpdated(): bool
     {
-        $lastLocalUpdate = $this->cache->get('UpdatePackages-lastupdate');
-        $content = $this->guzzleClient->request(
-            'GET',
-            $this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate'
-        )->getBody()->getContents();
-        $this->lastMirrorUpdate = (int)$content;
+        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate');
+        if ($lastLocalUpdateCache->isHit()) {
+            $content = $this->guzzleClient->request(
+                'GET',
+                $this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate'
+            )->getBody()->getContents();
+            $this->lastMirrorUpdate = (int)$content;
 
-        return $this->lastMirrorUpdate !== $lastLocalUpdate;
+            return $this->lastMirrorUpdate !== (int)$lastLocalUpdateCache->get();
+        } else {
+            return true;
+        }
     }
 
     private function updateLastMirrorUpdate()
     {
-        $this->cache->set('UpdatePackages-lastupdate', $this->lastMirrorUpdate);
+        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($this->lastMirrorUpdate);
+        $this->cache->save($lastLocalUpdateCache);
     }
 
     private function purgeDatabase(OutputInterface $output)

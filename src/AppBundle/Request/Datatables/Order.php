@@ -2,7 +2,7 @@
 
 namespace AppBundle\Request\Datatables;
 
-class Order
+class Order implements \JsonSerializable
 {
     /** @var Column */
     private $column;
@@ -36,5 +36,13 @@ class Order
     public function getDir(): string
     {
         return $this->dir;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'column' => ['id' => $this->column->getId()],
+            'dir' => $this->dir
+        ];
     }
 }

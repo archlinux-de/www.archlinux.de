@@ -2,7 +2,7 @@
 
 namespace AppBundle\Request\Datatables;
 
-class Search
+class Search implements \JsonSerializable
 {
     /** @var string */
     private $value;
@@ -41,5 +41,13 @@ class Search
     public function isValid(): bool
     {
         return !empty($this->value);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'value' => $this->value,
+            'regex' => $this->regex
+        ];
     }
 }

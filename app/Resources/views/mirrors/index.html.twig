@@ -2,56 +2,12 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" media="screen" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" media="screen" href="{{ asset('build/mirrors.css') }}"/>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#mirrors').DataTable({
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
-                },
-                "lengthMenu": [25, 50, 100],
-                "pageLength": 25,
-                "order": [[4, "desc"]],
-                "data": {{ mirrors | json_encode | raw }},
-                "columns": [
-                    {
-                        "data": "url",
-                        "render": function (data, type, row) {
-                            return '<a href="' + row.url + '" rel="nofollow">' + data + '</a>';
-                        }
-                    },
-                    {
-                        "data": "country"
-                    },
-                    {
-                        "data": "durationAvg",
-                        "searchable": false
-                    },
-                    {
-                        "data": "delay",
-                        "searchable": false
-                    },
-                    {
-                        "data": "lastsync",
-                        "searchable": false,
-                        "render": function (data, type, row) {
-                            if (data) {
-                                return new Date(data * 1000).toLocaleString('de-DE');
-                            } else {
-                                return '';
-                            }
-                        }
-                    }
-                ]
-            });
-        });
-    </script>
+    <script src="{{ asset('build/mirrors.js') }}"></script>
 {% endblock %}
 
 {% block title %}Mirror-Status{% endblock %}
@@ -59,7 +15,7 @@
 {% block body %}
     <div class="box">
         <h2>Mirror-Status</h2>
-        <table id="mirrors" class="pretty-table compact">
+        <table id="mirrors" class="pretty-table compact" data-ajax="{{ path('app_mirrorstatus_datatables') }}">
             <thead>
             <tr>
                 <th>URL</th>

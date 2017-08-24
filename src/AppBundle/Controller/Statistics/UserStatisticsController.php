@@ -2,11 +2,7 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\StatisticsPage;
-use Doctrine\DBAL\Driver\Connection;
-use Psr\SimpleCache\CacheInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,24 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserStatisticsController extends Controller implements IDatabaseCachable
 {
-    /** @var Connection */
-    private $database;
-    /** @var StatisticsPage */
-    private $statisticsPage;
-    /** @var CacheInterface */
-    private $cache;
-
-    /**
-     * @param Connection $connection
-     * @param CacheInterface $cache
-     * @param StatisticsPage $statisticsPage
-     */
-    public function __construct(Connection $connection, CacheInterface $cache, StatisticsPage $statisticsPage)
-    {
-        $this->database = $connection;
-        $this->cache = $cache;
-        $this->statisticsPage = $statisticsPage;
-    }
+    use StatisticsControllerTrait;
+    private const TITLE = 'User statistics';
 
     /**
      * @Route("/statistics/user", methods={"GET"})
@@ -40,20 +20,13 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
      */
     public function userAction(): Response
     {
-        if (!$this->cache->has('UserStatistics')) {
-            throw new NotFoundHttpException('No data found!');
-        }
-        return $this->render('statistics/statistic.html.twig', [
-            'title' => 'User statistics',
-            'body' => $this->cache->get('UserStatistics')
-        ]);
+        return $this->renderPage(self::TITLE);
     }
 
     public function updateDatabaseCache()
     {
-        try {
-            $log = $this->getCommonPackageUsageStatistics();
-            $body = '<div class="box">
+        $log = $this->getCommonPackageUsageStatistics();
+        $body = '<div class="box">
             <table id="packagedetails">
                 <tr>
                     <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">User statistics</h1></th>
@@ -119,10 +92,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
             </table>
             </div>
             ';
-            $this->cache->set('UserStatistics', $body);
-        } catch (\RuntimeException $e) {
-            echo 'UserStatistics failed:' . $e->getMessage();
-        }
+        $this->savePage(self::TITLE, $body);
     }
 
     /**
@@ -134,34 +104,34 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         SELECT
             (SELECT COUNT(*)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS submissions,
+                WHERE time >= ' . $this->getRangeTime() . ') AS submissions,
             (SELECT COUNT(*)
                 FROM (SELECT *
                     FROM pkgstats_users
-                    WHERE time >= ' . $this->statisticsPage->getRangeTime() . ' GROUP BY ip
+                    WHERE time >= ' . $this->getRangeTime() . ' GROUP BY ip
                     ) AS temp) AS differentips,
             (SELECT MIN(time)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS minvisited,
+                WHERE time >= ' . $this->getRangeTime() . ') AS minvisited,
             (SELECT MAX(time)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxvisited,
+                WHERE time >= ' . $this->getRangeTime() . ') AS maxvisited,
             (SELECT SUM(count)
                 FROM pkgstats_packages
-                WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS sumcount,
+                WHERE month >= ' . $this->getRangeYearMonth() . ') AS sumcount,
             (SELECT COUNT(*)
                 FROM (SELECT DISTINCT pkgname
                     FROM pkgstats_packages
-                    WHERE month >= ' . $this->statisticsPage->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
+                    WHERE month >= ' . $this->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
             (SELECT MIN(packages)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS mincount,
+                WHERE time >= ' . $this->getRangeTime() . ') AS mincount,
             (SELECT MAX(packages)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS maxcount,
+                WHERE time >= ' . $this->getRangeTime() . ') AS maxcount,
             (SELECT AVG(packages)
                 FROM pkgstats_users
-                WHERE time >= ' . $this->statisticsPage->getRangeTime() . ') AS avgcount
+                WHERE time >= ' . $this->getRangeTime() . ') AS avgcount
         ')->fetch();
     }
 
@@ -176,7 +146,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $countries = $this->database->query('
         SELECT
@@ -187,7 +157,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
             JOIN countries
             ON pkgstats_users.countryCode = countries.code
         WHERE
-            pkgstats_users.time >= ' . $this->statisticsPage->getRangeTime() . '
+            pkgstats_users.time >= ' . $this->getRangeTime() . '
         GROUP BY
             pkgstats_users.countryCode
         HAVING
@@ -198,7 +168,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         $list = '';
         foreach ($countries as $country) {
             $list .= '<tr><th>' . $country['country'] . '</th><td>' .
-                $this->statisticsPage->getBar((int)$country['count'], $total) . '</td></tr>';
+                $this->getBar((int)$country['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -215,7 +185,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $mirrors = $this->database->query('
         SELECT
@@ -224,7 +194,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         GROUP BY
             mirror
         HAVING
@@ -245,7 +215,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         arsort($hosts);
         $list = '';
         foreach ($hosts as $host => $count) {
-            $list .= '<tr><th>' . $host . '</th><td>' . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
+            $list .= '<tr><th>' . $host . '</th><td>' . $this->getBar($count, $total) . '</td></tr>';
         }
 
         return $list;
@@ -280,7 +250,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         $list = '';
         foreach ($countries as $country) {
             $list .= '<tr><th>' . $country['country'] . '</th><td>' .
-                $this->statisticsPage->getBar((int)$country['count'], $total) . '</td></tr>';
+                $this->getBar((int)$country['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -301,7 +271,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         foreach ($protocolls as $protocoll => $count) {
             $protocolls[$protocoll] = $this->database->query('
@@ -310,7 +280,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
             FROM
                 pkgstats_users
             WHERE
-                time >= ' . $this->statisticsPage->getRangeTime() . '
+                time >= ' . $this->getRangeTime() . '
                 AND mirror LIKE \'' . $protocoll . '%\'
             ')->fetchColumn();
         }
@@ -318,7 +288,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         $list = '';
         foreach ($protocolls as $protocoll => $count) {
             $list .= '<tr><th>' . $protocoll . '</th><td>'
-                . $this->statisticsPage->getBar($count, $total) . '</td></tr>';
+                . $this->getBar($count, $total) . '</td></tr>';
         }
 
         return $list;
@@ -335,7 +305,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         ')->fetchColumn();
         $arches = $this->database->query('
         SELECT
@@ -344,7 +314,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
         GROUP BY
             arch
         ORDER BY
@@ -353,7 +323,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         $list = '';
         foreach ($arches as $arch) {
             $list .= '<tr><th>' . $arch['name'] . '</th><td>'
-                . $this->statisticsPage->getBar((int)$arch['count'], $total) . '</td></tr>';
+                . $this->getBar((int)$arch['count'], $total) . '</td></tr>';
         }
 
         return $list;
@@ -370,7 +340,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
             AND cpuarch IS NOT NULL
         ')->fetchColumn();
         $arches = $this->database->query('
@@ -380,7 +350,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         FROM
             pkgstats_users
         WHERE
-            time >= ' . $this->statisticsPage->getRangeTime() . '
+            time >= ' . $this->getRangeTime() . '
             AND cpuarch IS NOT NULL
         GROUP BY
             cpuarch
@@ -390,7 +360,7 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         $list = '';
         foreach ($arches as $arch) {
             $list .= '<tr><th>' . $arch['name'] . '</th><td>'
-                . $this->statisticsPage->getBar((int)$arch['count'], $total) . '</td></tr>';
+                . $this->getBar((int)$arch['count'], $total) . '</td></tr>';
         }
 
         return $list;

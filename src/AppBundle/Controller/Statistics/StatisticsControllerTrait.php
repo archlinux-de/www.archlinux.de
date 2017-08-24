@@ -1,8 +1,14 @@
 <?php
 
-namespace archportal\lib;
+namespace AppBundle\Controller\Statistics;
 
-class StatisticsPage
+use Doctrine\DBAL\Driver\Connection;
+use Psr\Cache\CacheItemInterface;
+use Symfony\Component\Cache\Adapter\PdoAdapter;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+trait StatisticsControllerTrait
 {
     /** @var int */
     private $rangeMonths = 3;
@@ -14,9 +20,19 @@ class StatisticsPage
         'FF8800',
         '006400',
     );
+    /** @var Connection */
+    private $database;
+    /** @var PdoAdapter */
+    private $cache;
 
-    public function __construct()
+    /**
+     * @param Connection $connection
+     * @param PdoAdapter $cache
+     */
+    public function __construct(Connection $connection, PdoAdapter $cache)
     {
+        $this->database = $connection;
+        $this->cache = $cache;
         $this->barColors = $this->createMultiColorFade($this->barColorArray);
     }
 
@@ -85,7 +101,7 @@ class StatisticsPage
      *
      * @return string
      */
-    public function getBar(int $value, int $total): string
+    private function getBar(int $value, int $total): string
     {
         if ($total <= 0) {
             return '';
@@ -114,7 +130,7 @@ class StatisticsPage
     /**
      * @return int
      */
-    public function getRangeTime(): int
+    private function getRangeTime(): int
     {
         return strtotime(date('1-m-Y', strtotime('now -' . $this->rangeMonths . ' months')));
     }
@@ -122,8 +138,35 @@ class StatisticsPage
     /**
      * @return string
      */
-    public function getRangeYearMonth(): string
+    private function getRangeYearMonth(): string
     {
         return date('Ym', $this->getRangeTime());
+    }
+
+    private function renderPage(string $title): Response
+    {
+
+        $cachedItem = $this->getCachedItem($title);
+        if (!$cachedItem->isHit()) {
+            throw new NotFoundHttpException('No data found!');
+        }
+        return $this->render('statistics/statistic.html.twig', [
+            'title' => $title,
+            'body' => $cachedItem->get()
+        ]);
+    }
+
+    private function savePage(string $title, string $page): bool
+    {
+        return $this->cache->save($this->getCachedItem($title)->set($page));
+    }
+
+
+    /**
+     * @return CacheItemInterface
+     */
+    private function getCachedItem(string $title): CacheItemInterface
+    {
+        return $this->cache->getItem($title);
     }
 }

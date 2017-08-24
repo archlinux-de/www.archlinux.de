@@ -2,7 +2,7 @@
 
 namespace AppBundle\Request\Datatables;
 
-class Column
+class Column implements \JsonSerializable
 {
     /** @var int */
     private $id;
@@ -81,5 +81,17 @@ class Column
     public function getSearch(): Search
     {
         return $this->search;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'data' => $this->data,
+            'name' => $this->name,
+            'searchable' => $this->searchable,
+            'orderable' => $this->orderable,
+            'search' => $this->search
+        ];
     }
 }
