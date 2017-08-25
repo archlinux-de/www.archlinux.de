@@ -79,7 +79,7 @@ class GetOpenSearch extends Controller
         $icon->setAttribute('width', '16');
         $icon->setAttribute('type', 'image/x-icon');
 
-        $image = $dom->createElement('Image', $this->assetPackages->getUrl('build/images/archlogo-64.png'));
+        $image = $dom->createElement('Image', $this->assetPackages->getUrl('build/images/archlogo.svg'));
         $image->setAttribute('height', '64');
         $image->setAttribute('width', '64');
         $image->setAttribute('type', 'image/png');

@@ -1,2 +1,82 @@
-@import "arch.css";
-@import "archnavbar.css";
+// See ~bootstrap/scss/variables
+
+$brand-primary: #08c;
+$brand-secondary: #333;
+$brand-dark: #222;
+$brand-light: #f6f9fc;
+
+$theme-colors: (
+        primary: $brand-primary,
+        secondary: $brand-secondary,
+        success: #28a745,
+        info: #17a2b8,
+        warning: #ffc107,
+        danger: #dc3545,
+        light: $brand-light,
+        dark: $brand-secondary
+);
+
+$enable-rounded: false;
+$enable-transitions: false;
+
+$body-bg: $brand-light;
+$body-color: $brand-dark;
+$link-hover-color: #666;
+
+//$font-family-sans-serif: sans-serif;
+//$font-family-monospace: monospace;
+
+.navbar {
+  border-bottom: 0.313rem solid $brand-primary;
+}
+
+$navbar-dark-color: #999;
+$navbar-dark-hover-color: #fff;
+$navbar-dark-active-color: #fff;
+
+.navbar-nav {
+  .nav-link {
+    font-weight: bold;
+  }
+}
+
+$jumbotron-bg: #ecf2f5;
+.jumbotron {
+  border: 1px solid #bcd;
+}
+
+//html {
+//  position: relative;
+//  min-height: 100%;
+//}
+//
+//body {
+//  margin-bottom: 60px;
+//  font-size: 8px;
+//}
+//
+//$font-size-base: 0.8rem;
+//$font-size-lg: 0.8rem;
+//
+//.footer {
+//  position: absolute;
+//  bottom: 0;
+//  width: 100%;
+//  /* Set the fixed height of the footer here */
+//  height: 60px;
+//  line-height: 60px; /* Vertically center the text there */
+//  background-color: #f5f5f5;
+//}
+
+//$table-cell-padding:            .05rem;
+//$table-cell-padding-sm:         .01rem;
+
+
+.footer {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 40px;
+}
+
+
+@import "~bootstrap/scss/bootstrap";

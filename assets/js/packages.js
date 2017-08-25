@@ -2,10 +2,13 @@ require('../css/packages.scss');
 var $ = require('jquery');
 require('datatables.net');
 var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
+require( 'datatables.net-responsive' );
+require( 'datatables.net-bs4');
 
 $(document).ready(function () {
         $('#packages').DataTable({
             "language": language,
+            "responsive": true,
             "lengthMenu": [25, 50, 100],
             "pageLength": 25,
             "processing": false,

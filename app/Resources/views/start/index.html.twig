@@ -1,16 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block javascripts %}
+    {{ parent() }}
     <script src="{{ asset('build/start.js') }}"></script>
 {% endblock %}
 
 {% block title %}Start{% endblock %}
 
 {% block body %}
-    <div id="left-wrapper">
-        <div id="left">
-            <div id="intro" class="box">
-                <h2>Willkommen bei Arch Linux</h2>
+
+    <div class="row">
+        <div class="col-xl-9">
+
+            <div class="jumbotron jumbotron-fluid p-3">
+
+                <h1>Willkommen bei Arch Linux</h1>
                 <p>
                     <strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em> Distribution
                     für jeden
@@ -27,67 +31,87 @@
                     Arch Linux ist daher eine perfekte Distribution für erfahrene Anwender &mdash; und solche, die es
                     werden wollen...
                 </p>
-                <p class="readmore"><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">mehr über Arch
-                        Linux</a></p>
+                <div class="text-right">
+                    <a class="btn btn-outline-primary btn-sm"
+                       href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">
+                        mehr über Arch Linux
+                    </a>
+                </div>
             </div>
-            <div id="news">
+
+
                 {{ render(controller('AppBundle:Start:news')) }}
+        </div>
+        <div class="col-xl-3">
+
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <form method="get" action="{{ path('app_packages_index') }}">
+                    <div class="input-group">
+                        <input type="text" class="form-control border-primary" placeholder="Pakete" aria-label="Pakete" id="searchfield" autocomplete="off"
+                               data-suggest="{{ path('app_packagessuggest_suggest') }}">
+                        <span class="input-group-btn">
+        <button class="btn btn-primary border-primary" type="button">Suchen</button>
+      </span>
+                    </div>
+
+
+                    </form>
+                </div>
+            </div>
+
+            {{ render(controller('AppBundle:Start:recentPackages')) }}
+
+            <div class=" mt-4">
+                <div class="">
+                    <h4>Dokumentation</h4>
+                    <ul>
+                        <li><a href="https://wiki.archlinux.de/">Wiki</a></li>
+                        <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Arch Install Scripts</a></li>
+                        <li><a href="https://wiki.archlinux.de/title/Anleitung_f%C3%BCr_Einsteiger">Anleitung für
+                                Einsteiger</a>
+                        </li>
+                    </ul>
+                    <h4>Gemeinschaft</h4>
+                    <ul>
+                        <li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
+                        <li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
+                        <li><a href="https://wiki.archlinux.org/index.php/International_Communities">Internationale
+                                Gemeinschaft</a></li>
+                    </ul>
+                    <h4>Unterstützung</h4>
+                    <ul>
+                        <li><a href="https://www.archlinux.org/donate/">Spenden (international)</a></li>
+                    </ul>
+                    <h4>Entwicklung</h4>
+                    <ul>
+                        <li><a href="{{ path('app_packages_index') }}">Pakete</a></li>
+                        <li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
+                        <li><a href="https://aur.archlinux.de/">AUR</a></li>
+                        <li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
+                        <li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
+                        <li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>
+                        <li><a href="https://github.com/archlinux-de">archlinux.de Projekte in Git</a></li>
+                        <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki">Entwickler-Wiki</a></li>
+                    </ul>
+                    <h4>Informationen</h4>
+                    <ul>
+                        <li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
+                        <li><a href="{{ path('app_download_index') }}">Arch herunterladen</a></li>
+                        <li><a href="https://wiki.archlinux.de/title/Arch_in_den_Medien">Arch in den Medien</a></li>
+                        <li><a href="https://www.archlinux.org/art/">Logos</a></li>
+                        <li><a href="https://www.archlinux.org/people/developers/">Entwickler</a></li>
+                        <li><a href="https://www.archlinux.org/people/trusted-users/">Trusted Users</a></li>
+                        <li><a href="https://www.archlinux.org/people/developer-fellows/">Ehemalige Entwickler</a></li>
+                        <li><a href="https://www.archlinux.org/people/trusted-user-fellows/">Ehemalige Trusted Users</a>
+                        </li>
+                        <li><a href="{{ path('app_mirrorstatus_index') }}">Mirror-Status</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-    <div id="right">
-        <div id="pkgsearch">
-            <form method="get" action="{{ path('app_packages_index') }}">
-                <label for="searchfield">Paket-Suche:</label>
-                <input type="text" name="search" size="20" maxlength="200" id="searchfield" autocomplete="off"
-                       data-suggest="{{ path('app_packagessuggest_suggest') }}"/>
-            </form>
-        </div>
-        <div id="pkgrecent" class="box">
-            {{ render(controller('AppBundle:Start:recentPackages')) }}
-        </div>
-        <div id="sidebar">
-            <h4>Dokumentation</h4>
-            <ul>
-                <li><a href="https://wiki.archlinux.de/">Wiki</a></li>
-                <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Arch Install Scripts</a></li>
-                <li><a href="https://wiki.archlinux.de/title/Anleitung_f%C3%BCr_Einsteiger">Anleitung für Einsteiger</a>
-                </li>
-            </ul>
-            <h4>Gemeinschaft</h4>
-            <ul>
-                <li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
-                <li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
-                <li><a href="https://wiki.archlinux.org/index.php/International_Communities">Internationale
-                        Gemeinschaft</a></li>
-            </ul>
-            <h4>Unterstützung</h4>
-            <ul>
-                <li><a href="https://www.archlinux.org/donate/">Spenden (international)</a></li>
-            </ul>
-            <h4>Entwicklung</h4>
-            <ul>
-                <li><a href="{{ path('app_packages_index') }}">Pakete</a></li>
-                <li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
-                <li><a href="https://aur.archlinux.de/">AUR</a></li>
-                <li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
-                <li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
-                <li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>
-                <li><a href="https://github.com/archlinux-de">archlinux.de Projekte in Git</a></li>
-                <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki">Entwickler-Wiki</a></li>
-            </ul>
-            <h4>Informationen</h4>
-            <ul>
-                <li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
-                <li><a href="{{ path('app_download_index') }}">Arch herunterladen</a></li>
-                <li><a href="https://wiki.archlinux.de/title/Arch_in_den_Medien">Arch in den Medien</a></li>
-                <li><a href="https://www.archlinux.org/art/">Logos</a></li>
-                <li><a href="https://www.archlinux.org/people/developers/">Entwickler</a></li>
-                <li><a href="https://www.archlinux.org/people/trusted-users/">Trusted Users</a></li>
-                <li><a href="https://www.archlinux.org/people/developer-fellows/">Ehemalige Entwickler</a></li>
-                <li><a href="https://www.archlinux.org/people/trusted-user-fellows/">Ehemalige Trusted Users</a></li>
-                <li><a href="{{ path('app_mirrorstatus_index') }}">Mirror-Status</a></li>
-            </ul>
-        </div>
-    </div>
+
+
 {% endblock %}

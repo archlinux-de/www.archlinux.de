@@ -63,7 +63,7 @@ class RecentNewsController extends Controller
         $feed->addElement($icon);
 
         $logo = $feed->newElement();
-        $logo->setName('logo')->setValue($this->assetPackages->getUrl('build/images/archlogo-64.png'));
+        $logo->setName('logo')->setValue($this->assetPackages->getUrl('build/images/archlogo.svg'));
         $feed->addElement($logo);
 
         foreach ($news as $newsItem) {

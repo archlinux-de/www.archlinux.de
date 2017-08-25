@@ -19,7 +19,7 @@
 {% block body %}
     <div class="box">
         <h2>Paket-Suche</h2>
-        <table id="packages" class="pretty-table compact"
+        <table id="packages" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0"
                data-ajax="{{ path('app_packages_datatables') }}"
                data-search-cols='[null, {"search": "{{ default_architecture }}"}, null, null, null, null]'
                data-search='{"search": "{{ search }}"}'>
