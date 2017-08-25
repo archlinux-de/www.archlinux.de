@@ -69,5 +69,4 @@ deploy:
 	bin/console cache:warmup --env=prod
 	yarn install
 	yarn run encore production
-	sudo systemctl restart php-fpm@www
 	chmod o+x .
