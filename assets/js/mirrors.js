@@ -1,8 +1,7 @@
-require('../css/mirrors.scss');
-var $ = require('jquery');
-require('datatables.net');
-require('datatables.net-bs4');
-var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
+import 'jquery';
+import 'datatables.net';
+import 'datatables.net-bs4';
+import language from './lang-loader!datatables.net-plugins/i18n/German.lang';
 
 $(document).ready(function () {
     $('#mirrors').DataTable({
@@ -14,7 +13,7 @@ $(document).ready(function () {
             {
                 "data": "url",
                 "render": function (data, type, row) {
-                    if (type == 'display') {
+                    if (type === 'display') {
                         return '<a href="' + row.url + '" rel="nofollow">' + new URL(data).hostname + '</a>';
                     }
                     return data;
@@ -38,8 +37,8 @@ $(document).ready(function () {
                 "data": "lastsync",
                 "searchable": false,
                 "render": function (data, type, row) {
-                    if (type == 'display' && data) {
-                        var date = new Date(data * 1000);
+                    if (type === 'display' && data) {
+                        const date = new Date(data * 1000);
                         return date.toLocaleDateString('de-DE')
                             + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                     }

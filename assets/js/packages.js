@@ -1,8 +1,7 @@
-require('../css/packages.scss');
-var $ = require('jquery');
-require('datatables.net');
-require('datatables.net-bs4');
-var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
+import 'jquery';
+import 'datatables.net';
+import 'datatables.net-bs4';
+import language from './lang-loader!datatables.net-plugins/i18n/German.lang';
 
 $(document).ready(function () {
         $('#packages').DataTable({
@@ -31,7 +30,7 @@ $(document).ready(function () {
                     "orderable": true,
                     "searchable": true,
                     "render": function (data, type, row) {
-                        if (type == 'display') {
+                        if (type === 'display') {
                             return '<a href="' + row.url + '">' + data + '</a>';
                         }
                         return data;
@@ -54,8 +53,8 @@ $(document).ready(function () {
                     "orderable": true,
                     "searchable": false,
                     "render": function (data, type, row) {
-                        if (type == 'display') {
-                            var date = new Date(data * 1000);
+                        if (type === 'display') {
+                            const date = new Date(data * 1000);
                             return date.toLocaleDateString('de-DE')
                                 + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                         }

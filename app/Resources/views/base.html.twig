@@ -6,7 +6,7 @@
     <link rel="icon" href="{{ asset('build/images/archicon.svg') }}" sizes="any" type="image/svg+xml">
     <title>archlinux.de - {% block title %}{% endblock %}</title>
     {% block stylesheets %}
-        <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+        <link href="{{ asset('build/css/app.css') }}" rel="stylesheet">
     {% endblock %}
     <link rel="alternate" type="application/atom+xml" title="Aktuelle Arch Linux Neuigkeiten"
           href="{{ path('app_recentnews_index') }}"/>
@@ -62,7 +62,8 @@
 </footer>
 
 {% block javascripts %}
-    <script src="{{ asset('build/app.js') }}"></script>
+    <script src="{{ asset('build/manifest.js') }}"></script>
+    <script src="{{ asset('build/js/vendor.js') }}"></script>
 {% endblock %}
 </body>
 </html>

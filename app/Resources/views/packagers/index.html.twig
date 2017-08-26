@@ -1,13 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" media="screen" href="{{ asset('build/packagers.css') }}"/>
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('build/packagers.js') }}"></script>
+    <script src="{{ asset('build/js/packagers.js') }}"></script>
 {% endblock %}
 
 {% block title %}Packer{% endblock %}

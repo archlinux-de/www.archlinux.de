@@ -1,8 +1,7 @@
-require('../css/packagers.scss');
-var $ = require('jquery');
-require('datatables.net');
-require('datatables.net-bs4');
-var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
+import 'jquery';
+import 'datatables.net';
+import 'datatables.net-bs4';
+import language from './lang-loader!datatables.net-plugins/i18n/German.lang';
 
 $(document).ready(function () {
     $('#packagers').DataTable({
@@ -16,7 +15,7 @@ $(document).ready(function () {
             {
                 "data": "email",
                 "render": function (data, type, row) {
-                    if (type == 'display' && data) {
+                    if (type === 'display' && data) {
                         return '<a href="mailto:' + data + '">' + data + '</a>';
                     }
                     return data;
@@ -31,8 +30,8 @@ $(document).ready(function () {
                 "data": "lastbuilddate",
                 "searchable": false,
                 "render": function (data, type, row) {
-                    if (type == 'display' && data) {
-                        var date = new Date(data * 1000);
+                    if (type === 'display' && data) {
+                        const date = new Date(data * 1000);
                         return date.toLocaleDateString('de-DE')
                             + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                     }
