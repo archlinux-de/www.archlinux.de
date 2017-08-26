@@ -1,6 +1,7 @@
 require('../css/mirrors.scss');
 var $ = require('jquery');
 require('datatables.net');
+require('datatables.net-bs4');
 var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
 
 $(document).ready(function () {
@@ -14,21 +15,24 @@ $(document).ready(function () {
                 "data": "url",
                 "render": function (data, type, row) {
                     if (type == 'display') {
-                        return '<a href="' + row.url + '" rel="nofollow">' + data + '</a>';
+                        return '<a href="' + row.url + '" rel="nofollow">' + new URL(data).hostname + '</a>';
                     }
                     return data;
                 }
             },
             {
-                "data": "country"
+                "data": "country",
+                "className": "d-none d-md-table-cell"
             },
             {
                 "data": "durationAvg",
-                "searchable": false
+                "searchable": false,
+                "className": "d-none d-lg-table-cell"
             },
             {
                 "data": "delay",
-                "searchable": false
+                "searchable": false,
+                "className": "d-none d-lg-table-cell"
             },
             {
                 "data": "lastsync",

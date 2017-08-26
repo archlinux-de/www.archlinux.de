@@ -50,6 +50,8 @@ class MirrorStatusController extends Controller
             mirrors
             JOIN countries
             ON mirrors.countryCode = countries.code
+        WHERE
+            protocol = "https"
         ')->fetchAll(\PDO::FETCH_ASSOC);
 
         return $this->json(new DatatablesResponse($mirrors));
