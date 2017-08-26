@@ -20,7 +20,7 @@
             </ul>
             <p>Diese Daten werden für statistische Zwecke oder zur Erkennung von Angriffen verwendet.
                 Diese Daten werden eine Woche lang archiviert. Hier ein beispielhafter Log-Eintrag:</p>
-            <p><code>{{ request.clientIp }} {{ request.host }} - [{{ request.server.get('REQUEST_TIME') | date('c') }}]
+            <p class="mw-100"><code class="break-word">{{ request.clientIp }} {{ request.host }} - [{{ request.server.get('REQUEST_TIME') | date('c') }}]
                     "GET {{ request.requestUri }} {{ request.server.get('SERVER_PROTOCOL') }}" 200 1234
                     "{{ request.headers.get('REFERER') }}" "{{ request.headers.get('USER_AGENT') }}"</code></p>
             <h2>Speicherung persönlicher Daten bei der Registrierung</h2>

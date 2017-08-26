@@ -71,13 +71,23 @@ $jumbotron-bg: #ecf2f5;
 //$table-cell-padding:            .05rem;
 //$table-cell-padding-sm:         .01rem;
 
-
 .footer {
   padding-top: 40px;
   padding-bottom: 40px;
   margin-top: 40px;
 }
 
-
 @import "~bootstrap/scss/bootstrap";
 @import "~js-autocomplete/auto-complete.css";
+
+.w-20 {
+  width: 20% !important;
+}
+
+.mw-50vw {
+  max-width: 50vw;
+}
+
+.break-word {
+  word-wrap: break-word;
+}

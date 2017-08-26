@@ -257,7 +257,7 @@ class PackageDetailsController extends Controller
         $stm->bindParam('packageId', $this->pkgid, \PDO::PARAM_INT);
         $stm->bindParam('type', $type, \PDO::PARAM_STR);
         $stm->execute();
-        $list = '<ul>';
+        $list = '<ul class="list-unstyled pl-4">';
         foreach ($stm as $dependency) {
             if (is_null($dependency['id'])) {
                 $list .= '<li>' . $dependency['name'] . $dependency['version'] . '</li>';
@@ -304,7 +304,7 @@ class PackageDetailsController extends Controller
         $stm->bindParam('packageId', $this->pkgid, \PDO::PARAM_INT);
         $stm->bindParam('type', $type, \PDO::PARAM_STR);
         $stm->execute();
-        $list = '<ul>';
+        $list = '<ul class="list-unstyled pl-4">';
         foreach ($stm as $dependency) {
             $list .= '<li><a href="' . $this->router->generate('app_packagedetails_index', array(
                     'repo' => $dependency['repo'],
