@@ -105,7 +105,6 @@ class PackageDetailsController extends Controller
         return $this->render('package/index.html.twig', [
             'package' => $data,
             'cgit_url' => $cgitUrl,
-            'show_files' => $request->query->has('showfiles'),
             'arch' => $arch,
             'pgpsig_base64' => base64_encode($data['pgpsig']),
             'licenses' => $this->getLicenses(),
@@ -120,7 +119,6 @@ class PackageDetailsController extends Controller
             'makedepends' => $this->getRelations('makedepends'),
             'inverse_makedepends' => $this->getInverseRelations('makedepends'),
             'checkdepends' => $this->getRelations('checkdepends'),
-            'files' => $this->getFiles(),
             'repo' => $repo,
             'pkgname' => $pkgname
         ]);
@@ -176,54 +174,6 @@ class PackageDetailsController extends Controller
         }
 
         return implode(', ', $list);
-    }
-
-    /**
-     * @return string
-     */
-    private function getFiles(): string
-    {
-        $stm = $this->database->prepare('
-            SELECT
-                path
-            FROM
-                files
-            WHERE
-                package = :package
-            ORDER BY
-                path
-        ');
-        $stm->bindParam('package', $this->pkgid, \PDO::PARAM_INT);
-        $stm->execute();
-
-        $list = '';
-        if ($stm->rowCount() > 0) {
-            $last = 0;
-            $cur = 0;
-            while (($path = $stm->fetchColumn())) {
-                $cur = substr_count($path, '/');
-                if (substr($path, -1) != '/') {
-                    ++$cur;
-                }
-
-                if ($cur == $last + 1) {
-                    $list .= '<ul>';
-                } elseif ($cur < $last) {
-                    $list .= '</li>' . str_repeat('</ul></li>', $last - $cur);
-                } elseif ($cur > $last + 1) {
-                    throw new \RuntimeException('incorrect list depth');
-                } else {
-                    $list .= '</li>';
-                }
-
-                $list .= '<li>' . basename($path);
-                $last = $cur;
-            }
-
-            $list .= str_repeat('</li></ul>', $cur);
-        }
-
-        return $list;
     }
 
     /**

@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 class PackageDatabaseDownloader
 {
-    private const DB_EXT = '.files';
+    private const DB_EXT = '.db';
 
     /** @var Client */
     private $guzzleClient;

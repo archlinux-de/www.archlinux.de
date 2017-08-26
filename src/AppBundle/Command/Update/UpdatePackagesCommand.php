@@ -70,28 +70,12 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private $cleanupRelation = null;
     /** @var Statement */
     private $insertRelation = null;
-    /** @var Statement */
-    private $selectFileIndex = null;
-    /** @var Statement */
-    private $insertFileIndex = null;
-    /** @var Statement */
-    private $cleanupFiles = null;
-    /** @var Statement */
-    private $insertFiles = null;
-    /** @var Statement */
-    private $insertPackageFileIndex = null;
-    /** @var Statement */
-    private $cleanupPackageFileIndex = null;
-    private $files = array();
     private $contentTables = array(
         'architectures',
-        'files',
-        'file_index',
         'groups',
         'licenses',
         'packagers',
         'packages',
-        'package_file_index',
         'package_group',
         'package_license',
         'package_relation',
@@ -201,7 +185,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     }
                 }
                 $this->groups = array();
-                $this->files = array();
             }
 
             $this->printDebug('Cleaning up obsolete repositories...', $output);
@@ -519,48 +502,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 license = :license
             ');
 
-        // files
-        $this->selectFileIndex = $this->database->prepare('
-            SELECT
-                id
-            FROM
-                file_index
-            WHERE
-                name = :name
-            ');
-        $this->insertFileIndex = $this->database->prepare('
-            INSERT INTO
-                file_index
-            SET
-                name = :name
-            ');
-        $this->cleanupPackageFileIndex = $this->database->prepare('
-            DELETE FROM
-                package_file_index
-            WHERE
-                package = :package
-            ');
-        $this->cleanupFiles = $this->database->prepare('
-            DELETE FROM
-                files
-            WHERE
-                package = :package
-            ');
-        $this->insertFiles = $this->database->prepare('
-            INSERT INTO
-                files
-            SET
-                package = :package,
-                path = :path
-            ');
-        $this->insertPackageFileIndex = $this->database->prepare('
-            INSERT INTO
-                package_file_index
-            SET
-                package = :package,
-                file_index = :file
-            ');
-
         // relations
         $this->cleanupRelation = $this->database->prepare('
             DELETE FROM
@@ -764,57 +705,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param string $fileName
-     *
-     * @return int
-     */
-    private function getFileIndexID(string $fileName): int
-    {
-        if (!isset($this->files[$fileName])) {
-            $htmlFile = htmlspecialchars($fileName);
-            $this->selectFileIndex->bindParam('name', $htmlFile, \PDO::PARAM_STR);
-            $this->selectFileIndex->execute();
-            $id = $this->selectFileIndex->fetchColumn();
-            if ($id === false) {
-                $this->insertFileIndex->bindParam('name', $htmlFile, \PDO::PARAM_STR);
-                $this->insertFileIndex->execute();
-                $id = $this->database->lastInsertId();
-            }
-            $this->files[$fileName] = (int)$id;
-        }
-
-        return $this->files[$fileName];
-    }
-
-    /**
-     * @param array $files
-     * @param int $packageId
-     */
-    private function insertFiles(array $files, int $packageId)
-    {
-        $this->cleanupPackageFileIndex->bindParam('package', $packageId, \PDO::PARAM_INT);
-        $this->cleanupPackageFileIndex->execute();
-
-        $this->cleanupFiles->bindParam('package', $packageId, \PDO::PARAM_INT);
-        $this->cleanupFiles->execute();
-
-        foreach ($files as $file) {
-            $this->insertFiles->bindParam('package', $packageId, \PDO::PARAM_INT);
-            $this->insertFiles->bindValue('path', htmlspecialchars($file), \PDO::PARAM_STR);
-            $this->insertFiles->execute();
-            // skip directories (which end with /)
-            if (substr($file, -1) != '/') {
-                $filename = basename($file);
-                if (strlen($filename) > 2) {
-                    $this->insertPackageFileIndex->bindParam('package', $packageId, \PDO::PARAM_INT);
-                    $this->insertPackageFileIndex->bindValue('file', $this->getFileIndexID($filename), \PDO::PARAM_INT);
-                    $this->insertPackageFileIndex->execute();
-                }
-            }
-        }
-    }
-
-    /**
      * @param int $repoId
      * @param Package $package
      */
@@ -870,7 +760,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->addRelation($package->getProvides(), $packageId, 'provides');
         $this->addRelation($package->getMakeDepends(), $packageId, 'makedepends');
         $this->addRelation($package->getCheckDepends(), $packageId, 'checkdepends');
-        $this->insertFiles($package->getFiles(), $packageId);
 
         $this->updatedPackages = true;
     }
@@ -942,18 +831,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 packageId = :packageId
             ');
-        $cleanupFiles = $this->database->prepare('
-            DELETE FROM
-                files
-            WHERE
-                package = :packageId
-            ');
-        $cleanupPackageFileIndex = $this->database->prepare('
-            DELETE FROM
-                package_file_index
-            WHERE
-                package = :packageId
-            ');
         $cleanupPackageGroup = $this->database->prepare('
             DELETE FROM
                 package_group
@@ -985,12 +862,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $cleanupPackages->execute();
                 $cleanupRelations->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                 $cleanupRelations->execute();
-                if (isset($cleanupFiles) && isset($cleanupPackageFileIndex)) {
-                    $cleanupFiles->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
-                    $cleanupFiles->execute();
-                    $cleanupPackageFileIndex->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
-                    $cleanupPackageFileIndex->execute();
-                }
                 $cleanupPackageGroup->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
                 $cleanupPackageGroup->execute();
                 $cleanupPackageLicense->bindValue('packageId', $repoPackage['id'], \PDO::PARAM_INT);
@@ -1060,14 +931,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             WHERE
                 NOT EXISTS (
                     SELECT * FROM packages WHERE packages.arch = architectures.id
-                )
-            ');
-        $this->database->query('
-            DELETE FROM
-                file_index
-            WHERE
-                NOT EXISTS (
-                    SELECT * FROM package_file_index WHERE package_file_index.file_index = file_index.id
                 )
             ');
     }

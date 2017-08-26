@@ -155,24 +155,5 @@
                 </td>
             </tr>
         </table>
-        <table id="packagefiles">
-            <tr>
-                <th class="packagefileshead">Dateien</th>
-            </tr>
-            <tr>
-                <td>
-                    {% if show_files %}
-                        {{ files | raw }}
-                    {% else %}
-                        <a style="font-size:10px;margin:10px;" href="{{ path('app_packagedetails_index', {
-                            'repo': repo,
-                            'arch': arch,
-                            'pkgname': pkgname,
-                            'showfiles': '1'
-                        }) }}">Dateien anzeigen</a>
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
     </div>
 {% endblock %}

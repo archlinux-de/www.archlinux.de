@@ -52,14 +52,6 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
                     <td>' . number_format((float)$data['packages']) . '</td>
                 </tr>
                 <tr>
-                    <th>Files</th>
-                    <td>' . number_format((float)$data['files']) . '</td>
-                </tr>
-                <tr>
-                    <th>Size of file index</th>
-                    <td>' . number_format((float)$data['file_index']) . '</td>
-                </tr>
-                <tr>
                     <th>Licenses</th>
                     <td>' . number_format((float)$data['licenses']) . '</td>
                 </tr>
@@ -107,10 +99,6 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
                     <td>&empty; ' . $this->formatBytes((int)$data['avgisize']) . 'Byte</td>
                 </tr>
                 <tr>
-                    <th>Files per package</th>
-                    <td>&empty; ' . number_format((float)$data['avgfiles'], 2) . '</td>
-                </tr>
-                <tr>
                     <th>Packages per packager</th>
                     <td>&empty; ' . number_format((float)$data['avgpkgperpackager'], 2) . '</td>
                 </tr>
@@ -134,7 +122,6 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
             (SELECT COUNT(*) FROM architectures) AS architectures,
             (SELECT COUNT(*) FROM repositories) AS repositories,
             (SELECT COUNT(*) FROM packages) AS packages,
-            (SELECT COUNT(*) FROM files) AS files,
             (SELECT SUM(csize) FROM packages) AS csize,
             (SELECT SUM(isize) FROM packages) AS isize,
             (SELECT COUNT(*) FROM packagers) AS packagers,
@@ -145,7 +132,6 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
             (SELECT COUNT(*) FROM package_relation WHERE type = "conflicts") AS conflicts,
             (SELECT COUNT(*) FROM package_relation WHERE type = "replaces") AS replaces,
             (SELECT COUNT(*) FROM package_relation WHERE type = "provides") AS provides,
-            (SELECT COUNT(*) FROM file_index) AS file_index,
             (SELECT AVG(csize) FROM packages) AS avgcsize,
             (SELECT AVG(isize) FROM packages) AS avgisize,
             (SELECT
@@ -162,18 +148,7 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
                             packages.packager = packagers.id
                 GROUP BY packagers.id
                 ) AS temp
-            ) AS avgpkgperpackager,
-            (SELECT
-                AVG(pkgfiles)
-            FROM
-                (
-                SELECT
-                    COUNT(*) AS pkgfiles
-                FROM
-                    files
-                GROUP BY package
-                ) AS temp2
-            ) AS avgfiles
+            ) AS avgpkgperpackager
         ')->fetch();
     }
 
