@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use AppBundle\Response\Datatables\Response as DatatablesResponse;
 
 class PackagersController extends Controller
 {
@@ -63,6 +64,6 @@ class PackagersController extends Controller
             packagers
         ')->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->json(['data' => $packagers]);
+        return $this->json(new DatatablesResponse($packagers));
     }
 }
