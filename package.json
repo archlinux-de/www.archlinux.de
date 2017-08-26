@@ -12,8 +12,7 @@
     "node-sass": "^4.5.3",
     "popper.js": "^1.12.3",
     "postcss-loader": "^2.0.6",
-    "sass-loader": "^6.0.6",
-    "svgo-loader": "^1.2.1"
+    "sass-loader": "^6.0.6"
   },
   "browserslist": [
     "last 2 Firefox versions",
