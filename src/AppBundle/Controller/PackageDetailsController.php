@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -34,10 +33,9 @@ class PackageDetailsController extends Controller
      * @param string $repo
      * @param string $arch
      * @param string $pkgname
-     * @param Request $request
      * @return Response
      */
-    public function indexAction(string $repo, string $arch, string $pkgname, Request $request): Response
+    public function indexAction(string $repo, string $arch, string $pkgname): Response
     {
         $repository = $this->database->prepare('
             SELECT
@@ -119,7 +117,6 @@ class PackageDetailsController extends Controller
             'makedepends' => $this->getRelations('makedepends'),
             'inverse_makedepends' => $this->getInverseRelations('makedepends'),
             'checkdepends' => $this->getRelations('checkdepends'),
-            'files' => $this->getFiles(),
             'repo' => $repo,
             'pkgname' => $pkgname
         ]);
@@ -175,54 +172,6 @@ class PackageDetailsController extends Controller
         }
 
         return implode(', ', $list);
-    }
-
-    /**
-     * @return string
-     */
-    private function getFiles(): string
-    {
-        $stm = $this->database->prepare('
-            SELECT
-                path
-            FROM
-                files
-            WHERE
-                package = :package
-            ORDER BY
-                path
-        ');
-        $stm->bindParam('package', $this->pkgid, \PDO::PARAM_INT);
-        $stm->execute();
-
-        $list = '';
-        if ($stm->rowCount() > 0) {
-            $last = 0;
-            $cur = 0;
-            while (($path = $stm->fetchColumn())) {
-                $cur = substr_count($path, '/');
-                if (substr($path, -1) != '/') {
-                    ++$cur;
-                }
-
-                if ($cur == $last + 1) {
-                    $list .= '<ul class="list-unstyled pl-1">';
-                } elseif ($cur < $last) {
-                    $list .= '</li>' . str_repeat('</ul></li>', $last - $cur);
-                } elseif ($cur > $last + 1) {
-                    throw new \RuntimeException('incorrect list depth');
-                } else {
-                    $list .= '</li>';
-                }
-
-                $list .= '<li class="pl-2 pl-md-4">' . basename($path);
-                $last = $cur;
-            }
-
-            $list .= str_repeat('</li></ul>', $cur);
-        }
-
-        return $list;
     }
 
     /**

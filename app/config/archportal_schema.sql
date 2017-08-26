@@ -17,23 +17,6 @@ CREATE TABLE `countries` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `file_index` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(512) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `name` (`name`(20))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `files` (
-  `package` mediumint(8) unsigned NOT NULL,
-  `path` varchar(512) NOT NULL,
-  KEY `package` (`package`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `groups` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -79,15 +62,6 @@ CREATE TABLE `news_feed` (
   `updated` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `updated` (`updated`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `package_file_index` (
-  `package` mediumint(8) unsigned NOT NULL,
-  `file_index` mediumint(8) unsigned NOT NULL,
-  KEY `package` (`package`),
-  KEY `file_index` (`file_index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

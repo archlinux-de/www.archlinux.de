@@ -95,6 +95,7 @@ trait StatisticsControllerTrait
 
 
     /**
+     * @param string $title
      * @return CacheItemInterface
      */
     private function getCachedItem(string $title): CacheItemInterface
