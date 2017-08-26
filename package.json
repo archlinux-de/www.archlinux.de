@@ -13,8 +13,5 @@
     "postcss-loader": "^2.0.6",
     "sass-loader": "^6.0.6"
   },
-  "browserslist": [
-    "last 2 Firefox versions",
-    "last 2 Chrome versions"
-  ]
+  "browserslist": "> 1%"
 }
