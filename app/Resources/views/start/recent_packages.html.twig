@@ -1,7 +1,7 @@
 <div class="card">
     <h3 class="card-title card-header">Aktuelle Pakete</h3>
 
-    <div class="card-body">
+    <div class="card-body p-1 p-lg-3">
         <table class="table table-sm">
             {% for package in packages %}
                 <tr{% if package.testing == 1 %} class="testing"{% endif %}>

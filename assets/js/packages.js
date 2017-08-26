@@ -35,7 +35,8 @@ $(document).ready(function () {
                             return '<a href="' + row.url + '">' + data + '</a>';
                         }
                         return data;
-                    }
+                    },
+                    "className": "text-nowrap"
                 },
                 {
                     "data": "version",
@@ -46,7 +47,7 @@ $(document).ready(function () {
                     "data": "description",
                     "orderable": false,
                     "searchable": true,
-                    "className": "text-truncate"
+                    "className": "mw-50vw d-none d-sm-table-cell"
                 },
                 {
                     "data": "builddate",
@@ -54,7 +55,9 @@ $(document).ready(function () {
                     "searchable": false,
                     "render": function (data, type, row) {
                         if (type == 'display') {
-                            return new Date(data * 1000).toLocaleString('de-DE');
+                            var date = new Date(data * 1000);
+                            return date.toLocaleDateString('de-DE')
+                                + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                         }
                         return data;
                     },

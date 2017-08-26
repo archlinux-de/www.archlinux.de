@@ -105,7 +105,6 @@ class PackageDetailsController extends Controller
         return $this->render('package/index.html.twig', [
             'package' => $data,
             'cgit_url' => $cgitUrl,
-            'show_files' => $request->query->has('showfiles'),
             'arch' => $arch,
             'pgpsig_base64' => base64_encode($data['pgpsig']),
             'licenses' => $this->getLicenses(),
@@ -207,7 +206,7 @@ class PackageDetailsController extends Controller
                 }
 
                 if ($cur == $last + 1) {
-                    $list .= '<ul>';
+                    $list .= '<ul class="list-unstyled pl-1">';
                 } elseif ($cur < $last) {
                     $list .= '</li>' . str_repeat('</ul></li>', $last - $cur);
                 } elseif ($cur > $last + 1) {
@@ -216,7 +215,7 @@ class PackageDetailsController extends Controller
                     $list .= '</li>';
                 }
 
-                $list .= '<li>' . basename($path);
+                $list .= '<li class="pl-2 pl-md-4">' . basename($path);
                 $last = $cur;
             }
 

@@ -39,10 +39,13 @@ $(document).ready(function () {
                 "searchable": false,
                 "render": function (data, type, row) {
                     if (type == 'display' && data) {
-                        return new Date(data * 1000).toLocaleString('de-DE');
+                        var date = new Date(data * 1000);
+                        return date.toLocaleDateString('de-DE')
+                            + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                     }
                     return data;
-                }
+                },
+                "className": "d-none d-sm-table-cell"
             }
         ]
     });

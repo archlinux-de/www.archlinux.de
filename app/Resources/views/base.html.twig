@@ -21,7 +21,6 @@
     app.request.attributes.get('_route_params'))) }}{% endblock %}"/>
 </head>
 <body>
-
 {% macro nav_item(route, name) %}
     <li class="nav-item ml-3{% if app.request.attributes.get('_route') == route %} active{% endif %}">
         <a class="nav-link"
@@ -29,7 +28,6 @@
     </li>
 {% endmacro %}
 {% import _self as macro %}
-
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <a class="navbar-brand" href="{{ path('app_start_index') }}">
         <img src="{{ asset('build/images/archlogo.svg') }}" width="190" height="40" alt="Arch Linux">
@@ -51,11 +49,12 @@
         </ul>
     </div>
 </nav>
-<div class="container-fluid pl-0 pr-0 pl-xl-5 pr-xl-5">
+
+<div class="container-fluid pl-1 pr-1 pl-xl-5 pr-xl-5">
     {% block body %}{% endblock %}
 </div>
 
-<footer class="footer">
+<footer class="footer pt-5 pb-4 pr-1 pr-xl-5">
     <div class="container-fluid text-right">
           <span class="text-muted"><a href="{{ path('app_legal_privacypolicy') }}">Datenschutz</a> &ndash;
               <a href="{{ path('app_legal_impressum') }}">Impressum</a></span>

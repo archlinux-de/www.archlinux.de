@@ -20,21 +20,25 @@ $(document).ready(function () {
                         return '<a href="mailto:' + data + '">' + data + '</a>';
                     }
                     return data;
-                }
+                },
+                "className": "d-none d-md-table-cell"
             },
             {
                 "data": "packages",
-                "searchable": false,
+                "searchable": false
             },
             {
                 "data": "lastbuilddate",
                 "searchable": false,
                 "render": function (data, type, row) {
                     if (type == 'display' && data) {
-                        return new Date(data * 1000).toLocaleDateString('de-DE');
+                        var date = new Date(data * 1000);
+                        return date.toLocaleDateString('de-DE')
+                            + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                     }
                     return data;
-                }
+                },
+                "className": "d-none d-lg-table-cell"
             }
         ]
     });
