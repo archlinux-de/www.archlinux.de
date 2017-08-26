@@ -1,8 +1,9 @@
-var autoComplete = require('js-autocomplete');
-window.addEventListener('load', function () {
-    var searchInput = document.getElementById('searchfield');
-    var suggest = searchInput.dataset.suggest;
-    new autoComplete({
+import AutoComplete from 'js-autocomplete';
+
+$(document).ready(function () {
+    const searchInput = document.getElementById('searchfield');
+    const suggest = searchInput.dataset.suggest;
+    new AutoComplete({
         selector: searchInput,
         delay: 100,
         minChars: 1,

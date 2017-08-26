@@ -1,7 +1,7 @@
-require('../css/packages.scss');
-var $ = require('jquery');
-require('datatables.net');
-var language = require('./lang-loader!datatables.net-plugins/i18n/German.lang');
+import 'jquery';
+import 'datatables.net';
+import 'datatables.net-bs4';
+import language from './lang-loader!datatables.net-plugins/i18n/German.lang';
 
 $(document).ready(function () {
         $('#packages').DataTable({
@@ -16,23 +16,26 @@ $(document).ready(function () {
                 {
                     "data": "repository",
                     "orderable": true,
-                    "searchable": true
+                    "searchable": true,
+                    "className": "d-none d-lg-table-cell"
                 },
                 {
                     "data": "architecture",
                     "orderable": true,
-                    "searchable": true
+                    "searchable": true,
+                    "className": "d-none d-xl-table-cell"
                 },
                 {
                     "data": "name",
                     "orderable": true,
                     "searchable": true,
                     "render": function (data, type, row) {
-                        if (type == 'display') {
+                        if (type === 'display') {
                             return '<a href="' + row.url + '">' + data + '</a>';
                         }
                         return data;
-                    }
+                    },
+                    "className": "text-nowrap"
                 },
                 {
                     "data": "version",
@@ -43,18 +46,21 @@ $(document).ready(function () {
                     "data": "description",
                     "orderable": false,
                     "searchable": true,
-                    "className": "packages-description"
+                    "className": "mw-50vw d-none d-sm-table-cell"
                 },
                 {
                     "data": "builddate",
                     "orderable": true,
                     "searchable": false,
                     "render": function (data, type, row) {
-                        if (type == 'display') {
-                            return new Date(data * 1000).toLocaleString('de-DE');
+                        if (type === 'display') {
+                            const date = new Date(data * 1000);
+                            return date.toLocaleDateString('de-DE')
+                                + '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>';
                         }
                         return data;
-                    }
+                    },
+                    "className": "d-none d-lg-table-cell"
                 }
             ],
             "createdRow": function (row, data, index) {

@@ -5,43 +5,47 @@
 {% block robots %}noindex{% endblock %}
 
 {% block body %}
-    <div id="privacy-policy" class="box">
-        <h1>Datenschutz</h1>
-        <h2>Speicherung und Verarbeitung von Daten</h2>
-        <p>Alle Zugriffe auf diese Seiten werden protokolliert. Hierbei werden folgende Daten erfasst:</p>
-        <ul>
-            <li>Datum und Uhrzeit des Zugriffs</li>
-            <li>Anfrage des Clients</li>
-            <li>Rückgabecode des Servers</li>
-            <li>Größe der übertragenen Daten</li>
-            <li>vom Client gesendeter Referer</li>
-            <li>vom Client gesendete Kennung</li>
-        </ul>
-        <p>Diese Daten werden für statistische Zwecke oder zur Erkennung von Angriffen verwendet.
-            Diese Daten werden eine Woche lang archiviert. Hier ein beispielhafter Log-Eintrag:</p>
-        <p><code>{{ request.clientIp }} {{ request.host }} - [{{ request.server.get('REQUEST_TIME') | date('c') }}]
-                "GET {{ request.requestUri }} {{ request.server.get('SERVER_PROTOCOL') }}" 200 1234
-                "{{ request.headers.get('REFERER') }}" "{{ request.headers.get('USER_AGENT') }}"</code></p>
-        <h2>Speicherung persönlicher Daten bei der Registrierung</h2>
-        <p>Bei der Registrierung im Forum wird neben einem Benutzernamen auch eine E-Mail-Adresse gespeichert.
-            Diese wird nur intern verwendet und nicht weitergegeben oder veröffentlicht.
-            Alle weiteren Angaben im Profil des Nutzers sind freiwillig und öffentlich zugänglich.
-            Alle Angaben kann der Nutzer jederzeit unter "Mein Profil" einsehen und ändern.
-            Die im Forum angelegten Benutzer werden auch für das Wiki genutzt.</p>
-        <h2>Beendigung der Mitgliedschaft</h2>
-        <p>Jeder registrierte Nutzer kann seine Mitgliedschaft jederzeit über sein Profil beenden.
-            Hierbei werden alle im Profil befindlichen Daten gelöscht.
-            Alle vom Nutzer verfassten Beiträge im Forum bleiben jedoch bestehen.
-            Ebenso bleiben alle Artikel im Wiki erhalten.
-            Der Benutzername selbst wird weiterhin als Verfasser der Beiträge und Artikel angezeigt.
-            Auf besonderne Wunsch hin kann der Benutzername allerdings geändert werden.
-            Diese Anfrage sollte jedoch unbedingt vor dem Löschen des Benutzerkontos erfolgen.
-            (Kontakt-Adresse: siehe <a href="{{ path('app_legal_impressum') }}">Impressum</a>)</p>
-        <h2>Cookies</h2>
-        <p>Beim Anmelden oder Verfassen von Beiträgen werden Cookies verwendet.
-            Diese enhalten eine für jeden Nutzer eindeutige Kennung.</p>
-        <h2>Sicherheitshinweis</h2>
-        <p>Dem Nutzer ist bewusst, dass alle Angaben im Profil und alle Beiträge im Forum oder Wiki öffentlich
-            zugänglich sind. Für alle Folgen dieser Veröffentlichung ist der Nutzer selbst verantwortlich.</p>
+    <h1 class="mb-4">Datenschutz</h1>
+    <div class="row m-0">
+        <div class="col-lg-6">
+            <h2>Speicherung und Verarbeitung von Daten</h2>
+            <p>Alle Zugriffe auf diese Seiten werden protokolliert. Hierbei werden folgende Daten erfasst:</p>
+            <ul>
+                <li>Datum und Uhrzeit des Zugriffs</li>
+                <li>Anfrage des Clients</li>
+                <li>Rückgabecode des Servers</li>
+                <li>Größe der übertragenen Daten</li>
+                <li>vom Client gesendeter Referer</li>
+                <li>vom Client gesendete Kennung</li>
+            </ul>
+            <p>Diese Daten werden für statistische Zwecke oder zur Erkennung von Angriffen verwendet.
+                Diese Daten werden eine Woche lang archiviert. Hier ein beispielhafter Log-Eintrag:</p>
+            <p class="mw-100"><code class="break-word">{{ request.clientIp }} {{ request.host }} - [{{ request.server.get('REQUEST_TIME') | date('c') }}]
+                    "GET {{ request.requestUri }} {{ request.server.get('SERVER_PROTOCOL') }}" 200 1234
+                    "{{ request.headers.get('REFERER') }}" "{{ request.headers.get('USER_AGENT') }}"</code></p>
+            <h2>Speicherung persönlicher Daten bei der Registrierung</h2>
+            <p>Bei der Registrierung im Forum wird neben einem Benutzernamen auch eine E-Mail-Adresse gespeichert.
+                Diese wird nur intern verwendet und nicht weitergegeben oder veröffentlicht.
+                Alle weiteren Angaben im Profil des Nutzers sind freiwillig und öffentlich zugänglich.
+                Alle Angaben kann der Nutzer jederzeit unter "Mein Profil" einsehen und ändern.
+                Die im Forum angelegten Benutzer werden auch für das Wiki genutzt.</p>
+        </div>
+        <div class="col-lg-6 pl-lg-5">
+            <h2>Beendigung der Mitgliedschaft</h2>
+            <p>Jeder registrierte Nutzer kann seine Mitgliedschaft jederzeit über sein Profil beenden.
+                Hierbei werden alle im Profil befindlichen Daten gelöscht.
+                Alle vom Nutzer verfassten Beiträge im Forum bleiben jedoch bestehen.
+                Ebenso bleiben alle Artikel im Wiki erhalten.
+                Der Benutzername selbst wird weiterhin als Verfasser der Beiträge und Artikel angezeigt.
+                Auf besonderne Wunsch hin kann der Benutzername allerdings geändert werden.
+                Diese Anfrage sollte jedoch unbedingt vor dem Löschen des Benutzerkontos erfolgen.
+                (Kontakt-Adresse: siehe <a href="{{ path('app_legal_impressum') }}">Impressum</a>)</p>
+            <h2>Cookies</h2>
+            <p>Beim Anmelden oder Verfassen von Beiträgen werden Cookies verwendet.
+                Diese enhalten eine für jeden Nutzer eindeutige Kennung.</p>
+            <h2>Sicherheitshinweis</h2>
+            <p>Dem Nutzer ist bewusst, dass alle Angaben im Profil und alle Beiträge im Forum oder Wiki öffentlich
+                zugänglich sind. Für alle Folgen dieser Veröffentlichung ist der Nutzer selbst verantwortlich.</p>
+        </div>
     </div>
 {% endblock %}

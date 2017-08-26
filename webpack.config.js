@@ -3,21 +3,32 @@ var Encore = require('@symfony/webpack-encore');
 Encore
     .setOutputPath('web/build/')
     .setPublicPath('/build')
-    // empty the outputPath dir before each build
     .cleanupOutputBeforeBuild()
 
-    .addEntry('start', './assets/js/start.js')
-    .addEntry('packages', './assets/js/packages.js')
-    .addEntry('mirrors', './assets/js/mirrors.js')
-    .addEntry('packagers', './assets/js/packagers.js')
+    .addEntry('js/start', './assets/js/start.js')
+    .addEntry('js/packages', './assets/js/packages.js')
+    .addEntry('js/mirrors', './assets/js/mirrors.js')
+    .addEntry('js/packagers', './assets/js/packagers.js')
+    .createSharedEntry('js/vendor', [
+        'jquery',
+        'popper.js',
+        'bootstrap',
+        'datatables.net',
+        'datatables.net-bs4',
+        './assets/js/lang-loader!datatables.net-plugins/i18n/German.lang'
+    ])
+    .addStyleEntry('css/app', './assets/css/app.scss')
+    .addStyleEntry('images/archicon', './assets/images/archicon.svg')
+    .addStyleEntry('images/archlogo', './assets/images/archlogo.svg')
 
-    .addStyleEntry('app', './assets/css/app.scss')
-    .addStyleEntry('rss', './assets/images/rss.png')
-    .addStyleEntry('favicon', './assets/images/favicon.ico')
-    .addStyleEntry('archlogo-64', './assets/images/archlogo-64.png')
     .enableSassLoader()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning()
+    .enablePostCssLoader()
+    .autoProvidejQuery()
+    .autoProvideVariables({
+        'Popper': 'popper.js'
+    })
 ;
 
 module.exports = Encore.getWebpackConfig();

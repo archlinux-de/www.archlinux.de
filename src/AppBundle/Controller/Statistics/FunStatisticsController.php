@@ -45,10 +45,13 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
             GROUP BY
                 pkgname
             ');
-        $body = '<div class="box">
-            <table id="packagedetails">
+        $body = '<table class="table table-sm">
+                <colgroup>
+                    <col class="w-25">
+                    <col>
+                </colgroup>
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Browsers</th>
+                    <th colspan="2" class="text-center">Browsers</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'Mozilla Firefox' => 'firefox',
@@ -59,7 +62,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 'Opera' => 'opera',
             )) . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Editors</th>
+                    <th colspan="2" class="text-center">Editors</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'Vim' => array(
@@ -80,7 +83,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 'Geany' => 'geany',
                 'Pluma' => 'pluma',
             )) . '
-                    <th colspan="2" class="packagedetailshead">Desktop Environments</th>
+                    <th colspan="2" class="text-center">Desktop Environments</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'KDE SC' => array('kdebase-workspace', 'plasma-workspace'),
@@ -91,7 +94,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 'MATE' => 'mate-panel',
                 'Cinnamon' => 'cinnamon',
             )) . '
-                    <th colspan="2" class="packagedetailshead">File Managers</th>
+                    <th colspan="2" class="text-center">File Managers</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'Dolphin' => 'kdebase-dolphin',
@@ -102,7 +105,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 'Thunar' => 'thunar',
                 'Caja' => 'caja',
             )) . '
-                    <th colspan="2" class="packagedetailshead">Window Managers</th>
+                    <th colspan="2" class="text-center">Window Managers</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'Openbox' => 'openbox',
@@ -110,14 +113,14 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 'I3' => 'i3-wm',
                 'awesome' => 'awesome',
             )) . '
-                    <th colspan="2" class="packagedetailshead">Media Players</th>
+                    <th colspan="2" class="text-center">Media Players</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'Mplayer' => 'mplayer',
                 'Xine' => 'xine-lib',
                 'VLC' => 'vlc',
             )) . '
-                    <th colspan="2" class="packagedetailshead">Shells</th>
+                    <th colspan="2" class="text-center">Shells</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'Bash' => 'bash',
@@ -126,7 +129,7 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 'Fish' => 'fish',
                 'Tcsh' => 'tcsh',
             )) . '
-                    <th colspan="2" class="packagedetailshead">Graphic Chipsets</th>
+                    <th colspan="2" class="text-center">Graphic Chipsets</th>
                 </tr>
                     ' . $this->getPackageStatistics($total, $stm, array(
                 'ATI' => array(
@@ -146,7 +149,6 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 ),
             )) . '
             </table>
-            </div>
             ';
         $this->savePage(self::TITLE, $body);
     }

@@ -26,13 +26,13 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
     public function updateDatabaseCache()
     {
         $log = $this->getCommonPackageUsageStatistics();
-        $body = '<div class="box">
-            <table id="packagedetails">
+        $body = '<table class="table table-sm">
+                <colgroup>
+                    <col class="w-25">
+                    <col>
+                </colgroup>
                 <tr>
-                    <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">User statistics</h1></th>
-                </tr>
-                <tr>
-                    <th colspan="2" class="packagedetailshead">Common statistics</th>
+                    <th colspan="2" class="text-center">Common statistics</th>
                 </tr>
                 <tr>
                     <th>Submissions</th>
@@ -43,31 +43,31 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
                     <td>' . number_format($log['differentips']) . '</td>
                 </tr>
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Countries</th>
+                    <th colspan="2" class="text-center">Countries</th>
                 </tr>
                     ' . $this->getCountryStatistics() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Mirrors</th>
+                    <th colspan="2" class="text-center">Mirrors</th>
                 </tr>
                     ' . $this->getMirrorStatistics() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Mirrors per Country</th>
+                    <th colspan="2" class="text-center">Mirrors per Country</th>
                 </tr>
                     ' . $this->getMirrorCountryStatistics() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Mirror protocolls</th>
+                    <th colspan="2" class="text-center">Mirror protocolls</th>
                 </tr>
                     ' . $this->getMirrorProtocollStatistics() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Submissions per architectures</th>
+                    <th colspan="2" class="text-center">Submissions per architectures</th>
                 </tr>
                     ' . $this->getSubmissionsPerArchitecture() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Submissions per CPU architectures</th>
+                    <th colspan="2" class="text-center">Submissions per CPU architectures</th>
                 </tr>
                     ' . $this->getSubmissionsPerCpuArchitecture() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Common statistics</th>
+                    <th colspan="2" class="text-center">Common statistics</th>
                 </tr>
                 <tr>
                     <th>Sum of submitted packages</th>

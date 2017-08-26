@@ -27,13 +27,13 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
     public function updateDatabaseCache()
     {
         $data = $this->getCommonRepositoryStatistics();
-        $body = '<div class="box">
-            <table id="packagedetails">
+        $body = '<table class="table table-sm">
+                <colgroup>
+                    <col class="w-25">
+                    <col>
+                </colgroup>
                 <tr>
-                    <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Repositories</h1></th>
-                </tr>
-                <tr>
-                    <th colspan="2" class="packagedetailshead">Overview</th>
+                    <th colspan="2" class="text-center">Overview</th>
                 </tr>
                 <tr>
                     <th>Architectures</th>
@@ -88,7 +88,7 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
                     <td>' . $data['packagers'] . '</td>
                 </tr>
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Averages</th>
+                    <th colspan="2" class="text-center">Averages</th>
                 </tr>
                 <tr>
                     <th>Size of packages</th>
@@ -103,7 +103,7 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
                     <td>&empty; ' . number_format((float)$data['avgpkgperpackager'], 2) . '</td>
                 </tr>
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Repositories</th>
+                    <th colspan="2" class="text-center">Repositories</th>
                 </tr>
                     ' . $this->getRepositoryStatistics() . '
             </table>
@@ -194,19 +194,15 @@ class RepositoryStatisticsController extends Controller implements IDatabaseCach
             $data = $stm->fetch();
             $list .= '<tr>
                 <th>' . $repo . '</th>
-                <td style="padding:0;margin:0;">
-                    <div style="overflow:auto; max-height: 800px;">
-                    <table class="pretty-table" style="border:none;">
-                    <tr>
-                        <td style="width: 50px;">Packages</td>
-                        <td>' . $this->getBar($data['packages'], $total['packages']) . '</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 50px;">Size</td>
-                        <td>' . $this->getBar((int)$data['size'], (int)$total['size']) . '</td>
-                    </tr>
-                    </table>
-                    </div>
+                <td>
+                <div class="row">
+                    <div class="col-2">Packages</div>
+                    <div class="col-10">' . $this->getBar($data['packages'], $total['packages']) . '</div>
+                </div>
+                <div class="row">
+                    <div class="col-2">Size</div>
+                    <div class="col-10">' . $this->getBar((int)$data['size'], (int)$total['size']) . '</div>
+                </div>
                 </td>
             </tr>';
         }

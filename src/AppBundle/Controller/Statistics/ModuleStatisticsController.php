@@ -26,13 +26,13 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
     public function updateDatabaseCache()
     {
         $log = $this->getCommonModuleUsageStatistics();
-        $body = '<div class="box">
-            <table id="packagedetails">
+        $body = '<table class="table table-sm">
+                <colgroup>
+                    <col class="w-25">
+                    <col>
+                </colgroup>
                 <tr>
-                    <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Module usage</h1></th>
-                </tr>
-                <tr>
-                    <th colspan="2" class="packagedetailshead">Common statistics</th>
+                    <th colspan="2" class="text-center">Common statistics</th>
                 </tr>
                 <tr>
                     <th>Sum of submitted modules</th>
@@ -55,11 +55,10 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
                     <td>' . number_format((float)$log['avgcount']) . '</td>
                 </tr>
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Popular modules</th>
+                    <th colspan="2" class="text-center">Popular modules</th>
                 </tr>
                 ' . $this->getPopularModules() . '
             </table>
-            </div>
             ';
         $this->savePage(self::TITLE, $body);
     }

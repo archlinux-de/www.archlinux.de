@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -34,10 +33,9 @@ class PackageDetailsController extends Controller
      * @param string $repo
      * @param string $arch
      * @param string $pkgname
-     * @param Request $request
      * @return Response
      */
-    public function indexAction(string $repo, string $arch, string $pkgname, Request $request): Response
+    public function indexAction(string $repo, string $arch, string $pkgname): Response
     {
         $repository = $this->database->prepare('
             SELECT
@@ -207,7 +205,7 @@ class PackageDetailsController extends Controller
         $stm->bindParam('packageId', $this->pkgid, \PDO::PARAM_INT);
         $stm->bindParam('type', $type, \PDO::PARAM_STR);
         $stm->execute();
-        $list = '<ul>';
+        $list = '<ul class="list-unstyled pl-4">';
         foreach ($stm as $dependency) {
             if (is_null($dependency['id'])) {
                 $list .= '<li>' . $dependency['name'] . $dependency['version'] . '</li>';
@@ -254,7 +252,7 @@ class PackageDetailsController extends Controller
         $stm->bindParam('packageId', $this->pkgid, \PDO::PARAM_INT);
         $stm->bindParam('type', $type, \PDO::PARAM_STR);
         $stm->execute();
-        $list = '<ul>';
+        $list = '<ul class="list-unstyled pl-4">';
         foreach ($stm as $dependency) {
             $list .= '<li><a href="' . $this->router->generate('app_packagedetails_index', array(
                     'repo' => $dependency['repo'],

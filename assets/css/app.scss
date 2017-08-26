@@ -1,2 +1,74 @@
-@import "arch.css";
-@import "archnavbar.css";
+$brand-primary: #08c;
+$brand-secondary: #333;
+$brand-dark: #222;
+$brand-light: #f6f9fc;
+$theme-colors: (
+        primary: $brand-primary,
+        secondary: $brand-secondary,
+        success: #28a745,
+        info: #17a2b8,
+        warning: #ffc107,
+        danger: #dc3545,
+        light: $brand-light,
+        dark: $brand-secondary
+);
+$enable-rounded: false;
+$enable-transitions: false;
+$enable-print-styles: false;
+$body-bg: $brand-light;
+$body-color: $brand-dark;
+$link-hover-color: #666;
+$navbar-dark-color: #999;
+$navbar-dark-hover-color: #fff;
+$navbar-dark-active-color: #fff;
+$jumbotron-bg: #ecf2f5;
+
+@import "~bootstrap/scss/bootstrap";
+@import "auto-complete";
+@import "~datatables.net-bs4/css/dataTables.bootstrap4.css";
+
+.navbar-nav {
+  .nav-link {
+    font-weight: bold;
+  }
+}
+
+.navbar {
+  border-bottom: 0.313rem solid $brand-primary;
+}
+
+.jumbotron {
+  border: 1px solid #bcd;
+}
+
+.w-20 {
+  width: 20% !important;
+}
+
+.mw-50vw {
+  max-width: 50vw !important;
+}
+
+.break-word {
+  word-wrap: break-word;
+}
+
+.news-title {
+  @include media-breakpoint-down(lg) {
+    font-size: 1.5rem;
+  }
+}
+
+.welcome-title {
+  @include media-breakpoint-down(lg) {
+    font-size: 2rem;
+  }
+}
+
+.dataTables_info {
+  white-space: normal !important;
+}
+
+.dependency-type-title {
+  font-size: 1.25rem;
+}

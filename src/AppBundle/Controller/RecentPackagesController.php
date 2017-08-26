@@ -86,11 +86,11 @@ class RecentPackagesController extends Controller
         $feed->setLink($this->generateUrl('app_packages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
 
         $icon = $feed->newElement();
-        $icon->setName('icon')->setValue($this->assetPackages->getUrl('build/images/favicon.ico'));
+        $icon->setName('icon')->setValue($this->assetPackages->getUrl('build/images/archicon.svg'));
         $feed->addElement($icon);
 
         $logo = $feed->newElement();
-        $logo->setName('logo')->setValue($this->assetPackages->getUrl('build/images/archlogo-64.png'));
+        $logo->setName('logo')->setValue($this->assetPackages->getUrl('build/images/archicon.svg'));
         $feed->addElement($logo);
         foreach ($packages as $package) {
             $packageUrl = $this->generateUrl('app_packagedetails_index', [

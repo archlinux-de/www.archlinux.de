@@ -3,157 +3,126 @@
 {% block title %}{{ package.name }}{% endblock %}
 
 {% block body %}
-    <div class="box">
-        <h2>{{ package.name }}</h2>
-        <table id="packagedetails">
-            <tr>
-                <th colspan="2" class="packagedetailshead">Paket-Details</th>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ package.name }}</td>
-            </tr>
-            <tr>
-                <th>Version</th>
-                <td>{{ package.version }}</td>
-            </tr>
-            <tr>
-                <th>Beschreibung</th>
-                <td>{{ package.desc }}</td>
-            </tr>
-            <tr>
-                <th>URL</th>
-                <td><a rel="nofollow" href="{{ package.url }}">{{ package.url }}</a></td>
-            </tr>
-            <tr>
-                <th>Lizenzen</th>
-                <td>{{ licenses | raw }}</td>
-            </tr>
-            <tr>
-                <th colspan="2" class="packagedetailshead">Paket-Details</th>
-            </tr>
-            <tr>
-                <th>Repositorium</th>
-                <td>
-                    <a href="{{ path('app_packages_index', {'repository': package.repository}) }}">{{ package.repository }}</a>
-                </td>
-            </tr>
-            <tr>
-                <th>Architektur</th>
-                <td>
-                    <a href="{{ path('app_packages_index', {'architecture': package.architecture}) }}">{{ package.architecture }}</a>
-                </td>
-            </tr>
-            <tr>
-                <th>Gruppen</th>
-                <td>{{ groups | raw }}</td>
-            </tr>
-            <tr>
-                <th>Packer</th>
-                <td>
-                    <a href="{{ path('app_packages_index', {'packager': package.packagerid}) }}">{{ package.packager }}</a>
-                    {% if package.packageremail %}
-                        <a rel="nofollow" href="mailto:{{ package.packageremail }}">@</a>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Erstellt am</th>
-                <td>{{ package.builddate | date }}</td>
-            </tr>
-            <tr>
-                <th>Veröffentlicht am</th>
-                <td>{{ package.mtime | date }}</td>
-            </tr>
-            <tr>
-                <th>Quelltext</th>
-                <td><a href="{{ cgit_url }}tree/trunk?h=packages/{{ package.base }}">Quelldateien</a>,
-                    <a href="{{ cgit_url }}log/trunk?h=packages/{{ package.base }}">Änderungshistorie</a></td>
-            </tr>
-            <tr>
-                <th>Bugs</th>
-                <td><a href="https://bugs.archlinux.org/index.php?string=%5B{{ package.name }}%5D">Bug-Tracker</a></td>
-            </tr>
-            <tr>
-                <th>Paket</th>
-                <td>
-                    <a href="{{ path('app_mirror_index', {'file': package.repository~'/os/'~arch~'/'~package.filename}) }}">{{ package.filename }}</a>
-                </td>
-            </tr>
-            <tr>
-                <th>MD5-Prüfsumme</th>
-                <td><code>{{ package.md5sum }}</code></td>
-            </tr>
-            <tr>
-                <th>SHA256-Prüfsumme</th>
-                <td><code>{{ package.sha256sum }}</code></td>
-            </tr>
-            <tr>
-                <th>PGP-Signatur</th>
-                <td><a href="data:application/pgp-signature;base64,{{ pgpsig_base64 }}"
-                       download="{{ package.filename }}.sig">{{ package.filename }}.sig</a></td>
-            </tr>
-            <tr>
-                <th>Paket-Größe</th>
-                <td>{{ package.csize | format_bytes }}</td>
-            </tr>
-            <tr>
-                <th>Installations-Größe</th>
-                <td>{{ package.isize | format_bytes }}</td>
-            </tr>
-        </table>
-        <table id="packagedependencies">
-            <tr>
-                <th colspan="5" class="packagedependencieshead">Abhängigkeiten</th>
-            </tr>
-            <tr>
-                <th>hängt ab von</th>
-                <th>benötigt von</th>
-                <th>stellt bereit</th>
-                <th>kollidiert mit</th>
-                <th>ersetzt</th>
-            </tr>
-            <tr>
-                <td>
-                    {{ depends | raw }}
-                </td>
-                <td>
-                    {{ inverse_depends | raw }}
-                </td>
-                <td>
-                    {{ provides | raw }}
-                </td>
-                <td>
-                    {{ conflicts | raw }}
-                </td>
-                <td>
-                    {{ replaces | raw }}
-                </td>
-            </tr>
-            <tr>
-                <th>hängt optional ab von</th>
-                <th>optional benötigt von</th>
-                <th>Bauen hängt ab von</th>
-                <th>Bauen benötigt von</th>
-                <th>Test hängt ab von</th>
-            </tr>
-            <tr>
-                <td>
-                    {{ optdepends | raw }}
-                </td>
-                <td>
-                    {{ inverse_optdepends | raw }}
-                </td>
-                <td>
-                    {{ makedepends | raw }}
-                </td>
-                <td>
-                    {{ inverse_makedepends | raw }}
-                </td>
-                <td>
-                    {{ checkdepends | raw }}
-                </td>
-            </tr>
-        </table>
+    <h1 class="mb-4">{{ package.name }}</h1>
+    <div class="row mw-100">
+        <div class="col-12 col-xl-6">
+            <h2 class="mb-3">Paket-Details</h2>
+            <table class="table table-sm">
+                <colgroup>
+                    <col class="w-20">
+                </colgroup>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ package.name }}</td>
+                </tr>
+                <tr>
+                    <th>Version</th>
+                    <td>{{ package.version }}</td>
+                </tr>
+                <tr>
+                    <th>Beschreibung</th>
+                    <td>{{ package.desc }}</td>
+                </tr>
+                <tr>
+                    <th>URL</th>
+                    <td class="mw-50vw">
+                        <a class="break-word" rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Lizenzen</th>
+                    <td>{{ licenses | raw }}</td>
+                </tr>
+                <tr>
+                    <th>Repositorium</th>
+                    <td>
+                        <a href="{{ path('app_packages_index', {'repository': package.repository}) }}">{{ package.repository }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Architektur</th>
+                    <td>
+                        <a href="{{ path('app_packages_index', {'architecture': package.architecture}) }}">{{ package.architecture }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Gruppen</th>
+                    <td>{{ groups | raw }}</td>
+                </tr>
+                <tr>
+                    <th>Packer</th>
+                    <td>
+                        <a href="{{ path('app_packages_index', {'packager': package.packagerid}) }}">{{ package.packager }}</a>
+                        {% if package.packageremail %}
+                            <a rel="nofollow" href="mailto:{{ package.packageremail }}">@</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Erstellt am</th>
+                    <td>{{ package.builddate | date }}</td>
+                </tr>
+                <tr>
+                    <th>Veröffentlicht am</th>
+                    <td>{{ package.mtime | date }}</td>
+                </tr>
+                <tr>
+                    <th>Quelltext</th>
+                    <td><a href="{{ cgit_url }}tree/trunk?h=packages/{{ package.base }}">Quelldateien</a>,
+                        <a href="{{ cgit_url }}log/trunk?h=packages/{{ package.base }}">Änderungshistorie</a></td>
+                </tr>
+                <tr>
+                    <th>Bugs</th>
+                    <td><a href="https://bugs.archlinux.org/index.php?string=%5B{{ package.name }}%5D">Bug-Tracker</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Paket</th>
+                    <td>
+                        <a href="{{ path('app_mirror_index', {'file': package.repository~'/os/'~arch~'/'~package.filename}) }}">{{ package.filename }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>PGP-Signatur</th>
+                    <td><a href="data:application/pgp-signature;base64,{{ pgpsig_base64 }}"
+                           download="{{ package.filename }}.sig">{{ package.filename }}.sig</a></td>
+                </tr>
+                <tr>
+                    <th>Paket-Größe</th>
+                    <td>{{ package.csize | format_bytes }}</td>
+                </tr>
+                <tr>
+                    <th>Installations-Größe</th>
+                    <td>{{ package.isize | format_bytes }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-12 col-xl-6">
+            <h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
+            {% macro relation(name, list) %}
+                {% if list matches('/<li>/') %}
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                        <h3 class="dependency-type-title">{{ name }}</h3>
+                        {{ list | raw }}
+                    </div>
+                {% endif %}
+            {% endmacro %}
+            {% import _self as macro %}
+            <div class="row mw-100">
+                {{ macro.relation('von', depends) }}
+                {{ macro.relation('optional von', optdepends) }}
+
+                {{ macro.relation('stellt bereit', provides) }}
+                {{ macro.relation('ersetzt', replaces) }}
+                {{ macro.relation('kollidiert mit', conflicts) }}
+
+                {{ macro.relation('Bauen von', makedepends) }}
+                {{ macro.relation('Test von', checkdepends) }}
+
+                {{ macro.relation('benötigt von', inverse_depends) }}
+                {{ macro.relation('optional für', inverse_optdepends) }}
+                {{ macro.relation('Zum Bauen von', inverse_makedepends) }}
+            </div>
+        </div>
     </div>
 {% endblock %}
