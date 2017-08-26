@@ -26,13 +26,13 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
     public function updateDatabaseCache()
     {
         $log = $this->getCommonPackageUsageStatistics();
-        $body = '<div class="box">
-            <table id="packagedetails">
+        $body = '<table class="table table-sm">
+                <colgroup>
+                    <col class="w-25">
+                    <col>
+                </colgroup>
                 <tr>
-                    <th colspan="2" style="margin:0;padding:0;"><h1 id="packagename">Package usage</h1></th>
-                </tr>
-                <tr>
-                    <th colspan="2" class="packagedetailshead">Common statistics</th>
+                    <th colspan="2" class="text-center">Common statistics</th>
                 </tr>
                 <tr>
                     <th>Sum of submitted packages</th>
@@ -55,27 +55,26 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                     <td>' . number_format((float)$log['avgcount']) . '</td>
                 </tr>
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Submissions per architectures</th>
+                    <th colspan="2" class="text-center">Submissions per architectures</th>
                 </tr>
                 ' . $this->getSubmissionsPerArchitecture() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Submissions per CPU architectures</th>
+                    <th colspan="2" class="text-center">Submissions per CPU architectures</th>
                 </tr>
                 ' . $this->getSubmissionsPerCpuArchitecture() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Installed packages per repository</th>
+                    <th colspan="2" class="text-center">Installed packages per repository</th>
                 </tr>
                 ' . $this->getPackagesPerRepository() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Popular packages per repository</th>
+                    <th colspan="2" class="text-center">Popular packages per repository</th>
                 </tr>
                 ' . $this->getPopularPackagesPerRepository() . '
                 <tr>
-                    <th colspan="2" class="packagedetailshead">Popular unofficial packages</th>
+                    <th colspan="2" class="text-center">Popular unofficial packages</th>
                 </tr>
                 ' . $this->getPopularUnofficialPackages() . '
             </table>
-            </div>
             ';
         $this->savePage(self::TITLE, $body);
     }
@@ -335,16 +334,15 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
             $packages->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
             $packages->execute();
             if ($currentRepo != $repo) {
-                $list .= '<tr><th>' . $repo . '</th>'
-                    . '<td><div style="overflow:auto; max-height: 800px;">'
-                    . '<table class="pretty-table" style="border:none;">';
+                $list .= '<tr><th>' . $repo . '</th><td>';
             }
             foreach ($packages as $package) {
-                $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>'
-                    . $this->getBar((int)$package['count'], $total)
-                    . '</td></tr>';
+                $list .= '<div class="row">
+                    <div class="col-2">' . $package['pkgname'] . '</div>
+                    <div class="col-10">' . $this->getBar((int)$package['count'], $total) . '</div>
+                </div>';
             }
-            $list .= '</table></div></td></tr>';
+            $list .= '</td></tr>';
             $currentRepo = $repo;
         }
 
@@ -381,14 +379,14 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                 count DESC,
                 pkgname ASC
         ');
-        $list = '<tr><th>unknown</th>'
-            . '<td><div style="overflow:auto; max-height: 800px;"><table class="pretty-table" style="border:none;">';
+        $list = '<tr><th>unknown</th><td>';
         foreach ($packages as $package) {
-            $list .= '<tr><td style="width: 200px;">' . $package['pkgname'] . '</td><td>'
-                . $this->getBar((int)$package['count'], $total)
-                . '</td></tr>';
+            $list .= '<div class="row">
+                    <div class="col-2">' . $package['pkgname'] . '</div>
+                    <div class="col-10">' . $this->getBar((int)$package['count'], $total) . '</div>
+                </div>';
         }
-        $list .= '</table></div></td></tr>';
+        $list .= '</td></tr>';
 
         return $list;
     }
