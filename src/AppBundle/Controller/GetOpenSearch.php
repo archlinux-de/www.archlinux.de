@@ -74,15 +74,8 @@ class GetOpenSearch extends Controller
 
         $contact = $dom->createElement('Contact', $this->getParameter('app.common.email'));
 
-        $icon = $dom->createElement('Image', $this->assetPackages->getUrl('build/images/favicon.ico'));
-        $icon->setAttribute('height', '16');
-        $icon->setAttribute('width', '16');
-        $icon->setAttribute('type', 'image/x-icon');
-
-        $image = $dom->createElement('Image', $this->assetPackages->getUrl('build/images/archlogo.svg'));
-        $image->setAttribute('height', '64');
-        $image->setAttribute('width', '64');
-        $image->setAttribute('type', 'image/png');
+        $image = $dom->createElement('Image', $this->assetPackages->getUrl('build/images/archicon.svg'));
+        $image->setAttribute('type', 'image/svg+xml');
 
         $body->appendChild($shortName);
         $body->appendChild($description);
