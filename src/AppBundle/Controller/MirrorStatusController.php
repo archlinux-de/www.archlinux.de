@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use AppBundle\Response\Datatables\Response as DatatablesResponse;
 
 class MirrorStatusController extends Controller
 {
@@ -50,6 +51,7 @@ class MirrorStatusController extends Controller
             JOIN countries
             ON mirrors.countryCode = countries.code
         ')->fetchAll(\PDO::FETCH_ASSOC);
-        return $this->json(['data' => $mirrors]);
+
+        return $this->json(new DatatablesResponse($mirrors));
     }
 }

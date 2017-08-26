@@ -34,8 +34,7 @@ class PackageDatabaseDownloader
 
         $response = $this->guzzleClient->request('GET', $url, ['sink' => $tmpFile->getRealPath()]);
         $mtime = strtotime($response->getHeaderLine('Last-Modified'));
-
-        touch($tmpFile->getRealPath(), $mtime);
+        $tmpFile->setMTime($mtime);
 
         return $tmpFile;
     }
@@ -51,6 +50,8 @@ class PackageDatabaseDownloader
         {
             /** @var string */
             private $fileName;
+            /** @var int */
+            private $mTime;
 
             /**
              * @param string $prefix
@@ -59,6 +60,7 @@ class PackageDatabaseDownloader
             {
                 $this->fileName = tempnam(sys_get_temp_dir(), $prefix);
                 parent::__construct($this->fileName);
+                $this->mTime = parent::getMTime();
             }
 
             public function __destruct()
@@ -66,6 +68,23 @@ class PackageDatabaseDownloader
                 if (is_writable($this->fileName)) {
                     unlink($this->fileName);
                 }
+            }
+
+            /**
+             * @return int
+             */
+            public function getMTime(): int
+            {
+                return $this->mTime;
+            }
+
+            /**
+             * @param int $mtime
+             */
+            public function setMTime(int $mtime)
+            {
+                touch($this->getRealPath(), $mtime);
+                $this->mTime = $mtime;
             }
         };
     }

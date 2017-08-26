@@ -2,9 +2,14 @@
 
 namespace AppBundle\Request\Datatables;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class Search implements \JsonSerializable
 {
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\Length(max=255)
+     */
     private $value;
     /** @var bool */
     private $regex;

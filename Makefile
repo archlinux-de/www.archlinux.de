@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy assets
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy assets coverage
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
@@ -62,6 +62,9 @@ assets:
 	${APP-RUN} yarn install
 	${APP-RUN} yarn run encore dev
 
+coverage:
+	${APP-RUN} php -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html var/coverage
+
 deploy:
 	chmod o-x .
 	SYMFONY_ENV=prod composer --no-interaction install --no-dev --optimize-autoloader
@@ -69,5 +72,4 @@ deploy:
 	bin/console cache:warmup --env=prod
 	yarn install
 	yarn run encore production
-	sudo systemctl restart php-fpm@www
 	chmod o+x .

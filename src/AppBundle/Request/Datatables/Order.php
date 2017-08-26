@@ -2,11 +2,20 @@
 
 namespace AppBundle\Request\Datatables;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class Order implements \JsonSerializable
 {
-    /** @var Column */
+    /**
+     * @var Column
+     * @Assert\Valid()
+     */
     private $column;
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\NotBlank()
+     * @Assert\Choice({"asc", "desc"})
+     */
     private $dir;
 
     const ASC = 'asc';
