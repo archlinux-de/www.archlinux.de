@@ -2,19 +2,33 @@
 
 namespace AppBundle\Request\Datatables;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class Column implements \JsonSerializable
 {
-    /** @var int */
+    /**
+     * @var int
+     * @Assert\GreaterThanOrEqual(0)
+     */
     private $id;
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\Length(max=100)
+     */
     private $data;
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\Length(max=100)
+     */
     private $name;
     /** @var bool */
     private $searchable;
     /** @var bool */
     private $orderable;
-    /** @var Search */
+    /**
+     * @var Search
+     * @Assert\Valid()
+     */
     private $search;
 
     /**

@@ -14,6 +14,14 @@ class Response implements \JsonSerializable
     private $data = [];
 
     /**
+     * @param array $data
+     */
+    public function __construct(array $data = [])
+    {
+        $this->data = $data;
+    }
+
+    /**
      * @return int
      */
     public function getDraw(): int

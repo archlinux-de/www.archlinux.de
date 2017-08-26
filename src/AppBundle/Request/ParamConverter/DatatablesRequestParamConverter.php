@@ -9,9 +9,21 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use \AppBundle\Request\Datatables\Request as DatatablesRequest;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DatatablesRequestParamConverter implements ParamConverterInterface
 {
+    /** @var ValidatorInterface */
+    private $validator;
+
+    /**
+     * @param ValidatorInterface $validator
+     */
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
     /**
      * @param Request $request
      * @param ParamConverter $configuration
@@ -19,7 +31,6 @@ class DatatablesRequestParamConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        //@TODO: Use SF Validation
         $datatablesRequest = new DatatablesRequest(
             $request->query->getInt('draw'),
             $request->query->getInt('start'),
@@ -62,6 +73,11 @@ class DatatablesRequestParamConverter implements ParamConverterInterface
                     }
                 }
             }
+        }
+
+        $errors = $this->validator->validate($datatablesRequest);
+        if (count($errors) > 0) {
+            throw new \InvalidArgumentException((string)$errors);
         }
 
         $request->attributes->set(

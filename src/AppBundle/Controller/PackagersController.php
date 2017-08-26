@@ -4,10 +4,10 @@ namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use AppBundle\Response\Datatables\Response as DatatablesResponse;
 
 class PackagersController extends Controller
 {
@@ -35,10 +35,9 @@ class PackagersController extends Controller
     /**
      * @Route("/packages/packagers/datatables", methods={"GET"})
      * @Cache(smaxage="600")
-     * @param Request $request
      * @return Response
      */
-    public function datatablesAction(Request $request): Response
+    public function datatablesAction(): Response
     {
         $packagers = $this->database->query('
             SELECT
@@ -65,6 +64,6 @@ class PackagersController extends Controller
             packagers
         ')->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $this->json(['data' => $packagers]);
+        return $this->json(new DatatablesResponse($packagers));
     }
 }

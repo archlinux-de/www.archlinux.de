@@ -198,7 +198,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             }
 
             $this->database->commit();
-            $this->updateLastMirrorUpdate();
+            $this->updateLastMirrorUpdate($this->lastMirrorUpdate);
         } catch (\RuntimeException $e) {
             $this->database->rollBack();
             $this->printError(
@@ -247,9 +247,12 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         }
     }
 
-    private function updateLastMirrorUpdate()
+    /**
+     * @param int $lastMirrorUpdate
+     */
+    private function updateLastMirrorUpdate(int $lastMirrorUpdate)
     {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($this->lastMirrorUpdate);
+        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($lastMirrorUpdate);
         $this->cache->save($lastLocalUpdateCache);
     }
 
@@ -275,7 +278,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->finish();
             $output->writeln('');
         }
-        $this->cache->set('UpdatePackages-lastupdate', 0);
+        $this->updateLastMirrorUpdate(0);
     }
 
     private function resetDatabase(OutputInterface $output)
@@ -299,7 +302,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             $progress->finish();
             $output->writeln('');
         }
-        $this->cache->set('UpdatePackages-lastupdate', 0);
+        $this->updateLastMirrorUpdate(0);
 
         $this->database->beginTransaction();
     }

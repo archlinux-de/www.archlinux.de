@@ -176,9 +176,8 @@ class PackagesController extends Controller
         $packagesFiltered = $connection->createQueryBuilder()
             ->select('FOUND_ROWS()')->execute()->fetchColumn();
 
-        $response = new DatatablesResponse();
+        $response = new DatatablesResponse($packages);
         $response->setRecordsFiltered($packagesFiltered);
-        $response->setData($packages);
 
         return $response;
     }

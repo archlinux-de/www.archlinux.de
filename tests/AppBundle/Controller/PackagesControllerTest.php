@@ -10,7 +10,7 @@ class PackagesControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/packages/datatables');
+        $client->request('GET', '/packages/datatables', ['draw' => 1, 'length' => 1]);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertJson($client->getResponse()->getContent());
@@ -29,7 +29,7 @@ class PackagesControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/packages/datatables', ['draw' => 42]);
+        $client->request('GET', '/packages/datatables', ['draw' => 42, 'length' => 1]);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $responseData = json_decode($client->getResponse()->getContent(), true);
