@@ -40,23 +40,21 @@
             </div>
 
 
-                {{ render(controller('AppBundle:Start:news')) }}
+            {{ render(controller('AppBundle:Start:news')) }}
         </div>
         <div class="col-xl-3">
 
             <div class="card mb-4">
                 <div class="card-body">
-
                     <form method="get" action="{{ path('app_packages_index') }}">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-primary" placeholder="Pakete" aria-label="Pakete" id="searchfield" autocomplete="off"
-                               data-suggest="{{ path('app_packagessuggest_suggest') }}">
-                        <span class="input-group-btn">
-        <button class="btn btn-primary border-primary" type="button">Suchen</button>
-      </span>
-                    </div>
-
-
+                        <div class="input-group">
+                            <input type="text" class="form-control border-primary" placeholder="Pakete"
+                                   aria-label="Pakete" id="searchfield" autocomplete="off"
+                                   data-suggest="{{ path('app_packagessuggest_suggest') }}" name="search"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary border-primary" type="submit">Suchen</button>
+                            </span>
+                        </div>
                     </form>
                 </div>
             </div>

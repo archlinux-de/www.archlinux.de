@@ -1,4 +1,3 @@
-
 window.addEventListener('load', function () {
     var autoComplete = require('js-autocomplete');
     var searchInput = document.getElementById('searchfield');
