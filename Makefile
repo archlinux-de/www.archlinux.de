@@ -68,8 +68,8 @@ coverage:
 deploy:
 	chmod o-x .
 	SYMFONY_ENV=prod composer --no-interaction install --no-dev --optimize-autoloader
-	bin/console cache:clear --env=prod --no-debug --no-warmup
-	bin/console cache:warmup --env=prod
 	yarn install
+	bin/console cache:clear --env=prod --no-debug --no-warmup
 	yarn run encore production
+	bin/console cache:warmup --env=prod
 	chmod o+x .
