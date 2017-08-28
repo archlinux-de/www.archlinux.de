@@ -102,7 +102,7 @@
             {% macro relation(name, list) %}
                 {% if list matches('/<li>/') %}
                     <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                        <h3 class="dependency-type-title">{{ name }}</h3>
+                        <h3>{{ name }}</h3>
                         {{ list | raw }}
                     </div>
                 {% endif %}

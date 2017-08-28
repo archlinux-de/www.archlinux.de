@@ -22,6 +22,14 @@ $navbar-dark-color: #999;
 $navbar-dark-hover-color: #fff;
 $navbar-dark-active-color: #fff;
 $jumbotron-bg: #ecf2f5;
+$font-size-base: 0.875rem;
+$navbar-brand-padding-y: 0.14rem;
+$h1-font-size: 2rem !default;
+$h2-font-size: 1.5rem !default;
+$h3-font-size: 1.25rem !default;
+$h4-font-size: 1.15rem !default;
+$h5-font-size: 1rem !default;
+$h6-font-size: 1rem !default;
 
 @import "~bootstrap/scss/bootstrap";
 @import "auto-complete";
@@ -53,22 +61,6 @@ $jumbotron-bg: #ecf2f5;
   word-wrap: break-word;
 }
 
-.news-title {
-  @include media-breakpoint-down(lg) {
-    font-size: 1.5rem;
-  }
-}
-
-.welcome-title {
-  @include media-breakpoint-down(lg) {
-    font-size: 2rem;
-  }
-}
-
 .dataTables_info {
   white-space: normal !important;
-}
-
-.dependency-type-title {
-  font-size: 1.25rem;
 }
