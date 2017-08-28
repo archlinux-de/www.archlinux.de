@@ -37,18 +37,8 @@ $font-family-monospace: monospace;
 @import "auto-complete";
 @import "~datatables.net-bs4/css/dataTables.bootstrap4.css";
 
-.navbar-nav {
-  .nav-link {
-    font-weight: bold;
-  }
-}
-
-.navbar {
+.navbar-border-brand {
   border-bottom: 0.313rem solid $brand-primary;
-}
-
-.jumbotron {
-  border: 1px solid #bcd;
 }
 
 .w-20 {
