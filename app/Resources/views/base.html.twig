@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="{{ asset('build/images/archicon.svg') }}" sizes="any" type="image/svg+xml">
-    <title>archlinux.de - {% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}{% if block('title') %} - {% endif %}archlinux.de</title>
     {% block stylesheets %}
         <link href="{{ asset('build/css/app.css') }}" rel="stylesheet">
     {% endblock %}
