@@ -32,10 +32,12 @@ class PackagesController extends Controller
     public function indexAction(Request $request): Response
     {
         return $this->render('packages/index.html.twig', [
-            'default_architecture' => $this->getParameter('app.packages.default_architecture'),
+            'architecture' => $request->get('architecture', $this->getParameter('app.packages.default_architecture')),
+            'repository' => $request->get('repository'),
             'architectures' => $this->getAvailableArchitectures(),
             'repositories' => $this->getAvailableRepositories(),
-            'search' => $request->get('search')
+            'search' => $request->get('search'),
+            'packager' => $request->get('packager')
         ])->setSharedMaxAge(600);
     }
 
@@ -98,7 +100,8 @@ class PackagesController extends Controller
             $compareableColumns,
             [
                 'name' => 'packages.name',
-                'description' => 'packages.desc'
+                'description' => 'packages.desc',
+                'packager' => 'packages.packager'
             ]
         );
         $orderableColumns = array_merge(
@@ -120,7 +123,8 @@ class PackagesController extends Controller
                 'packages.name AS name',
                 'packages.version',
                 'packages.desc AS description',
-                'packages.builddate'
+                'packages.builddate',
+                'packages.packager'
             ])
             ->from('packages')
             ->from('repositories')

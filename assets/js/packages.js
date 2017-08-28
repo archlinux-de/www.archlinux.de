@@ -61,6 +61,12 @@ $(document).ready(function () {
                         return data;
                     },
                     "className": "d-none d-lg-table-cell"
+                },
+                {
+                    "data": "packager",
+                    "orderable": false,
+                    "searchable": true,
+                    "visible": false
                 }
             ],
             "createdRow": function (row, data, index) {

@@ -24,7 +24,13 @@ $(document).ready(function () {
             },
             {
                 "data": "packages",
-                "searchable": false
+                "searchable": false,
+                "render": function (data, type, row) {
+                    if (type === 'display') {
+                        return '<a href="' + row.packages_url + '">' + data + '</a>';
+                    }
+                    return data;
+                }
             },
             {
                 "data": "lastbuilddate",

@@ -64,6 +64,13 @@ class PackagersController extends Controller
             packagers
         ')->fetchAll(\PDO::FETCH_ASSOC);
 
+        array_walk($packagers, function (&$packager) {
+            $packager['packages_url'] = $this->generateUrl(
+                'app_packages_index',
+                ['packager' => $packager['id']]
+            );
+        });
+
         return $this->json(new DatatablesResponse($packagers));
     }
 }
