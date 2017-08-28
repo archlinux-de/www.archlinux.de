@@ -42,11 +42,8 @@ class GetOpenSearch extends Controller
         $results = $dom->createElement('Url');
         $results->setAttribute(
             'template',
-            $this->router->generate(
-                'app_packages_index',
-                ['submit' => '', 'search' => '{searchTerms}'],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            )
+            $this->router->generate('app_packages_index', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            . '?search={searchTerms}'
         );
         $results->setAttribute('type', 'text/html');
         $results->setAttribute('rel', 'results');
