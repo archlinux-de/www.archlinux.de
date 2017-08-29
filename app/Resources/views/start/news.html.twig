@@ -6,7 +6,7 @@
                 <div class="p-0">{{ entry.updated | date('d.m.Y') }}</div>
             </div>
             <div class="break-word">
-                {{ entry.summary | raw }}
+                {{ entry.summary | purify('news') }}
             </div>
         </div>
     {% endfor %}

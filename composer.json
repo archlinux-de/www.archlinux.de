@@ -21,6 +21,7 @@
         "debril/feed-io": "^3.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
+        "exercise/htmlpurifier-bundle": "^0.2.4",
         "geoip2/geoip2": "~2.0",
         "incenteev/composer-parameter-handler": "^2.0",
         "league/iso3166": "^2.0",

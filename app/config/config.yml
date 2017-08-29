@@ -83,3 +83,8 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+
+exercise_html_purifier:
+    news:
+        HTML.Allowed: 'a[href],p,code,pre,ul,ol,li,br,strong,em,del,ins,img[src|alt],blockquote,h3,h4,h5,h6'
+        HTML.Nofollow: true
