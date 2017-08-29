@@ -30,3 +30,18 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - db-socket:/run/mysqld
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=localhost
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    ports:
+      - "8090:80"
+    volumes:
+      - db-socket:/run/mysqld
+    tmpfs:
+      - /tmp
+    depends_on:
+      - db
