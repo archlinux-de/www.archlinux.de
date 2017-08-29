@@ -14,7 +14,7 @@ class LegacyController extends Controller
     private $router;
     /** @var array */
     private $internalPages = array(
-        'GetFileFromMirror' => 'app_mirror_index',
+        'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_getopensearch_index',
         'GetRecentNews' => 'app_recentnews_index',
         'GetRecentPackages' => 'app_recentpackages_index',

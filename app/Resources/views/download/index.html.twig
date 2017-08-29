@@ -49,7 +49,10 @@
         <div class="col-lg-6 pl-lg-5">
             <h3 class="mb-3">Download</h3>
             <div class="container pl-4">
-            <a class="btn btn-primary" href="{{ path('app_mirror_index', {'file': release.file_path }) }}">{{ release.file_name }}</a>
+                <a class="btn btn-primary"
+                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.file_name }) }}">
+                    {{ release.file_name }}
+                </a>
             </div>
 
             <h3 class="mt-5">Mirrors</h3>

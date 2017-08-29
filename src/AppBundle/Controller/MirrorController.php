@@ -27,21 +27,54 @@ class MirrorController extends Controller
     }
 
     /**
-     * @Route("/download/{file}", requirements={"file": "^[a-zA-Z0-9\.\-\+_/:]{1,255}$"}, methods={"GET"})
+     * @Route(
+     *     "/download/iso/{version}/{file}",
+     *      requirements={
+     *          "version": "^[0-9]{4}\.[0-9]{2}\.[0-9]{2}$",
+     *          "file": "[a-zA-Z0-9\.\-\+_/:]{1,255}"
+     *      },
+     *      methods={"GET"}
+     *     )
      * @param string $file
      * @param Request $request
      * @return Response
      */
-    public function indexAction(string $file, Request $request): Response
+    public function isoAction(string $version, string $file, Request $request): Response
     {
-        $repositories = implode('|', array_keys($this->getParameter('app.packages.repositories')));
-        $architectures = implode('|', $this->getAvailableArchitectures());
-        $pkgextension = '(?:' . $architectures . '|any).pkg.tar.(?:g|x)z';
-        if (preg_match(
-            '#^(' . $repositories . ')/os/(' . $architectures . ')/([^-]+.*)-[^-]+-[^-]+-' . $pkgextension . '$#',
-            $file,
-            $matches
-        )) {
+        $releasedate = $this->database->prepare('
+                SELECT
+                    created
+                FROM
+                    releng_releases
+                WHERE
+                    version = :version
+                    AND available = 1
+                ');
+        $releasedate->bindParam('version', $version, \PDO::PARAM_STR);
+        $releasedate->execute();
+        if ($releasedate->rowCount() == 0) {
+            throw $this->createNotFoundException('ISO image was not found');
+        }
+        $lastsync = $releasedate->fetchColumn();
+
+        return $this->redirectToMirror('iso/' . $version . '/' . $file, $lastsync, $request);
+    }
+
+    /**
+     * @Route(
+     *     "/download/{repository}/os/{architecture}/{file}",
+     *      requirements={
+     *          "file": "^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9\.\-\+_:]{1,255}$"
+     *      },
+     *      methods={"GET"}
+     *     )
+     * @param string $file
+     * @param Request $request
+     * @return Response
+     */
+    public function packageAction(string $repository, string $architecture, string $file, Request $request): Response
+    {
+        if (preg_match('#^([^-]+.*)-[^-]+-[^-]+-.*$#', $file, $matches)) {
             $pkgdate = $this->database->prepare('
                 SELECT
                     packages.mtime
@@ -56,52 +89,42 @@ class MirrorController extends Controller
                     AND repositories.name = :repository
                     AND architectures.name = :architecture
                 ');
-            $pkgdate->bindParam('pkgname', $matches[3], \PDO::PARAM_STR);
-            $pkgdate->bindParam('repository', $matches[1], \PDO::PARAM_STR);
-            $pkgdate->bindParam('architecture', $matches[2], \PDO::PARAM_STR);
+            $pkgdate->bindParam('pkgname', $matches[1], \PDO::PARAM_STR);
+            $pkgdate->bindParam('repository', $repository, \PDO::PARAM_STR);
+            $pkgdate->bindParam('architecture', $architecture, \PDO::PARAM_STR);
             $pkgdate->execute();
             if ($pkgdate->rowCount() == 0) {
                 throw $this->createNotFoundException('Package was not found');
             }
             $lastsync = $pkgdate->fetchColumn();
-        } elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $file, $matches)) {
-            $releasedate = $this->database->prepare('
-                SELECT
-                    created
-                FROM
-                    releng_releases
-                WHERE
-                    version = :version
-                    AND available = 1
-                ');
-            $releasedate->bindParam('version', $matches[1], \PDO::PARAM_STR);
-            $releasedate->execute();
-            if ($releasedate->rowCount() == 0) {
-                throw $this->createNotFoundException('ISO image was not found');
-            }
-            $lastsync = $releasedate->fetchColumn();
-        } else {
-            $lastsync = time() - (60 * 60 * 24);
+            return $this->redirectToMirror($repository . '/os/' . $architecture . '/' . $file, $lastsync, $request);
         }
-
-        $targetUrl = $this->getMirror($lastsync, $request->getClientIp()) . $file;
-
-        return $this->redirect($targetUrl);
+        throw $this->createNotFoundException('Package was not found');
     }
 
     /**
-     * @return array
+     * @Route("/download/{file}", requirements={"file": "^[a-zA-Z0-9\.\-\+_/:]{1,255}$"}, methods={"GET"})
+     * @param string $file
+     * @param Request $request
+     * @return Response
      */
-    private function getAvailableArchitectures(): array
+    public function fallbackAction(string $file, Request $request): Response
     {
-        $uniqueArchitectures = array();
-        foreach ($this->getParameter('app.packages.repositories') as $architectures) {
-            foreach ($architectures as $architecture) {
-                $uniqueArchitectures[$architecture] = 1;
-            }
-        }
+        $lastsync = time() - (60 * 60 * 24);
+        return $this->redirectToMirror($file, $lastsync, $request);
+    }
 
-        return array_keys($uniqueArchitectures);
+    /**
+     * @param string $file
+     * @param int $lastsync
+     * @param Request $request
+     * @return Response
+     */
+    private function redirectToMirror(string $file, int $lastsync, Request $request): Response
+    {
+        return $this->redirect(
+            $this->getMirror($lastsync, $request->getClientIp()) . $file
+        );
     }
 
     /**
