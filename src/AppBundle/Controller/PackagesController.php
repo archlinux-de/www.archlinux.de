@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Cache\CacheItemPoolInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,7 @@ class PackagesController extends Controller
 
     /**
      * @Route("/packages", methods={"GET"})
+     * @Cache(smaxage="600")
      * @param Request $request
      * @return Response
      */
@@ -38,7 +40,7 @@ class PackagesController extends Controller
             'repositories' => $this->getAvailableRepositories(),
             'search' => $request->get('search'),
             'packager' => $request->get('packager')
-        ])->setSharedMaxAge(600);
+        ]);
     }
 
     /**

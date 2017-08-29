@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,11 +23,12 @@ class StartController extends Controller
 
     /**
      * @Route("/", methods={"GET"})
+     * @Cache(smaxage="600")
      * @return Response
      */
     public function indexAction(): Response
     {
-        return $this->render('start/index.html.twig')->setSharedMaxAge(600);
+        return $this->render('start/index.html.twig');
     }
 
     /**
@@ -52,6 +54,7 @@ class StartController extends Controller
 
     /**
      * @return Response
+     * @Cache(smaxage="600")
      */
     public function newsAction(): Response
     {
@@ -71,11 +74,12 @@ class StartController extends Controller
         return $this->render('start/news.html.twig', [
             'news_feed' => $newsFeed,
             'news_archive_url' => $this->getParameter('app.news.archive')
-        ])->setSharedMaxAge(600);
+        ]);
     }
 
     /**
      * @return Response
+     * @Cache(smaxage="600")
      */
     public function recentPackagesAction(): Response
     {
@@ -106,6 +110,6 @@ class StartController extends Controller
 
         return $this->render('start/recent_packages.html.twig', [
             'packages' => $packages
-        ])->setSharedMaxAge(600);
+        ]);
     }
 }

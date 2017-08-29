@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,6 +23,7 @@ class DownloadController extends Controller
 
     /**
      * @Route("/download", methods={"GET"})
+     * @Cache(smaxage="600")
      * @return Response
      */
     public function indexAction(): Response
@@ -66,6 +68,6 @@ class DownloadController extends Controller
         return $this->render('download/index.html.twig', [
             'release' => $release,
             'mirrors' => $mirrors
-        ])->setSharedMaxAge(600);
+        ]);
     }
 }

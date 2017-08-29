@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Doctrine\DBAL\Driver\Connection;
 use FeedIo\Factory;
 use FeedIo\Feed;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +36,7 @@ class RecentPackagesController extends Controller
      *     defaults={"_format": "atom"},
      *     requirements={"_format": "atom|rss|json"}
      * )
+     * @Cache(smaxage="600")
      * @param string $_format
      * @return Response
      */
@@ -113,6 +115,6 @@ class RecentPackagesController extends Controller
         }
 
         $feedIo = Factory::create()->getFeedIo();
-        return (new Response($feedIo->format($feed, $_format)))->setSharedMaxAge(600);
+        return (new Response($feedIo->format($feed, $_format)));
     }
 }

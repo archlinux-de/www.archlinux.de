@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use DOMDocument;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Asset\Packages;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -29,6 +30,7 @@ class GetOpenSearch extends Controller
 
     /**
      * @Route("/packages/opensearch", methods={"GET"})
+     * @Cache(smaxage="600")
      * @return Response
      */
     public function indexAction(): Response
@@ -87,6 +89,6 @@ class GetOpenSearch extends Controller
             $dom->saveXML(),
             Response::HTTP_OK,
             ['Content-Type' => 'application/opensearchdescription+xml; charset=UTF-8']
-        ))->setSharedMaxAge(600);
+        ));
     }
 }

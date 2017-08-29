@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,6 +24,7 @@ class PackagesSuggestController extends Controller
 
     /**
      * @Route("/packages/suggest", methods={"GET"})
+     * @Cache(smaxage="600")
      * @param Request $request
      * @return Response
      */
@@ -46,6 +48,6 @@ class PackagesSuggestController extends Controller
         $suggestions->bindValue('name', $term . '%', \PDO::PARAM_STR);
         $suggestions->execute();
 
-        return $this->json($suggestions->fetchAll(\PDO::FETCH_COLUMN))->setSharedMaxAge(600);
+        return $this->json($suggestions->fetchAll(\PDO::FETCH_COLUMN));
     }
 }
