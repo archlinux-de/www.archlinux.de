@@ -59,7 +59,6 @@ class SmokeTest extends WebTestCase
             ['/statistics/module'],
             ['/statistics/package'],
             ['/statistics'],
-            ['/statistics/user'],
             ['/download'],
             ['/packages/datatables?draw=1&length=1'],
             ['/sitemap.xml'],

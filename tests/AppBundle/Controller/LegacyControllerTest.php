@@ -43,7 +43,6 @@ class LegacyControllerTest extends WebTestCase
             ['ModuleStatistics'],
             ['PackageStatistics'],
             ['Statistics'],
-            ['UserStatistics'],
             ['ArchitectureDifferences'],
             ['MirrorProblems'],
             ['MirrorStatusJSON']

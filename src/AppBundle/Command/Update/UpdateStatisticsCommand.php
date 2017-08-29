@@ -27,7 +27,6 @@ class UpdateStatisticsCommand extends ContainerAwareCommand
 
         foreach (array(
                      ModuleStatisticsController::class,
-                     UserStatisticsController::class,
                      FunStatisticsController::class,
                  ) as $statisticsControllerName) {
             /** @var IDatabaseCachable $statisticsController */
