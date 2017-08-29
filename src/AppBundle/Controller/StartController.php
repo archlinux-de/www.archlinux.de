@@ -32,27 +32,6 @@ class StartController extends Controller
     }
 
     /**
-     * @param string $architectureName
-     *
-     * @return int
-     */
-    private function getArchitectureId(string $architectureName): int
-    {
-        $stm = $this->database->prepare('
-            SELECT
-                id
-            FROM
-                architectures
-            WHERE
-                name = :architectureName
-            ');
-        $stm->bindParam('architectureName', $architectureName, \PDO::PARAM_STR);
-        $stm->execute();
-
-        return $stm->fetchColumn();
-    }
-
-    /**
      * @return Response
      * @Cache(smaxage="600")
      */
@@ -83,8 +62,6 @@ class StartController extends Controller
      */
     public function recentPackagesAction(): Response
     {
-        $architectureId = $this->getArchitectureId($this->getParameter('app.packages.default_architecture'));
-
         $packages = $this->database->prepare('
         SELECT
             packages.name,
@@ -98,14 +75,14 @@ class StartController extends Controller
             architectures
         WHERE
             packages.repository = repositories.id
-            AND repositories.arch = :architectureId
             AND architectures.id = repositories.arch
+            AND architectures.name = :architecture
         ORDER BY
             packages.builddate DESC
         LIMIT
             20
         ');
-        $packages->bindParam('architectureId', $architectureId, \PDO::PARAM_INT);
+        $packages->bindValue('architecture', $this->getParameter('app.packages.default_architecture'), \PDO::PARAM_STR);
         $packages->execute();
 
         return $this->render('start/recent_packages.html.twig', [
