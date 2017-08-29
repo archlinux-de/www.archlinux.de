@@ -579,7 +579,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         if (!isset($this->packagers[$packager])) {
             preg_match('/([^<>]+)(?:<(.+?)>)?/', $packager, $matches);
-            $name = trim(!empty($matches[1] ? $matches[1] : $packager));
+            $name = trim(!empty($matches[1]) ? $matches[1] : $packager);
             $email = trim(isset($matches[2]) ? $matches[2] : '');
             $this->selectPackager->bindParam('name', $name, \PDO::PARAM_STR);
             $this->selectPackager->bindParam('email', $email, \PDO::PARAM_STR);
