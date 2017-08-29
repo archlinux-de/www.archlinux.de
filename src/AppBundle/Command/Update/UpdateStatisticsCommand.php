@@ -5,7 +5,6 @@ namespace AppBundle\Command\Update;
 use AppBundle\Controller\Statistics\FunStatisticsController;
 use AppBundle\Controller\Statistics\ModuleStatisticsController;
 use AppBundle\Controller\Statistics\PackageStatisticsController;
-use AppBundle\Controller\Statistics\RepositoryStatisticsController;
 use AppBundle\Controller\Statistics\UserStatisticsController;
 use archportal\lib\IDatabaseCachable;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -27,7 +26,6 @@ class UpdateStatisticsCommand extends ContainerAwareCommand
         $this->lock('cron.lock', true);
 
         foreach (array(
-                     RepositoryStatisticsController::class,
                      PackageStatisticsController::class,
                      ModuleStatisticsController::class,
                      UserStatisticsController::class,

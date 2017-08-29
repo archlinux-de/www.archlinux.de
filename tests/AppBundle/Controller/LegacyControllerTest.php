@@ -42,7 +42,6 @@ class LegacyControllerTest extends WebTestCase
             ['FunStatistics'],
             ['ModuleStatistics'],
             ['PackageStatistics'],
-            ['RepositoryStatistics'],
             ['Statistics'],
             ['UserStatistics'],
             ['ArchitectureDifferences'],

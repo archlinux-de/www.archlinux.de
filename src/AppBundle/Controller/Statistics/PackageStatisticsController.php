@@ -63,17 +63,9 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                 </tr>
                 ' . $this->getSubmissionsPerCpuArchitecture() . '
                 <tr>
-                    <th colspan="2" class="text-center">Installed packages per repository</th>
+                    <th colspan="2" class="text-center">Popular packages</th>
                 </tr>
-                ' . $this->getPackagesPerRepository() . '
-                <tr>
-                    <th colspan="2" class="text-center">Popular packages per repository</th>
-                </tr>
-                ' . $this->getPopularPackagesPerRepository() . '
-                <tr>
-                    <th colspan="2" class="text-center">Popular unofficial packages</th>
-                </tr>
-                ' . $this->getPopularUnofficialPackages() . '
+                ' . $this->getPopularPackages() . '
             </table>
             ';
         $this->savePage(self::TITLE, $body);
@@ -193,166 +185,7 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
     /**
      * @return string
      */
-    private function getPackagesPerRepository(): string
-    {
-        $repos = $this->database->query('
-            SELECT DISTINCT
-                name
-            FROM
-                repositories
-            WHERE
-                testing = 0
-                AND name NOT LIKE "%unstable"
-                AND name NOT LIKE "%staging"
-            ')->fetchAll(\PDO::FETCH_COLUMN);
-        $total = $this->database->query('
-            SELECT
-                COUNT(*)
-            FROM
-                pkgstats_users
-            WHERE
-                time >= ' . $this->getRangeTime() . '
-        ')->fetchColumn();
-        $countStm = $this->database->prepare('
-            SELECT
-                COUNT(*)
-            FROM
-                (
-                SELECT DISTINCT
-                    packages.name
-                FROM
-                    packages
-                        JOIN repositories
-                        ON packages.repository = repositories.id
-                WHERE
-                    repositories.name = :repositoryName
-                ) AS total
-                JOIN
-                (
-                SELECT DISTINCT
-                    pkgname
-                FROM
-                    pkgstats_packages
-                WHERE
-                    month >= ' . $this->getRangeYearMonth() . '
-                    AND count >= ' . (floor($total / 100)) . '
-                ) AS used
-                ON total.name = used.pkgname
-        ');
-        $totalStm = $this->database->prepare('
-            SELECT
-                COUNT(*)
-            FROM
-                (
-                SELECT DISTINCT
-                    packages.name
-                FROM
-                    packages
-                        JOIN repositories
-                        ON packages.repository = repositories.id
-                WHERE
-                    repositories.name = :repositoryName
-                ) AS total
-        ');
-        $result = '';
-        $list = array();
-        $sortList = array();
-        $id = 0;
-        foreach ($repos as $repo) {
-            $countStm->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
-            $countStm->execute();
-            $count = $countStm->fetchColumn();
-            $totalStm->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
-            $totalStm->execute();
-            $total = $totalStm->fetchColumn();
-            $sortList[$id] = $count / $total;
-            $list[$id++] = '<tr><th>' . $repo . '</th><td>'
-                . $this->getBar($count, $total) . '</td></tr>';
-        }
-        arsort($sortList);
-        foreach (array_keys($sortList) as $id) {
-            $result .= $list[$id];
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return string
-     */
-    private function getPopularPackagesPerRepository(): string
-    {
-        $repos = $this->database->query('
-            SELECT DISTINCT
-                name
-            FROM
-                repositories
-            WHERE
-                testing = 0
-                AND name NOT LIKE "%unstable"
-                AND name NOT LIKE "%staging"
-            ORDER BY
-                id
-            ')->fetchAll(\PDO::FETCH_COLUMN);
-        $total = $this->database->query('
-            SELECT
-                COUNT(*)
-            FROM
-                pkgstats_users
-            WHERE
-                time >= ' . $this->getRangeTime() . '
-        ')->fetchColumn();
-        $packages = $this->database->prepare('
-            SELECT
-                pkgname,
-                SUM(count) AS count
-            FROM
-                pkgstats_packages
-            WHERE
-                month >= ' . $this->getRangeYearMonth() . '
-                AND pkgname IN (
-                    SELECT
-                        packages.name
-                    FROM
-                        packages
-                            JOIN repositories
-                            ON packages.repository = repositories.id
-                    WHERE
-                        repositories.name = :repositoryName
-                )
-            GROUP BY
-                pkgname
-            HAVING
-                count >= ' . (floor($total / 100)) . '
-            ORDER BY
-                count DESC,
-                pkgname ASC
-        ');
-        $list = '';
-        $currentRepo = '';
-        foreach ($repos as $repo) {
-            $packages->bindParam('repositoryName', $repo, \PDO::PARAM_STR);
-            $packages->execute();
-            if ($currentRepo != $repo) {
-                $list .= '<tr><th>' . $repo . '</th><td>';
-            }
-            foreach ($packages as $package) {
-                $list .= '<div class="row">
-                    <div class="col-2">' . $package['pkgname'] . '</div>
-                    <div class="col-10">' . $this->getBar((int)$package['count'], $total) . '</div>
-                </div>';
-            }
-            $list .= '</td></tr>';
-            $currentRepo = $repo;
-        }
-
-        return $list;
-    }
-
-    /**
-     * @return string
-     */
-    private function getPopularUnofficialPackages(): string
+    private function getPopularPackages(): string
     {
         $total = $this->database->query('
             SELECT
@@ -370,7 +203,6 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                 pkgstats_packages
             WHERE
                 month >= ' . $this->getRangeYearMonth() . '
-                AND pkgname NOT IN (SELECT name FROM packages)
             GROUP BY
                 pkgname
             HAVING
@@ -379,14 +211,12 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
                 count DESC,
                 pkgname ASC
         ');
-        $list = '<tr><th>unknown</th><td>';
+        $list = '<tr>';
         foreach ($packages as $package) {
-            $list .= '<div class="row">
-                    <div class="col-2">' . $package['pkgname'] . '</div>
-                    <div class="col-10">' . $this->getBar((int)$package['count'], $total) . '</div>
-                </div>';
+            $list .= '<th>' . $package['pkgname'] . '</th>
+                <td>' . $this->getBar((int)$package['count'], $total) . '</td>';
         }
-        $list .= '</td></tr>';
+        $list .= '</tr>';
 
         return $list;
     }

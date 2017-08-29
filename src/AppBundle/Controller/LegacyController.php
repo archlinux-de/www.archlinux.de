@@ -27,7 +27,6 @@ class LegacyController extends Controller
         'FunStatistics' => 'app_statistics_funstatistics_fun',
         'ModuleStatistics' => 'app_statistics_modulestatistics_module',
         'PackageStatistics' => 'app_statistics_packagestatistics_package',
-        'RepositoryStatistics' => 'app_statistics_repositorystatistics_repository',
         'Statistics' => 'app_statistics_statistics_index',
         'UserStatistics' => 'app_statistics_userstatistics_user'
     );

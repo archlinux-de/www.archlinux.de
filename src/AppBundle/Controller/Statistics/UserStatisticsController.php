@@ -51,10 +51,6 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
                 </tr>
                     ' . $this->getMirrorStatistics() . '
                 <tr>
-                    <th colspan="2" class="text-center">Mirrors per Country</th>
-                </tr>
-                    ' . $this->getMirrorCountryStatistics() . '
-                <tr>
                     <th colspan="2" class="text-center">Mirror protocolls</th>
                 </tr>
                     ' . $this->getMirrorProtocollStatistics() . '
@@ -216,41 +212,6 @@ class UserStatisticsController extends Controller implements IDatabaseCachable
         $list = '';
         foreach ($hosts as $host => $count) {
             $list .= '<tr><th>' . $host . '</th><td>' . $this->getBar($count, $total) . '</td></tr>';
-        }
-
-        return $list;
-    }
-
-    /**
-     * @return string
-     */
-    private function getMirrorCountryStatistics(): string
-    {
-        $total = $this->database->query('
-        SELECT
-            COUNT(countryCode)
-        FROM
-            mirrors
-        ')->fetchColumn();
-        $countries = $this->database->query('
-        SELECT
-            countries.name AS country,
-            COUNT(countryCode) AS count
-        FROM
-            mirrors
-            JOIN countries
-            ON mirrors.countryCode = countries.code
-        GROUP BY
-            mirrors.countryCode
-        HAVING
-            count > ' . (floor($total / 100)) . '
-        ORDER BY
-            count DESC
-        ');
-        $list = '';
-        foreach ($countries as $country) {
-            $list .= '<tr><th>' . $country['country'] . '</th><td>' .
-                $this->getBar((int)$country['count'], $total) . '</td></tr>';
         }
 
         return $list;
