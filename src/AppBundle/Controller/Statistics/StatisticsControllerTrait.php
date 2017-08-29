@@ -3,7 +3,7 @@
 namespace AppBundle\Controller\Statistics;
 
 use Doctrine\DBAL\Driver\Connection;
-use Symfony\Component\Cache\Adapter\PdoAdapter;
+use Psr\Cache\CacheItemPoolInterface;
 
 trait StatisticsControllerTrait
 {
@@ -11,14 +11,14 @@ trait StatisticsControllerTrait
     private $rangeMonths = 3;
     /** @var Connection */
     private $database;
-    /** @var PdoAdapter */
+    /** @var CacheItemPoolInterface */
     private $cache;
 
     /**
      * @param Connection $connection
-     * @param PdoAdapter $cache
+     * @param CacheItemPoolInterface $cache
      */
-    public function __construct(Connection $connection, PdoAdapter $cache)
+    public function __construct(Connection $connection, CacheItemPoolInterface $cache)
     {
         $this->database = $connection;
         $this->cache = $cache;

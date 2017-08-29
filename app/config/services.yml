@@ -42,10 +42,6 @@ services:
             - connect_timeout: 60
               timeout: 1800
 
-    Symfony\Component\Cache\Adapter\PdoAdapter:
-        arguments:
-            - '@database_connection'
-
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
