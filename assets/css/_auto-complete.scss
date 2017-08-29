@@ -17,7 +17,7 @@
 
 .autocomplete-suggestion {
   position: relative;
-  padding: 0 .6em;
+  padding: 0 0.6em;
   line-height: 23px;
   white-space: nowrap;
   overflow: hidden;
@@ -37,5 +37,5 @@
 
 .autocomplete-suggestion.selected {
   background: $brand-primary;
-  color: $white
+  color: $white;
 }
