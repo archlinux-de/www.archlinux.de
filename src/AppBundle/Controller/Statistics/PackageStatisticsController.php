@@ -3,15 +3,16 @@
 namespace AppBundle\Controller\Statistics;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Query\QueryBuilder;
+use AppBundle\Request\Datatables\Request as DatatablesRequest;
+use AppBundle\Response\Datatables\Response as DatatablesResponse;
 
-class PackageStatisticsController extends Controller implements IDatabaseCachable
+class PackageStatisticsController extends Controller
 {
     use StatisticsControllerTrait;
-    private const TITLE = 'Package statistics';
 
     /**
      * @Route("/statistics/package", methods={"GET"})
@@ -20,204 +21,137 @@ class PackageStatisticsController extends Controller implements IDatabaseCachabl
      */
     public function packageAction(): Response
     {
-        return $this->renderPage(self::TITLE);
-    }
-
-    public function updateDatabaseCache()
-    {
-        $log = $this->getCommonPackageUsageStatistics();
-        $body = '<table class="table table-sm">
-                <colgroup>
-                    <col class="w-25">
-                    <col>
-                </colgroup>
-                <tr>
-                    <th colspan="2" class="text-center">Common statistics</th>
-                </tr>
-                <tr>
-                    <th>Sum of submitted packages</th>
-                    <td>' . number_format((float)$log['sumcount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Number of different packages</th>
-                    <td>' . number_format((float)$log['diffcount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Lowest number of installed packages</th>
-                    <td>' . number_format((float)$log['mincount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Highest number of installed packages</th>
-                    <td>' . number_format((float)$log['maxcount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Average number of installed packages</th>
-                    <td>' . number_format((float)$log['avgcount']) . '</td>
-                </tr>
-                <tr>
-                    <th colspan="2" class="text-center">Submissions per architectures</th>
-                </tr>
-                ' . $this->getSubmissionsPerArchitecture() . '
-                <tr>
-                    <th colspan="2" class="text-center">Submissions per CPU architectures</th>
-                </tr>
-                ' . $this->getSubmissionsPerCpuArchitecture() . '
-                <tr>
-                    <th colspan="2" class="text-center">Popular packages</th>
-                </tr>
-                ' . $this->getPopularPackages() . '
-            </table>
-            ';
-        $this->savePage(self::TITLE, $body);
+        return $this->render('statistics/package.html.twig');
     }
 
     /**
-     * @return array
+     * @Route("/statistics/package/datatables", methods={"GET"})
+     * @param DatatablesRequest $request
+     * @return Response
      */
-    private function getCommonPackageUsageStatistics(): array
+    public function datatablesAction(DatatablesRequest $request): Response
     {
-        return $this->database->query('
-        SELECT
-            (SELECT COUNT(*)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS submissions,
-            (SELECT COUNT(*)
-                FROM (SELECT *
-                    FROM pkgstats_users
-                    WHERE time >= ' . $this->getRangeTime() . ' GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS minvisited,
-            (SELECT MAX(time)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS maxvisited,
-            (SELECT SUM(count)
-                FROM pkgstats_packages
-                WHERE month >= ' . $this->getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*)
-                FROM (SELECT DISTINCT pkgname
-                    FROM pkgstats_packages
-                    WHERE month >= ' . $this->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(packages)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS mincount,
-            (SELECT MAX(packages)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS maxcount,
-            (SELECT AVG(packages)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS avgcount
-        ')->fetch();
-    }
-
-    /**
-     * @return string
-     */
-    private function getSubmissionsPerArchitecture(): string
-    {
-        $total = $this->database->query('
-        SELECT
-            COUNT(*)
-        FROM
-            pkgstats_users
-        WHERE
-            time >= ' . $this->getRangeTime() . '
-        ')->fetchColumn();
-        $arches = $this->database->query('
-        SELECT
-            COUNT(*) AS count,
-            arch AS name
-        FROM
-            pkgstats_users
-        WHERE
-            time >= ' . $this->getRangeTime() . '
-        GROUP BY
-            arch
-        ORDER BY
-            count DESC
-        ');
-        $list = '';
-        foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>'
-                . $this->getBar($arch['count'], $total) . '</td></tr>';
+        $cachedResponse = $this->cache->getItem($request->getId());
+        if ($cachedResponse->isHit()) {
+            /** @var DatatablesResponse $response */
+            $response = $cachedResponse->get();
+        } else {
+            $response = $this->queryDatabase($request);
+            $cachedResponse->expiresAt(new \DateTime('1 hour'));
+            $cachedResponse->set($response);
+            // Only store the first draw (initial state of the page)
+            if ($request->getDraw() == 1) {
+                $this->cache->save($cachedResponse);
+            }
         }
 
-        return $list;
+        $cachedPkgstatsCount = $this->cache->getItem('pkgstats.count');
+        if ($cachedPkgstatsCount->isHit()) {
+            /** @var int $pkgstatsCount */
+            $pkgstatsCount = $cachedPkgstatsCount->get();
+        } else {
+//            $pkgstatsCount = $this->getDoctrine()->getConnection()->createQueryBuilder()
+//                ->select('DISTINCT pkgname')
+//                ->from('pkgstats_packages')
+//                ->where('month >= ' . $this->getRangeYearMonth())
+//                ->execute()
+//                ->rowCount();
+            $pkgstatsCount = $this->getDoctrine()->getConnection()->createQueryBuilder()
+                ->select('COUNT(*)')
+                ->from('pkgstats_users')
+                ->where('time >= ' . $this->getRangeTime())
+                ->execute()
+                ->fetchColumn();
+            $cachedPkgstatsCount->expiresAt(new \DateTime('24 hour'));
+            $cachedPkgstatsCount->set($pkgstatsCount);
+            $this->cache->save($cachedPkgstatsCount);
+        }
+
+        $response->setRecordsTotal($pkgstatsCount);
+        $response->setDraw($request->getDraw());
+
+        return $this->json(
+            $response,
+            Response::HTTP_OK,
+            [
+                'X-Cache-App' => $cachedResponse->isHit() ? 'HIT' : 'MISS'
+            ]
+        );
     }
 
     /**
-     * @return string
+     * @param DatatablesRequest $request
+     * @return DatatablesResponse
      */
-    private function getSubmissionsPerCpuArchitecture(): string
+    private function queryDatabase(DatatablesRequest $request): DatatablesResponse
     {
-        $total = $this->database->query('
-        SELECT
-            COUNT(*)
-        FROM
-            pkgstats_users
-        WHERE
-            time >= ' . $this->getRangeTime() . '
-            AND cpuarch IS NOT NULL
-        ')->fetchColumn();
-        $arches = $this->database->query('
-        SELECT
-            COUNT(cpuarch) AS count,
-            cpuarch AS name
-        FROM
-            pkgstats_users
-        WHERE
-            time >= ' . $this->getRangeTime() . '
-            AND cpuarch IS NOT NULL
-        GROUP BY
-            cpuarch
-        ORDER BY
-            count DESC
-        ');
-        $list = '';
-        foreach ($arches as $arch) {
-            $list .= '<tr><th>' . $arch['name'] . '</th><td>'
-                . $this->getBar($arch['count'], $total) . '</td></tr>';
+        $compareableColumns = [
+        ];
+        $searchableColumns = array_merge(
+            $compareableColumns,
+            [
+                'pkgname' => 'pkgname'
+            ]
+        );
+        $orderableColumns = array_merge(
+            $compareableColumns,
+            [
+                'count' => 'count'
+            ]
+        );
+
+        $connection = $this->getDoctrine()->getConnection();
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connection->createQueryBuilder();
+        $queryBuilder
+            ->select([
+                'SQL_CALC_FOUND_ROWS pkgname AS pkgname',
+                'SUM(count) AS count'
+            ])
+            ->from('pkgstats_packages')
+            ->where('month >= ' . $this->getRangeYearMonth())
+            ->groupBy('pkgname')
+            ->setFirstResult($request->getStart())
+            ->setMaxResults($request->getLength());
+
+        foreach ($request->getOrders() as $order) {
+            $orderColumnName = $order->getColumn()->getData();
+            if (isset($orderableColumns[$orderColumnName])) {
+                $queryBuilder->orderBy($orderColumnName, $order->getDir());
+            }
         }
 
-        return $list;
-    }
-
-    /**
-     * @return string
-     */
-    private function getPopularPackages(): string
-    {
-        $total = $this->database->query('
-            SELECT
-                COUNT(*)
-            FROM
-                pkgstats_users
-            WHERE
-                time >= ' . $this->getRangeTime() . '
-        ')->fetchColumn();
-        $packages = $this->database->query('
-            SELECT
-                pkgname,
-                SUM(count) AS count
-            FROM
-                pkgstats_packages
-            WHERE
-                month >= ' . $this->getRangeYearMonth() . '
-            GROUP BY
-                pkgname
-            HAVING
-                count >= ' . (floor($total / 100)) . '
-            ORDER BY
-                count DESC,
-                pkgname ASC
-        ');
-        $list = '<tr>';
-        foreach ($packages as $package) {
-            $list .= '<th>' . $package['pkgname'] . '</th>
-                <td>' . $this->getBar((int)$package['count'], $total) . '</td>';
+        if ($request->hasSearch() && !$request->getSearch()->isRegex()) {
+            $queryBuilder->andWhere('pkgname LIKE :search');
+            $queryBuilder->setParameter(':search', '%' . $request->getSearch()->getValue() . '%');
         }
-        $list .= '</tr>';
 
-        return $list;
+        foreach ($request->getColumns() as $column) {
+            if ($column->isSearchable()) {
+                $columnName = $column->getData();
+                if (isset($searchableColumns[$columnName])) {
+                    if (!$column->getSearch()->isRegex() && $column->getSearch()->isValid()) {
+                        $queryBuilder->andWhere(
+                            $searchableColumns[$columnName] . ' LIKE :columnSearch' . $column->getId()
+                        );
+                        $searchValue = $column->getSearch()->getValue();
+                        if (!isset($compareableColumns[$columnName])) {
+                            $searchValue = '%' . $searchValue . '%';
+                        }
+                        $queryBuilder->setParameter(':columnSearch' . $column->getId(), $searchValue);
+                    }
+                }
+            }
+        }
+
+        $packages = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        $pkgstatsFiltered = $connection->createQueryBuilder()
+            ->select('FOUND_ROWS()')->execute()->fetchColumn();
+
+        $response = new DatatablesResponse($packages);
+        $response->setRecordsFiltered($pkgstatsFiltered);
+
+        return $response;
     }
 }

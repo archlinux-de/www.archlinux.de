@@ -26,7 +26,6 @@ class UpdateStatisticsCommand extends ContainerAwareCommand
         $this->lock('cron.lock', true);
 
         foreach (array(
-                     PackageStatisticsController::class,
                      ModuleStatisticsController::class,
                      UserStatisticsController::class,
                      FunStatisticsController::class,
