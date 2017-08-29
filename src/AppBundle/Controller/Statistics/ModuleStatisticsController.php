@@ -2,16 +2,17 @@
 
 namespace AppBundle\Controller\Statistics;
 
-use archportal\lib\IDatabaseCachable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Query\QueryBuilder;
+use AppBundle\Request\Datatables\Request as DatatablesRequest;
+use AppBundle\Response\Datatables\Response as DatatablesResponse;
 
-class ModuleStatisticsController extends Controller implements IDatabaseCachable
+class ModuleStatisticsController extends Controller
 {
     use StatisticsControllerTrait;
-    private const TITLE = 'Module statistics';
 
     /**
      * @Route("/statistics/module", methods={"GET"})
@@ -20,124 +21,137 @@ class ModuleStatisticsController extends Controller implements IDatabaseCachable
      */
     public function moduleAction(): Response
     {
-        return $this->renderPage(self::TITLE);
-    }
-
-    public function updateDatabaseCache()
-    {
-        $log = $this->getCommonModuleUsageStatistics();
-        $body = '<table class="table table-sm">
-                <colgroup>
-                    <col class="w-25">
-                    <col>
-                </colgroup>
-                <tr>
-                    <th colspan="2" class="text-center">Common statistics</th>
-                </tr>
-                <tr>
-                    <th>Sum of submitted modules</th>
-                    <td>' . number_format((float)$log['sumcount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Number of different modules</th>
-                    <td>' . number_format((float)$log['diffcount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Lowest number of installed modules</th>
-                    <td>' . number_format((float)$log['mincount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Highest number of installed modules</th>
-                    <td>' . number_format((float)$log['maxcount']) . '</td>
-                </tr>
-                <tr>
-                    <th>Average number of installed modules</th>
-                    <td>' . number_format((float)$log['avgcount']) . '</td>
-                </tr>
-                <tr>
-                    <th colspan="2" class="text-center">Popular modules</th>
-                </tr>
-                ' . $this->getPopularModules() . '
-            </table>
-            ';
-        $this->savePage(self::TITLE, $body);
+        return $this->render('statistics/module.html.twig');
     }
 
     /**
-     * @return array
+     * @Route("/statistics/module/datatables", methods={"GET"})
+     * @param DatatablesRequest $request
+     * @return Response
      */
-    private function getCommonModuleUsageStatistics(): array
+    public function datatablesAction(DatatablesRequest $request): Response
     {
-        return $this->database->query('
-        SELECT
-            (SELECT COUNT(*)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ' AND modules IS NOT NULL) AS submissions,
-            (SELECT COUNT(*)
-                FROM (SELECT * FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . '
-                 AND modules IS NOT NULL GROUP BY ip) AS temp) AS differentips,
-            (SELECT MIN(time)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ' AND modules IS NOT NULL) AS minvisited,
-            (SELECT MAX(time)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ' AND modules IS NOT NULL) AS maxvisited,
-            (SELECT SUM(count)
-                FROM pkgstats_modules
-                WHERE month >= ' . $this->getRangeYearMonth() . ') AS sumcount,
-            (SELECT COUNT(*)
-                FROM (SELECT DISTINCT name FROM pkgstats_modules
-                WHERE month >= ' . $this->getRangeYearMonth() . ') AS diffpkgs) AS diffcount,
-            (SELECT MIN(modules)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS mincount,
-            (SELECT MAX(modules)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS maxcount,
-            (SELECT AVG(modules)
-                FROM pkgstats_users
-                WHERE time >= ' . $this->getRangeTime() . ') AS avgcount
-        ')->fetch();
-    }
-
-    /**
-     * @return string
-     */
-    private function getPopularModules(): string
-    {
-        $total = $this->database->query('
-            SELECT
-                COUNT(*)
-            FROM
-                pkgstats_users
-            WHERE
-                time >= ' . $this->getRangeTime() . '
-                AND modules IS NOT NULL
-        ')->fetchColumn();
-        $modules = $this->database->query('
-            SELECT
-                name,
-                SUM(count) AS count
-            FROM
-                pkgstats_modules
-            WHERE
-                month >= ' . $this->getRangeYearMonth() . '
-            GROUP BY
-                name
-            HAVING
-                count >= ' . (floor($total / 100)) . '
-            ORDER BY
-                count DESC,
-                name ASC
-        ');
-        $list = '<tr><td colspan="2"><div><table class="pretty-table" style="border:none;">';
-        foreach ($modules as $module) {
-            $list .= '<tr><td style="width: 200px;">' . $module['name'] . '</td><td>' .
-                $this->getBar((int)$module['count'], $total) . '</td></tr>';
+        $cachedResponse = $this->cache->getItem($request->getId());
+        if ($cachedResponse->isHit()) {
+            /** @var DatatablesResponse $response */
+            $response = $cachedResponse->get();
+        } else {
+            $response = $this->queryDatabase($request);
+            $cachedResponse->expiresAt(new \DateTime('1 hour'));
+            $cachedResponse->set($response);
+            // Only store the first draw (initial state of the page)
+            if ($request->getDraw() == 1) {
+                $this->cache->save($cachedResponse);
+            }
         }
-        $list .= '</table></div></td></tr>';
 
-        return $list;
+        $cachedModuleCount = $this->cache->getItem('module.count');
+        if ($cachedModuleCount->isHit()) {
+            /** @var int $moduleCount */
+            $moduleCount = $cachedModuleCount->get();
+        } else {
+            $moduleCount = $this->getDoctrine()->getConnection()->createQueryBuilder()
+                ->select('DISTINCT name')
+                ->from('pkgstats_modules')
+                ->where('month >= ' . $this->getRangeYearMonth())
+                ->execute()
+                ->rowCount();
+//            $moduleCount = $this->getDoctrine()->getConnection()->createQueryBuilder()
+//                ->select('COUNT(*)')
+//                ->from('pkgstats_users')
+//                ->where('time >= ' . $this->getRangeTime())
+//                ->execute()
+//                ->fetchColumn();
+            $cachedModuleCount->expiresAt(new \DateTime('24 hour'));
+            $cachedModuleCount->set($moduleCount);
+            $this->cache->save($cachedModuleCount);
+        }
+
+        $response->setRecordsTotal($moduleCount);
+        $response->setDraw($request->getDraw());
+
+        return $this->json(
+            $response,
+            Response::HTTP_OK,
+            [
+                'X-Cache-App' => $cachedResponse->isHit() ? 'HIT' : 'MISS'
+            ]
+        );
+    }
+
+    /**
+     * @param DatatablesRequest $request
+     * @return DatatablesResponse
+     */
+    private function queryDatabase(DatatablesRequest $request): DatatablesResponse
+    {
+        $compareableColumns = [
+        ];
+        $searchableColumns = array_merge(
+            $compareableColumns,
+            [
+                'name' => 'name'
+            ]
+        );
+        $orderableColumns = array_merge(
+            $compareableColumns,
+            [
+                'count' => 'count'
+            ]
+        );
+
+        $connection = $this->getDoctrine()->getConnection();
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connection->createQueryBuilder();
+        $queryBuilder
+            ->select([
+                'SQL_CALC_FOUND_ROWS name',
+                'SUM(count) AS count'
+            ])
+            ->from('pkgstats_modules')
+            ->where('month >= ' . $this->getRangeYearMonth())
+            ->groupBy('name')
+            ->setFirstResult($request->getStart())
+            ->setMaxResults($request->getLength());
+
+        foreach ($request->getOrders() as $order) {
+            $orderColumnName = $order->getColumn()->getData();
+            if (isset($orderableColumns[$orderColumnName])) {
+                $queryBuilder->orderBy($orderColumnName, $order->getDir());
+            }
+        }
+
+        if ($request->hasSearch() && !$request->getSearch()->isRegex()) {
+            $queryBuilder->andWhere('name LIKE :search');
+            $queryBuilder->setParameter(':search', '%' . $request->getSearch()->getValue() . '%');
+        }
+
+        foreach ($request->getColumns() as $column) {
+            if ($column->isSearchable()) {
+                $columnName = $column->getData();
+                if (isset($searchableColumns[$columnName])) {
+                    if (!$column->getSearch()->isRegex() && $column->getSearch()->isValid()) {
+                        $queryBuilder->andWhere(
+                            $searchableColumns[$columnName] . ' LIKE :columnSearch' . $column->getId()
+                        );
+                        $searchValue = $column->getSearch()->getValue();
+                        if (!isset($compareableColumns[$columnName])) {
+                            $searchValue = '%' . $searchValue . '%';
+                        }
+                        $queryBuilder->setParameter(':columnSearch' . $column->getId(), $searchValue);
+                    }
+                }
+            }
+        }
+
+        $modules = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+        $modulesFiltered = $connection->createQueryBuilder()
+            ->select('FOUND_ROWS()')->execute()->fetchColumn();
+
+        $response = new DatatablesResponse($modules);
+        $response->setRecordsFiltered($modulesFiltered);
+
+        return $response;
     }
 }
