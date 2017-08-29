@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,7 +88,7 @@ class PackageDetailsController extends Controller
         $stm->execute();
         $data = $stm->fetch();
         if ($data === false) {
-            throw new NotFoundHttpException('Paket wurde nicht gefunden');
+            throw $this->createNotFoundException('Paket wurde nicht gefunden');
         }
         $this->pkgid = $data['id'];
         $cgitUrl = $this->getParameter('app.packages.cgit') . (in_array($data['repository'], array(

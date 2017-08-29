@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Service\GeoIp;
 use Doctrine\DBAL\Driver\Connection;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +61,7 @@ class MirrorController extends Controller
             $pkgdate->bindParam('architecture', $matches[2], \PDO::PARAM_STR);
             $pkgdate->execute();
             if ($pkgdate->rowCount() == 0) {
-                throw new NotFoundHttpException('Package was not found');
+                throw $this->createNotFoundException('Package was not found');
             }
             $lastsync = $pkgdate->fetchColumn();
         } elseif (preg_match('#^iso/([0-9]{4}\.[0-9]{2}\.[0-9]{2})/#', $file, $matches)) {
@@ -78,7 +77,7 @@ class MirrorController extends Controller
             $releasedate->bindParam('version', $matches[1], \PDO::PARAM_STR);
             $releasedate->execute();
             if ($releasedate->rowCount() == 0) {
-                throw new NotFoundHttpException('ISO image was not found');
+                throw $this->createNotFoundException('ISO image was not found');
             }
             $lastsync = $releasedate->fetchColumn();
         } else {
