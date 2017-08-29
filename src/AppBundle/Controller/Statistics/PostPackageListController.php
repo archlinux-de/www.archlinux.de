@@ -76,7 +76,7 @@ class PostPackageListController extends Controller
         $arch = $request->request->get('arch');
         $cpuArch = $request->request->get('cpuarch', '');
         # Can be rewritten once 1.0 is no longer in use
-        $mirror = htmlspecialchars($request->request->get('mirror', ''));
+        $mirror = $request->request->get('mirror', '');
         # Can be rewritten once 2.0 is no longer in use
         $this->quiet = ($request->request->get('quiet', 'false') == 'true');
 
@@ -92,7 +92,7 @@ class PostPackageListController extends Controller
             'x86_64',
         ))
         ) {
-            throw new BadRequestHttpException(htmlspecialchars($arch) . ' is not a known architecture.');
+            throw new BadRequestHttpException($arch . ' is not a known architecture.');
         }
         if (!in_array($cpuArch, array(
             'i686',
@@ -100,7 +100,7 @@ class PostPackageListController extends Controller
             '',
         ))
         ) {
-            throw new BadRequestHttpException(htmlspecialchars($cpuArch) . ' is not a known architecture.');
+            throw new BadRequestHttpException($cpuArch . ' is not a known architecture.');
         }
         if ($cpuArch == '') {
             $cpuArch = null;
@@ -112,8 +112,8 @@ class PostPackageListController extends Controller
             throw new BadRequestHttpException('So, you have installed more than 10,000 packages?');
         }
         foreach ($packages as $package) {
-            if (!preg_match('/^[^-]+\S{0,254}$/', htmlspecialchars($package))) {
-                throw new BadRequestHttpException(htmlspecialchars($package) . ' does not look like a valid package');
+            if (!preg_match('/^[^-]+\S{0,254}$/', $package)) {
+                throw new BadRequestHttpException($package . ' does not look like a valid package');
             }
         }
         if ($moduleCount > 5000) {
@@ -165,7 +165,7 @@ class PostPackageListController extends Controller
                 count = count + 1
             ');
             foreach ($packages as $package) {
-                $stm->bindValue('pkgname', htmlspecialchars($package), \PDO::PARAM_STR);
+                $stm->bindValue('pkgname', $package, \PDO::PARAM_STR);
                 $stm->bindValue('month', date('Ym', time()), \PDO::PARAM_INT);
                 $stm->execute();
             }

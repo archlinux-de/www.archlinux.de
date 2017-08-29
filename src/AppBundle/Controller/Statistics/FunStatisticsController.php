@@ -171,13 +171,13 @@ class FunStatisticsController extends Controller implements IDatabaseCachable
                 );
             }
             foreach ($pkgnames as $pkgname) {
-                $stm->bindValue('pkgname', htmlspecialchars($pkgname), \PDO::PARAM_STR);
+                $stm->bindValue('pkgname', $pkgname, \PDO::PARAM_STR);
                 $stm->execute();
                 $count = $stm->fetchColumn() ?: 0;
-                if (isset($packageArray[htmlspecialchars($package)])) {
-                    $packageArray[htmlspecialchars($package)] += $count;
+                if (isset($packageArray[$package])) {
+                    $packageArray[$package] += $count;
                 } else {
-                    $packageArray[htmlspecialchars($package)] = $count;
+                    $packageArray[$package] = $count;
                 }
             }
         }
