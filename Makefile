@@ -52,6 +52,7 @@ shell:
 
 test:
 	${APP-RUN} vendor/bin/phpcs
+	${APP-RUN} node_modules/.bin/standard 'assets/js/**/*.js' '*.js'
 	${APP-RUN} vendor/bin/phpunit
 
 ci-test: init
