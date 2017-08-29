@@ -35,6 +35,7 @@ class MirrorController extends Controller
      *      },
      *      methods={"GET"}
      *     )
+     * @param string $version
      * @param string $file
      * @param Request $request
      * @return Response
@@ -68,6 +69,8 @@ class MirrorController extends Controller
      *      },
      *      methods={"GET"}
      *     )
+     * @param string $repository
+     * @param string $architecture
      * @param string $file
      * @param Request $request
      * @return Response

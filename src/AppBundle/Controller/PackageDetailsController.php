@@ -117,6 +117,7 @@ class PackageDetailsController extends Controller
     }
 
     /**
+     * @param int $pkgid
      * @return array
      */
     private function getLicenses(int $pkgid): array
@@ -138,6 +139,7 @@ class PackageDetailsController extends Controller
     }
 
     /**
+     * @param int $pkgid
      * @return array
      */
     private function getGroups(int $pkgid): array
@@ -159,8 +161,8 @@ class PackageDetailsController extends Controller
     }
 
     /**
+     * @param int $pkgid
      * @param string $type
-     *
      * @return array
      */
     private function getRelations(int $pkgid, string $type): array
@@ -193,8 +195,8 @@ class PackageDetailsController extends Controller
     }
 
     /**
+     * @param int $pkgid
      * @param string $type
-     *
      * @return array
      */
     private function getInverseRelations(int $pkgid, string $type): array
