@@ -106,15 +106,30 @@
         </div>
         <div class="col-12 col-xl-6">
             <h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
-            {% macro relation(name, list) %}
-                {% if list matches('/<li>/') %}
+
+            {% macro relation(name, packages) %}
+                {% if packages | length > 0 %}
                     <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                         <h3>{{ name }}</h3>
-                        {{ list | raw }}
+                        <ul class="list-unstyled pl-4">
+                            {% for package in packages %}
+                                <li>
+                                    {% if package.repo and package.arch %}
+                                        <a href="{{ path(
+                                    'app_packagedetails_index',
+                                    {'repo': package.repo, 'arch': package.arch, 'pkgname': package.name}
+                                    ) }}">{{ package.name }}</a>{{ package.version }}
+                                    {% else %}
+                                        {{ package.name }}{{ package.version }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endif %}
             {% endmacro %}
             {% import _self as macro %}
+
             <div class="row mw-100">
                 {{ macro.relation('von', depends) }}
                 {{ macro.relation('optional von', optdepends) }}

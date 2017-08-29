@@ -10,8 +10,6 @@ use Symfony\Component\Routing\RouterInterface;
 
 class PackageDetailsController extends Controller
 {
-    /** @var int */
-    private $pkgid = 0;
     /** @var Connection */
     private $database;
     /** @var RouterInterface */
@@ -89,7 +87,6 @@ class PackageDetailsController extends Controller
         if ($data === false) {
             throw $this->createNotFoundException('Paket wurde nicht gefunden');
         }
-        $this->pkgid = $data['id'];
         $cgitUrl = $this->getParameter('app.packages.cgit') . (in_array($data['repository'], array(
                 'community',
                 'community-testing',
@@ -102,18 +99,18 @@ class PackageDetailsController extends Controller
             'package' => $data,
             'cgit_url' => $cgitUrl,
             'arch' => $arch,
-            'licenses' => $this->getLicenses(),
-            'groups' => $this->getGroups(),
-            'depends' => $this->getRelations('depends'),
-            'inverse_depends' => $this->getInverseRelations('depends'),
-            'provides' => $this->getRelations('provides'),
-            'conflicts' => $this->getRelations('conflicts'),
-            'replaces' => $this->getRelations('replaces'),
-            'optdepends' => $this->getRelations('optdepends'),
-            'inverse_optdepends' => $this->getInverseRelations('optdepends'),
-            'makedepends' => $this->getRelations('makedepends'),
-            'inverse_makedepends' => $this->getInverseRelations('makedepends'),
-            'checkdepends' => $this->getRelations('checkdepends'),
+            'licenses' => $this->getLicenses($data['id']),
+            'groups' => $this->getGroups($data['id']),
+            'depends' => $this->getRelations($data['id'], 'depends'),
+            'inverse_depends' => $this->getInverseRelations($data['id'], 'depends'),
+            'provides' => $this->getRelations($data['id'], 'provides'),
+            'conflicts' => $this->getRelations($data['id'], 'conflicts'),
+            'replaces' => $this->getRelations($data['id'], 'replaces'),
+            'optdepends' => $this->getRelations($data['id'], 'optdepends'),
+            'inverse_optdepends' => $this->getInverseRelations($data['id'], 'optdepends'),
+            'makedepends' => $this->getRelations($data['id'], 'makedepends'),
+            'inverse_makedepends' => $this->getInverseRelations($data['id'], 'makedepends'),
+            'checkdepends' => $this->getRelations($data['id'], 'checkdepends'),
             'repo' => $repo,
             'pkgname' => $pkgname
         ]);
@@ -122,7 +119,7 @@ class PackageDetailsController extends Controller
     /**
      * @return array
      */
-    private function getLicenses(): array
+    private function getLicenses(int $pkgid): array
     {
         $stm = $this->database->prepare('
         SELECT
@@ -134,7 +131,7 @@ class PackageDetailsController extends Controller
             package_license.license = licenses.id
             AND package_license.package = :package
         ');
-        $stm->bindParam('package', $this->pkgid, \PDO::PARAM_INT);
+        $stm->bindParam('package', $pkgid, \PDO::PARAM_INT);
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_COLUMN);
@@ -143,7 +140,7 @@ class PackageDetailsController extends Controller
     /**
      * @return array
      */
-    private function getGroups(): array
+    private function getGroups(int $pkgid): array
     {
         $groups = $this->database->prepare('
             SELECT
@@ -155,7 +152,7 @@ class PackageDetailsController extends Controller
                 package_group.group = groups.id
                 AND package_group.package = :package
         ');
-        $groups->bindParam('package', $this->pkgid, \PDO::PARAM_INT);
+        $groups->bindParam('package', $pkgid, \PDO::PARAM_INT);
         $groups->execute();
 
         return $groups->fetchAll(\PDO::FETCH_COLUMN);
@@ -164,13 +161,12 @@ class PackageDetailsController extends Controller
     /**
      * @param string $type
      *
-     * @return string
+     * @return array
      */
-    private function getRelations(string $type): string
+    private function getRelations(int $pkgid, string $type): array
     {
         $stm = $this->database->prepare('
         SELECT
-            packages.id,
             package_relation.dependsName AS name,
             package_relation.dependsVersion AS version,
             architectures.name AS arch,
@@ -189,32 +185,19 @@ class PackageDetailsController extends Controller
         ORDER BY
             package_relation.dependsName
         ');
-        $stm->bindParam('packageId', $this->pkgid, \PDO::PARAM_INT);
+        $stm->bindParam('packageId', $pkgid, \PDO::PARAM_INT);
         $stm->bindParam('type', $type, \PDO::PARAM_STR);
         $stm->execute();
-        $list = '<ul class="list-unstyled pl-4">';
-        foreach ($stm as $dependency) {
-            if (is_null($dependency['id'])) {
-                $list .= '<li>' . $dependency['name'] . $dependency['version'] . '</li>';
-            } else {
-                $list .= '<li><a href="' . $this->router->generate('app_packagedetails_index', array(
-                        'repo' => $dependency['repo'],
-                        'arch' => $dependency['arch'],
-                        'pkgname' => $dependency['name'],
-                    )) . '">' . $dependency['name'] . '</a>' . $dependency['version'] . '</li>';
-            }
-        }
-        $list .= '</ul>';
 
-        return $list;
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
      * @param string $type
      *
-     * @return string
+     * @return array
      */
-    private function getInverseRelations(string $type): string
+    private function getInverseRelations(int $pkgid, string $type): array
     {
         $stm = $this->database->prepare('
         SELECT
@@ -236,19 +219,10 @@ class PackageDetailsController extends Controller
         ORDER BY
             packages.name
         ');
-        $stm->bindParam('packageId', $this->pkgid, \PDO::PARAM_INT);
+        $stm->bindParam('packageId', $pkgid, \PDO::PARAM_INT);
         $stm->bindParam('type', $type, \PDO::PARAM_STR);
         $stm->execute();
-        $list = '<ul class="list-unstyled pl-4">';
-        foreach ($stm as $dependency) {
-            $list .= '<li><a href="' . $this->router->generate('app_packagedetails_index', array(
-                    'repo' => $dependency['repo'],
-                    'arch' => $dependency['arch'],
-                    'pkgname' => $dependency['name'],
-                )) . '">' . $dependency['name'] . '</a>' . $dependency['version'] . '</li>';
-        }
-        $list .= '</ul>';
 
-        return $list;
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
