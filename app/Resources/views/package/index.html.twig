@@ -31,7 +31,7 @@
                 </tr>
                 <tr>
                     <th>Lizenzen</th>
-                    <td>{{ licenses | raw }}</td>
+                    <td>{{ licenses | join(', ') }}</td>
                 </tr>
                 <tr>
                     <th>Repositorium</th>
@@ -47,7 +47,7 @@
                 </tr>
                 <tr>
                     <th>Gruppen</th>
-                    <td>{{ groups | raw }}</td>
+                    <td>{{ groups | join(', ') }}</td>
                 </tr>
                 <tr>
                     <th>Packer</th>

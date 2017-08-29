@@ -120,9 +120,9 @@ class PackageDetailsController extends Controller
     }
 
     /**
-     * @return string
+     * @return array
      */
-    private function getLicenses(): string
+    private function getLicenses(): array
     {
         $stm = $this->database->prepare('
         SELECT
@@ -136,18 +136,14 @@ class PackageDetailsController extends Controller
         ');
         $stm->bindParam('package', $this->pkgid, \PDO::PARAM_INT);
         $stm->execute();
-        $list = array();
-        while (($license = $stm->fetchColumn())) {
-            $list[] = $license;
-        }
 
-        return implode(', ', $list);
+        return $stm->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**
-     * @return string
+     * @return array
      */
-    private function getGroups(): string
+    private function getGroups(): array
     {
         $groups = $this->database->prepare('
             SELECT
@@ -161,14 +157,8 @@ class PackageDetailsController extends Controller
         ');
         $groups->bindParam('package', $this->pkgid, \PDO::PARAM_INT);
         $groups->execute();
-        $list = array();
-        while (($group = $groups->fetchColumn())) {
-            $list[] = '<a href="' .
-                $this->router->generate('app_packages_index', ['group' => $group])
-                . '">' . $group . '</a>';
-        }
 
-        return implode(', ', $list);
+        return $groups->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**
