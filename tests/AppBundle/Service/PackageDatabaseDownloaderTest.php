@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Service;
 
-use AppBundle\Service\PackageDatabaseDownloader;
+use AppBundle\ArchLinux\PackageDatabaseDownloader;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;

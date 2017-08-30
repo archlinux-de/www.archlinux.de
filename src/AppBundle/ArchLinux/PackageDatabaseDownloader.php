@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Service;
+namespace AppBundle\ArchLinux;
 
 use GuzzleHttp\Client;
 

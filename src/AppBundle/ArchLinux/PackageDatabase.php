@@ -1,8 +1,6 @@
 <?php
 
-namespace archportal\lib;
-
-use AppBundle\Service\TarExtractor;
+namespace AppBundle\ArchLinux;
 
 class PackageDatabase implements \IteratorAggregate
 {
@@ -25,7 +23,7 @@ class PackageDatabase implements \IteratorAggregate
     private function getDatabaseDirectory(): \FilesystemIterator
     {
         if (is_null($this->databaseDirectory)) {
-            $tarExtractor = new TarExtractor($this->databaseFile);
+            $tarExtractor = new PackageDatabaseReader($this->databaseFile);
             $this->databaseDirectory = $tarExtractor->extract();
         }
 

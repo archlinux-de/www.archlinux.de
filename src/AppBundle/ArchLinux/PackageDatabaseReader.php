@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Service;
+namespace AppBundle\ArchLinux;
 
 use Symfony\Component\Process\Process;
 
-class TarExtractor
+class PackageDatabaseReader
 {
     /** @var \SplFileInfo */
     private $tarFile;

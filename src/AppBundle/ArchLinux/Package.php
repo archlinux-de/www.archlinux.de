@@ -1,6 +1,6 @@
 <?php
 
-namespace archportal\lib;
+namespace AppBundle\ArchLinux;
 
 class Package
 {

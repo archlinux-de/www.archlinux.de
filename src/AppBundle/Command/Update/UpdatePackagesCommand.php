@@ -2,10 +2,10 @@
 
 namespace AppBundle\Command\Update;
 
-use AppBundle\Service\PackageDatabaseDownloader;
+use AppBundle\ArchLinux\PackageDatabaseDownloader;
 use Psr\Cache\CacheItemPoolInterface;
-use archportal\lib\Package;
-use archportal\lib\PackageDatabase;
+use AppBundle\ArchLinux\Package;
+use AppBundle\ArchLinux\PackageDatabase;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
