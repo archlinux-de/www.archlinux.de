@@ -42,10 +42,11 @@ class PackageStatisticsController extends Controller
             $queryBuilder
                 ->select([
                     'pkgname',
-                    'month',
-                    'count'
+                    'SUM(count) AS count'
                 ])
-                ->from('pkgstats_packages');
+                ->from('pkgstats_packages')
+                ->where('month >= ' . $this->getRangeYearMonth())
+                ->groupBy('pkgname');
             $packages = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
             $cachedPackages->expiresAt(new \DateTime('24 hour'));

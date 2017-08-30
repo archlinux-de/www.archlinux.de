@@ -42,10 +42,11 @@ class ModuleStatisticsController extends Controller
             $queryBuilder
                 ->select([
                     'name',
-                    'month',
-                    'count'
+                    'SUM(count) AS count'
                 ])
-                ->from('pkgstats_modules');
+                ->from('pkgstats_modules')
+                ->where('month >= ' . $this->getRangeYearMonth())
+                ->groupBy('name');
             $modules = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
             $cachedModules->expiresAt(new \DateTime('24 hour'));
