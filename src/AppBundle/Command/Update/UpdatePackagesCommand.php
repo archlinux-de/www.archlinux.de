@@ -158,7 +158,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                         ->download($this->getContainer()->getParameter('app.packages.mirror'), $repo, $arch);
 
                     $packages = new PackageDatabase($packageDatabaseFile, $repoMTime, $packageMTime);
-                    if ($packages->getMTime() > $repoMTime && time() - $packages->getMTime() > PackageDatabase::DELAY) {
+                    if ($packages->getMTime() > $repoMTime) {
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, $packages->getNewPackageCount());
                             $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");

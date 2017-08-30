@@ -18,8 +18,6 @@ class PackageDatabase implements \Iterator
     /** @var null|int */
     private $packageCount = null;
 
-    public const DELAY = 120;
-
     /**
      * @param \SplFileInfo $packageDatabaseFile
      * @param int $repoMinMTime
@@ -33,7 +31,7 @@ class PackageDatabase implements \Iterator
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
-        if ($this->mtime > $repoMinMTime && time() - $this->mtime > self::DELAY) {
+        if ($this->mtime > $repoMinMTime) {
             system('bsdtar -xf ' . $packageDatabaseFile->getRealPath() . ' -C ' . $this->dbDir, $return);
             if ($return !== 0) {
                 throw new \RuntimeException('Could not extract Database');
