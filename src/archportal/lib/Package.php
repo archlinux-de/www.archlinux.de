@@ -2,41 +2,39 @@
 
 namespace archportal\lib;
 
-use RuntimeException;
-
 class Package
 {
-    /** @var string */
-    private $packageDir = '';
+    /** @var \SplFileInfo */
+    private $packageDir;
+    /** @var \SplFileInfo */
+    private $descFile;
     /** @var array */
-    private $desc = array();
+    private $desc;
+    /** @var array */
+    private $files;
 
     /**
-     * @param string $packageDir
+     * @param \SplFileInfo $packageDir
      */
-    public function __construct(string $packageDir)
+    public function __construct(\SplFileInfo $packageDir)
     {
         $this->packageDir = $packageDir;
-
-        if (!file_exists($this->packageDir . '/desc')) {
-            throw new RuntimeException('Invalid package data');
-        }
-        $this->desc = $this->loadInfo($this->packageDir . '/desc');
-        if (file_exists($this->packageDir . '/depends')) {
-            $this->desc = array_merge($this->desc, $this->loadInfo($this->packageDir . '/depends'));
-        }
+        $this->descFile = new \SplFileInfo($packageDir->getPathname() . '/desc');
     }
 
     /**
-     * @param string $file
+     * @param \SplFileInfo $descFile
      *
      * @return array
      */
-    private function loadInfo(string $file): array
+    private function loadInfo(\SplFileInfo $descFile): array
     {
         $index = '';
         $data = array();
-        foreach (file($file, \FILE_IGNORE_NEW_LINES | \FILE_SKIP_EMPTY_LINES) as $line) {
+        $file = $descFile->openFile();
+        $file->setFlags(\SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
+
+        foreach ($file as $line) {
             if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
                 $index = substr($line, 1, -1);
                 $data[$index] = array();
@@ -49,11 +47,43 @@ class Package
     }
 
     /**
+     * @param string $key
+     * @param string $default
+     * @return null|string
+     */
+    private function readValue(string $key, ?string $default = ''): ?string
+    {
+        $list = $this->readList($key);
+        if (isset($list[0])) {
+            return $list[0];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * @param string $key
+     * @param array $default
+     * @return array|null
+     */
+    private function readList(string $key, ?array $default = []): ?array
+    {
+        if (is_null($this->desc)) {
+            $this->desc = $this->loadInfo($this->descFile);
+        }
+        if (isset($this->desc[$key])) {
+            return $this->desc[$key];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
      * @return string
      */
     public function getFileName(): string
     {
-        return $this->desc['FILENAME'][0];
+        return $this->readValue('FILENAME');
     }
 
     /**
@@ -61,7 +91,7 @@ class Package
      */
     public function getName(): string
     {
-        return $this->desc['NAME'][0];
+        return $this->readValue('NAME');
     }
 
     /**
@@ -69,7 +99,7 @@ class Package
      */
     public function getBase(): string
     {
-        return isset($this->desc['BASE'][0]) ? $this->desc['BASE'][0] : $this->getName();
+        return $this->readValue('BASE', $this->getName());
     }
 
     /**
@@ -77,7 +107,7 @@ class Package
      */
     public function getVersion(): string
     {
-        return $this->desc['VERSION'][0];
+        return $this->readValue('VERSION');
     }
 
     /**
@@ -85,7 +115,7 @@ class Package
      */
     public function getDescription(): string
     {
-        return isset($this->desc['DESC'][0]) ? $this->desc['DESC'][0] : '';
+        return $this->readValue('DESC');
     }
 
     /**
@@ -93,7 +123,7 @@ class Package
      */
     public function getGroups(): array
     {
-        return isset($this->desc['GROUPS']) ? $this->desc['GROUPS'] : array();
+        return $this->readList('GROUPS');
     }
 
     /**
@@ -101,7 +131,7 @@ class Package
      */
     public function getCompressedSize(): int
     {
-        return isset($this->desc['CSIZE'][0]) ? (int)$this->desc['CSIZE'][0] : 0;
+        return $this->readValue('CSIZE', 0);
     }
 
     /**
@@ -109,7 +139,7 @@ class Package
      */
     public function getInstalledSize(): int
     {
-        return isset($this->desc['ISIZE'][0]) ? (int)$this->desc['ISIZE'][0] : 0;
+        return $this->readValue('ISIZE', 0);
     }
 
     /**
@@ -117,7 +147,7 @@ class Package
      */
     public function getMD5SUM(): string
     {
-        return $this->desc['MD5SUM'][0];
+        return $this->readValue('MD5SUM');
     }
 
     /**
@@ -125,7 +155,7 @@ class Package
      */
     public function getSHA256SUM(): string
     {
-        return isset($this->desc['SHA256SUM'][0]) ? $this->desc['SHA256SUM'][0] : null;
+        return $this->readValue('SHA256SUM', null);
     }
 
     /**
@@ -133,7 +163,7 @@ class Package
      */
     public function getPGPSignature(): string
     {
-        return isset($this->desc['PGPSIG'][0]) ? $this->desc['PGPSIG'][0] : null;
+        return $this->readValue('PGPSIG', null);
     }
 
     /**
@@ -141,15 +171,7 @@ class Package
      */
     public function getURL(): string
     {
-        if (isset($this->desc['URL'][0])) {
-            if (!preg_match('#^(https?|ftp)://#', $this->desc['URL'][0])) {
-                return 'http://' . $this->desc['URL'][0];
-            } else {
-                return $this->desc['URL'][0];
-            }
-        } else {
-            return '';
-        }
+        return $this->readValue('URL');
     }
 
     /**
@@ -157,7 +179,7 @@ class Package
      */
     public function getLicenses(): array
     {
-        return isset($this->desc['LICENSE']) ? $this->desc['LICENSE'] : array();
+        return $this->readList('LICENSE');
     }
 
     /**
@@ -165,7 +187,7 @@ class Package
      */
     public function getArch(): string
     {
-        return isset($this->desc['ARCH'][0]) ? $this->desc['ARCH'][0] : '';
+        return $this->readValue('ARCH');
     }
 
     /**
@@ -173,7 +195,7 @@ class Package
      */
     public function getBuildDate(): int
     {
-        return isset($this->desc['BUILDDATE'][0]) ? (int)$this->desc['BUILDDATE'][0] : 0;
+        return $this->readValue('BUILDDATE', 0);
     }
 
     /**
@@ -181,7 +203,7 @@ class Package
      */
     public function getPackager(): string
     {
-        return isset($this->desc['PACKAGER'][0]) ? $this->desc['PACKAGER'][0] : '';
+        return $this->readValue('PACKAGER');
     }
 
     /**
@@ -189,7 +211,7 @@ class Package
      */
     public function getReplaces(): array
     {
-        return isset($this->desc['REPLACES']) ? $this->desc['REPLACES'] : array();
+        return $this->readList('REPLACES');
     }
 
     /**
@@ -197,7 +219,7 @@ class Package
      */
     public function getDepends(): array
     {
-        return isset($this->desc['DEPENDS']) ? $this->desc['DEPENDS'] : array();
+        return $this->readList('DEPENDS');
     }
 
     /**
@@ -205,7 +227,7 @@ class Package
      */
     public function getConflicts(): array
     {
-        return isset($this->desc['CONFLICTS']) ? $this->desc['CONFLICTS'] : array();
+        return $this->readList('CONFLICTS');
     }
 
     /**
@@ -213,7 +235,7 @@ class Package
      */
     public function getProvides(): array
     {
-        return isset($this->desc['PROVIDES']) ? $this->desc['PROVIDES'] : array();
+        return $this->readList('PROVIDES');
     }
 
     /**
@@ -221,7 +243,7 @@ class Package
      */
     public function getOptDepends(): array
     {
-        return isset($this->desc['OPTDEPENDS']) ? $this->desc['OPTDEPENDS'] : array();
+        return $this->readList('OPTDEPENDS');
     }
 
     /**
@@ -229,7 +251,7 @@ class Package
      */
     public function getMakeDepends(): array
     {
-        return isset($this->desc['MAKEDEPENDS']) ? $this->desc['MAKEDEPENDS'] : array();
+        return $this->readList('MAKEDEPENDS');
     }
 
     /**
@@ -237,7 +259,7 @@ class Package
      */
     public function getCheckDepends(): array
     {
-        return isset($this->desc['CHECKDEPENDS']) ? $this->desc['CHECKDEPENDS'] : array();
+        return $this->readList('CHECKDEPENDS');
     }
 
     /**
@@ -245,13 +267,13 @@ class Package
      */
     public function getFiles(): array
     {
-        if (file_exists($this->packageDir . '/files')) {
-            $data = $this->loadInfo($this->packageDir . '/files');
-
-            return $data['FILES'];
-        } else {
-            return array();
+        if (is_null($this->files)) {
+            $this->files = $this->loadInfo(
+                new \SplFileInfo($this->packageDir->getPathname() . '/files')
+            )['FILES'];
         }
+
+        return $this->files;
     }
 
     /**
@@ -259,6 +281,6 @@ class Package
      */
     public function getMTime(): int
     {
-        return filemtime($this->packageDir . '/desc');
+        return $this->descFile->getMTime();
     }
 }

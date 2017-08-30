@@ -38,8 +38,9 @@ class PackageDatabase implements \IteratorAggregate
     public function getIterator(): \Iterator
     {
         return (function () {
+            /** @var \SplFileInfo $packageDirectory */
             foreach ($this->getDatabaseDirectory() as $packageDirectory) {
-                yield new Package($packageDirectory->getPathName());
+                yield new Package($packageDirectory);
             }
         })();
     }
