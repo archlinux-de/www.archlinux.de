@@ -23,12 +23,18 @@
                     <th>Beschreibung</th>
                     <td>{{ package.desc }}</td>
                 </tr>
-                <tr>
-                    <th>URL</th>
-                    <td class="mw-50vw">
-                        <a class="break-word" rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
-                    </td>
-                </tr>
+                {% if package.url %}
+                    <tr>
+                        <th>URL</th>
+                        <td class="mw-50vw">
+                            {% if package.url matches('#^(https?|ftp)://.+$#') %}
+                                <a class="break-word" rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
+                            {% else %}
+                                {{ package.url }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <th>Lizenzen</th>
                     <td>{{ licenses | join(', ') }}</td>
