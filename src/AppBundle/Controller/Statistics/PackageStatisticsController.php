@@ -25,6 +25,38 @@ class PackageStatisticsController extends Controller
     }
 
     /**
+     * @Route("/statistics/package.json", methods={"GET"})
+     * @Cache(smaxage="900")
+     * @return Response
+     */
+    public function packageJsonAction(): Response
+    {
+        $cachedPackages = $this->cache->getItem('pkgstats.json');
+        if ($cachedPackages->isHit()) {
+            /** @var DatatablesResponse $response */
+            $packages = $cachedPackages->get();
+        } else {
+            $connection = $this->getDoctrine()->getConnection();
+            /** @var QueryBuilder $queryBuilder */
+            $queryBuilder = $connection->createQueryBuilder();
+            $queryBuilder
+                ->select([
+                    'pkgname',
+                    'month',
+                    'count'
+                ])
+                ->from('pkgstats_packages');
+            $packages = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+            $cachedPackages->expiresAt(new \DateTime('24 hour'));
+            $cachedPackages->set($packages);
+            $this->cache->save($cachedPackages);
+        }
+
+        return $this->json($packages);
+    }
+
+    /**
      * @Route("/statistics/package/datatables", methods={"GET"})
      * @param DatatablesRequest $request
      * @return Response

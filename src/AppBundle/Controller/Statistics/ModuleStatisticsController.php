@@ -25,6 +25,38 @@ class ModuleStatisticsController extends Controller
     }
 
     /**
+     * @Route("/statistics/module.json", methods={"GET"})
+     * @Cache(smaxage="900")
+     * @return Response
+     */
+    public function packageJsonAction(): Response
+    {
+        $cachedModules = $this->cache->getItem('module.json');
+        if ($cachedModules->isHit()) {
+            /** @var DatatablesResponse $response */
+            $modules = $cachedModules->get();
+        } else {
+            $connection = $this->getDoctrine()->getConnection();
+            /** @var QueryBuilder $queryBuilder */
+            $queryBuilder = $connection->createQueryBuilder();
+            $queryBuilder
+                ->select([
+                    'name',
+                    'month',
+                    'count'
+                ])
+                ->from('pkgstats_modules');
+            $modules = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
+
+            $cachedModules->expiresAt(new \DateTime('24 hour'));
+            $cachedModules->set($modules);
+            $this->cache->save($cachedModules);
+        }
+
+        return $this->json($modules);
+    }
+
+    /**
      * @Route("/statistics/module/datatables", methods={"GET"})
      * @param DatatablesRequest $request
      * @return Response
