@@ -160,7 +160,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     if ($packageDatabaseFile->getMTime() > $repoMTime) {
                         $packages = new PackageDatabase($packageDatabaseFile);
                         if (!$output->isQuiet()) {
-                            $progress = new ProgressBar($output, $packages->getCount());
+                            $progress = new ProgressBar($output, iterator_count($packages));
                             $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
                             $progress->setFormat('minimal');
                             $progress->start();
