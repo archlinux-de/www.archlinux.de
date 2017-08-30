@@ -5,8 +5,6 @@ namespace archportal\lib;
 class PackageDatabase implements \Iterator
 {
     /** @var int */
-    private $mtime = 0;
-    /** @var int */
     private $packageMinMTime = 0;
     /** @var int */
     private $currentKey = 0;
@@ -20,22 +18,18 @@ class PackageDatabase implements \Iterator
 
     /**
      * @param \SplFileInfo $packageDatabaseFile
-     * @param int $repoMinMTime
      * @param int $packageMinMTime
      */
-    public function __construct(\SplFileInfo $packageDatabaseFile, int $repoMinMTime, int $packageMinMTime)
+    public function __construct(\SplFileInfo $packageDatabaseFile, int $packageMinMTime)
     {
         $this->packageMinMTime = $packageMinMTime;
-        $this->mtime = $packageDatabaseFile->getMTime();
 
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
-        if ($this->mtime > $repoMinMTime) {
-            system('bsdtar -xf ' . $packageDatabaseFile->getRealPath() . ' -C ' . $this->dbDir, $return);
-            if ($return !== 0) {
-                throw new \RuntimeException('Could not extract Database');
-            }
+        system('bsdtar -xf ' . $packageDatabaseFile->getRealPath() . ' -C ' . $this->dbDir, $return);
+        if ($return !== 0) {
+            throw new \RuntimeException('Could not extract Database');
         }
     }
 
@@ -100,14 +94,6 @@ class PackageDatabase implements \Iterator
     public function valid(): bool
     {
         return $this->currentDir !== false;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMTime(): int
-    {
-        return $this->mtime;
     }
 
     /**

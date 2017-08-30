@@ -157,8 +157,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     $packageDatabaseFile = $this->packageDatabaseDownloader
                         ->download($this->getContainer()->getParameter('app.packages.mirror'), $repo, $arch);
 
-                    $packages = new PackageDatabase($packageDatabaseFile, $repoMTime, $packageMTime);
-                    if ($packages->getMTime() > $repoMTime) {
+                    if ($packageDatabaseFile->getMTime() > $repoMTime) {
+                        $packages = new PackageDatabase($packageDatabaseFile, $packageMTime);
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, $packages->getNewPackageCount());
                             $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
@@ -179,7 +179,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                         $this->printDebug("\tCleaning up obsolete packages...", $output);
                         $this->cleanupObsoletePackages($repoId, $packageMTime, $packages->getOldPackageNames());
 
-                        $this->updateRepoMTime->bindValue('mtime', $packages->getMTime(), \PDO::PARAM_INT);
+                        $this->updateRepoMTime->bindValue('mtime', $packageDatabaseFile->getMTime(), \PDO::PARAM_INT);
                         $this->updateRepoMTime->bindParam('repoId', $repoId, \PDO::PARAM_INT);
                         $this->updateRepoMTime->execute();
                     }
