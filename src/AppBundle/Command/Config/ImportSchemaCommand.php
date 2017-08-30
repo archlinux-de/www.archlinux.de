@@ -30,7 +30,7 @@ class ImportSchemaCommand extends ContainerAwareCommand
     {
         $this->database->exec(
             file_get_contents(
-                $this->getContainer()->getParameter('kernel.project_dir') . '/app/config/archportal_schema.sql'
+                $this->getContainer()->getParameter('kernel.project_dir') . '/app/config/schema.sql'
             )
         );
     }

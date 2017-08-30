@@ -23,6 +23,6 @@ class UpdateSchemaCommand extends ContainerAwareCommand
             . ' '
             . '\'' . escapeshellcmd($this->getContainer()->getParameter('database_name')) . '\''
             . ' | sed  \'s/ AUTO_INCREMENT=[0-9]*//g\' > '
-            . $this->getContainer()->getParameter('kernel.project_dir') . '/app/config/archportal_schema.sql');
+            . $this->getContainer()->getParameter('kernel.project_dir') . '/app/config/schema.sql');
     }
 }

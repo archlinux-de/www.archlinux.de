@@ -1,12 +1,11 @@
 {
-    "name": "archportal",
+    "name": "www.archlinux.de",
     "license": "GPL-3.0",
     "type": "project",
-    "description": "A portal website for lcoal Arch Linux communities",
+    "description": "The German Arch Linux website",
     "autoload": {
         "psr-4": {
-            "AppBundle\\": "src/AppBundle",
-            "archportal\\": "src/archportal"
+            "AppBundle\\": "src/AppBundle"
         },
         "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
     },

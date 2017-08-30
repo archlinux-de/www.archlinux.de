@@ -4,7 +4,7 @@
 parameters:
     database_host: ~
     database_port: ~
-    database_name: archportal
+    database_name: www_archlinux_de
     database_user: root
     database_password: ~
     # You should uncomment this if you want to use pdo_sqlite
