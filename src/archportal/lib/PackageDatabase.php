@@ -5,25 +5,18 @@ namespace archportal\lib;
 class PackageDatabase implements \Iterator
 {
     /** @var int */
-    private $packageMinMTime = 0;
-    /** @var int */
     private $currentKey = 0;
     /** @var bool */
     private $currentDir = false;
     private $dbHandle = null;
     /** @var null|string */
     private $dbDir = null;
-    /** @var null|int */
-    private $packageCount = null;
 
     /**
      * @param \SplFileInfo $packageDatabaseFile
-     * @param int $packageMinMTime
      */
-    public function __construct(\SplFileInfo $packageDatabaseFile, int $packageMinMTime)
+    public function __construct(\SplFileInfo $packageDatabaseFile)
     {
-        $this->packageMinMTime = $packageMinMTime;
-
         $this->dbDir = $this->makeTempDir();
         $this->dbHandle = opendir($this->dbDir);
 
@@ -75,7 +68,6 @@ class PackageDatabase implements \Iterator
             $this->currentDir = readdir($this->dbHandle);
         } while ($this->currentDir == '.'
         || $this->currentDir == '..'
-        || filemtime($this->dbDir . '/' . $this->currentDir) <= $this->packageMinMTime
         );
         ++$this->currentKey;
     }
@@ -123,49 +115,17 @@ class PackageDatabase implements \Iterator
     /**
      * @return int
      */
-    public function getNewPackageCount(): int
+    public function getCount(): int
     {
-        if (is_null($this->packageCount)) {
-            $packages = 0;
-            if (is_dir($this->dbDir)) {
-                $dh = opendir($this->dbDir);
-                while (false !== ($dir = readdir($dh))) {
-                    if (is_dir($this->dbDir . '/' . $dir)
-                        && $dir != '.'
-                        && $dir != '..'
-                        && filemtime($this->dbDir . '/' . $dir) > $this->packageMinMTime
-                    ) {
-                        ++$packages;
-                    }
-                }
-                closedir($dh);
-            }
-            $this->packageCount = $packages;
-        }
-
-        return $this->packageCount;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOldPackageNames(): array
-    {
-        $packages = array();
+        $packages = 0;
         if (is_dir($this->dbDir)) {
             $dh = opendir($this->dbDir);
             while (false !== ($dir = readdir($dh))) {
                 if (is_dir($this->dbDir . '/' . $dir)
                     && $dir != '.'
                     && $dir != '..'
-                    && filemtime($this->dbDir . '/' . $dir) <= $this->packageMinMTime
                 ) {
-                    $matches = array();
-                    if (preg_match('/^([^\-].*)-[^\-]+?-[^\-]+?$/', $dir, $matches) == 1) {
-                        $packages[] = $matches[1];
-                    } else {
-                        throw new \RuntimeException('Could not read package ' . $dir);
-                    }
+                    ++$packages;
                 }
             }
             closedir($dh);

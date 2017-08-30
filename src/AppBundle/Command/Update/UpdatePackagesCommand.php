@@ -158,18 +158,23 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                         ->download($this->getContainer()->getParameter('app.packages.mirror'), $repo, $arch);
 
                     if ($packageDatabaseFile->getMTime() > $repoMTime) {
-                        $packages = new PackageDatabase($packageDatabaseFile, $packageMTime);
+                        $packages = new PackageDatabase($packageDatabaseFile);
                         if (!$output->isQuiet()) {
-                            $progress = new ProgressBar($output, $packages->getNewPackageCount());
+                            $progress = new ProgressBar($output, $packages->getCount());
                             $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
                             $progress->setFormat('minimal');
                             $progress->start();
                         }
+                        $oldPackageNames = [];
                         foreach ($packages as $package) {
                             if (isset($progress)) {
                                 $progress->advance();
                             }
-                            $this->updatePackage($repoId, $package);
+                            if ($package->getMTime() > $packageMTime) {
+                                $this->updatePackage($repoId, $package);
+                            } else {
+                                $oldPackageNames[] = $package->getName();
+                            }
                         }
                         if (isset($progress)) {
                             $progress->finish();
@@ -177,7 +182,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                         }
 
                         $this->printDebug("\tCleaning up obsolete packages...", $output);
-                        $this->cleanupObsoletePackages($repoId, $packageMTime, $packages->getOldPackageNames());
+                        $this->cleanupObsoletePackages($repoId, $packageMTime, $oldPackageNames);
 
                         $this->updateRepoMTime->bindValue('mtime', $packageDatabaseFile->getMTime(), \PDO::PARAM_INT);
                         $this->updateRepoMTime->bindParam('repoId', $repoId, \PDO::PARAM_INT);
