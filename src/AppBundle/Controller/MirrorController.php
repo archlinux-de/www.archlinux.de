@@ -2,8 +2,11 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Mirror;
 use AppBundle\Service\GeoIp;
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -15,15 +18,19 @@ class MirrorController extends Controller
     private $database;
     /** @var GeoIp */
     private $geoIp;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
     /**
      * @param Connection $connection
      * @param GeoIp $geoIp
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(Connection $connection, GeoIp $geoIp)
+    public function __construct(Connection $connection, GeoIp $geoIp, EntityManagerInterface $entityManager)
     {
         $this->database = $connection;
         $this->geoIp = $geoIp;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -138,48 +145,41 @@ class MirrorController extends Controller
      */
     private function getMirror(int $lastsync, string $clientIp): string
     {
-        $clientId = crc32($clientIp);
-
         $countryCode = $this->geoIp->getCountryCode($clientIp);
         if (empty($countryCode)) {
             $countryCode = $this->getParameter('app.mirrors.country');
         }
-        $stm = $this->database->prepare('
-            SELECT
-                url
-            FROM
-                mirrors
-            WHERE
-                lastsync > :lastsync
-                AND countryCode = :countryCode
-                AND protocol = "https"
-            ORDER BY RAND(:clientId) LIMIT 1
-            ');
-        $stm->bindParam('lastsync', $lastsync, \PDO::PARAM_INT);
-        $stm->bindParam('countryCode', $countryCode, \PDO::PARAM_STR);
-        $stm->bindParam('clientId', $clientId, \PDO::PARAM_INT);
-        $stm->execute();
-        if ($stm->rowCount() == 0) {
+        $mirrors = $this->entityManager->createQueryBuilder()
+            ->select('mirror.url')
+            ->from(Mirror::class, 'mirror')
+            ->where('mirror.lastSync > :lastsync')
+            ->andWhere('mirror.country = :country')
+            ->andWhere('mirror.protocol = :protocol')
+            ->setParameter('lastsync', $lastsync)
+            ->setParameter('country', $countryCode)
+            ->setParameter('protocol', 'https')
+            ->getQuery()
+            ->getResult(Query::HYDRATE_SCALAR);
+
+        if (empty($mirrors)) {
             // Let's see if any mirror is recent enough
-            $stm = $this->database->prepare('
-                SELECT
-                    url
-                FROM
-                    mirrors
-                WHERE
-                    lastsync > :lastsync
-                    AND protocol = "https"
-                ORDER BY RAND(:clientId) LIMIT 1
-                ');
-            $stm->bindParam('lastsync', $lastsync, \PDO::PARAM_INT);
-            $stm->bindParam('clientId', $clientId, \PDO::PARAM_INT);
-            $stm->execute();
-            if ($stm->rowCount() == 0) {
+            $mirrors = $this->entityManager->createQueryBuilder()
+                ->select('mirror.url')
+                ->from(Mirror::class, 'mirror')
+                ->where('mirror.lastSync > :lastsync')
+                ->andWhere('mirror.protocol = :protocol')
+                ->setParameter('lastsync', $lastsync)
+                ->setParameter('protocol', 'https')
+                ->getQuery()
+                ->getResult(Query::HYDRATE_SCALAR);
+
+            if (empty($mirrors)) {
                 // Fallback to the default mirror
-                return $this->getParameter('app.mirrors.default');
+                $mirrors = ['url' => $this->getParameter('app.mirrors.default')];
             }
         }
 
-        return $stm->fetchColumn();
+        srand(crc32($clientIp));
+        return $mirrors[array_rand($mirrors, 1)]['url'];
     }
 }

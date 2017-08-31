@@ -2,31 +2,37 @@
 
 namespace AppBundle\Command\Update;
 
-use Doctrine\DBAL\Driver\Connection;
+use AppBundle\Entity\Country;
+use AppBundle\Entity\Mirror;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateMirrorsCommand extends ContainerAwareCommand
+class UpdateMirrorsCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Connection */
-    private $database;
+    /** @var EntityManagerInterface */
+    private $entityManager;
     /** @var Client */
     private $guzzleClient;
+    /** @var string */
+    private $mirrorStatusUrl;
 
     /**
-     * @param Connection $connection
+     * @param EntityManagerInterface $entityManager
      * @param Client $guzzleClient
+     * @param string $mirrorStatusUrl
      */
-    public function __construct(Connection $connection, Client $guzzleClient)
+    public function __construct(EntityManagerInterface $entityManager, Client $guzzleClient, string $mirrorStatusUrl)
     {
         parent::__construct();
-        $this->database = $connection;
+        $this->entityManager = $entityManager;
         $this->guzzleClient = $guzzleClient;
+        $this->mirrorStatusUrl = $mirrorStatusUrl;
     }
 
     protected function configure()
@@ -47,58 +53,56 @@ class UpdateMirrorsCommand extends ContainerAwareCommand
             if (empty($mirrors)) {
                 throw new \RuntimeException('mirrorlist is empty');
             }
-            $this->database->beginTransaction();
+            $this->entityManager->beginTransaction();
             $this->updateMirrorlist($mirrors);
-            $this->database->commit();
+            $this->entityManager->commit();
         } catch (\RuntimeException $e) {
-            $this->database->rollBack();
+            $this->entityManager->rollBack();
             $output->writeln('Warning: UpdateMirrors failed: ' . $e->getMessage());
         }
     }
 
+    /**
+     * @param array $mirrors
+     */
     private function updateMirrorlist(array $mirrors)
     {
-        $this->database->query('DELETE FROM mirrors');
-        $stm = $this->database->prepare('
-            INSERT INTO
-                mirrors
-            SET
-                url = :url,
-                protocol = :protocol,
-                countryCode = :countryCode,
-                lastsync = :lastsync,
-                delay = :delay,
-                durationAvg = :durationAvg,
-                score = :score,
-                completionPct = :completionPct,
-                durationStddev = :durationStddev
-            ');
+        $this->removeAllMirrors();
+
         foreach ($mirrors as $mirror) {
-            $stm->bindParam('url', $mirror['url'], \PDO::PARAM_STR);
-            $stm->bindParam('protocol', $mirror['protocol'], \PDO::PARAM_STR);
-            $stm->bindParam('countryCode', $mirror['country_code'], \PDO::PARAM_STR);
-            if (is_null($mirror['last_sync'])) {
-                $lastSync = null;
-            } else {
-                $lastSyncDate = new \DateTime($mirror['last_sync']);
-                $lastSync = $lastSyncDate->getTimestamp();
+            $newMirror = new Mirror($mirror['url'], $mirror['protocol']);
+
+            if (!is_null($mirror['country_code'])) {
+                $country = $this->entityManager->find(Country::class, $mirror['country_code']);
+                $newMirror->setCountry($country);
             }
-            $stm->bindParam('lastsync', $lastSync, \PDO::PARAM_INT);
-            $stm->bindParam('delay', $mirror['delay'], \PDO::PARAM_INT);
-            $stm->bindParam('durationAvg', $mirror['duration_avg'], \PDO::PARAM_STR);
-            $stm->bindParam('score', $mirror['score'], \PDO::PARAM_STR);
-            $stm->bindParam('completionPct', $mirror['completion_pct'], \PDO::PARAM_STR);
-            $stm->bindParam('durationStddev', $mirror['duration_stddev'], \PDO::PARAM_STR);
-            $stm->execute();
+            if (!is_null($mirror['last_sync'])) {
+                $newMirror->setLastSync(new \DateTime($mirror['last_sync']));
+            }
+            $newMirror->setDelay($mirror['delay']);
+            $newMirror->setDurationAvg($mirror['duration_avg']);
+            $newMirror->setScore($mirror['score']);
+            $newMirror->setCompletionPct($mirror['completion_pct']);
+            $newMirror->setDurationStddev($mirror['duration_stddev']);
+
+            $this->entityManager->persist($newMirror);
         }
+
+        $this->entityManager->flush();
+    }
+
+    private function removeAllMirrors()
+    {
+        $mirrors = $this->entityManager->getRepository(Mirror::class)->findAll();
+        foreach ($mirrors as $mirror) {
+            $this->entityManager->remove($mirror);
+        }
+        $this->entityManager->flush();
     }
 
     private function getMirrorStatus(): array
     {
-        $response = $this->guzzleClient->request(
-            'GET',
-            $this->getContainer()->getParameter('app.mirrors.status')
-        );
+        $response = $this->guzzleClient->request('GET', $this->mirrorStatusUrl);
         $content = $response->getBody()->getContents();
         if (empty($content)) {
             throw new \RuntimeException('empty mirrorstatus', 1);

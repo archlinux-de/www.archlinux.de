@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Mirror;
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,9 +26,10 @@ class DownloadController extends Controller
     /**
      * @Route("/download", methods={"GET"})
      * @Cache(smaxage="600")
+     * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    public function indexAction(): Response
+    public function indexAction(EntityManagerInterface $entityManager): Response
     {
         $release = $this->database->query('
             SELECT
@@ -48,22 +51,18 @@ class DownloadController extends Controller
             LIMIT 1
             ')->fetch();
 
-        $stm = $this->database->prepare('
-            SELECT
-                url
-            FROM
-                mirrors
-            WHERE
-                protocol = "https"
-                AND countryCode = :country
-                AND lastsync > :lastsync
-            ORDER BY
-                score ASC
-            ');
-        $stm->bindValue('country', $this->getParameter('app.mirrors.country'), \PDO::PARAM_STR);
-        $stm->bindParam('lastsync', $release['creation_time'], \PDO::PARAM_INT);
-        $stm->execute();
-        $mirrors = $stm->fetchAll(\PDO::FETCH_COLUMN);
+        $mirrors = $entityManager->createQueryBuilder()
+            ->select('mirror.url')
+            ->from(Mirror::class, 'mirror')
+            ->where('mirror.protocol = :protocol')
+            ->andWhere('mirror.country = :country')
+            ->andWhere('mirror.lastSync > :lastsync')
+            ->orderBy('mirror.score')
+            ->setParameter('protocol', 'https')
+            ->setParameter('country', $this->getParameter('app.mirrors.country'))
+            ->setParameter('lastsync', $release['creation_time'])
+            ->getQuery()
+            ->getResult();
 
         return $this->render('download/index.html.twig', [
             'release' => $release,

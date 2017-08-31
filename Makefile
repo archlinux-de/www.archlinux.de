@@ -7,8 +7,9 @@ COMPOSER=composer --no-interaction
 all: init
 
 init: start
-	${DB-RUN} mysqladmin -uroot create www_archlinux_de
+	${APP-RUN} bin/console doctrine:database:create
 	${APP-RUN} bin/console app:config:import-schema
+	${APP-RUN} bin/console doctrine:schema:create
 	${APP-RUN} bin/console app:config:update-countries
 	${MAKE} update-data
 

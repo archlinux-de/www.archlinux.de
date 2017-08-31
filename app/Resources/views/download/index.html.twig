@@ -58,7 +58,7 @@
             <h3 class="mt-5">Mirrors</h3>
             <ul class="list-unstyled pl-4">
                 {% for mirror in mirrors %}
-                    <li><a href="{{ mirror }}{{ release.file_path }}">{{ mirror | parse_url('host') }}</a></li>
+                    <li><a href="{{ mirror.url }}{{ release.file_path }}">{{ mirror.url | parse_url('host') }}</a></li>
                 {% endfor %}
             </ul>
         </div>

@@ -45,3 +45,6 @@ services:
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
+
+    AppBundle\Command\Update\UpdateMirrorsCommand:
+        $mirrorStatusUrl: '%app.mirrors.status%'
