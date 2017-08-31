@@ -30,7 +30,7 @@ class GetOpenSearch extends Controller
 
     /**
      * @Route("/packages/opensearch", methods={"GET"})
-     * @Cache(smaxage="600")
+     * @Cache(smaxage="900")
      * @return Response
      */
     public function indexAction(): Response

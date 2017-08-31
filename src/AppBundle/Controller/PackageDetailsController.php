@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +28,7 @@ class PackageDetailsController extends Controller
 
     /**
      * @Route("/packages/{repo}/{arch}/{pkgname}", methods={"GET"})
+     * @Cache(smaxage="600")
      * @param string $repo
      * @param string $arch
      * @param string $pkgname
