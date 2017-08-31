@@ -3,6 +3,7 @@
 namespace AppBundle\Command\Config;
 
 use AppBundle\Entity\Country;
+use AppBundle\Entity\Mirror;
 use Doctrine\ORM\EntityManagerInterface;
 use League\ISO3166\ISO3166;
 use Symfony\Component\Console\Command\Command;
@@ -35,25 +36,20 @@ class UpdateCountriesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->removeAllCountries();
-
         foreach (new ISO3166() as $iso3166Country) {
-            $this->entityManager->persist(
-                new Country($iso3166Country['alpha2'], $iso3166Country['name'])
-            );
+            $country = $this->entityManager->find(Country::class, $iso3166Country['alpha2']);
+
+            if (is_null($country)) {
+                $country = new Country($iso3166Country['alpha2'], $iso3166Country['name']);
+            } else {
+                $country->setName($iso3166Country['name']);
+            }
+
+            $this->entityManager->persist($country);
         }
 
         $this->entityManager->flush();
 
         return 0;
-    }
-
-    private function removeAllCountries()
-    {
-        $countries = $this->entityManager->getRepository(Country::class)->findAll();
-        foreach ($countries as $country) {
-            $this->entityManager->remove($country);
-        }
-        $this->entityManager->flush();
     }
 }

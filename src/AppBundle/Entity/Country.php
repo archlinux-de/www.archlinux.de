@@ -36,6 +36,16 @@ class Country implements \JsonSerializable
     }
 
     /**
+     * @param string $name
+     * @return Country
+     */
+    public function setName(string $name): Country
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getCode(): string
