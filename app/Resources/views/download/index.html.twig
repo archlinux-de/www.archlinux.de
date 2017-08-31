@@ -15,8 +15,8 @@
                 <code>pacman -Syu</code> aktuell gehalten werden!</p>
             <ul class="list-unstyled pl-4">
                 <li><strong>Aktuelles Release:</strong> {{ release.version }}</li>
-                <li><strong>Enthaltener Kernel:</strong> {{ release.kernel_version }}</li>
-                <li><strong>ISO Größe:</strong> {{ release.file_length | format_bytes }}</li>
+                <li><strong>Enthaltener Kernel:</strong> {{ release.kernelVersion }}</li>
+                <li><strong>ISO Größe:</strong> {{ release.torrent.fileLength | format_bytes }}</li>
                 <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
             </ul>
 
@@ -26,8 +26,8 @@
             <h2>BitTorrent Download</h2>
             <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
             <ul class="list-unstyled pl-4">
-                <li><a href="{{ release.magnet_uri }}">Magnet link für {{ release.version }}</a></li>
-                <li><a href="https://www.archlinux.org/{{ release.file_path }}.torrent">
+                <li><a href="{{ release.torrent.magnetUri }}">Magnet link für {{ release.version }}</a></li>
+                <li><a href="https://www.archlinux.org{{ release.isoUrl | parse_url('path') }}.torrent">
                         Torrent für {{ release.version }}
                     </a></li>
             </ul>
@@ -39,26 +39,26 @@
 
             <h3>Prüfsummen</h3>
             <ul class="list-unstyled pl-4">
-                <li><a href="https://www.archlinux.org/{{ release.file_path }}.sig">PGP-Signatur</a></li>
-                {% if release.md5_sum %}
-                    <li class="break-word"><strong>MD5:</strong> {{ release.md5_sum }}</li>{% endif %}
-                {% if release.sha1_sum %}
-                    <li class="break-word"><strong>SHA1:</strong> {{ release.sha1_sum }}</li>{% endif %}
+                <li><a href="https://www.archlinux.org{{ release.isoUrl | parse_url('path') }}.sig">PGP-Signatur</a></li>
+                {% if release.md5Sum %}
+                    <li class="break-word"><strong>MD5:</strong> {{ release.md5Sum }}</li>{% endif %}
+                {% if release.sha1Sum %}
+                    <li class="break-word"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>{% endif %}
             </ul>
         </div>
         <div class="col-lg-6 pl-lg-5">
             <h3 class="mb-3">Download</h3>
             <div class="container pl-4">
                 <a class="btn btn-primary"
-                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.file_name }) }}">
-                    {{ release.file_name }}
+                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
+                    {{ release.torrent.fileName }}
                 </a>
             </div>
 
             <h3 class="mt-5">Mirrors</h3>
             <ul class="list-unstyled pl-4">
                 {% for mirror in mirrors %}
-                    <li><a href="{{ mirror.url }}{{ release.file_path }}">{{ mirror.url | parse_url('host') }}</a></li>
+                    <li><a href="{{ mirror.url }}{{ release.isoUrl | parse_url('path') | trim('/', 'left') }}">{{ mirror.url | parse_url('host') }}</a></li>
                 {% endfor %}
             </ul>
         </div>

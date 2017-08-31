@@ -3,7 +3,6 @@
 namespace AppBundle\Command\Config;
 
 use AppBundle\Entity\Country;
-use AppBundle\Entity\Mirror;
 use Doctrine\ORM\EntityManagerInterface;
 use League\ISO3166\ISO3166;
 use Symfony\Component\Console\Command\Command;
@@ -40,10 +39,9 @@ class UpdateCountriesCommand extends Command
             $country = $this->entityManager->find(Country::class, $iso3166Country['alpha2']);
 
             if (is_null($country)) {
-                $country = new Country($iso3166Country['alpha2'], $iso3166Country['name']);
-            } else {
-                $country->setName($iso3166Country['name']);
+                $country = new Country($iso3166Country['alpha2']);
             }
+            $country->setName($iso3166Country['name']);
 
             $this->entityManager->persist($country);
         }

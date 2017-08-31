@@ -27,20 +27,6 @@ CREATE TABLE `licenses` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `news_feed` (
-  `id` varchar(100) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `link` varchar(255) NOT NULL,
-  `summary` text NOT NULL,
-  `author_name` varchar(255) NOT NULL,
-  `author_uri` varchar(255) NOT NULL,
-  `updated` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `updated` (`updated`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `package_group` (
   `package` mediumint(8) unsigned NOT NULL,
   `group` smallint(5) unsigned NOT NULL,
@@ -142,33 +128,6 @@ CREATE TABLE `pkgstats_users` (
   KEY `mirror` (`mirror`(20)),
   KEY `ip` (`ip`(20),`time`),
   KEY `countryCode` (`countryCode`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `releng_releases` (
-  `version` varchar(20) NOT NULL,
-  `available` tinyint(1) unsigned NOT NULL,
-  `info` text NOT NULL,
-  `iso_url` varchar(255) NOT NULL,
-  `md5_sum` char(32) DEFAULT NULL,
-  `created` int(10) unsigned NOT NULL,
-  `kernel_version` varchar(20) DEFAULT NULL,
-  `release_date` date NOT NULL,
-  `torrent_url` varchar(255) DEFAULT NULL,
-  `sha1_sum` char(40) DEFAULT NULL,
-  `torrent_comment` text,
-  `torrent_info_hash` char(40) DEFAULT NULL,
-  `torrent_piece_length` int(10) unsigned DEFAULT NULL,
-  `torrent_file_name` varchar(255) DEFAULT NULL,
-  `torrent_announce` varchar(255) DEFAULT NULL,
-  `torrent_file_length` bigint(20) unsigned DEFAULT NULL,
-  `torrent_piece_count` smallint(5) unsigned DEFAULT NULL,
-  `torrent_created_by` varchar(255) DEFAULT NULL,
-  `torrent_creation_date` int(10) unsigned DEFAULT NULL,
-  `magnet_uri` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`version`),
-  KEY `available` (`available`,`release_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

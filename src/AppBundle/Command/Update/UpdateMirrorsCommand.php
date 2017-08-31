@@ -44,22 +44,15 @@ class UpdateMirrorsCommand extends Command
     {
         $this->lock('cron.lock', true);
 
-        try {
-            $status = $this->getMirrorStatus();
-            if ($status['version'] != 3) {
-                throw new \RuntimeException('incompatible mirrorstatus version');
-            }
-            $mirrors = $status['urls'];
-            if (empty($mirrors)) {
-                throw new \RuntimeException('mirrorlist is empty');
-            }
-            $this->entityManager->beginTransaction();
-            $this->updateMirrorlist($mirrors);
-            $this->entityManager->commit();
-        } catch (\RuntimeException $e) {
-            $this->entityManager->rollBack();
-            $output->writeln('Warning: UpdateMirrors failed: ' . $e->getMessage());
+        $status = $this->getMirrorStatus();
+        if ($status['version'] != 3) {
+            throw new \RuntimeException('incompatible mirrorstatus version');
         }
+        $mirrors = $status['urls'];
+        if (empty($mirrors)) {
+            throw new \RuntimeException('mirrorlist is empty');
+        }
+        $this->updateMirrorlist($mirrors);
     }
 
     /**

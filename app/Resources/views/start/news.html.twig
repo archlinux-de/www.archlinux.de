@@ -1,12 +1,12 @@
 <div class="container-fluid">
-    {% for entry in news_feed %}
+    {% for news in news_items %}
         <div class="mb-5">
             <div class="d-lg-flex justify-content-between align-items-baseline border border-top-0 border-left-0 border-right-0 mb-2">
-                <h2 class="p-0 break-word"><a href="{{ entry.link }}">{{ entry.title }}</a></h2>
-                <div class="p-0">{{ entry.updated | date('d.m.Y') }}</div>
+                <h2 class="p-0 break-word"><a href="{{ news.link }}">{{ news.title }}</a></h2>
+                <div class="p-0">{{ news.lastModified | date('d.m.Y') }}</div>
             </div>
             <div class="break-word">
-                {{ entry.summary | purify('news') }}
+                {{ news.description | purify('news') }}
             </div>
         </div>
     {% endfor %}

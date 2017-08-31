@@ -2,31 +2,37 @@
 
 namespace AppBundle\Command\Update;
 
-use Doctrine\DBAL\Driver\Connection;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use AppBundle\Entity\Release;
+use AppBundle\Entity\Torrent;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use GuzzleHttp\Client;
 
-class UpdateReleasesCommand extends ContainerAwareCommand
+class UpdateReleasesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Connection */
-    private $database;
+    /** @var EntityManagerInterface */
+    private $entityManager;
     /** @var Client */
     private $guzzleClient;
+    /** @var string */
+    private $releaseUrl;
 
     /**
-     * @param Connection $connection
+     * @param EntityManagerInterface $entityManager
      * @param Client $guzzleClient
+     * @param string $releaseUrl
      */
-    public function __construct(Connection $connection, Client $guzzleClient)
+    public function __construct(EntityManagerInterface $entityManager, Client $guzzleClient, string $releaseUrl)
     {
         parent::__construct();
-        $this->database = $connection;
+        $this->entityManager = $entityManager;
         $this->guzzleClient = $guzzleClient;
+        $this->releaseUrl = $releaseUrl;
     }
 
     protected function configure()
@@ -38,129 +44,57 @@ class UpdateReleasesCommand extends ContainerAwareCommand
     {
         $this->lock('cron.lock', true);
 
-        try {
-            $releng = $this->getRelengReleases();
-            if ($releng['version'] != 1) {
-                throw new \RuntimeException('incompatible releng/releases version');
-            }
-            $releases = $releng['releases'];
-            if (empty($releases)) {
-                throw new \RuntimeException('there are no releases');
-            }
-            $this->database->beginTransaction();
-            $this->updateRelengReleases($releases);
-            $this->database->commit();
-        } catch (\RuntimeException $e) {
-            $this->database->rollBack();
-            $output->writeln('Warning: UpdateReleases failed: ' . $e->getMessage());
+        $releng = $this->getRelengReleases();
+        if ($releng['version'] != 1) {
+            throw new \RuntimeException('incompatible releng/releases version');
         }
+        $releases = $releng['releases'];
+        if (empty($releases)) {
+            throw new \RuntimeException('there are no releases');
+        }
+
+        $this->updateRelengReleases($releases);
     }
 
     /**
-     * @param array $releases
+     * @param array $newReleases
      */
-    private function updateRelengReleases(array $releases)
+    private function updateRelengReleases(array $newReleases)
     {
-        $this->database->query('DELETE FROM releng_releases');
-        $stm = $this->database->prepare('
-                INSERT INTO
-                    releng_releases
-                SET
-                    version = :version,
-                    available = :available,
-                    info = :info,
-                    iso_url = :iso_url,
-                    md5_sum = :md5_sum,
-                    created = :created,
-                    kernel_version = :kernel_version,
-                    release_date = :release_date,
-                    torrent_url = :torrent_url,
-                    sha1_sum = :sha1_sum,
-                    torrent_comment = :torrent_comment,
-                    torrent_info_hash = :torrent_info_hash,
-                    torrent_piece_length = :torrent_piece_length,
-                    torrent_file_name = :torrent_file_name,
-                    torrent_announce = :torrent_announce,
-                    torrent_file_length = :torrent_file_length,
-                    torrent_piece_count = :torrent_piece_count,
-                    torrent_created_by = :torrent_created_by,
-                    torrent_creation_date = :torrent_creation_date,
-                    magnet_uri = :magnet_uri
-            ');
-        foreach ($releases as $release) {
-            $stm->bindParam('version', $release['version'], \PDO::PARAM_STR);
-            $stm->bindValue('available', $release['available'] ? 1 : 0, \PDO::PARAM_INT);
-            $stm->bindParam('info', $release['info'], \PDO::PARAM_STR);
-            $stm->bindParam('iso_url', $release['iso_url'], \PDO::PARAM_STR);
-            $stm->bindParam('md5_sum', $release['md5_sum'], \PDO::PARAM_STR);
-            $stm->bindValue('created', $this->getTimestamp($release['created']), \PDO::PARAM_INT);
-            $stm->bindParam('kernel_version', $release['kernel_version'], \PDO::PARAM_STR);
-            $stm->bindParam('release_date', $release['release_date'], \PDO::PARAM_STR);
-            $stm->bindParam('torrent_url', $release['torrent_url'], \PDO::PARAM_STR);
-            $stm->bindParam('sha1_sum', $release['sha1_sum'], \PDO::PARAM_STR);
-            $stm->bindValue(
-                'torrent_comment',
-                isset($release['torrent']['comment']) ? $release['torrent']['comment'] : null,
-                \PDO::PARAM_STR
-            );
-            $stm->bindValue(
-                'torrent_info_hash',
-                isset($release['torrent']['info_hash']) ? $release['torrent']['info_hash'] : null,
-                \PDO::PARAM_STR
-            );
-            $stm->bindValue(
-                'torrent_piece_length',
-                isset($release['torrent']['piece_length']) ? $release['torrent']['piece_length'] : null,
-                \PDO::PARAM_INT
-            );
-            $stm->bindValue(
-                'torrent_file_name',
-                isset($release['torrent']['file_name']) ? $release['torrent']['file_name'] : null,
-                \PDO::PARAM_STR
-            );
-            $stm->bindValue(
-                'torrent_announce',
-                isset($release['torrent']['announce']) ? $release['torrent']['announce'] : null,
-                \PDO::PARAM_STR
-            );
-            $stm->bindValue(
-                'torrent_file_length',
-                isset($release['torrent']['file_length']) ? $release['torrent']['file_length'] : null,
-                \PDO::PARAM_INT
-            );
-            $stm->bindValue(
-                'torrent_piece_count',
-                isset($release['torrent']['piece_count']) ? $release['torrent']['piece_count'] : null,
-                \PDO::PARAM_INT
-            );
-            $stm->bindValue(
-                'torrent_created_by',
-                isset($release['torrent']['created_by']) ? $release['torrent']['created_by'] : null,
-                \PDO::PARAM_STR
-            );
-            $stm->bindValue(
-                'torrent_creation_date',
-                isset($release['torrent']['creation_date'])
-                    ? $this->getTimestamp($release['torrent']['creation_date']) : null,
-                \PDO::PARAM_INT
-            );
-            $stm->bindParam('magnet_uri', $release['magnet_uri'], \PDO::PARAM_STR);
-            $stm->execute();
-        }
-    }
+        foreach ($newReleases as $newRelease) {
+            $release = $this->entityManager->find(Release::class, $newRelease['version']);
 
-    /**
-     * @param string|null $data
-     *
-     * @return int|null
-     */
-    private function getTimestamp($data)
-    {
-        if (is_null($data)) {
-            return null;
-        } else {
-            return (new \DateTime($data))->getTimestamp();
+            if (is_null($release)) {
+                $release = new Release($newRelease['version']);
+            }
+            $release
+                ->setAvailable($newRelease['available'])
+                ->setInfo($newRelease['info'])
+                ->setIsoUrl($newRelease['iso_url'])
+                ->setMd5Sum($newRelease['md5_sum'])
+                ->setCreated(new \DateTime($newRelease['created']))
+                ->setKernelVersion($newRelease['kernel_version'])
+                ->setReleaseDate(new \DateTime($newRelease['release_date']))
+                ->setSha1Sum($newRelease['sha1_sum'])
+                ->setTorrent(
+                    (new Torrent())
+                        ->setUrl($newRelease['torrent_url'])
+                        ->setComment($newRelease['torrent']['comment'])
+                        ->setInfoHash($newRelease['torrent']['info_hash'])
+                        ->setPieceLength($newRelease['torrent']['piece_length'])
+                        ->setFileName($newRelease['torrent']['file_name'])
+                        ->setAnnounce($newRelease['torrent']['announce'])
+                        ->setFileLength($newRelease['torrent']['file_length'])
+                        ->setPieceCount($newRelease['torrent']['piece_count'])
+                        ->setCreatedBy($newRelease['torrent']['created_by'])
+                        ->setCreationDate(new \DateTime($newRelease['torrent']['creation_date']))
+                        ->setMagnetUri($newRelease['magnet_uri'])
+                );
+
+            $this->entityManager->persist($release);
         }
+
+        $this->entityManager->flush();
     }
 
     /**
@@ -168,10 +102,7 @@ class UpdateReleasesCommand extends ContainerAwareCommand
      */
     private function getRelengReleases(): array
     {
-        $response = $this->guzzleClient->request(
-            'GET',
-            $this->getContainer()->getParameter('app.releng.releases')
-        );
+        $response = $this->guzzleClient->request('GET', $this->releaseUrl);
         $content = $response->getBody()->getContents();
         if (empty($content)) {
             throw new \RuntimeException('empty releng releases', 1);

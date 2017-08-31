@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Mirror;
+use AppBundle\Entity\Release;
 use AppBundle\Service\GeoIp;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,23 +50,23 @@ class MirrorController extends Controller
      */
     public function isoAction(string $version, string $file, Request $request): Response
     {
-        $releasedate = $this->database->prepare('
-                SELECT
-                    created
-                FROM
-                    releng_releases
-                WHERE
-                    version = :version
-                    AND available = 1
-                ');
-        $releasedate->bindParam('version', $version, \PDO::PARAM_STR);
-        $releasedate->execute();
-        if ($releasedate->rowCount() == 0) {
+        /** @var Release $release */
+        $release = $this
+            ->entityManager
+            ->createQueryBuilder()
+            ->select('release')
+            ->from(Release::class, 'release')
+            ->where('release.available = true')
+            ->andWhere('release.version = :version')
+            ->setParameter('version', $version)
+            ->getQuery()
+            ->getSingleResult();
+
+        if (is_null($release)) {
             throw $this->createNotFoundException('ISO image was not found');
         }
-        $lastsync = $releasedate->fetchColumn();
 
-        return $this->redirectToMirror('iso/' . $version . '/' . $file, $lastsync, $request);
+        return $this->redirectToMirror('iso/' . $version . '/' . $file, $release->getCreated(), $request);
     }
 
     /**
@@ -107,7 +108,11 @@ class MirrorController extends Controller
                 throw $this->createNotFoundException('Package was not found');
             }
             $lastsync = $pkgdate->fetchColumn();
-            return $this->redirectToMirror($repository . '/os/' . $architecture . '/' . $file, $lastsync, $request);
+            return $this->redirectToMirror(
+                $repository . '/os/' . $architecture . '/' . $file,
+                (new \DateTime)->setTimestamp($lastsync),
+                $request
+            );
         }
         throw $this->createNotFoundException('Package was not found');
     }
@@ -120,17 +125,16 @@ class MirrorController extends Controller
      */
     public function fallbackAction(string $file, Request $request): Response
     {
-        $lastsync = time() - (60 * 60 * 24);
-        return $this->redirectToMirror($file, $lastsync, $request);
+        return $this->redirectToMirror($file, new \DateTime('yesterday'), $request);
     }
 
     /**
      * @param string $file
-     * @param int $lastsync
+     * @param \DateTime|int $lastsync
      * @param Request $request
      * @return Response
      */
-    private function redirectToMirror(string $file, int $lastsync, Request $request): Response
+    private function redirectToMirror(string $file, \DateTime $lastsync, Request $request): Response
     {
         return $this->redirect(
             $this->getMirror($lastsync, $request->getClientIp()) . $file
@@ -138,12 +142,12 @@ class MirrorController extends Controller
     }
 
     /**
-     * @param int $lastsync
+     * @param \DateTime|int $lastsync
      *
      * @param string $clientIp
      * @return string
      */
-    private function getMirror(int $lastsync, string $clientIp): string
+    private function getMirror(\DateTime $lastsync, string $clientIp): string
     {
         $countryCode = $this->geoIp->getCountryCode($clientIp);
         if (empty($countryCode)) {

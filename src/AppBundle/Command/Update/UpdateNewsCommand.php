@@ -2,29 +2,35 @@
 
 namespace AppBundle\Command\Update;
 
-use Doctrine\DBAL\Driver\Connection;
+use AppBundle\Entity\NewsAuthor;
+use AppBundle\Entity\NewsItem;
+use Doctrine\ORM\EntityManagerInterface;
 use FeedIo\Factory;
 use FeedIo\Feed\ItemInterface;
 use FeedIo\FeedInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateNewsCommand extends ContainerAwareCommand
+class UpdateNewsCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Connection */
-    private $database;
+    /** @var EntityManagerInterface */
+    private $entityManager;
+    /** @var string */
+    private $newsFeedUrl;
 
     /**
-     * @param Connection $connection
+     * @param EntityManagerInterface $entityManager
+     * @param string $newsFeedUrl
      */
-    public function __construct(Connection $connection)
+    public function __construct(EntityManagerInterface $entityManager, string $newsFeedUrl)
     {
         parent::__construct();
-        $this->database = $connection;
+        $this->entityManager = $entityManager;
+        $this->newsFeedUrl = $newsFeedUrl;
     }
 
     protected function configure()
@@ -35,47 +41,31 @@ class UpdateNewsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-
-        try {
-            $this->database->beginTransaction();
-            $this->updateNewsEntries($this->getNewsFeed());
-            $this->database->commit();
-        } catch (\RuntimeException $e) {
-            $this->database->rollBack();
-            $output->writeln('Warning: UpdateNews failed: ' . $e->getMessage());
-        }
+        $this->updateNewsEntries($this->getNewsFeed());
     }
 
     private function updateNewsEntries(FeedInterface $newsFeed)
     {
-        $stm = $this->database->prepare('
-                INSERT INTO
-                    news_feed
-                SET
-                    id = :id,
-                    title = :title,
-                    link = :link,
-                    summary = :summary,
-                    author_name = :author_name,
-                    author_uri = :author_uri,
-                    updated = :updated
-                ON DUPLICATE KEY UPDATE
-                    title = VALUES(title),
-                    summary = VALUES(summary),
-                    author_name = VALUES(author_name),
-                    updated = VALUES(updated)
-            ');
         /** @var ItemInterface $newsEntry */
         foreach ($newsFeed as $newsEntry) {
-            $stm->bindValue('id', $newsEntry->getPublicId(), \PDO::PARAM_STR);
-            $stm->bindValue('title', $newsEntry->getTitle(), \PDO::PARAM_STR);
-            $stm->bindValue('link', $newsEntry->getLink(), \PDO::PARAM_STR);
-            $stm->bindValue('summary', $newsEntry->getDescription(), \PDO::PARAM_STR);
-            $stm->bindValue('author_name', $newsEntry->getAuthor()->getName(), \PDO::PARAM_STR);
-            $stm->bindValue('author_uri', $newsEntry->getAuthor()->getUri(), \PDO::PARAM_STR);
-            $stm->bindValue('updated', $newsEntry->getLastModified()->getTimestamp(), \PDO::PARAM_INT);
-            $stm->execute();
+            $newsItem = $this->entityManager->find(NewsItem::class, $newsEntry->getPublicId());
+            if (is_null($newsItem)) {
+                $newsItem = new NewsItem($newsEntry->getPublicId());
+            }
+            $newsItem
+                ->setTitle($newsEntry->getTitle())
+                ->setLink($newsEntry->getLink())
+                ->setDescription($newsEntry->getDescription())
+                ->setAuthor(
+                    (new NewsAuthor())
+                        ->setUri($newsEntry->getAuthor()->getUri())
+                        ->setName($newsEntry->getAuthor()->getName())
+                )
+                ->setLastModified($newsEntry->getLastModified());
+            $this->entityManager->persist($newsItem);
         }
+
+        $this->entityManager->flush();
     }
 
     /**
@@ -83,9 +73,6 @@ class UpdateNewsCommand extends ContainerAwareCommand
      */
     private function getNewsFeed(): FeedInterface
     {
-        return Factory::create()
-            ->getFeedIo()
-            ->read($this->getContainer()->getParameter('app.news.feed'))
-            ->getFeed();
+        return Factory::create()->getFeedIo()->read($this->newsFeedUrl)->getFeed();
     }
 }

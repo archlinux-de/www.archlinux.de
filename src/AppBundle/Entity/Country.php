@@ -14,7 +14,7 @@ class Country implements \JsonSerializable
      * @var string
      *
      * @ORM\Id
-     * @ORM\Column()
+     * @ORM\Column(length=2)
      */
     private $code;
 
@@ -27,12 +27,10 @@ class Country implements \JsonSerializable
 
     /**
      * @param string $code
-     * @param string $name
      */
-    public function __construct(string $code, string $name)
+    public function __construct(string $code)
     {
         $this->code = $code;
-        $this->name = $name;
     }
 
     /**

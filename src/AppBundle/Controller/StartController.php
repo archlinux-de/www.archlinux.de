@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\NewsItem;
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -10,17 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class StartController extends Controller
 {
-    /** @var Connection */
-    private $database;
-
-    /**
-     * @param Connection $connection
-     */
-    public function __construct(Connection $connection)
-    {
-        $this->database = $connection;
-    }
-
     /**
      * @Route("/", methods={"GET"})
      * @Cache(smaxage="600")
@@ -32,37 +23,36 @@ class StartController extends Controller
     }
 
     /**
+     * @param EntityManagerInterface $entityManager
      * @return Response
      * @Cache(smaxage="600")
      */
-    public function newsAction(): Response
+    public function newsAction(EntityManagerInterface $entityManager): Response
     {
-        $newsFeed = $this->database->query('
-            SELECT
-                link,
-                title,
-                updated,
-                summary
-            FROM
-                news_feed
-            ORDER BY
-                updated DESC
-            LIMIT 6
-            ');
+        /** @var NewsItem[] $newsItems */
+        $newsItems = $entityManager
+            ->createQueryBuilder()
+            ->select('news')
+            ->from('AppBundle:NewsItem', 'news')
+            ->orderBy('news.lastModified', 'DESC')
+            ->setMaxResults(6)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('start/news.html.twig', [
-            'news_feed' => $newsFeed,
+            'news_items' => $newsItems,
             'news_archive_url' => $this->getParameter('app.news.archive')
         ]);
     }
 
     /**
+     * @param Connection $connection
      * @return Response
      * @Cache(smaxage="600")
      */
-    public function recentPackagesAction(): Response
+    public function recentPackagesAction(Connection $connection): Response
     {
-        $packages = $this->database->prepare('
+        $packages = $connection->prepare('
         SELECT
             packages.name,
             packages.version,

@@ -48,3 +48,9 @@ services:
 
     AppBundle\Command\Update\UpdateMirrorsCommand:
         $mirrorStatusUrl: '%app.mirrors.status%'
+
+    AppBundle\Command\Update\UpdateNewsCommand:
+        $newsFeedUrl: '%app.news.feed%'
+
+    AppBundle\Command\Update\UpdateReleasesCommand:
+        $releaseUrl: '%app.releng.releases%'

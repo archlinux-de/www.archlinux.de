@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\NewsItem;
+use Doctrine\ORM\EntityManagerInterface;
 use FeedIo\Factory;
 use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -13,16 +15,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RecentNewsController extends Controller
 {
-    /** @var Packages */
-    private $assetPackages;
-
-    /**
-     * @param Packages $assetPackages
-     */
-    public function __construct(Packages $assetPackages)
-    {
-        $this->assetPackages = $assetPackages;
-    }
 
     /**
      * @Route(
@@ -33,25 +25,24 @@ class RecentNewsController extends Controller
      * )
      * @Cache(smaxage="600")
      * @param string $_format
+     * @param EntityManagerInterface $entityManager
+     * @param Packages $assetPackages
      * @return Response
      */
-    public function indexAction(string $_format): Response
-    {
-        $news = $this->getDoctrine()->getConnection()->query('
-            SELECT
-                id,
-                link,
-                title,
-                updated,
-                summary,
-                author_name,
-                author_uri
-            FROM
-                news_feed
-            ORDER BY
-                updated DESC
-            LIMIT 25
-            ');
+    public function indexAction(
+        string $_format,
+        EntityManagerInterface $entityManager,
+        Packages $assetPackages
+    ): Response {
+        /** @var NewsItem[] $news */
+        $news = $entityManager
+            ->createQueryBuilder()
+            ->select('news')
+            ->from(NewsItem::class, 'news')
+            ->orderBy('news.lastModified', 'DESC')
+            ->setMaxResults(25)
+            ->getQuery()
+            ->getResult();
 
         $feed = new Feed();
         $feedUrl = $this->generateUrl('app_recentnews_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -61,24 +52,24 @@ class RecentNewsController extends Controller
         $feed->setLink($this->generateUrl('app_start_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
 
         $icon = $feed->newElement();
-        $icon->setName('icon')->setValue($this->assetPackages->getUrl('build/images/archicon.svg'));
+        $icon->setName('icon')->setValue($assetPackages->getUrl('build/images/archicon.svg'));
         $feed->addElement($icon);
 
         $logo = $feed->newElement();
-        $logo->setName('logo')->setValue($this->assetPackages->getUrl('build/images/archicon.svg'));
+        $logo->setName('logo')->setValue($assetPackages->getUrl('build/images/archicon.svg'));
         $feed->addElement($logo);
 
         foreach ($news as $newsItem) {
             $item = $feed->newItem();
-            $item->setPublicId($newsItem['id']);
-            $item->setTitle($newsItem['title']);
-            $item->setLastModified((new \DateTime())->setTimestamp($newsItem['updated']));
+            $item->setPublicId($newsItem->getId());
+            $item->setTitle($newsItem->getTitle());
+            $item->setLastModified($newsItem->getLastModified());
             $author = $item->newAuthor();
-            $author->setName($newsItem['author_name']);
-            $author->setUri($newsItem['author_uri']);
+            $author->setName($newsItem->getAuthor()->getName());
+            $author->setUri($newsItem->getAuthor()->getUri());
             $item->setAuthor($author);
-            $item->setLink($newsItem['link']);
-            $item->setDescription($newsItem['summary']);
+            $item->setLink($newsItem->getLink());
+            $item->setDescription($newsItem->getDescription());
 
             $feed->add($item);
         }

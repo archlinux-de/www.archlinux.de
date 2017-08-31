@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Mirror;
-use Doctrine\DBAL\Driver\Connection;
+use AppBundle\Entity\Release;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -12,17 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class DownloadController extends Controller
 {
-    /** @var Connection */
-    private $database;
-
-    /**
-     * @param Connection $connection
-     */
-    public function __construct(Connection $connection)
-    {
-        $this->database = $connection;
-    }
-
     /**
      * @Route("/download", methods={"GET"})
      * @Cache(smaxage="600")
@@ -31,25 +20,16 @@ class DownloadController extends Controller
      */
     public function indexAction(EntityManagerInterface $entityManager): Response
     {
-        $release = $this->database->query('
-            SELECT
-                version,
-                kernel_version,
-                SUBSTRING(iso_url, 2) AS file_path,
-                md5_sum,
-                sha1_sum,
-                torrent_file_name AS file_name,
-                torrent_file_length AS file_length,
-                magnet_uri,
-                created AS creation_time
-            FROM
-                releng_releases
-            WHERE
-                available = 1
-            ORDER BY
-                release_date DESC
-            LIMIT 1
-            ')->fetch();
+        /** @var Release $release */
+        $release = $entityManager
+            ->createQueryBuilder()
+            ->select('release')
+            ->from(Release::class, 'release')
+            ->where('release.available = true')
+            ->orderBy('release.releaseDate', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleResult();
 
         $mirrors = $entityManager->createQueryBuilder()
             ->select('mirror.url')
@@ -60,7 +40,7 @@ class DownloadController extends Controller
             ->orderBy('mirror.score')
             ->setParameter('protocol', 'https')
             ->setParameter('country', $this->getParameter('app.mirrors.country'))
-            ->setParameter('lastsync', $release['creation_time'])
+            ->setParameter('lastsync', $release->getCreated())
             ->getQuery()
             ->getResult();
 
