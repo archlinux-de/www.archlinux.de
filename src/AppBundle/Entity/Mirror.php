@@ -86,13 +86,21 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param Country $country
-     * @return Mirror
+     * @return array
      */
-    public function setCountry(?Country $country): Mirror
+    public function jsonSerialize(): array
     {
-        $this->country = $country;
-        return $this;
+        return [
+            'url' => $this->getUrl(),
+            'protocol' => $this->getProtocol(),
+            'country' => $this->getCountry(),
+            'durationAvg' => $this->getDurationAvg(),
+            'delay' => $this->getDelay(),
+            'durationStddev' => $this->getDurationStddev(),
+            'completionPct' => $this->getCompletionPct(),
+            'score' => $this->getScore(),
+            'lastsync' => $this->getLastSync() ? $this->getLastSync()->format(\DateTime::RFC2822) : null
+        ];
     }
 
     /**
@@ -120,20 +128,30 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return \DateTime
+     * @param Country $country
+     * @return Mirror
      */
-    public function getLastSync(): ?\DateTime
+    public function setCountry(?Country $country): Mirror
     {
-        return $this->lastSync;
+        $this->country = $country;
+        return $this;
     }
 
     /**
-     * @param \DateTime $lastSync
+     * @return float
+     */
+    public function getDurationAvg(): ?float
+    {
+        return $this->durationAvg;
+    }
+
+    /**
+     * @param float $durationAvg
      * @return Mirror
      */
-    public function setLastSync(?\DateTime $lastSync): Mirror
+    public function setDurationAvg(?float $durationAvg): Mirror
     {
-        $this->lastSync = $lastSync;
+        $this->durationAvg = $durationAvg;
         return $this;
     }
 
@@ -158,36 +176,18 @@ class Mirror implements \JsonSerializable
     /**
      * @return float
      */
-    public function getDurationAvg(): ?float
+    public function getDurationStddev(): ?float
     {
-        return $this->durationAvg;
+        return $this->durationStddev;
     }
 
     /**
-     * @param float $durationAvg
+     * @param float $durationStddev
      * @return Mirror
      */
-    public function setDurationAvg(?float $durationAvg): Mirror
+    public function setDurationStddev(?float $durationStddev): Mirror
     {
-        $this->durationAvg = $durationAvg;
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getScore(): ?float
-    {
-        return $this->score;
-    }
-
-    /**
-     * @param float $score
-     * @return Mirror
-     */
-    public function setScore(?float $score): Mirror
-    {
-        $this->score = $score;
+        $this->durationStddev = $durationStddev;
         return $this;
     }
 
@@ -212,36 +212,36 @@ class Mirror implements \JsonSerializable
     /**
      * @return float
      */
-    public function getDurationStddev(): ?float
+    public function getScore(): ?float
     {
-        return $this->durationStddev;
+        return $this->score;
     }
 
     /**
-     * @param float $durationStddev
+     * @param float $score
      * @return Mirror
      */
-    public function setDurationStddev(?float $durationStddev): Mirror
+    public function setScore(?float $score): Mirror
     {
-        $this->durationStddev = $durationStddev;
+        $this->score = $score;
         return $this;
     }
 
     /**
-     * @return array
+     * @return \DateTime
      */
-    public function jsonSerialize(): array
+    public function getLastSync(): ?\DateTime
     {
-        return [
-            'url' => $this->getUrl(),
-            'protocol' => $this->getProtocol(),
-            'country' => $this->getCountry(),
-            'durationAvg' => $this->getDurationAvg(),
-            'delay' => $this->getDelay(),
-            'durationStddev' => $this->getDurationStddev(),
-            'completionPct' => $this->getCompletionPct(),
-            'score' => $this->getScore(),
-            'lastsync' => $this->getLastSync() ? $this->getLastSync()->format(\DateTime::RFC2822) : null
-        ];
+        return $this->lastSync;
+    }
+
+    /**
+     * @param \DateTime $lastSync
+     * @return Mirror
+     */
+    public function setLastSync(?\DateTime $lastSync): Mirror
+    {
+        $this->lastSync = $lastSync;
+        return $this;
     }
 }

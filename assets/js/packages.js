@@ -4,7 +4,9 @@ import 'datatables.net-bs4'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
 $(document).ready(function () {
-  $('#packages').DataTable({
+  const dataTable = $('#packages')
+  const packageUrlTemplate = dataTable.data('packageUrlTemplate')
+  dataTable.DataTable({
     'language': language,
     'lengthMenu': [25, 50, 100],
     'pageLength': 25,
@@ -14,7 +16,7 @@ $(document).ready(function () {
     'searchDelay': 100,
     'columns': [
       {
-        'data': 'repository',
+        'data': 'repository.name',
         'orderable': true,
         'searchable': true,
         'className': 'd-none d-lg-table-cell'
@@ -31,7 +33,11 @@ $(document).ready(function () {
         'searchable': true,
         'render': function (data, type, row) {
           if (type === 'display') {
-            return `<a href="${row.url}">${data}</a>`
+            const packageUrl = packageUrlTemplate
+              .replace('_repository_', row.repository.name)
+              .replace('_architecture_', row.repository.architecture)
+              .replace('_package_', data)
+            return `<a href="${packageUrl}">${data}</a>`
           }
           return data
         },
@@ -54,19 +60,13 @@ $(document).ready(function () {
         'searchable': false,
         'render': function (data, type) {
           if (type === 'display') {
-            const date = new Date(data * 1000)
+            const date = new Date(data)
             return `${date.toLocaleDateString('de-DE')}
                 <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
           }
           return data
         },
         'className': 'd-none d-lg-table-cell'
-      },
-      {
-        'data': 'packager',
-        'orderable': false,
-        'searchable': true,
-        'visible': false
       }
     ]
   })

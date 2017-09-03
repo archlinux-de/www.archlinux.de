@@ -2,7 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use Doctrine\DBAL\Query\QueryBuilder;
+use AppBundle\Entity\Packages\Package;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Psr\Cache\CacheItemPoolInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -14,17 +15,6 @@ use AppBundle\Response\Datatables\Response as DatatablesResponse;
 
 class PackagesController extends Controller
 {
-    /** @var CacheItemPoolInterface */
-    private $cache;
-
-    /**
-     * @param CacheItemPoolInterface $cache
-     */
-    public function __construct(CacheItemPoolInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
     /**
      * @Route("/packages", methods={"GET"})
      * @Cache(smaxage="600")
@@ -36,19 +26,20 @@ class PackagesController extends Controller
         return $this->render('packages/index.html.twig', [
             'architecture' => $request->get('architecture', $this->getParameter('app.packages.default_architecture')),
             'repository' => $request->get('repository'),
-            'search' => $request->get('search'),
-            'packager' => $request->get('packager')
+            'search' => $request->get('search')
         ]);
     }
 
     /**
      * @Route("/packages/datatables", methods={"GET"})
      * @param DatatablesRequest $request
+     * @param CacheItemPoolInterface $cache
      * @return Response
+     * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function datatablesAction(DatatablesRequest $request): Response
+    public function datatablesAction(DatatablesRequest $request, CacheItemPoolInterface $cache): Response
     {
-        $cachedResponse = $this->cache->getItem($request->getId());
+        $cachedResponse = $cache->getItem($request->getId());
         if ($cachedResponse->isHit()) {
             /** @var DatatablesResponse $response */
             $response = $cachedResponse->get();
@@ -58,20 +49,25 @@ class PackagesController extends Controller
             $cachedResponse->set($response);
             // Only store the first draw (initial state of the page)
             if ($request->getDraw() == 1) {
-                $this->cache->save($cachedResponse);
+                $cache->save($cachedResponse);
             }
         }
 
-        $cachedPackageCount = $this->cache->getItem('packages.count');
+        $cachedPackageCount = $cache->getItem('packages.count');
         if ($cachedPackageCount->isHit()) {
             /** @var int $packageCount */
             $packageCount = $cachedPackageCount->get();
         } else {
-            $packageCount = $this->getDoctrine()->getConnection()->createQueryBuilder()
-                ->select('COUNT(*)')->from('packages')->execute()->fetchColumn();
+            $packageCount = $this->getDoctrine()->getManager()
+                ->createQueryBuilder()
+                ->select('COUNT(package)')
+                ->from(Package::class, 'package')
+                ->getQuery()
+                ->getSingleScalarResult();
+
             $cachedPackageCount->expiresAt(new \DateTime('24 hour'));
             $cachedPackageCount->set($packageCount);
-            $this->cache->save($cachedPackageCount);
+            $cache->save($cachedPackageCount);
         }
 
         $response->setRecordsTotal($packageCount);
@@ -93,55 +89,41 @@ class PackagesController extends Controller
     private function queryDatabase(DatatablesRequest $request): DatatablesResponse
     {
         $compareableColumns = [
-            'repository' => 'repositories.name',
-            'architecture' => 'architectures.name'
+            'repository.name' => 'repository.name',
+            'architecture' => 'repository.architecture'
         ];
         $searchableColumns = array_merge(
             $compareableColumns,
             [
-                'name' => 'packages.name',
-                'description' => 'packages.desc',
-                'packager' => 'packages.packager'
+                'name' => 'package.name',
+                'description' => 'package.description'
             ]
         );
         $orderableColumns = array_merge(
             $compareableColumns,
             [
-                'builddate' => 'packages.builddate',
-                'name' => 'packages.name'
+                'builddate' => 'package.buildDate',
+                'name' => 'package.name'
             ]
         );
 
-        $connection = $this->getDoctrine()->getConnection();
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder
-            ->select([
-                'SQL_CALC_FOUND_ROWS repositories.name AS repository',
-                'architectures.name AS architecture',
-                'packages.name AS name',
-                'packages.version',
-                'packages.desc AS description',
-                'packages.builddate',
-                'packages.packager'
-            ])
-            ->from('packages')
-            ->from('repositories')
-            ->from('architectures')
-            ->where('packages.repository = repositories.id')
-            ->andWhere('architectures.id = repositories.arch')
+        $queryBuilder = $this->getDoctrine()->getManager()
+            ->createQueryBuilder()
+            ->select('package', 'repository')
+            ->from(Package::class, 'package')
+            ->join('package.repository', 'repository')
             ->setFirstResult($request->getStart())
             ->setMaxResults($request->getLength());
 
         foreach ($request->getOrders() as $order) {
             $orderColumnName = $order->getColumn()->getData();
             if (isset($orderableColumns[$orderColumnName])) {
-                $queryBuilder->orderBy($orderColumnName, $order->getDir());
+                $queryBuilder->orderBy($orderableColumns[$orderColumnName], $order->getDir());
             }
         }
 
         if ($request->hasSearch() && !$request->getSearch()->isRegex()) {
-            $queryBuilder->andWhere('(packages.name LIKE :search OR packages.desc LIKE :search)');
+            $queryBuilder->andWhere('(package.name LIKE :search OR package.description LIKE :search)');
             $queryBuilder->setParameter(':search', '%' . $request->getSearch()->getValue() . '%');
         }
 
@@ -163,21 +145,9 @@ class PackagesController extends Controller
             }
         }
 
-        $packages = $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC);
-
-        array_walk($packages, function (&$package) {
-            $package['url'] = $this->generateUrl(
-                'app_packagedetails_index',
-                [
-                    'repo' => $package['repository'],
-                    'arch' => $package['architecture'],
-                    'pkgname' => $package['name']
-                ]
-            );
-        });
-
-        $packagesFiltered = $connection->createQueryBuilder()
-            ->select('FOUND_ROWS()')->execute()->fetchColumn();
+        $pagination = new Paginator($queryBuilder, false);
+        $packagesFiltered = $pagination->count();
+        $packages = $pagination->getQuery()->getResult();
 
         $response = new DatatablesResponse($packages);
         $response->setRecordsFiltered($packagesFiltered);

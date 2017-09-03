@@ -35,7 +35,6 @@ class LegacyControllerTest extends WebTestCase
             ['GetRecentPackages'],
             ['MirrorStatus'],
             ['PackageDetails', ['repo' => 'core', 'arch' => 'x86_64', 'pkgname' => 'foo']],
-            ['Packagers'],
             ['Packages'],
             ['PackagesSuggest'],
             ['Start'],

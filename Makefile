@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy assets coverage
+.PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy assets coverage rebuild-database
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 DB-RUN=docker-compose run --rm db
@@ -66,6 +66,14 @@ assets:
 
 coverage:
 	${APP-RUN} php -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html var/coverage
+
+rebuild-database:
+	${APP-RUN} bin/console cache:clear
+	${APP-RUN} bin/console doctrine:database:drop --force --if-exists
+	${APP-RUN} bin/console doctrine:database:create
+	${APP-RUN} bin/console doctrine:schema:create
+#	${APP-RUN} bin/console doctrine:fixtures:load -n
+#	${APP-RUN} bin/console app:update:packages
 
 deploy:
 	chmod o-x .

@@ -78,11 +78,11 @@ doctrine:
         #   2. Uncomment database_path in parameters.yml.dist
         #   3. Uncomment next line:
         #path: '%database_path%'
-        schema_filter: '/^(?!(pkgstats_.+|architectures|groups|licenses|package.+|repositories))/'
+        schema_filter: '/^(?!(pkgstats_.+))/'
 
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
-        naming_strategy: doctrine.orm.naming_strategy.underscore
+        naming_strategy: AppBundle\Doctrine\ORM\Mapping\PrefixNamingStrategy
         auto_mapping: true
 
 exercise_html_purifier:

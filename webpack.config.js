@@ -7,7 +7,6 @@ Encore
   .addEntry('js/start', './assets/js/start.js')
   .addEntry('js/packages', './assets/js/packages.js')
   .addEntry('js/mirrors', './assets/js/mirrors.js')
-  .addEntry('js/packagers', './assets/js/packagers.js')
   .addEntry('js/statistics/package', './assets/js/statistics/package.js')
   .addEntry('js/statistics/module', './assets/js/statistics/module.js')
   .createSharedEntry('js/vendor', [

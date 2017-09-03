@@ -2,7 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use Doctrine\DBAL\Driver\Connection;
+use AppBundle\Entity\Packages\Package;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -11,43 +12,31 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PackagesSuggestController extends Controller
 {
-    /** @var Connection */
-    private $database;
-
-    /**
-     * @param Connection $connection
-     */
-    public function __construct(Connection $connection)
-    {
-        $this->database = $connection;
-    }
-
     /**
      * @Route("/packages/suggest", methods={"GET"})
      * @Cache(smaxage="600")
      * @param Request $request
+     * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    public function suggestAction(Request $request): Response
+    public function suggestAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $term = $request->get('term');
         if (strlen($term) < 1 || strlen($term) > 50) {
             return $this->json([]);
         }
-        $suggestions = $this->database->prepare('
-                        SELECT DISTINCT
-                            packages.name
-                        FROM
-                            packages
-                        WHERE
-                            packages.name LIKE :name
-                        ORDER BY
-                            packages.name ASC
-                        LIMIT 10
-                    ');
-        $suggestions->bindValue('name', $term . '%', \PDO::PARAM_STR);
-        $suggestions->execute();
+        $suggestions = $entityManager
+            ->createQueryBuilder()
+            ->select('package.name')
+            ->distinct()
+            ->from(Package::class, 'package')
+            ->where('package.name LIKE :package')
+            ->orderBy('package.name')
+            ->setMaxResults(10)
+            ->setParameter('package', $term . '%')
+            ->getQuery()
+            ->getScalarResult();
 
-        return $this->json($suggestions->fetchAll(\PDO::FETCH_COLUMN));
+        return $this->json(array_column($suggestions, 'name'));
     }
 }

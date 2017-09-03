@@ -16,6 +16,7 @@ class FunStatisticsController extends Controller
      * @Route("/statistics/fun", methods={"GET"})
      * @Cache(smaxage="900")
      * @return Response
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function funAction(): Response
     {

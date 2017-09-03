@@ -51,7 +51,6 @@ class SmokeTest extends WebTestCase
             ['/'],
             ['/mirrors'],
             ['/packages/core/x86_64/pacman'],
-            ['/packages/packagers'],
             ['/packages'],
             ['/packages/suggest?term=foo'],
             ['/packages/feed'],
@@ -69,7 +68,6 @@ class SmokeTest extends WebTestCase
             ['/news/feed'],
             ['/impressum'],
             ['/privacy-policy'],
-            ['/packages/packagers/datatables'],
             ['/mirrors/datatables']
         ];
     }

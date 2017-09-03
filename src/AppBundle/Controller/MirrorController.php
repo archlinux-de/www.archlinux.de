@@ -3,9 +3,10 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Mirror;
+use AppBundle\Entity\Packages\Package;
+
 use AppBundle\Entity\Release;
 use AppBundle\Service\GeoIp;
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,21 +16,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MirrorController extends Controller
 {
-    /** @var Connection */
-    private $database;
     /** @var GeoIp */
     private $geoIp;
     /** @var EntityManagerInterface */
     private $entityManager;
 
     /**
-     * @param Connection $connection
      * @param GeoIp $geoIp
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(Connection $connection, GeoIp $geoIp, EntityManagerInterface $entityManager)
+    public function __construct(GeoIp $geoIp, EntityManagerInterface $entityManager)
     {
-        $this->database = $connection;
         $this->geoIp = $geoIp;
         $this->entityManager = $entityManager;
     }
@@ -47,6 +44,8 @@ class MirrorController extends Controller
      * @param string $file
      * @param Request $request
      * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function isoAction(string $version, string $file, Request $request): Response
     {
@@ -82,35 +81,33 @@ class MirrorController extends Controller
      * @param string $file
      * @param Request $request
      * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function packageAction(string $repository, string $architecture, string $file, Request $request): Response
     {
         if (preg_match('#^([^-]+.*)-[^-]+-[^-]+-.*$#', $file, $matches)) {
-            $pkgdate = $this->database->prepare('
-                SELECT
-                    packages.mtime
-                FROM
-                    packages
-                    LEFT JOIN repositories
-                    ON packages.repository = repositories.id
-                    LEFT JOIN architectures
-                    ON repositories.arch = architectures.id
-                WHERE
-                    packages.name = :pkgname
-                    AND repositories.name = :repository
-                    AND architectures.name = :architecture
-                ');
-            $pkgdate->bindParam('pkgname', $matches[1], \PDO::PARAM_STR);
-            $pkgdate->bindParam('repository', $repository, \PDO::PARAM_STR);
-            $pkgdate->bindParam('architecture', $architecture, \PDO::PARAM_STR);
-            $pkgdate->execute();
-            if ($pkgdate->rowCount() == 0) {
+            $lastsync = $this
+                ->entityManager
+                ->createQueryBuilder()
+                ->select('package.mTime')
+                ->from(Package::class, 'package')
+                ->join('package.repository', 'repository')
+                ->where('package.name = :package')
+                ->andWhere('repository.name = :repository')
+                ->andWhere('repository.architecture = :architecture')
+                ->setParameter('package', $matches[1])
+                ->setParameter('repository', $repository)
+                ->setParameter('architecture', $architecture)
+                ->getQuery()
+                ->getSingleResult();
+
+            if (is_null($lastsync)) {
                 throw $this->createNotFoundException('Package was not found');
             }
-            $lastsync = $pkgdate->fetchColumn();
             return $this->redirectToMirror(
                 $repository . '/os/' . $architecture . '/' . $file,
-                (new \DateTime)->setTimestamp($lastsync),
+                $lastsync['mTime'],
                 $request
             );
         }
@@ -179,10 +176,9 @@ class MirrorController extends Controller
 
             if (empty($mirrors)) {
                 // Fallback to the default mirror
-                $mirrors = ['url' => $this->getParameter('app.mirrors.default')];
+                $mirrors = [['url' => $this->getParameter('app.mirrors.default')]];
             }
         }
-
         srand(crc32($clientIp));
         return $mirrors[array_rand($mirrors, 1)]['url'];
     }

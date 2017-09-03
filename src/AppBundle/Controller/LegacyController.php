@@ -20,7 +20,6 @@ class LegacyController extends Controller
         'GetRecentPackages' => 'app_recentpackages_index',
         'MirrorStatus' => 'app_mirrorstatus_index',
         'PackageDetails' => 'app_packagedetails_index',
-        'Packagers' => 'app_packagers_index',
         'Packages' => 'app_packages_index',
         'PackagesSuggest' => 'app_packagessuggest_suggest',
         'Start' => 'app_start_index',

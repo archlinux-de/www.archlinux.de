@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\NewsItem;
-use Doctrine\DBAL\Driver\Connection;
+use AppBundle\Entity\Packages\Package;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -33,7 +33,7 @@ class StartController extends Controller
         $newsItems = $entityManager
             ->createQueryBuilder()
             ->select('news')
-            ->from('AppBundle:NewsItem', 'news')
+            ->from(NewsItem::class, 'news')
             ->orderBy('news.lastModified', 'DESC')
             ->setMaxResults(6)
             ->getQuery()
@@ -46,34 +46,22 @@ class StartController extends Controller
     }
 
     /**
-     * @param Connection $connection
+     * @param EntityManagerInterface $entityManager
      * @return Response
      * @Cache(smaxage="600")
      */
-    public function recentPackagesAction(Connection $connection): Response
+    public function recentPackagesAction(EntityManagerInterface $entityManager): Response
     {
-        $packages = $connection->prepare('
-        SELECT
-            packages.name,
-            packages.version,
-            repositories.name AS repository,
-            repositories.testing,
-            architectures.name AS architecture
-        FROM
-            packages,
-            repositories,
-            architectures
-        WHERE
-            packages.repository = repositories.id
-            AND architectures.id = repositories.arch
-            AND architectures.name = :architecture
-        ORDER BY
-            packages.builddate DESC
-        LIMIT
-            20
-        ');
-        $packages->bindValue('architecture', $this->getParameter('app.packages.default_architecture'), \PDO::PARAM_STR);
-        $packages->execute();
+        $packages = $entityManager
+            ->createQueryBuilder()
+            ->select('package', 'repository')
+            ->from(Package::class, 'package')
+            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->orderBy('package.buildDate', 'DESC')
+            ->setMaxResults(20)
+            ->setParameter('architecture', $this->getParameter('app.packages.default_architecture'))
+            ->getQuery()
+            ->getResult();
 
         return $this->render('start/recent_packages.html.twig', [
             'packages' => $packages

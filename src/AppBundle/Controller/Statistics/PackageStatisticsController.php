@@ -28,6 +28,7 @@ class PackageStatisticsController extends Controller
      * @Route("/statistics/package.json", methods={"GET"})
      * @Cache(smaxage="900")
      * @return Response
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function packageJsonAction(): Response
     {
@@ -61,6 +62,7 @@ class PackageStatisticsController extends Controller
      * @Route("/statistics/package/datatables", methods={"GET"})
      * @param DatatablesRequest $request
      * @return Response
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function datatablesAction(DatatablesRequest $request): Response
     {

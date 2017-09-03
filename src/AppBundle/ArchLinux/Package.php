@@ -32,7 +32,7 @@ class Package
         $index = '';
         $data = array();
         $file = $descFile->openFile();
-        $file->setFlags(\SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
+        $file->setFlags(\SplFileObject::READ_AHEAD | \SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
 
         foreach ($file as $line) {
             if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
@@ -191,11 +191,11 @@ class Package
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getBuildDate(): int
+    public function getBuildDate(): \DateTime
     {
-        return $this->readValue('BUILDDATE', 0);
+        return (new \DateTime())->setTimestamp($this->readValue('BUILDDATE', '0'));
     }
 
     /**

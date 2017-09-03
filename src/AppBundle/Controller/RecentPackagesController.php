@@ -2,32 +2,18 @@
 
 namespace AppBundle\Controller;
 
-use Doctrine\DBAL\Driver\Connection;
+use AppBundle\Entity\Packages\Package;
 use FeedIo\Factory;
 use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Asset\Packages;
 
 class RecentPackagesController extends Controller
 {
-    /** @var Connection */
-    private $database;
-    /** @var Packages */
-    private $assetPackages;
-
-    /**
-     * @param Connection $connection
-     * @param Packages $assetPackages
-     */
-    public function __construct(Connection $connection, Packages $assetPackages)
-    {
-        $this->database = $connection;
-        $this->assetPackages = $assetPackages;
-    }
 
     /**
      * @Route(
@@ -38,47 +24,21 @@ class RecentPackagesController extends Controller
      * )
      * @Cache(smaxage="600")
      * @param string $_format
+     * @param Packages $assetPackages
      * @return Response
      */
-    public function indexAction(string $_format): Response
+    public function indexAction(string $_format, Packages $assetPackages): Response
     {
-        $packages = $this->database->prepare('
-        SELECT
-            packages.name,
-            packages.builddate,
-            packages.version,
-            packages.desc,
-            packagers.name AS packager,
-            packagers.email AS email,
-            architectures.name AS architecture,
-            repositories.name AS repository
-        FROM
-            packages
-                JOIN
-                    packagers
-                ON
-                    packages.packager = packagers.id
-                JOIN
-                    architectures
-                ON
-                    packages.arch = architectures.id
-                JOIN
-                    repositories
-                ON
-                    packages.repository = repositories.id
-                JOIN
-                    architectures repoarch
-                ON
-                    repoarch.id = repositories.arch
-        WHERE
-            repoarch.name = :architecture
-        ORDER BY
-            packages.builddate DESC
-        LIMIT
-            25
-        ');
-        $packages->bindValue('architecture', $this->getParameter('app.packages.default_architecture'), \PDO::PARAM_STR);
-        $packages->execute();
+        $packages = $this->getDoctrine()->getManager()
+            ->createQueryBuilder()
+            ->select('package', 'repository')
+            ->from(Package::class, 'package')
+            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->orderBy('package.buildDate', 'DESC')
+            ->setMaxResults(25)
+            ->setParameter('architecture', $this->getParameter('app.packages.default_architecture'))
+            ->getQuery()
+            ->getResult();
 
         $feed = new Feed();
         $feedUrl = $this->generateUrl('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -88,28 +48,29 @@ class RecentPackagesController extends Controller
         $feed->setLink($this->generateUrl('app_packages_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
 
         $icon = $feed->newElement();
-        $icon->setName('icon')->setValue($this->assetPackages->getUrl('build/images/archicon.svg'));
+        $icon->setName('icon')->setValue($assetPackages->getUrl('build/images/archicon.svg'));
         $feed->addElement($icon);
 
         $logo = $feed->newElement();
-        $logo->setName('logo')->setValue($this->assetPackages->getUrl('build/images/archicon.svg'));
+        $logo->setName('logo')->setValue($assetPackages->getUrl('build/images/archicon.svg'));
         $feed->addElement($logo);
+        /** @var Package $package */
         foreach ($packages as $package) {
             $packageUrl = $this->generateUrl('app_packagedetails_index', [
-                'repo' => $package['repository'],
-                'arch' => $package['architecture'],
-                'pkgname' => $package['name'],
+                'repo' => $package->getRepository()->getName(),
+                'arch' => $package->getRepository()->getArchitecture(),
+                'pkgname' => $package->getName(),
             ], UrlGeneratorInterface::ABSOLUTE_URL);
             $item = $feed->newItem();
             $item->setPublicId($packageUrl);
-            $item->setTitle($package['name'] . ' ' . $package['version']);
-            $item->setLastModified((new \DateTime())->setTimestamp($package['builddate']));
+            $item->setTitle($package->getName() . ' ' . $package->getVersion());
+            $item->setLastModified($package->getBuilddate() ?: new \DateTime());
             $author = $item->newAuthor();
-            $author->setName($package['packager']);
-            $author->setEmail($package['email']);
+            $author->setName($package->getPackager()->getName());
+            $author->setEmail($package->getPackager()->getEmail());
             $item->setAuthor($author);
             $item->setLink($packageUrl);
-            $item->setDescription($package['desc']);
+            $item->setDescription($package->getDescription());
 
             $feed->add($item);
         }

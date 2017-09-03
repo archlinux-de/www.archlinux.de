@@ -17,6 +17,8 @@ class DownloadController extends Controller
      * @Cache(smaxage="600")
      * @param EntityManagerInterface $entityManager
      * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function indexAction(EntityManagerInterface $entityManager): Response
     {

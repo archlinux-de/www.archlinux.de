@@ -34,13 +34,14 @@ class Country implements \JsonSerializable
     }
 
     /**
-     * @param string $name
-     * @return Country
+     * @return array
      */
-    public function setName(string $name): Country
+    public function jsonSerialize(): array
     {
-        $this->name = $name;
-        return $this;
+        return [
+            'code' => $this->getCode(),
+            'name' => $this->getName()
+        ];
     }
 
     /**
@@ -60,13 +61,12 @@ class Country implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @param string $name
+     * @return Country
      */
-    public function jsonSerialize(): array
+    public function setName(string $name): Country
     {
-        return [
-            'code' => $this->getCode(),
-            'name' => $this->getName()
-        ];
+        $this->name = $name;
+        return $this;
     }
 }

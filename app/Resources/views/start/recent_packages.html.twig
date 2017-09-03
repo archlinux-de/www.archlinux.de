@@ -3,11 +3,12 @@
 
     <div class="card-body p-1 p-lg-3">
         <table class="table table-sm">
+            {# @var package \AppBundle\Entity\Packages\Package #}
             {% for package in packages %}
-                <tr{% if package.testing == 1 %} class="testing"{% endif %}>
+                <tr>
                     <td class="pkgname"><a href="{{ path('app_packagedetails_index', {
-                            'repo': package.repository,
-                            'arch': package.architecture,
+                            'repo': package.repository.name,
+                            'arch': package.repository.architecture,
                             'pkgname': package.name
                         }) }}">{{ package.name }}</a></td>
                     <td class="text-right">{{ package.version }}</td>
