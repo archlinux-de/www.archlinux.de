@@ -275,14 +275,14 @@ autoprefixer@^6.3.1:
     postcss-value-parser "^3.2.3"
 
 autoprefixer@^7.1.2:
-  version "7.1.3"
-  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-7.1.3.tgz#0e8d337976d6f13644db9f8813b4c42f3d1ccc34"
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-7.1.4.tgz#960847dbaa4016bc8e8e52ec891cbf8f1257a748"
   dependencies:
     browserslist "^2.4.0"
-    caniuse-lite "^1.0.30000718"
+    caniuse-lite "^1.0.30000726"
     normalize-range "^0.1.2"
     num2fraction "^1.2.2"
-    postcss "^6.0.10"
+    postcss "^6.0.11"
     postcss-value-parser "^3.2.3"
 
 aws-sign2@~0.6.0:
@@ -986,6 +986,10 @@ caniuse-lite@^1.0.30000718:
   version "1.0.30000721"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000721.tgz#931a21a7bd85016300328d21f126d84b73437d35"
 
+caniuse-lite@^1.0.30000726:
+  version "1.0.30000726"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000726.tgz#966a753fa107a09d4131cf8b3d616723a06ccf7e"
+
 caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
@@ -1463,6 +1467,12 @@ debug-log@^1.0.0:
 debug@2.6.8, debug@^2.1.1, debug@^2.2.0, debug@^2.6.6, debug@^2.6.8:
   version "2.6.8"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
+  dependencies:
+    ms "2.0.0"
+
+debug@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-3.0.1.tgz#0564c612b521dc92d9f2988f0549e34f9c98db64"
   dependencies:
     ms "2.0.0"
 
@@ -2965,9 +2975,9 @@ kind-of@^4.0.0:
   dependencies:
     is-buffer "^1.1.5"
 
-known-css-properties@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.2.0.tgz#899c94be368e55b42d7db8d5be7d73a4a4a41454"
+known-css-properties@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.3.0.tgz#a3d135bbfc60ee8c6eacf2f7e7e6f2d4755e49a4"
 
 lazy-cache@^0.2.3:
   version "0.2.7"
@@ -3130,15 +3140,15 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-"lodash@>=3.5 <5", lodash@^4.0.0, lodash@^4.1.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.3.0, lodash@~4.17.4:
+"lodash@>=3.5 <5", lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.3.0, lodash@~4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-log-symbols@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-1.0.2.tgz#376ff7b58ea3086a0f09facc74617eca501e1a18"
+log-symbols@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-2.0.0.tgz#595e63be4d5c8cbf294a9e09e0d5629f5913fc0c"
   dependencies:
-    chalk "^1.0.0"
+    chalk "^2.0.1"
 
 loglevel@^1.4.1:
   version "1.4.1"
@@ -4037,13 +4047,14 @@ postcss-reduce-transforms@^1.0.3:
     postcss "^5.0.8"
     postcss-value-parser "^3.0.1"
 
-postcss-reporter@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/postcss-reporter/-/postcss-reporter-4.0.0.tgz#13356c365c36783adde88e28e09dbba6ec6c6501"
+postcss-reporter@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/postcss-reporter/-/postcss-reporter-5.0.0.tgz#a14177fd1342829d291653f2786efd67110332c3"
   dependencies:
-    chalk "^1.0.0"
-    lodash "^4.1.0"
-    log-symbols "^1.0.2"
+    chalk "^2.0.1"
+    lodash "^4.17.4"
+    log-symbols "^2.0.0"
+    postcss "^6.0.8"
 
 postcss-resolve-nested-selector@^0.1.1:
   version "0.1.1"
@@ -4101,13 +4112,21 @@ postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0
     source-map "^0.5.6"
     supports-color "^3.2.3"
 
-postcss@^6.0.0, postcss@^6.0.1, postcss@^6.0.10, postcss@^6.0.2, postcss@^6.0.3, postcss@^6.0.6:
+postcss@^6.0.0, postcss@^6.0.1, postcss@^6.0.2, postcss@^6.0.3, postcss@^6.0.6:
   version "6.0.10"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-6.0.10.tgz#c311b89734483d87a91a56dc9e53f15f4e6e84e4"
   dependencies:
     chalk "^2.1.0"
     source-map "^0.5.7"
     supports-color "^4.2.1"
+
+postcss@^6.0.11, postcss@^6.0.8:
+  version "6.0.11"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-6.0.11.tgz#f48db210b1d37a7f7ab6499b7a54982997ab6f72"
+  dependencies:
+    chalk "^2.1.0"
+    source-map "^0.5.7"
+    supports-color "^4.4.0"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -4992,14 +5011,14 @@ stylelint-config-standard@^17.0.0:
     stylelint-config-recommended "^1.0.0"
 
 stylelint@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/stylelint/-/stylelint-8.0.0.tgz#87611211776cb315c93fcf6c58bc261d3c92612e"
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/stylelint/-/stylelint-8.1.1.tgz#9feeed699598b27427715551ed7786db341c19ad"
   dependencies:
     autoprefixer "^7.1.2"
     balanced-match "^1.0.0"
     chalk "^2.0.1"
     cosmiconfig "^2.1.3"
-    debug "^2.6.8"
+    debug "^3.0.0"
     execall "^1.0.0"
     file-entry-cache "^2.0.0"
     get-stdin "^5.0.1"
@@ -5008,9 +5027,9 @@ stylelint@^8.0.0:
     html-tags "^2.0.0"
     ignore "^3.3.3"
     imurmurhash "^0.1.4"
-    known-css-properties "^0.2.0"
+    known-css-properties "^0.3.0"
     lodash "^4.17.4"
-    log-symbols "^1.0.2"
+    log-symbols "^2.0.0"
     mathml-tag-names "^2.0.1"
     meow "^3.7.0"
     micromatch "^2.3.11"
@@ -5019,7 +5038,7 @@ stylelint@^8.0.0:
     postcss "^6.0.6"
     postcss-less "^1.1.0"
     postcss-media-query-parser "^0.2.3"
-    postcss-reporter "^4.0.0"
+    postcss-reporter "^5.0.0"
     postcss-resolve-nested-selector "^0.1.1"
     postcss-scss "^1.0.2"
     postcss-selector-parser "^2.2.3"
@@ -5048,7 +5067,7 @@ supports-color@^3.1.1, supports-color@^3.2.3:
   dependencies:
     has-flag "^1.0.0"
 
-supports-color@^4.0.0, supports-color@^4.2.1:
+supports-color@^4.0.0, supports-color@^4.2.1, supports-color@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.4.0.tgz#883f7ddabc165142b2a61427f3352ded195d1a3e"
   dependencies:
