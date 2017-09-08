@@ -14,7 +14,7 @@ $(document).ready(function () {
         'data': 'url',
         'render': function (data, type, row) {
           if (type === 'display') {
-            return '<a href="' + row.url + '" rel="nofollow">' + new window.URL(data).hostname + '</a>'
+            return `<a href="${row.url}" rel="nofollow">${new window.URL(data).hostname}</a>`
           }
           return data
         }
@@ -36,11 +36,11 @@ $(document).ready(function () {
       {
         'data': 'lastsync',
         'searchable': false,
-        'render': function (data, type, row) {
+        'render': function (data, type) {
           if (type === 'display' && data) {
             const date = new Date(data * 1000)
-            return date.toLocaleDateString('de-DE') +
-              '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>'
+            return `${date.toLocaleDateString('de-DE')}
+                <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
           }
           return data
         },

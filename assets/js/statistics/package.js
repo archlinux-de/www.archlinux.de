@@ -17,9 +17,9 @@ $(document).ready(function () {
         'orderable': false,
         'searchable': true,
         'className': 'text-nowrap',
-        'render': function (data, type, row) {
+        'render': function (data, type) {
           if (type === 'display') {
-            return '<a href="' + jqueryTable.data('searchUrl') + '?search=' + encodeURI(data) + '">' + data + '</a>'
+            return `<a href="${jqueryTable.data('searchUrl')}?search=${encodeURI(data)}">${data}</a>`
           }
           return data
         }
@@ -35,10 +35,11 @@ $(document).ready(function () {
               total = data
             }
             const percent = Math.ceil(data / total * 100)
-            return '<div class="progress bg-transparent" title="' + percent + ' %">' +
-              '<div class="progress-bar bg-primary" role="progressbar" style="width: ' + percent + '%" ' +
-              'aria-valuenow="' + percent + '" aria-valuemin="0" aria-valuemax="100">' +
-              (percent > 5 ? percent + ' %' : '') + '</div></div>'
+            return `<div class="progress bg-transparent" title="${percent}%">
+                    <div class="progress-bar bg-primary" role="progressbar"
+                     style="width: ${percent}%" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+                    ${percent > 5 ? percent + ' %' : ''}
+                    </div></div>`
           }
           return data
         },
