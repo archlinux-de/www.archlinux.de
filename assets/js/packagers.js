@@ -14,9 +14,9 @@ $(document).ready(function () {
       },
       {
         'data': 'email',
-        'render': function (data, type, row) {
+        'render': function (data, type) {
           if (type === 'display' && data) {
-            return '<a href="mailto:' + data + '">' + data + '</a>'
+            return `<a href="mailto:${data}">${data}</a>`
           }
           return data
         },
@@ -27,7 +27,7 @@ $(document).ready(function () {
         'searchable': false,
         'render': function (data, type, row) {
           if (type === 'display') {
-            return '<a href="' + row.packages_url + '">' + data + '</a>'
+            return `<a href="${row.packages_url}">${data}</a>`
           }
           return data
         }
@@ -35,11 +35,11 @@ $(document).ready(function () {
       {
         'data': 'lastbuilddate',
         'searchable': false,
-        'render': function (data, type, row) {
+        'render': function (data, type) {
           if (type === 'display' && data) {
             const date = new Date(data * 1000)
-            return date.toLocaleDateString('de-DE') +
-              '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>'
+            return `${date.toLocaleDateString('de-DE')}
+                <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
           }
           return data
         },

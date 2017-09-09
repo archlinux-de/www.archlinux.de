@@ -31,7 +31,7 @@ $(document).ready(function () {
         'searchable': true,
         'render': function (data, type, row) {
           if (type === 'display') {
-            return '<a href="' + row.url + '">' + data + '</a>'
+            return `<a href="${row.url}">${data}</a>`
           }
           return data
         },
@@ -52,11 +52,11 @@ $(document).ready(function () {
         'data': 'builddate',
         'orderable': true,
         'searchable': false,
-        'render': function (data, type, row) {
+        'render': function (data, type) {
           if (type === 'display') {
             const date = new Date(data * 1000)
-            return date.toLocaleDateString('de-DE') +
-              '<span class="d-none d-xl-inline text-nowrap">, ' + date.toLocaleTimeString('de-DE') + '</span>'
+            return `${date.toLocaleDateString('de-DE')}
+                <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
           }
           return data
         },
@@ -68,11 +68,6 @@ $(document).ready(function () {
         'searchable': true,
         'visible': false
       }
-    ],
-    'createdRow': function (row, data, index) {
-      if (row.testing) {
-        $(row).addClass('less')
-      }
-    }
+    ]
   })
 })

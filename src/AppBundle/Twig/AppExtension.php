@@ -7,8 +7,8 @@ class AppExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter('format_bytes', array($this, 'formatBytes')),
-            new \Twig_SimpleFilter('parse_url', array($this, 'parseUrl')),
+            new \Twig_Filter('format_bytes', array($this, 'formatBytes')),
+            new \Twig_Filter('parse_url', array($this, 'parseUrl')),
         );
     }
 

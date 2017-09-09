@@ -36,8 +36,6 @@ class PackagesController extends Controller
         return $this->render('packages/index.html.twig', [
             'architecture' => $request->get('architecture', $this->getParameter('app.packages.default_architecture')),
             'repository' => $request->get('repository'),
-            'architectures' => $this->getAvailableArchitectures(),
-            'repositories' => $this->getAvailableRepositories(),
             'search' => $request->get('search'),
             'packager' => $request->get('packager')
         ]);
@@ -120,7 +118,6 @@ class PackagesController extends Controller
         $queryBuilder
             ->select([
                 'SQL_CALC_FOUND_ROWS repositories.name AS repository',
-                'repositories.testing',
                 'architectures.name AS architecture',
                 'packages.name AS name',
                 'packages.version',
@@ -186,28 +183,5 @@ class PackagesController extends Controller
         $response->setRecordsFiltered($packagesFiltered);
 
         return $response;
-    }
-
-    /**
-     * @return array
-     */
-    private function getAvailableRepositories(): array
-    {
-        return array_keys($this->getParameter('app.packages.repositories'));
-    }
-
-    /**
-     * @return array
-     */
-    private function getAvailableArchitectures(): array
-    {
-        $uniqueArchitectures = array();
-        foreach ($this->getParameter('app.packages.repositories') as $architectures) {
-            foreach ($architectures as $architecture) {
-                $uniqueArchitectures[$architecture] = 1;
-            }
-        }
-
-        return array_keys($uniqueArchitectures);
     }
 }

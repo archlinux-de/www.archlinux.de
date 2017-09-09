@@ -21,17 +21,18 @@ $(document).ready(function () {
         'data': 'count',
         'orderable': true,
         'searchable': false,
-        'render': function (data, type, row) {
+        'render': function (data, type) {
           if (type === 'display') {
             let total = dataTable.page.info().recordsTotal
             if (data > total) {
               total = data
             }
             const percent = Math.ceil(data / total * 100)
-            return '<div class="progress bg-transparent" title="' + percent + ' %">' +
-              '<div class="progress-bar bg-primary" role="progressbar" style="width: ' + percent + '%" ' +
-              'aria-valuenow="' + percent + '" aria-valuemin="0" aria-valuemax="100">' +
-              (percent > 5 ? percent + ' %' : '') + '</div></div>'
+            return `<div class="progress bg-transparent" title="${percent}%">
+                    <div class="progress-bar bg-primary" role="progressbar"
+                     style="width: ${percent}%" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+                    ${percent > 5 ? percent + ' %' : ''}
+                    </div></div>`
           }
           return data
         },
