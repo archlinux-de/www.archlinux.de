@@ -39,4 +39,4 @@ monolog:
 
 parameters:
     app.packages.repositories:
-        core: ['x86_64', 'i686']
+        core: ['x86_64']
