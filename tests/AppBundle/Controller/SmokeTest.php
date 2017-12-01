@@ -78,7 +78,9 @@ class SmokeTest extends WebTestCase
     public function provideRedirectUrls(): array
     {
         return [
-            ['/download/foo']
+            ['/download/foo'],
+            ['/download/iso/2017.11.01/archlinux-2017.11.01-x86_64.iso'],
+            ['/download/core/os/x86_64/pacman-5.0.2-2-x86_64.pkg.tar.xz']
         ];
     }
 }
