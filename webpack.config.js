@@ -1,7 +1,7 @@
 var Encore = require('@symfony/webpack-encore')
 
 Encore
-  .setOutputPath('web/build/')
+  .setOutputPath('public/build/')
   .setPublicPath('/build')
   .cleanupOutputBeforeBuild()
   .addEntry('js/start', './assets/js/start.js')
@@ -22,7 +22,7 @@ Encore
   .addStyleEntry('images/archlogo', './assets/images/archlogo.svg')
   .enableSassLoader()
   .enableSourceMaps(!Encore.isProduction())
-  .enableVersioning()
+  .enableVersioning(Encore.isProduction())
   .enablePostCssLoader()
   .addLoader({
     test: /\.lang$/,

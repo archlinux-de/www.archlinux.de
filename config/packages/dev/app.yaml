@@ -1,0 +1,4 @@
+parameters:
+    app.packages.repositories:
+        core: ['x86_64']
+        extra: ['x86_64']

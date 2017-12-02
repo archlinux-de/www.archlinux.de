@@ -1,0 +1,21 @@
+parameters:
+    locale: de
+    app.common.email: 'bob@archlinux.de'
+    app.packages.mirror: 'https://mirror.leaseweb.net/archlinux/'
+    app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
+    app.packages.repositories:
+        core: ['x86_64']
+        extra: ['x86_64']
+        testing: ['x86_64']
+        community: ['x86_64']
+        community-testing: ['x86_64']
+        multilib: ['x86_64']
+        multilib-testing: ['x86_64']
+    app.packages.default_architecture: 'x86_64'
+    app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
+    app.mirrors.default: '%app.packages.mirror%'
+    app.mirrors.country: 'DE'
+    app.news.feed: 'https://bbs.archlinux.de/extern.php?action=feed&fid=257&type=atom&order=posted&show=15'
+    app.news.archive: 'https://bbs.archlinux.de/viewforum.php?id=257'
+    app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
+    geoip.database: '/usr/share/GeoIP/GeoLite2-Country.mmdb'

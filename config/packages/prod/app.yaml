@@ -1,0 +1,3 @@
+parameters:
+    app.packages.mirror: 'https://repos.archlinux.org/'
+    app.mirrors.default: 'https://mirror.leaseweb.net/archlinux/'
