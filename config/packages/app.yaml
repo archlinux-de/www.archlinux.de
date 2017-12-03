@@ -1,5 +1,4 @@
 parameters:
-    locale: de
     app.common.email: 'bob@archlinux.de'
     app.packages.mirror: 'https://mirror.leaseweb.net/archlinux/'
     app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
@@ -18,4 +17,3 @@ parameters:
     app.news.feed: 'https://bbs.archlinux.de/extern.php?action=feed&fid=257&type=atom&order=posted&show=15'
     app.news.archive: 'https://bbs.archlinux.de/viewforum.php?id=257'
     app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
-    geoip.database: '/usr/share/GeoIP/GeoLite2-Country.mmdb'
