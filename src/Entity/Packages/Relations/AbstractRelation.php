@@ -38,7 +38,8 @@ abstract class AbstractRelation
     /**
      * @var Package
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $target;
 
