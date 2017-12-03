@@ -19,7 +19,7 @@ class NewsAuthor
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column(nullable=true)
      */
     private $uri;
 
@@ -42,18 +42,18 @@ class NewsAuthor
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUri(): string
+    public function getUri(): ?string
     {
         return $this->uri;
     }
 
     /**
-     * @param string $uri
+     * @param string|null $uri
      * @return NewsAuthor
      */
-    public function setUri(string $uri): NewsAuthor
+    public function setUri(?string $uri): NewsAuthor
     {
         $this->uri = $uri;
         return $this;
