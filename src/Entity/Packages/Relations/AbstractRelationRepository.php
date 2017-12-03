@@ -19,8 +19,8 @@ class AbstractRelationRepository extends EntityRepository
         $this->getEntityManager()->getConnection()->createQueryBuilder()
             ->update('
                 packages_relation relation,
-                packages_package source,
-                packages_package target
+                package source,
+                package target
              ')
             ->set('target_id', 'target.id')
             ->where('source.repository_id = target.repository_id')
@@ -31,10 +31,10 @@ class AbstractRelationRepository extends EntityRepository
         $this->getEntityManager()->getConnection()->createQueryBuilder()
             ->update('
                 packages_relation relation,
-                packages_package source,
-                packages_package target,
-                packages_repository source_repository,
-                packages_repository target_repository
+                package source,
+                package target,
+                repository source_repository,
+                repository target_repository
             ')
             ->set('target_id', 'target.id')
             ->where('relation.target_id IS NULL')
