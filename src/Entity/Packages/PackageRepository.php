@@ -42,7 +42,7 @@ class PackageRepository extends EntityRepository
             ->andWhere('source = :source')
             ->setParameter('source', $package)
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 
     /**
@@ -100,6 +100,6 @@ class PackageRepository extends EntityRepository
             ->setParameter('repository', $repository)
             ->setParameter('mtime', $mTime)
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 }
