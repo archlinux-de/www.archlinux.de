@@ -48,19 +48,6 @@ class LegacyControllerTest extends WebTestCase
         ];
     }
 
-    public function testPostPackageListStillAcceptsInput()
-    {
-        $client = static::createClient();
-
-        $client->request(
-            'POST',
-            '/?page=PostPackageList',
-            ['pkgstatsver' => '2.3', 'arch' => 'x86_64', 'packages' => 'pkgstats', 'modules' => 'snd']
-        );
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-    }
-
     public function testUnknownPageWillFail()
     {
         $client = static::createClient();

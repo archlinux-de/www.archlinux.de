@@ -22,18 +22,17 @@ class LegacyController extends Controller
         'PackageDetails' => 'app_packagedetails_index',
         'Packages' => 'app_packages_index',
         'PackagesSuggest' => 'app_packagessuggest_suggest',
-        'Start' => 'app_start_index',
-        'FunStatistics' => 'app_statistics_funstatistics_fun',
-        'ModuleStatistics' => 'app_statistics_modulestatistics_module',
-        'PackageStatistics' => 'app_statistics_packagestatistics_package',
-        'Statistics' => 'app_statistics_statistics_index',
-        'UserStatistics' => 'app_statistics_userstatistics_user'
+        'Start' => 'app_start_index'
     );
     /** @var array */
     private $externalPages = array(
         'ArchitectureDifferences' => 'https://www.archlinux.org/packages/differences/',
         'MirrorProblems' => 'https://www.archlinux.org/mirrors/status/#outofsync',
-        'MirrorStatusJSON' => 'https://www.archlinux.org/mirrors/status/json/'
+        'MirrorStatusJSON' => 'https://www.archlinux.org/mirrors/status/json/',
+        'FunStatistics' => 'https://pkgstats.archlinux.de/fun',
+        'ModuleStatistics' => 'https://pkgstats.archlinux.de/module',
+        'PackageStatistics' => 'https://pkgstats.archlinux.de/package',
+        'Statistics' => 'https://pkgstats.archlinux.de/'
     );
 
     /**
@@ -60,14 +59,5 @@ class LegacyController extends Controller
             return $this->redirect($this->externalPages[$page], Response::HTTP_MOVED_PERMANENTLY);
         }
         throw $this->createNotFoundException();
-    }
-
-    /**
-     * @Route("/", condition="request.query.get('page') == 'PostPackageList'", methods={"POST"})
-     * @return Response
-     */
-    public function postAction(): Response
-    {
-        return $this->forward('App\Controller\Statistics\PostPackageListController:postAction');
     }
 }

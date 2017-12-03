@@ -13,18 +13,6 @@
     <url>
         <loc>{{ absolute_url(path('app_start_index')) }}</loc>
     </url>
-    <url>
-        <loc>{{ absolute_url(path('app_statistics_funstatistics_fun')) }}</loc>
-    </url>
-    <url>
-        <loc>{{ absolute_url(path('app_statistics_modulestatistics_module')) }}</loc>
-    </url>
-    <url>
-        <loc>{{ absolute_url(path('app_statistics_packagestatistics_package')) }}</loc>
-    </url>
-    <url>
-        <loc>{{ absolute_url(path('app_statistics_statistics_index')) }}</loc>
-    </url>
     {% for package in packages %}
         <url>
             <loc>{{ absolute_url(path(
