@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Package implements \JsonSerializable
 {
     private const PKGEXT = '.pkg.tar.xz';
+
     /**
      * @var int
      *
@@ -27,134 +28,134 @@ class Package implements \JsonSerializable
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-
     private $id;
+
     /**
      * @var Repository
      *
      * @ORM\ManyToOne(targetEntity="Repository", inversedBy="packages")
      */
-
     private $repository;
+
     /**
      * @var string
      *
      * @ORM\Column(name="fileName", type="string")
      */
-
     private $fileName;
+
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string")
      */
-
     private $name;
+
     /**
      * @var string
      *
      * @ORM\Column(name="base", type="string")
      */
-
     private $base;
+
     /**
      * @var string
      *
      * @ORM\Column(name="version", type="string")
      */
-
     private $version;
+
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="string")
      */
-
     private $description = '';
+
     /**
      * @var string[]
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
-
     private $groups;
+
     /**
      * @var integer
      *
      * @ORM\Column(name="compressedSize", type="bigint")
      */
-
     private $compressedSize = 0;
+
     /**
      * @var integer
      *
      * @ORM\Column(name="installedSize", type="bigint")
      */
-
     private $installedSize = 0;
+
     /**
      * @var string
      *
      * @ORM\Column(name="md5sum", type="string", length=32, nullable=true)
      */
-
     private $md5sum;
+
     /**
      * @var string
      *
      * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
      */
-
     private $sha256sum;
+
     /**
      * @var string
      *
      * @ORM\Column(name="signature", type="blob", nullable=true)
      */
-
     private $signature;
+
     /**
      * @var string
      *
      * @ORM\Column(name="url", type="string", nullable=true)
      */
-
     private $url;
+
     /**
      * @var string[]
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
-
     private $licenses;
+
     /**
      * @var string
      *
      * @ORM\Column(name="architecture", type="string")
      */
-
     private $architecture;
+
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="buildDate", type="datetime", nullable=true)
      */
-
     private $buildDate;
+
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="mTime", type="datetime", nullable=true)
      */
-
     private $mTime;
+
     /**
      * @var Packager
      *
      * @ORM\Embedded(class="App\Entity\Packages\Packager")
      */
-
     private $packager;
+
     /**
      * @var Collection
      *
@@ -165,8 +166,8 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $replaces;
+
     /**
      * @var Collection
      *
@@ -177,8 +178,8 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $conflicts;
+
     /**
      * @var Collection
      *
@@ -189,8 +190,8 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $provides;
+
     /**
      * @var Collection
      *
@@ -201,8 +202,8 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $depends;
+
     /**
      * @var Collection
      *
@@ -213,8 +214,8 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $optdepends;
+
     /**
      * @var Collection
      *
@@ -225,8 +226,8 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $makedepends;
+
     /**
      * @var Collection
      *
@@ -237,7 +238,6 @@ class Package implements \JsonSerializable
      *     orphanRemoval=true
      * )
      */
-
     private $checkdepends;
 
     /**
