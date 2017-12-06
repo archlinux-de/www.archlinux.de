@@ -2,6 +2,8 @@
 
 {% block title %}{{ package.name }}{% endblock %}
 
+{% block robots %}{% if package.repository.testing == true %}no{% endif %}index,follow{% endblock %}
+
 {% block body %}
     <h1 class="mb-4">{{ package.name }}</h1>
     <div class="row mw-100">
@@ -87,8 +89,8 @@
                     <th>Paket</th>
                     <td>
                         <a href="{{ path(
-                        'app_mirror_package',
-                        {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename}
+                            'app_mirror_package',
+                            {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename}
                         ) }}">{{ package.filename }}</a>
                     </td>
                 </tr>
@@ -96,8 +98,8 @@
                     <th>PGP-Signatur</th>
                     <td>
                         <a href="{{ path(
-                        'app_mirror_package',
-                        {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename~'.sig'}
+                            'app_mirror_package',
+                            {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename~'.sig'}
                         ) }}">{{ package.filename }}
                             .sig</a></td>
                 </tr>
@@ -124,8 +126,8 @@
                                 <li>
                                     {% if relation.target %}
                                         <a href="{{ path(
-                                    'app_packagedetails_index',
-                                    {'repo': relation.target.repository.name, 'arch': relation.target.repository.architecture, 'pkgname': relation.target.name}
+                                        'app_packagedetails_index',
+                                        {'repo': relation.target.repository.name, 'arch': relation.target.repository.architecture, 'pkgname': relation.target.name}
                                     ) }}">{{ relation.target.name }}</a>{{ relation.targetVersion }}
                                     {% else %}
                                         {{ relation.targetName }}{{ relation.targetVersion }}
@@ -145,8 +147,8 @@
                             {% for package in packages %}
                                 <li>
                                     <a href="{{ path(
-                                    'app_packagedetails_index',
-                                    {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+                                        'app_packagedetails_index',
+                                        {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
                                     ) }}">{{ package.name }}</a>
                                 </li>
                             {% endfor %}

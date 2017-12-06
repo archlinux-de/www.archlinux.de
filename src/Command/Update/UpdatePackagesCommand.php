@@ -186,6 +186,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             ->findByNameAndArchitecture($repoName, $archName);
         if (is_null($repository)) {
             $repository = new Repository($repoName, $archName);
+            $repository->setTesting(preg_match('/(-|^)testing$/', $repoName) > 0);
             $this->entityManager->persist($repository);
             $this->entityManager->flush();
         }
