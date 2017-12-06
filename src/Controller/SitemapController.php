@@ -26,6 +26,7 @@ class SitemapController extends Controller
             ->select('package', 'repository')
             ->from(Package::class, 'package')
             ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->where('repository.testing = 0')
             ->setParameter('architecture', $this->getParameter('app.packages.default_architecture'))
             ->getQuery()
             ->getResult();
