@@ -7,6 +7,9 @@ use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -37,25 +40,32 @@ class PackageDetailsController extends Controller
      * @param string $arch
      * @param string $pkgname
      * @return Response
+     * @throws NonUniqueResultException
      */
     public function indexAction(string $repo, string $arch, string $pkgname): Response
     {
         $packageRepository = $this->getDoctrine()->getRepository(Package::class);
 
-        /** @var Package $package */
-        $package = $this->getDoctrine()->getManager()
-            ->createQueryBuilder()
-            ->select('package', 'repository')
-            ->from(Package::class, 'package')
-            ->join('package.repository', 'repository')
-            ->where('package.name = :pkgname')
-            ->andWhere('repository.name = :repository')
-            ->andWhere('repository.architecture = :architecture')
-            ->setParameter('pkgname', $pkgname)
-            ->setParameter('repository', $repo)
-            ->setParameter('architecture', $arch)
-            ->getQuery()
-            ->getSingleResult();
+        try {
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $this->getDoctrine()->getManager();
+            /** @var Package $package */
+            $package = $entityManager
+                ->createQueryBuilder()
+                ->select('package', 'repository')
+                ->from(Package::class, 'package')
+                ->join('package.repository', 'repository')
+                ->where('package.name = :pkgname')
+                ->andWhere('repository.name = :repository')
+                ->andWhere('repository.architecture = :architecture')
+                ->setParameter('pkgname', $pkgname)
+                ->setParameter('repository', $repo)
+                ->setParameter('architecture', $arch)
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException('Package not found', $e);
+        }
 
         $cgitUrl = $this->getParameter('app.packages.cgit') . (in_array($package->getRepository()->getName(), array(
                 'community',
