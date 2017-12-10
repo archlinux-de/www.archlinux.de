@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(indexes={@ORM\Index(columns={"last_modified"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\NewsItemRepository")
  */
 class NewsItem
 {

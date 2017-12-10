@@ -2,49 +2,35 @@
 
 namespace App\Controller;
 
-use App\Entity\Mirror;
-use App\Entity\Release;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\MirrorRepository;
+use App\Repository\ReleaseRepository;
+use Doctrine\ORM\UnexpectedResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class DownloadController extends Controller
 {
     /**
      * @Route("/download", methods={"GET"})
      * @Cache(smaxage="600")
-     * @param EntityManagerInterface $entityManager
+     * @param ReleaseRepository $releaseRepository
+     * @param MirrorRepository $mirrorRepository
      * @return Response
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function indexAction(EntityManagerInterface $entityManager): Response
+    public function indexAction(ReleaseRepository $releaseRepository, MirrorRepository $mirrorRepository): Response
     {
-        /** @var Release $release */
-        $release = $entityManager
-            ->createQueryBuilder()
-            ->select('release')
-            ->from(Release::class, 'release')
-            ->where('release.available = true')
-            ->orderBy('release.releaseDate', 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getSingleResult();
+        try {
+            $release = $releaseRepository->getLatestAvailable();
+        } catch (UnexpectedResultException $e) {
+            throw $this->createNotFoundException('Release not found', $e);
+        }
 
-        $mirrors = $entityManager->createQueryBuilder()
-            ->select('mirror.url')
-            ->from(Mirror::class, 'mirror')
-            ->where('mirror.protocol = :protocol')
-            ->andWhere('mirror.country = :country')
-            ->andWhere('mirror.lastSync > :lastsync')
-            ->orderBy('mirror.score')
-            ->setParameter('protocol', 'https')
-            ->setParameter('country', $this->getParameter('app.mirrors.country'))
-            ->setParameter('lastsync', $release->getCreated())
-            ->getQuery()
-            ->getResult();
+        $mirrors = $mirrorRepository->findBestByCountryAndLastSync(
+            $this->getParameter('app.mirrors.country'),
+            $release->getCreated()
+        );
 
         return $this->render('download/index.html.twig', [
             'release' => $release,

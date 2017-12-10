@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity\Packages;
+namespace App\Repository;
 
+use App\Entity\Packages\Repository;
 use Doctrine\ORM\EntityRepository;
 
 class RepositoryRepository extends EntityRepository

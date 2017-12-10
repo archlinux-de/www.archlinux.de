@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Packages\Package;
+use App\Repository\PackageRepository;
 use FeedIo\Factory;
 use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -25,20 +26,18 @@ class RecentPackagesController extends Controller
      * @Cache(smaxage="600")
      * @param string $_format
      * @param Packages $assetPackages
+     * @param PackageRepository $packageRepository
      * @return Response
      */
-    public function indexAction(string $_format, Packages $assetPackages): Response
-    {
-        $packages = $this->getDoctrine()->getManager()
-            ->createQueryBuilder()
-            ->select('package', 'repository')
-            ->from(Package::class, 'package')
-            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
-            ->orderBy('package.buildDate', 'DESC')
-            ->setMaxResults(25)
-            ->setParameter('architecture', $this->getParameter('app.packages.default_architecture'))
-            ->getQuery()
-            ->getResult();
+    public function indexAction(
+        string $_format,
+        Packages $assetPackages,
+        PackageRepository $packageRepository
+    ): Response {
+        $packages = $packageRepository->findLatestByArchitecture(
+            $this->getParameter('app.packages.default_architecture'),
+            25
+        );
 
         $feed = new Feed();
         $feedUrl = $this->generateUrl('app_recentpackages_index', [], UrlGeneratorInterface::ABSOLUTE_URL);

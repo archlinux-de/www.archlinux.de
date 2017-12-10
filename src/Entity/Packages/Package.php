@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="PackageRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\PackageRepository")
  * @ORM\Table(indexes={@ORM\Index(columns={"buildDate"}), @ORM\Index(columns={"name"})})
  */
 class Package implements \JsonSerializable

@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="releng_release", indexes={@ORM\Index(columns={"available", "release_date"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ReleaseRepository")
  */
 class Release
 {

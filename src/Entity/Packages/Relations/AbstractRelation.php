@@ -6,7 +6,7 @@ use App\Entity\Packages\Package;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="AbstractRelationRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\AbstractRelationRepository")
  * @ORM\InheritanceType(value="SINGLE_TABLE")
  * @ORM\Table(name="packages_relation", indexes={@ORM\Index(columns={"target_name"})})
  */

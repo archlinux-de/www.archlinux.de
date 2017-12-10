@@ -3,14 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\NewsItem;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\NewsItemRepository;
 use FeedIo\Factory;
 use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RecentNewsController extends Controller
@@ -25,24 +25,17 @@ class RecentNewsController extends Controller
      * )
      * @Cache(smaxage="600")
      * @param string $_format
-     * @param EntityManagerInterface $entityManager
+     * @param NewsItemRepository $newsItemRepository
      * @param Packages $assetPackages
      * @return Response
      */
     public function indexAction(
         string $_format,
-        EntityManagerInterface $entityManager,
+        NewsItemRepository $newsItemRepository,
         Packages $assetPackages
     ): Response {
         /** @var NewsItem[] $news */
-        $news = $entityManager
-            ->createQueryBuilder()
-            ->select('news')
-            ->from(NewsItem::class, 'news')
-            ->orderBy('news.lastModified', 'DESC')
-            ->setMaxResults(25)
-            ->getQuery()
-            ->getResult();
+        $news = $newsItemRepository->findLatest(25);
 
         $feed = new Feed();
         $feedUrl = $this->generateUrl('app_recentnews_index', [], UrlGeneratorInterface::ABSOLUTE_URL);

@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Packages\Package;
-
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\PackageRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,20 +14,14 @@ class SitemapController extends Controller
     /**
      * @Route("/sitemap.xml", methods={"GET"})
      * @Cache(smaxage="600")
-     * @param EntityManagerInterface $entityManager
+     * @param PackageRepository $packageRepository
      * @return Response
      */
-    public function indexAction(EntityManagerInterface $entityManager): Response
+    public function indexAction(PackageRepository $packageRepository): Response
     {
-        $packages = $entityManager
-            ->createQueryBuilder()
-            ->select('package', 'repository')
-            ->from(Package::class, 'package')
-            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
-            ->where('repository.testing = 0')
-            ->setParameter('architecture', $this->getParameter('app.packages.default_architecture'))
-            ->getQuery()
-            ->getResult();
+        $packages = $packageRepository->findStableByArchitecture(
+            $this->getParameter('app.packages.default_architecture')
+        );
 
         $response = $this->render(
             'sitemap/index.xml.twig',

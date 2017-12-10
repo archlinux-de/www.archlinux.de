@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Mirror;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\MirrorRepository;
+use App\Response\Datatables\Response as DatatablesResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use App\Response\Datatables\Response as DatatablesResponse;
 
 class MirrorStatusController extends Controller
 {
@@ -25,12 +24,11 @@ class MirrorStatusController extends Controller
     /**
      * @Route("/mirrors/datatables", methods={"GET"})
      * @Cache(smaxage="600")
-     * @param EntityManagerInterface $entityManager
+     * @param MirrorRepository $mirrorRepository
      * @return Response
      */
-    public function datatablesAction(EntityManagerInterface $entityManager): Response
+    public function datatablesAction(MirrorRepository $mirrorRepository): Response
     {
-        $mirrors = $entityManager->getRepository(Mirror::class)->findBy(['protocol' => 'https']);
-        return $this->json(new DatatablesResponse($mirrors));
+        return $this->json(new DatatablesResponse($mirrorRepository->findSecure()));
     }
 }

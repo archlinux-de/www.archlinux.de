@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(indexes={@ORM\Index(columns={"last_sync"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\MirrorRepository")
  */
 class Mirror implements \JsonSerializable
 {

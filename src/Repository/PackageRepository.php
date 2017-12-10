@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Entity\Packages;
+namespace App\Repository;
 
+use App\Entity\Packages\Package;
+use App\Entity\Packages\Repository;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\UnexpectedResultException;
 
 class PackageRepository extends EntityRepository
 {
@@ -101,5 +104,96 @@ class PackageRepository extends EntityRepository
             ->setParameter('mtime', $mTime)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param string $architecture
+     * @param int $limit
+     * @return array
+     */
+    public function findLatestByArchitecture(string $architecture, int $limit): array
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->orderBy('package.buildDate', 'DESC')
+            ->setMaxResults($limit)
+            ->setParameter('architecture', $architecture)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param string $architecture
+     * @return array
+     */
+    public function findStableByArchitecture(string $architecture): array
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->where('repository.testing = 0')
+            ->setParameter('architecture', $architecture)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param string $term
+     * @param int $limit
+     * @return array
+     */
+    public function findByTerm(string $term, int $limit): array
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->select('package.name')
+            ->distinct()
+            ->where('package.name LIKE :package')
+            ->orderBy('package.name')
+            ->setMaxResults($limit)
+            ->setParameter('package', $term . '%')
+            ->getQuery()
+            ->getScalarResult();
+    }
+
+    /**
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
+     * @return Package
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getByName(string $repository, string $architecture, string $name): Package
+    {
+        return $this->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository')
+            ->where('package.name = :pkgname')
+            ->andWhere('repository.name = :repository')
+            ->andWhere('repository.architecture = :architecture')
+            ->setParameter('pkgname', $name)
+            ->setParameter('repository', $repository)
+            ->setParameter('architecture', $architecture)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int
+    {
+        try {
+            return $this->createQueryBuilder('package')
+                ->select('COUNT(package)')
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (UnexpectedResultException $e) {
+            return 0;
+        }
     }
 }

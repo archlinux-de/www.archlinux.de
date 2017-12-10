@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Packages\Package;
+use App\Repository\PackageRepository;
+use App\Request\Datatables\Request as DatatablesRequest;
+use App\Response\Datatables\Response as DatatablesResponse;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Psr\Cache\CacheItemPoolInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -10,8 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Request\Datatables\Request as DatatablesRequest;
-use App\Response\Datatables\Response as DatatablesResponse;
 
 class PackagesController extends Controller
 {
@@ -34,17 +34,21 @@ class PackagesController extends Controller
      * @Route("/packages/datatables", methods={"GET"})
      * @param DatatablesRequest $request
      * @param CacheItemPoolInterface $cache
+     * @param PackageRepository $packageRepository
      * @return Response
      * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function datatablesAction(DatatablesRequest $request, CacheItemPoolInterface $cache): Response
-    {
+    public function datatablesAction(
+        DatatablesRequest $request,
+        CacheItemPoolInterface $cache,
+        PackageRepository $packageRepository
+    ): Response {
         $cachedResponse = $cache->getItem($request->getId());
         if ($cachedResponse->isHit()) {
             /** @var DatatablesResponse $response */
             $response = $cachedResponse->get();
         } else {
-            $response = $this->queryDatabase($request);
+            $response = $this->queryDatabase($request, $packageRepository);
             $cachedResponse->expiresAt(new \DateTime('1 hour'));
             $cachedResponse->set($response);
             // Only store the first draw (initial state of the page)
@@ -58,12 +62,7 @@ class PackagesController extends Controller
             /** @var int $packageCount */
             $packageCount = $cachedPackageCount->get();
         } else {
-            $packageCount = $this->getDoctrine()->getManager()
-                ->createQueryBuilder()
-                ->select('COUNT(package)')
-                ->from(Package::class, 'package')
-                ->getQuery()
-                ->getSingleScalarResult();
+            $packageCount = $packageRepository->getSize();
 
             $cachedPackageCount->expiresAt(new \DateTime('24 hour'));
             $cachedPackageCount->set($packageCount);
@@ -84,9 +83,10 @@ class PackagesController extends Controller
 
     /**
      * @param DatatablesRequest $request
+     * @param PackageRepository $packageRepository
      * @return DatatablesResponse
      */
-    private function queryDatabase(DatatablesRequest $request): DatatablesResponse
+    private function queryDatabase(DatatablesRequest $request, PackageRepository $packageRepository): DatatablesResponse
     {
         $compareableColumns = [
             'repository.name' => 'repository.name',
@@ -107,10 +107,9 @@ class PackagesController extends Controller
             ]
         );
 
-        $queryBuilder = $this->getDoctrine()->getManager()
-            ->createQueryBuilder()
-            ->select('package', 'repository')
-            ->from(Package::class, 'package')
+        $queryBuilder = $packageRepository
+            ->createQueryBuilder('package')
+            ->addSelect('repository')
             ->join('package.repository', 'repository')
             ->setFirstResult($request->getStart())
             ->setMaxResults($request->getLength());

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="RepositoryRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\RepositoryRepository")
  * @ORM\Table(indexes={@ORM\Index(columns={"name", "architecture"})})
  */
 class Repository implements \JsonSerializable
