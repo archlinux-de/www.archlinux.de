@@ -2,9 +2,10 @@
 
 namespace App\Command\Update;
 
-use App\ArchLinux\Package;
+use App\ArchLinux\Package as DatabasePackage;
 use App\ArchLinux\PackageDatabase;
 use App\ArchLinux\PackageDatabaseDownloader;
+use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use Doctrine\DBAL\Driver\Connection;
@@ -57,12 +58,17 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     protected function configure()
     {
-        $this->setName('app:update:packages');
+        $this->setName('app:update:packages')
+            ->addOption('reset', 'r');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
+
+        if ($input->getOption('reset')) {
+            $this->resetDatabase($output);
+        }
 
         if (!$this->hasMirrorUpdated()) {
             $this->printDebug('No updated packages available...', $output);
@@ -80,7 +86,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
                     $packageMTime = $this
                         ->entityManager
-                        ->getRepository(\App\Entity\Packages\Package::class)
+                        ->getRepository(Package::class)
                         ->getMaxMTimeByRepository($repo);
 
                     $this->printDebug("\tDownloading...", $output);
@@ -97,7 +103,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                             $progress->start();
                         }
                         $oldPackageNames = [];
-                        /** @var Package $package */
+                        /** @var DatabasePackage $package */
                         foreach ($packages as $package) {
                             if (isset($progress)) {
                                 $progress->advance();
@@ -139,6 +145,53 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $output
             );
         }
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    private function resetDatabase(OutputInterface $output)
+    {
+        $tables = [];
+        foreach ([AbstractRelation::class, Package::class, Repository::class] as $className) {
+            $tables[] = $this->entityManager->getClassMetadata($className)->getTableName();
+        }
+
+        $connection = $this->entityManager->getConnection();
+        $dbPlatform = $connection->getDatabasePlatform();
+
+        if (!$output->isQuiet()) {
+            $tablesTotal = count($tables);
+            $progress = new ProgressBar($output, $tablesTotal);
+            $progress->setFormatDefinition('minimal', 'Resetting databas: %percent%%');
+            $progress->setFormat('minimal');
+            $progress->start();
+        }
+
+        $connection->query('SET FOREIGN_KEY_CHECKS=0');
+        foreach ($tables as $table) {
+            $connection->executeUpdate($dbPlatform->getTruncateTableSql($table));
+            if (isset($progress)) {
+                $progress->advance();
+            }
+        }
+        $connection->query('SET FOREIGN_KEY_CHECKS=1');
+
+        if (isset($progress)) {
+            $progress->finish();
+            $output->writeln('');
+        }
+
+        $this->updateLastMirrorUpdate(0);
+    }
+
+    /**
+     * @param int $lastMirrorUpdate
+     */
+    private function updateLastMirrorUpdate(int $lastMirrorUpdate)
+    {
+        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($lastMirrorUpdate);
+        $this->cache->save($lastLocalUpdateCache);
     }
 
     /**
@@ -195,18 +248,18 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     /**
      * @param Repository $repository
-     * @param Package $databasePackage
+     * @param DatabasePackage $databasePackage
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @internal param Package $package
      */
-    private function updatePackage(Repository $repository, Package $databasePackage)
+    private function updatePackage(Repository $repository, DatabasePackage $databasePackage)
     {
         $package = $this
             ->entityManager
-            ->getRepository(\App\Entity\Packages\Package::class)
+            ->getRepository(Package::class)
             ->findByRepositoryAndName($repository, $databasePackage->getName());
         if (is_null($package)) {
-            $package = \App\Entity\Packages\Package::createFromPackageDatabase($repository, $databasePackage);
+            $package = Package::createFromPackageDatabase($repository, $databasePackage);
         } else {
             $package->updateFromPackageDatabase($databasePackage);
         }
@@ -225,10 +278,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         $repoPackages = $this
             ->entityManager
-            ->getRepository(\App\Entity\Packages\Package::class)
+            ->getRepository(Package::class)
             ->findByRepositoryOlderThan($repo, $packageMTime);
 
-        /** @var \App\Entity\Packages\Package $repoPackage */
+        /** @var Package $repoPackage */
         foreach ($repoPackages as $repoPackage) {
             if (!in_array($repoPackage->getName(), $allPackages)) {
                 $this->entityManager->remove($repoPackage);
@@ -261,16 +314,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function resolveRelations()
     {
         $this->entityManager->getRepository(AbstractRelation::class)->updateTargets();
-    }
-
-    /**
-     * @param int $lastMirrorUpdate
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    private function updateLastMirrorUpdate(int $lastMirrorUpdate)
-    {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($lastMirrorUpdate);
-        $this->cache->save($lastLocalUpdateCache);
     }
 
     /**
