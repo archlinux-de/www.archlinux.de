@@ -1,21 +1,31 @@
 <?php
 
-namespace App\DataFixtures\ORM;
+namespace App\DataFixtures;
 
 use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
-use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\OptionalDependency;
 use App\Entity\Packages\Repository;
+use App\Repository\AbstractRelationRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class Packages extends Fixture
+class PackageFixtures extends Fixture
 {
+    /** @var AbstractRelationRepository */
+    private $relationRepository;
+
+    /**
+     * @param AbstractRelationRepository $relationRepository
+     */
+    public function __construct(AbstractRelationRepository $relationRepository)
+    {
+        $this->relationRepository = $relationRepository;
+    }
+
     /**
      * @param ObjectManager $manager
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function load(ObjectManager $manager)
     {
@@ -44,10 +54,6 @@ class Packages extends Fixture
 
         $manager->flush();
 
-        $this
-            ->container
-            ->get('doctrine.orm.entity_manager')
-            ->getRepository(AbstractRelation::class)
-            ->updateTargets();
+        $this->relationRepository->updateTargets();
     }
 }

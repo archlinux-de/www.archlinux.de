@@ -17,7 +17,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Tests,Request,DataFixtures,Repository}'
+        exclude: '../src/{Entity,Migrations,Tests,Request,Repository}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -48,6 +48,10 @@ services:
 
     App\Command\Update\UpdateReleasesCommand:
         $releaseUrl: '%app.releng.releases%'
+
+    App\Repository\AbstractRelationRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments: ['\App\Entity\Packages\Relations\AbstractRelation']
 
     App\Repository\MirrorRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'

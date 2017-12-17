@@ -3,15 +3,16 @@
 namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\OptimisticLockException;
 
 class AbstractRelationRepository extends EntityRepository
 {
-    /**
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function updateTargets()
     {
-        $this->getEntityManager()->flush();
+        try {
+            $this->getEntityManager()->flush();
+        } catch (OptimisticLockException $e) {
+        }
 
         $this->getEntityManager()->getConnection()->createQueryBuilder()
             ->update('packages_relation')->set('target_id', 'NULL')->execute();
