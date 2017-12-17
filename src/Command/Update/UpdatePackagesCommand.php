@@ -5,6 +5,7 @@ namespace App\Command\Update;
 use App\ArchLinux\Package as DatabasePackage;
 use App\ArchLinux\PackageDatabase;
 use App\ArchLinux\PackageDatabaseDownloader;
+use App\ArchLinux\PackageDatabaseReader;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
@@ -95,7 +96,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
                     if (($repo->getMTime() && $packageDatabaseFile->getMTime() > $repo->getMTime()->getTimestamp())
                         || !$repo->getMTime()) {
-                        $packages = new PackageDatabase($packageDatabaseFile);
+                        $packages = new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
                         if (!$output->isQuiet()) {
                             $progress = new ProgressBar($output, iterator_count($packages));
                             $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");

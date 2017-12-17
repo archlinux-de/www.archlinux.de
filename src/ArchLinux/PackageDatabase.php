@@ -4,30 +4,17 @@ namespace App\ArchLinux;
 
 class PackageDatabase implements \IteratorAggregate
 {
-    /** @var \SplFileInfo */
-    private $databaseFile;
+    /** @var PackageDatabaseReader */
+    private $databaseReader;
     /** @var \FilesystemIterator */
     private $databaseDirectory;
 
     /**
-     * @param \SplFileInfo $databaseFile
+     * @param PackageDatabaseReader $databaseReader
      */
-    public function __construct(\SplFileInfo $databaseFile)
+    public function __construct(PackageDatabaseReader $databaseReader)
     {
-        $this->databaseFile = $databaseFile;
-    }
-
-    /**
-     * @return \FilesystemIterator
-     */
-    private function getDatabaseDirectory(): \FilesystemIterator
-    {
-        if (is_null($this->databaseDirectory)) {
-            $tarExtractor = new PackageDatabaseReader($this->databaseFile);
-            $this->databaseDirectory = $tarExtractor->extract();
-        }
-
-        return $this->databaseDirectory;
+        $this->databaseReader = $databaseReader;
     }
 
     /**
@@ -41,5 +28,17 @@ class PackageDatabase implements \IteratorAggregate
                 yield new Package($packageDirectory);
             }
         })();
+    }
+
+    /**
+     * @return \FilesystemIterator
+     */
+    private function getDatabaseDirectory(): \FilesystemIterator
+    {
+        if (is_null($this->databaseDirectory)) {
+            $this->databaseDirectory = $this->databaseReader->extract();
+        }
+
+        return $this->databaseDirectory;
     }
 }
