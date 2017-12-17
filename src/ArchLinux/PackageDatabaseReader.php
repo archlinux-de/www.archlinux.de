@@ -23,7 +23,13 @@ class PackageDatabaseReader
     public function extract(): \FilesystemIterator
     {
         $extractedDirectory = new TemporaryDirectory();
-        $untar = new Process(['bsdtar', '-xf', $this->tarFile->getRealPath(), '-C', $extractedDirectory->getPathname()]);
+        $untar = new Process([
+            'bsdtar',
+            '-xf',
+            $this->tarFile->getRealPath(),
+            '-C',
+            $extractedDirectory->getPathname()
+        ]);
         $untar->mustRun();
 
         return $extractedDirectory;
