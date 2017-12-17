@@ -69,10 +69,7 @@ coverage:
 rebuild-database:
 	${APP-RUN} bin/console cache:clear
 	${APP-RUN} bin/console doctrine:database:drop --force --if-exists
-	${APP-RUN} bin/console doctrine:database:create
-	${APP-RUN} bin/console doctrine:schema:create
-#	${APP-RUN} bin/console doctrine:fixtures:load -n
-#	${APP-RUN} bin/console app:update:packages
+	${MAKE} init
 
 deploy:
 	chmod o-x .

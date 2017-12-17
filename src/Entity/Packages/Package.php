@@ -306,7 +306,7 @@ class Package implements \JsonSerializable
         $this->setPackager(Packager::createFromString($databasePackage->getPackager()));
         $this->setSha256sum($databasePackage->getSHA256SUM());
         $this->setSignature($databasePackage->getPGPSignature());
-        $this->setMTime((new \DateTime())->setTimestamp($databasePackage->getMTime()));
+        $this->setMTime($databasePackage->getMTime());
         $this->setLicenses($databasePackage->getLicenses());
         $this->setGroups($databasePackage->getGroups());
 

@@ -277,10 +277,10 @@ class Package
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getMTime(): int
+    public function getMTime(): \DateTime
     {
-        return $this->descFile->getMTime();
+        return (new \DateTime())->setTimestamp($this->descFile->getMTime());
     }
 }

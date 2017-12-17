@@ -108,7 +108,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                             if (isset($progress)) {
                                 $progress->advance();
                             }
-                            if (is_null($packageMTime) || $package->getMTime() > $packageMTime->getTimestamp()) {
+                            if (is_null($packageMTime)
+                                || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
                                 $this->updatePackage($repo, $package);
                             } else {
                                 $oldPackageNames[] = $package->getName();
