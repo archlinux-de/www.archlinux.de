@@ -588,10 +588,10 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @param string $sha256sum
+     * @param string|null $sha256sum
      * @return Package
      */
-    public function setSha256sum(string $sha256sum): Package
+    public function setSha256sum(?string $sha256sum): Package
     {
         $this->sha256sum = $sha256sum;
         return $this;
@@ -606,10 +606,10 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @param string $signature
+     * @param string|null $signature
      * @return Package
      */
-    public function setSignature(string $signature): Package
+    public function setSignature(?string $signature): Package
     {
         $this->signature = $signature;
         return $this;
@@ -757,7 +757,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getBuildDate(): ?\DateTime
     {
@@ -765,10 +765,10 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @param \DateTime $buildDate
+     * @param \DateTime|null $buildDate
      * @return Package
      */
-    public function setBuildDate(\DateTime $buildDate): Package
+    public function setBuildDate(?\DateTime $buildDate): Package
     {
         $this->buildDate = $buildDate;
         return $this;

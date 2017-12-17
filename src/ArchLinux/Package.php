@@ -23,27 +23,11 @@ class Package
     }
 
     /**
-     * @param \SplFileInfo $descFile
-     *
-     * @return array
+     * @return string
      */
-    private function loadInfo(\SplFileInfo $descFile): array
+    public function getFileName(): string
     {
-        $index = '';
-        $data = array();
-        $file = $descFile->openFile();
-        $file->setFlags(\SplFileObject::READ_AHEAD | \SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
-
-        foreach ($file as $line) {
-            if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
-                $index = substr($line, 1, -1);
-                $data[$index] = array();
-            } else {
-                $data[$index][] = $line;
-            }
-        }
-
-        return $data;
+        return $this->readValue('FILENAME');
     }
 
     /**
@@ -79,19 +63,27 @@ class Package
     }
 
     /**
-     * @return string
+     * @param \SplFileInfo $descFile
+     *
+     * @return array
      */
-    public function getFileName(): string
+    private function loadInfo(\SplFileInfo $descFile): array
     {
-        return $this->readValue('FILENAME');
-    }
+        $index = '';
+        $data = array();
+        $file = $descFile->openFile();
+        $file->setFlags(\SplFileObject::READ_AHEAD | \SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
 
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->readValue('NAME');
+        foreach ($file as $line) {
+            if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
+                $index = substr($line, 1, -1);
+                $data[$index] = array();
+            } else {
+                $data[$index][] = $line;
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -100,6 +92,14 @@ class Package
     public function getBase(): string
     {
         return $this->readValue('BASE', $this->getName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->readValue('NAME');
     }
 
     /**
@@ -151,17 +151,17 @@ class Package
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSHA256SUM(): string
+    public function getSHA256SUM(): ?string
     {
         return $this->readValue('SHA256SUM', null);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPGPSignature(): string
+    public function getPGPSignature(): ?string
     {
         return $this->readValue('PGPSIG', null);
     }
@@ -191,11 +191,15 @@ class Package
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getBuildDate(): \DateTime
+    public function getBuildDate(): ?\DateTime
     {
-        return (new \DateTime())->setTimestamp($this->readValue('BUILDDATE', '0'));
+        $buildTimestamp = $this->readValue('BUILDDATE', null);
+        if (is_null($buildTimestamp)) {
+            return null;
+        }
+        return (new \DateTime())->setTimestamp($buildTimestamp);
     }
 
     /**

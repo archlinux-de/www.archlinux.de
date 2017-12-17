@@ -23,4 +23,12 @@ class TemporaryDirectory extends \FilesystemIterator
         $rmdir = new Process(['rm', '-rf', $this->directory]);
         $rmdir->mustRun();
     }
+
+    /**
+     * @return string
+     */
+    public function getPathname(): string
+    {
+        return $this->directory;
+    }
 }
