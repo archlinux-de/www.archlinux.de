@@ -4,6 +4,9 @@ namespace Tests\App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @coversNothing
+ */
 class PackagesControllerTest extends WebTestCase
 {
     public function testEmptyRequest()

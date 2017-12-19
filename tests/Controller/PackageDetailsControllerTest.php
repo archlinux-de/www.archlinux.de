@@ -4,6 +4,9 @@ namespace Tests\App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @coversNothing
+ */
 class PackageDetailsControllerTest extends WebTestCase
 {
     public function testUnknownPackageReturnsCorrectHttpStatus()
