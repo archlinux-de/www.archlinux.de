@@ -7,6 +7,30 @@ use PHPUnit\Framework\TestCase;
 
 class AppExtensionTest extends TestCase
 {
+    public function testFormatBytesIsCallable()
+    {
+        $result = call_user_func(
+            $this->getFilterCallableFromExtension(new AppExtension(), 'format_bytes'),
+            '1'
+        );
+        $this->assertEquals('1,00 Byte', $result);
+    }
+
+    /**
+     * @param \Twig_Extension $extension
+     * @param string $filterName
+     * @return callable
+     */
+    private function getFilterCallableFromExtension(\Twig_Extension $extension, string $filterName): callable
+    {
+        /** @var \Twig_Filter $filter */
+        foreach ($extension->getFilters() as $filter) {
+            if ($filter->getName() == $filterName) {
+                return $filter->getCallable();
+            }
+        }
+    }
+
     /**
      * @param string $input
      * @param string $output
@@ -37,6 +61,16 @@ class AppExtensionTest extends TestCase
         $appExtension = new AppExtension();
         $this->expectException(\TypeError::class);
         $appExtension->formatBytes('foo');
+    }
+
+    public function testParseUrlIsCallable()
+    {
+        $result = call_user_func(
+            $this->getFilterCallableFromExtension(new AppExtension(), 'parse_url'),
+            'https://www.archlinux.de',
+            'host'
+        );
+        $this->assertEquals('www.archlinux.de', $result);
     }
 
     /**
