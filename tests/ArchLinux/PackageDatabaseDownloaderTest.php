@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\ArchLinux;
+namespace App\Tests\ArchLinux;
 
 use App\ArchLinux\PackageDatabaseDownloader;
 use GuzzleHttp\Client;

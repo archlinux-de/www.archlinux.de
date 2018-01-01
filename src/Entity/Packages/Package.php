@@ -77,7 +77,7 @@ class Package implements \JsonSerializable
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
-    private $groups;
+    private $groups = [];
 
     /**
      * @var integer
@@ -358,11 +358,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param Dependency $dependency
+     * @return Package
      */
     public function addDependency(Dependency $dependency)
     {
         $dependency->setSource($this);
         $this->depends->add($dependency);
+        return $this;
     }
 
     /**
@@ -375,11 +377,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param Conflict $conflict
+     * @return Package
      */
     public function addConflict(Conflict $conflict)
     {
         $conflict->setSource($this);
         $this->conflicts->add($conflict);
+        return $this;
     }
 
     /**
@@ -392,11 +396,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param Replacement $replacement
+     * @return Package
      */
     public function addReplacement(Replacement $replacement)
     {
         $replacement->setSource($this);
         $this->replaces->add($replacement);
+        return $this;
     }
 
     /**
@@ -409,11 +415,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param OptionalDependency $optionalDependency
+     * @return Package
      */
     public function addOptionalDependency(OptionalDependency $optionalDependency)
     {
         $optionalDependency->setSource($this);
         $this->optdepends->add($optionalDependency);
+        return $this;
     }
 
     /**
@@ -426,11 +434,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param Provision $provision
+     * @return Package
      */
     public function addProvision(Provision $provision)
     {
         $provision->setSource($this);
         $this->provides->add($provision);
+        return $this;
     }
 
     /**
@@ -443,11 +453,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param MakeDependency $makeDependency
+     * @return Package
      */
     public function addMakeDependency(MakeDependency $makeDependency)
     {
         $makeDependency->setSource($this);
         $this->makedepends->add($makeDependency);
+        return $this;
     }
 
     /**
@@ -460,11 +472,13 @@ class Package implements \JsonSerializable
 
     /**
      * @param CheckDependency $checkDependency
+     * @return Package
      */
     public function addCheckDependency(CheckDependency $checkDependency)
     {
         $checkDependency->setSource($this);
         $this->checkdepends->add($checkDependency);
+        return $this;
     }
 
     /**
@@ -485,10 +499,12 @@ class Package implements \JsonSerializable
 
     /**
      * @param \DateTime $mTime
+     * @return Package
      */
     public function setMTime(\DateTime $mTime)
     {
         $this->mTime = $mTime;
+        return $this;
     }
 
     /**
@@ -519,10 +535,12 @@ class Package implements \JsonSerializable
 
     /**
      * @param array $groups
+     * @return Package
      */
     public function setGroups(array $groups)
     {
         $this->groups = $groups;
+        return $this;
     }
 
     /**
@@ -643,10 +661,12 @@ class Package implements \JsonSerializable
 
     /**
      * @param string[] $licenses
+     * @return Package
      */
     public function setLicenses(array $licenses)
     {
         $this->licenses = $licenses;
+        return $this;
     }
 
     /**
@@ -775,9 +795,9 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Packager
+     * @return Packager|null
      */
-    public function getPackager(): Packager
+    public function getPackager(): ?Packager
     {
         return $this->packager;
     }

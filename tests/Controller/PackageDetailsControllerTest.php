@@ -1,18 +1,17 @@
 <?php
 
-namespace Tests\App\Controller;
+namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Util\DatabaseTestCase;
 
 /**
  * @coversNothing
  */
-class PackageDetailsControllerTest extends WebTestCase
+class PackageDetailsControllerTest extends DatabaseTestCase
 {
     public function testUnknownPackageReturnsCorrectHttpStatus()
     {
-        $client = static::createClient();
-
+        $client = $this->getClient();
         $client->request('GET', '/packages/core/x86_64/not-found');
 
         $this->assertTrue($client->getResponse()->isNotFound());

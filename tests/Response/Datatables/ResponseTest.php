@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Response\Datatables;
+namespace App\Tests\Response\Datatables;
 
 use App\Response\Datatables\Response;
 use PHPUnit\Framework\TestCase;

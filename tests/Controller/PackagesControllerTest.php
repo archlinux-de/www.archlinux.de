@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\App\Controller;
+namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Util\DatabaseTestCase;
 
 /**
  * @coversNothing
  */
-class PackagesControllerTest extends WebTestCase
+class PackagesControllerTest extends DatabaseTestCase
 {
     public function testEmptyRequest()
     {
-        $client = static::createClient();
+        $client = $this->getClient();
 
         $client->request('GET', '/packages/datatables', ['draw' => 1, 'length' => 1]);
 
@@ -30,7 +30,7 @@ class PackagesControllerTest extends WebTestCase
 
     public function testDrawIsReturnedCorrectly()
     {
-        $client = static::createClient();
+        $client = $this->getClient();
 
         $client->request('GET', '/packages/datatables', ['draw' => 42, 'length' => 1]);
 
