@@ -71,7 +71,6 @@ class PackageRepository extends EntityRepository
     /**
      * @param Repository $repository
      * @return \DateTime|null
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getMaxMTimeByRepository(Repository $repository): ?\DateTime

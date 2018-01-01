@@ -57,16 +57,18 @@
                     <th>Gruppen</th>
                     <td>{{ package.groups | join(', ') }}</td>
                 </tr>
-                <tr>
-                    <th>Packer</th>
-                    <td>
-                        {% if package.packager.email %}
-                            <a rel="nofollow" href="mailto:{{ package.packager.email }}">{{ package.packager.name }}</a>
-                        {% else %}
-                            {{ package.packager.name }}
-                        {% endif %}
-                    </td>
-                </tr>
+                {% if package.packager %}
+                    <tr>
+                        <th>Packer</th>
+                        <td>
+                            {% if package.packager.email %}
+                                <a rel="nofollow" href="mailto:{{ package.packager.email }}">{{ package.packager.name }}</a>
+                            {% else %}
+                                {{ package.packager.name }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <th>Erstellt am</th>
                     <td>{{ package.builddate | date }}</td>

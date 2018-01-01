@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Twig;
+namespace App\Tests\Twig;
 
 use App\Twig\AppExtension;
 use PHPUnit\Framework\TestCase;
@@ -29,6 +29,7 @@ class AppExtensionTest extends TestCase
                 return $filter->getCallable();
             }
         }
+        throw new \RuntimeException('Filter "' . $filterName . '" was not found.');
     }
 
     /**

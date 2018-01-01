@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\ArchLinux;
+namespace App\Tests\ArchLinux;
 
 use App\ArchLinux\Package;
 use App\ArchLinux\PackageDatabase;

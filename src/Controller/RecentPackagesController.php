@@ -64,11 +64,13 @@ class RecentPackagesController extends Controller
             $item->setPublicId($packageUrl);
             $item->setTitle($package->getName() . ' ' . $package->getVersion());
             $item->setLastModified($package->getBuilddate() ?: new \DateTime());
-            $author = $item->newAuthor();
-            $author->setName($package->getPackager()->getName());
-            $author->setEmail($package->getPackager()->getEmail());
-            $author->setUri('');
-            $item->setAuthor($author);
+            if (!is_null($package->getPackager())) {
+                $author = $item->newAuthor();
+                $author->setName($package->getPackager()->getName());
+                $author->setEmail($package->getPackager()->getEmail());
+                $author->setUri('');
+                $item->setAuthor($author);
+            }
             $item->setLink($packageUrl);
             $item->setDescription($package->getDescription());
 

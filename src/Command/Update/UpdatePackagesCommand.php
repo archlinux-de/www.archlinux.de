@@ -151,6 +151,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     /**
      * @param OutputInterface $output
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     private function resetDatabase(OutputInterface $output)
     {
@@ -165,7 +167,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         if (!$output->isQuiet()) {
             $tablesTotal = count($tables);
             $progress = new ProgressBar($output, $tablesTotal);
-            $progress->setFormatDefinition('minimal', 'Resetting databas: %percent%%');
+            $progress->setFormatDefinition('minimal', 'Resetting database: %percent%%');
             $progress->setFormat('minimal');
             $progress->start();
         }
@@ -189,6 +191,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     /**
      * @param int $lastMirrorUpdate
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     private function updateLastMirrorUpdate(int $lastMirrorUpdate)
     {
