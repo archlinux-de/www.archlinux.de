@@ -46,7 +46,8 @@ $(document).ready(function () {
       {
         'data': 'version',
         'orderable': false,
-        'searchable': false
+        'searchable': false,
+        'className': 'break-word mw-10vw'
       },
       {
         'data': 'description',

@@ -46,6 +46,10 @@ $font-family-monospace: monospace;
   width: 20% !important;
 }
 
+.mw-10vw {
+  max-width: 10vw !important;
+}
+
 .mw-50vw {
   max-width: 50vw !important;
 }
@@ -56,4 +60,8 @@ $font-family-monospace: monospace;
 
 .dataTables_info {
   white-space: normal !important;
+}
+
+.table-fixed {
+  table-layout: fixed;
 }
