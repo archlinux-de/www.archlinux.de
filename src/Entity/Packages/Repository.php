@@ -22,6 +22,14 @@ class Repository implements \JsonSerializable
     private $id;
 
     /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string")

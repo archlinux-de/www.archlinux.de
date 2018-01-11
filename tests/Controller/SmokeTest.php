@@ -45,6 +45,7 @@ class SmokeTest extends DatabaseTestCase
         $entityManager->persist($mirror);
 
         $entityManager->flush();
+        $entityManager->clear();
     }
 
     /**

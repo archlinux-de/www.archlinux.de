@@ -90,15 +90,23 @@ abstract class AbstractRelation
     /**
      * @return Package
      */
+    public function getSource(): Package
+    {
+        return $this->source;
+    }
+
+    /**
+     * @return Package
+     */
     public function getTarget(): ?Package
     {
         return $this->target;
     }
 
     /**
-     * @param Package $target
+     * @param Package|null $target
      */
-    public function setTarget(Package $target)
+    public function setTarget(?Package $target)
     {
         $this->target = $target;
     }
