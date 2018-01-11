@@ -136,6 +136,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
             if ($this->updatedPackages) {
                 $this->printDebug('Resolving package relations...', $output);
+                $this->entityManager->flush();
                 $this->resolveRelations();
             }
 

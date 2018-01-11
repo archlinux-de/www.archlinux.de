@@ -48,9 +48,9 @@ class PackageDetailsController extends Controller
         return $this->render('package/index.html.twig', [
             'package' => $package,
             'cgit_url' => $cgitUrl,
-            'inverse_depends' => $packageRepository->findByInverseRelation($package, Dependency::class),
-            'inverse_optdepends' => $packageRepository->findByInverseRelation($package, OptionalDependency::class),
-            'inverse_makedepends' => $packageRepository->findByInverseRelation($package, MakeDependency::class),
+            'inverse_depends' => $packageRepository->findByInverseRelationType($package, Dependency::class),
+            'inverse_optdepends' => $packageRepository->findByInverseRelationType($package, OptionalDependency::class),
+            'inverse_makedepends' => $packageRepository->findByInverseRelationType($package, MakeDependency::class),
         ]);
     }
 }

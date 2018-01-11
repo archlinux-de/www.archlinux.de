@@ -33,7 +33,7 @@ class PackageRepository extends EntityRepository
      * @param string $relationType
      * @return array
      */
-    public function findByRelation(Package $package, string $relationType): array
+    public function findByRelationType(Package $package, string $relationType): array
     {
         return $this
             ->createQueryBuilder('target')
@@ -53,15 +53,14 @@ class PackageRepository extends EntityRepository
      * @param string $relationType
      * @return array
      */
-    public function findByInverseRelation(Package $package, string $relationType): array
+    public function findByInverseRelationType(Package $package, string $relationType): array
     {
         return $this
             ->createQueryBuilder('source')
             ->from('App:Packages\Package', 'target')
             ->from($relationType, 'relation')
-            ->where('target.repository = source.repository')
-            ->andWhere('relation.target = source')
-            ->andWhere('relation.source = target')
+            ->andWhere('relation.target = target')
+            ->andWhere('relation.source = source')
             ->andWhere('target = :target')
             ->setParameter('target', $package)
             ->getQuery()

@@ -66,8 +66,8 @@ class RecentPackagesController extends Controller
             $item->setLastModified($package->getBuilddate() ?: new \DateTime());
             if (!is_null($package->getPackager())) {
                 $author = $item->newAuthor();
-                $author->setName($package->getPackager()->getName());
-                $author->setEmail($package->getPackager()->getEmail());
+                $author->setName($package->getPackager()->getName() ?: '');
+                $author->setEmail($package->getPackager()->getEmail() ?: '');
                 $author->setUri('');
                 $item->setAuthor($author);
             }
