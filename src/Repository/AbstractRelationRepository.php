@@ -5,8 +5,6 @@ namespace App\Repository;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 
 class AbstractRelationRepository extends EntityRepository
@@ -65,18 +63,24 @@ class AbstractRelationRepository extends EntityRepository
      */
     private function getProviderByRelation(AbstractRelation $relation): ?Package
     {
-        try {
-            return $this->createQueryBuilder('relation')
-                ->where('relation INSTANCE OF App:Packages\Relations\Provision')
-                ->andWhere('relation.targetName = :target')
-                ->setParameter('target', $relation->getTargetName())
-                ->getQuery()
-                ->getSingleResult()
-                ->getSource();
-        } catch (NonUniqueResultException $e) {
-            return null;
-        } catch (NoResultException $e) {
-            return null;
+        $repositoryArchitecture = $relation->getSource()->getRepository()->getArchitecture();
+        /** @var AbstractRelation $candidate */
+        $candidates = $this->createQueryBuilder('relation')
+            ->where('relation INSTANCE OF App:Packages\Relations\Provision')
+            ->andWhere('relation.targetName = :targetName')
+            ->setParameter('targetName', $relation->getTargetName())
+            ->getQuery()
+            ->getResult();
+        $compatibleCandidates = [];
+        foreach ($candidates as $candidate) {
+            if ($candidate->getSource()->getRepository()->getArchitecture() == $repositoryArchitecture) {
+                $compatibleCandidates[] = $candidate->getSource();
+            }
         }
+        if (count($compatibleCandidates) == 1) {
+            return $compatibleCandidates[0];
+        }
+
+        return null;
     }
 }
