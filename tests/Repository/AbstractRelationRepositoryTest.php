@@ -168,4 +168,49 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertNull($databaseGlibc);
     }
+
+    public function testProvisionHasCorrectArchitecture()
+    {
+        $entityManager = $this->getEntityManager();
+
+        $core64Repository = new Repository('core', Architecture::X86_64);
+        $core32Repository = new Repository('core', Architecture::I686);
+        $pacman = (new Package(
+            $core64Repository,
+            'pacman',
+            '5.0.2-2',
+            Architecture::X86_64
+        ))->setMTime(new \DateTime());
+        $glibcNg32 = (new Package(
+            $core32Repository,
+            'glibc-ng',
+            '1.0-1',
+            Architecture::I686
+        ))->setMTime(new \DateTime());
+        $glibcNg64 = (new Package(
+            $core64Repository,
+            'glibc-ng',
+            '1.0-1',
+            Architecture::X86_64
+        ))->setMTime(new \DateTime());
+        $glibcNg32->addProvision(new Provision('glibc'));
+        $glibcNg64->addProvision(new Provision('glibc'));
+        $pacman->addDependency(new Dependency('glibc'));
+        $entityManager->persist($core64Repository);
+        $entityManager->persist($core32Repository);
+        $entityManager->persist($pacman);
+        $entityManager->persist($glibcNg32);
+        $entityManager->persist($glibcNg64);
+        $entityManager->flush();
+
+        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $packageRepository = $entityManager->getRepository(Package::class);
+        $databasePacman = $packageRepository->find($pacman->getId());
+        $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
+        $this->assertEquals($glibcNg64->getId(), $databaseGlibc->getId());
+    }
 }
