@@ -130,7 +130,7 @@
                                         <a href="{{ path(
                                         'app_packagedetails_index',
                                         {'repo': relation.target.repository.name, 'arch': relation.target.repository.architecture, 'pkgname': relation.target.name}
-                                    ) }}">{{ relation.target.name }}</a>{{ relation.targetVersion }}
+                                    ) }}">{{ relation.targetName }}</a>{{ relation.targetVersion }}
                                     {% else %}
                                         {{ relation.targetName }}{{ relation.targetVersion }}
                                     {% endif %}
@@ -145,7 +145,7 @@
                     <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                         <h3>{{ name }}</h3>
                         <ul class="list-unstyled pl-4">
-                            {# @var package \App\Entity\Packages\Relations\AbstractRelation #}
+                            {# @var package \App\Entity\Packages\Package #}
                             {% for package in packages %}
                                 <li>
                                     <a href="{{ path(
