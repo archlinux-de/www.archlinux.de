@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\UnexpectedResultException;
 
 class PackageRepository extends EntityRepository
 {
@@ -28,30 +27,9 @@ class PackageRepository extends EntityRepository
     }
 
     /**
-     * @deprecated
      * @param Package $package
      * @param string $relationType
-     * @return array
-     */
-    public function findByRelationType(Package $package, string $relationType): array
-    {
-        return $this
-            ->createQueryBuilder('target')
-            ->from('App:Packages\Package', 'source')
-            ->from($relationType, 'relation')
-            ->where('source.repository = target.repository')
-            ->andWhere('relation.targetName = target.name')
-            ->andWhere('relation.source = source')
-            ->andWhere('source = :source')
-            ->setParameter('source', $package)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @param Package $package
-     * @param string $relationType
-     * @return array
+     * @return Package[]
      */
     public function findByInverseRelationType(Package $package, string $relationType): array
     {
@@ -90,7 +68,7 @@ class PackageRepository extends EntityRepository
     /**
      * @param Repository $repository
      * @param \DateTime $mTime
-     * @return array
+     * @return Package[]
      */
     public function findByRepositoryOlderThan(Repository $repository, \DateTime $mTime): array
     {
@@ -107,7 +85,7 @@ class PackageRepository extends EntityRepository
     /**
      * @param string $architecture
      * @param int $limit
-     * @return array
+     * @return Package[]
      */
     public function findLatestByArchitecture(string $architecture, int $limit): array
     {
@@ -124,7 +102,7 @@ class PackageRepository extends EntityRepository
 
     /**
      * @param string $architecture
-     * @return array
+     * @return Package[]
      */
     public function findStableByArchitecture(string $architecture): array
     {
@@ -141,7 +119,7 @@ class PackageRepository extends EntityRepository
     /**
      * @param string $term
      * @param int $limit
-     * @return array
+     * @return Package[]
      */
     public function findByTerm(string $term, int $limit): array
     {
@@ -185,13 +163,9 @@ class PackageRepository extends EntityRepository
      */
     public function getSize(): int
     {
-        try {
-            return $this->createQueryBuilder('package')
-                ->select('COUNT(package)')
-                ->getQuery()
-                ->getSingleScalarResult();
-        } catch (UnexpectedResultException $e) {
-            return 0;
-        }
+        return $this->createQueryBuilder('package')
+            ->select('COUNT(package)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }
