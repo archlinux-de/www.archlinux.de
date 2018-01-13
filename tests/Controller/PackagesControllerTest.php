@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use App\Tests\Util\DatabaseTestCase;
 
 /**
- * @coversNothing
+ * @covers \App\Controller\PackagesController
  */
 class PackagesControllerTest extends DatabaseTestCase
 {
