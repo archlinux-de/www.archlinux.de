@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * @coversNothing
+ * @covers \App\Controller\LegacyController
  */
 class LegacyControllerTest extends WebTestCase
 {
