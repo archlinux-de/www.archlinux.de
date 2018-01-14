@@ -55,7 +55,7 @@ test:
 	${APP-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'
 	${APP-RUN} vendor/bin/phpunit
 
-ci-test: init
+ci-test: vendor assets
 	${MAKE} test
 	${APP-RUN} vendor/bin/security-checker security:check
 
