@@ -2,23 +2,23 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Util\DatabaseTestCase;
 
 /**
- * @covers \App\Controller\GetOpenSearch
+ * @covers \App\Controller\SitemapController
  */
-class GetOpenSearchTest extends WebTestCase
+class SitemapControllerTest extends DatabaseTestCase
 {
     public function testIndexAction()
     {
-        $client = static::createClient();
+        $client = $this->getClient();
 
-        $client->request('GET', '/packages/opensearch');
+        $client->request('GET', '/sitemap.xml');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $response = $client->getResponse()->getContent();
         $this->assertNotFalse(\simplexml_load_string($response));
         $this->assertEmpty(\libxml_get_errors());
-        $this->assertContains('/packages?search=', $response);
+        $this->assertContains('<url><loc>http://localhost/download</loc></url>', $response);
     }
 }

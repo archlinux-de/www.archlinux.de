@@ -45,4 +45,12 @@ class DownloadControllerTest extends DatabaseTestCase
             $primaryButtons->getNode(0)->getAttribute('href')
         );
     }
+
+    public function testErrorCodeIfReleaseIsMissing()
+    {
+        $client = $this->getClient();
+
+        $client->request('GET', '/download');
+        $this->assertTrue($client->getResponse()->isNotFound());
+    }
 }
