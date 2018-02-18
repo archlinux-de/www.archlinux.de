@@ -22,14 +22,6 @@ class Repository implements \JsonSerializable
     private $id;
 
     /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string")
@@ -76,6 +68,14 @@ class Repository implements \JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getMTime(): ?\DateTime
@@ -102,19 +102,15 @@ class Repository implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getArchitecture(): string
+    public function jsonSerialize(): array
     {
-        return $this->architecture;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->getName() . '/' . $this->getArchitecture();
+        return [
+            'name' => $this->getName(),
+            'architecture' => $this->getArchitecture(),
+            'testing' => $this->isTesting()
+        ];
     }
 
     /**
@@ -126,15 +122,11 @@ class Repository implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function jsonSerialize(): array
+    public function getArchitecture(): string
     {
-        return [
-            'name' => $this->getName(),
-            'architecture' => $this->getArchitecture(),
-            'testing' => $this->isTesting()
-        ];
+        return $this->architecture;
     }
 
     /**
@@ -152,7 +144,6 @@ class Repository implements \JsonSerializable
     public function setTesting(bool $testing = true): self
     {
         $this->testing = $testing;
-
         return $this;
     }
 }
