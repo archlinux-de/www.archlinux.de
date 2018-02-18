@@ -695,16 +695,6 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @param Repository $repository
-     * @return Package
-     */
-    public function setRepository(Repository $repository): Package
-    {
-        $this->repository = $repository;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getArchitecture(): string
@@ -810,11 +800,6 @@ class Package implements \JsonSerializable
     {
         $this->packager = $packager;
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getRepository() . '/' . $this->getFileName();
     }
 
     /**

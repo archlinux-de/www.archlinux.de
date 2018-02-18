@@ -102,24 +102,6 @@ class Repository implements \JsonSerializable
     }
 
     /**
-     * @param Package $package
-     * @return self
-     */
-    public function addPackage(Package $package): self
-    {
-        if (!Architecture::isCompatible($this->getArchitecture(), $package->getArchitecture())) {
-            throw new \InvalidArgumentException(
-                'Repository architecture "' . $this->getArchitecture() . '"' .
-                ' and package architecture "' . $package->getArchitecture() . '" are not compatible.'
-            );
-        }
-        $package->setRepository($this);
-        $this->packages->add($package);
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getArchitecture(): string
