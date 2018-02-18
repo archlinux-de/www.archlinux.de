@@ -145,7 +145,7 @@ class Package
     /**
      * @return string
      */
-    public function getMD5SUM(): string
+    public function getMd5sum(): string
     {
         return $this->readValue('MD5SUM');
     }
@@ -153,7 +153,7 @@ class Package
     /**
      * @return string|null
      */
-    public function getSHA256SUM(): ?string
+    public function getSha256sum(): ?string
     {
         return $this->readValue('SHA256SUM', null);
     }
@@ -161,7 +161,7 @@ class Package
     /**
      * @return string|null
      */
-    public function getPGPSignature(): ?string
+    public function getPgpSignature(): ?string
     {
         return $this->readValue('PGPSIG', null);
     }
@@ -169,7 +169,7 @@ class Package
     /**
      * @return string
      */
-    public function getURL(): string
+    public function getUrl(): string
     {
         return $this->readValue('URL');
     }
@@ -185,7 +185,7 @@ class Package
     /**
      * @return string
      */
-    public function getArch(): string
+    public function getArchitecture(): string
     {
         return $this->readValue('ARCH');
     }

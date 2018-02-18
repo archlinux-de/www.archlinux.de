@@ -64,13 +64,13 @@ class PackageTest extends TestCase
     public function testSha256sumMightBeNull()
     {
         $package = $this->createPackage();
-        $this->assertNull($package->getSHA256SUM());
+        $this->assertNull($package->getSha256sum());
     }
 
     public function testPGPSignatureMightBeNull()
     {
         $package = $this->createPackage();
-        $this->assertNull($package->getPGPSignature());
+        $this->assertNull($package->getPgpSignature());
     }
 
     public function testBuildDate()
@@ -122,11 +122,11 @@ class PackageTest extends TestCase
             ['NAME', 'getName'],
             ['VERSION', 'getVersion'],
             ['DESC', 'getDescription'],
-            ['MD5SUM', 'getMD5SUM'],
-            ['SHA256SUM', 'getSHA256SUM'],
-            ['PGPSIG', 'getPGPSignature'],
-            ['URL', 'getURL'],
-            ['ARCH', 'getArch'],
+            ['MD5SUM', 'getMd5sum'],
+            ['SHA256SUM', 'getSha256sum'],
+            ['PGPSIG', 'getPgpSignature'],
+            ['URL', 'getUrl'],
+            ['ARCH', 'getArchitecture'],
             ['PACKAGER', 'getPackager']
         ];
     }

@@ -110,9 +110,9 @@ class Package implements \JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="signature", type="blob", nullable=true)
+     * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
      */
-    private $signature;
+    private $pgpSignature;
 
     /**
      * @var string
@@ -279,7 +279,7 @@ class Package implements \JsonSerializable
             $repository,
             $databasePackage->getName(),
             $databasePackage->getVersion(),
-            $databasePackage->getArch()
+            $databasePackage->getArchitecture()
         );
 
         return $package->updateFromPackageDatabase($databasePackage);
@@ -293,19 +293,19 @@ class Package implements \JsonSerializable
     {
         $this->setName($databasePackage->getName());
         $this->setVersion($databasePackage->getVersion());
-        $this->setArchitecture($databasePackage->getArch());
+        $this->setArchitecture($databasePackage->getArchitecture());
 
         $this->setFileName($databasePackage->getFileName());
-        $this->setUrl($databasePackage->getURL());
+        $this->setUrl($databasePackage->getUrl());
         $this->setDescription($databasePackage->getDescription());
         $this->setBase($databasePackage->getBase());
         $this->setBuildDate($databasePackage->getBuildDate());
         $this->setCompressedSize($databasePackage->getCompressedSize());
         $this->setInstalledSize($databasePackage->getInstalledSize());
-        $this->setMd5sum($databasePackage->getMD5SUM());
+        $this->setMd5sum($databasePackage->getMd5sum());
         $this->setPackager(Packager::createFromString($databasePackage->getPackager()));
-        $this->setSha256sum($databasePackage->getSHA256SUM());
-        $this->setSignature($databasePackage->getPGPSignature());
+        $this->setSha256sum($databasePackage->getSha256sum());
+        $this->setPgpSignature($databasePackage->getPgpSignature());
         $this->setMTime($databasePackage->getMTime());
         $this->setLicenses($databasePackage->getLicenses());
         $this->setGroups($databasePackage->getGroups());
@@ -618,18 +618,18 @@ class Package implements \JsonSerializable
     /**
      * @return string
      */
-    public function getSignature(): string
+    public function getPgpSignature(): string
     {
-        return $this->signature;
+        return $this->pgpSignature;
     }
 
     /**
-     * @param string|null $signature
+     * @param string|null $pgpSignature
      * @return Package
      */
-    public function setSignature(?string $signature): Package
+    public function setPgpSignature(?string $pgpSignature): Package
     {
-        $this->signature = $signature;
+        $this->pgpSignature = $pgpSignature;
         return $this;
     }
 
