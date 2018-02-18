@@ -117,20 +117,18 @@ class MirrorController extends Controller
         Request $request,
         PackageRepository $packageRepository
     ): Response {
-        if (preg_match('#^([^-]+.*)-[^-]+-[^-]+-.*$#', $file, $matches)) {
-            try {
-                $package = $packageRepository->getByName($repository, $architecture, $matches[1]);
-            } catch (UnexpectedResultException $e) {
-                throw $this->createNotFoundException('Package not found', $e);
-            }
-
-            return $this->redirectToMirror(
-                $repository . '/os/' . $architecture . '/' . $file,
-                $package->getMTime(),
-                $request
-            );
+        preg_match('#^([^-]+.*)-[^-]+-[^-]+-.*$#', $file, $matches);
+        try {
+            $package = $packageRepository->getByName($repository, $architecture, $matches[1]);
+        } catch (UnexpectedResultException $e) {
+            throw $this->createNotFoundException('Package not found', $e);
         }
-        throw $this->createNotFoundException('Package not found');
+
+        return $this->redirectToMirror(
+            $repository . '/os/' . $architecture . '/' . $file,
+            $package->getMTime(),
+            $request
+        );
     }
 
     /**
