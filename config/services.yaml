@@ -44,11 +44,11 @@ services:
 
     FeedIo\Adapter\Guzzle\Client:
         arguments:
-            - GuzzleHttp\Client
+            - '@GuzzleHttp\Client'
 
     FeedIo\FeedIo:
         bind:
-            $client: FeedIo\Adapter\Guzzle\Client
+            $client: '@FeedIo\Adapter\Guzzle\Client'
 
     App\Service\MirrorFetcher:
         $mirrorStatusUrl: '%app.mirrors.status%'
