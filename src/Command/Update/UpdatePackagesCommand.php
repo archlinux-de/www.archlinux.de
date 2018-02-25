@@ -9,7 +9,6 @@ use App\ArchLinux\PackageDatabaseReader;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use Psr\Cache\CacheItemPoolInterface;
@@ -38,14 +37,12 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
-     * @param Connection $connection
      * @param CacheItemPoolInterface $cache
      * @param Client $guzzleClient
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
-        Connection $connection,
         CacheItemPoolInterface $cache,
         Client $guzzleClient,
         EntityManagerInterface $entityManager
