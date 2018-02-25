@@ -2,7 +2,7 @@
 
 namespace App\Command\Config;
 
-use App\Entity\Country;
+use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -17,15 +17,23 @@ class UpdateCountriesCommand extends Command
     /** @var CountryFetcher */
     private $countryFetcher;
 
+    /** @var CountryRepository */
+    private $countryRepository;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param CountryFetcher $countryFetcher
+     * @param CountryRepository $countryRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, CountryFetcher $countryFetcher)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        CountryFetcher $countryFetcher,
+        CountryRepository $countryRepository
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->countryFetcher = $countryFetcher;
+        $this->countryRepository = $countryRepository;
     }
 
     protected function configure()
@@ -39,13 +47,12 @@ class UpdateCountriesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $codes = [];
         foreach ($this->countryFetcher->fetchCountries() as $country) {
             $this->entityManager->merge($country);
+            $codes[] = $country->getCode();
         }
-
-        $countryRepository = $this->entityManager->getRepository(Country::class);
-        $countryIds = $this->countryFetcher->fetchCountryCodes();
-        foreach ($countryRepository->findAllExceptByCodes($countryIds) as $country) {
+        foreach ($this->countryRepository->findAllExceptByCodes($codes) as $country) {
             $this->entityManager->remove($country);
         }
 

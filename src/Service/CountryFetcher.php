@@ -29,16 +29,4 @@ class CountryFetcher
             }
         })());
     }
-
-    /**
-     * @return string[]
-     */
-    public function fetchCountryCodes(): array
-    {
-        return iterator_to_array((function () {
-            foreach ($this->iso3166 as $iso3166Country) {
-                yield $iso3166Country['alpha2'];
-            }
-        })());
-    }
 }
