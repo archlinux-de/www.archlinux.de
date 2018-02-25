@@ -45,7 +45,7 @@ class UpdateCountriesCommand extends Command
 
         $countryRepository = $this->entityManager->getRepository(Country::class);
         $countryIds = $this->countryFetcher->fetchCountryCodes();
-        foreach ($countryRepository->findAllExceptByIds($countryIds) as $country) {
+        foreach ($countryRepository->findAllExceptByCodes($countryIds) as $country) {
             $this->entityManager->remove($country);
         }
 

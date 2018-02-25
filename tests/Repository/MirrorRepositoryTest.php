@@ -84,4 +84,22 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $this->assertCount(1, $mirrors);
         $this->assertEquals($mirror->getUrl(), array_shift($mirrors)->getUrl());
     }
+
+    public function testFindAllExceptByUrls()
+    {
+        $mirrorA = new Mirror('a', 'https');
+        $mirrorB = new Mirror('b', 'https');
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($mirrorA);
+        $entityManager->persist($mirrorB);
+        $entityManager->flush();
+
+        /** @var MirrorRepository $mirrorRepository */
+        $mirrorRepository = $this->getRepository(Mirror::class);
+        /** @var Mirror[] $mirrors */
+        $mirrors = $mirrorRepository->findAllExceptByUrls(['a']);
+
+        $this->assertCount(1, $mirrors);
+        $this->assertEquals('b', $mirrors[0]->getUrl());
+    }
 }

@@ -3,11 +3,10 @@
 namespace App\Tests\Command\Update;
 
 use App\Command\Update\UpdateMirrorsCommand;
-use Doctrine\Common\Persistence\ObjectRepository;
+use App\Entity\Mirror;
+use App\Repository\MirrorRepository;
+use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -19,57 +18,32 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 {
     public function testCommand()
     {
-        /** @var ObjectRepository|\PHPUnit_Framework_MockObject_MockObject $mirrorRepository */
-        $mirrorRepository = $this->createMock(ObjectRepository::class);
-        $mirrorRepository->method('findAll')->willReturn([]);
+        $newMirror = new Mirror('https://127.0.0.2', 'https');
+        $oldMirror = new Mirror('https://127.0.0.1', 'https');
+
+        /** @var MirrorRepository|\PHPUnit_Framework_MockObject_MockObject $mirrorRepository */
+        $mirrorRepository = $this->createMock(MirrorRepository::class);
+        $mirrorRepository->method('findAllExceptByUrls')->willReturn([$oldMirror]);
 
         /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getRepository')->willReturn($mirrorRepository);
+        $entityManager->expects($this->once())->method('merge')->with($newMirror);
+        $entityManager->expects($this->once())->method('remove')->with($oldMirror);
+        $entityManager->expects($this->once())->method('flush');
 
-        /** @var StreamInterface|\PHPUnit_Framework_MockObject_MockObject $RequestBody */
-        $responseBody = $this->createMock(StreamInterface::class);
-        $responseBody
-            ->method('getContents')
-            ->willReturn(
-                json_encode(
-                    [
-                        'version' => 3,
-                        'urls' => [
-                            [
-                                'url' => '',
-                                'protocol' => '',
-                                'country_code' => null,
-                                'last_sync' => null,
-                                'delay' => 1,
-                                'duration_avg' => 1,
-                                'score' => 1,
-                                'completion_pct' => 1,
-                                'duration_stddev' => 1
-                            ]
-                        ]
-                    ]
-                )
-            );
-
-        /** @var ResponseInterface|\PHPUnit_Framework_MockObject_MockObject $response */
-        $response = $this->createMock(ResponseInterface::class);
-        $response->method('getBody')->willReturn($responseBody);
-
-        /** @var Client|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
-        $guzzleClient = $this->createMock(Client::class);
-        $guzzleClient->method('request')->willReturn($response);
+        /** @var MirrorFetcher|\PHPUnit_Framework_MockObject_MockObject $mirrorFetcher */
+        $mirrorFetcher = $this->createMock(MirrorFetcher::class);
+        $mirrorFetcher->method('fetchMirrors')->willReturn([$newMirror]);
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateMirrorsCommand($entityManager, $guzzleClient, 'http://localhost/'));
+        $application->add(new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository));
 
         $command = $application->find('app:update:mirrors');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['command' => $command->getName()]);
 
-        $output = $commandTester->getDisplay();
-        $this->assertEmpty($output);
+        $this->assertEquals(0, $commandTester->getStatusCode());
     }
 }

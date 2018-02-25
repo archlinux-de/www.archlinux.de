@@ -86,4 +86,18 @@ class MirrorRepository extends EntityRepository
     {
         return $this->findBy(['protocol' => self::PROTOCOL], ['score' => 'DESC']);
     }
+
+    /**
+     * @param array $urls
+     * @return array
+     */
+    public function findAllExceptByUrls(array $urls): array
+    {
+        return $this
+            ->createQueryBuilder('mirror')
+            ->where('mirror.url NOT IN (:urls)')
+            ->setParameter('urls', $urls)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Command\Update;
 
-use App\Entity\Country;
-use App\Entity\Mirror;
+use App\Repository\MirrorRepository;
+use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,23 +16,29 @@ class UpdateMirrorsCommand extends Command
 
     /** @var EntityManagerInterface */
     private $entityManager;
-    /** @var Client */
-    private $guzzleClient;
-    /** @var string */
-    private $mirrorStatusUrl;
+
+    /** @var MirrorFetcher */
+    private $mirrorFetcher;
+
+    /** @var MirrorRepository */
+    private $mirrorRepository;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param Client $guzzleClient
-     * @param string $mirrorStatusUrl
+     * @param MirrorFetcher $mirrorFetcher
+     * @param MirrorRepository $mirrorRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, Client $guzzleClient, string $mirrorStatusUrl)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        MirrorFetcher $mirrorFetcher,
+        MirrorRepository $mirrorRepository
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
-        $this->guzzleClient = $guzzleClient;
-        $this->mirrorStatusUrl = $mirrorStatusUrl;
+        $this->mirrorFetcher = $mirrorFetcher;
+        $this->mirrorRepository = $mirrorRepository;
     }
+
 
     protected function configure()
     {
@@ -44,69 +49,16 @@ class UpdateMirrorsCommand extends Command
     {
         $this->lock('cron.lock', true);
 
-        $status = $this->getMirrorStatus();
-        if ($status['version'] != 3) {
-            throw new \RuntimeException('incompatible mirrorstatus version');
+        $urls = [];
+        foreach ($this->mirrorFetcher->fetchMirrors() as $mirror) {
+            $this->entityManager->merge($mirror);
+            $urls[] = $mirror->getUrl();
         }
-        $mirrors = $status['urls'];
-        if (empty($mirrors)) {
-            throw new \RuntimeException('mirrorlist is empty');
-        }
-        $this->updateMirrorlist($mirrors);
-
-        $this->release();
-    }
-
-    private function getMirrorStatus(): array
-    {
-        $response = $this->guzzleClient->request('GET', $this->mirrorStatusUrl);
-        $content = $response->getBody()->getContents();
-        if (empty($content)) {
-            throw new \RuntimeException('empty mirrorstatus', 1);
-        }
-        $mirrors = json_decode($content, true);
-        if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \RuntimeException('could not decode mirrorstatus', 1);
-        }
-
-        return $mirrors;
-    }
-
-    /**
-     * @param array $mirrors
-     */
-    private function updateMirrorlist(array $mirrors)
-    {
-        $this->removeAllMirrors();
-
-        foreach ($mirrors as $mirror) {
-            $newMirror = new Mirror($mirror['url'], $mirror['protocol']);
-
-            if (!is_null($mirror['country_code'])) {
-                $country = $this->entityManager->find(Country::class, $mirror['country_code']);
-                $newMirror->setCountry($country);
-            }
-            if (!is_null($mirror['last_sync'])) {
-                $newMirror->setLastSync(new \DateTime($mirror['last_sync']));
-            }
-            $newMirror->setDelay($mirror['delay']);
-            $newMirror->setDurationAvg($mirror['duration_avg']);
-            $newMirror->setScore($mirror['score']);
-            $newMirror->setCompletionPct($mirror['completion_pct']);
-            $newMirror->setDurationStddev($mirror['duration_stddev']);
-
-            $this->entityManager->persist($newMirror);
-        }
-
-        $this->entityManager->flush();
-    }
-
-    private function removeAllMirrors()
-    {
-        $mirrors = $this->entityManager->getRepository(Mirror::class)->findAll();
-        foreach ($mirrors as $mirror) {
+        foreach ($this->mirrorRepository->findAllExceptByUrls($urls) as $mirror) {
             $this->entityManager->remove($mirror);
         }
+
         $this->entityManager->flush();
+        $this->release();
     }
 }

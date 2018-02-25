@@ -7,15 +7,15 @@ use Doctrine\ORM\EntityRepository;
 class CountryRepository extends EntityRepository
 {
     /**
-     * @param array $ids
+     * @param array $codes
      * @return array
      */
-    public function findAllExceptByIds(array $ids): array
+    public function findAllExceptByCodes(array $codes): array
     {
         return $this
             ->createQueryBuilder('country')
-            ->where('country.code NOT IN (:ids)')
-            ->setParameter('ids', $ids)
+            ->where('country.code NOT IN (:codes)')
+            ->setParameter('codes', $codes)
             ->getQuery()
             ->getResult();
     }

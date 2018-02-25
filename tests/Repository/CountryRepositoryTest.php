@@ -20,7 +20,7 @@ class CountryRepositoryTest extends DatabaseTestCase
         /** @var CountryRepository $countryRepository */
         $countryRepository = $this->getRepository(Country::class);
         /** @var Country[] $countries */
-        $countries = $countryRepository->findAllExceptByIds(['A']);
+        $countries = $countryRepository->findAllExceptByCodes(['A']);
 
         $this->assertCount(1, $countries);
         $this->assertEquals('B', $countries[0]->getCode());

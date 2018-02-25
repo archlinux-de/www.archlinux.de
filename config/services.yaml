@@ -42,7 +42,7 @@ services:
 
     League\ISO3166\ISO3166:
 
-    App\Command\Update\UpdateMirrorsCommand:
+    App\Service\MirrorFetcher:
         $mirrorStatusUrl: '%app.mirrors.status%'
 
     App\Command\Update\UpdateNewsCommand:
@@ -70,3 +70,7 @@ services:
     App\Repository\ReleaseRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         arguments: ['\App\Entity\Release']
+
+    App\Repository\CountryRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments: ['\App\Entity\Country']
