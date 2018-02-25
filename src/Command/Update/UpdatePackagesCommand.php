@@ -56,17 +56,12 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
     protected function configure()
     {
-        $this->setName('app:update:packages')
-            ->addOption('reset', 'r');
+        $this->setName('app:update:packages');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-
-        if ($input->getOption('reset')) {
-            $this->resetDatabase($output);
-        }
 
         if (!$this->hasMirrorUpdated()) {
             $this->printDebug('No updated packages available...', $output);
@@ -147,56 +142,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         }
 
         $this->release();
-    }
-
-    /**
-     * @param OutputInterface $output
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    private function resetDatabase(OutputInterface $output)
-    {
-        $tables = [];
-        foreach ([AbstractRelation::class, Package::class, Repository::class] as $className) {
-            $tables[] = $this->entityManager->getClassMetadata($className)->getTableName();
-        }
-
-        $connection = $this->entityManager->getConnection();
-        $dbPlatform = $connection->getDatabasePlatform();
-
-        if (!$output->isQuiet()) {
-            $tablesTotal = count($tables);
-            $progress = new ProgressBar($output, $tablesTotal);
-            $progress->setFormatDefinition('minimal', 'Resetting database: %percent%%');
-            $progress->setFormat('minimal');
-            $progress->start();
-        }
-
-        $connection->query('SET FOREIGN_KEY_CHECKS=0');
-        foreach ($tables as $table) {
-            $connection->executeUpdate($dbPlatform->getTruncateTableSql($table));
-            if (isset($progress)) {
-                $progress->advance();
-            }
-        }
-        $connection->query('SET FOREIGN_KEY_CHECKS=1');
-
-        if (isset($progress)) {
-            $progress->finish();
-            $output->writeln('');
-        }
-
-        $this->updateLastMirrorUpdate(0);
-    }
-
-    /**
-     * @param int $lastMirrorUpdate
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    private function updateLastMirrorUpdate(int $lastMirrorUpdate)
-    {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($lastMirrorUpdate);
-        $this->cache->save($lastLocalUpdateCache);
     }
 
     /**
@@ -319,6 +264,16 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function resolveRelations()
     {
         $this->entityManager->getRepository(AbstractRelation::class)->updateTargets();
+    }
+
+    /**
+     * @param int $lastMirrorUpdate
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    private function updateLastMirrorUpdate(int $lastMirrorUpdate)
+    {
+        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($lastMirrorUpdate);
+        $this->cache->save($lastLocalUpdateCache);
     }
 
     /**
