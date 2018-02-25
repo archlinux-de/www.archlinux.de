@@ -31,23 +31,20 @@ class UpdateCountriesCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return null|int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         foreach (new ISO3166() as $iso3166Country) {
-            $country = $this->entityManager->find(Country::class, $iso3166Country['alpha2']);
+            $country = (new Country($iso3166Country['alpha2']))->setName($iso3166Country['name']);
+            $this->entityManager->merge($country);
+        }
 
-            if (is_null($country)) {
-                $country = new Country($iso3166Country['alpha2']);
-            }
-            $country->setName($iso3166Country['name']);
-
-            $this->entityManager->persist($country);
+        $countryRepository = $this->entityManager->getRepository(Country::class);
+        $countryIds = array_keys(iterator_to_array((new ISO3166())->iterator()));
+        foreach ($countryRepository->findAllExceptByIds($countryIds) as $country) {
+            $this->entityManager->remove($country);
         }
 
         $this->entityManager->flush();
-
-        return 0;
     }
 }
