@@ -2,12 +2,9 @@
 
 namespace App\Command\Update;
 
-use App\Entity\NewsAuthor;
-use App\Entity\NewsItem;
+use App\Repository\NewsItemRepository;
+use App\Service\NewsItemFetcher;
 use Doctrine\ORM\EntityManagerInterface;
-use FeedIo\Factory;
-use FeedIo\Feed\ItemInterface;
-use FeedIo\FeedInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,18 +16,27 @@ class UpdateNewsCommand extends Command
 
     /** @var EntityManagerInterface */
     private $entityManager;
-    /** @var string */
-    private $newsFeedUrl;
+
+    /** @var NewsItemFetcher */
+    private $newsItemFetcher;
+
+    /** @var NewsItemRepository */
+    private $newsItemRepository;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param string $newsFeedUrl
+     * @param NewsItemFetcher $newsItemFetcher
+     * @param NewsItemRepository $newsItemRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, string $newsFeedUrl)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        NewsItemFetcher $newsItemFetcher,
+        NewsItemRepository $newsItemRepository
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
-        $this->newsFeedUrl = $newsFeedUrl;
+        $this->newsItemFetcher = $newsItemFetcher;
+        $this->newsItemRepository = $newsItemRepository;
     }
 
     protected function configure()
@@ -41,39 +47,21 @@ class UpdateNewsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
-        $this->updateNewsEntries($this->getNewsFeed());
-        $this->release();
-    }
 
-    private function updateNewsEntries(FeedInterface $newsFeed)
-    {
-        /** @var ItemInterface $newsEntry */
-        foreach ($newsFeed as $newsEntry) {
-            $newsItem = $this->entityManager->find(NewsItem::class, $newsEntry->getPublicId());
-            if (is_null($newsItem)) {
-                $newsItem = new NewsItem($newsEntry->getPublicId());
+        $ids = [];
+        $oldestLastModified = new \DateTime();
+        foreach ($this->newsItemFetcher->fetchNewsItems() as $newsItem) {
+            $this->entityManager->merge($newsItem);
+            $ids[] = $newsItem->getId();
+            if ($oldestLastModified > $newsItem->getLastModified()) {
+                $oldestLastModified = $newsItem->getLastModified();
             }
-            $newsItem
-                ->setTitle($newsEntry->getTitle())
-                ->setLink($newsEntry->getLink())
-                ->setDescription($newsEntry->getDescription())
-                ->setAuthor(
-                    (new NewsAuthor())
-                        ->setUri($newsEntry->getAuthor()->getUri())
-                        ->setName($newsEntry->getAuthor()->getName())
-                )
-                ->setLastModified($newsEntry->getLastModified());
-            $this->entityManager->persist($newsItem);
+        }
+        foreach ($this->newsItemRepository->findAllExceptByIdsNewerThan($ids, $oldestLastModified) as $newsItem) {
+            $this->entityManager->remove($newsItem);
         }
 
         $this->entityManager->flush();
-    }
-
-    /**
-     * @return FeedInterface
-     */
-    private function getNewsFeed(): FeedInterface
-    {
-        return Factory::create()->getFeedIo()->read($this->newsFeedUrl)->getFeed();
+        $this->release();
     }
 }

@@ -57,4 +57,24 @@ class NewsItemRepositoryTest extends DatabaseTestCase
         $newsItemRepository = $this->getRepository(NewsItem::class);
         $this->assertCount(1, $newsItemRepository->findLatest(1));
     }
+
+    public function testFindAllExceptByIdsNewerThan()
+    {
+        $newsItemA = $this->createNewsItem('A', new \DateTime('- 2 day'));
+        $newsItemB = $this->createNewsItem('B', new \DateTime('- 2 day'));
+        $newsItemC = $this->createNewsItem('C', new \DateTime('- 4 day'));
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($newsItemA);
+        $entityManager->persist($newsItemB);
+        $entityManager->persist($newsItemC);
+        $entityManager->flush();
+
+        /** @var NewsItemRepository $newsItemRepository */
+        $newsItemRepository = $this->getRepository(NewsItem::class);
+        /** @var NewsItem[] $newsItems */
+        $newsItems = $newsItemRepository->findAllExceptByIdsNewerThan(['A'], new \DateTime('- 3 day'));
+
+        $this->assertCount(1, $newsItems);
+        $this->assertEquals('B', $newsItems[0]->getId());
+    }
 }
