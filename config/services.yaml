@@ -40,6 +40,8 @@ services:
         arguments:
             - '%geoip.database%'
 
+    League\ISO3166\ISO3166:
+
     App\Command\Update\UpdateMirrorsCommand:
         $mirrorStatusUrl: '%app.mirrors.status%'
 
