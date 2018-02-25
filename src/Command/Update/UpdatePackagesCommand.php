@@ -148,6 +148,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $output
             );
         }
+
+        $this->release();
     }
 
     /**

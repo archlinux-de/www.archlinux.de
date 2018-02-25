@@ -5,11 +5,11 @@ namespace App\Command\Update;
 use App\Entity\Release;
 use App\Entity\Torrent;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use GuzzleHttp\Client;
 
 class UpdateReleasesCommand extends Command
 {
@@ -54,6 +54,26 @@ class UpdateReleasesCommand extends Command
         }
 
         $this->updateRelengReleases($releases);
+
+        $this->release();
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getRelengReleases(): array
+    {
+        $response = $this->guzzleClient->request('GET', $this->releaseUrl);
+        $content = $response->getBody()->getContents();
+        if (empty($content)) {
+            throw new \RuntimeException('empty releng releases', 1);
+        }
+        $releng = json_decode($content, true);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \RuntimeException('could not decode releng releases', 1);
+        }
+
+        return $releng;
     }
 
     /**
@@ -95,23 +115,5 @@ class UpdateReleasesCommand extends Command
         }
 
         $this->entityManager->flush();
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getRelengReleases(): array
-    {
-        $response = $this->guzzleClient->request('GET', $this->releaseUrl);
-        $content = $response->getBody()->getContents();
-        if (empty($content)) {
-            throw new \RuntimeException('empty releng releases', 1);
-        }
-        $releng = json_decode($content, true);
-        if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \RuntimeException('could not decode releng releases', 1);
-        }
-
-        return $releng;
     }
 }

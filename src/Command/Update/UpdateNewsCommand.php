@@ -42,6 +42,7 @@ class UpdateNewsCommand extends Command
     {
         $this->lock('cron.lock', true);
         $this->updateNewsEntries($this->getNewsFeed());
+        $this->release();
     }
 
     private function updateNewsEntries(FeedInterface $newsFeed)

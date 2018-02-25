@@ -53,6 +53,23 @@ class UpdateMirrorsCommand extends Command
             throw new \RuntimeException('mirrorlist is empty');
         }
         $this->updateMirrorlist($mirrors);
+
+        $this->release();
+    }
+
+    private function getMirrorStatus(): array
+    {
+        $response = $this->guzzleClient->request('GET', $this->mirrorStatusUrl);
+        $content = $response->getBody()->getContents();
+        if (empty($content)) {
+            throw new \RuntimeException('empty mirrorstatus', 1);
+        }
+        $mirrors = json_decode($content, true);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \RuntimeException('could not decode mirrorstatus', 1);
+        }
+
+        return $mirrors;
     }
 
     /**
@@ -91,20 +108,5 @@ class UpdateMirrorsCommand extends Command
             $this->entityManager->remove($mirror);
         }
         $this->entityManager->flush();
-    }
-
-    private function getMirrorStatus(): array
-    {
-        $response = $this->guzzleClient->request('GET', $this->mirrorStatusUrl);
-        $content = $response->getBody()->getContents();
-        if (empty($content)) {
-            throw new \RuntimeException('empty mirrorstatus', 1);
-        }
-        $mirrors = json_decode($content, true);
-        if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \RuntimeException('could not decode mirrorstatus', 1);
-        }
-
-        return $mirrors;
     }
 }
