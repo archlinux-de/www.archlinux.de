@@ -39,4 +39,18 @@ class ReleaseRepository extends EntityRepository
             ->getQuery()
             ->getSingleResult();
     }
+
+    /**
+     * @param array $versions
+     * @return array
+     */
+    public function findAllExceptByVersions(array $versions): array
+    {
+        return $this
+            ->createQueryBuilder('release')
+            ->where('release.version NOT IN (:versions)')
+            ->setParameter('versions', $versions)
+            ->getQuery()
+            ->getResult();
+    }
 }

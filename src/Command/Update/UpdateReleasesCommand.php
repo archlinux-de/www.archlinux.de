@@ -2,10 +2,9 @@
 
 namespace App\Command\Update;
 
-use App\Entity\Release;
-use App\Entity\Torrent;
+use App\Repository\ReleaseRepository;
+use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,22 +16,25 @@ class UpdateReleasesCommand extends Command
 
     /** @var EntityManagerInterface */
     private $entityManager;
-    /** @var Client */
-    private $guzzleClient;
-    /** @var string */
-    private $releaseUrl;
+    /** @var ReleaseFetcher */
+    private $releaseFetcher;
+    /** @var ReleaseRepository */
+    private $releaseRepository;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param Client $guzzleClient
-     * @param string $releaseUrl
+     * @param ReleaseFetcher $releaseFetcher
+     * @param ReleaseRepository $releaseRepository
      */
-    public function __construct(EntityManagerInterface $entityManager, Client $guzzleClient, string $releaseUrl)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ReleaseFetcher $releaseFetcher,
+        ReleaseRepository $releaseRepository
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
-        $this->guzzleClient = $guzzleClient;
-        $this->releaseUrl = $releaseUrl;
+        $this->releaseFetcher = $releaseFetcher;
+        $this->releaseRepository = $releaseRepository;
     }
 
     protected function configure()
@@ -44,76 +46,16 @@ class UpdateReleasesCommand extends Command
     {
         $this->lock('cron.lock', true);
 
-        $releng = $this->getRelengReleases();
-        if ($releng['version'] != 1) {
-            throw new \RuntimeException('incompatible releng/releases version');
+        $versions = [];
+        foreach ($this->releaseFetcher->fetchReleases() as $release) {
+            $this->entityManager->merge($release);
+            $versions[] = $release->getVersion();
         }
-        $releases = $releng['releases'];
-        if (empty($releases)) {
-            throw new \RuntimeException('there are no releases');
-        }
-
-        $this->updateRelengReleases($releases);
-
-        $this->release();
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getRelengReleases(): array
-    {
-        $response = $this->guzzleClient->request('GET', $this->releaseUrl);
-        $content = $response->getBody()->getContents();
-        if (empty($content)) {
-            throw new \RuntimeException('empty releng releases', 1);
-        }
-        $releng = json_decode($content, true);
-        if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \RuntimeException('could not decode releng releases', 1);
-        }
-
-        return $releng;
-    }
-
-    /**
-     * @param array $newReleases
-     */
-    private function updateRelengReleases(array $newReleases)
-    {
-        foreach ($newReleases as $newRelease) {
-            $release = $this->entityManager->find(Release::class, $newRelease['version']);
-
-            if (is_null($release)) {
-                $release = new Release($newRelease['version']);
-            }
-            $release
-                ->setAvailable($newRelease['available'])
-                ->setInfo($newRelease['info'])
-                ->setIsoUrl($newRelease['iso_url'])
-                ->setMd5Sum($newRelease['md5_sum'])
-                ->setCreated(new \DateTime($newRelease['created']))
-                ->setKernelVersion($newRelease['kernel_version'])
-                ->setReleaseDate(new \DateTime($newRelease['release_date']))
-                ->setSha1Sum($newRelease['sha1_sum'])
-                ->setTorrent(
-                    (new Torrent())
-                        ->setUrl($newRelease['torrent_url'])
-                        ->setComment($newRelease['torrent']['comment'])
-                        ->setInfoHash($newRelease['torrent']['info_hash'])
-                        ->setPieceLength($newRelease['torrent']['piece_length'])
-                        ->setFileName($newRelease['torrent']['file_name'])
-                        ->setAnnounce($newRelease['torrent']['announce'])
-                        ->setFileLength($newRelease['torrent']['file_length'])
-                        ->setPieceCount($newRelease['torrent']['piece_count'])
-                        ->setCreatedBy($newRelease['torrent']['created_by'])
-                        ->setCreationDate(new \DateTime($newRelease['torrent']['creation_date']))
-                        ->setMagnetUri($newRelease['magnet_uri'])
-                );
-
-            $this->entityManager->persist($release);
+        foreach ($this->releaseRepository->findAllExceptByVersions($versions) as $release) {
+            $this->entityManager->remove($release);
         }
 
         $this->entityManager->flush();
+        $this->release();
     }
 }

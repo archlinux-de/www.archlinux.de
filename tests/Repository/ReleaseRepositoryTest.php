@@ -47,4 +47,34 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $latestRelease = $releaseRepository->getAvailableByVersion($release->getVersion());
         $this->assertEquals($release->getVersion(), $latestRelease->getVersion());
     }
+
+    public function testFindAllExceptByVersions()
+    {
+        $releaseA = new Release('A');
+        $releaseA->setAvailable(true);
+        $releaseA->setInfo('');
+        $releaseA->setIsoUrl('');
+        $releaseA->setCreated(new \DateTime());
+        $releaseA->setReleaseDate(new \DateTime());
+
+        $releaseB = new Release('B');
+        $releaseB->setAvailable(true);
+        $releaseB->setInfo('');
+        $releaseB->setIsoUrl('');
+        $releaseB->setCreated(new \DateTime());
+        $releaseB->setReleaseDate(new \DateTime());
+
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($releaseA);
+        $entityManager->persist($releaseB);
+        $entityManager->flush();
+
+        /** @var ReleaseRepository $releaseRepository */
+        $releaseRepository = $this->getRepository(Release::class);
+        /** @var Release[] $releases */
+        $releases = $releaseRepository->findAllExceptByVersions(['A']);
+
+        $this->assertCount(1, $releases);
+        $this->assertEquals('B', $releases[0]->getVersion());
+    }
 }

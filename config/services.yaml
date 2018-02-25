@@ -45,11 +45,11 @@ services:
     App\Service\MirrorFetcher:
         $mirrorStatusUrl: '%app.mirrors.status%'
 
+    App\Service\ReleaseFetcher:
+        $releaseUrl: '%app.releng.releases%'
+
     App\Command\Update\UpdateNewsCommand:
         $newsFeedUrl: '%app.news.feed%'
-
-    App\Command\Update\UpdateReleasesCommand:
-        $releaseUrl: '%app.releng.releases%'
 
     App\Repository\AbstractRelationRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
