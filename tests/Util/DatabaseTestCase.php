@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -66,5 +67,13 @@ class DatabaseTestCase extends KernelTestCase
     protected function getContainer(): ContainerInterface
     {
         return $this->container;
+    }
+
+    /**
+     * @return Application
+     */
+    protected function createApplication(): Application
+    {
+        return new Application(static::$kernel);
     }
 }
