@@ -40,6 +40,10 @@ services:
         bind:
             $mirrorUrl: '%app.packages.mirror%'
 
+    App\Service\RepositoryManager:
+        bind:
+            $repositoryConfiguration: '%app.packages.repositories%'
+
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
@@ -63,6 +67,14 @@ services:
     App\Service\NewsItemFetcher:
         $newsFeedUrl: '%app.news.feed%'
 
+    App\Repository\RepositoryRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments: ['\App\Entity\Packages\Repository']
+
+    App\Repository\PackageRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments: ['\App\Entity\Packages\Package']
+
     App\Repository\AbstractRelationRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         arguments: ['\App\Entity\Packages\Relations\AbstractRelation']
@@ -74,10 +86,6 @@ services:
     App\Repository\NewsItemRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         arguments: ['\App\Entity\NewsItem']
-
-    App\Repository\PackageRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Packages\Package']
 
     App\Repository\ReleaseRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
