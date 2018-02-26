@@ -12,7 +12,6 @@ use App\Entity\Release;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -68,7 +67,7 @@ class ResetDatabaseCommand extends ContainerAwareCommand
         }
 
         if (!empty($classNames)) {
-            $this->resetDatabase($classNames, $output);
+            $this->resetDatabase($classNames);
         }
 
         $this->release();
@@ -78,7 +77,7 @@ class ResetDatabaseCommand extends ContainerAwareCommand
      * @param array $classNames
      * @param OutputInterface $output
      */
-    private function resetDatabase(array $classNames, OutputInterface $output)
+    private function resetDatabase(array $classNames)
     {
         $tables = [];
         foreach ($classNames as $className) {
@@ -87,17 +86,6 @@ class ResetDatabaseCommand extends ContainerAwareCommand
 
         $connection = $this->entityManager->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
-
-        if (!$output->isQuiet()) {
-            $tablesTotal = count($tables);
-            $progress = new ProgressBar($output, $tablesTotal);
-            $progress->setFormatDefinition(
-                'minimal',
-                'Resetting database [' . implode(', ', $tables) . ']: %percent%%'
-            );
-            $progress->setFormat('minimal');
-            $progress->start();
-        }
 
         switch ($connection->getDriver()->getName()) {
             case 'pdo_mysql':
@@ -110,14 +98,6 @@ class ResetDatabaseCommand extends ContainerAwareCommand
 
         foreach ($tables as $table) {
             $connection->executeUpdate($dbPlatform->getTruncateTableSql($table));
-            if (isset($progress)) {
-                $progress->advance();
-            }
-        }
-
-        if (isset($progress)) {
-            $progress->finish();
-            $output->writeln('');
         }
     }
 }

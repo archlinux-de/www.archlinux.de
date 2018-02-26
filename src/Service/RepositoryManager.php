@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Packages\Repository;
 use App\Repository\RepositoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 
 class RepositoryManager implements \IteratorAggregate
 {
@@ -18,25 +17,19 @@ class RepositoryManager implements \IteratorAggregate
     /** @var RepositoryRepository */
     private $repositoryRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
-
     /**
      * @param EntityManagerInterface $entityManager
      * @param array $repositoryConfiguration
      * @param RepositoryRepository $repositoryRepository
-     * @param LoggerInterface $logger
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         array $repositoryConfiguration,
-        RepositoryRepository $repositoryRepository,
-        LoggerInterface $logger
+        RepositoryRepository $repositoryRepository
     ) {
         $this->entityManager = $entityManager;
         $this->repositoryConfiguration = $repositoryConfiguration;
         $this->repositoryRepository = $repositoryRepository;
-        $this->logger = $logger;
     }
 
     public function cleanupObsoleteRepositories()
@@ -47,13 +40,6 @@ class RepositoryManager implements \IteratorAggregate
         foreach ($repos as $repo) {
             if (!isset($this->repositoryConfiguration[$repo->getName()])
                 || !in_array($repo->getArchitecture(), $this->repositoryConfiguration[$repo->getName()])) {
-                $this->logger->info(
-                    sprintf(
-                        'Removing repository [%s] (%s)',
-                        $repo->getName(),
-                        $repo->getArchitecture()
-                    )
-                );
                 $this->entityManager->remove($repo);
                 $this->updatedPackages = true;
             }

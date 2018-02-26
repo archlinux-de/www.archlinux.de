@@ -16,7 +16,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -86,8 +85,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->lock('cron.lock', true);
 
         if (!$this->packageDatabaseMirror->hasUpdated()) {
-            $this->printDebug('No updated packages available...', $output);
-
             return;
         }
 
@@ -95,11 +92,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
         /** @var Repository $repo */
         foreach ($this->repositoryManager as $repo) {
-            $this->printDebug('Processing [' . $repo->getName() . '] (' . $repo->getArchitecture() . ')', $output);
-
             $packageMTime = $this->packageRepository->getMaxMTimeByRepository($repo);
 
-            $this->printDebug("\tDownloading...", $output);
             $packageDatabaseFile = $this->packageDatabaseDownloader->download(
                 $this->packageDatabaseMirror->getMirrorUrl(),
                 $repo->getName(),
@@ -109,18 +103,10 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             if (($repo->getMTime() && $packageDatabaseFile->getMTime() > $repo->getMTime()->getTimestamp())
                 || !$repo->getMTime()) {
                 $packages = new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
-                if (!$output->isQuiet()) {
-                    $progress = new ProgressBar($output, iterator_count($packages));
-                    $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
-                    $progress->setFormat('minimal');
-                    $progress->start();
-                }
+
                 $oldPackageNames = [];
                 /** @var DatabasePackage $package */
                 foreach ($packages as $package) {
-                    if (isset($progress)) {
-                        $progress->advance();
-                    }
                     if (is_null($packageMTime)
                         || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
                         $this->updatePackage($repo, $package);
@@ -128,13 +114,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                         $oldPackageNames[] = $package->getName();
                     }
                 }
-                if (isset($progress)) {
-                    $progress->finish();
-                    $output->writeln('');
-                }
 
                 if (!is_null($packageMTime)) {
-                    $this->printDebug("\tCleaning up obsolete packages...", $output);
                     $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
                 }
 
@@ -142,11 +123,9 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $this->entityManager->persist($repo);
             }
         }
-        $this->printDebug('Cleaning up obsolete repositories...', $output);
         $this->repositoryManager->cleanupObsoleteRepositories();
 
         if ($this->updatedPackages) {
-            $this->printDebug('Resolving package relations...', $output);
             $this->entityManager->flush();
             $this->relationRepository->updateTargets();
         }
@@ -155,17 +134,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->packageDatabaseMirror->updateLastUpdate();
 
         $this->release();
-    }
-
-    /**
-     * @param string $text
-     * @param OutputInterface $output
-     */
-    private function printDebug(string $text, OutputInterface $output)
-    {
-        if (!$output->isQuiet()) {
-            $output->writeln($text);
-        }
     }
 
     /**
