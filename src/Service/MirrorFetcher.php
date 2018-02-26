@@ -31,31 +31,29 @@ class MirrorFetcher
     }
 
     /**
-     * @return Mirror[]
+     * @return iterable
      */
-    public function fetchMirrors(): array
+    public function fetchMirrors(): iterable
     {
-        return iterator_to_array((function () {
-            foreach ($this->fetchMirrorStatusUrls() as $mirrorData) {
-                $mirror = new Mirror($mirrorData['url'], $mirrorData['protocol']);
+        foreach ($this->fetchMirrorStatusUrls() as $mirrorData) {
+            $mirror = new Mirror($mirrorData['url'], $mirrorData['protocol']);
 
-                if (!is_null($mirrorData['country_code'])) {
-                    /** @var Country $country */
-                    $country = $this->countryRepository->find($mirrorData['country_code']);
-                    $mirror->setCountry($country);
-                }
-                if (!is_null($mirrorData['last_sync'])) {
-                    $mirror->setLastSync(new \DateTime($mirrorData['last_sync']));
-                }
-                $mirror->setDelay($mirrorData['delay']);
-                $mirror->setDurationAvg($mirrorData['duration_avg']);
-                $mirror->setScore($mirrorData['score']);
-                $mirror->setCompletionPct($mirrorData['completion_pct']);
-                $mirror->setDurationStddev($mirrorData['duration_stddev']);
-
-                yield $mirror;
+            if (!is_null($mirrorData['country_code'])) {
+                /** @var Country $country */
+                $country = $this->countryRepository->find($mirrorData['country_code']);
+                $mirror->setCountry($country);
             }
-        })());
+            if (!is_null($mirrorData['last_sync'])) {
+                $mirror->setLastSync(new \DateTime($mirrorData['last_sync']));
+            }
+            $mirror->setDelay($mirrorData['delay']);
+            $mirror->setDurationAvg($mirrorData['duration_avg']);
+            $mirror->setScore($mirrorData['score']);
+            $mirror->setCompletionPct($mirrorData['completion_pct']);
+            $mirror->setDurationStddev($mirrorData['duration_stddev']);
+
+            yield $mirror;
+        }
     }
 
     private function fetchMirrorStatusUrls(): array
@@ -75,7 +73,6 @@ class MirrorFetcher
         if (empty($data['urls'])) {
             throw new \RuntimeException('mirrorlist is empty');
         }
-
         return $data['urls'];
     }
 }

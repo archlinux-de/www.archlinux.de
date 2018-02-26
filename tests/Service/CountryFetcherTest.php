@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\Country;
 use App\Service\CountryFetcher;
 use League\ISO3166\ISO3166;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +18,8 @@ class CountryFetcherTest extends TestCase
                 ]
             )
         );
-        $countries = $countryFetcher->fetchCountries();
+        /** @var Country[] $countries */
+        $countries = iterator_to_array($countryFetcher->fetchCountries());
 
         $this->assertCount(1, $countries);
         $this->assertEquals('DE', $countries[0]->getCode());

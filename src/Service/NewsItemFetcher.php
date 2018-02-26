@@ -27,27 +27,25 @@ class NewsItemFetcher
     }
 
     /**
-     * @return NewsItem[]
+     * @return iterable
      */
-    public function fetchNewsItems(): array
+    public function fetchNewsItems(): iterable
     {
-        return iterator_to_array((function () {
-            /** @var ItemInterface $newsEntry */
-            foreach ($this->fetchNewsFeed() as $newsEntry) {
-                $newsItem = new NewsItem($newsEntry->getPublicId());
-                $newsItem
-                    ->setTitle($newsEntry->getTitle())
-                    ->setLink($newsEntry->getLink())
-                    ->setDescription($newsEntry->getDescription())
-                    ->setAuthor(
-                        (new NewsAuthor())
-                            ->setUri($newsEntry->getAuthor()->getUri())
-                            ->setName($newsEntry->getAuthor()->getName())
-                    )
-                    ->setLastModified($newsEntry->getLastModified());
-                yield $newsItem;
-            }
-        })());
+        /** @var ItemInterface $newsEntry */
+        foreach ($this->fetchNewsFeed() as $newsEntry) {
+            $newsItem = new NewsItem($newsEntry->getPublicId());
+            $newsItem
+                ->setTitle($newsEntry->getTitle())
+                ->setLink($newsEntry->getLink())
+                ->setDescription($newsEntry->getDescription())
+                ->setAuthor(
+                    (new NewsAuthor())
+                        ->setUri($newsEntry->getAuthor()->getUri())
+                        ->setName($newsEntry->getAuthor()->getName())
+                )
+                ->setLastModified($newsEntry->getLastModified());
+            yield $newsItem;
+        }
     }
 
     /**

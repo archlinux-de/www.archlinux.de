@@ -3,6 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Entity\Country;
+use App\Entity\Mirror;
 use App\Repository\CountryRepository;
 use App\Service\MirrorFetcher;
 use GuzzleHttp\Client;
@@ -41,7 +42,8 @@ class MirrorFetcherTest extends TestCase
         $countryRepository->method('find')->with('DE')->willReturn(new Country('DE'));
 
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
-        $mirrors = $mirrorFetcher->fetchMirrors();
+        /** @var Mirror[] $mirrors */
+        $mirrors = iterator_to_array($mirrorFetcher->fetchMirrors());
 
         $this->assertCount(1, $mirrors);
         $this->assertEquals('https://127.0.0.1', $mirrors[0]->getUrl());
@@ -69,7 +71,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        $mirrorFetcher->fetchMirrors();
+        iterator_to_array($mirrorFetcher->fetchMirrors());
     }
 
     public function testExceptionOnInvalidResponse()
@@ -86,7 +88,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        $mirrorFetcher->fetchMirrors();
+        iterator_to_array($mirrorFetcher->fetchMirrors());
     }
 
     public function testExceptionOnUnknownVersion()
@@ -103,7 +105,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        $mirrorFetcher->fetchMirrors();
+        iterator_to_array($mirrorFetcher->fetchMirrors());
     }
 
     public function testExceptionOnEmptyMirrorList()
@@ -120,6 +122,6 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        $mirrorFetcher->fetchMirrors();
+        iterator_to_array($mirrorFetcher->fetchMirrors());
     }
 }
