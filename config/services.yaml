@@ -36,6 +36,10 @@ services:
             - connect_timeout: 60
               timeout: 1800
 
+    App\ArchLinux\PackageDatabaseMirror:
+        bind:
+            $mirrorUrl: '%app.packages.mirror%'
+
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
