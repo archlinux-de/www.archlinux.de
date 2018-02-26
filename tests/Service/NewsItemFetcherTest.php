@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\NewsItem;
 use App\Service\NewsItemFetcher;
 use FeedIo\FeedIo;
 use GuzzleHttp\Client;
@@ -38,7 +39,8 @@ class NewsItemFetcherTest extends TestCase
         $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
         $newsItemFetcher = new NewsItemFetcher($feedIo, '');
 
-        $newsItems = $newsItemFetcher->fetchNewsItems();
+        /** @var NewsItem[] $newsItems */
+        $newsItems = iterator_to_array($newsItemFetcher->fetchNewsItems());
         $this->assertCount(1, $newsItems);
         $this->assertEquals('https://127.0.0.1/news/1', $newsItems[0]->getId());
         $this->assertEquals(new \DateTime('2018-02-22T19:06:26Z'), $newsItems[0]->getLastModified());
@@ -61,7 +63,7 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher($feedIo, '');
 
         $this->expectException(\RuntimeException::class);
-        $newsItemFetcher->fetchNewsItems();
+        iterator_to_array($newsItemFetcher->fetchNewsItems());
     }
 
     public function testExceptionOnInvalidResponse()
@@ -76,6 +78,6 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher($feedIo, '');
 
         $this->expectException(\RuntimeException::class);
-        $newsItemFetcher->fetchNewsItems();
+        iterator_to_array($newsItemFetcher->fetchNewsItems());
     }
 }

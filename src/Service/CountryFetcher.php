@@ -19,14 +19,12 @@ class CountryFetcher
     }
 
     /**
-     * @return Country[]
+     * @return iterable
      */
-    public function fetchCountries(): array
+    public function fetchCountries(): iterable
     {
-        return iterator_to_array((function () {
-            foreach ($this->iso3166 as $iso3166Country) {
-                yield (new Country($iso3166Country['alpha2']))->setName($iso3166Country['name']);
-            }
-        })());
+        foreach ($this->iso3166 as $iso3166Country) {
+            yield (new Country($iso3166Country['alpha2']))->setName($iso3166Country['name']);
+        }
     }
 }

@@ -47,9 +47,9 @@ class RepositoryManager implements \IteratorAggregate
     }
 
     /**
-     * @return \Iterator
+     * @return iterable
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): iterable
     {
         foreach ($this->repositoryConfiguration as $repoName => $arches) {
             foreach ($arches as $arch) {

@@ -18,16 +18,14 @@ class PackageDatabase implements \IteratorAggregate
     }
 
     /**
-     * @return \Iterator
+     * @return iterable
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): iterable
     {
-        return (function () {
-            /** @var \SplFileInfo $packageDirectory */
-            foreach ($this->getDatabaseDirectory() as $packageDirectory) {
-                yield new Package($packageDirectory);
-            }
-        })();
+        /** @var \SplFileInfo $packageDirectory */
+        foreach ($this->getDatabaseDirectory() as $packageDirectory) {
+            yield new Package($packageDirectory);
+        }
     }
 
     /**
