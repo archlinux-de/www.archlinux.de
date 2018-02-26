@@ -51,12 +51,41 @@ class LegacyControllerTest extends WebTestCase
         ];
     }
 
-    public function testUnknownPageWillFail()
+    public function testUnknownPageWillReturnNotFoundStatus()
     {
         $client = static::createClient();
 
         $client->request('GET', '/', ['page' => 'UnknownPage']);
 
         $this->assertTrue($client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @param string $legacyPage
+     * @param array $parameters
+     * @dataProvider provideInvalidLegacyPages
+     */
+    public function testInvalidParametersWillReturnNotFoundStatus(string $legacyPage, array $parameters = [])
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/', array_merge(['page' => $legacyPage], $parameters));
+
+        $this->assertTrue($client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @return array
+     */
+    public function provideInvalidLegacyPages(): array
+    {
+        return [
+            ['PackageDetails', ['package' => '123']],
+            ['PackageDetails', ['package' => '123', 'showfiles']],
+            [''],
+            ['Start"'],
+            ['Statistics%27'],
+            ['GetFileFromMirror']
+        ];
     }
 }

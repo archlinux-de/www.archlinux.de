@@ -2,16 +2,17 @@
 
 namespace App\Controller;
 
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RouterInterface;
 
 class LegacyController extends Controller
 {
-    /** @var RouterInterface */
-    private $router;
+    /** @var LoggerInterface */
+    private $logger;
+
     /** @var array */
     private $internalPages = array(
         'GetFileFromMirror' => 'app_mirror_fallback',
@@ -24,6 +25,7 @@ class LegacyController extends Controller
         'PackagesSuggest' => 'app_packagessuggest_suggest',
         'Start' => 'app_start_index'
     );
+
     /** @var array */
     private $externalPages = array(
         'ArchitectureDifferences' => 'https://www.archlinux.org/packages/differences/',
@@ -36,11 +38,11 @@ class LegacyController extends Controller
     );
 
     /**
-     * @param RouterInterface $router
+     * @param LoggerInterface $logger
      */
-    public function __construct(RouterInterface $router)
+    public function __construct(LoggerInterface $logger)
     {
-        $this->router = $router;
+        $this->logger = $logger;
     }
 
     /**
@@ -54,10 +56,19 @@ class LegacyController extends Controller
 
         if (isset($this->internalPages[$page])) {
             $parameters = array_diff_key($request->query->all(), ['page' => '']);
-            return $this->redirectToRoute($this->internalPages[$page], $parameters, Response::HTTP_MOVED_PERMANENTLY);
+            try {
+                return $this->redirectToRoute(
+                    $this->internalPages[$page],
+                    $parameters,
+                    Response::HTTP_MOVED_PERMANENTLY
+                );
+            } catch (\InvalidArgumentException $e) {
+                $this->logger->warning($e->getMessage(), ['exception' => $e]);
+            }
         } elseif (isset($this->externalPages[$page])) {
             return $this->redirect($this->externalPages[$page], Response::HTTP_MOVED_PERMANENTLY);
         }
+
         throw $this->createNotFoundException();
     }
 }
