@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @covers \App\Controller\LegacyController
@@ -87,5 +88,41 @@ class LegacyControllerTest extends WebTestCase
             ['Statistics%27'],
             ['GetFileFromMirror']
         ];
+    }
+
+    /**
+     * @param string $url
+     * @dataProvider providePkgstatsPostUrl
+     */
+    public function testPostPackageListIsRedirected(string $url)
+    {
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            $url,
+            ['pkgstatsver' => '2.3', 'arch' => 'x86_64', 'packages' => 'pkgstats', 'modules' => 'snd']
+        );
+
+        $this->assertEquals(308, $client->getResponse()->getStatusCode());
+        $this->assertEquals('https://pkgstats.archlinux.de/post', $client->getResponse()->headers->get('Location'));
+    }
+
+    /**
+     * @return array
+     */
+    public function providePkgstatsPostUrl(): array
+    {
+        return [
+            ['/?page=PostPackageList'],
+            ['/statistics']
+        ];
+    }
+
+    public function testPostIsInvalid()
+    {
+        $client = static::createClient();
+        $client->request('POST', '/?page=foo');
+
+        $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
     }
 }
