@@ -5,12 +5,12 @@ namespace App\Command\Update;
 use App\ArchLinux\Package as DatabasePackage;
 use App\ArchLinux\PackageDatabase;
 use App\ArchLinux\PackageDatabaseDownloader;
+use App\ArchLinux\PackageDatabaseMirror;
 use App\ArchLinux\PackageDatabaseReader;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -22,36 +22,38 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 {
     use LockableTrait;
 
-    /** @var int */
-    private $lastMirrorUpdate = 0;
     /** @var bool */
     private $updatedPackages = false;
+
     /** @var CacheItemPoolInterface */
     private $cache;
-    /** @var Client */
-    private $guzzleClient;
+
     /** @var PackageDatabaseDownloader */
     private $packageDatabaseDownloader;
+
     /** @var EntityManagerInterface */
     private $entityManager;
+
+    /** @var PackageDatabaseMirror */
+    private $packageDatabaseMirror;
 
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param CacheItemPoolInterface $cache
-     * @param Client $guzzleClient
      * @param EntityManagerInterface $entityManager
+     * @param PackageDatabaseMirror $packageDatabaseMirror
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
         CacheItemPoolInterface $cache,
-        Client $guzzleClient,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        PackageDatabaseMirror $packageDatabaseMirror
     ) {
         parent::__construct();
         $this->cache = $cache;
-        $this->guzzleClient = $guzzleClient;
         $this->packageDatabaseDownloader = $packageDatabaseDownloader;
         $this->entityManager = $entityManager;
+        $this->packageDatabaseMirror = $packageDatabaseMirror;
     }
 
     protected function configure()
@@ -63,7 +65,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     {
         $this->lock('cron.lock', true);
 
-        if (!$this->hasMirrorUpdated()) {
+        if (!$this->packageDatabaseMirror->hasUpdated()) {
             $this->printDebug('No updated packages available...', $output);
 
             return;
@@ -84,7 +86,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
                     $this->printDebug("\tDownloading...", $output);
                     $packageDatabaseFile = $this->packageDatabaseDownloader
-                        ->download($this->getContainer()->getParameter('app.packages.mirror'), $repo->getName(), $arch);
+                        ->download($this->packageDatabaseMirror->getMirrorUrl(), $repo->getName(), $arch);
 
                     if (($repo->getMTime() && $packageDatabaseFile->getMTime() > $repo->getMTime()->getTimestamp())
                         || !$repo->getMTime()) {
@@ -133,7 +135,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             }
 
             $this->entityManager->flush();
-            $this->updateLastMirrorUpdate($this->lastMirrorUpdate);
+            $this->packageDatabaseMirror->updateLastUpdate();
         } catch (\RuntimeException $e) {
             $this->printError(
                 'UpdatePackages failed at ' . $e->getFile() . ' on line ' . $e->getLine() . ': ' . $e->getMessage(),
@@ -142,26 +144,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         }
 
         $this->release();
-    }
-
-    /**
-     * @return bool
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    private function hasMirrorUpdated(): bool
-    {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate');
-        if ($lastLocalUpdateCache->isHit()) {
-            $content = $this->guzzleClient->request(
-                'GET',
-                $this->getContainer()->getParameter('app.packages.mirror') . 'lastupdate'
-            )->getBody()->getContents();
-            $this->lastMirrorUpdate = (int)$content;
-
-            return $this->lastMirrorUpdate !== (int)$lastLocalUpdateCache->get();
-        } else {
-            return true;
-        }
     }
 
     /**
@@ -264,16 +246,6 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     private function resolveRelations()
     {
         $this->entityManager->getRepository(AbstractRelation::class)->updateTargets();
-    }
-
-    /**
-     * @param int $lastMirrorUpdate
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    private function updateLastMirrorUpdate(int $lastMirrorUpdate)
-    {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($lastMirrorUpdate);
-        $this->cache->save($lastLocalUpdateCache);
     }
 
     /**
