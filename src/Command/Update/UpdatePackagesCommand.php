@@ -91,75 +91,68 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             return;
         }
 
-        try {
-            ini_set('memory_limit', '-1');
+        ini_set('memory_limit', '-1');
 
-            /** @var Repository $repo */
-            foreach ($this->repositoryManager as $repo) {
-                $this->printDebug('Processing [' . $repo->getName() . '] (' . $repo->getArchitecture() . ')', $output);
+        /** @var Repository $repo */
+        foreach ($this->repositoryManager as $repo) {
+            $this->printDebug('Processing [' . $repo->getName() . '] (' . $repo->getArchitecture() . ')', $output);
 
-                $packageMTime = $this->packageRepository->getMaxMTimeByRepository($repo);
+            $packageMTime = $this->packageRepository->getMaxMTimeByRepository($repo);
 
-                $this->printDebug("\tDownloading...", $output);
-                $packageDatabaseFile = $this->packageDatabaseDownloader->download(
-                    $this->packageDatabaseMirror->getMirrorUrl(),
-                    $repo->getName(),
-                    $repo->getArchitecture()
-                );
-
-                if (($repo->getMTime() && $packageDatabaseFile->getMTime() > $repo->getMTime()->getTimestamp())
-                    || !$repo->getMTime()) {
-                    $packages = new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
-                    if (!$output->isQuiet()) {
-                        $progress = new ProgressBar($output, iterator_count($packages));
-                        $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
-                        $progress->setFormat('minimal');
-                        $progress->start();
-                    }
-                    $oldPackageNames = [];
-                    /** @var DatabasePackage $package */
-                    foreach ($packages as $package) {
-                        if (isset($progress)) {
-                            $progress->advance();
-                        }
-                        if (is_null($packageMTime)
-                            || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
-                            $this->updatePackage($repo, $package);
-                        } else {
-                            $oldPackageNames[] = $package->getName();
-                        }
-                    }
-                    if (isset($progress)) {
-                        $progress->finish();
-                        $output->writeln('');
-                    }
-
-                    if (!is_null($packageMTime)) {
-                        $this->printDebug("\tCleaning up obsolete packages...", $output);
-                        $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
-                    }
-
-                    $repo->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
-                    $this->entityManager->persist($repo);
-                }
-            }
-            $this->printDebug('Cleaning up obsolete repositories...', $output);
-            $this->repositoryManager->cleanupObsoleteRepositories();
-
-            if ($this->updatedPackages) {
-                $this->printDebug('Resolving package relations...', $output);
-                $this->entityManager->flush();
-                $this->relationRepository->updateTargets();
-            }
-
-            $this->entityManager->flush();
-            $this->packageDatabaseMirror->updateLastUpdate();
-        } catch (\RuntimeException $e) {
-            $this->printError(
-                'UpdatePackages failed at ' . $e->getFile() . ' on line ' . $e->getLine() . ': ' . $e->getMessage(),
-                $output
+            $this->printDebug("\tDownloading...", $output);
+            $packageDatabaseFile = $this->packageDatabaseDownloader->download(
+                $this->packageDatabaseMirror->getMirrorUrl(),
+                $repo->getName(),
+                $repo->getArchitecture()
             );
+
+            if (($repo->getMTime() && $packageDatabaseFile->getMTime() > $repo->getMTime()->getTimestamp())
+                || !$repo->getMTime()) {
+                $packages = new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
+                if (!$output->isQuiet()) {
+                    $progress = new ProgressBar($output, iterator_count($packages));
+                    $progress->setFormatDefinition('minimal', "\tReading packages: %percent%%");
+                    $progress->setFormat('minimal');
+                    $progress->start();
+                }
+                $oldPackageNames = [];
+                /** @var DatabasePackage $package */
+                foreach ($packages as $package) {
+                    if (isset($progress)) {
+                        $progress->advance();
+                    }
+                    if (is_null($packageMTime)
+                        || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
+                        $this->updatePackage($repo, $package);
+                    } else {
+                        $oldPackageNames[] = $package->getName();
+                    }
+                }
+                if (isset($progress)) {
+                    $progress->finish();
+                    $output->writeln('');
+                }
+
+                if (!is_null($packageMTime)) {
+                    $this->printDebug("\tCleaning up obsolete packages...", $output);
+                    $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
+                }
+
+                $repo->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
+                $this->entityManager->persist($repo);
+            }
         }
+        $this->printDebug('Cleaning up obsolete repositories...', $output);
+        $this->repositoryManager->cleanupObsoleteRepositories();
+
+        if ($this->updatedPackages) {
+            $this->printDebug('Resolving package relations...', $output);
+            $this->entityManager->flush();
+            $this->relationRepository->updateTargets();
+        }
+
+        $this->entityManager->flush();
+        $this->packageDatabaseMirror->updateLastUpdate();
 
         $this->release();
     }
@@ -211,14 +204,5 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 $this->updatedPackages = true;
             }
         }
-    }
-
-    /**
-     * @param string $text
-     * @param OutputInterface $output
-     */
-    private function printError(string $text, OutputInterface $output)
-    {
-        $output->writeln($text);
     }
 }
