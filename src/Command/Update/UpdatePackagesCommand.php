@@ -83,33 +83,19 @@ class UpdatePackagesCommand extends ContainerAwareCommand
             foreach ($this->repositoryRepository->findAll() as $repo) {
                 $packageMTime = $this->packageRepository->getMaxMTimeByRepository($repo);
 
-                $packageDatabaseFile = $this->packageDatabaseDownloader->download(
-                    $this->packageDatabaseMirror->getMirrorUrl(),
-                    $repo->getName(),
-                    $repo->getArchitecture()
-                );
-
-                if (($repo->getMTime() && $packageDatabaseFile->getMTime() > $repo->getMTime()->getTimestamp())
-                    || !$repo->getMTime()) {
-                    $packages = new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
-
-                    $oldPackageNames = [];
-                    /** @var DatabasePackage $package */
-                    foreach ($packages as $package) {
-                        if (is_null($packageMTime)
-                            || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
-                            $this->updatePackage($repo, $package);
-                        } else {
-                            $oldPackageNames[] = $package->getName();
-                        }
+                $oldPackageNames = [];
+                /** @var DatabasePackage $package */
+                foreach ($this->downloadPackagesForRepository($repo) as $package) {
+                    if (is_null($packageMTime)
+                        || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
+                        $this->updatePackage($repo, $package);
+                    } else {
+                        $oldPackageNames[] = $package->getName();
                     }
+                }
 
-                    if (!is_null($packageMTime)) {
-                        $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
-                    }
-
-                    $repo->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
-                    $this->entityManager->persist($repo);
+                if (!is_null($packageMTime)) {
+                    $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
                 }
             }
         }
@@ -123,6 +109,26 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->packageDatabaseMirror->updateLastUpdate();
 
         $this->release();
+    }
+
+    /**
+     * @param Repository $repository
+     * @return iterable
+     */
+    private function downloadPackagesForRepository(Repository $repository): iterable
+    {
+        $packageDatabaseFile = $this->packageDatabaseDownloader->download(
+            $this->packageDatabaseMirror->getMirrorUrl(),
+            $repository->getName(),
+            $repository->getArchitecture()
+        );
+
+        if (($repository->getMTime() && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp())
+            || !$repository->getMTime()) {
+            $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
+            $this->entityManager->persist($repository);
+            yield from new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
+        }
     }
 
     /**
