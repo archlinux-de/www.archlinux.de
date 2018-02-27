@@ -6,7 +6,7 @@ use App\Entity\Packages\Repository;
 use App\Repository\RepositoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class RepositoryManager implements \IteratorAggregate
+class RepositoryManager
 {
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -32,46 +32,52 @@ class RepositoryManager implements \IteratorAggregate
         $this->repositoryRepository = $repositoryRepository;
     }
 
-    public function cleanupObsoleteRepositories()
+    /**
+     * @return bool
+     */
+    public function removeObsoleteRepositories(): bool
     {
-        /** @var Repository[] $repos */
-        $repos = $this->repositoryRepository->findAll();
+        $repositoryWasRemoved = false;
 
-        foreach ($repos as $repo) {
+        /** @var Repository $repo */
+        foreach ($this->repositoryRepository->findAll() as $repo) {
             if (!isset($this->repositoryConfiguration[$repo->getName()])
                 || !in_array($repo->getArchitecture(), $this->repositoryConfiguration[$repo->getName()])) {
                 $this->entityManager->remove($repo);
-                $this->updatedPackages = true;
+                $repositoryWasRemoved = true;
             }
         }
-    }
 
-    /**
-     * @return iterable
-     */
-    public function getIterator(): iterable
-    {
-        foreach ($this->repositoryConfiguration as $repoName => $arches) {
-            foreach ($arches as $arch) {
-                yield $this->getRepository($repoName, $arch);
-            }
-        }
-    }
-
-    /**
-     * @param string $repoName
-     * @param string $archName
-     * @return Repository
-     */
-    private function getRepository(string $repoName, string $archName): Repository
-    {
-        $repository = $this->repositoryRepository->findByNameAndArchitecture($repoName, $archName);
-        if (is_null($repository)) {
-            $repository = new Repository($repoName, $archName);
-            $repository->setTesting(preg_match('/(-|^)testing$/', $repoName) > 0);
-            $this->entityManager->persist($repository);
+        if ($repositoryWasRemoved) {
             $this->entityManager->flush();
         }
-        return $repository;
+
+        return $repositoryWasRemoved;
+    }
+
+    /**
+     * @return bool
+     */
+    public function createNewRepositories(): bool
+    {
+        $repositoryWasCreated = false;
+
+        foreach ($this->repositoryConfiguration as $repoName => $archNames) {
+            foreach ($archNames as $archName) {
+                $repository = $this->repositoryRepository->findByNameAndArchitecture($repoName, $archName);
+                if (is_null($repository)) {
+                    $repository = new Repository($repoName, $archName);
+                    $repository->setTesting(preg_match('/(-|^)testing$/', $repoName) > 0);
+                    $this->entityManager->persist($repository);
+                    $repositoryWasCreated = true;
+                }
+            }
+        }
+
+        if ($repositoryWasCreated) {
+            $this->entityManager->flush();
+        }
+
+        return $repositoryWasCreated;
     }
 }
