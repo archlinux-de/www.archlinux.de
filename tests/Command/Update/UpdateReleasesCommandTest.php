@@ -33,7 +33,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
 
         /** @var ReleaseFetcher|\PHPUnit_Framework_MockObject_MockObject $releaseFetcher */
         $releaseFetcher = $this->createMock(ReleaseFetcher::class);
-        $releaseFetcher->method('fetchReleases')->willReturn([$newRelease]);
+        $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newRelease]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);

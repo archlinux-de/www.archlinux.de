@@ -7,7 +7,7 @@ use App\Entity\Mirror;
 use App\Repository\CountryRepository;
 use GuzzleHttp\Client;
 
-class MirrorFetcher
+class MirrorFetcher implements \IteratorAggregate
 {
     /** @var Client */
     private $guzzleClient;
@@ -33,7 +33,7 @@ class MirrorFetcher
     /**
      * @return iterable
      */
-    public function fetchMirrors(): iterable
+    public function getIterator(): iterable
     {
         foreach ($this->fetchMirrorStatusUrls() as $mirrorData) {
             $mirror = new Mirror($mirrorData['url'], $mirrorData['protocol']);

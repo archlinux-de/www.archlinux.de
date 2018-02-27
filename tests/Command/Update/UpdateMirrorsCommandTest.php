@@ -33,7 +33,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 
         /** @var MirrorFetcher|\PHPUnit_Framework_MockObject_MockObject $mirrorFetcher */
         $mirrorFetcher = $this->createMock(MirrorFetcher::class);
-        $mirrorFetcher->method('fetchMirrors')->willReturn([$newMirror]);
+        $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newMirror]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);

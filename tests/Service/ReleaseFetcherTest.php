@@ -50,7 +50,7 @@ class ReleaseFetcherTest extends TestCase
 
         $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
         /** @var Release[] $releases */
-        $releases = iterator_to_array($releaseFetcher->fetchReleases());
+        $releases = iterator_to_array($releaseFetcher);
 
         $this->assertCount(1, $releases);
         $this->assertEquals('2018.01.01', $releases[0]->getVersion());
@@ -68,7 +68,7 @@ class ReleaseFetcherTest extends TestCase
         $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($releaseFetcher->fetchReleases());
+        iterator_to_array($releaseFetcher);
     }
 
     public function testExceptionOnInvalidResponse()
@@ -82,7 +82,7 @@ class ReleaseFetcherTest extends TestCase
         $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($releaseFetcher->fetchReleases());
+        iterator_to_array($releaseFetcher);
     }
 
     public function testExceptionOnUnknownVersion()
@@ -96,7 +96,7 @@ class ReleaseFetcherTest extends TestCase
         $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($releaseFetcher->fetchReleases());
+        iterator_to_array($releaseFetcher);
     }
 
     public function testExceptionOnEmptyMirrorList()
@@ -110,6 +110,6 @@ class ReleaseFetcherTest extends TestCase
         $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($releaseFetcher->fetchReleases());
+        iterator_to_array($releaseFetcher);
     }
 }

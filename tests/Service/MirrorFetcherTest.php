@@ -43,7 +43,7 @@ class MirrorFetcherTest extends TestCase
 
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
         /** @var Mirror[] $mirrors */
-        $mirrors = iterator_to_array($mirrorFetcher->fetchMirrors());
+        $mirrors = iterator_to_array($mirrorFetcher);
 
         $this->assertCount(1, $mirrors);
         $this->assertEquals('https://127.0.0.1', $mirrors[0]->getUrl());
@@ -71,7 +71,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($mirrorFetcher->fetchMirrors());
+        iterator_to_array($mirrorFetcher);
     }
 
     public function testExceptionOnInvalidResponse()
@@ -88,7 +88,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($mirrorFetcher->fetchMirrors());
+        iterator_to_array($mirrorFetcher);
     }
 
     public function testExceptionOnUnknownVersion()
@@ -105,7 +105,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($mirrorFetcher->fetchMirrors());
+        iterator_to_array($mirrorFetcher);
     }
 
     public function testExceptionOnEmptyMirrorList()
@@ -122,6 +122,6 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($mirrorFetcher->fetchMirrors());
+        iterator_to_array($mirrorFetcher);
     }
 }

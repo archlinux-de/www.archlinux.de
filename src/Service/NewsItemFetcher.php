@@ -8,7 +8,7 @@ use FeedIo\Feed\ItemInterface;
 use FeedIo\FeedInterface;
 use FeedIo\FeedIo;
 
-class NewsItemFetcher
+class NewsItemFetcher implements \IteratorAggregate
 {
     /** @var FeedIo */
     private $feedIo;
@@ -29,7 +29,7 @@ class NewsItemFetcher
     /**
      * @return iterable
      */
-    public function fetchNewsItems(): iterable
+    public function getIterator(): iterable
     {
         /** @var ItemInterface $newsEntry */
         foreach ($this->fetchNewsFeed() as $newsEntry) {

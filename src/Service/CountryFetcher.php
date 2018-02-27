@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Entity\Country;
 use League\ISO3166\ISO3166;
 
-class CountryFetcher
+class CountryFetcher implements \IteratorAggregate
 {
     /** @var ISO3166 */
     private $iso3166;
@@ -21,7 +21,7 @@ class CountryFetcher
     /**
      * @return iterable
      */
-    public function fetchCountries(): iterable
+    public function getIterator(): iterable
     {
         foreach ($this->iso3166 as $iso3166Country) {
             yield (new Country($iso3166Country['alpha2']))->setName($iso3166Country['name']);

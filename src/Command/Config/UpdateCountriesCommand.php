@@ -2,6 +2,7 @@
 
 namespace App\Command\Config;
 
+use App\Entity\Country;
 use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,7 +49,8 @@ class UpdateCountriesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $codes = [];
-        foreach ($this->countryFetcher->fetchCountries() as $country) {
+        /** @var Country $country */
+        foreach ($this->countryFetcher as $country) {
             $this->entityManager->merge($country);
             $codes[] = $country->getCode();
         }

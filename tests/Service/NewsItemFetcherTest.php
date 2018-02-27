@@ -40,7 +40,7 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher($feedIo, '');
 
         /** @var NewsItem[] $newsItems */
-        $newsItems = iterator_to_array($newsItemFetcher->fetchNewsItems());
+        $newsItems = iterator_to_array($newsItemFetcher);
         $this->assertCount(1, $newsItems);
         $this->assertEquals('https://127.0.0.1/news/1', $newsItems[0]->getId());
         $this->assertEquals(new \DateTime('2018-02-22T19:06:26Z'), $newsItems[0]->getLastModified());
@@ -63,7 +63,7 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher($feedIo, '');
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($newsItemFetcher->fetchNewsItems());
+        iterator_to_array($newsItemFetcher);
     }
 
     public function testExceptionOnInvalidResponse()
@@ -78,6 +78,6 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher($feedIo, '');
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($newsItemFetcher->fetchNewsItems());
+        iterator_to_array($newsItemFetcher);
     }
 }
