@@ -7,6 +7,7 @@ COMPOSER=composer --no-interaction
 all: init
 
 init: start
+	${APP-RUN} bin/console cache:warmup
 	${APP-RUN} bin/console doctrine:database:create
 	${APP-RUN} bin/console doctrine:schema:create
 	${APP-RUN} bin/console app:config:update-countries
