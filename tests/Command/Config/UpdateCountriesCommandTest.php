@@ -33,7 +33,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
 
         /** @var CountryFetcher|\PHPUnit_Framework_MockObject_MockObject $countryFetcher */
         $countryFetcher = $this->createMock(CountryFetcher::class);
-        $countryFetcher->method('fetchCountries')->willReturn([$newCountry]);
+        $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newCountry]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);

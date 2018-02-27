@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
 use App\Service\NewsItemFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,7 +51,8 @@ class UpdateNewsCommand extends Command
 
         $ids = [];
         $oldestLastModified = new \DateTime();
-        foreach ($this->newsItemFetcher->fetchNewsItems() as $newsItem) {
+        /** @var NewsItem $newsItem */
+        foreach ($this->newsItemFetcher as $newsItem) {
             $this->entityManager->merge($newsItem);
             $ids[] = $newsItem->getId();
             if ($oldestLastModified > $newsItem->getLastModified()) {

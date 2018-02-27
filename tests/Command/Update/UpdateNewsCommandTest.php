@@ -33,7 +33,7 @@ class UpdateNewsCommandTest extends KernelTestCase
 
         /** @var NewsItemFetcher|\PHPUnit_Framework_MockObject_MockObject $newsItemFetcher */
         $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
-        $newsItemFetcher->method('fetchNewsItems')->willReturn([$newNewsItem]);
+        $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newNewsItem]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
@@ -67,7 +67,7 @@ class UpdateNewsCommandTest extends KernelTestCase
 
         /** @var NewsItemFetcher|\PHPUnit_Framework_MockObject_MockObject $newsItemFetcher */
         $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
-        $newsItemFetcher->method('fetchNewsItems')->willReturn([$oldNewsItem, $newNewsItem]);
+        $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$oldNewsItem, $newNewsItem]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);

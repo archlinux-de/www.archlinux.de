@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,7 +40,6 @@ class UpdateMirrorsCommand extends Command
         $this->mirrorRepository = $mirrorRepository;
     }
 
-
     protected function configure()
     {
         $this->setName('app:update:mirrors');
@@ -50,7 +50,8 @@ class UpdateMirrorsCommand extends Command
         $this->lock('cron.lock', true);
 
         $urls = [];
-        foreach ($this->mirrorFetcher->fetchMirrors() as $mirror) {
+        /** @var Mirror $mirror */
+        foreach ($this->mirrorFetcher as $mirror) {
             $this->entityManager->merge($mirror);
             $urls[] = $mirror->getUrl();
         }

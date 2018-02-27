@@ -21,7 +21,7 @@ class PackageDatabaseTest extends TestCase
 
         $database = new PackageDatabase($reader);
 
-        $packageArray = iterator_to_array($database->getIterator());
+        $packageArray = iterator_to_array($database);
         $this->assertCount(1, $packageArray);
         $this->assertInstanceOf(Package::class, array_pop($packageArray));
     }
@@ -86,6 +86,6 @@ class PackageDatabaseTest extends TestCase
 
         $database = new PackageDatabase($reader);
 
-        $this->assertCount(2, iterator_to_array($database->getIterator()));
+        $this->assertCount(2, iterator_to_array($database));
     }
 }

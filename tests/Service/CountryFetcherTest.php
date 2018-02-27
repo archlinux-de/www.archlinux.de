@@ -19,7 +19,7 @@ class CountryFetcherTest extends TestCase
             )
         );
         /** @var Country[] $countries */
-        $countries = iterator_to_array($countryFetcher->fetchCountries());
+        $countries = iterator_to_array($countryFetcher);
 
         $this->assertCount(1, $countries);
         $this->assertEquals('DE', $countries[0]->getCode());

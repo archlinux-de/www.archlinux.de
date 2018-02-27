@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Entity\Release;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,7 +48,8 @@ class UpdateReleasesCommand extends Command
         $this->lock('cron.lock', true);
 
         $versions = [];
-        foreach ($this->releaseFetcher->fetchReleases() as $release) {
+        /** @var Release $release */
+        foreach ($this->releaseFetcher as $release) {
             $this->entityManager->merge($release);
             $versions[] = $release->getVersion();
         }

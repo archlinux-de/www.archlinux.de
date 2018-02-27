@@ -6,7 +6,7 @@ use App\Entity\Release;
 use App\Entity\Torrent;
 use GuzzleHttp\Client;
 
-class ReleaseFetcher
+class ReleaseFetcher implements \IteratorAggregate
 {
     /** @var Client */
     private $guzzleClient;
@@ -27,7 +27,7 @@ class ReleaseFetcher
     /**
      * @return iterable
      */
-    public function fetchReleases(): iterable
+    public function getIterator(): iterable
     {
         foreach ($this->fetchRelengReleases() as $releaseData) {
             $release = new Release($releaseData['version']);
