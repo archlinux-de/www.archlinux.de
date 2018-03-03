@@ -94,7 +94,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                     }
                 }
 
-                if (!is_null($packageMTime)) {
+                if (!empty($oldPackageNames)) {
+                    $this->entityManager->flush();
                     $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
                 }
             }
