@@ -18,8 +18,9 @@ class PackageDatabaseDownloaderTest extends TestCase
 
     public function setUp()
     {
-        $this->guzzleClient = $this->createMock(ClientInterface::class);
+        /** @var PackageDatabaseMirror|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
+        $this->guzzleClient = $this->createMock(ClientInterface::class);
         $this->downloader = new PackageDatabaseDownloader($this->guzzleClient, $packageDatabaseMirror);
     }
 
@@ -55,5 +56,21 @@ class PackageDatabaseDownloaderTest extends TestCase
         unset($download);
         gc_collect_cycles();
         $this->assertFileNotExists($fileName);
+    }
+
+    public function testCreateDatabase()
+    {
+        /** @var \SplFileObject|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseFile */
+        $packageDatabaseFile = $this
+            ->getMockBuilder(\SplFileObject::class)
+            ->setConstructorArgs(['/dev/null'])
+            ->getMock();
+        $packageDatabaseFile
+            ->method('getRealPath')
+            ->willReturn('/dev/null');
+
+        $database = $this->downloader->createDatabase($packageDatabaseFile);
+
+        $this->assertCount(0, iterator_to_array($database));
     }
 }
