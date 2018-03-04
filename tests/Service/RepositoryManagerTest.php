@@ -91,8 +91,11 @@ class RepositoryManagerTest extends TestCase
             ->with($repositoryName, 'x86_64')
             ->willReturn(null);
 
-        $repositoryManager = new RepositoryManager($entityManager, [$repositoryName => ['x86_64']],
-            $repositoryRepository);
+        $repositoryManager = new RepositoryManager(
+            $entityManager,
+            [$repositoryName => ['x86_64']],
+            $repositoryRepository
+        );
 
         $this->assertTrue($repositoryManager->createNewRepositories());
     }
