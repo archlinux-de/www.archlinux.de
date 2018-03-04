@@ -77,7 +77,7 @@ class LegacyController extends Controller
      * @Route("/statistics", methods={"POST"})
      * @return Response
      */
-    public function postPackageListAction(Request $request): Response
+    public function postPackageListAction(): Response
     {
         return $this->redirect('https://pkgstats.archlinux.de/post', Response::HTTP_PERMANENTLY_REDIRECT);
     }

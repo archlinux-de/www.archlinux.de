@@ -151,6 +151,7 @@ class PackageTest extends TestCase
     public function testUndefinedList(string $_, string $getter)
     {
         $package = $this->createPackage();
+        $this->assertNotEmpty($_);
         $this->assertEquals([], call_user_func([$package, $getter]));
     }
 

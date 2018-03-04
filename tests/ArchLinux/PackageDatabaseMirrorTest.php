@@ -30,10 +30,6 @@ class PackageDatabaseMirrorTest extends TestCase
 
     public function testHasUpdatedIsTrueForNewMirror()
     {
-        $guzzleMock = new MockHandler([new Response(200, [], '')]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
-
         /** @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
         $guzzleClient = $this->createMock(ClientInterface::class);
 
