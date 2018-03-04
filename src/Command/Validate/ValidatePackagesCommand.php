@@ -5,13 +5,11 @@ namespace App\Command\Validate;
 use App\ArchLinux\Package as DatabasePackage;
 use App\ArchLinux\PackageDatabase;
 use App\ArchLinux\PackageDatabaseDownloader;
-use App\ArchLinux\PackageDatabaseMirror;
 use App\ArchLinux\PackageDatabaseReader;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,12 +22,6 @@ class ValidatePackagesCommand extends ContainerAwareCommand
     /** @var PackageDatabaseDownloader */
     private $packageDatabaseDownloader;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var PackageDatabaseMirror */
-    private $packageDatabaseMirror;
-
     /** @var RepositoryRepository */
     private $repositoryRepository;
 
@@ -38,19 +30,16 @@ class ValidatePackagesCommand extends ContainerAwareCommand
 
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
-     * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param RepositoryRepository $repositoryRepository
      * @param PackageRepository $packageRepository
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
-        PackageDatabaseMirror $packageDatabaseMirror,
         RepositoryRepository $repositoryRepository,
         PackageRepository $packageRepository
     ) {
         parent::__construct();
         $this->packageDatabaseDownloader = $packageDatabaseDownloader;
-        $this->packageDatabaseMirror = $packageDatabaseMirror;
         $this->repositoryRepository = $repositoryRepository;
         $this->packageRepository = $packageRepository;
     }
@@ -109,7 +98,6 @@ class ValidatePackagesCommand extends ContainerAwareCommand
     private function downloadPackagesForRepository(Repository $repository): iterable
     {
         $packageDatabaseFile = $this->packageDatabaseDownloader->download(
-            $this->packageDatabaseMirror->getMirrorUrl(),
             $repository->getName(),
             $repository->getArchitecture()
         );

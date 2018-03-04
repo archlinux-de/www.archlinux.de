@@ -3,10 +3,7 @@
 namespace App\Service;
 
 use App\ArchLinux\Package as DatabasePackage;
-use App\ArchLinux\PackageDatabase;
 use App\ArchLinux\PackageDatabaseDownloader;
-use App\ArchLinux\PackageDatabaseMirror;
-use App\ArchLinux\PackageDatabaseReader;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\PackageRepository;
@@ -20,9 +17,6 @@ class PackageManager
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var PackageDatabaseMirror */
-    private $packageDatabaseMirror;
-
     /** @var PackageRepository */
     private $packageRepository;
 
@@ -32,18 +26,15 @@ class PackageManager
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param EntityManagerInterface $entityManager
-     * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param PackageRepository $packageRepository
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
         EntityManagerInterface $entityManager,
-        PackageDatabaseMirror $packageDatabaseMirror,
         PackageRepository $packageRepository
     ) {
         $this->packageDatabaseDownloader = $packageDatabaseDownloader;
         $this->entityManager = $entityManager;
-        $this->packageDatabaseMirror = $packageDatabaseMirror;
         $this->packageRepository = $packageRepository;
     }
 
@@ -54,7 +45,6 @@ class PackageManager
     public function downloadPackagesForRepository(Repository $repository): \Generator
     {
         $packageDatabaseFile = $this->packageDatabaseDownloader->download(
-            $this->packageDatabaseMirror->getMirrorUrl(),
             $repository->getName(),
             $repository->getArchitecture()
         );
@@ -63,7 +53,7 @@ class PackageManager
             $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
             /** @TODO Should not persist here */
             $this->entityManager->persist($repository);
-            yield from new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
+            yield from $this->packageDatabaseDownloader->createDatabase($packageDatabaseFile);
             return true;
         }
         return false;

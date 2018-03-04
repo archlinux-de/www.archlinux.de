@@ -11,23 +11,28 @@ class PackageDatabaseDownloader
     /** @var ClientInterface */
     private $guzzleClient;
 
+    /** @var PackageDatabaseMirror */
+    private $packageDatabaseMirror;
+
     /**
      * @param ClientInterface $guzzleClient
+     * @param PackageDatabaseMirror $packageDatabaseMirror
      */
-    public function __construct(ClientInterface $guzzleClient)
+    public function __construct(ClientInterface $guzzleClient, PackageDatabaseMirror $packageDatabaseMirror)
     {
         $this->guzzleClient = $guzzleClient;
+        $this->packageDatabaseMirror = $packageDatabaseMirror;
     }
 
     /**
-     * @param string $mirror
      * @param string $repository
      * @param string $architecture
      * @return \SplFileObject
      */
-    public function download(string $mirror, string $repository, string $architecture): \SplFileObject
+    public function download(string $repository, string $architecture): \SplFileObject
     {
-        $url = $mirror . $repository . '/os/' . $architecture . '/' . $repository . self::DB_EXT;
+        $url = $this->packageDatabaseMirror->getMirrorUrl()
+            . $repository . '/os/' . $architecture . '/' . $repository . self::DB_EXT;
 
         $tmpFilePrefix = strtolower(preg_replace('/\W+/', '_', $url));
         $tmpFile = new TemporaryFile($tmpFilePrefix);
@@ -37,5 +42,14 @@ class PackageDatabaseDownloader
         $tmpFile->setMTime($mtime);
 
         return $tmpFile;
+    }
+
+    /**
+     * @param \SplFileInfo $packageDatabaseFile
+     * @return iterable
+     */
+    public function createDatabase(\SplFileInfo $packageDatabaseFile): iterable
+    {
+        return new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
     }
 }
