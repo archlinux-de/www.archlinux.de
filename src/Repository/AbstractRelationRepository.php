@@ -9,9 +9,6 @@ use Doctrine\ORM\ORMException;
 
 class AbstractRelationRepository extends EntityRepository
 {
-    /**
-     * @throws ORMException
-     */
     public function updateTargets()
     {
         /** @var AbstractRelation $relation */
