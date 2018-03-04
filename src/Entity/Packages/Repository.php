@@ -102,6 +102,16 @@ class Repository implements \JsonSerializable
     }
 
     /**
+     * @param Package $package
+     * @return Repository
+     */
+    public function addPackage(Package $package): Repository
+    {
+        $this->packages->add($package);
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array
