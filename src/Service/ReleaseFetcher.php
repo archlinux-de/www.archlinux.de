@@ -4,21 +4,21 @@ namespace App\Service;
 
 use App\Entity\Release;
 use App\Entity\Torrent;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 
 class ReleaseFetcher implements \IteratorAggregate
 {
-    /** @var Client */
+    /** @var ClientInterface */
     private $guzzleClient;
 
     /** @var string */
     private $releaseUrl;
 
     /**
-     * @param Client $guzzleClient
+     * @param ClientInterface $guzzleClient
      * @param string $releaseUrl
      */
-    public function __construct(Client $guzzleClient, string $releaseUrl)
+    public function __construct(ClientInterface $guzzleClient, string $releaseUrl)
     {
         $this->guzzleClient = $guzzleClient;
         $this->releaseUrl = $releaseUrl;

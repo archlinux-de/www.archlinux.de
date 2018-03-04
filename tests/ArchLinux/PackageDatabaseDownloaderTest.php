@@ -3,20 +3,20 @@
 namespace App\Tests\ArchLinux;
 
 use App\ArchLinux\PackageDatabaseDownloader;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
 class PackageDatabaseDownloaderTest extends TestCase
 {
-    /** @var Client|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $guzzleClient;
     /** @var PackageDatabaseDownloader */
     private $downloader;
 
     public function setUp()
     {
-        $this->guzzleClient = $this->createMock(Client::class);
+        $this->guzzleClient = $this->createMock(ClientInterface::class);
         $this->downloader = new PackageDatabaseDownloader($this->guzzleClient);
     }
 

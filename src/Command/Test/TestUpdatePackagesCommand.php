@@ -2,7 +2,7 @@
 
 namespace App\Command\Test;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,13 +10,13 @@ use Symfony\Component\Process\Process;
 
 class TestUpdatePackagesCommand extends ContainerAwareCommand
 {
-    /** @var Client */
+    /** @var ClientInterface */
     private $guzzleClient;
 
     /**
-     * @param Client $guzzleClient
+     * @param ClientInterface $guzzleClient
      */
-    public function __construct(Client $guzzleClient)
+    public function __construct(ClientInterface $guzzleClient)
     {
         parent::__construct();
         $this->guzzleClient = $guzzleClient;

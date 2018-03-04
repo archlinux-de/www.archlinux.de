@@ -2,7 +2,7 @@
 
 namespace App\ArchLinux;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 class PackageDatabaseMirror
@@ -10,7 +10,7 @@ class PackageDatabaseMirror
     /** @var int */
     private $lastMirrorUpdate = 0;
 
-    /** @var Client */
+    /** @var ClientInterface */
     private $guzzleClient;
 
     /** @var CacheItemPoolInterface */
@@ -20,11 +20,11 @@ class PackageDatabaseMirror
     private $mirrorUrl;
 
     /**
-     * @param Client $guzzleClient
+     * @param ClientInterface $guzzleClient
      * @param CacheItemPoolInterface $cache
      * @param string $mirrorUrl
      */
-    public function __construct(Client $guzzleClient, CacheItemPoolInterface $cache, string $mirrorUrl)
+    public function __construct(ClientInterface $guzzleClient, CacheItemPoolInterface $cache, string $mirrorUrl)
     {
         $this->guzzleClient = $guzzleClient;
         $this->cache = $cache;
