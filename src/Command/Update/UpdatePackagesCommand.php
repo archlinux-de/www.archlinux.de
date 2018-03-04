@@ -75,7 +75,7 @@ class UpdatePackagesCommand extends ContainerAwareCommand
                 /** @var DatabasePackage $package */
                 foreach ($packageRepositoryGenerator as $package) {
                     $allPackageNames[] = $package->getName();
-                    if (!$this->packageManager->updatePackage($repository, $package)) {
+                    if ($this->packageManager->updatePackage($repository, $package)) {
                         $updatedPackages = true;
                     }
                 }

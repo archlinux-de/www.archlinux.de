@@ -29,6 +29,6 @@ class UpdatePackagesCommandTest extends DatabaseTestCase
 
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertGreaterThan(100, count($this->getRepository(Package::class)->findAll()));
-        $this->assertGreaterThan(1000, count($this->getRepository(AbstractRelation::class)->findAll()));
+        $this->assertGreaterThan(800, count($this->getRepository(AbstractRelation::class)->findWithTargets()));
     }
 }
