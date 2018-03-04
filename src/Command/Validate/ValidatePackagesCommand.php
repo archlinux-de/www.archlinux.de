@@ -129,7 +129,7 @@ class ValidatePackagesCommand extends ContainerAwareCommand
                 $packageNames[] = $package->getName();
             }
 
-            $repoPackages = $this->packageRepository->findByRepositoryOlderThan($repo, new \DateTime());
+            $repoPackages = $this->packageRepository->findByRepository($repo);
             /** @var Package $repoPackage */
             foreach ($repoPackages as $repoPackage) {
                 if (!in_array($repoPackage->getName(), $packageNames)) {

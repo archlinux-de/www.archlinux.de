@@ -26,6 +26,9 @@ class PackageManager
     /** @var PackageRepository */
     private $packageRepository;
 
+    /** @var array */
+    private $packageMTimes;
+
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param EntityManagerInterface $entityManager
@@ -46,56 +49,86 @@ class PackageManager
 
     /**
      * @param Repository $repository
-     * @return iterable
+     * @return \Generator
      */
-    public function downloadPackagesForRepository(Repository $repository): iterable
+    public function downloadPackagesForRepository(Repository $repository): \Generator
     {
         $packageDatabaseFile = $this->packageDatabaseDownloader->download(
             $this->packageDatabaseMirror->getMirrorUrl(),
             $repository->getName(),
             $repository->getArchitecture()
         );
-
         if (($repository->getMTime() && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp())
             || !$repository->getMTime()) {
             $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
             /** @TODO Should not persist here */
             $this->entityManager->persist($repository);
             yield from new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
+            return true;
         }
+        return false;
     }
 
     /**
      * @param Repository $repository
      * @param DatabasePackage $databasePackage
-     * @internal param Package $package
+     * @return bool
      */
-    public function updatePackage(Repository $repository, DatabasePackage $databasePackage)
-    {
-        $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
-        if (is_null($package)) {
-            $package = Package::createFromPackageDatabase($repository, $databasePackage);
-        } else {
-            $package->updateFromPackageDatabase($databasePackage);
-        }
+    public function updatePackage(
+        Repository $repository,
+        DatabasePackage $databasePackage
+    ): bool {
+        $packageMTime = $this->getRepositoryPackageMTime($repository);
 
-        $this->entityManager->persist($package);
+        if (is_null($packageMTime)
+            || $databasePackage->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
+            $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
+            if (is_null($package)) {
+                $package = Package::createFromPackageDatabase($repository, $databasePackage);
+            } else {
+                $package->updateFromPackageDatabase($databasePackage);
+            }
+            $this->entityManager->persist($package);
+            return true;
+        }
+        return false;
     }
 
     /**
-     * @param Repository $repo
-     * @param \DateTime $packageMTime
-     * @param array $allPackages
+     * @param Repository $repository
+     * @return \DateTime|null
      */
-    public function cleanupObsoletePackages(Repository $repo, \DateTime $packageMTime, array $allPackages)
+    private function getRepositoryPackageMTime(Repository $repository): ?\DateTime
     {
-        $repoPackages = $this->packageRepository->findByRepositoryOlderThan($repo, $packageMTime);
+        if (!isset($this->packageMTimes[$repository->getId()])) {
+            $this->packageMTimes[$repository->getId()] = $this->packageRepository->getMaxMTimeByRepository($repository);
+        }
+        return $this->packageMTimes[$repository->getId()];
+    }
+
+    /**
+     * @param Repository $repository
+     * @param array $allPackages
+     * @return bool
+     */
+    public function cleanupObsoletePackages(Repository $repository, array $allPackages): bool
+    {
+        $packageMTime = $this->getRepositoryPackageMTime($repository);
+        if (is_null($packageMTime)) {
+            $repoPackages = $this->packageRepository->findByRepository($repository);
+        } else {
+            $repoPackages = $this->packageRepository->findByRepositoryOlderThan($repository, $packageMTime);
+        }
+        $packagesRemoved = false;
 
         /** @var Package $repoPackage */
         foreach ($repoPackages as $repoPackage) {
             if (!in_array($repoPackage->getName(), $allPackages)) {
                 $this->entityManager->remove($repoPackage);
+                $packagesRemoved = true;
             }
         }
+
+        return $packagesRemoved;
     }
 }

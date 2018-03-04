@@ -166,4 +166,18 @@ class PackageRepository extends EntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @param $repository
+     * @return array
+     */
+    public function findByRepository($repository): array
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->where('package.repository = :repository')
+            ->setParameter('repository', $repository)
+            ->getQuery()
+            ->getResult();
+    }
 }
