@@ -2,19 +2,19 @@
 
 namespace App\ArchLinux;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 
 class PackageDatabaseDownloader
 {
     private const DB_EXT = '.db';
 
-    /** @var Client */
+    /** @var ClientInterface */
     private $guzzleClient;
 
     /**
-     * @param Client $guzzleClient
+     * @param ClientInterface $guzzleClient
      */
-    public function __construct(Client $guzzleClient)
+    public function __construct(ClientInterface $guzzleClient)
     {
         $this->guzzleClient = $guzzleClient;
     }

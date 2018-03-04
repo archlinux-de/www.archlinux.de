@@ -10,7 +10,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @covers \App\Command\Update\UpdatePackagesCommand
- * @covers \App\Command\Update\UpdateRepositoriesCommand
  */
 class UpdatePackagesCommandTest extends DatabaseTestCase
 {

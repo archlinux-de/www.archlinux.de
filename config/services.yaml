@@ -36,6 +36,9 @@ services:
             - connect_timeout: 60
               timeout: 1800
 
+    GuzzleHttp\ClientInterface:
+        alias: 'GuzzleHttp\Client'
+
     App\ArchLinux\PackageDatabaseMirror:
         bind:
             $mirrorUrl: '%app.packages.mirror%'
@@ -51,8 +54,6 @@ services:
     League\ISO3166\ISO3166:
 
     FeedIo\Adapter\Guzzle\Client:
-        arguments:
-            - '@GuzzleHttp\Client'
 
     FeedIo\FeedIo:
         bind:

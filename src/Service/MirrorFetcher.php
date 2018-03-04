@@ -5,11 +5,11 @@ namespace App\Service;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Repository\CountryRepository;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 
 class MirrorFetcher implements \IteratorAggregate
 {
-    /** @var Client */
+    /** @var ClientInterface */
     private $guzzleClient;
 
     /** @var string */
@@ -19,12 +19,15 @@ class MirrorFetcher implements \IteratorAggregate
     private $countryRepository;
 
     /**
-     * @param Client $guzzleClient
+     * @param ClientInterface $guzzleClient
      * @param string $mirrorStatusUrl
      * @param CountryRepository $countryRepository
      */
-    public function __construct(Client $guzzleClient, string $mirrorStatusUrl, CountryRepository $countryRepository)
-    {
+    public function __construct(
+        ClientInterface $guzzleClient,
+        string $mirrorStatusUrl,
+        CountryRepository $countryRepository
+    ) {
         $this->guzzleClient = $guzzleClient;
         $this->mirrorStatusUrl = $mirrorStatusUrl;
         $this->countryRepository = $countryRepository;
