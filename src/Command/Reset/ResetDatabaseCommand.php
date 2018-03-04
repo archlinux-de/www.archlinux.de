@@ -75,7 +75,6 @@ class ResetDatabaseCommand extends ContainerAwareCommand
 
     /**
      * @param array $classNames
-     * @param OutputInterface $output
      */
     private function resetDatabase(array $classNames)
     {

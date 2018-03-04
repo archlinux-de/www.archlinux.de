@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\ORMException;
 
 class AbstractRelationRepository extends EntityRepository
 {
