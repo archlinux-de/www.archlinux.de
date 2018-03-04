@@ -3,15 +3,12 @@
 namespace App\Command\Update;
 
 use App\ArchLinux\Package as DatabasePackage;
-use App\ArchLinux\PackageDatabase;
-use App\ArchLinux\PackageDatabaseDownloader;
 use App\ArchLinux\PackageDatabaseMirror;
-use App\ArchLinux\PackageDatabaseReader;
-use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
+use App\Service\PackageManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -21,12 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdatePackagesCommand extends ContainerAwareCommand
 {
     use LockableTrait;
-
-    /** @var bool */
-    private $updatedPackages = false;
-
-    /** @var PackageDatabaseDownloader */
-    private $packageDatabaseDownloader;
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -43,29 +34,32 @@ class UpdatePackagesCommand extends ContainerAwareCommand
     /** @var AbstractRelationRepository */
     private $relationRepository;
 
+    /** @var PackageManager */
+    private $packageManager;
+
     /**
-     * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param EntityManagerInterface $entityManager
      * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param RepositoryRepository $repositoryRepository
      * @param PackageRepository $packageRepository
      * @param AbstractRelationRepository $relationRepository
+     * @param PackageManager $packageManager
      */
     public function __construct(
-        PackageDatabaseDownloader $packageDatabaseDownloader,
         EntityManagerInterface $entityManager,
         PackageDatabaseMirror $packageDatabaseMirror,
         RepositoryRepository $repositoryRepository,
         PackageRepository $packageRepository,
-        AbstractRelationRepository $relationRepository
+        AbstractRelationRepository $relationRepository,
+        PackageManager $packageManager
     ) {
         parent::__construct();
-        $this->packageDatabaseDownloader = $packageDatabaseDownloader;
         $this->entityManager = $entityManager;
         $this->packageDatabaseMirror = $packageDatabaseMirror;
         $this->repositoryRepository = $repositoryRepository;
         $this->packageRepository = $packageRepository;
         $this->relationRepository = $relationRepository;
+        $this->packageManager = $packageManager;
     }
 
     protected function configure()
@@ -78,6 +72,8 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->lock('cron.lock', true);
         ini_set('memory_limit', '-1');
 
+        $updatedPackages = false;
+
         if ($this->packageDatabaseMirror->hasUpdated()) {
             /** @var Repository $repo */
             foreach ($this->repositoryRepository->findAll() as $repo) {
@@ -85,23 +81,24 @@ class UpdatePackagesCommand extends ContainerAwareCommand
 
                 $oldPackageNames = [];
                 /** @var DatabasePackage $package */
-                foreach ($this->downloadPackagesForRepository($repo) as $package) {
+                foreach ($this->packageManager->downloadPackagesForRepository($repo) as $package) {
                     if (is_null($packageMTime)
                         || $package->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
-                        $this->updatePackage($repo, $package);
+                        $this->packageManager->updatePackage($repo, $package);
                     } else {
                         $oldPackageNames[] = $package->getName();
                     }
+                    $updatedPackages = true;
                 }
 
                 if (!empty($oldPackageNames)) {
                     $this->entityManager->flush();
-                    $this->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
+                    $this->packageManager->cleanupObsoletePackages($repo, $packageMTime, $oldPackageNames);
                 }
             }
         }
 
-        if ($this->updatedPackages) {
+        if ($updatedPackages) {
             $this->entityManager->flush();
             $this->relationRepository->updateTargets();
         }
@@ -110,63 +107,5 @@ class UpdatePackagesCommand extends ContainerAwareCommand
         $this->packageDatabaseMirror->updateLastUpdate();
 
         $this->release();
-    }
-
-    /**
-     * @param Repository $repository
-     * @return iterable
-     */
-    private function downloadPackagesForRepository(Repository $repository): iterable
-    {
-        $packageDatabaseFile = $this->packageDatabaseDownloader->download(
-            $this->packageDatabaseMirror->getMirrorUrl(),
-            $repository->getName(),
-            $repository->getArchitecture()
-        );
-
-        if (($repository->getMTime() && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp())
-            || !$repository->getMTime()) {
-            $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
-            $this->entityManager->persist($repository);
-            yield from new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
-        }
-    }
-
-    /**
-     * @param Repository $repository
-     * @param DatabasePackage $databasePackage
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @internal param Package $package
-     */
-    private function updatePackage(Repository $repository, DatabasePackage $databasePackage)
-    {
-        $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
-        if (is_null($package)) {
-            $package = Package::createFromPackageDatabase($repository, $databasePackage);
-        } else {
-            $package->updateFromPackageDatabase($databasePackage);
-        }
-
-        $this->entityManager->persist($package);
-
-        $this->updatedPackages = true;
-    }
-
-    /**
-     * @param Repository $repo
-     * @param \DateTime $packageMTime
-     * @param array $allPackages
-     */
-    private function cleanupObsoletePackages(Repository $repo, \DateTime $packageMTime, array $allPackages)
-    {
-        $repoPackages = $this->packageRepository->findByRepositoryOlderThan($repo, $packageMTime);
-
-        /** @var Package $repoPackage */
-        foreach ($repoPackages as $repoPackage) {
-            if (!in_array($repoPackage->getName(), $allPackages)) {
-                $this->entityManager->remove($repoPackage);
-                $this->updatedPackages = true;
-            }
-        }
     }
 }

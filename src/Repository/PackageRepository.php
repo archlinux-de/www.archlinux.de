@@ -12,7 +12,6 @@ class PackageRepository extends EntityRepository
      * @param Repository $repository
      * @param $name
      * @return Package|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findByRepositoryAndName(Repository $repository, $name): ?Package
     {
@@ -48,7 +47,6 @@ class PackageRepository extends EntityRepository
     /**
      * @param Repository $repository
      * @return \DateTime|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getMaxMTimeByRepository(Repository $repository): ?\DateTime
     {
