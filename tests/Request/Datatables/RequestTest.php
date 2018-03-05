@@ -30,13 +30,11 @@ class RequestTest extends TestCase
      */
     public function provideSearches(): array
     {
-        /** @var Search|\PHPUnit_Framework_MockObject_MockObject $validSearch */
-        $validSearch = $this->createMock(Search::class);
-        $validSearch->method('isValid')->willReturn(true);
+        $validSearch = new Search('abc', false);
+        $this->assertTrue($validSearch->isValid());
 
-        /** @var Search|\PHPUnit_Framework_MockObject_MockObject $invalidSearch */
-        $invalidSearch = $this->createMock(Search::class);
-        $invalidSearch->method('isValid')->willReturn(false);
+        $invalidSearch = new Search('', false);
+        $this->assertFalse($invalidSearch->isValid());
 
         return [
             [null, false],

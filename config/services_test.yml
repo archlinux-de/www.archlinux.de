@@ -1,3 +1,0 @@
-services:
-    cache.adapter.array:
-        class: Symfony\Component\Cache\Adapter\ArrayAdapter
