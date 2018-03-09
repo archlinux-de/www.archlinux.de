@@ -11,7 +11,7 @@
         "debril/feed-io": "^4.1",
         "doctrine/doctrine-bundle": "^1.8",
         "doctrine/orm": "^2.6",
-        "exercise/htmlpurifier-bundle": "dev-master",
+        "exercise/htmlpurifier-bundle": "^1.0",
         "geoip2/geoip2": "^2.8",
         "league/iso3166": "^2.1",
         "sensio/framework-extra-bundle": "^5.1",
@@ -42,7 +42,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/pierres/HTMLPurifierBundle"
+            "url": "https://github.com/Exercise/HTMLPurifierBundle"
         }
     ],
     "config": {
