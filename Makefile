@@ -1,6 +1,6 @@
 .PHONY: all init start stop restart clean rebuild composer-update update-data shell test ci-test deploy assets coverage rebuild-database
 
-APP-RUN=docker-compose run --rm -u $$(id -u) app
+APP-RUN=docker-compose run --rm -u $$(id -u) --no-deps app
 DB-RUN=docker-compose run --rm db
 COMPOSER=composer --no-interaction
 
