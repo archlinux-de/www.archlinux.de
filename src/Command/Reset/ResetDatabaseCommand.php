@@ -86,13 +86,12 @@ class ResetDatabaseCommand extends ContainerAwareCommand
         $connection = $this->entityManager->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
 
-        switch ($connection->getDriver()->getName()) {
-            case 'pdo_mysql':
-                $connection->query('SET FOREIGN_KEY_CHECKS = 0');
-                break;
-            case 'pdo_sqlite':
-                $connection->query('PRAGMA foreign_keys = OFF');
-                break;
+        if ($connection->getDriver()->getName() == 'pdo_sqlite') {
+            $connection->query('PRAGMA foreign_keys = OFF');
+        } else {
+            // @codeCoverageIgnoreStart
+            $connection->query('SET FOREIGN_KEY_CHECKS = 0');
+            // @codeCoverageIgnoreEnd
         }
 
         foreach ($tables as $table) {
