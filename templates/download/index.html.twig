@@ -27,7 +27,7 @@
             <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
             <ul class="list-unstyled pl-4">
                 <li><a href="{{ release.torrent.magnetUri }}">Magnet link für {{ release.version }}</a></li>
-                <li><a href="https://www.archlinux.org{{ release.isoUrl | parse_url('path') }}.torrent">
+                <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.torrent">
                         Torrent für {{ release.version }}
                     </a></li>
             </ul>
@@ -39,7 +39,7 @@
 
             <h3>Prüfsummen</h3>
             <ul class="list-unstyled pl-4">
-                <li><a href="https://www.archlinux.org{{ release.isoUrl | parse_url('path') }}.sig">PGP-Signatur</a></li>
+                <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a></li>
                 {% if release.md5Sum %}
                     <li class="break-word"><strong>MD5:</strong> {{ release.md5Sum }}</li>{% endif %}
                 {% if release.sha1Sum %}
@@ -58,7 +58,7 @@
             <h3 class="mt-5">Mirrors</h3>
             <ul class="list-unstyled pl-4">
                 {% for mirror in mirrors %}
-                    <li><a href="{{ mirror.url }}{{ release.isoUrl | parse_url('path') | trim('/', 'left') }}">{{ mirror.url | parse_url('host') }}</a></li>
+                    <li><a href="{{ mirror.url }}{{ release.isoUrl | url_path | trim('/', 'left') }}">{{ mirror.url | url_host }}</a></li>
                 {% endfor %}
             </ul>
         </div>

@@ -64,49 +64,35 @@ class AppExtensionTest extends TestCase
         $appExtension->formatBytes('foo');
     }
 
-    public function testParseUrlIsCallable()
+    public function testUrlPathIsCallable()
     {
         $result = call_user_func(
-            $this->getFilterCallableFromExtension(new AppExtension(), 'parse_url'),
-            'https://www.archlinux.de',
-            'host'
+            $this->getFilterCallableFromExtension(new AppExtension(), 'url_path'),
+            'https://www.archlinux.de/packages'
+        );
+        $this->assertEquals('/packages', $result);
+    }
+
+    public function testUrlPath()
+    {
+        $input = 'https://user:pass@www.archlinux.de:443/path/blah?foo#bar';
+        $appExtension = new AppExtension();
+        $this->assertEquals('/path/blah', $appExtension->urlPath($input));
+    }
+
+    public function testUrlHostIsCallable()
+    {
+        $result = call_user_func(
+            $this->getFilterCallableFromExtension(new AppExtension(), 'url_host'),
+            'https://www.archlinux.de/packages'
         );
         $this->assertEquals('www.archlinux.de', $result);
     }
 
-    /**
-     * @param string $component
-     * @param string $output
-     * @dataProvider provideUrlParserOptions
-     */
-    public function testParseUrl(string $component, string $output)
+    public function testUrlHost()
     {
         $input = 'https://user:pass@www.archlinux.de:443/path/blah?foo#bar';
         $appExtension = new AppExtension();
-        $this->assertEquals($output, $appExtension->parseUrl($input, $component));
-    }
-
-    /**
-     * @return array
-     */
-    public function provideUrlParserOptions(): array
-    {
-        return [
-            ['scheme', 'https'],
-            ['host', 'www.archlinux.de'],
-            ['port', '443'],
-            ['user', 'user'],
-            ['pass', 'pass'],
-            ['path', '/path/blah'],
-            ['query', 'foo'],
-            ['fragment', 'bar']
-        ];
-    }
-
-    public function testParseUrlFailsOnIncorrectInput()
-    {
-        $appExtension = new AppExtension();
-        $this->expectException(\RuntimeException::class);
-        $appExtension->parseUrl('foo', 'bar');
+        $this->assertEquals('www.archlinux.de', $appExtension->urlHost($input));
     }
 }

@@ -8,7 +8,8 @@ class AppExtension extends \Twig_Extension
     {
         return array(
             new \Twig_Filter('format_bytes', array($this, 'formatBytes')),
-            new \Twig_Filter('parse_url', array($this, 'parseUrl')),
+            new \Twig_Filter('url_path', array($this, 'urlPath')),
+            new \Twig_Filter('url_host', array($this, 'urlHost')),
         );
     }
 
@@ -42,39 +43,19 @@ class AppExtension extends \Twig_Extension
 
     /**
      * @param string $url
-     * @param string $component
      * @return string
      */
-    public function parseUrl(string $url, string $component): string
+    public function urlPath(string $url): string
     {
-        switch ($component) {
-            case 'scheme':
-                $componentId = \PHP_URL_SCHEME;
-                break;
-            case 'host':
-                $componentId = \PHP_URL_HOST;
-                break;
-            case 'port':
-                $componentId = \PHP_URL_PORT;
-                break;
-            case 'user':
-                $componentId = \PHP_URL_USER;
-                break;
-            case 'pass':
-                $componentId = \PHP_URL_PASS;
-                break;
-            case 'path':
-                $componentId = \PHP_URL_PATH;
-                break;
-            case 'query':
-                $componentId = \PHP_URL_QUERY;
-                break;
-            case 'fragment':
-                $componentId = \PHP_URL_FRAGMENT;
-                break;
-            default:
-                throw new \RuntimeException('Unknown component: ' . $component);
-        }
-        return (string)parse_url($url, $componentId);
+        return (string)parse_url($url, \PHP_URL_PATH);
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     */
+    public function urlHost(string $url): string
+    {
+        return (string)parse_url($url, \PHP_URL_HOST);
     }
 }
