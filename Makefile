@@ -66,7 +66,7 @@ assets:
 	${APP-RUN} yarn run encore dev
 
 coverage:
-	${APP-RUN} php -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html var/coverage
+	${APP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
 
 rebuild-database:
 	${APP-RUN} bin/console cache:clear
