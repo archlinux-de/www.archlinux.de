@@ -1,7 +1,7 @@
 .autocomplete-suggestions {
   text-align: left;
   cursor: default;
-  border: 1px solid $brand-primary;
+  border: 1px solid $primary;
   border-top: 0;
   background: $white;
 
@@ -28,7 +28,7 @@
 
 .autocomplete-suggestion b {
   font-weight: bolder;
-  color: $brand-primary;
+  color: $primary;
 }
 
 .autocomplete-suggestion.selected b {
@@ -36,6 +36,6 @@
 }
 
 .autocomplete-suggestion.selected {
-  background: $brand-primary;
+  background: $primary;
   color: $white;
 }
