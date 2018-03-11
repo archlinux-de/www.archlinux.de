@@ -191,7 +191,7 @@ class PackageRepositoryTest extends DatabaseTestCase
 
     /**
      * @param string $term
-     * @param int $limt
+     * @param int $limit
      * @param int $matchCount
      * @dataProvider provideTerms
      */

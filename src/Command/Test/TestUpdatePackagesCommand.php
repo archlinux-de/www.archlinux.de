@@ -3,6 +3,7 @@
 namespace App\Command\Test;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -94,7 +95,7 @@ class TestUpdatePackagesCommand extends ContainerAwareCommand
                 $url . 'lastupdate'
             )->getBody()->getContents();
             return $content > 1;
-        } catch (\RuntimeException $e) {
+        } catch (GuzzleException $e) {
             return false;
         }
     }
