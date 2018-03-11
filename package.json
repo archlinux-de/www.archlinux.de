@@ -8,6 +8,7 @@
     "datatables.net": "^1.10.16",
     "datatables.net-bs4": "^1.10.16",
     "datatables.net-plugins": "^1.10.15",
+    "jquery": "^3.3.1",
     "js-autocomplete": "^1.0.4",
     "node-sass": "^4.7.2",
     "popper.js": "^1.12.9",
