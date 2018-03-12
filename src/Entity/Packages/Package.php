@@ -15,7 +15,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PackageRepository")
- * @ORM\Table(indexes={@ORM\Index(columns={"buildDate"}), @ORM\Index(columns={"name"})})
+ * @ORM\Table(indexes={
+ *     @ORM\Index(columns={"buildDate"}),
+ *     @ORM\Index(columns={"name"})
+ * })
  */
 class Package implements \JsonSerializable
 {
@@ -241,6 +244,18 @@ class Package implements \JsonSerializable
     private $checkdepends;
 
     /**
+     * @var Files
+     *
+     * @ORM\OneToOne(
+     *     targetEntity="App\Entity\Packages\Files",
+     *     cascade={"remove", "persist"},
+     *     fetch="LAZY",
+     *     inversedBy="package"
+     * )
+     */
+    private $files;
+
+    /**
      * @param Repository $repository
      * @param string $name
      * @param string $version
@@ -344,6 +359,8 @@ class Package implements \JsonSerializable
         foreach ($databasePackage->getCheckDepends() as $checkDepend) {
             $this->addCheckDependency(CheckDependency::createFromString($checkDepend));
         }
+
+        $this->setFiles(Files::createFromArray($databasePackage->getFiles()));
 
         return $this;
     }
@@ -478,6 +495,24 @@ class Package implements \JsonSerializable
     {
         $checkDependency->setSource($this);
         $this->checkdepends->add($checkDependency);
+        return $this;
+    }
+
+    /**
+     * @return Files
+     */
+    public function getFiles(): Files
+    {
+        return $this->files;
+    }
+
+    /**
+     * @param Files $files
+     * @return Package
+     */
+    public function setFiles(Files $files): Package
+    {
+        $this->files = $files;
         return $this;
     }
 

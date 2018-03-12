@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('build/js/package.js') }}"></script>
+{% endblock %}
+
 {% block title %}{{ package.name }}{% endblock %}
 
 {% block robots %}{% if package.repository.testing == true %}no{% endif %}index,follow{% endblock %}
@@ -62,7 +67,8 @@
                         <th>Packer</th>
                         <td>
                             {% if package.packager.email %}
-                                <a rel="nofollow" href="mailto:{{ package.packager.email }}">{{ package.packager.name }}</a>
+                                <a rel="nofollow"
+                                   href="mailto:{{ package.packager.email }}">{{ package.packager.name }}</a>
                             {% else %}
                                 {{ package.packager.name }}
                             {% endif %}
@@ -175,6 +181,20 @@
                 {{ macro.related('optional für', inverse_optdepends) }}
                 {{ macro.related('Zum Bauen von', inverse_makedepends) }}
             </div>
+        </div>
+
+        <div class="col-12">
+            <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
+
+            <button id="fileListToggle" class="btn btn-outline-secondary btn-sm ml-4" type="button" data-toggle="collapse"
+                    data-target="#fileList" aria-expanded="false" aria-controls="fileList">Dateien anzeigen
+            </button>
+            <ul id="fileList" class="d-none list-unstyled pl-4" data-ajax="{{ path(
+                'app_packagedetails_files',
+                {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+            ) }}">
+            </ul>
+
         </div>
     </div>
 {% endblock %}

@@ -77,4 +77,29 @@ class PackageDetailsController extends Controller
             ]
         );
     }
+
+    /**
+     * @Route("/packages/{repo}/{arch}/{pkgname}/files", methods={"GET"})
+     * @Cache(smaxage="600")
+     * @param string $repo
+     * @param string $arch
+     * @param string $pkgname
+     * @param PackageRepository $packageRepository
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    public function filesAction(
+        string $repo,
+        string $arch,
+        string $pkgname,
+        PackageRepository $packageRepository
+    ): Response {
+        try {
+            $package = $packageRepository->getByName($repo, $arch, $pkgname);
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException('Package not found', $e);
+        }
+
+        return $this->json($package->getFiles());
+    }
 }

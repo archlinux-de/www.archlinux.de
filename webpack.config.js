@@ -7,6 +7,7 @@ Encore
   .addEntry('js/start', './assets/js/start.js')
   .addEntry('js/packages', './assets/js/packages.js')
   .addEntry('js/mirrors', './assets/js/mirrors.js')
+  .addEntry('js/package', './assets/js/package.js')
   .createSharedEntry('js/vendor', [
     'jquery',
     'popper.js',

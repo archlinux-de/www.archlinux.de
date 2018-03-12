@@ -236,4 +236,19 @@ class PackageTest extends TestCase
             ['getCheckDepends', 'getCheckDependencies']
         ];
     }
+
+    public function testUpdateFiles()
+    {
+        $repository = new Repository('core', Architecture::X86_64);
+        $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
+        $pacmanFiles = ['usr/bin', 'usr/bin/pacman'];
+
+        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        $databasePackage = $this->createMock(DatabasePackage::class);
+        $databasePackage->method('getFiles')->willReturn($pacmanFiles);
+
+        $package->updateFromPackageDatabase($databasePackage);
+
+        $this->assertEquals($pacmanFiles, iterator_to_array($package->getFiles()));
+    }
 }
