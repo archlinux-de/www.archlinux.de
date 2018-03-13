@@ -64,7 +64,7 @@ class PackagesController extends Controller
         } else {
             $packageCount = $packageRepository->getSize();
 
-            $cachedPackageCount->expiresAt(new \DateTime('24 hour'));
+            $cachedPackageCount->expiresAt(new \DateTime('1 hour'));
             $cachedPackageCount->set($packageCount);
             $cache->save($cachedPackageCount);
         }
