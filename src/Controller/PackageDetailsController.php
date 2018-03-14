@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
@@ -11,6 +12,7 @@ use Doctrine\ORM\NoResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class PackageDetailsController extends Controller
@@ -32,9 +34,15 @@ class PackageDetailsController extends Controller
         PackageRepository $packageRepository
     ): Response {
         try {
-            $package = $packageRepository->getByName($repo, $arch, $pkgname);
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException('Package not found', $e);
+            try {
+                $package = $packageRepository->getByName($repo, $arch, $pkgname);
+            } catch (NoResultException $e) {
+                return $this->redirectToPackage(
+                    $packageRepository->getByRepositoryArchitectureAndName($arch, $pkgname)
+                );
+            }
+        } catch (NoResultException $f) {
+            throw $this->createNotFoundException('Package not found', $f);
         }
 
         $cgitUrl = $this->getParameter('app.packages.cgit') . (in_array($package->getRepository()->getName(), array(
@@ -52,5 +60,21 @@ class PackageDetailsController extends Controller
             'inverse_optdepends' => $packageRepository->findByInverseRelationType($package, OptionalDependency::class),
             'inverse_makedepends' => $packageRepository->findByInverseRelationType($package, MakeDependency::class),
         ]);
+    }
+
+    /**
+     * @param $relatedPackage
+     * @return RedirectResponse
+     */
+    private function redirectToPackage(Package $relatedPackage): RedirectResponse
+    {
+        return $this->redirectToRoute(
+            'app_packagedetails_index',
+            [
+                'repo' => $relatedPackage->getRepository()->getName(),
+                'arch' => $relatedPackage->getRepository()->getArchitecture(),
+                'pkgname' => $relatedPackage->getName()
+            ]
+        );
     }
 }

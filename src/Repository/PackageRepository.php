@@ -157,6 +157,28 @@ class PackageRepository extends EntityRepository
     }
 
     /**
+     * @param string $architecture
+     * @param string $name
+     * @return Package
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getByRepositoryArchitectureAndName(string $architecture, string $name): ?Package
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->where('package.name = :pkgname')
+            ->orderBy('repository.testing', 'ASC')
+            ->setParameter('architecture', $architecture)
+            ->setParameter('pkgname', $name)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    /**
      * @return int
      */
     public function getSize(): int

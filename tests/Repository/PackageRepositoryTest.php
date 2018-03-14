@@ -315,4 +315,28 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertCount(1, $packages);
         $this->assertEquals($pacman->getId(), array_shift($packages)->getId());
     }
+
+    public function testGetByRepositoryArchitectureAndName()
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $pacman = (new Package(
+            $coreRepository,
+            'pacman',
+            '5.0.2-2',
+            Architecture::X86_64
+        ));
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($pacman);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $packageRepository = $entityManager->getRepository(Package::class);
+        $package = $packageRepository->getByRepositoryArchitectureAndName(
+            $coreRepository->getArchitecture(),
+            $pacman->getName()
+        );
+        $this->assertEquals($pacman->getId(), $package->getId());
+    }
 }
