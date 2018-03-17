@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "eeb7c468457c438eec99fd52381982fe",
+    "content-hash": "a1d8edaf211fd9dbc38ff168cad2d527",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -941,6 +941,7 @@
                     "Exercise\\HTMLPurifierBundle\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -955,10 +956,6 @@
             "keywords": [
                 "htmlpurifier"
             ],
-            "support": {
-                "source": "https://github.com/Exercise/HTMLPurifierBundle/tree/v1.0.0",
-                "issues": "https://github.com/Exercise/HTMLPurifierBundle/issues"
-            },
             "time": "2018-03-09T09:23:51+00:00"
         },
         {

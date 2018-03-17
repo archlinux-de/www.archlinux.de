@@ -39,12 +39,6 @@
         "symfony/stopwatch": "^4.0",
         "symfony/web-profiler-bundle": "^4.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Exercise/HTMLPurifierBundle"
-        }
-    ],
     "config": {
         "preferred-install": {
             "*": "dist"
