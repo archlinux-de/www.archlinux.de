@@ -6,6 +6,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
+use App\Repository\FilesRepository;
 use App\Repository\PackageRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -84,7 +85,7 @@ class PackageDetailsController extends Controller
      * @param string $repo
      * @param string $arch
      * @param string $pkgname
-     * @param PackageRepository $packageRepository
+     * @param FilesRepository $filesRepository
      * @return Response
      * @throws NonUniqueResultException
      */
@@ -92,14 +93,14 @@ class PackageDetailsController extends Controller
         string $repo,
         string $arch,
         string $pkgname,
-        PackageRepository $packageRepository
+        FilesRepository $filesRepository
     ): Response {
         try {
-            $package = $packageRepository->getByName($repo, $arch, $pkgname);
+            $files = $filesRepository->getByPackageName($repo, $arch, $pkgname);
         } catch (NoResultException $e) {
             throw $this->createNotFoundException('Package not found', $e);
         }
 
-        return $this->json($package->getFiles());
+        return $this->json($files);
     }
 }

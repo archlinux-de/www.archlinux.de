@@ -76,6 +76,10 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         arguments: ['\App\Entity\Packages\Package']
 
+    App\Repository\FilesRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments: ['\App\Entity\Packages\Files']
+
     App\Repository\AbstractRelationRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         arguments: ['\App\Entity\Packages\Relations\AbstractRelation']

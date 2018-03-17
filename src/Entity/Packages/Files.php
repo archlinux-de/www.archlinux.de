@@ -5,7 +5,7 @@ namespace App\Entity\Packages;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\FilesRepository")
  */
 class Files implements \IteratorAggregate, \JsonSerializable
 {
@@ -28,7 +28,7 @@ class Files implements \IteratorAggregate, \JsonSerializable
     /**
      * @var Package
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Packages\Package", mappedBy="files")
+     * @ORM\OneToOne(targetEntity="App\Entity\Packages\Package", mappedBy="files", fetch="LAZY")
      */
     private $package;
 
