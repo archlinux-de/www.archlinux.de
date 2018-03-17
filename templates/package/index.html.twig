@@ -126,12 +126,22 @@
 
             {% macro relate(name, relations) %}
                 {% if relations | length > 0 %}
+                    {% set listLimit = 10 %}
+                    {% set listClass %}list-target-{{ random() }}{% endset %}
                     <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                         <h3>{{ name }}</h3>
                         <ul class="list-unstyled pl-4">
                             {# @var relation \App\Entity\Packages\Relations\AbstractRelation #}
                             {% for relation in relations %}
-                                <li>
+
+                                {% if loop.index == listLimit and loop.length > listLimit %}
+                                    <li class="mt-1 show {{ listClass }}">
+                                        <a href="#" class="text-secondary" data-target=".{{ listClass }}" data-toggle="collapse" >
+                                            mehr&hellip;
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li{% if loop.index >= listLimit and loop.length > listLimit %} class="collapse {{ listClass }}"{% endif %}>
                                     {% if relation.target %}
                                         <a href="{{ path(
                                         'app_packagedetails_index',
@@ -148,12 +158,22 @@
             {% endmacro %}
             {% macro related(name, packages) %}
                 {% if packages | length > 0 %}
+                    {% set listLimit = 10 %}
+                    {% set listClass %}list-target-{{ random() }}{% endset %}
                     <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                         <h3>{{ name }}</h3>
                         <ul class="list-unstyled pl-4">
                             {# @var package \App\Entity\Packages\Package #}
                             {% for package in packages %}
-                                <li>
+
+                                {% if loop.index == listLimit and loop.length > listLimit %}
+                                    <li class="mt-1 show {{ listClass }}">
+                                        <a href="#" class="text-secondary" data-target=".{{ listClass }}" data-toggle="collapse" >
+                                            mehr&hellip;
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li{% if loop.index >= listLimit and loop.length > listLimit %} class="collapse {{ listClass }}"{% endif %}>
                                     <a href="{{ path(
                                         'app_packagedetails_index',
                                         {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
@@ -186,10 +206,11 @@
         <div class="col-12">
             <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
 
-            <button id="fileListToggle" class="btn btn-outline-secondary btn-sm ml-4" type="button" data-toggle="collapse"
+            <button id="fileListToggle" class="btn btn-outline-secondary btn-sm ml-4" type="button"
+                    data-toggle="collapse"
                     data-target="#fileList" aria-expanded="false" aria-controls="fileList">Dateien anzeigen
             </button>
-            <ul id="fileList" class="d-none list-unstyled pl-4" data-ajax="{{ path(
+            <ul id="fileList" class="d-none collapse list-unstyled pl-4" data-ajax="{{ path(
                 'app_packagedetails_files',
                 {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
             ) }}">
