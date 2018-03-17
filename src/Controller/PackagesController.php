@@ -92,12 +92,14 @@ class PackagesController extends Controller
             'repository.name' => 'repository.name',
             'architecture' => 'repository.architecture'
         ];
+        $textSearchableColumns = [
+            'name' => 'package.name',
+            'description' => 'package.description',
+            'groups' => 'package.groups'
+        ];
         $searchableColumns = array_merge(
             $compareableColumns,
-            [
-                'name' => 'package.name',
-                'description' => 'package.description'
-            ]
+            $textSearchableColumns
         );
         $orderableColumns = array_merge(
             $compareableColumns,
@@ -122,7 +124,7 @@ class PackagesController extends Controller
         }
 
         if ($request->hasSearch() && !$request->getSearch()->isRegex()) {
-            $queryBuilder->andWhere('(package.name LIKE :search OR package.description LIKE :search)');
+            $queryBuilder->andWhere($this->createTextSearchQuery($textSearchableColumns));
             $queryBuilder->setParameter(':search', '%' . $request->getSearch()->getValue() . '%');
         }
 
@@ -152,5 +154,26 @@ class PackagesController extends Controller
         $response->setRecordsFiltered($packagesFiltered);
 
         return $response;
+    }
+
+    /**
+     * @param $textSearchableColumns
+     * @return string
+     */
+    private function createTextSearchQuery($textSearchableColumns): string
+    {
+        $textSearchesArray = iterator_to_array($this->createTextSearchesIterator($textSearchableColumns));
+        return '(' . implode(' OR ', $textSearchesArray) . ')';
+    }
+
+    /**
+     * @param $textSearchableColumns
+     * @return \Iterator
+     */
+    private function createTextSearchesIterator($textSearchableColumns): \Iterator
+    {
+        foreach ($textSearchableColumns as $textSearchableColumn) {
+            yield $textSearchableColumn . ' LIKE :search';
+        }
     }
 }

@@ -68,6 +68,12 @@ $(document).ready(function () {
           return data
         },
         'className': 'd-none d-lg-table-cell'
+      },
+      {
+        'data': 'groups',
+        'orderable': false,
+        'searchable': true,
+        'visible': false
       }
     ]
   })

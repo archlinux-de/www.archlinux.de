@@ -20,6 +20,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '6.0-1', Architecture::X86_64);
         $package->setBuildDate(new \DateTime('2018-01-30'));
         $package->setDescription('foo bar');
+        $package->setGroups(['base']);
 
         $json = json_encode($package);
         $this->assertJson($json);
@@ -35,6 +36,9 @@ class PackageTest extends TestCase
                     'name' => 'core',
                     'architecture' => 'x86_64',
                     'testing' => false
+                ],
+                'groups' => [
+                    'base'
                 ]
             ],
             $jsonArray

@@ -561,24 +561,6 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string[]
-     */
-    public function getGroups(): array
-    {
-        return $this->groups;
-    }
-
-    /**
-     * @param array $groups
-     * @return Package
-     */
-    public function setGroups(array $groups)
-    {
-        $this->groups = $groups;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getCompressedSize(): int
@@ -718,6 +700,7 @@ class Package implements \JsonSerializable
             'builddate' => !is_null($this->getBuildDate())
                 ? $this->getBuildDate()->format(\DateTime::RFC2822)
                 : null,
+            'groups' => $this->getGroups()
         ];
     }
 
@@ -816,6 +799,24 @@ class Package implements \JsonSerializable
     public function setBuildDate(?\DateTime $buildDate): Package
     {
         $this->buildDate = $buildDate;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getGroups(): array
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param array $groups
+     * @return Package
+     */
+    public function setGroups(array $groups)
+    {
+        $this->groups = $groups;
         return $this;
     }
 
