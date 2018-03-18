@@ -15,31 +15,42 @@ class FilesTest extends TestCase
     {
         /** @var Package|\PHPUnit_Framework_MockObject_MockObject $packge */
         $packge = $this->createMock(Package::class);
-        $files = $this->createFiles();
+        $files = Files::createFromArray($this->files);
         $files->setPackage($packge);
         $this->assertSame($packge, $files->getPackage());
     }
 
     /**
-     * @return Files
+     * @param array $files
+     * @dataProvider provideFilesArray
      */
-    private function createFiles(): Files
+    public function testGetIterator(array $files)
     {
-        return Files::createFromArray($this->files);
+        $this->assertEquals($files, iterator_to_array(Files::createFromArray($files)->getIterator()));
     }
 
-    public function testGetIterator()
+    /**
+     * @param array $filesArray
+     * @dataProvider provideFilesArray
+     */
+    public function testJsonSerialize(array $filesArray)
     {
-        $this->assertEquals($this->files, iterator_to_array($this->createFiles()->getIterator()));
-    }
-
-    public function testJsonSerialize()
-    {
-        $files = $this->createFiles();
+        $files = Files::createFromArray($filesArray);
 
         $json = json_encode($files);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
-        $this->assertEquals($this->files, $jsonArray);
+        $this->assertEquals($filesArray, $jsonArray);
+    }
+
+    /**
+     * @return array
+     */
+    public function provideFilesArray(): array
+    {
+        return [
+            [[]],
+            [$this->files]
+        ];
     }
 }
