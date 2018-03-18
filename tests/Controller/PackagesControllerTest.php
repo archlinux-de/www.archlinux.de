@@ -27,7 +27,7 @@ class PackagesControllerTest extends DatabaseTestCase
     {
         $client = $this->getClient();
 
-        $client->request('GET', '/packages');
+        $client->request('GET', '/packages', ['search' => 'foo', 'repository' => 'bar']);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
     }

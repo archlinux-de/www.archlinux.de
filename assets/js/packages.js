@@ -7,10 +7,13 @@ $(document).ready(function () {
   const dataTable = $('#packages')
   const packageUrlTemplate = dataTable.data('packageUrlTemplate')
   const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
+  const recordsTotal = dataTable.data('recordsTotal')
+  const recordsFiltered = dataTable.data('recordsFiltered')
   dataTable.DataTable({
     'language': language,
     'lengthMenu': [25, 50, 100],
     'pageLength': 25,
+    'deferLoading': [recordsFiltered, recordsTotal],
     'processing': false,
     'serverSide': true,
     'order': [[5, 'desc']],
@@ -84,6 +87,9 @@ $(document).ready(function () {
         'searchable': true,
         'visible': false
       }
-    ]
+    ],
+    'initComplete': function (settings, json) {
+      dataTable.removeClass('invisible')
+    }
   })
 })
