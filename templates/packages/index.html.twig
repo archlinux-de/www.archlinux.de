@@ -24,6 +24,7 @@
         <thead>
         <tr>
             <th>Repositorium</th>
+            <th class="d-none">Repositorium-Architektur</th>
             <th>Architektur</th>
             <th>Name</th>
             <th>Version</th>
@@ -37,6 +38,7 @@
         {% for package in datatablesResponse.data %}
             <tr>
                 <td>{{ package.jsonSerialize.repository.name }}</td>
+                <td class="d-none">{{ package.jsonSerialize.repository.architecture }}</td>
                 <td>{{ package.jsonSerialize.architecture }}</td>
                 <td>{{ package.jsonSerialize.name }}</td>
                 <td>{{ package.jsonSerialize.version }}</td>

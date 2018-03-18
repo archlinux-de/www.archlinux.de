@@ -34,6 +34,12 @@ $(document).ready(function () {
         }
       },
       {
+        'data': 'repository.architecture',
+        'orderable': false,
+        'searchable': false,
+        'visible': false
+      },
+      {
         'data': 'architecture',
         'orderable': true,
         'searchable': true,
