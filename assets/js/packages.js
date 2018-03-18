@@ -6,6 +6,7 @@ import language from 'datatables.net-plugins/i18n/German.lang'
 $(document).ready(function () {
   const dataTable = $('#packages')
   const packageUrlTemplate = dataTable.data('packageUrlTemplate')
+  const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
   dataTable.DataTable({
     'language': language,
     'lengthMenu': [25, 50, 100],
@@ -19,7 +20,15 @@ $(document).ready(function () {
         'data': 'repository.name',
         'orderable': true,
         'searchable': true,
-        'className': 'd-none d-lg-table-cell'
+        'className': 'd-none d-lg-table-cell',
+        'render': function (data, type, row) {
+          if (type === 'display') {
+            const repositoryUrl = repositoryUrlTemplate
+              .replace('_repository_', data)
+            return `<a href="${repositoryUrl}">${data}</a>`
+          }
+          return data
+        }
       },
       {
         'data': 'architecture',
