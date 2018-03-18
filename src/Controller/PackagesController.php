@@ -50,7 +50,7 @@ class PackagesController extends Controller
         $datatablesRequest->addOrder(
             new Order(
                 new Column(
-                    5,
+                    6,
                     'builddate',
                     '',
                     false,
@@ -65,7 +65,7 @@ class PackagesController extends Controller
         }
         $datatablesRequest->addColumn(
             new Column(
-                1,
+                2,
                 'architecture',
                 '',
                 true,

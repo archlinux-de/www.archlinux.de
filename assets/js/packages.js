@@ -16,7 +16,7 @@ $(document).ready(function () {
     'deferLoading': [recordsFiltered, recordsTotal],
     'processing': false,
     'serverSide': true,
-    'order': [[5, 'desc']],
+    'order': [[6, 'desc']],
     'searchDelay': 100,
     'columns': [
       {
