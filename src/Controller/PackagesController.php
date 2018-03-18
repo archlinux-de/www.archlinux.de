@@ -43,7 +43,8 @@ class PackagesController extends Controller
     public function indexAction(Request $request): Response
     {
         $search = $request->get('search');
-        $architecture = $request->get('architecture', $this->getParameter('app.packages.default_architecture'));
+        $defaultArchitecture = $this->getParameter('app.packages.default_architecture');
+        $architecture = $request->get('architecture', $defaultArchitecture);
         $repository = $request->get('repository');
 
         $datatablesRequest = new DatatablesRequest(0, 0, 25);
@@ -95,6 +96,7 @@ class PackagesController extends Controller
 
         return $this->render('packages/index.html.twig', [
             'architecture' => $architecture,
+            'defaultArchitecture' => $defaultArchitecture,
             'repository' => $repository,
             'search' => $search,
             'datatablesResponse' => $datatablesResponse

@@ -7,9 +7,14 @@
 
 {% block title %}Paket-Suche{% endblock %}
 
-{% if search %}
-    {% block canonical %}{{ absolute_url(path('app_packages_index', {'search': search})) }}{% endblock %}
-{% endif %}
+{% block canonical %}{{ absolute_url(path(
+    'app_packages_index',
+    {
+        'search': search,
+        'architecture': architecture == defaultArchitecture ? null : architecture,
+        'repository': repository
+    }
+)) }}{% endblock %}
 
 {% block body %}
     <h1 class="mb-4">Paket-Suche</h1>
