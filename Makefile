@@ -68,7 +68,7 @@ rebuild-database:
 
 deploy:
 	chmod o-x .
-	SYMFONY_ENV=prod composer --no-interaction install --no-dev --optimize-autoloader
+	composer --no-interaction install --no-dev --optimize-autoloader
 	yarn install
 	bin/console cache:clear --no-debug --no-warmup
 	yarn run encore production
