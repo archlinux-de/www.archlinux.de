@@ -1,6 +1,7 @@
 /.idea/
 /public/build/
 /node_modules/
+/yarn-error.log
 
 ###> symfony/framework-bundle ###
 .env
