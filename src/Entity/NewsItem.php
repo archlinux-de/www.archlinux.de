@@ -13,7 +13,7 @@ class NewsItem
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column(length=191)
      * @ORM\Id
      */
     private $id;

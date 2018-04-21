@@ -13,7 +13,7 @@ class Torrent
     /**
      * @var string
      *
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(nullable=true, length=191)
      */
     private $url;
 
