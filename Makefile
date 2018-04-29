@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild update-data shell test ci-test deploy install coverage rebuild-database
+.PHONY: all init start stop restart clean rebuild update-data shell test ci-test deploy install coverage rebuild-database update
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 APP-NO-DB-RUN=docker-compose run --rm -u $$(id -u) --no-deps app
@@ -65,6 +65,10 @@ rebuild-database:
 	${APP-RUN} bin/console cache:clear
 	${APP-RUN} bin/console doctrine:database:drop --force --if-exists
 	${MAKE} init
+
+update:
+	${APP-NO-DB-RUN} ${COMPOSER} update
+	${APP-NO-DB-RUN} yarn upgrade --latest
 
 deploy:
 	chmod o-x .
