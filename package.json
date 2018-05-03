@@ -4,7 +4,7 @@
   "devDependencies": {
     "@symfony/webpack-encore": "^0.20.1",
     "autoprefixer": "^8.4.1",
-    "bootstrap": "^4.1.0",
+    "bootstrap": "^4.1.1",
     "datatables.net": "^1.10.16",
     "datatables.net-bs4": "^1.10.16",
     "datatables.net-plugins": "^1.10.15",
