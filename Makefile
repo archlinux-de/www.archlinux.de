@@ -51,11 +51,13 @@ test:
 	${APP-NO-DB-RUN} vendor/bin/phpcs
 	${APP-NO-DB-RUN} node_modules/.bin/standard 'assets/js/**/*.js' '*.js'
 	${APP-NO-DB-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'
+	${APP-NO-DB-RUN} bin/console lint:yaml config
+	${APP-NO-DB-RUN} bin/console lint:twig templates
 	${APP-NO-DB-RUN} vendor/bin/phpunit
 
 ci-test: install
 	${MAKE} test
-	${APP-NO-DB-RUN} vendor/bin/security-checker security:check
+	${APP-NO-DB-RUN} bin/console security:check
 	${APP-NO-DB-RUN} node_modules/.bin/encore dev
 
 coverage:
