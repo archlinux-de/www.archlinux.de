@@ -1,4 +1,4 @@
-.PHONY: all init start stop restart clean rebuild update-data shell test ci-test deploy install coverage rebuild-database update
+.PHONY: all init start stop restart clean rebuild update-data shell test db-test ci-test deploy install coverage rebuild-database update
 
 APP-RUN=docker-compose run --rm -u $$(id -u) app
 APP-NO-DB-RUN=docker-compose run --rm -u $$(id -u) --no-deps app
@@ -55,10 +55,14 @@ test:
 	${APP-NO-DB-RUN} bin/console lint:twig templates
 	${APP-NO-DB-RUN} vendor/bin/phpunit
 
+db-test:
+	${APP-RUN} vendor/bin/phpunit -c phpunit-db.xml
+
 ci-test: install
 	${MAKE} test
 	${APP-NO-DB-RUN} bin/console security:check
 	${APP-NO-DB-RUN} node_modules/.bin/encore dev
+	${MAKE} db-test
 
 coverage:
 	${APP-NO-DB-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
