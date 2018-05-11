@@ -56,6 +56,7 @@ test:
 	${APP-NO-DB-RUN} vendor/bin/phpunit
 
 db-test:
+	${DB-RUN} mysqladmin -uroot --wait=10 ping
 	${APP-RUN} vendor/bin/phpunit -c phpunit-db.xml
 
 ci-test: install
