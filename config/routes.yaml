@@ -1,3 +1,15 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+external_forum:
+    path: /
+    host: bbs.archlinux.de
+    schemes: ['https']
+
+external_wiki:
+    path: /
+    host: wiki.archlinux.de
+    schemes: ['https']
+
+external_contact:
+    path: /contact
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
+    defaults:
+        path: 'https://bbs.archlinux.de/misc.php?email=486'

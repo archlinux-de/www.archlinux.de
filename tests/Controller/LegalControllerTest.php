@@ -19,7 +19,7 @@ class LegalControllerTest extends WebTestCase
         $response = $client->getResponse()->getContent();
         $this->assertContains('Pierre Schmitz', $response);
         $this->assertContains('+49 228 9716608', $response);
-        $this->assertContains('mail@pierre-schmitz.com', $response);
+        $this->assertContains('pierre@archlinux.de', $response);
     }
 
     public function testPrivacyAction()
@@ -29,7 +29,5 @@ class LegalControllerTest extends WebTestCase
         $client->request('GET', '/privacy-policy');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
-        $response = $client->getResponse()->getContent();
-        $this->assertContains('Symfony BrowserKit', $response);
     }
 }
