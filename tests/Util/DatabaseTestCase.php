@@ -9,17 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DatabaseTestCase extends KernelTestCase
 {
-    /** @var ContainerInterface */
-    private $container;
-
     public function setUp()
     {
         parent::setUp();
-        $this->container = static::bootKernel()->getContainer();
+        static::bootKernel();
         if ($this->isPersistentDatabase()) {
             $this->dropDatabase();
             $this->createDatabase();
@@ -41,7 +37,7 @@ class DatabaseTestCase extends KernelTestCase
      */
     protected function getEntityManager(): EntityManagerInterface
     {
-        return $this->container->get('doctrine.orm.entity_manager');
+        return static::$container->get('doctrine.orm.entity_manager');
     }
 
     private function dropDatabase()
@@ -88,7 +84,6 @@ class DatabaseTestCase extends KernelTestCase
         if ($this->isPersistentDatabase()) {
             $this->dropDatabase();
         }
-        $this->container = null;
         parent::tearDown();
     }
 
@@ -106,15 +101,7 @@ class DatabaseTestCase extends KernelTestCase
      */
     protected function getClient(): Client
     {
-        return $this->getContainer()->get('test.client');
-    }
-
-    /**
-     * @return ContainerInterface
-     */
-    protected function getContainer(): ContainerInterface
-    {
-        return $this->container;
+        return static::$container->get('test.client');
     }
 
     /**
