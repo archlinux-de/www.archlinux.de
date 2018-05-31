@@ -5,8 +5,8 @@
     "license": "GPL-3.0",
     "require": {
         "php": "^7.2",
-        "ext-iconv": "*",
         "ext-apcu": "^5.1",
+        "ext-iconv": "*",
         "ext-pdo_mysql": "*",
         "debril/feed-io": "^4.3",
         "doctrine/doctrine-bundle": "^1.9",
@@ -27,6 +27,7 @@
         "symfony/process": "^4.1",
         "symfony/twig-bundle": "^4.1",
         "symfony/validator": "^4.1",
+        "symfony/web-link": "^4.1",
         "symfony/yaml": "^4.1"
     },
     "require-dev": {
