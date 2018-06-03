@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "@symfony/webpack-encore": "^0.20.1",
-    "autoprefixer": "^8.5.2",
+    "autoprefixer": "^8.6.0",
     "bootstrap": "^4.1.1",
     "datatables.net": "^1.10.16",
     "datatables.net-bs4": "^1.10.16",
@@ -13,7 +13,7 @@
     "node-sass": "^4.9.0",
     "popper.js": "^1.14.3",
     "postcss-loader": "^2.1.5",
-    "sass-loader": "^7.0.1",
+    "sass-loader": "^7.0.2",
     "standard": "^11.0.1",
     "stylelint": "^9.2.1",
     "stylelint-config-standard": "^18.2.0"
