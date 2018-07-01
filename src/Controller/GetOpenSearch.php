@@ -5,7 +5,7 @@ namespace App\Controller;
 use DOMDocument;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Asset\Packages;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

@@ -11,7 +11,7 @@ use App\Response\Datatables\Response as DatatablesResponse;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Psr\Cache\CacheItemPoolInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
