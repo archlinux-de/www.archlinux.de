@@ -1,4 +1,4 @@
-version: "3"
+version: "3.6"
 
 volumes:
   mariadb-socket:
@@ -12,6 +12,7 @@ services:
     environment:
       - HOME=/tmp
     command: php-fpm -F
+    user: "${UID}:${GID}"
     volumes:
       - ../:/app
       - mariadb-socket:/run/mysqld
@@ -27,6 +28,7 @@ services:
     environment:
       - HOME=/tmp
     command: node_modules/.bin/encore dev-server --host 0.0.0.0 --port 8080 --disable-host-check --inline=false
+    user: "${UID}:${GID}"
     restart: always
     volumes:
       - ../:/app
@@ -37,11 +39,15 @@ services:
     build: nginx
     working_dir: /app
     command: nginx -g "daemon off;"
+    user: "${UID}:${GID}"
     ports:
       - "8080:8080"
     volumes:
       - ../:/app:ro
       - php-fpm-socket:/run/php-fpm
+    tmpfs:
+      - /tmp
+      - /var/lib/nginx
     depends_on:
       - php
 

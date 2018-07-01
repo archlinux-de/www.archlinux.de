@@ -1,11 +1,15 @@
+.EXPORT_ALL_VARIABLES:
 .PHONY: all init start stop restart clean rebuild update-data shell test db-test ci-test deploy install coverage rebuild-database update
 
+UID!=id -u
+GID!=id -g
+COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml
+COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
+PHP-RUN=${COMPOSE-RUN} php
+PHP-NO-DB-RUN=${COMPOSE-RUN} --no-deps php
 COMPOSER=composer --no-interaction
-COMPOSE=docker-compose -f docker/docker-compose.yml
-PHP-RUN=${COMPOSE} run --rm -u $$(id -u) php
-PHP-NO-DB-RUN=${COMPOSE} run --rm -u $$(id -u) --no-deps php
-NODE-RUN=${COMPOSE} run --rm -u $$(id -u) --no-deps encore
-MARIADB-RUN=${COMPOSE} run --rm mariadb
+NODE-RUN=${COMPOSE-RUN} --no-deps encore
+MARIADB-RUN=${COMPOSE-RUN} mariadb
 
 all: init
 
