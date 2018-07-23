@@ -7,6 +7,8 @@
         "php": "^7.2",
         "ext-apcu": "^5.1",
         "ext-iconv": "*",
+        "ext-ctype": "*",
+        "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
         "debril/feed-io": "^4.3",
         "doctrine/doctrine-bundle": "^1.9",
@@ -58,7 +60,10 @@
         }
     },
     "replace": {
+        "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
         "symfony/polyfill-php71": "*",
         "symfony/polyfill-php70": "*",
         "symfony/polyfill-php56": "*"
