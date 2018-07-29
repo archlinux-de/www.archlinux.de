@@ -1,3 +1,7 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
 external_forum:
     path: /
     host: bbs.archlinux.de
