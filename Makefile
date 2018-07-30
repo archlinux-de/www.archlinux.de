@@ -7,7 +7,7 @@ COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-RUN=${COMPOSE-RUN} php
 PHP-NO-DB-RUN=${COMPOSE-RUN} --no-deps php
-COMPOSER=composer --no-interaction
+COMPOSER-BIN=composer --no-interaction
 NODE-RUN=${COMPOSE-RUN} --no-deps encore
 MARIADB-RUN=${COMPOSE-RUN} mariadb
 
@@ -47,7 +47,7 @@ rebuild: clean
 	${MAKE}
 
 install:
-	${PHP-NO-DB-RUN} ${COMPOSER} install
+	${PHP-NO-DB-RUN} ${COMPOSER-BIN} install
 	${NODE-RUN} yarn install
 
 shell:
@@ -79,12 +79,12 @@ rebuild-database:
 	${MAKE} init
 
 update:
-	${PHP-NO-DB-RUN} ${COMPOSER} update
+	${PHP-NO-DB-RUN} ${COMPOSER-BIN} update
 	${NODE-RUN} yarn upgrade --latest
 
 deploy:
 	chmod o-x .
-	composer --no-interaction install --no-dev --optimize-autoloader
+	${COMPOSER-BIN} install --no-dev --optimize-autoloader
 	yarn install
 	bin/console cache:clear --no-debug --no-warmup
 	yarn run encore production
