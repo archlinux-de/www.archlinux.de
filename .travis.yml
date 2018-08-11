@@ -6,5 +6,4 @@ services:
   - docker
 
 script:
-  - make ci-test
-  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then make ci-update; fi
+  - make ci-build

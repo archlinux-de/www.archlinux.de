@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all init start stop clean rebuild install shell-php shell-node test test-db test-coverage ci-test update ci-update ci-update-commit deploy
+.PHONY: all init start stop clean rebuild install shell-php shell-node test test-db test-coverage test-ci ci-build ci-update ci-update-commit deploy
 
 UID!=id -u
 GID!=id -g
@@ -63,29 +63,29 @@ test-db: start
 test-coverage:
 	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
 
-ci-test: install
+test-ci:
 	${MAKE} test
-	${PHP-RUN} bin/console security:check
 	${NODE-RUN} node_modules/.bin/encore production
 	${MAKE} test-db
 
-update:
-	${PHP-RUN} composer --no-interaction update
-	${MAKE} test
-	${MAKE} test-db
-	${NODE-RUN} yarn upgrade --latest
-	${NODE-RUN} node_modules/.bin/encore production
+ci-build: install
+	${MAKE} test-ci
+	if [ "$${TRAVIS_EVENT_TYPE}" = "cron" ]; then ${MAKE} ci-update; fi
+	${PHP-RUN} bin/console security:check
 
 ci-update-commit:
 	git config --local user.name "$${GH_NAME}"
 	git config --local user.email "$${GH_EMAIL}"
+	git checkout "$${TRAVIS_BRANCH}"
 	git add -A
 	git commit -m"Update dependencies"
-	git remote add origin-push https://$${GH_TOKEN}@github.com/archlinux-de/www.archlinux.de.git
+	git remote add origin-push https://$${GH_USER}:$${GH_TOKEN}@github.com/$${TRAVIS_REPO_SLUG}.git
 	git push --set-upstream origin-push "$${TRAVIS_BRANCH}"
 
 ci-update:
-	${MAKE} update
+	${PHP-RUN} composer --no-interaction update
+	${NODE-RUN} yarn upgrade --latest
+	${MAKE} test-ci
 	git diff-index --quiet HEAD || ${MAKE} ci-update-commit
 
 deploy:
