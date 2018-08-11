@@ -12,8 +12,7 @@ MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
 
-init:
-	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
+init: start
 	${PHP-DB-RUN} bin/console cache:warmup
 	${PHP-DB-RUN} bin/console doctrine:database:create
 	${PHP-DB-RUN} bin/console doctrine:schema:create
@@ -26,6 +25,7 @@ init:
 
 start:
 	${COMPOSE} up -d
+	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
 
 stop:
 	${COMPOSE} stop
@@ -57,8 +57,7 @@ test:
 	${PHP-RUN} bin/console lint:twig templates
 	${PHP-RUN} vendor/bin/phpunit
 
-test-db:
-	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
+test-db: start
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
 
 test-coverage:
