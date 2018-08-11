@@ -77,12 +77,12 @@ update:
 	${NODE-RUN} node_modules/.bin/encore production
 
 ci-update-commit:
-	git config --local user.name "$GH_NAME"
-	git config --local user.email "$GH_EMAIL"
+	git config --local user.name "$${GH_NAME}"
+	git config --local user.email "$${GH_EMAIL}"
 	git add -A
 	git commit -m"Update dependencies"
-	git remote add origin-push https://${GH_TOKEN}@github.com/archlinux-de/www.archlinux.de.git
-	git push --set-upstream origin-push "$TRAVIS_BRANCH"
+	git remote add origin-push https://$${GH_TOKEN}@github.com/archlinux-de/www.archlinux.de.git
+	git push --set-upstream origin-push "$${TRAVIS_BRANCH}"
 
 ci-update:
 	${MAKE} update
