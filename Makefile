@@ -8,10 +8,12 @@ COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} php
 PHP-RUN=${COMPOSE-RUN} --no-deps php
 NODE-RUN=${COMPOSE-RUN} --no-deps encore
+MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
 
 init:
+	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
 	${PHP-DB-RUN} bin/console cache:warmup
 	${PHP-DB-RUN} bin/console doctrine:database:create
 	${PHP-DB-RUN} bin/console doctrine:schema:create
@@ -56,6 +58,7 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-db:
+	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
 
 test-coverage:
