@@ -1,90 +1,79 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all init start stop restart clean rebuild update-data shell test db-test ci-test deploy install coverage rebuild-database update
+.PHONY: all init start stop clean rebuild install shell-php shell-node test test-db test-coverage test-ci update deploy
 
 UID!=id -u
 GID!=id -g
 COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
-PHP-RUN=${COMPOSE-RUN} php
-PHP-NO-DB-RUN=${COMPOSE-RUN} --no-deps php
-COMPOSER-BIN=composer --no-interaction
+PHP-DB-RUN=${COMPOSE-RUN} php
+PHP-RUN=${COMPOSE-RUN} --no-deps php
 NODE-RUN=${COMPOSE-RUN} --no-deps encore
-MARIADB-RUN=${COMPOSE-RUN} mariadb
 
-all: init
+all: install
 
-init: start
-	${PHP-RUN} bin/console cache:warmup
-	${PHP-RUN} bin/console doctrine:database:create
-	${PHP-RUN} bin/console doctrine:schema:create
-	${PHP-RUN} bin/console app:config:update-countries
-	${MAKE} update-data
+init:
+	${PHP-DB-RUN} bin/console cache:warmup
+	${PHP-DB-RUN} bin/console doctrine:database:create
+	${PHP-DB-RUN} bin/console doctrine:schema:create
+	${PHP-DB-RUN} bin/console app:config:update-countries
+	${PHP-DB-RUN} bin/console app:update:mirrors
+	${PHP-DB-RUN} bin/console app:update:news
+	${PHP-DB-RUN} bin/console app:update:releases
+	${PHP-DB-RUN} bin/console app:update:repositories
+	${PHP-DB-RUN} bin/console app:update:packages
 
-update-data:
-	${PHP-RUN} bin/console app:update:mirrors
-	${PHP-RUN} bin/console app:update:news
-	${PHP-RUN} bin/console app:update:releases
-	${PHP-RUN} bin/console app:update:repositories
-	${PHP-RUN} bin/console app:update:packages
-
-start: install
+start:
 	${COMPOSE} up -d
-	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
 
 stop:
 	${COMPOSE} stop
-
-restart:
-	${MAKE} stop
-	${MAKE} start
 
 clean:
 	${COMPOSE} down -v
 	git clean -fdqx -e .idea
 
 rebuild: clean
-	${COMPOSE} build --no-cache --pull
-	${MAKE}
-
-install:
-	${PHP-NO-DB-RUN} ${COMPOSER-BIN} install
-	${NODE-RUN} yarn install
-
-shell:
-	${PHP-RUN} bash
-
-test:
-	${PHP-NO-DB-RUN} vendor/bin/phpcs
-	${NODE-RUN} node_modules/.bin/standard 'assets/js/**/*.js' '*.js'
-	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'
-	${PHP-NO-DB-RUN} bin/console lint:yaml config
-	${PHP-NO-DB-RUN} bin/console lint:twig templates
-	${PHP-NO-DB-RUN} vendor/bin/phpunit
-
-db-test:
-	${PHP-RUN} vendor/bin/phpunit -c phpunit-db.xml
-
-ci-test: start
-	${MAKE} test
-	${PHP-NO-DB-RUN} bin/console security:check
-	${NODE-RUN} node_modules/.bin/encore dev
-	${MAKE} db-test
-
-coverage:
-	${PHP-NO-DB-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
-
-rebuild-database:
-	${PHP-RUN} bin/console cache:clear
-	${PHP-RUN} bin/console doctrine:database:drop --force --if-exists
+	${COMPOSE} build --pull
+	${MAKE} install
 	${MAKE} init
 
+install:
+	${PHP-RUN} composer --no-interaction install
+	${NODE-RUN} yarn install
+
+shell-php:
+	${PHP-DB-RUN} bash
+
+shell-node:
+	${NODE-RUN} bash
+
+test:
+	${PHP-RUN} vendor/bin/phpcs
+	${NODE-RUN} node_modules/.bin/standard 'assets/js/**/*.js' '*.js'
+	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'
+	${PHP-RUN} bin/console lint:yaml config
+	${PHP-RUN} bin/console lint:twig templates
+	${PHP-RUN} vendor/bin/phpunit
+
+test-db:
+	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
+
+test-coverage:
+	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
+
+test-ci: install
+	${MAKE} test
+	${PHP-RUN} bin/console security:check
+	${NODE-RUN} node_modules/.bin/encore production
+	${MAKE} test-db
+
 update:
-	${PHP-NO-DB-RUN} ${COMPOSER-BIN} update
+	${PHP-RUN} composer --no-interaction update
 	${NODE-RUN} yarn upgrade --latest
 
 deploy:
 	chmod o-x .
-	${COMPOSER-BIN} install --no-dev --optimize-autoloader
+	composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader
 	yarn install
 	bin/console cache:clear --no-debug --no-warmup
 	yarn run encore production
