@@ -3,7 +3,7 @@
 
 UID!=id -u
 GID!=id -g
-COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml
+COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml -p www_archlinux_de
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} php
 PHP-RUN=${COMPOSE-RUN} --no-deps php
@@ -38,6 +38,7 @@ rebuild: clean
 	${COMPOSE} build --pull
 	${MAKE} install
 	${MAKE} init
+	${MAKE} stop
 
 install:
 	${PHP-RUN} composer --no-interaction install
