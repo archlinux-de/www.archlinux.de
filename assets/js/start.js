@@ -9,7 +9,7 @@ $(document).ready(function () {
     delay: 100,
     minChars: 1,
     source: function (term, response) {
-      $.getJSON(suggest, {term: term}, function (data) { response(data) })
+      $.getJSON(suggest, { term: term }, function (data) { response(data) })
     }
   })
 })
