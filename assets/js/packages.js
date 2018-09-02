@@ -3,6 +3,44 @@ import 'datatables.net'
 import 'datatables.net-bs4'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
+class Renderer {
+  static renderTime (data, type) {
+    if (data) {
+      const date = new Date(data)
+      if (type === 'display') {
+        return `${date.toLocaleDateString('de-DE')}
+                <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
+      }
+      return date.getTime()
+    }
+    return data
+  }
+
+  static renderRepository (repositoryUrlTemplate) {
+    return function (data, type) {
+      if (type === 'display' && data) {
+        const repositoryUrl = repositoryUrlTemplate
+          .replace('_repository_', data)
+        return `<a href="${repositoryUrl}">${data}</a>`
+      }
+      return data
+    }
+  }
+
+  static renderName (packageUrlTemplate) {
+    return function (data, type, row) {
+      if (type === 'display' && data) {
+        const packageUrl = packageUrlTemplate
+          .replace('_repository_', row.repository.name)
+          .replace('_architecture_', row.repository.architecture)
+          .replace('_package_', data)
+        return `<a href="${packageUrl}">${data}</a>`
+      }
+      return data
+    }
+  }
+}
+
 $(document).ready(function () {
   const dataTable = $('#packages')
   const packageUrlTemplate = dataTable.data('packageUrlTemplate')
@@ -24,14 +62,7 @@ $(document).ready(function () {
         'orderable': true,
         'searchable': true,
         'className': 'd-none d-lg-table-cell',
-        'render': function (data, type, row) {
-          if (type === 'display') {
-            const repositoryUrl = repositoryUrlTemplate
-              .replace('_repository_', data)
-            return `<a href="${repositoryUrl}">${data}</a>`
-          }
-          return data
-        }
+        'render': Renderer.renderRepository(repositoryUrlTemplate)
       },
       {
         'data': 'repository.architecture',
@@ -41,24 +72,15 @@ $(document).ready(function () {
       },
       {
         'data': 'architecture',
-        'orderable': true,
-        'searchable': true,
+        'orderable': false,
+        'searchable': false,
         'className': 'd-none d-xl-table-cell'
       },
       {
         'data': 'name',
         'orderable': true,
         'searchable': true,
-        'render': function (data, type, row) {
-          if (type === 'display') {
-            const packageUrl = packageUrlTemplate
-              .replace('_repository_', row.repository.name)
-              .replace('_architecture_', row.repository.architecture)
-              .replace('_package_', data)
-            return `<a href="${packageUrl}">${data}</a>`
-          }
-          return data
-        },
+        'render': Renderer.renderName(packageUrlTemplate),
         'className': 'text-nowrap'
       },
       {
@@ -77,14 +99,7 @@ $(document).ready(function () {
         'data': 'builddate',
         'orderable': true,
         'searchable': false,
-        'render': function (data, type) {
-          if (type === 'display') {
-            const date = new Date(data)
-            return `${date.toLocaleDateString('de-DE')}
-                <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
-          }
-          return data
-        },
+        'render': Renderer.renderTime,
         'className': 'd-none d-lg-table-cell'
       },
       {
@@ -94,7 +109,7 @@ $(document).ready(function () {
         'visible': false
       }
     ],
-    'initComplete': function (settings, json) {
+    'initComplete': function () {
       dataTable.removeClass('invisible')
     }
   })
