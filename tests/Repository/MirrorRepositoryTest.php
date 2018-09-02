@@ -16,6 +16,8 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
         $mirror->setCountry($country);
         $mirror->setLastSync($lastSync);
+        $mirror->setActive(true);
+        $mirror->setIsos(true);
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($country);
@@ -34,6 +36,8 @@ class MirrorRepositoryTest extends DatabaseTestCase
     {
         $lastSync = new \DateTime('2018-01-01');
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
+        $mirror->setActive(true);
+        $mirror->setIsos(true);
         $mirror->setLastSync($lastSync);
 
         $entityManager = $this->getEntityManager();
@@ -51,6 +55,8 @@ class MirrorRepositoryTest extends DatabaseTestCase
     public function testFindBestSecure()
     {
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
+        $mirror->setActive(true);
+        $mirror->setIsos(true);
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($mirror);
@@ -69,6 +75,8 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $country = (new Country('de'))->setName('Germany');
         $lastSync = new \DateTime('2018-01-01');
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
+        $mirror->setActive(true);
+        $mirror->setIsos(true);
         $mirror->setCountry($country);
         $mirror->setLastSync($lastSync);
 

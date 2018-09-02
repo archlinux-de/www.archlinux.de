@@ -76,6 +76,34 @@ class Mirror implements \JsonSerializable
     private $durationStddev;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isos;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $ipv4;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $ipv6;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $active;
+
+    /**
      * @param string $url
      * @param string $protocol
      */
@@ -99,7 +127,11 @@ class Mirror implements \JsonSerializable
             'durationStddev' => $this->getDurationStddev(),
             'completionPct' => $this->getCompletionPct(),
             'score' => $this->getScore(),
-            'lastsync' => $this->getLastSync() ? $this->getLastSync()->format(\DateTime::RFC2822) : null
+            'lastsync' => $this->getLastSync() ? $this->getLastSync()->format(\DateTime::RFC2822) : null,
+            'isos' => $this->hasIsos(),
+            'ipv4' => $this->hasIpv4(),
+            'ipv6' => $this->hasIpv6(),
+            'active' => $this->isActive()
         ];
     }
 
@@ -242,6 +274,78 @@ class Mirror implements \JsonSerializable
     public function setLastSync(?\DateTime $lastSync): Mirror
     {
         $this->lastSync = $lastSync;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasIsos(): ?bool
+    {
+        return $this->isos;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasIpv4(): ?bool
+    {
+        return $this->ipv4;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasIpv6(): ?bool
+    {
+        return $this->ipv6;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     * @return Mirror
+     */
+    public function setActive(?bool $active): Mirror
+    {
+        $this->active = $active;
+        return $this;
+    }
+
+    /**
+     * @param bool $isos
+     * @return Mirror
+     */
+    public function setIsos(?bool $isos): Mirror
+    {
+        $this->isos = $isos;
+        return $this;
+    }
+
+    /**
+     * @param bool $ipv4
+     * @return Mirror
+     */
+    public function setIpv4(?bool $ipv4): Mirror
+    {
+        $this->ipv4 = $ipv4;
+        return $this;
+    }
+
+    /**
+     * @param bool $ipv6
+     * @return Mirror
+     */
+    public function setIpv6(?bool $ipv6): Mirror
+    {
+        $this->ipv6 = $ipv6;
         return $this;
     }
 }

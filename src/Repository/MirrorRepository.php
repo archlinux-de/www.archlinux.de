@@ -23,7 +23,7 @@ class MirrorRepository extends EntityRepository
             $mirrors = $this->findByCountry($countryCode);
         }
         if (empty($mirrors)) {
-            $mirrors = $this->findSecure();
+            $mirrors = $this->findActive();
         }
         return $mirrors;
     }
@@ -39,6 +39,8 @@ class MirrorRepository extends EntityRepository
             ->where('mirror.protocol = :protocol')
             ->andWhere('mirror.country = :country')
             ->andWhere('mirror.lastSync > :lastsync')
+            ->andWhere('mirror.active = true')
+            ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
             ->setParameter('protocol', self::PROTOCOL)
             ->setParameter('country', $countryCode)
@@ -56,6 +58,8 @@ class MirrorRepository extends EntityRepository
         return $this->createQueryBuilder('mirror')
             ->where('mirror.protocol = :protocol')
             ->andWhere('mirror.lastSync > :lastsync')
+            ->andWhere('mirror.active = true')
+            ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
             ->setParameter('protocol', self::PROTOCOL)
             ->setParameter('lastsync', $lastSync)
@@ -72,11 +76,28 @@ class MirrorRepository extends EntityRepository
         return $this->createQueryBuilder('mirror')
             ->where('mirror.protocol = :protocol')
             ->andWhere('mirror.country = :country')
+            ->andWhere('mirror.active = true')
+            ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
             ->setParameter('protocol', self::PROTOCOL)
             ->setParameter('country', $countryCode)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return array
+     */
+    private function findActive(): array
+    {
+        return $this->findBy(
+            [
+                'protocol' => self::PROTOCOL,
+                'active' => true,
+                'isos' => true,
+            ],
+            ['score' => 'DESC']
+        );
     }
 
     /**

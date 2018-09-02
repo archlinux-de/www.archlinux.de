@@ -54,6 +54,7 @@ $(document).ready(function () {
       {
         'data': 'lastsync',
         'searchable': false,
+        'className': 'd-none d-sm-table-cell',
         'render': function (data, type) {
           if (type === 'display' && data) {
             const date = new Date(data)
@@ -61,8 +62,51 @@ $(document).ready(function () {
                 <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
           }
           return data
-        },
-        'className': 'd-none d-sm-table-cell'
+        }
+      },
+      {
+        'data': 'isos',
+        'searchable': false,
+        'className': 'd-none d-md-table-cell text-center',
+        'render': function (data, type, row) {
+          if (type === 'display') {
+            return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
+          }
+          return data
+        }
+      },
+      {
+        'data': 'ipv4',
+        'searchable': false,
+        'className': 'd-none d-xl-table-cell text-center',
+        'render': function (data, type, row) {
+          if (type === 'display') {
+            return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
+          }
+          return data
+        }
+      },
+      {
+        'data': 'ipv6',
+        'searchable': false,
+        'className': 'd-none d-md-table-cell text-center',
+        'render': function (data, type, row) {
+          if (type === 'display') {
+            return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
+          }
+          return data
+        }
+      },
+      {
+        'data': 'active',
+        'searchable': false,
+        'className': 'd-none d-xl-table-cell text-center',
+        'render': function (data, type, row) {
+          if (type === 'display') {
+            return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
+          }
+          return data
+        }
       }
     ]
   })

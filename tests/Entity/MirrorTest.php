@@ -18,6 +18,10 @@ class MirrorTest extends TestCase
         $mirror->setCompletionPct(765.324);
         $mirror->setScore(234.2);
         $mirror->setLastSync(new \DateTime('2018-01-30'));
+        $mirror->setIsos(true);
+        $mirror->setIpv4(true);
+        $mirror->setIpv6(true);
+        $mirror->setActive(true);
 
         $json = json_encode($mirror);
         $this->assertJson($json);
@@ -35,7 +39,11 @@ class MirrorTest extends TestCase
                 'durationStddev' => 53.1,
                 'completionPct' => 765.324,
                 'score' => 234.2,
-                'lastsync' => 'Tue, 30 Jan 2018 00:00:00 +0000'
+                'lastsync' => 'Tue, 30 Jan 2018 00:00:00 +0000',
+                'isos' => true,
+                'ipv4' => true,
+                'ipv6' => true,
+                'active' => true
             ],
             $jsonArray
         );

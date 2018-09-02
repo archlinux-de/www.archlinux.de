@@ -54,6 +54,10 @@ class MirrorFetcher implements \IteratorAggregate
             $mirror->setScore($mirrorData['score']);
             $mirror->setCompletionPct($mirrorData['completion_pct']);
             $mirror->setDurationStddev($mirrorData['duration_stddev']);
+            $mirror->setIsos($mirrorData['isos']);
+            $mirror->setIpv4($mirrorData['ipv4']);
+            $mirror->setIpv6($mirrorData['ipv6']);
+            $mirror->setActive($mirrorData['active']);
 
             yield $mirror;
         }

@@ -29,7 +29,11 @@ class MirrorFetcherTest extends TestCase
                         'duration_avg' => 2.1,
                         'score' => 3.2,
                         'completion_pct' => 4.3,
-                        'duration_stddev' => 5.4
+                        'duration_stddev' => 5.4,
+                        'isos' => true,
+                        'ipv4' => true,
+                        'ipv6' => true,
+                        'active' => true
                     ]
                 ]
             ]))

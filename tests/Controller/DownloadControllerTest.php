@@ -30,6 +30,8 @@ class DownloadControllerTest extends DatabaseTestCase
         $entityManager->persist($release);
 
         $mirror = new Mirror('', 'https');
+        $mirror->setActive(true);
+        $mirror->setIsos(true);
         $entityManager->persist($mirror);
 
         $entityManager->flush();
