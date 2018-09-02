@@ -4,38 +4,60 @@ import 'datatables.net-bs4'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
 class Renderer {
-  static renderSeconds (data, type, row) {
+  static renderDuration (data, type) {
     if (type === 'display' && data) {
-      return new Intl.NumberFormat('de-DE').format(data) + 's'
+      if (data < 0) {
+        data = 0
+      }
+
+      let unit = 's'
+      const secondsPerMinute = 60
+      const secondsPerHour = secondsPerMinute * 60
+      const secondsPerDay = secondsPerHour * 24
+      if (data >= secondsPerDay) {
+        unit = 'd'
+        data = data / secondsPerDay
+      } else if (data >= secondsPerHour) {
+        unit = 'h'
+        data = data / secondsPerHour
+      } else if (data >= secondsPerMinute) {
+        unit = 'min'
+        data = data / secondsPerMinute
+      }
+
+      return new Intl.NumberFormat('de-DE').format(data) + ' ' + unit
     }
     return data
   }
 
-  static renderBoolean (data, type, row) {
-    if (type === 'display') {
+  static renderBoolean (data, type) {
+    if (type === 'display' && data != null) {
       return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
     }
     return data
   }
 
-  static renderTime (data, type, row) {
-    if (type === 'display' && data) {
+  static renderTime (data, type) {
+    if (data) {
       const date = new Date(data)
-      return `${date.toLocaleDateString('de-DE')}
+      if (type === 'display') {
+        return `${date.toLocaleDateString('de-DE')}
                 <span class="d-none d-xl-inline text-nowrap">, ${date.toLocaleTimeString('de-DE')}</span>`
+      }
+      return date.getTime()
     }
     return data
   }
 
-  static renderUrl (data, type, row) {
-    if (type === 'display') {
+  static renderUrl (data, type) {
+    if (type === 'display' && data) {
       return `<a href="${data}" rel="nofollow">${new window.URL(data).hostname}</a>`
     }
     return data
   }
 
-  static renderCountry (data, type, row) {
-    if (type === 'display' && data) {
+  static renderCountry (data) {
+    if (data && data.name) {
       return data.name
     }
     return data
@@ -51,6 +73,7 @@ $(document).ready(function () {
     'columns': [
       {
         'data': 'url',
+        'orderable': false,
         'render': Renderer.renderUrl
       },
       {
@@ -62,13 +85,13 @@ $(document).ready(function () {
         'data': 'durationAvg',
         'searchable': false,
         'className': 'd-none d-lg-table-cell',
-        'render': Renderer.renderSeconds
+        'render': Renderer.renderDuration
       },
       {
         'data': 'delay',
         'searchable': false,
         'className': 'd-none d-lg-table-cell',
-        'render': Renderer.renderSeconds
+        'render': Renderer.renderDuration
       },
       {
         'data': 'lastsync',
