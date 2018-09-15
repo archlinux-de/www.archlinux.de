@@ -6,8 +6,8 @@
     "require": {
         "php": "^7.2",
         "ext-apcu": "^5.1",
-        "ext-iconv": "*",
         "ext-ctype": "*",
+        "ext-iconv": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
         "debril/feed-io": "^4.3",
@@ -24,7 +24,6 @@
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "^4.1",
         "symfony/lock": "^4.1",
-        "symfony/lts": "^4@dev",
         "symfony/monolog-bundle": "^3.3",
         "symfony/process": "^4.1",
         "symfony/twig-bundle": "^4.1",
@@ -60,6 +59,7 @@
         }
     },
     "replace": {
+        "paragonie/random_compat": "2.*",
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",
         "symfony/polyfill-mbstring": "*",
@@ -85,7 +85,8 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false
+            "allow-contrib": false,
+            "require": "4.1.*"
         }
     }
 }
