@@ -65,8 +65,8 @@ test-coverage:
 	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
 
 test-ci:
-	${MAKE} test
 	${NODE-RUN} node_modules/.bin/encore production
+	${MAKE} test
 	${MAKE} test-db
 
 ci-build: install
