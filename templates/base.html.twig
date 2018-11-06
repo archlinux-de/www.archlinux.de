@@ -7,7 +7,9 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <title>{% block title %}{% endblock %}{% if block('title') %} - {% endif %}archlinux.de</title>
     {% block stylesheets %}
-        <link href="{{ preload(asset('build/css/app.css'), { as: 'style' }) }}" rel="stylesheet">
+        {% for css_file in encore_entry_css_files('css/app') %}
+            <link href="{{ preload(css_file, { as: 'style' }) }}" rel="stylesheet">
+        {% endfor %}
     {% endblock %}
     <link rel="alternate" type="application/atom+xml" title="Aktuelle Arch Linux Neuigkeiten"
           href="{{ path('app_recentnews_index') }}"/>
@@ -67,8 +69,7 @@
 </footer>
 
 {% block javascripts %}
-    <script src="{{ asset('build/manifest.js') }}"></script>
-    <script src="{{ asset('build/js/vendor.js') }}"></script>
+    {{ encore_entry_script_tags('js/app') }}
 {% endblock %}
 </body>
 </html>

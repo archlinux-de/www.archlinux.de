@@ -5,21 +5,18 @@ Encore
   .setOutputPath('public/build/')
   .setPublicPath('/build')
   .cleanupOutputBeforeBuild()
+  .addEntry('js/app', './assets/js/app.js')
   .addEntry('js/start', './assets/js/start.js')
   .addEntry('js/packages', './assets/js/packages.js')
   .addEntry('js/mirrors', './assets/js/mirrors.js')
   .addEntry('js/package', './assets/js/package.js')
-  .createSharedEntry('js/vendor', [
-    'jquery',
-    'popper.js',
-    'bootstrap',
-    'datatables.net',
-    'datatables.net-bs4',
-    '!./assets/js/lang-loader!datatables.net-plugins/i18n/German.lang'
-  ])
   .addStyleEntry('css/app', './assets/css/app.scss')
-  .addStyleEntry('images/archicon', './assets/images/archicon.svg')
-  .addStyleEntry('images/archlogo', './assets/images/archlogo.svg')
+  .copyFiles({
+    from: './assets/images',
+    to: './images/[path][name].[hash:8].[ext]'
+  })
+  .splitEntryChunks()
+  .enableSingleRuntimeChunk()
   .enableSassLoader()
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())

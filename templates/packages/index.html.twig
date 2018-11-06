@@ -2,7 +2,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('build/js/packages.js') }}"></script>
+    {{ encore_entry_script_tags('js/packages') }}
 {% endblock %}
 
 {% block title %}Paket-Suche{% endblock %}

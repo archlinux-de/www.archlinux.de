@@ -2,7 +2,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('build/js/start.js') }}"></script>
+    {{ encore_entry_script_tags('js/start') }}
     <script type="application/ld+json">{% include('start/ld+json.json.twig') %}</script>
 {% endblock %}
 
