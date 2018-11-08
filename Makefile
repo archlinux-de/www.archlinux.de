@@ -85,7 +85,7 @@ ci-update-commit:
 
 ci-update:
 	${PHP-RUN} composer --no-interaction update
-	${NODE-RUN} yarn upgrade
+	${NODE-RUN} yarn upgrade --latest
 	${MAKE} test-ci
 	git diff-index --quiet HEAD || ${MAKE} ci-update-commit
 
