@@ -7,13 +7,13 @@ use App\Repository\PackageRepository;
 use FeedIo\Factory;
 use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class RecentPackagesController extends Controller
+class RecentPackagesController extends AbstractController
 {
 
     /**

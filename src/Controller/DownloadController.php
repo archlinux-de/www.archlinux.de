@@ -6,11 +6,11 @@ use App\Repository\MirrorRepository;
 use App\Repository\ReleaseRepository;
 use Doctrine\ORM\UnexpectedResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class DownloadController extends Controller
+class DownloadController extends AbstractController
 {
     /**
      * @Route("/download", methods={"GET"})

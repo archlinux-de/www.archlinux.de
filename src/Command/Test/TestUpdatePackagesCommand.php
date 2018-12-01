@@ -4,7 +4,7 @@ namespace App\Command\Test;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
 /**
  * @codeCoverageIgnore
  */
-class TestUpdatePackagesCommand extends ContainerAwareCommand
+class TestUpdatePackagesCommand extends Command
 {
     /** @var ClientInterface */
     private $guzzleClient;

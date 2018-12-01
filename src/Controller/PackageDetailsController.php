@@ -11,12 +11,12 @@ use App\Repository\PackageRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class PackageDetailsController extends Controller
+class PackageDetailsController extends AbstractController
 {
     /**
      * @Route("/packages/{repo}/{arch}/{pkgname}", methods={"GET"})

@@ -5,12 +5,12 @@ namespace App\Command\Update;
 use App\Repository\AbstractRelationRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateRepositoriesCommand extends ContainerAwareCommand
+class UpdateRepositoriesCommand extends Command
 {
     use LockableTrait;
 

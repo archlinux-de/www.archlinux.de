@@ -10,7 +10,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @codeCoverageIgnore
  */
-class ValidatePackagesCommand extends ContainerAwareCommand
+class ValidatePackagesCommand extends Command
 {
     use LockableTrait;
 

@@ -11,12 +11,12 @@ use App\Response\Datatables\Response as DatatablesResponse;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Psr\Cache\CacheItemPoolInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class PackagesController extends Controller
+class PackagesController extends AbstractController
 {
     /** @var CacheItemPoolInterface */
     private $cache;

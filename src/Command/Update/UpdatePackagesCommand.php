@@ -9,12 +9,12 @@ use App\Repository\AbstractRelationRepository;
 use App\Repository\RepositoryRepository;
 use App\Service\PackageManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdatePackagesCommand extends ContainerAwareCommand
+class UpdatePackagesCommand extends Command
 {
     use LockableTrait;
 

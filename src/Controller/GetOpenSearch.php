@@ -4,14 +4,14 @@ namespace App\Controller;
 
 use DOMDocument;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class GetOpenSearch extends Controller
+class GetOpenSearch extends AbstractController
 {
     /** @var RouterInterface */
     private $router;

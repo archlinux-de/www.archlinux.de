@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class LegacyController extends Controller
+class LegacyController extends AbstractController
 {
     /** @var LoggerInterface */
     private $logger;

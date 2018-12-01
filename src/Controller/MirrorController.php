@@ -8,12 +8,12 @@ use App\Repository\PackageRepository;
 use App\Repository\ReleaseRepository;
 use App\Service\GeoIp;
 use Doctrine\ORM\UnexpectedResultException;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class MirrorController extends Controller
+class MirrorController extends AbstractController
 {
     /** @var GeoIp */
     private $geoIp;
