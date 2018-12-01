@@ -37,7 +37,7 @@ class SmokeTest extends DatabaseTestCase
             ->setCreated(new \DateTime())
             ->setReleaseDate(new \DateTime())
             ->setTorrent(
-                (new Torrent())->setFileLength(1)
+                (new Torrent())->setFileLength(1)->setFileName('release.iso')
             );
         $entityManager->persist($release);
 
