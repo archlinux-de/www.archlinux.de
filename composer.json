@@ -7,7 +7,9 @@
         "php": "^7.2",
         "ext-apcu": "^5.1",
         "ext-ctype": "*",
+        "ext-dom": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
         "debril/feed-io": "^4.3",
@@ -33,6 +35,8 @@
         "symfony/yaml": "4.2.*"
     },
     "require-dev": {
+        "ext-SimpleXML": "*",
+        "ext-libxml": "*",
         "phpunit/phpunit": "^7",
         "sensiolabs/security-checker": "^5.0",
         "squizlabs/php_codesniffer": "^3.3",
