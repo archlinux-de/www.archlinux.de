@@ -6,13 +6,14 @@ use App\Entity\Packages\Repository;
 use App\Repository\RepositoryRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class RepositoryManagerTest extends TestCase
 {
     public function testRemoveObsoleteRepositories()
     {
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
@@ -26,7 +27,7 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
-        /** @var RepositoryRepository|\PHPUnit_Framework_MockObject_MockObject $repositoryRepository */
+        /** @var RepositoryRepository|MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
@@ -40,7 +41,7 @@ class RepositoryManagerTest extends TestCase
 
     public function testConfiguredRepositoriesAreNotRemoved()
     {
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
@@ -49,7 +50,7 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->never())
             ->method('flush');
 
-        /** @var RepositoryRepository|\PHPUnit_Framework_MockObject_MockObject $repositoryRepository */
+        /** @var RepositoryRepository|MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
@@ -68,7 +69,7 @@ class RepositoryManagerTest extends TestCase
      */
     public function testCreateNewRepositories(string $repositoryName, bool $isTesting)
     {
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
@@ -83,7 +84,7 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
-        /** @var RepositoryRepository|\PHPUnit_Framework_MockObject_MockObject $repositoryRepository */
+        /** @var RepositoryRepository|MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
@@ -102,7 +103,7 @@ class RepositoryManagerTest extends TestCase
 
     public function testCreateNewRepositoriesIsSkippedForExistingRepositories()
     {
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
@@ -111,7 +112,7 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->never())
             ->method('flush');
 
-        /** @var RepositoryRepository|\PHPUnit_Framework_MockObject_MockObject $repositoryRepository */
+        /** @var RepositoryRepository|MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())

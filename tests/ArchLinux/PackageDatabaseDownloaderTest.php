@@ -6,11 +6,12 @@ use App\ArchLinux\PackageDatabaseDownloader;
 use App\ArchLinux\PackageDatabaseMirror;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PackageDatabaseDownloaderTest extends TestCase
 {
-    /** @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClientInterface|MockObject */
     private $guzzleClient;
 
     /** @var PackageDatabaseDownloader */
@@ -18,7 +19,7 @@ class PackageDatabaseDownloaderTest extends TestCase
 
     public function setUp()
     {
-        /** @var PackageDatabaseMirror|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseMirror */
+        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $this->guzzleClient = $this->createMock(ClientInterface::class);
         $this->downloader = new PackageDatabaseDownloader($this->guzzleClient, $packageDatabaseMirror);
@@ -60,7 +61,7 @@ class PackageDatabaseDownloaderTest extends TestCase
 
     public function testCreateDatabase()
     {
-        /** @var \SplFileObject|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseFile */
+        /** @var \SplFileObject|MockObject $packageDatabaseFile */
         $packageDatabaseFile = $this
             ->getMockBuilder(\SplFileObject::class)
             ->setConstructorArgs(['/dev/null'])

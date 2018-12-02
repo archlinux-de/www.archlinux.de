@@ -8,6 +8,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -17,10 +18,10 @@ class PackageDatabaseMirrorTest extends TestCase
 {
     public function testGetMirrorUrl()
     {
-        /** @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+        /** @var ClientInterface|MockObject $guzzleClient */
         $guzzleClient = $this->createMock(ClientInterface::class);
 
-        /** @var CacheItemPoolInterface|\PHPUnit_Framework_MockObject_MockObject $cache */
+        /** @var CacheItemPoolInterface|MockObject $cache */
         $cache = $this->createMock(CacheItemPoolInterface::class);
 
         $packageDatabaseMirror = new PackageDatabaseMirror($guzzleClient, $cache, 'foo');
@@ -30,7 +31,7 @@ class PackageDatabaseMirrorTest extends TestCase
 
     public function testHasUpdatedIsTrueForNewMirror()
     {
-        /** @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+        /** @var ClientInterface|MockObject $guzzleClient */
         $guzzleClient = $this->createMock(ClientInterface::class);
 
         $cache = new ArrayAdapter();
@@ -50,7 +51,7 @@ class PackageDatabaseMirrorTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
-        /** @var CacheItemInterface|\PHPUnit_Framework_MockObject_MockObject $cacheItem */
+        /** @var CacheItemInterface|MockObject $cacheItem */
         $cacheItem = $this->createMock(CacheItemInterface::class);
         $cacheItem
             ->expects($this->once())
@@ -61,7 +62,7 @@ class PackageDatabaseMirrorTest extends TestCase
             ->method('get')
             ->willReturn($oldLastUpdated);
 
-        /** @var CacheItemPoolInterface|\PHPUnit_Framework_MockObject_MockObject $cache */
+        /** @var CacheItemPoolInterface|MockObject $cache */
         $cache = $this->createMock(CacheItemPoolInterface::class);
         $cache
             ->expects($this->once())
@@ -75,7 +76,7 @@ class PackageDatabaseMirrorTest extends TestCase
 
     public function testUpdateLastUpdate()
     {
-        /** @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject $guzzleClient */
+        /** @var ClientInterface|MockObject $guzzleClient */
         $guzzleClient = $this->createMock(ClientInterface::class);
 
         $cache = new ArrayAdapter();

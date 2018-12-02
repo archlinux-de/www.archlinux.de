@@ -10,6 +10,7 @@ use App\Repository\AbstractRelationRepository;
 use App\Repository\RepositoryRepository;
 use App\Service\PackageManager;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -21,32 +22,32 @@ class UpdatePackagesCommandTest extends KernelTestCase
 {
     public function testCommand()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $package */
+        /** @var DatabasePackage|MockObject $package */
         $package = $this->createMock(DatabasePackage::class);
         $package
             ->expects($this->atLeastOnce())
             ->method('getName')
             ->willReturn('foo');
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->atLeastOnce())->method('flush');
 
-        /** @var PackageDatabaseMirror|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseMirror */
+        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror->expects($this->once())->method('hasUpdated')->willReturn(true);
 
-        /** @var RepositoryRepository|\PHPUnit_Framework_MockObject_MockObject $repositoryRepository */
+        /** @var RepositoryRepository|MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository->expects($this->once())->method('findAll')->willReturn([$repository]);
 
-        /** @var AbstractRelationRepository|\PHPUnit_Framework_MockObject_MockObject $relationRepository */
+        /** @var AbstractRelationRepository|MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
 
-        /** @var PackageManager|\PHPUnit_Framework_MockObject_MockObject $packageManager */
+        /** @var PackageManager|MockObject $packageManager */
         $packageManager = $this->createMock(PackageManager::class);
         $packageManager
             ->expects($this->once())

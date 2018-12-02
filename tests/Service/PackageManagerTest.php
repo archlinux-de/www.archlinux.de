@@ -9,26 +9,27 @@ use App\Entity\Packages\Repository;
 use App\Repository\PackageRepository;
 use App\Service\PackageManager;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PackageManagerTest extends TestCase
 {
     public function testDownloadPackagesForRepository()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
             ->method('persist')
             ->with($repository);
 
-        /** @var \SplFileObject|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseFile */
+        /** @var \SplFileObject|MockObject $packageDatabaseFile */
         $packageDatabaseFile = $this
             ->getMockBuilder(\SplFileObject::class)
             ->setConstructorArgs(['/dev/null'])
@@ -37,7 +38,7 @@ class PackageManagerTest extends TestCase
             ->method('getMTime')
             ->willReturn(1);
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
         $packageDatabaseDownloader
             ->expects($this->once())
@@ -49,7 +50,7 @@ class PackageManagerTest extends TestCase
             ->with($packageDatabaseFile)
             ->willReturn([$databasePackage]);
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
 
         $packageManager = new PackageManager($packageDatabaseDownloader, $entityManager, $packageRepository);
@@ -63,24 +64,24 @@ class PackageManagerTest extends TestCase
 
     public function testDownloadPackagesForRepositoryIsSkippedIfNoUpdatesAreAvailable()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
         $repository
             ->expects($this->atLeastOnce())
             ->method('getMTime')
             ->willReturn(new \DateTime());
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
             ->method('persist')
             ->with($repository);
 
-        /** @var \SplFileObject|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseFile */
+        /** @var \SplFileObject|MockObject $packageDatabaseFile */
         $packageDatabaseFile = $this
             ->getMockBuilder(\SplFileObject::class)
             ->setConstructorArgs(['/dev/null'])
@@ -89,7 +90,7 @@ class PackageManagerTest extends TestCase
             ->method('getMTime')
             ->willReturn(1);
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
         $packageDatabaseDownloader
             ->expects($this->once())
@@ -101,7 +102,7 @@ class PackageManagerTest extends TestCase
             ->with($packageDatabaseFile)
             ->willReturn([$databasePackage]);
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
 
         $packageManager = new PackageManager($packageDatabaseDownloader, $entityManager, $packageRepository);
@@ -114,34 +115,34 @@ class PackageManagerTest extends TestCase
 
     public function testUpdatePackage()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
         $repository
             ->expects($this->atLeastOnce())
             ->method('getId')
             ->willReturn(1);
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
 
-        /** @var Package|\PHPUnit_Framework_MockObject_MockObject $package */
+        /** @var Package|MockObject $package */
         $package = $this->createMock(Package::class);
         $package
             ->expects($this->once())
             ->method('updateFromPackageDatabase')
             ->with($databasePackage);
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
             ->method('persist')
             ->with($package);
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
@@ -154,24 +155,24 @@ class PackageManagerTest extends TestCase
 
     public function testUpdateNewPackage()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
         $repository
             ->expects($this->atLeastOnce())
             ->method('getId')
             ->willReturn(1);
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage
             ->expects($this->atLeastOnce())
             ->method('getName')
             ->willReturn('pacman');
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
@@ -181,7 +182,7 @@ class PackageManagerTest extends TestCase
                 return true;
             }));
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
@@ -194,26 +195,26 @@ class PackageManagerTest extends TestCase
 
     public function testUpdatePackageIsSkippedWhenNoUpdatesAreAvailable()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
         $repository
             ->expects($this->atLeastOnce())
             ->method('getId')
             ->willReturn(1);
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
             ->method('persist');
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
@@ -226,23 +227,23 @@ class PackageManagerTest extends TestCase
 
     public function testCleanupObsoletePackages()
     {
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var Package|\PHPUnit_Framework_MockObject_MockObject $package */
+        /** @var Package|MockObject $package */
         $package = $this->createMock(Package::class);
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
             ->method('remove')
             ->with($package);
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
@@ -257,30 +258,30 @@ class PackageManagerTest extends TestCase
     {
         $mTime = new \DateTime();
 
-        /** @var Repository|\PHPUnit_Framework_MockObject_MockObject $repository */
+        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
         $repository
             ->expects($this->atLeastOnce())
             ->method('getId')
             ->willReturn(1);
 
-        /** @var Package|\PHPUnit_Framework_MockObject_MockObject $package */
+        /** @var Package|MockObject $package */
         $package = $this->createMock(Package::class);
         $package
             ->expects($this->atLeastOnce())
             ->method('getName')
             ->willReturn('pacman');
 
-        /** @var PackageDatabaseDownloader|\PHPUnit_Framework_MockObject_MockObject $packageDatabaseDownloader */
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
             ->method('remove');
 
-        /** @var PackageRepository|\PHPUnit_Framework_MockObject_MockObject $packageRepository */
+        /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())

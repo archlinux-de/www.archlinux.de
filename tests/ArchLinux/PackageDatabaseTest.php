@@ -5,13 +5,14 @@ namespace App\Tests\ArchLinux;
 use App\ArchLinux\Package;
 use App\ArchLinux\PackageDatabase;
 use App\ArchLinux\PackageDatabaseReader;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PackageDatabaseTest extends TestCase
 {
     public function testIteratorCreatesPackage()
     {
-        /** @var PackageDatabaseReader|\PHPUnit_Framework_MockObject_MockObject $reader */
+        /** @var PackageDatabaseReader|MockObject $reader */
         $reader = $this->createMock(PackageDatabaseReader::class);
         $reader->method('extract')->willReturn(
             $this->createFilesystemIteratorMock([
@@ -28,7 +29,7 @@ class PackageDatabaseTest extends TestCase
 
     /**
      * @param array $fileNames
-     * @return \PHPUnit_Framework_MockObject_MockObject|\FilesystemIterator
+     * @return MockObject|\FilesystemIterator
      */
     private function createFilesystemIteratorMock(array $fileNames = []): \FilesystemIterator
     {
@@ -75,7 +76,7 @@ class PackageDatabaseTest extends TestCase
 
     public function testReaderIsOnlyCalledOnce()
     {
-        /** @var PackageDatabaseReader|\PHPUnit_Framework_MockObject_MockObject $reader */
+        /** @var PackageDatabaseReader|MockObject $reader */
         $reader = $this->createMock(PackageDatabaseReader::class);
         $reader->expects($this->once())->method('extract')->willReturn(
             $this->createFilesystemIteratorMock([

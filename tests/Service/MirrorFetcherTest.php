@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class MirrorFetcherTest extends TestCase
@@ -41,7 +42,7 @@ class MirrorFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
-        /** @var CountryRepository|\PHPUnit_Framework_MockObject_MockObject $countryRepository */
+        /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
         $countryRepository->method('find')->with('DE')->willReturn(new Country('DE'));
 
@@ -69,7 +70,7 @@ class MirrorFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
-        /** @var CountryRepository|\PHPUnit_Framework_MockObject_MockObject $countryRepository */
+        /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
@@ -86,7 +87,7 @@ class MirrorFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
-        /** @var CountryRepository|\PHPUnit_Framework_MockObject_MockObject $countryRepository */
+        /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
@@ -103,7 +104,7 @@ class MirrorFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
-        /** @var CountryRepository|\PHPUnit_Framework_MockObject_MockObject $countryRepository */
+        /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
@@ -120,7 +121,7 @@ class MirrorFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
-        /** @var CountryRepository|\PHPUnit_Framework_MockObject_MockObject $countryRepository */
+        /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
         $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);

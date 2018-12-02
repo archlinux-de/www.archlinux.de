@@ -7,6 +7,7 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -49,7 +50,7 @@ class PackageTest extends TestCase
     {
         $repository = new Repository('core', Architecture::X86_64);
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method('getName')->willReturn('pacman');
         $databasePackage->method('getVersion')->willReturn('1.0-1');
@@ -72,7 +73,7 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method($stringMethod)->willReturn('foo');
 
@@ -105,7 +106,7 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method('getPackager')->willReturn('foo<foo@localhost>');
 
@@ -124,7 +125,7 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method($timeMethod)->willReturn(new \DateTime('2018-01-30'));
 
@@ -152,7 +153,7 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method($sizeMethod)->willReturn(1234);
 
@@ -182,7 +183,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
         $list = ['foo', 'bar'];
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method($listMethod)->willReturn($list);
 
@@ -212,7 +213,7 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method($databaseMethod)->willReturn(['foo', 'bar']);
 
@@ -247,7 +248,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
         $pacmanFiles = ['usr/bin', 'usr/bin/pacman'];
 
-        /** @var DatabasePackage|\PHPUnit_Framework_MockObject_MockObject $databasePackage */
+        /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
         $databasePackage->method('getFiles')->willReturn($pacmanFiles);
 

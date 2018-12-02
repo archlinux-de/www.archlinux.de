@@ -7,6 +7,7 @@ use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -21,17 +22,17 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $newMirror = new Mirror('https://127.0.0.2', 'https');
         $oldMirror = new Mirror('https://127.0.0.1', 'https');
 
-        /** @var MirrorRepository|\PHPUnit_Framework_MockObject_MockObject $mirrorRepository */
+        /** @var MirrorRepository|MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);
         $mirrorRepository->method('findAllExceptByUrls')->willReturn([$oldMirror]);
 
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('merge')->with($newMirror);
         $entityManager->expects($this->once())->method('remove')->with($oldMirror);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var MirrorFetcher|\PHPUnit_Framework_MockObject_MockObject $mirrorFetcher */
+        /** @var MirrorFetcher|MockObject $mirrorFetcher */
         $mirrorFetcher = $this->createMock(MirrorFetcher::class);
         $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newMirror]));
 

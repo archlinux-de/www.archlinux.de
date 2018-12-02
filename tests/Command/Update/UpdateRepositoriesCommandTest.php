@@ -6,6 +6,7 @@ use App\Command\Update\UpdateRepositoriesCommand;
 use App\Repository\AbstractRelationRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -17,11 +18,11 @@ class UpdateRepositoriesCommandTest extends KernelTestCase
 {
     public function testCommand()
     {
-        /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $entityManager */
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var RepositoryManager|\PHPUnit_Framework_MockObject_MockObject $repositoryManager */
+        /** @var RepositoryManager|MockObject $repositoryManager */
         $repositoryManager = $this->createMock(RepositoryManager::class);
         $repositoryManager
             ->expects($this->once())
@@ -31,7 +32,7 @@ class UpdateRepositoriesCommandTest extends KernelTestCase
             ->method('removeObsoleteRepositories')
             ->willReturn(true);
 
-        /** @var AbstractRelationRepository|\PHPUnit_Framework_MockObject_MockObject $relationRepository */
+        /** @var AbstractRelationRepository|MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
         $relationRepository
             ->expects($this->once())
