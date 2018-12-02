@@ -92,7 +92,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $entityManager->flush();
 
         $client = $this->getClient();
-        $crawler = $client->request('GET', '/packages/core/x86_64/pacman/files');
+        $client->request('GET', '/packages/core/x86_64/pacman/files');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertJson($client->getResponse()->getContent());
