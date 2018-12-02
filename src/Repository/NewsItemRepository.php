@@ -2,13 +2,14 @@
 
 namespace App\Repository;
 
+use App\Entity\NewsItem;
 use Doctrine\ORM\EntityRepository;
 
 class NewsItemRepository extends EntityRepository
 {
     /**
      * @param int $limit
-     * @return array
+     * @return NewsItem[]
      */
     public function findLatest(int $limit): array
     {
@@ -23,7 +24,7 @@ class NewsItemRepository extends EntityRepository
     /**
      * @param array $ids
      * @param \DateTime $lastModified
-     * @return array
+     * @return NewsItem[]
      */
     public function findAllExceptByIdsNewerThan(array $ids, \DateTime $lastModified): array
     {

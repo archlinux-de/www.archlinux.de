@@ -104,7 +104,6 @@ class MirrorRepositoryTest extends DatabaseTestCase
 
         /** @var MirrorRepository $mirrorRepository */
         $mirrorRepository = $this->getRepository(Mirror::class);
-        /** @var Mirror[] $mirrors */
         $mirrors = $mirrorRepository->findAllExceptByUrls(['a']);
 
         $this->assertCount(1, $mirrors);

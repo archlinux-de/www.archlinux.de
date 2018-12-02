@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Mirror;
 use Doctrine\ORM\EntityRepository;
 
 class MirrorRepository extends EntityRepository
@@ -11,7 +12,7 @@ class MirrorRepository extends EntityRepository
     /**
      * @param string $countryCode
      * @param \DateTime $lastSync
-     * @return array
+     * @return Mirror[]
      */
     public function findBestByCountryAndLastSync(string $countryCode, \DateTime $lastSync): array
     {
@@ -31,7 +32,7 @@ class MirrorRepository extends EntityRepository
     /**
      * @param string $countryCode
      * @param \DateTime $lastSync
-     * @return array
+     * @return Mirror[]
      */
     private function findByCountryAndLastSync(string $countryCode, \DateTime $lastSync): array
     {
@@ -51,7 +52,7 @@ class MirrorRepository extends EntityRepository
 
     /**
      * @param \DateTime $lastSync
-     * @return array
+     * @return Mirror[]
      */
     private function findByLastSync(\DateTime $lastSync): array
     {
@@ -69,7 +70,7 @@ class MirrorRepository extends EntityRepository
 
     /**
      * @param string $countryCode
-     * @return array
+     * @return Mirror[]
      */
     private function findByCountry(string $countryCode): array
     {
@@ -86,7 +87,7 @@ class MirrorRepository extends EntityRepository
     }
 
     /**
-     * @return array
+     * @return Mirror[]
      */
     private function findActive(): array
     {
@@ -101,7 +102,7 @@ class MirrorRepository extends EntityRepository
     }
 
     /**
-     * @return array
+     * @return Mirror[]
      */
     public function findSecure(): array
     {
@@ -110,7 +111,7 @@ class MirrorRepository extends EntityRepository
 
     /**
      * @param array $urls
-     * @return array
+     * @return Mirror[]
      */
     public function findAllExceptByUrls(array $urls): array
     {

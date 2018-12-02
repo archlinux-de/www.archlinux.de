@@ -71,7 +71,6 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
         /** @var NewsItemRepository $newsItemRepository */
         $newsItemRepository = $this->getRepository(NewsItem::class);
-        /** @var NewsItem[] $newsItems */
         $newsItems = $newsItemRepository->findAllExceptByIdsNewerThan(['A'], new \DateTime('- 3 day'));
 
         $this->assertCount(1, $newsItems);

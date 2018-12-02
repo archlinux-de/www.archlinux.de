@@ -42,7 +42,7 @@ class ReleaseRepository extends EntityRepository
 
     /**
      * @param array $versions
-     * @return array
+     * @return Release[]
      */
     public function findAllExceptByVersions(array $versions): array
     {

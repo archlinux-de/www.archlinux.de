@@ -81,7 +81,7 @@ class AbstractRelationRepository extends EntityRepository
     }
 
     /**
-     * @return array
+     * @return AbstractRelation[]
      */
     public function findWithTargets(): array
     {

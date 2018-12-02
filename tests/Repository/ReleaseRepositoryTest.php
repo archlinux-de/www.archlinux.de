@@ -71,7 +71,6 @@ class ReleaseRepositoryTest extends DatabaseTestCase
 
         /** @var ReleaseRepository $releaseRepository */
         $releaseRepository = $this->getRepository(Release::class);
-        /** @var Release[] $releases */
         $releases = $releaseRepository->findAllExceptByVersions(['A']);
 
         $this->assertCount(1, $releases);

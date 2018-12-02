@@ -242,7 +242,6 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var Dependency[] $dependencies */
         $dependencies = $entityManager->getRepository(AbstractRelation::class)->findWithTargets();
 
         $this->assertCount(1, $dependencies);

@@ -2,13 +2,14 @@
 
 namespace App\Repository;
 
+use App\Entity\Country;
 use Doctrine\ORM\EntityRepository;
 
 class CountryRepository extends EntityRepository
 {
     /**
      * @param array $codes
-     * @return array
+     * @return Country[]
      */
     public function findAllExceptByCodes(array $codes): array
     {
