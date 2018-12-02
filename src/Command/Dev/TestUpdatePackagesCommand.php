@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command\Test;
+namespace App\Command\Dev;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -28,7 +28,7 @@ class TestUpdatePackagesCommand extends Command
 
     protected function configure()
     {
-        $this->setName('app:test:update-packages');
+        $this->setName('app:dev:test-update-packages');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

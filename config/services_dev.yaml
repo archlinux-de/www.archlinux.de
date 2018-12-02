@@ -1,0 +1,5 @@
+services:
+    App\Command\Dev\:
+        resource: '../src/Command/Dev/*'
+        autowire: true
+        autoconfigure: true
