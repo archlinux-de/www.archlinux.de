@@ -11,7 +11,7 @@
     "datatables.net-plugins": "^1.10.18",
     "jquery": "^3.3.1",
     "js-autocomplete": "^1.0.4",
-    "node-sass": "^4.10.0",
+    "node-sass": "^4.11.0",
     "popper.js": "^1.14.6",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
