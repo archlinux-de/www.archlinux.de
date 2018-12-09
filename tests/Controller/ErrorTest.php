@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * @covers nothing
+ * @coversNothing
  */
 class ErrorTest extends WebTestCase
 {
