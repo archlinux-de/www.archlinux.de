@@ -77,7 +77,6 @@ ci-build: install
 ci-update-commit:
 	git config --local user.name "$${GH_NAME}"
 	git config --local user.email "$${GH_EMAIL}"
-	git checkout "$${TRAVIS_BRANCH}"
 	git add -A
 	git commit -m"Update dependencies"
 	git remote add origin-push https://$${GH_USER}:$${GH_TOKEN}@github.com/$${TRAVIS_REPO_SLUG}.git
@@ -87,6 +86,7 @@ ci-update:
 	${PHP-RUN} composer --no-interaction update
 	${NODE-RUN} yarn upgrade --latest
 	${MAKE} test-ci
+	git checkout "$${TRAVIS_BRANCH}"
 	if ! git diff-index --quiet HEAD; then ${MAKE} ci-update-commit; fi
 
 deploy:
