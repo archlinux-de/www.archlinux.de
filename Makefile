@@ -87,7 +87,7 @@ ci-update:
 	${PHP-RUN} composer --no-interaction update
 	${NODE-RUN} yarn upgrade --latest
 	${MAKE} test-ci
-	if git diff-index --quiet HEAD; then ${MAKE} ci-update-commit; fi
+	if !git diff-index --quiet HEAD; then ${MAKE} ci-update-commit; fi
 
 deploy:
 	chmod o-x .
