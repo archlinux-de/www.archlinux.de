@@ -71,7 +71,7 @@ test-ci:
 
 ci-build: install
 	${MAKE} test-ci
-	if [[ "$${TRAVIS_EVENT_TYPE}" = "cron" ]]; then ${MAKE} ci-update; fi
+	if [ "$${TRAVIS_EVENT_TYPE}" = "cron" ]; then ${MAKE} ci-update; fi
 	${PHP-RUN} bin/console security:check
 
 ci-update-commit:
