@@ -64,16 +64,16 @@
         },
         {
             "name": "debril/feed-io",
-            "version": "v4.3.5",
+            "version": "v4.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alexdebril/feed-io.git",
-                "reference": "4cc135d4993aedb52a3b158f18ad9799db3fef52"
+                "reference": "6f3bad7753c9e214dec7523d91fc2886a00d222a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/4cc135d4993aedb52a3b158f18ad9799db3fef52",
-                "reference": "4cc135d4993aedb52a3b158f18ad9799db3fef52",
+                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/6f3bad7753c9e214dec7523d91fc2886a00d222a",
+                "reference": "6f3bad7753c9e214dec7523d91fc2886a00d222a",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "news",
                 "rss"
             ],
-            "time": "2018-12-06T10:07:01+00:00"
+            "time": "2018-12-21T23:10:58+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -6135,20 +6135,21 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "0df1908962e7a3071564e857d86874dad1ef204a"
+                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/0df1908962e7a3071564e857d86874dad1ef204a",
-                "reference": "0df1908962e7a3071564e857d86874dad1ef204a",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/83e253c8e0be5b0257b881e1827274667c5c17a9",
+                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3 || ^7.0"
+                "php": "^5.3.3 || ^7.0",
+                "symfony/polyfill-ctype": "^1.8"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.6",
@@ -6181,7 +6182,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-01-29T19:49:41+00:00"
+            "time": "2018-12-25T11:19:39+00:00"
         }
     ],
     "aliases": [],
