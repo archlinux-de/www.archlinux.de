@@ -5,6 +5,7 @@ import language from 'datatables.net-plugins/i18n/German.lang'
 
 $(document).ready(function () {
   const dataTable = $('#news')
+  const newsItemUrlTemplate = dataTable.data('newsItemUrlTemplate')
   dataTable.DataTable({
     'language': language,
     'lengthMenu': [25, 50, 100],
@@ -37,7 +38,9 @@ $(document).ready(function () {
         'className': 'text-nowrap',
         'render': function (data, type, row) {
           if (type === 'display' && data) {
-            return `<a href="${row.link}">${data}</a>`
+            const newsItemUrl = newsItemUrlTemplate
+              .replace('1-slug', row.slug)
+            return `<a href="${newsItemUrl}">${data}</a>`
           }
           return data
         }
