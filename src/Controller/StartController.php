@@ -29,8 +29,7 @@ class StartController extends AbstractController
     public function newsAction(NewsItemRepository $newsItemRepository): Response
     {
         return $this->render('start/news.html.twig', [
-            'news_items' => $newsItemRepository->findLatest(6),
-            'news_archive_url' => $this->getParameter('app.news.archive')
+            'news_items' => $newsItemRepository->findLatest(6)
         ]);
     }
 
