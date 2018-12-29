@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\MirrorRepository;
-use App\Response\Datatables\Response as DatatablesResponse;
+use DatatablesApiBundle\DatatablesResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +23,6 @@ class MirrorStatusController extends AbstractController
 
     /**
      * @Route("/mirrors/datatables", methods={"GET"})
-     * @Cache(smaxage="600")
      * @param MirrorRepository $mirrorRepository
      * @return Response
      */
