@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(indexes={@ORM\Index(columns={"last_modified"})})
  * @ORM\Entity(repositoryClass="App\Repository\NewsItemRepository")
  */
-class NewsItem
+class NewsItem implements \JsonSerializable
 {
     /**
      * @var string
@@ -67,6 +67,20 @@ class NewsItem
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'title' => $this->getTitle(),
+            'link' => $this->getLink(),
+            'description' => $this->getDescription(),
+            'author' => $this->getAuthor(),
+            'lastModified' => $this->getLastModified()->format(\DateTime::RFC2822)
+        ];
     }
 
     /**

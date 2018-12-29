@@ -46,4 +46,15 @@ class NewsItemRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int
+    {
+        return $this->createQueryBuilder('news')
+            ->select('COUNT(news)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

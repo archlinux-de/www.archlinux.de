@@ -10,6 +10,7 @@ Encore
   .addEntry('js/packages', './assets/js/packages.js')
   .addEntry('js/mirrors', './assets/js/mirrors.js')
   .addEntry('js/package', './assets/js/package.js')
+  .addEntry('js/news', './assets/js/news.js')
   .addStyleEntry('css/app', './assets/css/app.scss')
   .copyFiles({
     from: 'assets/images',
