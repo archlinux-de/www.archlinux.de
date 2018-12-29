@@ -21,6 +21,13 @@ class NewsItem implements \JsonSerializable
     /**
      * @var string
      *
+     * @ORM\Column(unique=true, length=191)
+     */
+    private $slug;
+
+    /**
+     * @var string
+     *
      * @ORM\Column()
      */
     private $title;
@@ -64,6 +71,24 @@ class NewsItem implements \JsonSerializable
     /**
      * @return string
      */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     * @return NewsItem
+     */
+    public function setSlug(string $slug): NewsItem
+    {
+        $this->slug = $slug;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getId(): string
     {
         return $this->id;
@@ -75,6 +100,7 @@ class NewsItem implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
+            'slug' => $this->getSlug(),
             'title' => $this->getTitle(),
             'link' => $this->getLink(),
             'description' => $this->getDescription(),

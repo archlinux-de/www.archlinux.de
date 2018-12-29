@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
 use DatatablesApiBundle\DatatablesColumnConfiguration;
 use DatatablesApiBundle\DatatablesQuery;
@@ -66,5 +67,19 @@ class NewsController extends AbstractController
         );
 
         return $this->json($response);
+    }
+
+    /**
+     * @Route("/news/{slug}", methods={"GET"}, requirements={"slug": "^[0-9]+-[a-z0-9_\-\.]+$"})
+     * @Cache(smaxage="900")
+     * @param NewsItem $newsItem
+     * @return Response
+     */
+    public function itemAction(NewsItem $newsItem): Response
+    {
+        return $this->render(
+            'news/item.html.twig',
+            ['news' => $newsItem]
+        );
     }
 }

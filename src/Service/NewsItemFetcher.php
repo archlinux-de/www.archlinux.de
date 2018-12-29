@@ -44,6 +44,7 @@ class NewsItemFetcher implements \IteratorAggregate
                         ->setName($newsEntry->getAuthor()->getName())
                 )
                 ->setLastModified($newsEntry->getLastModified());
+            $newsItem->setSlug($this->createSlug($newsItem));
             yield $newsItem;
         }
     }
@@ -58,5 +59,44 @@ class NewsItemFetcher implements \IteratorAggregate
             throw new \RuntimeException('empty news feed');
         }
         return $feed;
+    }
+
+    /**
+     * @param NewsItem $newsItem
+     * @return string
+     */
+    private function createSlug(NewsItem $newsItem): string
+    {
+        setlocale(LC_ALL, 'de_DE.UTF-8');
+        return substr(
+            $this->parseId($newsItem->getId()) . '-' . trim(
+                preg_replace(
+                    ['/[^a-z0-9_\-\.]+/', '/\-+/'],
+                    '-',
+                    strtolower(
+                        iconv(
+                            'UTF-8',
+                            'ASCII//TRANSLIT',
+                            $newsItem->getTitle()
+                        )
+                    )
+                ),
+                '_-.'
+            ),
+            0,
+            255
+        );
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    private function parseId(string $id): int
+    {
+        if (preg_match('/id=(\d+)/', $id, $matches) !== false) {
+            return $matches[1];
+        }
+        return crc32($id);
     }
 }

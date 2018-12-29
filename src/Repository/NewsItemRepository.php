@@ -40,7 +40,7 @@ class NewsItemRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('newsItem')
             ->where('newsItem.id NOT IN (:ids)')
-            ->andWhere('newsItem.lastModified > :lastModified')
+            ->andWhere('newsItem.lastModified >= :lastModified')
             ->setParameter('ids', $ids)
             ->setParameter('lastModified', $lastModified)
             ->getQuery()
