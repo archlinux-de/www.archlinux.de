@@ -3,3 +3,6 @@ services:
         resource: '../src/Command/Dev/*'
         autowire: true
         autoconfigure: true
+
+    cache.adapter.array:
+        class: Symfony\Component\Cache\Adapter\ArrayAdapter
