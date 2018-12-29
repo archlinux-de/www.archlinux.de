@@ -3,10 +3,19 @@
 namespace App\Repository;
 
 use App\Entity\Release;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class ReleaseRepository extends EntityRepository
+class ReleaseRepository extends ServiceEntityRepository
 {
+    /**
+     * @param RegistryInterface $registry
+     */
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, Release::class);
+    }
+
     /**
      * @return Release
      * @throws \Doctrine\ORM\NoResultException

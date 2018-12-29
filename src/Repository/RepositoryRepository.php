@@ -3,10 +3,19 @@
 namespace App\Repository;
 
 use App\Entity\Packages\Repository;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class RepositoryRepository extends EntityRepository
+class RepositoryRepository extends ServiceEntityRepository
 {
+    /**
+     * @param RegistryInterface $registry
+     */
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, Repository::class);
+    }
+
     /**
      * @param string $repoName
      * @param string $archName

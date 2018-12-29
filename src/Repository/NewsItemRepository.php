@@ -3,10 +3,19 @@
 namespace App\Repository;
 
 use App\Entity\NewsItem;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class NewsItemRepository extends EntityRepository
+class NewsItemRepository extends ServiceEntityRepository
 {
+    /**
+     * @param RegistryInterface $registry
+     */
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, NewsItem::class);
+    }
+
     /**
      * @param int $limit
      * @return NewsItem[]

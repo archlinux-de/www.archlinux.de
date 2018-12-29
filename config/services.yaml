@@ -17,7 +17,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php,Repository,Command/Dev}'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php,Command/Dev}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -64,35 +64,3 @@ services:
 
     App\Service\NewsItemFetcher:
         $newsFeedUrl: '%app.news.feed%'
-
-    App\Repository\RepositoryRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Packages\Repository']
-
-    App\Repository\PackageRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Packages\Package']
-
-    App\Repository\FilesRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Packages\Files']
-
-    App\Repository\AbstractRelationRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Packages\Relations\AbstractRelation']
-
-    App\Repository\MirrorRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Mirror']
-
-    App\Repository\NewsItemRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\NewsItem']
-
-    App\Repository\ReleaseRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Release']
-
-    App\Repository\CountryRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        arguments: ['\App\Entity\Country']

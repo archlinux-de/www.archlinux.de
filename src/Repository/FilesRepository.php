@@ -3,11 +3,20 @@
 namespace App\Repository;
 
 use App\Entity\Packages\Files;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class FilesRepository extends EntityRepository
+class FilesRepository extends ServiceEntityRepository
 {
+    /**
+     * @param RegistryInterface $registry
+     */
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, Files::class);
+    }
+
     /**
      * @param string $repository
      * @param string $architecture

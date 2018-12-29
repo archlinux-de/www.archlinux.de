@@ -3,11 +3,20 @@
 namespace App\Repository;
 
 use App\Entity\Mirror;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class MirrorRepository extends EntityRepository
+class MirrorRepository extends ServiceEntityRepository
 {
     private const PROTOCOL = 'https';
+
+    /**
+     * @param RegistryInterface $registry
+     */
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, Mirror::class);
+    }
 
     /**
      * @param string $countryCode
