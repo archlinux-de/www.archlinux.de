@@ -16,7 +16,7 @@ init: start
 	${PHP-DB-RUN} bin/console cache:warmup
 	${PHP-DB-RUN} bin/console doctrine:database:create
 	${PHP-DB-RUN} bin/console doctrine:schema:create
-	${PHP-DB-RUN} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+	${PHP-DB-RUN} bin/console doctrine:migrations:version --add --all --no-interaction
 	${PHP-DB-RUN} bin/console app:config:update-countries
 	${PHP-DB-RUN} bin/console app:update:mirrors
 	${PHP-DB-RUN} bin/console app:update:news
