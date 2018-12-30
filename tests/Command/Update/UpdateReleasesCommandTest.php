@@ -11,6 +11,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \App\Command\Update\UpdateReleasesCommand
@@ -36,10 +38,14 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $releaseFetcher = $this->createMock(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newRelease]));
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository));
+        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);

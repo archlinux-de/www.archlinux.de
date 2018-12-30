@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateNewsCommand extends Command
 {
@@ -24,20 +25,26 @@ class UpdateNewsCommand extends Command
     /** @var NewsItemRepository */
     private $newsItemRepository;
 
+    /** @var ValidatorInterface */
+    private $validator;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param NewsItemFetcher $newsItemFetcher
      * @param NewsItemRepository $newsItemRepository
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         NewsItemFetcher $newsItemFetcher,
-        NewsItemRepository $newsItemRepository
+        NewsItemRepository $newsItemRepository,
+        ValidatorInterface $validator
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->newsItemFetcher = $newsItemFetcher;
         $this->newsItemRepository = $newsItemRepository;
+        $this->validator = $validator;
     }
 
     protected function configure()
@@ -53,6 +60,11 @@ class UpdateNewsCommand extends Command
         $oldestLastModified = new \DateTime();
         /** @var NewsItem $newsItem */
         foreach ($this->newsItemFetcher as $newsItem) {
+            $errors = $this->validator->validate($newsItem);
+            if ($errors->count() > 0) {
+                throw new \RuntimeException((string)$errors);
+            }
+
             $this->entityManager->merge($newsItem);
             $ids[] = $newsItem->getId();
             if ($oldestLastModified > $newsItem->getLastModified()) {

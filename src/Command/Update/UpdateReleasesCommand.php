@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateReleasesCommand extends Command
 {
@@ -21,21 +22,26 @@ class UpdateReleasesCommand extends Command
     private $releaseFetcher;
     /** @var ReleaseRepository */
     private $releaseRepository;
+    /** @var ValidatorInterface */
+    private $validator;
 
     /**
      * @param EntityManagerInterface $entityManager
      * @param ReleaseFetcher $releaseFetcher
      * @param ReleaseRepository $releaseRepository
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ReleaseFetcher $releaseFetcher,
-        ReleaseRepository $releaseRepository
+        ReleaseRepository $releaseRepository,
+        ValidatorInterface $validator
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->releaseFetcher = $releaseFetcher;
         $this->releaseRepository = $releaseRepository;
+        $this->validator = $validator;
     }
 
     protected function configure()
@@ -50,6 +56,11 @@ class UpdateReleasesCommand extends Command
         $versions = [];
         /** @var Release $release */
         foreach ($this->releaseFetcher as $release) {
+            $errors = $this->validator->validate($release);
+            if ($errors->count() > 0) {
+                throw new \RuntimeException((string)$errors);
+            }
+
             $this->entityManager->merge($release);
             $versions[] = $release->getVersion();
         }

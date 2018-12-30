@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,8 @@ class Mirror implements \JsonSerializable
 {
     /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(min="10", max="255")
      *
      * @ORM\Column(length=191)
      * @ORM\Id
@@ -20,6 +23,7 @@ class Mirror implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Choice({"http", "https", "rsync", "ftp"})
      *
      * @ORM\Column()
      */
@@ -42,6 +46,7 @@ class Mirror implements \JsonSerializable
 
     /**
      * @var integer
+     * @Assert\Range(min="0",max="31536000")
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -49,6 +54,7 @@ class Mirror implements \JsonSerializable
 
     /**
      * @var float
+     * @Assert\Range(min="0",max="10240")
      *
      * @ORM\Column(type="float", nullable=true)
      */
@@ -56,6 +62,7 @@ class Mirror implements \JsonSerializable
 
     /**
      * @var float
+     * @Assert\Range(min="0",max="102400")
      *
      * @ORM\Column(type="float", nullable=true)
      */
@@ -63,6 +70,7 @@ class Mirror implements \JsonSerializable
 
     /**
      * @var float
+     * @Assert\Range(min="0",max="1")
      *
      * @ORM\Column(type="float", nullable=true)
      */
@@ -70,6 +78,7 @@ class Mirror implements \JsonSerializable
 
     /**
      * @var float
+     * @Assert\Range(min="0",max="10240")
      *
      * @ORM\Column(type="float", nullable=true)
      */

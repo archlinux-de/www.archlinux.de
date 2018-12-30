@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,8 @@ class NewsItem implements \JsonSerializable
 {
     /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(length=191)
      * @ORM\Id
@@ -20,6 +23,8 @@ class NewsItem implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(unique=true, length=191)
      */
@@ -27,6 +32,7 @@ class NewsItem implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\NotBlank()
      *
      * @ORM\Column()
      */
@@ -34,6 +40,8 @@ class NewsItem implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(min="10", max="255")
      *
      * @ORM\Column()
      */
@@ -41,6 +49,8 @@ class NewsItem implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(max="16384")
      *
      * @ORM\Column(type="text")
      */
@@ -48,6 +58,7 @@ class NewsItem implements \JsonSerializable
 
     /**
      * @var NewsAuthor
+     * @Assert\Valid()
      *
      * @ORM\Embedded(class="NewsAuthor")
      */

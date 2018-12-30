@@ -11,6 +11,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \App\Command\Update\UpdateNewsCommand
@@ -36,10 +38,14 @@ class UpdateNewsCommandTest extends KernelTestCase
         $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
         $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newNewsItem]));
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository));
+        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator));
 
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);
@@ -70,10 +76,14 @@ class UpdateNewsCommandTest extends KernelTestCase
         $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
         $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$oldNewsItem, $newNewsItem]));
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository));
+        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator));
 
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);

@@ -11,6 +11,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \App\Command\Update\UpdateMirrorsCommand
@@ -36,10 +38,14 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $mirrorFetcher = $this->createMock(MirrorFetcher::class);
         $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newMirror]));
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository));
+        $application->add(new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator));
 
         $command = $application->find('app:update:mirrors');
         $commandTester = new CommandTester($command);
