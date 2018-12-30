@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all init start stop clean rebuild install shell-php shell-node test test-db test-coverage test-ci ci-build ci-update ci-update-commit deploy
+.PHONY: all init start stop clean rebuild install shell-php shell-node test test-db test-db-migrations test-coverage test-db-coverage test-ci ci-build ci-update ci-update-commit deploy
 
 UID!=id -u
 GID!=id -g
@@ -62,8 +62,14 @@ test:
 test-db: start
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
 
+test-db-migrations: start
+	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml tests/Migrations/
+
 test-coverage:
 	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
+
+test-db-coverage: start
+	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
 
 test-ci:
 	${NODE-RUN} node_modules/.bin/encore production
