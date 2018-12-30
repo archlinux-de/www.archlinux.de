@@ -62,4 +62,15 @@ class ReleaseRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int
+    {
+        return $this->createQueryBuilder('release')
+            ->select('COUNT(release)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

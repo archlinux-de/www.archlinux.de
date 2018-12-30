@@ -2,3 +2,6 @@ exercise_html_purifier:
     news:
         HTML.Allowed: 'a[href],p,code,pre,ul,ol,li,br,strong,em,del,ins,img[src|alt],blockquote,h3,h4,h5,h6'
         HTML.Nofollow: true
+    release:
+        HTML.Allowed: 'a[href],p,code,pre,ul,ol,li,br,strong,em'
+        HTML.Nofollow: true

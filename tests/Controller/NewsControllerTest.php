@@ -13,21 +13,6 @@ class NewsControllerTest extends DatabaseTestCase
 {
     public function testIndexAction()
     {
-        $entityManager = $this->getEntityManager();
-        $news = new NewsItem('1');
-        $news->setTitle('Breaking News');
-        $news->setSlug('1-breaking-news');
-        $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
-        $news->setAuthor(
-            (new NewsAuthor())
-                ->setName('')
-                ->setUri('')
-        );
-        $news->setLink('https://www.archlinux.de/');
-        $entityManager->persist($news);
-        $entityManager->flush();
-
         $client = $this->getClient();
 
         $client->request('GET', '/news', ['search' => 'foo']);

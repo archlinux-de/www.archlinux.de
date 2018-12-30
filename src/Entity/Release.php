@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="releng_release", indexes={@ORM\Index(columns={"available", "release_date"})})
  * @ORM\Entity(repositoryClass="App\Repository\ReleaseRepository")
  */
-class Release
+class Release implements \JsonSerializable
 {
     /**
      * @var string
@@ -92,32 +92,6 @@ class Release
     /**
      * @return string
      */
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAvailable(): bool
-    {
-        return $this->available;
-    }
-
-    /**
-     * @param bool $available
-     * @return Release
-     */
-    public function setAvailable(bool $available): Release
-    {
-        $this->available = $available;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getInfo(): string
     {
         return $this->info;
@@ -190,6 +164,63 @@ class Release
     /**
      * @return string
      */
+    public function getSha1Sum(): ?string
+    {
+        return $this->sha1Sum;
+    }
+
+    /**
+     * @param string $sha1Sum
+     * @return Release
+     */
+    public function setSha1Sum(?string $sha1Sum): Release
+    {
+        $this->sha1Sum = $sha1Sum;
+        return $this;
+    }
+
+    /**
+     * @return Torrent
+     */
+    public function getTorrent(): Torrent
+    {
+        return $this->torrent;
+    }
+
+    /**
+     * @param Torrent $torrent
+     * @return Release
+     */
+    public function setTorrent(Torrent $torrent): Release
+    {
+        $this->torrent = $torrent;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'version' => $this->getVersion(),
+            'kernelVersion' => $this->getKernelVersion(),
+            'releaseDate' => $this->getReleaseDate()->format(\DateTime::RFC2822),
+            'available' => $this->isAvailable()
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @return string
+     */
     public function getKernelVersion(): ?string
     {
         return $this->kernelVersion;
@@ -224,38 +255,20 @@ class Release
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getSha1Sum(): ?string
+    public function isAvailable(): bool
     {
-        return $this->sha1Sum;
+        return $this->available;
     }
 
     /**
-     * @param string $sha1Sum
+     * @param bool $available
      * @return Release
      */
-    public function setSha1Sum(?string $sha1Sum): Release
+    public function setAvailable(bool $available): Release
     {
-        $this->sha1Sum = $sha1Sum;
-        return $this;
-    }
-
-    /**
-     * @return Torrent
-     */
-    public function getTorrent(): Torrent
-    {
-        return $this->torrent;
-    }
-
-    /**
-     * @param Torrent $torrent
-     * @return Release
-     */
-    public function setTorrent(Torrent $torrent): Release
-    {
-        $this->torrent = $torrent;
+        $this->available = $available;
         return $this;
     }
 }

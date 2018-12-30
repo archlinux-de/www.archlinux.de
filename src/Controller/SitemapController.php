@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\NewsItemRepository;
 use App\Repository\PackageRepository;
+use App\Repository\ReleaseRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,10 +17,14 @@ class SitemapController extends AbstractController
      * @Cache(smaxage="600")
      * @param PackageRepository $packageRepository
      * @param NewsItemRepository $newsItemRepository
+     * @param ReleaseRepository $releaseRepository
      * @return Response
      */
-    public function indexAction(PackageRepository $packageRepository, NewsItemRepository $newsItemRepository): Response
-    {
+    public function indexAction(
+        PackageRepository $packageRepository,
+        NewsItemRepository $newsItemRepository,
+        ReleaseRepository $releaseRepository
+    ): Response {
         $packages = $packageRepository->findStableByArchitecture(
             $this->getParameter('app.packages.default_architecture')
         );
@@ -28,7 +33,8 @@ class SitemapController extends AbstractController
             'sitemap/index.xml.twig',
             [
                 'packages' => $packages,
-                'news' => $newsItemRepository->findAll()
+                'news' => $newsItemRepository->findAll(),
+                'releases' => $releaseRepository->findAll()
             ]
         );
         $response->headers->set('Content-Type', 'application/xml; charset=UTF-8');

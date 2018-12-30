@@ -39,4 +39,27 @@ class ReleaseTest extends TestCase
 
         $this->assertSame($torrent, $release->getTorrent());
     }
+
+    public function testJsonSerialize()
+    {
+        $releaseDate = new \DateTime('2018-01-01');
+
+        $release = new Release('2018.01.01');
+        $release->setReleaseDate($releaseDate);
+        $release->setAvailable(true);
+        $release->setKernelVersion('3.11');
+
+        $json = json_encode($release);
+        $this->assertJson($json);
+        $jsonArray = json_decode($json, true);
+        $this->assertEquals(
+            [
+                'version' => '2018.01.01',
+                'kernelVersion' => '3.11',
+                'releaseDate' => 'Mon, 01 Jan 2018 00:00:00 +0000',
+                'available' => true
+            ],
+            $jsonArray
+        );
+    }
 }
