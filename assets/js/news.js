@@ -35,7 +35,6 @@ $(document).ready(function () {
         'data': 'title',
         'orderable': false,
         'searchable': true,
-        'className': 'text-nowrap',
         'render': function (data, type, row) {
           if (type === 'display' && data) {
             const newsItemUrl = newsItemUrlTemplate
