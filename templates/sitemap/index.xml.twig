@@ -13,6 +13,10 @@
     <url>
         <loc>{{ absolute_url(path('app_start_index')) }}</loc>
     </url>
+    <url>
+        <loc>{{ absolute_url(path('app_news_index')) }}</loc>
+    </url>
+    {# @var package \App\Entity\Packages\Package #}
     {% for package in packages %}
         <url>
             <loc>{{ absolute_url(path(
@@ -20,6 +24,13 @@
                 {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
                 )) }}</loc>
             <lastmod>{{ package.mtime | date('Y-m-d') }}</lastmod>
+        </url>
+    {% endfor %}
+    {# @var item \App\Entity\NewsItem #}
+    {% for item in news %}
+        <url>
+            <loc>{{ absolute_url(path('app_news_item', {'slug': item.slug})) }}</loc>
+            <lastmod>{{ item.lastModified | date('Y-m-d') }}</lastmod>
         </url>
     {% endfor %}
 </urlset>

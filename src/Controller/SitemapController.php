@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\NewsItemRepository;
 use App\Repository\PackageRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,14 +11,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SitemapController extends AbstractController
 {
-
     /**
      * @Route("/sitemap.xml", methods={"GET"})
      * @Cache(smaxage="600")
      * @param PackageRepository $packageRepository
+     * @param NewsItemRepository $newsItemRepository
      * @return Response
      */
-    public function indexAction(PackageRepository $packageRepository): Response
+    public function indexAction(PackageRepository $packageRepository, NewsItemRepository $newsItemRepository): Response
     {
         $packages = $packageRepository->findStableByArchitecture(
             $this->getParameter('app.packages.default_architecture')
@@ -25,7 +26,10 @@ class SitemapController extends AbstractController
 
         $response = $this->render(
             'sitemap/index.xml.twig',
-            ['packages' => $packages]
+            [
+                'packages' => $packages,
+                'news' => $newsItemRepository->findAll()
+            ]
         );
         $response->headers->set('Content-Type', 'application/xml; charset=UTF-8');
         return $response;
