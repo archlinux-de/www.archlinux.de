@@ -47,8 +47,7 @@
         "symfony/css-selector": "4.2.*",
         "symfony/phpunit-bridge": "4.2.*",
         "symfony/stopwatch": "4.2.*",
-        "symfony/web-profiler-bundle": "4.2.*",
-        "symfony/web-server-bundle": "4.2.*"
+        "symfony/web-profiler-bundle": "4.2.*"
     },
     "config": {
         "preferred-install": {
