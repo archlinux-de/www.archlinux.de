@@ -16,6 +16,7 @@ init: start
 	${PHP-DB-RUN} bin/console cache:warmup
 	${PHP-DB-RUN} bin/console doctrine:database:create
 	${PHP-DB-RUN} bin/console doctrine:schema:create
+	${PHP-DB-RUN} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 	${PHP-DB-RUN} bin/console app:config:update-countries
 	${PHP-DB-RUN} bin/console app:update:mirrors
 	${PHP-DB-RUN} bin/console app:update:news
@@ -96,5 +97,6 @@ deploy:
 	bin/console cache:clear --no-debug --no-warmup
 	yarn run encore production
 	bin/console cache:warmup
+	bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 	bin/console app:config:update-countries
 	chmod o+x .
