@@ -71,24 +71,6 @@ class NewsItem implements \JsonSerializable
     /**
      * @return string
      */
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-    /**
-     * @param string $slug
-     * @return NewsItem
-     */
-    public function setSlug(string $slug): NewsItem
-    {
-        $this->slug = $slug;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
@@ -107,6 +89,24 @@ class NewsItem implements \JsonSerializable
             'author' => $this->getAuthor(),
             'lastModified' => $this->getLastModified()->format(\DateTime::RFC2822)
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     * @return NewsItem
+     */
+    public function setSlug(string $slug): NewsItem
+    {
+        $this->slug = $slug;
+        return $this;
     }
 
     /**

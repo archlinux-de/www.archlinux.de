@@ -16,6 +16,7 @@ class RecentNewsControllerTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
         $news = new NewsItem('1');
         $news->setTitle('Breaking News');
+        $news->setSlug('1-breaking-news');
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime());
         $news->setAuthor(
