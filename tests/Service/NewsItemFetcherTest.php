@@ -4,11 +4,13 @@ namespace App\Tests\Service;
 
 use App\Entity\NewsItem;
 use App\Service\NewsItemFetcher;
+use App\Service\NewsItemSlugger;
 use FeedIo\FeedIo;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -36,13 +38,18 @@ class NewsItemFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
+        /** @var NewsItemSlugger|MockObject $slugger */
+        $slugger = $this->createMock(NewsItemSlugger::class);
+        $slugger->expects($this->once())->method('slugify')->willReturn('slug');
+
         $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '');
+        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
 
         /** @var NewsItem[] $newsItems */
         $newsItems = iterator_to_array($newsItemFetcher);
         $this->assertCount(1, $newsItems);
         $this->assertEquals('https://127.0.0.1/news/1', $newsItems[0]->getId());
+        $this->assertEquals('slug', $newsItems[0]->getSlug());
         $this->assertEquals(new \DateTime('2018-02-22T19:06:26Z'), $newsItems[0]->getLastModified());
         $this->assertEquals('Test Title', $newsItems[0]->getTitle());
         $this->assertEquals('https://127.0.0.1/news/1.html', $newsItems[0]->getLink());
@@ -59,8 +66,12 @@ class NewsItemFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
+        /** @var NewsItemSlugger|MockObject $slugger */
+        $slugger = $this->createMock(NewsItemSlugger::class);
+        $slugger->expects($this->never())->method('slugify');
+
         $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '');
+        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($newsItemFetcher);
@@ -74,8 +85,12 @@ class NewsItemFetcherTest extends TestCase
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 
+        /** @var NewsItemSlugger|MockObject $slugger */
+        $slugger = $this->createMock(NewsItemSlugger::class);
+        $slugger->expects($this->never())->method('slugify');
+
         $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '');
+        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($newsItemFetcher);

@@ -37,6 +37,7 @@ class NewsItemRepositoryTest extends DatabaseTestCase
         return (new NewsItem($id))
             ->setLastModified($lastModified)
             ->setTitle('')
+            ->setSlug($id . '-')
             ->setLink('')
             ->setDescription('')
             ->setAuthor((new NewsAuthor())->setName(''));
@@ -75,5 +76,21 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
         $this->assertCount(1, $newsItems);
         $this->assertEquals('B', $newsItems[0]->getId());
+    }
+
+    public function testGetSize()
+    {
+        $oldItem = $this->createNewsItem('1', new \DateTime('now'));
+        $newItem = $this->createNewsItem('2', new \DateTime('now'));
+
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($newItem);
+        $entityManager->persist($oldItem);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        /** @var NewsItemRepository $newsItemRepository */
+        $newsItemRepository = $this->getRepository(NewsItem::class);
+        $this->assertEquals(2, $newsItemRepository->getSize());
     }
 }

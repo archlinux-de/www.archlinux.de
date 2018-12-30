@@ -3,6 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Mirror;
+use App\Entity\NewsAuthor;
+use App\Entity\NewsItem;
 use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
@@ -45,6 +47,15 @@ class SmokeTest extends DatabaseTestCase
         $mirror->setActive(true);
         $mirror->setIsos(true);
         $entityManager->persist($mirror);
+
+        $newsItem = (new NewsItem(1))
+            ->setTitle('Big News')
+            ->setSlug('1-big-news')
+            ->setLink('https://www.archlinux.de/')
+            ->setDescription('Foo bar')
+            ->setLastModified(new \DateTime())
+            ->setAuthor((new NewsAuthor())->setName('Bob'));
+        $entityManager->persist($newsItem);
 
         $entityManager->flush();
         $entityManager->clear();
@@ -101,7 +112,10 @@ class SmokeTest extends DatabaseTestCase
             ['/download'],
             ['/packages/datatables?draw=1&length=1'],
             ['/sitemap.xml'],
+            ['/news'],
             ['/news/feed'],
+            ['/news/datatables?draw=1&length=1'],
+            ['/news/1-big-news'],
             ['/impressum'],
             ['/privacy-policy'],
             ['/mirrors/datatables']
