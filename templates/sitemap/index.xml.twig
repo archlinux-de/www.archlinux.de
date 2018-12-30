@@ -16,6 +16,9 @@
     <url>
         <loc>{{ absolute_url(path('app_news_index')) }}</loc>
     </url>
+    <url>
+        <loc>{{ absolute_url(path('app_releases_index')) }}</loc>
+    </url>
     {# @var package \App\Entity\Packages\Package #}
     {% for package in packages %}
         <url>
@@ -31,6 +34,13 @@
         <url>
             <loc>{{ absolute_url(path('app_news_item', {'slug': item.slug})) }}</loc>
             <lastmod>{{ item.lastModified | date('Y-m-d') }}</lastmod>
+        </url>
+    {% endfor %}
+    {# @var release \App\Entity\Release #}
+    {% for release in releases %}
+        <url>
+            <loc>{{ absolute_url(path('app_releases_release', {'version': release.version})) }}</loc>
+            <lastmod>{{ release.created | date('Y-m-d') }}</lastmod>
         </url>
     {% endfor %}
 </urlset>

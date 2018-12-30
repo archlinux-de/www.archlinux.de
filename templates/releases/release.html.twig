@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ release.version }}{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Arch Linux {{ release.version }}</h1>
+    <div class="row mw-100">
+        <div class="col-12 col-xl-6">
+            <h2 class="mb-3">Release</h2>
+            <table class="table table-sm mb-4">
+                <colgroup>
+                    <col class="w-20">
+                </colgroup>
+                <tr>
+                    <th>Version</th>
+                    <td>{{ release.version }}</td>
+                </tr>
+                <tr>
+                    <th>Verfügbarkeit</th>
+                    <td>
+                        {% if release.available %}
+                            <span class="text-success">✓</span>
+                        {% else %}
+                            <span class="text-danger">×</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if release.info %}
+                    <tr>
+                        <th>Informationen</th>
+                        <td>{{ release.info | purify('release') }}</td>
+                    </tr>
+                {% endif %}
+                {% if release.md5Sum %}
+                    <tr>
+                        <th>MD5</th>
+                        <td class="break-word">{{ release.md5Sum }}</td>
+                    </tr>
+                {% endif %}
+                {% if release.sha1Sum %}
+                    <tr>
+                        <th>SHA1</th>
+                        <td class="break-word">{{ release.sha1Sum }}</td>
+                    </tr>
+                {% endif %}
+                {% if release.available %}
+                    <tr>
+                        <th>PGP</th>
+                        <td><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a></td>
+                    </tr>
+                {% endif %}
+                {% if release.kernelVersion %}
+                    <tr>
+                        <th>Kernel-Version</th>
+                        <td>{{ release.kernelVersion }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th>Veröffentlichung</th>
+                    <td>{{ release.releaseDate | date }}</td>
+                </tr>
+                <tr>
+                    <th>Erstellung</th>
+                    <td>{{ release.created | date }}</td>
+                </tr>
+            </table>
+
+            <a class="btn btn-outline-secondary btn-sm" role="button" href="{{ path('app_releases_index') }}">
+                zum Release-Archiv
+            </a>
+            {% if release.available %}
+                <a class="btn btn-primary btn-sm" role="button"
+                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
+                    <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
+                </a>
+            {% endif %}
+        </div>
+
+        {% if release.torrent.fileLength %}
+            <div class="col-12 col-xl-6">
+                <h2 class="mb-3 mt-5 mt-xl-0">Torrent</h2>
+                <table class="table table-sm">
+                    <colgroup>
+                        <col class="w-20">
+                    </colgroup>
+                    {% if release.torrent.url %}
+                        <tr>
+                            <th>Torrent URL</th>
+                            <td>
+                                <a href="https://www.archlinux.org{{ release.torrent.url }}">
+                                    {{ release.torrent.fileName }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.comment %}
+                        <tr>
+                            <th>Comment</th>
+                            <td>{{ release.torrent.comment }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.infoHash %}
+                        <tr>
+                            <th>Info hash</th>
+                            <td class="break-word">{{ release.torrent.infoHash }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.pieceLength %}
+                        <tr>
+                            <th>Piece length</th>
+                            <td>{{ release.torrent.pieceLength | format_bytes }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.fileName %}
+                        <tr>
+                            <th>File name</th>
+                            <td>{{ release.torrent.fileName }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.announce %}
+                        <tr>
+                            <th>Announce</th>
+                            <td>{{ release.torrent.announce }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.fileLength %}
+                        <tr>
+                            <th>File length</th>
+                            <td>{{ release.torrent.fileLength | format_bytes }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.pieceCount %}
+                        <tr>
+                            <th>Piece count</th>
+                            <td>{{ release.torrent.pieceCount | number_format }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.createdBy %}
+                        <tr>
+                            <th>Created by</th>
+                            <td>{{ release.torrent.createdBy }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.creationDate %}
+                        <tr>
+                            <th>Creation date</th>
+                            <td>{{ release.torrent.creationDate | date }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if release.torrent.magnetUri %}
+                        <tr>
+                            <th>Magnet URI</th>
+                            <td><a href="{{ release.torrent.magnetUri }}">{{ release.torrent.fileName }}</a></td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

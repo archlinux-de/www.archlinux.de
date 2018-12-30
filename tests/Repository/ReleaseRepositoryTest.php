@@ -76,4 +76,31 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $this->assertCount(1, $releases);
         $this->assertEquals('B', $releases[0]->getVersion());
     }
+
+    public function testGetSize()
+    {
+        $releaseA = new Release('A');
+        $releaseA->setAvailable(true);
+        $releaseA->setInfo('');
+        $releaseA->setIsoUrl('');
+        $releaseA->setCreated(new \DateTime());
+        $releaseA->setReleaseDate(new \DateTime());
+
+        $releaseB = new Release('B');
+        $releaseB->setAvailable(true);
+        $releaseB->setInfo('');
+        $releaseB->setIsoUrl('');
+        $releaseB->setCreated(new \DateTime());
+        $releaseB->setReleaseDate(new \DateTime());
+
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($releaseA);
+        $entityManager->persist($releaseB);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        /** @var ReleaseRepository $releaseRepository */
+        $releaseRepository = $this->getRepository(Release::class);
+        $this->assertEquals(2, $releaseRepository->getSize());
+    }
 }

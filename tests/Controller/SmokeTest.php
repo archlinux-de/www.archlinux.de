@@ -116,6 +116,9 @@ class SmokeTest extends DatabaseTestCase
             ['/news/feed'],
             ['/news/datatables?draw=1&length=1'],
             ['/news/1-big-news'],
+            ['/releases'],
+            ['/releases/datatables?draw=1&length=1'],
+            ['/releases/2018.01.01'],
             ['/impressum'],
             ['/privacy-policy'],
             ['/mirrors/datatables']

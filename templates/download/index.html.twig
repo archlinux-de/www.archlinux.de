@@ -14,10 +14,13 @@
             <p>Der Download ist nur für Neuinstallationen notwendig! Ein bestehendes Arch Linux System kann immer mit
                 <code>pacman -Syu</code> aktuell gehalten werden!</p>
             <ul class="list-unstyled pl-4">
-                <li><strong>Aktuelles Release:</strong> {{ release.version }}</li>
+                <li><strong>Aktuelles Release:</strong>
+                    <a href="{{ path('app_releases_release', {'version': release.version}) }}">{{ release.version }}</a>
+                </li>
                 <li><strong>Enthaltener Kernel:</strong> {{ release.kernelVersion }}</li>
                 <li><strong>ISO Größe:</strong> {{ release.torrent.fileLength | format_bytes }}</li>
                 <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
+                <li><a href="{{ path('app_releases_release', {'version': release.version}) }}">Release-Informationen</a></li>
             </ul>
 
             <h2>Installation</h2>
@@ -27,7 +30,7 @@
             <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
             <ul class="list-unstyled pl-4">
                 <li><a href="{{ release.torrent.magnetUri }}">Magnet link für {{ release.version }}</a></li>
-                <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.torrent">
+                <li><a href="https://www.archlinux.org{{ release.torrent.url }}">
                         Torrent für {{ release.version }}
                     </a></li>
             </ul>
@@ -47,11 +50,10 @@
             </ul>
         </div>
         <div class="col-lg-6 pl-lg-5">
-            <h3 class="mb-3">Download</h3>
             <div class="container pl-4">
-                <a class="btn btn-primary"
+                <a class="btn btn-primary btn-lg"
                    href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
-                    {{ release.torrent.fileName }}
+                     <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
                 </a>
             </div>
 
