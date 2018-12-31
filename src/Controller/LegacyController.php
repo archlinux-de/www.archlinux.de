@@ -71,14 +71,4 @@ class LegacyController extends AbstractController
 
         throw $this->createNotFoundException();
     }
-
-    /**
-     * @Route("/", condition="request.query.get('page') == 'PostPackageList'", methods={"POST"})
-     * @Route("/statistics", methods={"POST"})
-     * @return Response
-     */
-    public function postPackageListAction(): Response
-    {
-        return $this->redirect('https://pkgstats.archlinux.de/post', Response::HTTP_PERMANENTLY_REDIRECT);
-    }
 }
