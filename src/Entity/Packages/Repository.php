@@ -5,6 +5,7 @@ namespace App\Entity\Packages;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RepositoryRepository")
@@ -23,6 +24,7 @@ class Repository implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(name="name", type="string")
      */
@@ -37,6 +39,7 @@ class Repository implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Choice({"x86_64"})
      *
      * @ORM\Column(name="architecture", type="string")
      */

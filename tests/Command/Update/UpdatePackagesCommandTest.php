@@ -14,6 +14,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \App\Command\Update\UpdatePackagesCommand
@@ -65,6 +67,10 @@ class UpdatePackagesCommandTest extends KernelTestCase
             ->with($repository, [$package->getName()])
             ->willReturn(true);
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
@@ -73,7 +79,8 @@ class UpdatePackagesCommandTest extends KernelTestCase
             $packageDatabaseMirror,
             $repositoryRepository,
             $relationRepository,
-            $packageManager
+            $packageManager,
+            $validator
         ));
 
         $command = $application->find('app:update:packages');

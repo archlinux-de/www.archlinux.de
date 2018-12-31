@@ -4,6 +4,7 @@ namespace App\Entity\Packages\Relations;
 
 use App\Entity\Packages\Package;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AbstractRelationRepository")
@@ -12,6 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class AbstractRelation
 {
+    /**
+     * @var Package
+     */
+    protected $source;
+
     /**
      * @var int
      *
@@ -23,6 +29,7 @@ abstract class AbstractRelation
 
     /**
      * @var string
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
      *
      * @ORM\Column(type="string")
      */
@@ -30,6 +37,7 @@ abstract class AbstractRelation
 
     /**
      * @var string
+     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_]{1,255}$/")
      *
      * @ORM\Column(type="string", nullable=true)
      */
@@ -42,11 +50,6 @@ abstract class AbstractRelation
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $target;
-
-    /**
-     * @var Package
-     */
-    protected $source;
 
     /**
      * @param null|string $targetName
@@ -78,6 +81,14 @@ abstract class AbstractRelation
     }
 
     /**
+     * @return Package
+     */
+    public function getSource(): Package
+    {
+        return $this->source;
+    }
+
+    /**
      * @param Package $package
      * @return $this
      */
@@ -85,14 +96,6 @@ abstract class AbstractRelation
     {
         $this->source = $package;
         return $this;
-    }
-
-    /**
-     * @return Package
-     */
-    public function getSource(): Package
-    {
-        return $this->source;
     }
 
     /**

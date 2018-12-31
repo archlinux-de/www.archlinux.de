@@ -2,6 +2,7 @@
 
 namespace App\Entity\Packages;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,6 +12,7 @@ class Packager implements \JsonSerializable
 {
     /**
      * @var string
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */
@@ -18,6 +20,8 @@ class Packager implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Email()
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */

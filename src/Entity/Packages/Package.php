@@ -2,6 +2,7 @@
 
 namespace App\Entity\Packages;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Packages\Relations\CheckDependency;
 use App\Entity\Packages\Relations\Conflict;
 use App\Entity\Packages\Relations\Dependency;
@@ -35,6 +36,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Repository
+     * @Assert\Valid()
      *
      * @ORM\ManyToOne(targetEntity="Repository", inversedBy="packages")
      */
@@ -42,6 +44,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Regex("/^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$/")
      *
      * @ORM\Column(name="fileName", type="string")
      */
@@ -49,6 +52,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
      *
      * @ORM\Column(name="name", type="string")
      */
@@ -56,6 +60,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
      *
      * @ORM\Column(name="base", type="string")
      */
@@ -63,6 +68,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_]{1,255}$/")
      *
      * @ORM\Column(name="version", type="string")
      */
@@ -70,6 +76,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(name="description", type="string")
      */
@@ -77,6 +84,9 @@ class Package implements \JsonSerializable
 
     /**
      * @var string[]
+     * @Assert\All({
+     *      @Assert\Length(min="2", max="100")
+     * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
@@ -84,6 +94,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var integer
+     * @Assert\Range(min="0", max="10737418240")
      *
      * @ORM\Column(name="compressedSize", type="bigint")
      */
@@ -91,6 +102,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var integer
+     * @Assert\Range(min="0", max="10737418240")
      *
      * @ORM\Column(name="installedSize", type="bigint")
      */
@@ -98,6 +110,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Regex("/^[0-9a-f]{32}$/")
      *
      * @ORM\Column(name="md5sum", type="string", length=32, nullable=true)
      */
@@ -105,6 +118,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Regex("/^[0-9a-f]{64}$/")
      *
      * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
      */
@@ -112,6 +126,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(min="50", max="2048")
      *
      * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
      */
@@ -119,6 +134,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Url()
      *
      * @ORM\Column(name="url", type="string", nullable=true)
      */
@@ -126,6 +142,9 @@ class Package implements \JsonSerializable
 
     /**
      * @var string[]
+     * @Assert\All({
+     *      @Assert\Length(min="3", max="50")
+     * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
@@ -133,6 +152,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Choice({"x86_64", "any"})
      *
      * @ORM\Column(name="architecture", type="string")
      */
@@ -154,6 +174,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Packager
+     * @Assert\Valid()
      *
      * @ORM\Embedded(class="App\Entity\Packages\Packager")
      */
@@ -161,6 +182,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\Replacement",
@@ -173,6 +195,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\Conflict",
@@ -185,6 +208,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\Provision",
@@ -197,6 +221,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\Dependency",
@@ -209,6 +234,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\OptionalDependency",
@@ -221,6 +247,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\MakeDependency",
@@ -233,6 +260,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
+     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\CheckDependency",
@@ -245,6 +273,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var Files
+     * @Assert\Valid()
      *
      * @ORM\OneToOne(
      *     targetEntity="App\Entity\Packages\Files",

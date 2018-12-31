@@ -13,6 +13,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdatePackagesCommand extends Command
 {
@@ -33,19 +34,24 @@ class UpdatePackagesCommand extends Command
     /** @var PackageManager */
     private $packageManager;
 
+    /** @var ValidatorInterface */
+    private $validator;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param RepositoryRepository $repositoryRepository
      * @param AbstractRelationRepository $relationRepository
      * @param PackageManager $packageManager
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         PackageDatabaseMirror $packageDatabaseMirror,
         RepositoryRepository $repositoryRepository,
         AbstractRelationRepository $relationRepository,
-        PackageManager $packageManager
+        PackageManager $packageManager,
+        ValidatorInterface $validator
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
@@ -53,6 +59,7 @@ class UpdatePackagesCommand extends Command
         $this->repositoryRepository = $repositoryRepository;
         $this->relationRepository = $relationRepository;
         $this->packageManager = $packageManager;
+        $this->validator = $validator;
     }
 
     protected function configure()
@@ -74,6 +81,11 @@ class UpdatePackagesCommand extends Command
                 $packageRepositoryGenerator = $this->packageManager->downloadPackagesForRepository($repository);
                 /** @var DatabasePackage $package */
                 foreach ($packageRepositoryGenerator as $package) {
+                    $errors = $this->validator->validate($package);
+                    if ($errors->count() > 0) {
+                        throw new \RuntimeException((string)$errors);
+                    }
+
                     $allPackageNames[] = $package->getName();
                     if ($this->packageManager->updatePackage($repository, $package)) {
                         $updatedPackages = true;
