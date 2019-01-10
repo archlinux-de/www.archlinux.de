@@ -95,6 +95,8 @@ ci-update-commit:
 
 ci-update:
 	${PHP-RUN} composer --no-interaction update
+	${PHP-RUN} bin/console cache:clear --env=dev
+	${PHP-RUN} bin/console cache:clear --env=test
 	${NODE-RUN} yarn upgrade --latest
 	${MAKE} test-ci
 	git checkout "$${TRAVIS_BRANCH}"
