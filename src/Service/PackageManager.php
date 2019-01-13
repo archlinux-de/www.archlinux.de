@@ -48,8 +48,13 @@ class PackageManager
             $repository->getName(),
             $repository->getArchitecture()
         );
-        if (($repository->getMTime() && !is_null($repository->getMTime()) && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp())
-            || !$repository->getMTime()) {
+        if ((
+                $repository->getMTime()
+                && !is_null($repository->getMTime())
+                && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp()
+            )
+            || !$repository->getMTime()
+        ) {
             $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
             /** @TODO Should not persist here */
             $this->entityManager->persist($repository);
