@@ -79,7 +79,7 @@ class PackageTest extends TestCase
 
         $package->updateFromPackageDatabase($databasePackage);
 
-        $this->assertEquals('foo', call_user_func([$package, $stringMethod]));
+        $this->assertEquals('foo', $package->$stringMethod());
     }
 
     /**
@@ -131,7 +131,7 @@ class PackageTest extends TestCase
         $databasePackage->method($timeMethod)->willReturn(new \DateTime('2018-01-30'));
 
         $package->updateFromPackageDatabase($databasePackage);
-        $this->assertEquals(new \DateTime('2018-01-30'), call_user_func([$package, $timeMethod]));
+        $this->assertEquals(new \DateTime('2018-01-30'), $package->$timeMethod());
     }
 
     /**
@@ -160,7 +160,7 @@ class PackageTest extends TestCase
 
         $package->updateFromPackageDatabase($databasePackage);
 
-        $this->assertEquals(1234, call_user_func([$package, $sizeMethod]));
+        $this->assertEquals(1234, $package->$sizeMethod());
     }
 
     /**
@@ -190,7 +190,7 @@ class PackageTest extends TestCase
 
         $package->updateFromPackageDatabase($databasePackage);
 
-        $this->assertEquals($list, call_user_func([$package, $listMethod]));
+        $this->assertEquals($list, $package->$listMethod());
     }
 
     /**
@@ -221,7 +221,7 @@ class PackageTest extends TestCase
         $package->updateFromPackageDatabase($databasePackage);
 
         /** @var AbstractRelation[] $relations */
-        $relations = call_user_func([$package, $packageMethod]);
+        $relations = $package->$packageMethod();
         $this->assertCount(2, $relations);
         $this->assertEquals('foo', $relations[0]->getTargetName());
         $this->assertEquals('bar', $relations[1]->getTargetName());

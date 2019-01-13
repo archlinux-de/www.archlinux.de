@@ -172,7 +172,7 @@ class PackageRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getByRepositoryArchitectureAndName(string $architecture, string $name): ?Package
+    public function getByRepositoryArchitectureAndName(string $architecture, string $name): Package
     {
         return $this
             ->createQueryBuilder('package')
