@@ -32,10 +32,10 @@ class Package
 
     /**
      * @param string $key
-     * @param string|null $default
-     * @return string|null
+     * @param string $default
+     * @return string
      */
-    private function readValue(string $key, ?string $default = ''): ?string
+    private function readValue(string $key, string $default = ''): string
     {
         $list = $this->readList($key);
         if (isset($list[0])) {
@@ -48,9 +48,9 @@ class Package
     /**
      * @param string $key
      * @param array $default
-     * @return array|null
+     * @return array
      */
-    private function readList(string $key, ?array $default = []): ?array
+    private function readList(string $key, array $default = []): array
     {
         if (!is_array($this->desc)) {
             $this->desc = $this->loadInfo($this->descFile);
@@ -157,7 +157,7 @@ class Package
      */
     public function getSha256sum(): ?string
     {
-        return $this->readValue('SHA256SUM', null);
+        return $this->readValue('SHA256SUM') ?: null;
     }
 
     /**
@@ -165,7 +165,7 @@ class Package
      */
     public function getPgpSignature(): ?string
     {
-        return $this->readValue('PGPSIG', null);
+        return $this->readValue('PGPSIG') ?: null;
     }
 
     /**
@@ -197,7 +197,7 @@ class Package
      */
     public function getBuildDate(): ?\DateTime
     {
-        $buildTimestamp = $this->readValue('BUILDDATE', null);
+        $buildTimestamp = $this->readValue('BUILDDATE') ?: null;
         if (is_null($buildTimestamp)) {
             return null;
         }

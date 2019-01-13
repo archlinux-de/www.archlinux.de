@@ -29,7 +29,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirrorRepository = $this->getRepository(Mirror::class);
         $mirrors = $mirrorRepository->findBestByCountryAndLastSync($country->getCode(), $lastSync);
         $this->assertCount(1, $mirrors);
-        $this->assertEquals($mirror->getUrl(), array_shift($mirrors)->getUrl());
+        $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
     public function testFindBestLastSync()
@@ -49,7 +49,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirrorRepository = $this->getRepository(Mirror::class);
         $mirrors = $mirrorRepository->findBestByCountryAndLastSync('us', $lastSync);
         $this->assertCount(1, $mirrors);
-        $this->assertEquals($mirror->getUrl(), array_shift($mirrors)->getUrl());
+        $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
     public function testFindBestSecure()
@@ -67,7 +67,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirrorRepository = $this->getRepository(Mirror::class);
         $mirrors = $mirrorRepository->findBestByCountryAndLastSync('us', new \DateTime());
         $this->assertCount(1, $mirrors);
-        $this->assertEquals($mirror->getUrl(), array_shift($mirrors)->getUrl());
+        $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
     public function testFindSecure()
@@ -90,7 +90,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirrorRepository = $this->getRepository(Mirror::class);
         $mirrors = $mirrorRepository->findSecure();
         $this->assertCount(1, $mirrors);
-        $this->assertEquals($mirror->getUrl(), array_shift($mirrors)->getUrl());
+        $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
     public function testFindAllExceptByUrls()

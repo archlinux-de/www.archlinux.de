@@ -108,7 +108,7 @@ class PackageTest extends TestCase
     {
         $value = 'foo';
         $package = $this->createPackage(['%' . $key . '%', $value]);
-        $this->assertEquals($value, call_user_func([$package, $getter]));
+        $this->assertEquals($value, $package->$getter());
     }
 
     /**
@@ -140,7 +140,7 @@ class PackageTest extends TestCase
     {
         $list = ['foo', 'bar'];
         $package = $this->createPackage(array_merge(['%' . $key . '%'], $list));
-        $this->assertEquals($list, call_user_func([$package, $getter]));
+        $this->assertEquals($list, $package->$getter());
     }
 
     /**
@@ -152,7 +152,7 @@ class PackageTest extends TestCase
     {
         $package = $this->createPackage();
         $this->assertNotEmpty($_);
-        $this->assertEquals([], call_user_func([$package, $getter]));
+        $this->assertEquals([], $package->$getter());
     }
 
     /**

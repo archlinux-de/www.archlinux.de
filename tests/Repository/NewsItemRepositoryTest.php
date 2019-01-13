@@ -24,7 +24,7 @@ class NewsItemRepositoryTest extends DatabaseTestCase
         $newsItemRepository = $this->getRepository(NewsItem::class);
         $newsItems = $newsItemRepository->findLatest(2);
         $this->assertCount(2, $newsItems);
-        $this->assertEquals($newItem->getId(), array_shift($newsItems)->getId());
+        $this->assertEquals($newItem->getId(), $newsItems[0]->getId());
     }
 
     /**

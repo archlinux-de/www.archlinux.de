@@ -38,6 +38,16 @@ class NewsItemFetcher implements \IteratorAggregate
     {
         /** @var ItemInterface $newsEntry */
         foreach ($this->fetchNewsFeed() as $newsEntry) {
+            if (is_null($newsEntry->getPublicId())
+                || is_null($newsEntry->getAuthor())
+                || is_null($newsEntry->getTitle())
+                || is_null($newsEntry->getLink())
+                || is_null($newsEntry->getDescription())
+                || is_null($newsEntry->getAuthor()->getName())
+                || is_null($newsEntry->getLastModified())
+            ) {
+                throw new \RuntimeException('Invalid news entry');
+            }
             $newsItem = new NewsItem($newsEntry->getPublicId());
             $newsItem
                 ->setTitle($newsEntry->getTitle())

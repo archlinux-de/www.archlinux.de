@@ -48,7 +48,7 @@ class PackageManagerTest extends TestCase
             ->expects($this->once())
             ->method('createDatabase')
             ->with($packageDatabaseFile)
-            ->willReturn([$databasePackage]);
+            ->willReturn(new \ArrayObject([$databasePackage]));
 
         /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);

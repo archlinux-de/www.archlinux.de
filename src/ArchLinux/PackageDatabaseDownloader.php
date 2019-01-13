@@ -46,9 +46,9 @@ class PackageDatabaseDownloader
 
     /**
      * @param \SplFileInfo $packageDatabaseFile
-     * @return iterable
+     * @return \IteratorAggregate
      */
-    public function createDatabase(\SplFileInfo $packageDatabaseFile): iterable
+    public function createDatabase(\SplFileInfo $packageDatabaseFile): \IteratorAggregate
     {
         return new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
     }

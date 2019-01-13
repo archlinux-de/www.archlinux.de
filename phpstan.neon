@@ -1,12 +1,11 @@
 includes:
-	- vendor/phpstan/phpstan/conf/config.levelmax.neon
 	- vendor/phpstan/phpstan-doctrine/extension.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
 	- vendor/phpstan/phpstan-symfony/extension.neon
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 parameters:
-	checkUnionTypes: false
+	level: max
 	symfony:
 		container_xml_path: '%rootDir%/../../../var/cache/dev/srcApp_KernelDevDebugContainer.xml'
 	autoload_directories:
@@ -17,6 +16,5 @@ parameters:
 		- public
 		- config
 		- bin
-	excludes_analyse:
-		- %rootDir%/../../../tests/Util/DatabaseTestCase.php
-		- %rootDir%/../../../tests/Repository
+	ignoreErrors:
+		- '#^Service "test\.client" is not registered in the container\.$#'
