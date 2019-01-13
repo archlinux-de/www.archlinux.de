@@ -37,7 +37,7 @@ class UpdateCountriesCommand extends Command
         $this->countryRepository = $countryRepository;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:config:update-countries');
     }
@@ -46,7 +46,7 @@ class UpdateCountriesCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $codes = [];
         /** @var Country $country */

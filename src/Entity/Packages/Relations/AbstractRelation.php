@@ -13,6 +13,10 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class AbstractRelation
 {
     /**
+     * @var Package
+     */
+    protected $source;
+    /**
      * @var int
      *
      * @ORM\Column(type="integer")
@@ -20,21 +24,18 @@ abstract class AbstractRelation
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @var string
      *
      * @ORM\Column(type="string")
      */
     private $targetName;
-
     /**
      * @var string|null
      *
      * @ORM\Column(type="string", nullable=true)
      */
     private $targetVersion;
-
     /**
      * @var Package|null
      *
@@ -42,11 +43,6 @@ abstract class AbstractRelation
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $target;
-
-    /**
-     * @var Package
-     */
-    protected $source;
 
     /**
      * @param string $targetName
@@ -78,6 +74,14 @@ abstract class AbstractRelation
     }
 
     /**
+     * @return Package
+     */
+    public function getSource(): Package
+    {
+        return $this->source;
+    }
+
+    /**
      * @param Package $package
      * @return $this
      */
@@ -90,14 +94,6 @@ abstract class AbstractRelation
     /**
      * @return Package
      */
-    public function getSource(): Package
-    {
-        return $this->source;
-    }
-
-    /**
-     * @return Package
-     */
     public function getTarget(): ?Package
     {
         return $this->target;
@@ -105,10 +101,12 @@ abstract class AbstractRelation
 
     /**
      * @param Package|null $target
+     * @return $this
      */
     public function setTarget(?Package $target)
     {
         $this->target = $target;
+        return $this;
     }
 
     /**

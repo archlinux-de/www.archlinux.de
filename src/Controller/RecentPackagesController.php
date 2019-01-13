@@ -63,7 +63,7 @@ class RecentPackagesController extends AbstractController
             $item = $feed->newItem();
             $item->setPublicId($packageUrl);
             $item->setTitle($package->getName() . ' ' . $package->getVersion());
-            $item->setLastModified($package->getBuilddate() ?: new \DateTime());
+            $item->setLastModified($package->getBuildDate() ?: new \DateTime());
             if (!is_null($package->getPackager())) {
                 $author = $item->newAuthor();
                 $author->setName($package->getPackager()->getName() ?: '');

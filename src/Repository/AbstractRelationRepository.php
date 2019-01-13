@@ -17,7 +17,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
         parent::__construct($registry, AbstractRelation::class);
     }
 
-    public function updateTargets()
+    public function updateTargets(): void
     {
         /** @var AbstractRelation $relation */
         foreach ($this->findAll() as $relation) {

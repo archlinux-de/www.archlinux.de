@@ -39,12 +39,16 @@ class UpdateRepositoriesCommand extends Command
         $this->relationRepository = $relationRepository;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:repositories');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
         ini_set('memory_limit', '-1');

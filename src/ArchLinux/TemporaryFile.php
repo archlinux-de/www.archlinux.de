@@ -41,7 +41,7 @@ class TemporaryFile extends \SplFileObject
     /**
      * @param int $mtime
      */
-    public function setMTime(int $mtime)
+    public function setMTime(int $mtime): void
     {
         $filePath = $this->getRealPath();
         if (!$filePath) {
