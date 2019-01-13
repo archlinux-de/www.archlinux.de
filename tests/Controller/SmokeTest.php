@@ -48,7 +48,7 @@ class SmokeTest extends DatabaseTestCase
         $mirror->setIsos(true);
         $entityManager->persist($mirror);
 
-        $newsItem = (new NewsItem(1))
+        $newsItem = (new NewsItem('1'))
             ->setTitle('Big News')
             ->setSlug('1-big-news')
             ->setLink('https://www.archlinux.de/')

@@ -67,12 +67,12 @@ class ValidatePackagesCommand extends Command
         /** @var DatabasePackage $package */
 
         foreach ($this->findMissingPackages() as $repo => $package) {
-            $output->writeln(sprintf('Missing package: %s [%s]', $package, $repo));
+            $output->writeln(sprintf('Missing package: %s [%s]', $package->getName(), $repo));
             $result = 1;
         }
 
         foreach ($this->findObsoletePackages() as $repo => $package) {
-            $output->writeln(sprintf('Obsolete package: %s [%s]', $package, $repo));
+            $output->writeln(sprintf('Obsolete package: %s [%s]', $package->getName(), $repo));
             $result = 1;
         }
 
