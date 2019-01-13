@@ -17,7 +17,7 @@ class NewsAuthor implements \JsonSerializable
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(nullable=true)
      */

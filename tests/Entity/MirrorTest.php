@@ -23,7 +23,7 @@ class MirrorTest extends TestCase
         $mirror->setIpv6(true);
         $mirror->setActive(true);
 
-        $json = json_encode($mirror);
+        $json = (string)json_encode($mirror);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(

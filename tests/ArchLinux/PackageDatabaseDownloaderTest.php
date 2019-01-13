@@ -51,7 +51,7 @@ class PackageDatabaseDownloaderTest extends TestCase
         $this->guzzleClient->method('request')->willReturn(new Response());
         $download = $this->downloader->download('', '');
 
-        $fileName = $download->getRealPath();
+        $fileName = (string)$download->getRealPath();
         $this->assertFileExists($fileName);
 
         unset($download);

@@ -35,7 +35,7 @@ class PackagerTest extends TestCase
     {
         $packager = new Packager('foo', 'foo@localhost');
 
-        $json = json_encode($packager);
+        $json = (string)json_encode($packager);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(

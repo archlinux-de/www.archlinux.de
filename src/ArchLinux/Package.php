@@ -75,11 +75,13 @@ class Package
         $file->setFlags(\SplFileObject::READ_AHEAD | \SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
 
         foreach ($file as $line) {
-            if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
-                $index = substr($line, 1, -1);
-                $data[$index] = array();
-            } else {
-                $data[$index][] = $line;
+            if (is_string($line)) {
+                if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
+                    $index = substr($line, 1, -1);
+                    $data[$index] = array();
+                } else {
+                    $data[$index][] = $line;
+                }
             }
         }
 
