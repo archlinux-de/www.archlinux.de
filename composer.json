@@ -42,6 +42,7 @@
         "ext-libxml": "*",
         "ext-pdo_sqlite": "*",
         "phpstan/phpstan": "^0.10",
+        "phpstan/phpstan-deprecation-rules": "^0.10.2",
         "phpstan/phpstan-doctrine": "^0.10",
         "phpstan/phpstan-phpunit": "^0.10",
         "phpstan/phpstan-symfony": "^0.10",
