@@ -38,7 +38,7 @@ class FilesTest extends TestCase
     {
         $files = Files::createFromArray($filesArray);
 
-        $json = json_encode($files);
+        $json = (string)json_encode($files);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals($filesArray, $jsonArray);

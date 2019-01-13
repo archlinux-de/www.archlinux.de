@@ -15,7 +15,7 @@ class ReleaseFetcherTest extends TestCase
     public function testFetchReleases()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], json_encode([
+            new Response(200, [], (string)json_encode([
                 'version' => 1,
                 'releases' => [
                     [
@@ -88,7 +88,7 @@ class ReleaseFetcherTest extends TestCase
     public function testExceptionOnUnknownVersion()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], json_encode(['version' => 2]))
+            new Response(200, [], (string)json_encode(['version' => 2]))
         ]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
@@ -102,7 +102,7 @@ class ReleaseFetcherTest extends TestCase
     public function testExceptionOnEmptyMirrorList()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], json_encode(['version' => 1, 'releases' => []]))
+            new Response(200, [], (string)json_encode(['version' => 1, 'releases' => []]))
         ]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);

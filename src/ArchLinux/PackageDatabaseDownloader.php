@@ -34,7 +34,7 @@ class PackageDatabaseDownloader
         $url = $this->packageDatabaseMirror->getMirrorUrl()
             . $repository . '/os/' . $architecture . '/' . $repository . self::DB_EXT;
 
-        $tmpFilePrefix = strtolower(preg_replace('/\W+/', '_', $url));
+        $tmpFilePrefix = strtolower((string)preg_replace('/\W+/', '_', $url));
         $tmpFile = new TemporaryFile($tmpFilePrefix);
 
         $response = $this->guzzleClient->request('GET', $url, ['sink' => $tmpFile->getRealPath()]);

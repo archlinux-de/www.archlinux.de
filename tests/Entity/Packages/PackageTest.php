@@ -23,7 +23,7 @@ class PackageTest extends TestCase
         $package->setDescription('foo bar');
         $package->setGroups(['base']);
 
-        $json = json_encode($package);
+        $json = (string)json_encode($package);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(
@@ -112,6 +112,7 @@ class PackageTest extends TestCase
 
         $package->updateFromPackageDatabase($databasePackage);
 
+        $this->assertNotNull($package->getPackager());
         $this->assertEquals('foo', $package->getPackager()->getName());
         $this->assertEquals('foo@localhost', $package->getPackager()->getEmail());
     }

@@ -12,7 +12,7 @@ class CountryTest extends TestCase
         $country = new Country('de');
         $country->setName('Germany');
 
-        $json = json_encode($country);
+        $json = (string)json_encode($country);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(

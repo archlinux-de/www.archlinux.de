@@ -29,14 +29,14 @@ abstract class AbstractRelation
     private $targetName;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(type="string", nullable=true)
      */
     private $targetVersion;
 
     /**
-     * @var Package
+     * @var Package|null
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package")
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -49,10 +49,10 @@ abstract class AbstractRelation
     protected $source;
 
     /**
-     * @param null|string $targetName
-     * @param null|string $targetVersion
+     * @param string $targetName
+     * @param string|null $targetVersion
      */
-    public function __construct(?string $targetName, ?string $targetVersion = null)
+    public function __construct(string $targetName, ?string $targetVersion = null)
     {
         $this->targetName = $targetName;
         $this->targetVersion = $targetVersion;

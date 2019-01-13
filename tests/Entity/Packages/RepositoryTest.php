@@ -19,7 +19,7 @@ class RepositoryTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $repository->setTesting($testing);
 
-        $json = json_encode($repository);
+        $json = (string)json_encode($repository);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(

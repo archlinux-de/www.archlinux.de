@@ -104,14 +104,14 @@ class Package implements \JsonSerializable
     private $md5sum;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
      */
     private $sha256sum;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
      */
@@ -139,7 +139,7 @@ class Package implements \JsonSerializable
     private $architecture;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @ORM\Column(name="buildDate", type="datetime", nullable=true)
      */
@@ -615,9 +615,9 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSha256sum(): string
+    public function getSha256sum(): ?string
     {
         return $this->sha256sum;
     }
@@ -633,9 +633,9 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPgpSignature(): string
+    public function getPgpSignature(): ?string
     {
         return $this->pgpSignature;
     }
