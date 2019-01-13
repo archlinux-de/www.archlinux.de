@@ -33,11 +33,11 @@ class AppExtensionTest extends TestCase
     }
 
     /**
-     * @param string $input
+     * @param int $input
      * @param string $output
      * @dataProvider provideByteFormats
      */
-    public function testFormatBytes(string $input, string $output)
+    public function testFormatBytes(int $input, string $output)
     {
         $appExtension = new AppExtension();
         $this->assertEquals($output, $appExtension->formatBytes($input));
@@ -49,19 +49,12 @@ class AppExtensionTest extends TestCase
     public function provideByteFormats(): array
     {
         return [
-            ['1', '1,00 Byte'],
-            ['1024', '1,00 KByte'],
-            ['1048576', '1,00 MByte'],
-            ['1073741824', '1,00 GByte'],
-            ['-1', '-1,00 Byte']
+            [1, '1,00 Byte'],
+            [1024, '1,00 KByte'],
+            [1048576, '1,00 MByte'],
+            [1073741824, '1,00 GByte'],
+            [-1, '-1,00 Byte']
         ];
-    }
-
-    public function testFormatBytesFailsOnIncorrectInput()
-    {
-        $appExtension = new AppExtension();
-        $this->expectException(\TypeError::class);
-        $appExtension->formatBytes('foo');
     }
 
     public function testUrlPathIsCallable()

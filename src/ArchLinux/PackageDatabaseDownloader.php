@@ -39,7 +39,7 @@ class PackageDatabaseDownloader
 
         $response = $this->guzzleClient->request('GET', $url, ['sink' => $tmpFile->getRealPath()]);
         $mtime = strtotime($response->getHeaderLine('Last-Modified'));
-        $tmpFile->setMTime($mtime);
+        $tmpFile->setMTime((int)$mtime);
 
         return $tmpFile;
     }

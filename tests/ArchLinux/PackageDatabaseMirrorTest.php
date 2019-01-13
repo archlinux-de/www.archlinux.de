@@ -47,7 +47,7 @@ class PackageDatabaseMirrorTest extends TestCase
      */
     public function testHasUpdated(int $oldLastUpdated, int $newLastUpdated)
     {
-        $guzzleMock = new MockHandler([new Response(200, [], $newLastUpdated)]);
+        $guzzleMock = new MockHandler([new Response(200, [], (string)$newLastUpdated)]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
 

@@ -32,8 +32,8 @@ class Package
 
     /**
      * @param string $key
-     * @param string $default
-     * @return null|string
+     * @param string|null $default
+     * @return string|null
      */
     private function readValue(string $key, ?string $default = ''): ?string
     {
@@ -131,7 +131,7 @@ class Package
      */
     public function getCompressedSize(): int
     {
-        return $this->readValue('CSIZE', 0);
+        return (int)$this->readValue('CSIZE', '0');
     }
 
     /**
@@ -139,7 +139,7 @@ class Package
      */
     public function getInstalledSize(): int
     {
-        return $this->readValue('ISIZE', 0);
+        return (int)$this->readValue('ISIZE', '0');
     }
 
     /**
@@ -199,7 +199,7 @@ class Package
         if (is_null($buildTimestamp)) {
             return null;
         }
-        return (new \DateTime())->setTimestamp($buildTimestamp);
+        return (new \DateTime())->setTimestamp((int)$buildTimestamp);
     }
 
     /**
