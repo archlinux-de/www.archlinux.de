@@ -62,7 +62,7 @@ class MirrorController extends AbstractController
 
     /**
      * @param string $file
-     * @param \DateTime|int $lastsync
+     * @param \DateTime $lastsync
      * @param Request $request
      * @return Response
      */
@@ -74,8 +74,7 @@ class MirrorController extends AbstractController
     }
 
     /**
-     * @param \DateTime|int $lastSync
-     *
+     * @param \DateTime $lastSync
      * @param string $clientIp
      * @return Mirror
      */

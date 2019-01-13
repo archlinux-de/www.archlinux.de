@@ -64,7 +64,7 @@ class PackageDetailsController extends AbstractController
     }
 
     /**
-     * @param $relatedPackage
+     * @param Package $relatedPackage
      * @return RedirectResponse
      */
     private function redirectToPackage(Package $relatedPackage): RedirectResponse
