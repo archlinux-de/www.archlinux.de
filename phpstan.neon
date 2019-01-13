@@ -1,5 +1,5 @@
 includes:
-	- vendor/phpstan/phpstan/conf/config.level1.neon
+	- vendor/phpstan/phpstan/conf/config.level5.neon
 	- vendor/phpstan/phpstan-doctrine/extension.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
@@ -17,3 +17,4 @@ parameters:
 		- bin
 	excludes_analyse:
 		- %rootDir%/../../../tests/Util/DatabaseTestCase.php
+		- %rootDir%/../../../tests/Repository

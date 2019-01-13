@@ -33,7 +33,7 @@ class PackageDatabase implements \IteratorAggregate
      */
     private function getDatabaseDirectory(): \FilesystemIterator
     {
-        if (is_null($this->databaseDirectory)) {
+        if (!$this->databaseDirectory instanceof \FilesystemIterator) {
             $this->databaseDirectory = $this->databaseReader->extract();
         }
 
