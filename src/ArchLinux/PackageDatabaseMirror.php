@@ -58,7 +58,7 @@ class PackageDatabaseMirror
         }
     }
 
-    public function updateLastUpdate()
+    public function updateLastUpdate(): void
     {
         $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($this->lastMirrorUpdate);
         $this->cache->save($lastLocalUpdateCache);

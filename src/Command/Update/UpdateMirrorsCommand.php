@@ -40,12 +40,16 @@ class UpdateMirrorsCommand extends Command
         $this->mirrorRepository = $mirrorRepository;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:mirrors');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
 

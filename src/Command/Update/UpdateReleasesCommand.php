@@ -38,12 +38,16 @@ class UpdateReleasesCommand extends Command
         $this->releaseRepository = $releaseRepository;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:releases');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
 

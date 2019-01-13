@@ -31,7 +31,7 @@ class ResetDatabaseCommand extends Command
         $this->entityManager = $entityManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:reset:database')
             ->addOption('packages')
@@ -45,7 +45,7 @@ class ResetDatabaseCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
 
@@ -76,7 +76,7 @@ class ResetDatabaseCommand extends Command
     /**
      * @param array $classNames
      */
-    private function resetDatabase(array $classNames)
+    private function resetDatabase(array $classNames): void
     {
         $tables = [];
         foreach ($classNames as $className) {
@@ -95,7 +95,7 @@ class ResetDatabaseCommand extends Command
         }
 
         foreach ($tables as $table) {
-            $connection->executeUpdate($dbPlatform->getTruncateTableSql($table));
+            $connection->executeUpdate($dbPlatform->getTruncateTableSQL($table));
         }
     }
 }

@@ -40,12 +40,16 @@ class UpdateNewsCommand extends Command
         $this->newsItemRepository = $newsItemRepository;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:news');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
 
