@@ -1,0 +1,19 @@
+includes:
+	- vendor/phpstan/phpstan/conf/config.level1.neon
+	- vendor/phpstan/phpstan-doctrine/extension.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+	- vendor/phpstan/phpstan-symfony/extension.neon
+parameters:
+	symfony:
+		container_xml_path: '%rootDir%/../../../var/cache/dev/srcApp_KernelDevDebugContainer.xml'
+	autoload_directories:
+		- %rootDir%/../../../src/Migrations
+	paths:
+		- src
+		- tests
+		- public
+		- config
+		- bin
+	excludes_analyse:
+		- %rootDir%/../../../tests/Util/DatabaseTestCase.php
