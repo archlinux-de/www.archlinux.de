@@ -215,9 +215,9 @@ class PackagesControllerTest extends DatabaseTestCase
         $responseData = json_decode($client->getResponse()->getContent(), true);
         foreach (['draw', 'recordsTotal', 'recordsFiltered'] as $metaData) {
             $this->assertArrayHasKey($metaData, $responseData);
-            $this->assertInternalType('int', $responseData[$metaData]);
+            $this->assertIsInt($responseData[$metaData]);
         }
         $this->assertArrayHasKey('data', $responseData);
-        $this->assertInternalType('array', $responseData['data']);
+        $this->assertIsArray($responseData['data']);
     }
 }
