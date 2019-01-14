@@ -8,9 +8,9 @@ class Package
     private $packageDir;
     /** @var \SplFileInfo */
     private $descFile;
-    /** @var array */
+    /** @var array|null */
     private $desc;
-    /** @var array */
+    /** @var array|null */
     private $files;
 
     /**
@@ -52,7 +52,7 @@ class Package
      */
     private function readList(string $key, array $default = []): array
     {
-        if (!is_array($this->desc)) {
+        if (is_null($this->desc)) {
             $this->desc = $this->loadInfo($this->descFile);
         }
         if (isset($this->desc[$key])) {
@@ -273,7 +273,7 @@ class Package
      */
     public function getFiles(): array
     {
-        if (!is_array($this->files)) {
+        if (is_null($this->files)) {
             $this->files = $this->loadInfo(
                 new \SplFileInfo($this->packageDir->getPathname() . '/files')
             )['FILES'];

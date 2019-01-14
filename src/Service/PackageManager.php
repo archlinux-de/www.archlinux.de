@@ -49,11 +49,10 @@ class PackageManager
             $repository->getArchitecture()
         );
         if ((
-                $repository->getMTime()
-                && !is_null($repository->getMTime())
+                !is_null($repository->getMTime())
                 && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp()
             )
-            || !$repository->getMTime()
+            || is_null($repository->getMTime())
         ) {
             $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
             /** @TODO Should not persist here */

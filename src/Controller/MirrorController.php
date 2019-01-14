@@ -129,7 +129,7 @@ class MirrorController extends AbstractController
 
         return $this->redirectToMirror(
             $repository . '/os/' . $architecture . '/' . $file,
-            $package->getMTime() ?? new \DateTime(),
+            $package->getMTime() ?? new \DateTime('-1 day'),
             $request
         );
     }
