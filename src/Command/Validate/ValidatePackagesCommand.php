@@ -47,7 +47,7 @@ class ValidatePackagesCommand extends Command
         $this->packageRepository = $packageRepository;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:validate:packages');
     }
@@ -55,9 +55,9 @@ class ValidatePackagesCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|null
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('cron.lock', true);
         ini_set('memory_limit', '-1');
@@ -67,12 +67,12 @@ class ValidatePackagesCommand extends Command
         /** @var DatabasePackage $package */
 
         foreach ($this->findMissingPackages() as $repo => $package) {
-            $output->writeln(sprintf('Missing package: %s [%s]', $package, $repo));
+            $output->writeln(sprintf('Missing package: %s [%s]', $package->getName(), $repo));
             $result = 1;
         }
 
         foreach ($this->findObsoletePackages() as $repo => $package) {
-            $output->writeln(sprintf('Obsolete package: %s [%s]', $package, $repo));
+            $output->writeln(sprintf('Obsolete package: %s [%s]', $package->getName(), $repo));
             $result = 1;
         }
 
@@ -81,6 +81,9 @@ class ValidatePackagesCommand extends Command
         return $result;
     }
 
+    /**
+     * @return iterable
+     */
     private function findMissingPackages(): iterable
     {
         /** @var Repository $repo */

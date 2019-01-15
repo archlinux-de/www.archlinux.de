@@ -6,6 +6,7 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
+use App\Repository\FilesRepository;
 use App\Tests\Util\DatabaseTestCase;
 
 class FilesRepositoryTest extends DatabaseTestCase
@@ -28,6 +29,7 @@ class FilesRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var FilesRepository $filesRepository */
         $filesRepository = $entityManager->getRepository(Files::class);
         $files = $filesRepository->getByPackageName('core', Architecture::X86_64, 'pacman');
         $this->assertEquals($filesArray, iterator_to_array($files));

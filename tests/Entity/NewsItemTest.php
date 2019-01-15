@@ -47,7 +47,7 @@ class NewsItemTest extends TestCase
             ->setLink('https://www.archlinux.de/')
             ->setLastModified($lastModified);
 
-        $json = json_encode($newsItem);
+        $json = (string)json_encode($newsItem);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(

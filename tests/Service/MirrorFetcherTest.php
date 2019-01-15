@@ -18,7 +18,7 @@ class MirrorFetcherTest extends TestCase
     public function testFetchMirrors()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], json_encode([
+            new Response(200, [], (string)json_encode([
                 'version' => 3,
                 'urls' => [
                     [
@@ -53,6 +53,7 @@ class MirrorFetcherTest extends TestCase
         $this->assertCount(1, $mirrors);
         $this->assertEquals('https://127.0.0.1', $mirrors[0]->getUrl());
         $this->assertEquals('https', $mirrors[0]->getProtocol());
+        $this->assertNotNull($mirrors[0]->getCountry());
         $this->assertEquals('DE', $mirrors[0]->getCountry()->getCode());
         $this->assertEquals(new \DateTime('2018-01-01'), $mirrors[0]->getLastSync());
         $this->assertEquals(1, $mirrors[0]->getDelay());
@@ -99,7 +100,7 @@ class MirrorFetcherTest extends TestCase
     public function testExceptionOnUnknownVersion()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], json_encode(['version' => 2]))
+            new Response(200, [], (string)json_encode(['version' => 2]))
         ]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
@@ -116,7 +117,7 @@ class MirrorFetcherTest extends TestCase
     public function testExceptionOnEmptyMirrorList()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], json_encode(['version' => 3, 'urls' => []]))
+            new Response(200, [], (string)json_encode(['version' => 3, 'urls' => []]))
         ]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);

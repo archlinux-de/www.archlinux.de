@@ -9,19 +9,24 @@ class AppExtensionTest extends TestCase
 {
     public function testFormatBytesIsCallable()
     {
-        $result = call_user_func(
-            $this->getFilterCallableFromExtension(new AppExtension(), 'format_bytes'),
-            '1'
-        );
-        $this->assertEquals('1,00 Byte', $result);
+        $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'format_bytes');
+        if (is_callable($callable)) {
+            $result = call_user_func(
+                $callable,
+                '1'
+            );
+            $this->assertEquals('1,00 Byte', $result);
+        } else {
+            $this->fail('Filter has no callable');
+        }
     }
 
     /**
      * @param \Twig_Extension $extension
      * @param string $filterName
-     * @return callable
+     * @return callable|null
      */
-    private function getFilterCallableFromExtension(\Twig_Extension $extension, string $filterName): callable
+    private function getFilterCallableFromExtension(\Twig_Extension $extension, string $filterName): ?callable
     {
         /** @var \Twig_Filter $filter */
         foreach ($extension->getFilters() as $filter) {
@@ -33,11 +38,11 @@ class AppExtensionTest extends TestCase
     }
 
     /**
-     * @param string $input
+     * @param int $input
      * @param string $output
      * @dataProvider provideByteFormats
      */
-    public function testFormatBytes(string $input, string $output)
+    public function testFormatBytes(int $input, string $output)
     {
         $appExtension = new AppExtension();
         $this->assertEquals($output, $appExtension->formatBytes($input));
@@ -49,28 +54,26 @@ class AppExtensionTest extends TestCase
     public function provideByteFormats(): array
     {
         return [
-            ['1', '1,00 Byte'],
-            ['1024', '1,00 KByte'],
-            ['1048576', '1,00 MByte'],
-            ['1073741824', '1,00 GByte'],
-            ['-1', '-1,00 Byte']
+            [1, '1,00 Byte'],
+            [1024, '1,00 KByte'],
+            [1048576, '1,00 MByte'],
+            [1073741824, '1,00 GByte'],
+            [-1, '-1,00 Byte']
         ];
-    }
-
-    public function testFormatBytesFailsOnIncorrectInput()
-    {
-        $appExtension = new AppExtension();
-        $this->expectException(\TypeError::class);
-        $appExtension->formatBytes('foo');
     }
 
     public function testUrlPathIsCallable()
     {
-        $result = call_user_func(
-            $this->getFilterCallableFromExtension(new AppExtension(), 'url_path'),
-            'https://www.archlinux.de/packages'
-        );
-        $this->assertEquals('/packages', $result);
+        $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'url_path');
+        if (is_callable($callable)) {
+            $result = call_user_func(
+                $callable,
+                'https://www.archlinux.de/packages'
+            );
+            $this->assertEquals('/packages', $result);
+        } else {
+            $this->fail('Filter has no callable');
+        }
     }
 
     public function testUrlPath()
@@ -82,11 +85,16 @@ class AppExtensionTest extends TestCase
 
     public function testUrlHostIsCallable()
     {
-        $result = call_user_func(
-            $this->getFilterCallableFromExtension(new AppExtension(), 'url_host'),
-            'https://www.archlinux.de/packages'
-        );
-        $this->assertEquals('www.archlinux.de', $result);
+        $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'url_host');
+        if (is_callable($callable)) {
+            $result = call_user_func(
+                $callable,
+                'https://www.archlinux.de/packages'
+            );
+            $this->assertEquals('www.archlinux.de', $result);
+        } else {
+            $this->fail('Filter has no callable');
+        }
     }
 
     public function testUrlHost()

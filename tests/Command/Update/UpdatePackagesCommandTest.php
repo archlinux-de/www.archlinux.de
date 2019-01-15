@@ -55,7 +55,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
             ->expects($this->once())
             ->method('downloadPackagesForRepository')
             ->with($repository)
-            ->willReturn($this->createGenerator([$package], true));
+            ->willReturn($this->createGenerator([$package]));
         $packageManager
             ->expects($this->once())
             ->method('updatePackage')
@@ -92,14 +92,13 @@ class UpdatePackagesCommandTest extends KernelTestCase
 
     /**
      * @param iterable $iterable
-     * @param $return
      * @return \Generator
      */
-    private function createGenerator(iterable $iterable, $return): \Generator
+    private function createGenerator(iterable $iterable): \Generator
     {
         foreach ($iterable as $item) {
             yield $item;
         }
-        return $return;
+        return true;
     }
 }

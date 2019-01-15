@@ -6,7 +6,7 @@ class PackageDatabase implements \IteratorAggregate
 {
     /** @var PackageDatabaseReader */
     private $databaseReader;
-    /** @var \FilesystemIterator */
+    /** @var \FilesystemIterator|null */
     private $databaseDirectory;
 
     /**

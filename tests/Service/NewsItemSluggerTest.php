@@ -35,7 +35,7 @@ class NewsItemSluggerTest extends TestCase
 
     public function testLimitSlugLength()
     {
-        $newsItem = new NewsItem(1);
+        $newsItem = new NewsItem('1');
         $newsItem->setTitle('');
 
         /** @var Slugger|MockObject $slugger */

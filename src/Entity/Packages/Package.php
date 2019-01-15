@@ -117,7 +117,7 @@ class Package implements \JsonSerializable
     private $md5sum;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Regex("/^[0-9a-f]{64}$/")
      *
      * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
@@ -125,7 +125,7 @@ class Package implements \JsonSerializable
     private $sha256sum;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(min="50", max="2048")
      *
      * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
@@ -159,7 +159,7 @@ class Package implements \JsonSerializable
     private $architecture;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @ORM\Column(name="buildDate", type="datetime", nullable=true)
      */
@@ -247,7 +247,6 @@ class Package implements \JsonSerializable
 
     /**
      * @var Collection
-     * @Assert\Valid()
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\MakeDependency",
@@ -644,9 +643,9 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSha256sum(): string
+    public function getSha256sum(): ?string
     {
         return $this->sha256sum;
     }
@@ -662,9 +661,9 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPgpSignature(): string
+    public function getPgpSignature(): ?string
     {
         return $this->pgpSignature;
     }

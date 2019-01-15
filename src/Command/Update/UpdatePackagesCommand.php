@@ -62,12 +62,16 @@ class UpdatePackagesCommand extends Command
         $this->validator = $validator;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:packages');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
         ini_set('memory_limit', '-1');
@@ -83,7 +87,7 @@ class UpdatePackagesCommand extends Command
                 foreach ($packageRepositoryGenerator as $package) {
                     $errors = $this->validator->validate($package);
                     if ($errors->count() > 0) {
-                        throw new \RuntimeException((string)$errors);
+                        throw new \RuntimeException((string)json_encode($errors));
                     }
 
                     $allPackageNames[] = $package->getName();

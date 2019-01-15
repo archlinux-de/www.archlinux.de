@@ -49,7 +49,7 @@ class ReleaseTest extends TestCase
         $release->setAvailable(true);
         $release->setKernelVersion('3.11');
 
-        $json = json_encode($release);
+        $json = (string)json_encode($release);
         $this->assertJson($json);
         $jsonArray = json_decode($json, true);
         $this->assertEquals(

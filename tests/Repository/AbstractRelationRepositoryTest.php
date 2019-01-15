@@ -8,6 +8,8 @@ use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Repository;
+use App\Repository\AbstractRelationRepository;
+use App\Repository\PackageRepository;
 use App\Tests\Util\DatabaseTestCase;
 
 class AbstractRelationRepositoryTest extends DatabaseTestCase
@@ -35,11 +37,14 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibc);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->find($pacman->getId());
         /** @var Package $databaseGlibc */
@@ -71,11 +76,14 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibc);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->find($pacman->getId());
         /** @var Package $databaseGlibc */
@@ -117,11 +125,14 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($testingGlibc);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->find($pacman->getId());
         /** @var Package $databaseGlibc */
@@ -161,11 +172,14 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibcNg);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->find($pacman->getId());
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
@@ -206,11 +220,14 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibcNg64);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->find($pacman->getId());
         /** @var Package $databaseGlibc */
@@ -241,14 +258,17 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibc);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
-        $dependencies = $entityManager->getRepository(AbstractRelation::class)->findWithTargets();
+        $dependencies = $abstractRelationRepository->findWithTargets();
 
         $this->assertCount(1, $dependencies);
+        $this->assertNotNull($dependencies[0]->getTarget());
         $this->assertEquals($glibc->getId(), $dependencies[0]->getTarget()->getId());
     }
 }

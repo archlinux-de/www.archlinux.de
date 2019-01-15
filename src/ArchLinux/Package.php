@@ -8,9 +8,9 @@ class Package
     private $packageDir;
     /** @var \SplFileInfo */
     private $descFile;
-    /** @var array */
+    /** @var array|null */
     private $desc;
-    /** @var array */
+    /** @var array|null */
     private $files;
 
     /**
@@ -33,9 +33,9 @@ class Package
     /**
      * @param string $key
      * @param string $default
-     * @return null|string
+     * @return string
      */
-    private function readValue(string $key, ?string $default = ''): ?string
+    private function readValue(string $key, string $default = ''): string
     {
         $list = $this->readList($key);
         if (isset($list[0])) {
@@ -48,9 +48,9 @@ class Package
     /**
      * @param string $key
      * @param array $default
-     * @return array|null
+     * @return array
      */
-    private function readList(string $key, ?array $default = []): ?array
+    private function readList(string $key, array $default = []): array
     {
         if (is_null($this->desc)) {
             $this->desc = $this->loadInfo($this->descFile);
@@ -75,11 +75,13 @@ class Package
         $file->setFlags(\SplFileObject::READ_AHEAD | \SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
 
         foreach ($file as $line) {
-            if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
-                $index = substr($line, 1, -1);
-                $data[$index] = array();
-            } else {
-                $data[$index][] = $line;
+            if (is_string($line)) {
+                if (substr($line, 0, 1) == '%' && substr($line, -1) == '%') {
+                    $index = substr($line, 1, -1);
+                    $data[$index] = array();
+                } else {
+                    $data[$index][] = $line;
+                }
             }
         }
 
@@ -131,7 +133,7 @@ class Package
      */
     public function getCompressedSize(): int
     {
-        return $this->readValue('CSIZE', 0);
+        return (int)$this->readValue('CSIZE', '0');
     }
 
     /**
@@ -139,7 +141,7 @@ class Package
      */
     public function getInstalledSize(): int
     {
-        return $this->readValue('ISIZE', 0);
+        return (int)$this->readValue('ISIZE', '0');
     }
 
     /**
@@ -155,7 +157,7 @@ class Package
      */
     public function getSha256sum(): ?string
     {
-        return $this->readValue('SHA256SUM', null);
+        return $this->readValue('SHA256SUM') ?: null;
     }
 
     /**
@@ -163,7 +165,7 @@ class Package
      */
     public function getPgpSignature(): ?string
     {
-        return $this->readValue('PGPSIG', null);
+        return $this->readValue('PGPSIG') ?: null;
     }
 
     /**
@@ -195,11 +197,11 @@ class Package
      */
     public function getBuildDate(): ?\DateTime
     {
-        $buildTimestamp = $this->readValue('BUILDDATE', null);
+        $buildTimestamp = $this->readValue('BUILDDATE') ?: null;
         if (is_null($buildTimestamp)) {
             return null;
         }
-        return (new \DateTime())->setTimestamp($buildTimestamp);
+        return (new \DateTime())->setTimestamp((int)$buildTimestamp);
     }
 
     /**

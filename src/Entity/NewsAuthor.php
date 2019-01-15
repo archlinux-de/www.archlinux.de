@@ -20,7 +20,7 @@ class NewsAuthor implements \JsonSerializable
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)

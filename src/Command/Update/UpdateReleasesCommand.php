@@ -44,12 +44,16 @@ class UpdateReleasesCommand extends Command
         $this->validator = $validator;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:releases');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
 
@@ -58,7 +62,7 @@ class UpdateReleasesCommand extends Command
         foreach ($this->releaseFetcher as $release) {
             $errors = $this->validator->validate($release);
             if ($errors->count() > 0) {
-                throw new \RuntimeException((string)$errors);
+                throw new \RuntimeException((string)json_encode($errors));
             }
 
             $this->entityManager->merge($release);

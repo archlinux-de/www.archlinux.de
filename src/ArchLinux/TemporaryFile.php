@@ -14,7 +14,11 @@ class TemporaryFile extends \SplFileObject
      */
     public function __construct(string $prefix)
     {
-        $this->fileName = tempnam(sys_get_temp_dir(), $prefix);
+        $fileName = tempnam(sys_get_temp_dir(), $prefix);
+        if (!$fileName) {
+            throw new \RuntimeException(sprintf('Could not create temporyry file "%s".', $prefix));
+        }
+        $this->fileName = $fileName;
         parent::__construct($this->fileName);
         $this->mTime = parent::getMTime();
     }
@@ -37,9 +41,13 @@ class TemporaryFile extends \SplFileObject
     /**
      * @param int $mtime
      */
-    public function setMTime(int $mtime)
+    public function setMTime(int $mtime): void
     {
-        touch($this->getRealPath(), $mtime);
+        $filePath = $this->getRealPath();
+        if (!$filePath) {
+            throw new \RuntimeException(sprintf('Could not find file "%s".', $filePath));
+        }
+        touch($filePath, $mtime);
         $this->mTime = $mtime;
     }
 }

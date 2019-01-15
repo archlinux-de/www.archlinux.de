@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
+use Exercise\HTMLPurifierBundle\HTMLPurifiersRegistryInterface;
 use FeedIo\Factory;
 use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -27,12 +28,14 @@ class RecentNewsController extends AbstractController
      * @param string $_format
      * @param NewsItemRepository $newsItemRepository
      * @param Packages $assetPackages
+     * @param HTMLPurifiersRegistryInterface $purifiersRegistry
      * @return Response
      */
     public function indexAction(
         string $_format,
         NewsItemRepository $newsItemRepository,
-        Packages $assetPackages
+        Packages $assetPackages,
+        HTMLPurifiersRegistryInterface $purifiersRegistry
     ): Response {
         /** @var NewsItem[] $news */
         $news = $newsItemRepository->findLatest(25);
@@ -63,7 +66,7 @@ class RecentNewsController extends AbstractController
             $author->setUri($newsItem->getAuthor()->getUri());
             $item->setAuthor($author);
             $item->setLink($newsItem->getLink());
-            $item->setDescription($newsItem->getDescription());
+            $item->setDescription($purifiersRegistry->get('news')->purify($newsItem->getDescription()));
 
             $feed->add($item);
         }

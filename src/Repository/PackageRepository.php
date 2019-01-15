@@ -19,10 +19,10 @@ class PackageRepository extends ServiceEntityRepository
 
     /**
      * @param Repository $repository
-     * @param $name
+     * @param string $name
      * @return Package|null
      */
-    public function findByRepositoryAndName(Repository $repository, $name): ?Package
+    public function findByRepositoryAndName(Repository $repository, string $name): ?Package
     {
         return $this
             ->createQueryBuilder('package')
@@ -172,7 +172,7 @@ class PackageRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getByRepositoryArchitectureAndName(string $architecture, string $name): ?Package
+    public function getByRepositoryArchitectureAndName(string $architecture, string $name): Package
     {
         return $this
             ->createQueryBuilder('package')
@@ -199,10 +199,10 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $repository
+     * @param Repository $repository
      * @return array
      */
-    public function findByRepository($repository): array
+    public function findByRepository(Repository $repository): array
     {
         return $this
             ->createQueryBuilder('package')

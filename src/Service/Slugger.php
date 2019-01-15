@@ -11,7 +11,7 @@ class Slugger
     public function slugify(string $input): string
     {
         return trim(
-            preg_replace(
+            (string)preg_replace(
                 ['/[^a-z0-9_\-\.]+/', '/\-+/'],
                 '-',
                 $this->translit(

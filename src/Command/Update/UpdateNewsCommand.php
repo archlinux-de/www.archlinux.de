@@ -47,12 +47,16 @@ class UpdateNewsCommand extends Command
         $this->validator = $validator;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:update:news');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->lock('cron.lock', true);
 
@@ -62,7 +66,7 @@ class UpdateNewsCommand extends Command
         foreach ($this->newsItemFetcher as $newsItem) {
             $errors = $this->validator->validate($newsItem);
             if ($errors->count() > 0) {
-                throw new \RuntimeException((string)$errors);
+                throw new \RuntimeException((string)json_encode($errors));
             }
 
             $this->entityManager->merge($newsItem);

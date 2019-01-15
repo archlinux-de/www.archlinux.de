@@ -62,20 +62,19 @@ class MirrorController extends AbstractController
 
     /**
      * @param string $file
-     * @param \DateTime|int $lastsync
+     * @param \DateTime $lastsync
      * @param Request $request
      * @return Response
      */
     private function redirectToMirror(string $file, \DateTime $lastsync, Request $request): Response
     {
         return $this->redirect(
-            $this->getMirror($lastsync, $request->getClientIp())->getUrl() . $file
+            $this->getMirror($lastsync, $request->getClientIp() ?? '')->getUrl() . $file
         );
     }
 
     /**
-     * @param \DateTime|int $lastSync
-     *
+     * @param \DateTime $lastSync
      * @param string $clientIp
      * @return Mirror
      */
@@ -92,7 +91,11 @@ class MirrorController extends AbstractController
         }
 
         srand(crc32($clientIp));
-        return $mirrors[array_rand($mirrors, 1)];
+        $randomMirrorIndex = array_rand($mirrors, 1);
+        if (is_array($randomMirrorIndex)) {
+            $randomMirrorIndex = 0;
+        }
+        return $mirrors[$randomMirrorIndex];
     }
 
     /**
@@ -126,7 +129,7 @@ class MirrorController extends AbstractController
 
         return $this->redirectToMirror(
             $repository . '/os/' . $architecture . '/' . $file,
-            $package->getMTime(),
+            $package->getMTime() ?? new \DateTime('-1 day'),
             $request
         );
     }

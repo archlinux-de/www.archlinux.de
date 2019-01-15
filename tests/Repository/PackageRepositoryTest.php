@@ -7,6 +7,8 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Repository;
+use App\Repository\AbstractRelationRepository;
+use App\Repository\PackageRepository;
 use App\Tests\Util\DatabaseTestCase;
 
 class PackageRepositoryTest extends DatabaseTestCase
@@ -34,11 +36,14 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibc);
         $entityManager->flush();
 
-        $entityManager->getRepository(AbstractRelation::class)->updateTargets();
+        /** @var AbstractRelationRepository $abstractRelationRepository */
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $inverseRelations = $packageRepository->findByInverseRelationType($glibc, Dependency::class);
         $this->assertCount(1, $inverseRelations);
@@ -61,6 +66,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->findByRepositoryAndName($coreRepository, $pacman->getName());
         $this->assertEquals($pacman->getId(), $databasePacman->getId());
@@ -91,6 +97,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $mtime = $packageRepository->getMaxMTimeByRepository($coreRepository);
         $this->assertEquals($newMtime, $mtime);
@@ -121,6 +128,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $packages = $packageRepository->findByRepositoryOlderThan($coreRepository, $oldMtime);
         $this->assertCount(1, $packages);
@@ -152,10 +160,11 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $packages = $packageRepository->findLatestByArchitecture(Architecture::X86_64, 1);
         $this->assertCount(1, $packages);
-        $this->assertEquals($pacman->getId(), array_shift($packages)->getId());
+        $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
 
     public function testFindStableByArchitecture()
@@ -183,10 +192,11 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $packages = $packageRepository->findStableByArchitecture(Architecture::X86_64);
         $this->assertCount(1, $packages);
-        $this->assertEquals($pacman->getId(), array_shift($packages)->getId());
+        $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
 
     /**
@@ -218,6 +228,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $matches = $packageRepository->findByTerm($term, $limit);
         $this->assertCount($matchCount, $matches);
@@ -261,6 +272,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $package = $packageRepository->getByName('core', Architecture::X86_64, 'pacman');
         $this->assertEquals($pacman->getId(), $package->getId());
@@ -290,6 +302,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $this->assertEquals(2, $packageRepository->getSize());
     }
@@ -310,6 +323,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $packages = $packageRepository->findByRepository($coreRepository);
         $this->assertCount(1, $packages);
@@ -332,6 +346,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
+        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $package = $packageRepository->getByRepositoryArchitectureAndName(
             $coreRepository->getArchitecture(),

@@ -36,7 +36,7 @@ abstract class AbstractRelation
     private $targetName;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_]{1,255}$/")
      *
      * @ORM\Column(type="string", nullable=true)
@@ -44,7 +44,7 @@ abstract class AbstractRelation
     private $targetVersion;
 
     /**
-     * @var Package
+     * @var Package|null
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package")
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -52,10 +52,10 @@ abstract class AbstractRelation
     private $target;
 
     /**
-     * @param null|string $targetName
-     * @param null|string $targetVersion
+     * @param string $targetName
+     * @param string|null $targetVersion
      */
-    public function __construct(?string $targetName, ?string $targetVersion = null)
+    public function __construct(string $targetName, ?string $targetVersion = null)
     {
         $this->targetName = $targetName;
         $this->targetVersion = $targetVersion;
@@ -108,10 +108,12 @@ abstract class AbstractRelation
 
     /**
      * @param Package|null $target
+     * @return $this
      */
     public function setTarget(?Package $target)
     {
         $this->target = $target;
+        return $this;
     }
 
     /**

@@ -4,13 +4,16 @@ namespace App\Twig;
 
 class AppExtension extends \Twig_Extension
 {
-    public function getFilters()
+    /**
+     * @return array
+     */
+    public function getFilters(): array
     {
-        return array(
-            new \Twig_Filter('format_bytes', array($this, 'formatBytes')),
-            new \Twig_Filter('url_path', array($this, 'urlPath')),
-            new \Twig_Filter('url_host', array($this, 'urlHost')),
-        );
+        return [
+            new \Twig_Filter('format_bytes', [$this, 'formatBytes']),
+            new \Twig_Filter('url_path', [$this, 'urlPath']),
+            new \Twig_Filter('url_host', [$this, 'urlHost']),
+        ];
     }
 
     /**

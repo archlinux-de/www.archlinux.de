@@ -26,12 +26,17 @@ class TestUpdatePackagesCommand extends Command
         $this->guzzleClient = $guzzleClient;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:dev:test-update-packages');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $clearCache = new Process(['bin/console', 'cache:clear']);
         $clearCache->mustRun();
