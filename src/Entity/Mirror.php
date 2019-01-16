@@ -26,7 +26,7 @@ class Mirror implements \JsonSerializable
     private $protocol;
 
     /**
-     * @var Country
+     * @var Country|null
      *
      * @ORM\ManyToOne(targetEntity="Country",fetch="EAGER")
      * @ORM\JoinColumn(referencedColumnName="code", nullable=true)
@@ -34,70 +34,70 @@ class Mirror implements \JsonSerializable
     private $country;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $lastSync;
 
     /**
-     * @var integer
+     * @var integer|null
      *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $delay;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
      */
     private $durationAvg;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
      */
     private $score;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
      */
     private $completionPct;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(type="float", nullable=true)
      */
     private $durationStddev;
 
     /**
-     * @var bool
+     * @var bool|null
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $isos;
 
     /**
-     * @var bool
+     * @var bool|null
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $ipv4;
 
     /**
-     * @var bool
+     * @var bool|null
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $ipv6;
 
     /**
-     * @var bool
+     * @var bool|null
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
@@ -152,7 +152,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return Country
+     * @return Country|null
      */
     public function getCountry(): ?Country
     {
@@ -160,7 +160,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param Country $country
+     * @param Country|null $country
      * @return Mirror
      */
     public function setCountry(?Country $country): Mirror
@@ -170,7 +170,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getDurationAvg(): ?float
     {
@@ -178,7 +178,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param float $durationAvg
+     * @param float|null $durationAvg
      * @return Mirror
      */
     public function setDurationAvg(?float $durationAvg): Mirror
@@ -188,7 +188,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getDelay(): ?int
     {
@@ -196,7 +196,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param int $delay
+     * @param int|null $delay
      * @return Mirror
      */
     public function setDelay(?int $delay): Mirror
@@ -206,7 +206,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getDurationStddev(): ?float
     {
@@ -214,7 +214,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param float $durationStddev
+     * @param float|null $durationStddev
      * @return Mirror
      */
     public function setDurationStddev(?float $durationStddev): Mirror
@@ -224,7 +224,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getCompletionPct(): ?float
     {
@@ -232,7 +232,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param float $completionPct
+     * @param float|null $completionPct
      * @return Mirror
      */
     public function setCompletionPct(?float $completionPct): Mirror
@@ -242,7 +242,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getScore(): ?float
     {
@@ -250,7 +250,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param float $score
+     * @param float|null $score
      * @return Mirror
      */
     public function setScore(?float $score): Mirror
@@ -260,7 +260,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getLastSync(): ?\DateTime
     {
@@ -268,7 +268,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param \DateTime $lastSync
+     * @param \DateTime|null $lastSync
      * @return Mirror
      */
     public function setLastSync(?\DateTime $lastSync): Mirror
@@ -278,7 +278,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function hasIsos(): ?bool
     {
@@ -286,7 +286,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function hasIpv4(): ?bool
     {
@@ -294,7 +294,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function hasIpv6(): ?bool
     {
@@ -302,7 +302,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function isActive(): ?bool
     {
@@ -310,7 +310,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param bool $active
+     * @param bool|null $active
      * @return Mirror
      */
     public function setActive(?bool $active): Mirror
@@ -320,7 +320,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param bool $isos
+     * @param bool|null $isos
      * @return Mirror
      */
     public function setIsos(?bool $isos): Mirror
@@ -330,7 +330,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param bool $ipv4
+     * @param bool|null $ipv4
      * @return Mirror
      */
     public function setIpv4(?bool $ipv4): Mirror
@@ -340,7 +340,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param bool $ipv6
+     * @param bool|null $ipv6
      * @return Mirror
      */
     public function setIpv6(?bool $ipv6): Mirror

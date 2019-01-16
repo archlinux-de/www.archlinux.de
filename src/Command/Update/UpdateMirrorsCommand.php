@@ -49,7 +49,7 @@ class UpdateMirrorsCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->lock('cron.lock', true);
 

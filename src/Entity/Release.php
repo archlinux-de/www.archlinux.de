@@ -40,7 +40,7 @@ class Release implements \JsonSerializable
     private $isoUrl;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(length=32, nullable=true)
      */
@@ -54,7 +54,7 @@ class Release implements \JsonSerializable
     private $created;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(nullable=true)
      */
@@ -68,7 +68,7 @@ class Release implements \JsonSerializable
     private $releaseDate;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(length=40, nullable=true)
      */
@@ -126,7 +126,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMd5Sum(): ?string
     {
@@ -134,7 +134,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @param string $md5Sum
+     * @param string|null $md5Sum
      * @return Release
      */
     public function setMd5Sum(?string $md5Sum): Release
@@ -162,7 +162,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSha1Sum(): ?string
     {
@@ -170,7 +170,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @param string $sha1Sum
+     * @param string|null $sha1Sum
      * @return Release
      */
     public function setSha1Sum(?string $sha1Sum): Release
@@ -219,7 +219,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKernelVersion(): ?string
     {
@@ -227,7 +227,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @param string $kernelVersion
+     * @param string|null $kernelVersion
      * @return Release
      */
     public function setKernelVersion(?string $kernelVersion): Release
