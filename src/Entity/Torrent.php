@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Torrent
 {
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true, length=191)
@@ -19,7 +19,7 @@ class Torrent
     private $url;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(type="text", nullable=true)
@@ -27,7 +27,7 @@ class Torrent
     private $comment;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Regex("/^[0-9a-f]{40}$/")
      *
      * @ORM\Column(nullable=true)
@@ -35,7 +35,7 @@ class Torrent
     private $infoHash;
 
     /**
-     * @var integer
+     * @var integer|null
      * @Assert\Range(min="1", max="10485760")
      *
      * @ORM\Column(type="integer", nullable=true)
@@ -43,7 +43,7 @@ class Torrent
     private $pieceLength;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
@@ -51,7 +51,7 @@ class Torrent
     private $fileName;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
@@ -59,7 +59,7 @@ class Torrent
     private $announce;
 
     /**
-     * @var integer
+     * @var integer|null
      * @Assert\Range(min="1", max="4294967296")
      *
      * @ORM\Column(type="bigint", nullable=true)
@@ -67,7 +67,7 @@ class Torrent
     private $fileLength;
 
     /**
-     * @var integer
+     * @var integer|null
      * @Assert\Range(min="1", max="81920")
      *
      * @ORM\Column(type="smallint", nullable=true)
@@ -75,7 +75,7 @@ class Torrent
     private $pieceCount;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
@@ -83,14 +83,14 @@ class Torrent
     private $createdBy;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $creationDate;
 
     /**
-     * @var string
+     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
@@ -98,7 +98,7 @@ class Torrent
     private $magnetUri;
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUrl(): ?string
     {
@@ -106,7 +106,7 @@ class Torrent
     }
 
     /**
-     * @param string $url
+     * @param string|null $url
      * @return Torrent
      */
     public function setUrl(?string $url): Torrent
@@ -116,7 +116,7 @@ class Torrent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getComment(): ?string
     {
@@ -124,7 +124,7 @@ class Torrent
     }
 
     /**
-     * @param string $comment
+     * @param string|null $comment
      * @return Torrent
      */
     public function setComment(?string $comment): Torrent
@@ -134,7 +134,7 @@ class Torrent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getInfoHash(): ?string
     {
@@ -142,7 +142,7 @@ class Torrent
     }
 
     /**
-     * @param string $infoHash
+     * @param string|null $infoHash
      * @return Torrent
      */
     public function setInfoHash(?string $infoHash): Torrent
@@ -152,7 +152,7 @@ class Torrent
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getPieceLength(): ?int
     {
@@ -160,7 +160,7 @@ class Torrent
     }
 
     /**
-     * @param int $pieceLength
+     * @param int|null $pieceLength
      * @return Torrent
      */
     public function setPieceLength(?int $pieceLength): Torrent
@@ -170,7 +170,7 @@ class Torrent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFileName(): ?string
     {
@@ -178,7 +178,7 @@ class Torrent
     }
 
     /**
-     * @param string $fileName
+     * @param string|null $fileName
      * @return Torrent
      */
     public function setFileName(?string $fileName): Torrent
@@ -188,7 +188,7 @@ class Torrent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAnnounce(): ?string
     {
@@ -196,7 +196,7 @@ class Torrent
     }
 
     /**
-     * @param string $announce
+     * @param string|null $announce
      * @return Torrent
      */
     public function setAnnounce(?string $announce): Torrent
@@ -206,7 +206,7 @@ class Torrent
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getFileLength(): ?int
     {
@@ -214,7 +214,7 @@ class Torrent
     }
 
     /**
-     * @param int $fileLength
+     * @param int|null $fileLength
      * @return Torrent
      */
     public function setFileLength(?int $fileLength): Torrent
@@ -224,7 +224,7 @@ class Torrent
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getPieceCount(): ?int
     {
@@ -232,7 +232,7 @@ class Torrent
     }
 
     /**
-     * @param int $pieceCount
+     * @param int|null $pieceCount
      * @return Torrent
      */
     public function setPieceCount(?int $pieceCount): Torrent
@@ -242,7 +242,7 @@ class Torrent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCreatedBy(): ?string
     {
@@ -250,7 +250,7 @@ class Torrent
     }
 
     /**
-     * @param string $createdBy
+     * @param string|null $createdBy
      * @return Torrent
      */
     public function setCreatedBy(?string $createdBy): Torrent
@@ -260,7 +260,7 @@ class Torrent
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getCreationDate(): ?\DateTime
     {
@@ -268,7 +268,7 @@ class Torrent
     }
 
     /**
-     * @param \DateTime $creationDate
+     * @param \DateTime|null $creationDate
      * @return Torrent
      */
     public function setCreationDate(?\DateTime $creationDate): Torrent
@@ -278,7 +278,7 @@ class Torrent
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMagnetUri(): ?string
     {
@@ -286,7 +286,7 @@ class Torrent
     }
 
     /**
-     * @param string $magnetUri
+     * @param string|null $magnetUri
      * @return Torrent
      */
     public function setMagnetUri(?string $magnetUri): Torrent
