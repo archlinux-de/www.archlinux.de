@@ -19,7 +19,10 @@ class NewsItemFetcherTest extends TestCase
     public function testFetchNewsItems()
     {
         $guzzleMock = new MockHandler([
-            new Response(200, [], '<?xml version="1.0" encoding="utf-8"?>
+            new Response(
+                200,
+                [],
+                '<?xml version="1.0" encoding="utf-8"?>
                 <feed xmlns="http://www.w3.org/2005/Atom">
                     <entry>
                         <title type="html"><![CDATA[Test Title]]></title>
@@ -32,8 +35,8 @@ class NewsItemFetcherTest extends TestCase
                         <updated>2018-02-22T19:06:26Z</updated>
                         <id>https://127.0.0.1/news/1</id>
                     </entry>
-                </feed>
-                ')
+                </feed>'
+            )
         ]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);
@@ -81,6 +84,32 @@ class NewsItemFetcherTest extends TestCase
     {
         $guzzleMock = new MockHandler([
             new Response(200, [], 'foo')
+        ]);
+        $guzzleHhandler = HandlerStack::create($guzzleMock);
+        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+
+        /** @var NewsItemSlugger|MockObject $slugger */
+        $slugger = $this->createMock(NewsItemSlugger::class);
+        $slugger->expects($this->never())->method('slugify');
+
+        $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
+        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
+
+        $this->expectException(\RuntimeException::class);
+        iterator_to_array($newsItemFetcher);
+    }
+
+    public function testExceptionOnIncompleteResponse()
+    {
+        $guzzleMock = new MockHandler([
+            new Response(
+                200,
+                [],
+                '<?xml version="1.0" encoding="utf-8"?>
+                <feed xmlns="http://www.w3.org/2005/Atom">
+                    <entry></entry>
+                </feed>'
+            )
         ]);
         $guzzleHhandler = HandlerStack::create($guzzleMock);
         $guzzleClient = new Client(['handler' => $guzzleHhandler]);

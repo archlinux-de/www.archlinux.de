@@ -93,7 +93,9 @@ class MirrorController extends AbstractController
         srand(crc32($clientIp));
         $randomMirrorIndex = array_rand($mirrors, 1);
         if (is_array($randomMirrorIndex)) {
+            // @codeCoverageIgnoreStart
             $randomMirrorIndex = 0;
+            // @codeCoverageIgnoreEnd
         }
         return $mirrors[$randomMirrorIndex];
     }
