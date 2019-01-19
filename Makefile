@@ -111,4 +111,5 @@ deploy:
 	bin/console cache:warmup
 	bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 	bin/console app:config:update-countries
+	bin/console app:update:repositories
 	chmod o+x .
