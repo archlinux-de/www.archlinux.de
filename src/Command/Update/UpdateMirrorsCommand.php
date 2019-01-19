@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Command\Exception\ValidationException;
 use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\Service\MirrorFetcher;
@@ -65,7 +66,7 @@ class UpdateMirrorsCommand extends Command
         foreach ($this->mirrorFetcher as $mirror) {
             $errors = $this->validator->validate($mirror);
             if ($errors->count() > 0) {
-                throw new \RuntimeException((string)json_encode($errors));
+                throw new ValidationException($errors);
             }
 
             $this->entityManager->merge($mirror);

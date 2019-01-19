@@ -4,6 +4,7 @@ namespace App\Command\Update;
 
 use App\ArchLinux\Package as DatabasePackage;
 use App\ArchLinux\PackageDatabaseMirror;
+use App\Command\Exception\ValidationException;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\RepositoryRepository;
@@ -87,7 +88,7 @@ class UpdatePackagesCommand extends Command
                 foreach ($packageRepositoryGenerator as $package) {
                     $errors = $this->validator->validate($package);
                     if ($errors->count() > 0) {
-                        throw new \RuntimeException((string)json_encode($errors));
+                        throw new ValidationException($errors);
                     }
 
                     $allPackageNames[] = $package->getName();

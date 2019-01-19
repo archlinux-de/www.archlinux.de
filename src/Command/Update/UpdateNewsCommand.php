@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Command\Exception\ValidationException;
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
 use App\Service\NewsItemFetcher;
@@ -66,7 +67,7 @@ class UpdateNewsCommand extends Command
         foreach ($this->newsItemFetcher as $newsItem) {
             $errors = $this->validator->validate($newsItem);
             if ($errors->count() > 0) {
-                throw new \RuntimeException((string)json_encode($errors));
+                throw new ValidationException($errors);
             }
 
             $this->entityManager->merge($newsItem);

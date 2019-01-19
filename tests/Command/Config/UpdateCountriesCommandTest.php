@@ -11,6 +11,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \App\Command\Config\UpdateCountriesCommand
@@ -36,10 +38,14 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $countryFetcher = $this->createMock(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newCountry]));
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository));
+        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);

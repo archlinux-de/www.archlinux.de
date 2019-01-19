@@ -2,6 +2,7 @@
 
 namespace App\Command\Config;
 
+use App\Command\Exception\ValidationException;
 use App\Entity\Country;
 use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
@@ -9,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateCountriesCommand extends Command
 {
@@ -21,20 +23,26 @@ class UpdateCountriesCommand extends Command
     /** @var CountryRepository */
     private $countryRepository;
 
+    /** @var ValidatorInterface */
+    private $validator;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param CountryFetcher $countryFetcher
      * @param CountryRepository $countryRepository
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         CountryFetcher $countryFetcher,
-        CountryRepository $countryRepository
+        CountryRepository $countryRepository,
+        ValidatorInterface $validator
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->countryFetcher = $countryFetcher;
         $this->countryRepository = $countryRepository;
+        $this->validator = $validator;
     }
 
     protected function configure(): void
@@ -51,6 +59,10 @@ class UpdateCountriesCommand extends Command
         $codes = [];
         /** @var Country $country */
         foreach ($this->countryFetcher as $country) {
+            $errors = $this->validator->validate($country);
+            if ($errors->count() > 0) {
+                throw new ValidationException($errors);
+            }
             $this->entityManager->merge($country);
             $codes[] = $country->getCode();
         }

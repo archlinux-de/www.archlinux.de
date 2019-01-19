@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Command\Exception\ValidationException;
 use App\Entity\Release;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
@@ -62,7 +63,7 @@ class UpdateReleasesCommand extends Command
         foreach ($this->releaseFetcher as $release) {
             $errors = $this->validator->validate($release);
             if ($errors->count() > 0) {
-                throw new \RuntimeException((string)json_encode($errors));
+                throw new ValidationException($errors);
             }
 
             $this->entityManager->merge($release);
