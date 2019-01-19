@@ -40,7 +40,6 @@ class RecentPackagesControllerTest extends DatabaseTestCase
         $this->assertEmpty(\libxml_get_errors());
         $this->assertEquals($php->getName() . ' ' . $php->getVersion(), $xml->entry->title->__toString());
         $this->assertEquals($php->getDescription(), $xml->entry->content->__toString());
-        $this->assertNotNull($xml->entry->link);
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertEquals(
             'http://localhost/packages/core/x86_64/php',

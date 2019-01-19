@@ -92,7 +92,7 @@ abstract class AbstractRelation
     }
 
     /**
-     * @return Package
+     * @return Package|null
      */
     public function getTarget(): ?Package
     {
@@ -118,7 +118,7 @@ abstract class AbstractRelation
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getTargetVersion(): ?string
     {

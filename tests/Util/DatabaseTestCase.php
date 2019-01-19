@@ -29,7 +29,7 @@ class DatabaseTestCase extends KernelTestCase
     protected function isPersistentDatabase(): bool
     {
         $params = $this->getEntityManager()->getConnection()->getParams();
-        return (isset($params['path']) && $params['path']) || (isset($params['dbname']) && $params['dbname']);
+        return !empty($params['path']) || !empty($params['dbname']);
     }
 
     /**

@@ -25,9 +25,9 @@ class ReleaseFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return iterable
+     * @return \Traversable
      */
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         foreach ($this->fetchRelengReleases() as $releaseData) {
             $release = new Release($releaseData['version']);

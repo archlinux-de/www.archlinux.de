@@ -37,10 +37,8 @@ class RecentNewsControllerTest extends DatabaseTestCase
         $xml = \simplexml_load_string($response);
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());
-        $this->assertNotNull($xml->entry->title);
         $this->assertEquals($news->getTitle(), $xml->entry->title->__toString());
         $this->assertEquals($news->getDescription(), $xml->entry->content->__toString());
-        $this->assertNotNull($xml->entry->link);
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertEquals($news->getLink(), $xml->entry->link->attributes()->href->__toString());
     }

@@ -63,8 +63,9 @@ class UpdatePackagesCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('cron.lock', true);
         ini_set('memory_limit', '-1');
@@ -102,5 +103,7 @@ class UpdatePackagesCommand extends Command
         $this->packageDatabaseMirror->updateLastUpdate();
 
         $this->release();
+
+        return 0;
     }
 }

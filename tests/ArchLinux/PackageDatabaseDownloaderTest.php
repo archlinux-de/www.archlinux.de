@@ -25,13 +25,6 @@ class PackageDatabaseDownloaderTest extends TestCase
         $this->downloader = new PackageDatabaseDownloader($this->guzzleClient, $packageDatabaseMirror);
     }
 
-    public function testDownloadReturnsFile()
-    {
-        $this->guzzleClient->method('request')->willReturn(new Response());
-        $download = $this->downloader->download('', '');
-        $this->assertInstanceOf(\SplFileObject::class, $download);
-    }
-
     public function testFileModificationTimeIsInSyncWithServerResponse()
     {
         $timestamp = 42;
