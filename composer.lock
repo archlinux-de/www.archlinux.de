@@ -1308,16 +1308,16 @@
         },
         {
             "name": "exercise/htmlpurifier-bundle",
-            "version": "V2.0.2",
+            "version": "V2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Exercise/HTMLPurifierBundle.git",
-                "reference": "24b7ef4a0a59465b11c793280b1a71fe1daea3ad"
+                "reference": "0f5e899f29e140405f4a9817c8c53143bf969a1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/24b7ef4a0a59465b11c793280b1a71fe1daea3ad",
-                "reference": "24b7ef4a0a59465b11c793280b1a71fe1daea3ad",
+                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/0f5e899f29e140405f4a9817c8c53143bf969a1e",
+                "reference": "0f5e899f29e140405f4a9817c8c53143bf969a1e",
                 "shasum": ""
             },
             "require": {
@@ -1361,7 +1361,7 @@
                 "htmlpurifier",
                 "symfony"
             ],
-            "time": "2018-11-04T18:30:30+00:00"
+            "time": "2019-01-16T01:50:21+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -5766,16 +5766,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.11",
+            "version": "0.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "cfb0b43021fb75abe853ab8d88d22cdb37596697"
+                "reference": "a138b8a2731b2c19f1dffa2f1411984a638fe977"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cfb0b43021fb75abe853ab8d88d22cdb37596697",
-                "reference": "cfb0b43021fb75abe853ab8d88d22cdb37596697",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a138b8a2731b2c19f1dffa2f1411984a638fe977",
+                "reference": "a138b8a2731b2c19f1dffa2f1411984a638fe977",
                 "shasum": ""
             },
             "require": {
@@ -5835,7 +5835,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-01-15T14:21:47+00:00"
+            "time": "2019-01-19T20:23:08+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
