@@ -13,7 +13,8 @@ parameters:
         multilib-testing: ['x86_64']
     app.packages.default_architecture: 'x86_64'
     app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
-    app.mirrors.default: '%app.packages.mirror%'
+    env(DEFAULT_MIRROR): '%app.packages.mirror%'
+    app.mirrors.default: '%env(DEFAULT_MIRROR)%'
     app.mirrors.country: 'DE'
     app.news.feed: 'https://bbs.archlinux.de/extern.php?action=feed&fid=257&type=atom&order=posted&show=15'
     app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
