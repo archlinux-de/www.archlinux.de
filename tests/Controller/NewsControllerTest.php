@@ -43,7 +43,7 @@ class NewsControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals('Breaking News', $crawler->filter('h1')->text());
-        $this->assertContains('Hell has frozen over!', $client->getResponse()->getContent());
+        $this->assertStringContainsString('Hell has frozen over!', $client->getResponse()->getContent());
     }
 
     public function testDatatablesAction()

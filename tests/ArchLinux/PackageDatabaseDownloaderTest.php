@@ -17,7 +17,7 @@ class PackageDatabaseDownloaderTest extends TestCase
     /** @var PackageDatabaseDownloader */
     private $downloader;
 
-    public function setUp()
+    public function setUp(): void
     {
         /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);

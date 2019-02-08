@@ -210,7 +210,10 @@ class PackagesControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertJson($client->getResponse()->getContent());
-        $this->assertContains('application/json', $client->getResponse()->headers->get('Content-Type'));
+        $this->assertStringContainsString(
+            'application/json',
+            (string)$client->getResponse()->headers->get('Content-Type')
+        );
 
         $responseData = json_decode($client->getResponse()->getContent(), true);
         foreach (['draw', 'recordsTotal', 'recordsFiltered'] as $metaData) {

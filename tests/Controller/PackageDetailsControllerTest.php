@@ -42,7 +42,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals('pacman', $crawler->filter('h1')->text());
         $content = $client->getResponse()->getContent();
-        $this->assertContains('5.0.2-2', $content);
+        $this->assertStringContainsString('5.0.2-2', $content);
     }
 
     public function testRedirectToPackageFromAnotherRepository()
