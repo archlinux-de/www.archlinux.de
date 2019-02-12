@@ -34,13 +34,13 @@
                 {% if release.md5Sum %}
                     <tr>
                         <th>MD5</th>
-                        <td class="break-word">{{ release.md5Sum }}</td>
+                        <td class="text-break">{{ release.md5Sum }}</td>
                     </tr>
                 {% endif %}
                 {% if release.sha1Sum %}
                     <tr>
                         <th>SHA1</th>
-                        <td class="break-word">{{ release.sha1Sum }}</td>
+                        <td class="text-break">{{ release.sha1Sum }}</td>
                     </tr>
                 {% endif %}
                 {% if release.available %}
@@ -102,7 +102,7 @@
                     {% if release.torrent.infoHash %}
                         <tr>
                             <th>Info hash</th>
-                            <td class="break-word">{{ release.torrent.infoHash }}</td>
+                            <td class="text-break">{{ release.torrent.infoHash }}</td>
                         </tr>
                     {% endif %}
                     {% if release.torrent.pieceLength %}

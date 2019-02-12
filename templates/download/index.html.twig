@@ -44,9 +44,9 @@
             <ul class="list-unstyled pl-4">
                 <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a></li>
                 {% if release.md5Sum %}
-                    <li class="break-word"><strong>MD5:</strong> {{ release.md5Sum }}</li>{% endif %}
+                    <li class="text-break"><strong>MD5:</strong> {{ release.md5Sum }}</li>{% endif %}
                 {% if release.sha1Sum %}
-                    <li class="break-word"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>{% endif %}
+                    <li class="text-break"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>{% endif %}
             </ul>
         </div>
         <div class="col-lg-6 pl-lg-5">

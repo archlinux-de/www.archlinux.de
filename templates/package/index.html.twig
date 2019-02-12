@@ -35,7 +35,7 @@
                         <th>URL</th>
                         <td class="mw-50vw">
                             {% if package.url matches('#^(https?|ftp)://.+$#') %}
-                                <a class="break-word" rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
+                                <a class="text-break" rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
                             {% else %}
                                 {{ package.url }}
                             {% endif %}
