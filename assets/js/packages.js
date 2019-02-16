@@ -53,6 +53,7 @@ $(document).ready(function () {
     'serverSide': true,
     'order': [[6, 'desc']],
     'searchDelay': 100,
+    'pagingType': 'numbers',
     'columns': [
       {
         'data': 'repository.name',
@@ -78,19 +79,19 @@ $(document).ready(function () {
         'orderable': true,
         'searchable': true,
         'render': Renderer.renderName(packageUrlTemplate),
-        'className': 'text-nowrap'
+        'className': 'text-break'
       },
       {
         'data': 'version',
         'orderable': false,
         'searchable': false,
-        'className': 'text-break mw-10vw'
+        'className': 'text-break'
       },
       {
         'data': 'description',
         'orderable': false,
         'searchable': true,
-        'className': 'mw-50vw text-break d-none d-sm-table-cell'
+        'className': 'text-break d-none d-sm-table-cell'
       },
       {
         'data': 'builddate',

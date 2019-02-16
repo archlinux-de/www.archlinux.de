@@ -5,63 +5,73 @@
 {% block robots %}noindex{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Datenschutz</h1>
-    <div class="row m-0">
-        <div class="col-lg-6">
-            <p>Diese Datenschutzerklärung gilt für den deutschsprachigen Auftritt von Arch Linux unter
-                <a href="{{ path('app_start_index') }}">archlinux.de</a>. Hier erfährst Du welche personenbezogenen
-                Daten bei der Interaktion mit <a href="{{ path('app_start_index') }}">archlinux.de</a> anfallen und für
-                welchen Zweck sie wie lange gespeichert werden.</p>
-            <h2>IP-Adresse</h2>
-            <h3>Server-Logs</h3>
-            <p>Alle Zugriffe auf diese Seiten werden protokolliert. Hierbei werden folgende Daten erfasst:</p>
-            <ul>
-                <li>Deine aktuelle IP-Adresse</li>
-                <li>Datum und Uhrzeit des Zugriffs</li>
-                <li>Anfrage des Browser</li>
-                <li>Vom Browser gesendeter Referer</li>
-                <li>Vom Browser gesendete Kennung</li>
-            </ul>
-            <p>Aus diesen Daten werden anonymisierte Statistiken erstellt. Zusätzlich werden sie zur Erkennung und
-                Abwehr von Angriffen verwendet. Die Logdaten werden für einen Monat archiviert.</p>
-            <h3>Beiträge im Forum und Wiki</h3>
-            <p>Veröffentlichst Du Beiträge im <a href="{{ path('external_forum') }}">Forum</a> oder
-                <a href="{{ path('external_wiki') }}">Wiki</a> so wird auch hier Deine IP-Adresse protokolliert.
-                Dies ist notwendig um mögliche Angriffe abzuwehren und Straftaten zu verfolgen. Diese Daten werden
-                zusammen mit den jeweiligen Beiträgen entfernt.</p>
-            <h2>Cookies</h2>
-            <p>Beim Login werden technisch notwendige Cookies gesetzt, die für die Dauer der Session gültig sind. Diese
-                werden zudem beim Logout entfernt.</p>
-            <p>Darüber hinaus kannst Du beim Login optional ein langfristiges Cookie setzen, um bei künftigen Besuchen
-                automatisch angemeldet zu werden. Auch dieses Cookie lässt sich expliziet durch einen Logout
-                entfernen.</p>
+    <main role="main" class="container-fluid">
+        <h1 class="mb-4">Datenschutz</h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <p>Diese Datenschutzerklärung gilt für den deutschsprachigen Auftritt von Arch Linux unter
+                    <a href="{{ path('app_start_index') }}">archlinux.de</a>. Hier erfährst Du welche personenbezogenen
+                    Daten bei der Interaktion mit <a href="{{ path('app_start_index') }}">archlinux.de</a> anfallen und
+                    für
+                    welchen Zweck sie wie lange gespeichert werden.</p>
+                <h2>IP-Adresse</h2>
+                <h3>Server-Logs</h3>
+                <p>Alle Zugriffe auf diese Seiten werden protokolliert. Hierbei werden folgende Daten erfasst:</p>
+                <ul>
+                    <li>Deine aktuelle IP-Adresse</li>
+                    <li>Datum und Uhrzeit des Zugriffs</li>
+                    <li>Anfrage des Browser</li>
+                    <li>Vom Browser gesendeter Referer</li>
+                    <li>Vom Browser gesendete Kennung</li>
+                </ul>
+                <p>Aus diesen Daten werden anonymisierte Statistiken erstellt. Zusätzlich werden sie zur Erkennung und
+                    Abwehr von Angriffen verwendet. Die Logdaten werden für einen Monat archiviert.</p>
+                <h3>Beiträge im Forum und Wiki</h3>
+                <p>Veröffentlichst Du Beiträge im <a href="{{ path('external_forum') }}">Forum</a> oder
+                    <a href="{{ path('external_wiki') }}">Wiki</a> so wird auch hier Deine IP-Adresse protokolliert.
+                    Dies ist notwendig um mögliche Angriffe abzuwehren und Straftaten zu verfolgen. Diese Daten werden
+                    zusammen mit den jeweiligen Beiträgen entfernt.</p>
+                <h2>Cookies</h2>
+                <p>Beim Login werden technisch notwendige Cookies gesetzt, die für die Dauer der Session gültig sind.
+                    Diese
+                    werden zudem beim Logout entfernt.</p>
+                <p>Darüber hinaus kannst Du beim Login optional ein langfristiges Cookie setzen, um bei künftigen
+                    Besuchen
+                    automatisch angemeldet zu werden. Auch dieses Cookie lässt sich expliziet durch einen Logout
+                    entfernen.</p>
+            </div>
+            <div class="col-lg-6 pl-lg-5">
+                <h2>Benutzerkonten</h2>
+                <p>Bei der Registrierung im <a href="{{ path('external_forum') }}">Forum</a> wird neben einem
+                    Benutzernamen
+                    auch Deine E-Mail-Adresse gespeichert. Alle weiteren Angaben im Profil sind freiwillig und
+                    öffentlich zugänglich. Diese kannst Du jederzeit unter <em>Profil</em> im
+                    <a href="{{ path('external_forum') }}">Forum</a> einsehen und ändern.
+                    Dein im <a href="{{ path('external_forum') }}">Forum</a> angelegtes Benutzer-Konto wird
+                    zudem für das <a href="{{ path('external_wiki') }}">Wiki</a> verwendet.</p>
+                <h2>Löschen des Benutzerkontos</h2>
+                <p>Du kannst Dein Konto und die enthaltenen Daten jederzeit im
+                    <a href="{{ path('external_forum') }}">Forum</a> unter <em>Profil</em> löschen. Alle von Dir
+                    verfassten Beiträge im <a href="{{ path('external_forum') }}">Forum</a> oder
+                    <a href="{{ path('external_wiki') }}">Wiki</a> bleiben hierbei erhalten. Dein Benutzername selbst
+                    wird
+                    weiterhin als Verfasser angezeigt.</p>
+                <h2>Änderung des Benutzernamens</h2>
+                <p>Auf besonderne Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt
+                    vor
+                    dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage über das
+                    <a href="{{ path('external_contact') }}">Kontakt-Formular</a>. Nur durch die Nutzung des Formulars
+                    ist
+                    sichergestellt, dass Du Besitzer des jeweiligen Benutzerkontos bist.</p>
+                <h2>Auskunft über personenbezogene Daten</h2>
+                <p>Du hast das Recht Auskunft über die hier gespeicherten personenbezogenen Daten zu erfragen. Nutze
+                    auch
+                    hierzu das <a href="{{ path('external_contact') }}">Kontakt-Formular</a>.</p>
+                <h2>Kontakt</h2>
+                <p>Anfragen zu Deinem Benutzerkonto können nur über den authentifizierten Zugang über das
+                    <a href="{{ path('external_contact') }}">Kontakt-Formular</a> erfolgen. Weitere
+                    Kontakt-Möglichkeiten findest Du im <a href="{{ path('app_legal_impressum') }}">Impressum</a>.</p>
+            </div>
         </div>
-        <div class="col-lg-6 pl-lg-5">
-            <h2>Benutzerkonten</h2>
-            <p>Bei der Registrierung im <a href="{{ path('external_forum') }}">Forum</a> wird neben einem Benutzernamen
-                auch Deine E-Mail-Adresse gespeichert. Alle weiteren Angaben im Profil sind freiwillig und
-                öffentlich zugänglich. Diese kannst Du jederzeit unter <em>Profil</em> im
-                <a href="{{ path('external_forum') }}">Forum</a> einsehen und ändern.
-                Dein im <a href="{{ path('external_forum') }}">Forum</a> angelegtes Benutzer-Konto wird
-                zudem für das <a href="{{ path('external_wiki') }}">Wiki</a> verwendet.</p>
-            <h2>Löschen des Benutzerkontos</h2>
-            <p>Du kannst Dein Konto und die enthaltenen Daten jederzeit im
-                <a href="{{ path('external_forum') }}">Forum</a> unter <em>Profil</em> löschen. Alle von Dir
-                verfassten Beiträge im <a href="{{ path('external_forum') }}">Forum</a> oder
-                <a href="{{ path('external_wiki') }}">Wiki</a> bleiben hierbei erhalten. Dein Benutzername selbst wird
-                weiterhin als Verfasser angezeigt.</p>
-            <h2>Änderung des Benutzernamens</h2>
-            <p>Auf besonderne Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt vor
-                dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage über das
-                <a href="{{ path('external_contact') }}">Kontakt-Formular</a>. Nur durch die Nutzung des Formulars ist
-                sichergestellt, dass Du Besitzer des jeweiligen Benutzerkontos bist.</p>
-            <h2>Auskunft über personenbezogene Daten</h2>
-            <p>Du hast das Recht Auskunft über die hier gespeicherten personenbezogenen Daten zu erfragen. Nutze auch
-                hierzu das <a href="{{ path('external_contact') }}">Kontakt-Formular</a>.</p>
-            <h2>Kontakt</h2>
-            <p>Anfragen zu Deinem Benutzerkonto können nur über den authentifizierten Zugang über das
-                <a href="{{ path('external_contact') }}">Kontakt-Formular</a> erfolgen. Weitere
-                Kontakt-Möglichkeiten findest Du im <a href="{{ path('app_legal_impressum') }}">Impressum</a>.</p>
-        </div>
-    </div>
+    </main>
 {% endblock %}
