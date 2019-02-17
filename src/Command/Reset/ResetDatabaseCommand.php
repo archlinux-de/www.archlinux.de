@@ -11,16 +11,19 @@ use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\Store\FlockStore;
+use Symfony\Component\Lock\Store\SemaphoreStore;
 
 class ResetDatabaseCommand extends Command
 {
-    use LockableTrait;
-
     /** @var EntityManagerInterface */
     private $entityManager;
+
+    /** @var array */
+    private $locks = [];
 
     /**
      * @param EntityManagerInterface $entityManager
@@ -48,22 +51,25 @@ class ResetDatabaseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->lock('cron.lock', true);
-
         $classNames = [];
         if ($input->getOption('packages')) {
+            $this->lock('packages.lock');
             $classNames = array_merge($classNames, [AbstractRelation::class, Package::class, Repository::class]);
         }
         if ($input->getOption('countries')) {
+            $this->lock('countries.lock');
             $classNames = array_merge($classNames, [Country::class]);
         }
         if ($input->getOption('mirrors')) {
+            $this->lock('mirrors.lock');
             $classNames = array_merge($classNames, [Mirror::class]);
         }
         if ($input->getOption('news')) {
+            $this->lock('news.lock');
             $classNames = array_merge($classNames, [NewsItem::class]);
         }
         if ($input->getOption('releases')) {
+            $this->lock('releases.lock');
             $classNames = array_merge($classNames, [Release::class]);
         }
 
@@ -74,6 +80,32 @@ class ResetDatabaseCommand extends Command
         $this->release();
 
         return 0;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    private function lock(string $name): bool
+    {
+        if (isset($this->locks[$name])) {
+            throw new \LogicException(sprintf('A lock for "%s" is already in place.', $name));
+        }
+
+        if (SemaphoreStore::isSupported()) {
+            $store = new SemaphoreStore();
+        } else {
+            $store = new FlockStore();
+        }
+
+        $this->locks[$name] = (new Factory($store))->createLock($name);
+        if (!$this->locks[$name]->acquire()) {
+            $this->locks[$name] = null;
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -99,6 +131,16 @@ class ResetDatabaseCommand extends Command
 
         foreach ($tables as $table) {
             $connection->executeUpdate($dbPlatform->getTruncateTableSQL($table));
+        }
+    }
+
+    private function release()
+    {
+        foreach ($this->locks as $name => $lock) {
+            if ($lock) {
+                $lock->release();
+                $this->locks[$name] = null;
+            }
         }
     }
 }

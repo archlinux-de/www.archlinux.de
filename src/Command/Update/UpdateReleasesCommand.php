@@ -57,7 +57,7 @@ class UpdateReleasesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->lock('cron.lock', true);
+        $this->lock('releases.lock');
 
         $versions = [];
         /** @var Release $release */

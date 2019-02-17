@@ -60,7 +60,7 @@ class UpdateMirrorsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->lock('cron.lock', true);
+        $this->lock('mirrors.lock');
 
         $urls = [];
         /** @var Mirror $mirror */

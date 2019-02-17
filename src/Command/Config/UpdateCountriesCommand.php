@@ -8,12 +8,15 @@ use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateCountriesCommand extends Command
 {
+    use LockableTrait;
+
     /** @var EntityManagerInterface */
     private $entityManager;
 
@@ -57,6 +60,8 @@ class UpdateCountriesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->lock('countries.lock');
+
         $codes = [];
         /** @var Country $country */
         foreach ($this->countryFetcher as $country) {
@@ -72,6 +77,7 @@ class UpdateCountriesCommand extends Command
         }
 
         $this->entityManager->flush();
+        $this->release();
 
         return 0;
     }
