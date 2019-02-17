@@ -2,12 +2,16 @@
 
 namespace App\Tests\Service;
 
+use App\Command\Exception\ValidationException;
 use App\Entity\Packages\Repository;
 use App\Repository\RepositoryRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RepositoryManagerTest extends TestCase
 {
@@ -34,7 +38,11 @@ class RepositoryManagerTest extends TestCase
             ->method('findAll')
             ->willReturn([new Repository('core', 'x86_64')]);
 
-        $repositoryManager = new RepositoryManager($entityManager, [], $repositoryRepository);
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->never())->method('validate');
+
+        $repositoryManager = new RepositoryManager($entityManager, [], $repositoryRepository, $validator);
 
         $this->assertTrue($repositoryManager->removeObsoleteRepositories());
     }
@@ -57,7 +65,16 @@ class RepositoryManagerTest extends TestCase
             ->method('findAll')
             ->willReturn([new Repository('core', 'x86_64')]);
 
-        $repositoryManager = new RepositoryManager($entityManager, ['core' => ['x86_64']], $repositoryRepository);
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->never())->method('validate');
+
+        $repositoryManager = new RepositoryManager(
+            $entityManager,
+            ['core' => ['x86_64']],
+            $repositoryRepository,
+            $validator
+        );
 
         $this->assertFalse($repositoryManager->removeObsoleteRepositories());
     }
@@ -92,10 +109,15 @@ class RepositoryManagerTest extends TestCase
             ->with($repositoryName, 'x86_64')
             ->willReturn(null);
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $repositoryManager = new RepositoryManager(
             $entityManager,
             [$repositoryName => ['x86_64']],
-            $repositoryRepository
+            $repositoryRepository,
+            $validator
         );
 
         $this->assertTrue($repositoryManager->createNewRepositories());
@@ -120,9 +142,54 @@ class RepositoryManagerTest extends TestCase
             ->with('core', 'x86_64')
             ->willReturn(new Repository('core', 'x86_64'));
 
-        $repositoryManager = new RepositoryManager($entityManager, ['core' => ['x86_64']], $repositoryRepository);
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->never())->method('validate');
+
+        $repositoryManager = new RepositoryManager(
+            $entityManager,
+            ['core' => ['x86_64']],
+            $repositoryRepository,
+            $validator
+        );
 
         $this->assertFalse($repositoryManager->createNewRepositories());
+    }
+
+    public function testFailOnInvalidConfiguration()
+    {
+        /** @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager
+            ->expects($this->never())
+            ->method('persist');
+        $entityManager
+            ->expects($this->never())
+            ->method('flush');
+
+        /** @var RepositoryRepository|MockObject $repositoryRepository */
+        $repositoryRepository = $this->createMock(RepositoryRepository::class);
+        $repositoryRepository
+            ->expects($this->once())
+            ->method('findByNameAndArchitecture')
+            ->willReturn(null);
+
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator
+            ->expects($this->atLeastOnce())
+            ->method('validate')
+            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+
+        $repositoryManager = new RepositoryManager(
+            $entityManager,
+            ['%invalid' => ['x86_64']],
+            $repositoryRepository,
+            $validator
+        );
+
+        $this->expectException(ValidationException::class);
+        $repositoryManager->createNewRepositories();
     }
 
     /**

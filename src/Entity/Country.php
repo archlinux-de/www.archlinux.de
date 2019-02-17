@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CountryRepository")
@@ -12,6 +13,7 @@ class Country implements \JsonSerializable
 {
     /**
      * @var string
+     * @Assert\Regex("/^[A-Z]{2}$/")
      *
      * @ORM\Id
      * @ORM\Column(length=2)
@@ -20,6 +22,7 @@ class Country implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(min="2", max="100")
      *
      * @ORM\Column()
      */

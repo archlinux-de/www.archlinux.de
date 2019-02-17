@@ -3,6 +3,7 @@
 namespace App\Tests\Command\Config;
 
 use App\Command\Config\UpdateCountriesCommand;
+use App\Command\Exception\ValidationException;
 use App\Entity\Country;
 use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
@@ -11,6 +12,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @covers \App\Command\Config\UpdateCountriesCommand
@@ -36,15 +40,51 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $countryFetcher = $this->createMock(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newCountry]));
 
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository));
+        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['command' => $command->getName()]);
 
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    public function testFailOnInvalidCountries()
+    {
+        /** @var CountryRepository|MockObject $countryRepository */
+        $countryRepository = $this->createMock(CountryRepository::class);
+        $countryRepository->expects($this->never())->method('findAllExceptByCodes');
+
+        /** @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('flush');
+
+        /** @var CountryFetcher|MockObject $countryFetcher */
+        $countryFetcher = $this->createMock(CountryFetcher::class);
+        $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([new Country('%invalid')]));
+
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator
+            ->expects($this->atLeastOnce())
+            ->method('validate')
+            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+
+        $kernel = self::bootKernel();
+        $application = new Application($kernel);
+
+        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+
+        $command = $application->find('app:config:update-countries');
+        $commandTester = new CommandTester($command);
+        $this->expectException(ValidationException::class);
+        $commandTester->execute(['command' => $command->getName()]);
     }
 }

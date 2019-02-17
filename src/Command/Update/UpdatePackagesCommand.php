@@ -4,6 +4,7 @@ namespace App\Command\Update;
 
 use App\ArchLinux\Package as DatabasePackage;
 use App\ArchLinux\PackageDatabaseMirror;
+use App\Command\Exception\ValidationException;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\RepositoryRepository;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdatePackagesCommand extends Command
 {
@@ -33,19 +35,24 @@ class UpdatePackagesCommand extends Command
     /** @var PackageManager */
     private $packageManager;
 
+    /** @var ValidatorInterface */
+    private $validator;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param RepositoryRepository $repositoryRepository
      * @param AbstractRelationRepository $relationRepository
      * @param PackageManager $packageManager
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         PackageDatabaseMirror $packageDatabaseMirror,
         RepositoryRepository $repositoryRepository,
         AbstractRelationRepository $relationRepository,
-        PackageManager $packageManager
+        PackageManager $packageManager,
+        ValidatorInterface $validator
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
@@ -53,6 +60,7 @@ class UpdatePackagesCommand extends Command
         $this->repositoryRepository = $repositoryRepository;
         $this->relationRepository = $relationRepository;
         $this->packageManager = $packageManager;
+        $this->validator = $validator;
     }
 
     protected function configure(): void
@@ -67,7 +75,7 @@ class UpdatePackagesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->lock('cron.lock', true);
+        $this->lock('packages.lock');
         ini_set('memory_limit', '-1');
 
         $updatedPackages = false;
@@ -79,6 +87,11 @@ class UpdatePackagesCommand extends Command
                 $packageRepositoryGenerator = $this->packageManager->downloadPackagesForRepository($repository);
                 /** @var DatabasePackage $package */
                 foreach ($packageRepositoryGenerator as $package) {
+                    $errors = $this->validator->validate($package);
+                    if ($errors->count() > 0) {
+                        throw new ValidationException($errors);
+                    }
+
                     $allPackageNames[] = $package->getName();
                     if ($this->packageManager->updatePackage($repository, $package)) {
                         $updatedPackages = true;

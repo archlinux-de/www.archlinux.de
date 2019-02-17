@@ -5,6 +5,7 @@ namespace App\Command\Dev;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -50,42 +51,78 @@ class TestUpdatePackagesCommand extends Command
         $updateRepositories = new Process(['bin/console', 'app:update:repositories']);
         $updateRepositories->mustRun();
 
-        foreach (range(2017, 2018) as $year) {
-            foreach (range(1, 12) as $month) {
-                foreach (range(1, 31) as $day) {
-                    $mirrorUrl = sprintf('https://archive.archlinux.org/repos/%d/%02d/%02d/', $year, $month, $day);
-                    if ($this->checkMirrorUrl($mirrorUrl)) {
-                        $output->writeln(sprintf('Updating to %d-%02d-%02d', $year, $month, $day));
-                        $updatePackages = new Process(
-                            ['bin/console', 'app:update:packages'],
-                            null,
-                            ['PACKAGES_MIRROR' => $mirrorUrl]
-                        );
-                        $updatePackages->setTimeout(120);
-                        $updatePackages->mustRun();
-                        if (!$updatePackages->isSuccessful()) {
-                            $output->writeln($updatePackages->getOutput());
-                            return 1;
-                        } else {
-                            $output->writeln($updatePackages->getOutput());
-                        }
+        $dateDirectories = $this->generateDateDirectories();
+        $progressBar = new ProgressBar($output, count($dateDirectories));
+        $progressBar->setFormat(
+            "Updating to <info>%message%</info> [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%\n"
+        );
 
-                        $validatePackages = new Process(
-                            ['bin/console', 'app:validate:packages'],
-                            null,
-                            ['PACKAGES_MIRROR' => $mirrorUrl]
-                        );
-                        $validatePackages->mustRun();
-                        if (!$validatePackages->isSuccessful()) {
-                            $output->writeln($validatePackages->getOutput());
-                            return 1;
-                        }
-                    }
+        foreach ($dateDirectories as $dateDirectory) {
+            $mirrorUrl = sprintf('https://archive.archlinux.org/repos/%s/', $dateDirectory);
+            if ($this->checkMirrorUrl($mirrorUrl)) {
+                $progressBar->setMessage($dateDirectory);
+                $progressBar->advance();
+
+                $updatePackages = new Process(
+                    ['bin/console', 'app:update:packages'],
+                    null,
+                    ['PACKAGES_MIRROR' => $mirrorUrl]
+                );
+                $updatePackages->setTimeout(120);
+                $updatePackages->mustRun();
+                if (!$updatePackages->isSuccessful()) {
+                    $output->writeln($updatePackages->getOutput());
+                    return 1;
+                }
+
+                $validatePackages = new Process(
+                    ['bin/console', 'app:validate:packages'],
+                    null,
+                    ['PACKAGES_MIRROR' => $mirrorUrl]
+                );
+                $validatePackages->mustRun();
+                if (!$validatePackages->isSuccessful()) {
+                    $output->writeln($validatePackages->getOutput());
+                    return 1;
                 }
             }
         }
 
+        $progressBar->finish();
+
         return 0;
+    }
+
+    /**
+     * @return array
+     */
+    private function generateDateDirectories(): array
+    {
+        $dates = [];
+        foreach (range(((int)date('Y') - 1), date('Y')) as $year) {
+            foreach (range(1, 12) as $month) {
+                foreach (range(1, date('t', (int)strtotime($year . '-' . $month . '-1'))) as $day) {
+                    if (date('Y') == $year) {
+                        if ($month > date('n')) {
+                            continue;
+                        } elseif ($month == date('n')) {
+                            if ($day > date('j')) {
+                                continue;
+                            }
+                        }
+                    }
+
+                    $dates[] = sprintf(
+                        '%d/%02d/%02d',
+                        $year,
+                        $month,
+                        $day
+                    );
+                }
+            }
+        }
+
+        return array_slice($dates, -366, 365);
     }
 
     /**

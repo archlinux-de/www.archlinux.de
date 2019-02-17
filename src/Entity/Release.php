@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,9 @@ class Release implements \JsonSerializable
 {
     /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(max="255")
+     * @Assert\Regex("/^[0-9]+[\.\-\w]+$/")
      *
      * @ORM\Column(length=191)
      * @ORM\Id
@@ -27,6 +31,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(max="16384")
      *
      * @ORM\Column(type="text")
      */
@@ -34,6 +39,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(min="10", max="255")
      *
      * @ORM\Column()
      */
@@ -41,6 +47,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var string|null
+     * @Assert\Regex("/^[0-9a-f]{32}$/")
      *
      * @ORM\Column(length=32, nullable=true)
      */
@@ -55,6 +62,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var string|null
+     * @Assert\Regex("/^[\d\.]{5,10}$/")
      *
      * @ORM\Column(nullable=true)
      */
@@ -69,6 +77,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var string|null
+     * @Assert\Regex("/^[0-9a-f]{40}$/")
      *
      * @ORM\Column(length=40, nullable=true)
      */
@@ -76,6 +85,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var Torrent
+     * @Assert\Valid()
      *
      * @ORM\Embedded(class="Torrent")
      */

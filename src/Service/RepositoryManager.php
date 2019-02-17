@@ -2,9 +2,11 @@
 
 namespace App\Service;
 
+use App\Command\Exception\ValidationException;
 use App\Entity\Packages\Repository;
 use App\Repository\RepositoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RepositoryManager
 {
@@ -17,19 +19,25 @@ class RepositoryManager
     /** @var RepositoryRepository */
     private $repositoryRepository;
 
+    /** @var ValidatorInterface */
+    private $validator;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param array $repositoryConfiguration
      * @param RepositoryRepository $repositoryRepository
+     * @param ValidatorInterface $validator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         array $repositoryConfiguration,
-        RepositoryRepository $repositoryRepository
+        RepositoryRepository $repositoryRepository,
+        ValidatorInterface $validator
     ) {
         $this->entityManager = $entityManager;
         $this->repositoryConfiguration = $repositoryConfiguration;
         $this->repositoryRepository = $repositoryRepository;
+        $this->validator = $validator;
     }
 
     /**
@@ -68,6 +76,12 @@ class RepositoryManager
                 if (is_null($repository)) {
                     $repository = new Repository($repoName, $archName);
                     $repository->setTesting(preg_match('/(-|^)testing$/', $repoName) > 0);
+
+                    $errors = $this->validator->validate($repository);
+                    if ($errors->count() > 0) {
+                        throw new ValidationException($errors);
+                    }
+
                     $this->entityManager->persist($repository);
                     $repositoryWasCreated = true;
                 }

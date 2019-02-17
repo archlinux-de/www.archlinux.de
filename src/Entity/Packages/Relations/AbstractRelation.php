@@ -4,6 +4,7 @@ namespace App\Entity\Packages\Relations;
 
 use App\Entity\Packages\Package;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AbstractRelationRepository")
@@ -16,6 +17,7 @@ abstract class AbstractRelation
      * @var Package
      */
     protected $source;
+
     /**
      * @var int
      *
@@ -24,18 +26,23 @@ abstract class AbstractRelation
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
      * @var string
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
      *
      * @ORM\Column(type="string")
      */
     private $targetName;
+
     /**
      * @var string|null
+     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_]{1,255}$/")
      *
      * @ORM\Column(type="string", nullable=true)
      */
     private $targetVersion;
+
     /**
      * @var Package|null
      *

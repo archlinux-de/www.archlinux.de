@@ -3,6 +3,7 @@
 namespace App\Entity\Packages;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\FilesRepository")
@@ -20,6 +21,7 @@ class Files implements \IteratorAggregate, \JsonSerializable
 
     /**
      * @var string
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(type="text", nullable=true)
      */

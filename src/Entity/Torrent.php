@@ -3,15 +3,16 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Embeddable
  */
 class Torrent
 {
-
     /**
      * @var string|null
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true, length=191)
      */
@@ -19,6 +20,7 @@ class Torrent
 
     /**
      * @var string|null
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(type="text", nullable=true)
      */
@@ -26,6 +28,7 @@ class Torrent
 
     /**
      * @var string|null
+     * @Assert\Regex("/^[0-9a-f]{40}$/")
      *
      * @ORM\Column(nullable=true)
      */
@@ -33,6 +36,7 @@ class Torrent
 
     /**
      * @var integer|null
+     * @Assert\Range(min="1", max="10485760")
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -40,6 +44,7 @@ class Torrent
 
     /**
      * @var string|null
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */
@@ -47,6 +52,7 @@ class Torrent
 
     /**
      * @var string|null
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */
@@ -54,6 +60,7 @@ class Torrent
 
     /**
      * @var integer|null
+     * @Assert\Range(min="1", max="4294967296")
      *
      * @ORM\Column(type="bigint", nullable=true)
      */
@@ -61,6 +68,7 @@ class Torrent
 
     /**
      * @var integer|null
+     * @Assert\Range(min="1", max="81920")
      *
      * @ORM\Column(type="smallint", nullable=true)
      */
@@ -68,6 +76,7 @@ class Torrent
 
     /**
      * @var string|null
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */
@@ -82,6 +91,7 @@ class Torrent
 
     /**
      * @var string|null
+     * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */

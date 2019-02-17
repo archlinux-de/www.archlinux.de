@@ -104,7 +104,7 @@ class MirrorController extends AbstractController
      * @Route(
      *     "/download/{repository}/os/{architecture}/{file}",
      *      requirements={
-     *          "file": "^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9\.\-\+_:]{1,255}$"
+     *          "file": "^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$"
      *      },
      *      methods={"GET"}
      *     )
@@ -137,7 +137,7 @@ class MirrorController extends AbstractController
     }
 
     /**
-     * @Route("/download/{file}", requirements={"file": "^[a-zA-Z0-9\.\-\+_/:]{1,255}$"}, methods={"GET"})
+     * @Route("/download/{file}", requirements={"file": "^[a-zA-Z0-9@\.\-\+_/:]{1,255}$"}, methods={"GET"})
      * @param string $file
      * @param Request $request
      * @return Response
