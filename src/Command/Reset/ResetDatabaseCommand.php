@@ -85,6 +85,7 @@ class ResetDatabaseCommand extends Command
     /**
      * @param string $name
      * @return bool
+     * @codeCoverageIgnore
      */
     private function lock(string $name): bool
     {
@@ -134,6 +135,9 @@ class ResetDatabaseCommand extends Command
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function release()
     {
         foreach ($this->locks as $name => $lock) {
