@@ -23,7 +23,7 @@ class LegacyControllerTest extends WebTestCase
 
         $this->assertTrue($client->getResponse()->isRedirection());
         foreach ($parameters as $parameter) {
-            $this->assertContains($parameter, $client->getResponse()->headers->get('Location'));
+            $this->assertStringContainsString($parameter, (string)$client->getResponse()->headers->get('Location'));
         }
     }
 

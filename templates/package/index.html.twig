@@ -10,212 +10,217 @@
 {% block robots %}{% if package.repository.testing == true %}no{% endif %}index,follow{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">{{ package.name }}</h1>
-    <div class="row mw-100">
-        <div class="col-12 col-xl-6">
-            <h2 class="mb-3">Paket-Details</h2>
-            <table class="table table-sm">
-                <colgroup>
-                    <col class="w-20">
-                </colgroup>
-                <tr>
-                    <th>Name</th>
-                    <td>{{ package.name }}</td>
-                </tr>
-                <tr>
-                    <th>Version</th>
-                    <td>{{ package.version }}</td>
-                </tr>
-                <tr>
-                    <th>Beschreibung</th>
-                    <td>{{ package.description }}</td>
-                </tr>
-                {% if package.url %}
+    <main role="main" class="container-fluid">
+        <h1 class="mb-4">{{ package.name }}</h1>
+        <div class="row">
+            <div class="col-12 col-xl-6">
+                <h2 class="mb-3">Paket-Details</h2>
+                <table class="table table-sm">
+                    <colgroup>
+                        <col class="w-25">
+                        <col class="w-75">
+                    </colgroup>
                     <tr>
-                        <th>URL</th>
-                        <td class="mw-50vw">
-                            {% if package.url matches('#^(https?|ftp)://.+$#') %}
-                                <a class="break-word" rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
-                            {% else %}
-                                {{ package.url }}
-                            {% endif %}
-                        </td>
+                        <th>Name</th>
+                        <td>{{ package.name }}</td>
                     </tr>
-                {% endif %}
-                <tr>
-                    <th>Lizenzen</th>
-                    <td>{{ package.licenses | join(', ') }}</td>
-                </tr>
-                <tr>
-                    <th>Repositorium</th>
-                    <td>
-                        <a href="{{ path('app_packages_index', {'repository': package.repository.name}) }}">{{ package.repository.name }}</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Architektur</th>
-                    <td>
-                        {{ package.architecture }}
-                    </td>
-                </tr>
-                <tr>
-                    <th>Gruppen</th>
-                    <td>{{ package.groups | join(', ') }}</td>
-                </tr>
-                {% if package.packager %}
                     <tr>
-                        <th>Packer</th>
+                        <th>Version</th>
+                        <td>{{ package.version }}</td>
+                    </tr>
+                    <tr>
+                        <th>Beschreibung</th>
+                        <td class="text-break">{{ package.description }}</td>
+                    </tr>
+                    {% if package.url %}
+                        <tr>
+                            <th>URL</th>
+                            <td class="text-break">
+                                {% if package.url matches('#^(https?|ftp)://.+$#') %}
+                                    <a rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
+                                {% else %}
+                                    {{ package.url }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Lizenzen</th>
+                        <td>{{ package.licenses | join(', ') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Repositorium</th>
                         <td>
-                            {% if package.packager.email %}
-                                <a rel="nofollow"
-                                   href="mailto:{{ package.packager.email }}">{{ package.packager.name }}</a>
-                            {% else %}
-                                {{ package.packager.name }}
-                            {% endif %}
+                            <a href="{{ path('app_packages_index', {'repository': package.repository.name}) }}">{{ package.repository.name }}</a>
                         </td>
                     </tr>
-                {% endif %}
-                <tr>
-                    <th>Erstellt am</th>
-                    <td>{{ package.builddate | date }}</td>
-                </tr>
-                <tr>
-                    <th>Veröffentlicht am</th>
-                    <td>{{ package.mTime | date }}</td>
-                </tr>
-                <tr>
-                    <th>Quelltext</th>
-                    <td><a href="{{ cgit_url }}tree/trunk?h=packages/{{ package.base }}">Quelldateien</a>,
-                        <a href="{{ cgit_url }}log/trunk?h=packages/{{ package.base }}">Änderungshistorie</a></td>
-                </tr>
-                <tr>
-                    <th>Bugs</th>
-                    <td><a href="https://bugs.archlinux.org/index.php?string=%5B{{ package.name }}%5D">Bug-Tracker</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Paket</th>
-                    <td>
-                        <a href="{{ path(
-                            'app_mirror_package',
-                            {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename}
-                        ) }}">{{ package.filename }}</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>PGP-Signatur</th>
-                    <td>
-                        <a href="{{ path(
-                            'app_mirror_package',
-                            {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename~'.sig'}
-                        ) }}">{{ package.filename }}
-                            .sig</a></td>
-                </tr>
-                <tr>
-                    <th>Paket-Größe</th>
-                    <td>{{ package.compressedSize | format_bytes }}</td>
-                </tr>
-                <tr>
-                    <th>Installations-Größe</th>
-                    <td>{{ package.installedSize | format_bytes }}</td>
-                </tr>
-            </table>
-        </div>
-        <div class="col-12 col-xl-6">
-            <h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
-
-            {% macro relate(name, relations) %}
-                {% if relations | length > 0 %}
-                    {% set listLimit = 10 %}
-                    {% set listClass %}list-target-{{ random() }}{% endset %}
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                        <h3>{{ name }}</h3>
-                        <ul class="list-unstyled pl-4">
-                            {# @var relation \App\Entity\Packages\Relations\AbstractRelation #}
-                            {% for relation in relations %}
-
-                                {% if loop.index == listLimit and loop.length > listLimit %}
-                                    <li class="mt-1 show {{ listClass }}">
-                                        <a href="#" class="text-secondary" data-target=".{{ listClass }}" data-toggle="collapse" >
-                                            mehr&hellip;
-                                        </a>
-                                    </li>
+                    <tr>
+                        <th>Architektur</th>
+                        <td>
+                            {{ package.architecture }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Gruppen</th>
+                        <td>{{ package.groups | join(', ') }}</td>
+                    </tr>
+                    {% if package.packager %}
+                        <tr>
+                            <th>Packer</th>
+                            <td>
+                                {% if package.packager.email %}
+                                    <a rel="nofollow"
+                                       href="mailto:{{ package.packager.email }}">{{ package.packager.name }}</a>
+                                {% else %}
+                                    {{ package.packager.name }}
                                 {% endif %}
-                                <li{% if loop.index >= listLimit and loop.length > listLimit %} class="collapse {{ listClass }}"{% endif %}>
-                                    {% if relation.target %}
-                                        <a href="{{ path(
-                                        'app_packagedetails_index',
-                                        {'repo': relation.target.repository.name, 'arch': relation.target.repository.architecture, 'pkgname': relation.target.name}
-                                    ) }}">{{ relation.targetName }}</a>{{ relation.targetVersion }}
-                                    {% else %}
-                                        {{ relation.targetName }}{{ relation.targetVersion }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Erstellt am</th>
+                        <td>{{ package.builddate | date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Veröffentlicht am</th>
+                        <td>{{ package.mTime | date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Quelltext</th>
+                        <td><a href="{{ cgit_url }}tree/trunk?h=packages/{{ package.base }}">Quelldateien</a>,
+                            <a href="{{ cgit_url }}log/trunk?h=packages/{{ package.base }}">Änderungshistorie</a></td>
+                    </tr>
+                    <tr>
+                        <th>Bugs</th>
+                        <td>
+                            <a href="https://bugs.archlinux.org/index.php?string=%5B{{ package.name }}%5D">Bug-Tracker</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Paket</th>
+                        <td>
+                            <a href="{{ path(
+                                'app_mirror_package',
+                                {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename}
+                            ) }}">{{ package.filename }}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>PGP-Signatur</th>
+                        <td>
+                            <a href="{{ path(
+                                'app_mirror_package',
+                                {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename~'.sig'}
+                            ) }}">{{ package.filename }}
+                                .sig</a></td>
+                    </tr>
+                    <tr>
+                        <th>Paket-Größe</th>
+                        <td>{{ package.compressedSize | format_bytes }}</td>
+                    </tr>
+                    <tr>
+                        <th>Installations-Größe</th>
+                        <td>{{ package.installedSize | format_bytes }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-12 col-xl-6">
+                <h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
+
+                {% macro relate(name, relations) %}
+                    {% if relations | length > 0 %}
+                        {% set listLimit = 10 %}
+                        {% set listClass %}list-target-{{ random() }}{% endset %}
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                            <h3>{{ name }}</h3>
+                            <ul class="list-unstyled pl-4">
+                                {# @var relation \App\Entity\Packages\Relations\AbstractRelation #}
+                                {% for relation in relations %}
+
+                                    {% if loop.index == listLimit and loop.length > listLimit %}
+                                        <li class="mt-1 show {{ listClass }}">
+                                            <a href="#" class="text-secondary" data-target=".{{ listClass }}"
+                                               data-toggle="collapse">
+                                                mehr&hellip;
+                                            </a>
+                                        </li>
                                     {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-            {% endmacro %}
-            {% macro related(name, packages) %}
-                {% if packages | length > 0 %}
-                    {% set listLimit = 10 %}
-                    {% set listClass %}list-target-{{ random() }}{% endset %}
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                        <h3>{{ name }}</h3>
-                        <ul class="list-unstyled pl-4">
-                            {# @var package \App\Entity\Packages\Package #}
-                            {% for package in packages %}
-
-                                {% if loop.index == listLimit and loop.length > listLimit %}
-                                    <li class="mt-1 show {{ listClass }}">
-                                        <a href="#" class="text-secondary" data-target=".{{ listClass }}" data-toggle="collapse" >
-                                            mehr&hellip;
-                                        </a>
+                                    <li{% if loop.index >= listLimit and loop.length > listLimit %} class="collapse {{ listClass }}"{% endif %}>
+                                        {% if relation.target %}
+                                            <a href="{{ path(
+                                            'app_packagedetails_index',
+                                            {'repo': relation.target.repository.name, 'arch': relation.target.repository.architecture, 'pkgname': relation.target.name}
+                                        ) }}">{{ relation.targetName }}</a>{{ relation.targetVersion }}
+                                        {% else %}
+                                            {{ relation.targetName }}{{ relation.targetVersion }}
+                                        {% endif %}
                                     </li>
-                                {% endif %}
-                                <li{% if loop.index >= listLimit and loop.length > listLimit %} class="collapse {{ listClass }}"{% endif %}>
-                                    <a href="{{ path(
-                                        'app_packagedetails_index',
-                                        {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
-                                    ) }}">{{ package.name }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-            {% endmacro %}
-            {% import _self as macro %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endmacro %}
+                {% macro related(name, packages) %}
+                    {% if packages | length > 0 %}
+                        {% set listLimit = 10 %}
+                        {% set listClass %}list-target-{{ random() }}{% endset %}
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                            <h3>{{ name }}</h3>
+                            <ul class="list-unstyled ml-4">
+                                {# @var package \App\Entity\Packages\Package #}
+                                {% for package in packages %}
 
-            <div class="row mw-100">
-                {{ macro.relate('von', package.dependencies) }}
-                {{ macro.relate('optional von', package.optionalDependencies) }}
+                                    {% if loop.index == listLimit and loop.length > listLimit %}
+                                        <li class="mt-1 show {{ listClass }}">
+                                            <a href="#" class="text-secondary" data-target=".{{ listClass }}"
+                                               data-toggle="collapse">
+                                                mehr&hellip;
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    <li{% if loop.index >= listLimit and loop.length > listLimit %} class="collapse {{ listClass }}"{% endif %}>
+                                        <a href="{{ path(
+                                            'app_packagedetails_index',
+                                            {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+                                        ) }}">{{ package.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endmacro %}
+                {% import _self as macro %}
 
-                {{ macro.relate('stellt bereit', package.provisions) }}
-                {{ macro.relate('ersetzt', package.replacements) }}
-                {{ macro.relate('kollidiert mit', package.conflicts) }}
+                <div class="row">
+                    {{ macro.relate('von', package.dependencies) }}
+                    {{ macro.relate('optional von', package.optionalDependencies) }}
 
-                {{ macro.relate('Bauen von', package.makeDependencies) }}
-                {{ macro.relate('Test von', package.checkDependencies) }}
+                    {{ macro.relate('stellt bereit', package.provisions) }}
+                    {{ macro.relate('ersetzt', package.replacements) }}
+                    {{ macro.relate('kollidiert mit', package.conflicts) }}
 
-                {{ macro.related('benötigt von', inverse_depends) }}
-                {{ macro.related('optional für', inverse_optdepends) }}
-                {{ macro.related('Zum Bauen von', inverse_makedepends) }}
+                    {{ macro.relate('Bauen von', package.makeDependencies) }}
+                    {{ macro.relate('Test von', package.checkDependencies) }}
+
+                    {{ macro.related('benötigt von', inverse_depends) }}
+                    {{ macro.related('optional für', inverse_optdepends) }}
+                    {{ macro.related('Zum Bauen von', inverse_makedepends) }}
+                </div>
+            </div>
+
+            <div class="col-12">
+                <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
+
+                <button id="fileListToggle" class="btn btn-outline-secondary btn-sm ml-4" type="button"
+                        data-toggle="collapse" data-target="#fileList"
+                        aria-expanded="false" aria-controls="fileList">Dateien anzeigen
+                </button>
+                <ul id="fileList" class="d-none collapse list-unstyled ml-4 overflow-auto" data-ajax="{{ path(
+                    'app_packagedetails_files',
+                    {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+                ) }}">
+                </ul>
             </div>
         </div>
-
-        <div class="col-12">
-            <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
-
-            <button id="fileListToggle" class="btn btn-outline-secondary btn-sm ml-4" type="button"
-                    data-toggle="collapse"
-                    data-target="#fileList" aria-expanded="false" aria-controls="fileList">Dateien anzeigen
-            </button>
-            <ul id="fileList" class="d-none collapse list-unstyled pl-4" data-ajax="{{ path(
-                'app_packagedetails_files',
-                {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
-            ) }}">
-            </ul>
-
-        </div>
-    </div>
+    </main>
 {% endblock %}

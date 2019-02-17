@@ -18,9 +18,9 @@ class PackageDatabase implements \IteratorAggregate
     }
 
     /**
-     * @return iterable
+     * @return \Traversable
      */
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         /** @var \SplFileInfo $packageDirectory */
         foreach ($this->getDatabaseDirectory() as $packageDirectory) {

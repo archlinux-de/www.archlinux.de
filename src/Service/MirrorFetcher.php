@@ -34,9 +34,9 @@ class MirrorFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return iterable
+     * @return \Traversable
      */
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         foreach ($this->fetchMirrorStatusUrls() as $mirrorData) {
             $mirror = new Mirror($mirrorData['url'], $mirrorData['protocol']);

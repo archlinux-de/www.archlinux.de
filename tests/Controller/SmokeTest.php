@@ -17,7 +17,7 @@ use App\Tests\Util\DatabaseTestCase;
  */
 class SmokeTest extends DatabaseTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $entityManager = $this->getEntityManager();

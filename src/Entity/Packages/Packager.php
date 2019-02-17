@@ -62,7 +62,7 @@ class Packager implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -70,7 +70,7 @@ class Packager implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getEmail(): ?string
     {

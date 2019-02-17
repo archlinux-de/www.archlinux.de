@@ -37,7 +37,7 @@ class NewsItemSlugger
     private function parseId(string $id): int
     {
         if (preg_match('/id=(\d+)/', $id, $matches)) {
-            return $matches[1];
+            return (int)$matches[1];
         } elseif (preg_match('/^\d+$/', $id)) {
             return (int)$id;
         }

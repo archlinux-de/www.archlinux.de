@@ -53,8 +53,9 @@ class UpdateReleasesCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('cron.lock', true);
 
@@ -75,5 +76,7 @@ class UpdateReleasesCommand extends Command
 
         $this->entityManager->flush();
         $this->release();
+
+        return 0;
     }
 }

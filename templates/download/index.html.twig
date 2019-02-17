@@ -3,66 +3,72 @@
 {% block title %}Download{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Arch Linux Downloads</h1>
-    <div class="row m-0">
-        <div class="col-lg-6">
-            <h2>Release Informationen</h2>
-            <p>Das CD/USB-Image ist gleichzeitig Installations-Medium und Live-System, das zur Wartung oder Reparatur
-                benutzt werden kann. Die ISO-Datei kann sowohl auf CD gebrannt als auch mit Programmen wie
-                <a href="https://wiki.archlinux.de/title/Dd">dd</a> auf USB-Sticks kopiert
-                werden. Es kann nur für x86_64-Installationen verwendet werden.</p>
-            <p>Der Download ist nur für Neuinstallationen notwendig! Ein bestehendes Arch Linux System kann immer mit
-                <code>pacman -Syu</code> aktuell gehalten werden!</p>
-            <ul class="list-unstyled pl-4">
-                <li><strong>Aktuelles Release:</strong>
-                    <a href="{{ path('app_releases_release', {'version': release.version}) }}">{{ release.version }}</a>
-                </li>
-                <li><strong>Enthaltener Kernel:</strong> {{ release.kernelVersion }}</li>
-                <li><strong>ISO Größe:</strong> {{ release.torrent.fileLength | format_bytes }}</li>
-                <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
-                <li><a href="{{ path('app_releases_release', {'version': release.version}) }}">Release-Informationen</a></li>
-            </ul>
+    <main role="main" class="container-fluid">
+        <h1 class="mb-4">Arch Linux Downloads</h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <h2>Release Informationen</h2>
+                <p>Das CD/USB-Image ist gleichzeitig Installations-Medium und Live-System, das zur Wartung oder
+                    Reparatur
+                    benutzt werden kann. Die ISO-Datei kann sowohl auf CD gebrannt als auch mit Programmen wie
+                    <a href="https://wiki.archlinux.de/title/Dd">dd</a> auf USB-Sticks kopiert
+                    werden. Es kann nur für x86_64-Installationen verwendet werden.</p>
+                <p>Der Download ist nur für Neuinstallationen notwendig! Ein bestehendes Arch Linux System kann immer
+                    mit
+                    <code>pacman -Syu</code> aktuell gehalten werden!</p>
+                <ul class="list-unstyled ml-4">
+                    <li><strong>Aktuelles Release:</strong>
+                        <a href="{{ path('app_releases_release', {'version': release.version}) }}">{{ release.version }}</a>
+                    </li>
+                    <li><strong>Enthaltener Kernel:</strong> {{ release.kernelVersion }}</li>
+                    <li><strong>ISO Größe:</strong> {{ release.torrent.fileLength | format_bytes }}</li>
+                    <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
+                    <li>
+                        <a href="{{ path('app_releases_release', {'version': release.version}) }}">Release-Informationen</a>
+                    </li>
+                </ul>
 
-            <h2>Installation</h2>
-            <p> Hilfe zur Erstellung der USB-Images und erste Schritte zum Aufsetzen des Basis-Systems findet man in
-                der <a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a>.</p>
-            <h2>BitTorrent Download</h2>
-            <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
-            <ul class="list-unstyled pl-4">
-                <li><a href="{{ release.torrent.magnetUri }}">Magnet link für {{ release.version }}</a></li>
-                <li><a href="https://www.archlinux.org{{ release.torrent.url }}">
-                        Torrent für {{ release.version }}
-                    </a></li>
-            </ul>
+                <h2>Installation</h2>
+                <p> Hilfe zur Erstellung der USB-Images und erste Schritte zum Aufsetzen des Basis-Systems findet man in
+                    der <a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a>.</p>
+                <h2>BitTorrent Download</h2>
+                <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
+                <ul class="list-unstyled ml-4">
+                    <li><a href="{{ release.torrent.magnetUri }}">Magnet link für {{ release.version }}</a></li>
+                    <li><a href="https://www.archlinux.org{{ release.torrent.url }}">
+                            Torrent für {{ release.version }}
+                        </a></li>
+                </ul>
 
-            <h2>Direkte HTTP-Downloads</h2>
-            <p>Nach dem Download sollten die Dateien stets <a
-                        href="https://wiki.archlinux.de/title/Md5sum">überprüft</a>
-                werden.</p>
+                <h2>Direkte HTTP-Downloads</h2>
+                <p>Nach dem Download sollten die Dateien stets <a
+                            href="https://wiki.archlinux.de/title/Md5sum">überprüft</a>
+                    werden.</p>
 
-            <h3>Prüfsummen</h3>
-            <ul class="list-unstyled pl-4">
-                <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a></li>
-                {% if release.md5Sum %}
-                    <li class="break-word"><strong>MD5:</strong> {{ release.md5Sum }}</li>{% endif %}
-                {% if release.sha1Sum %}
-                    <li class="break-word"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>{% endif %}
-            </ul>
-        </div>
-        <div class="col-lg-6 pl-lg-5">
-            <div class="container pl-4">
-                <a class="btn btn-primary btn-lg"
-                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
-                     <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
-                </a>
+                <h3>Prüfsummen</h3>
+                <ul class="list-unstyled ml-4">
+                    <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a></li>
+                    {% if release.md5Sum %}
+                        <li class="text-break"><strong>MD5:</strong> {{ release.md5Sum }}</li>{% endif %}
+                    {% if release.sha1Sum %}
+                        <li class="text-break"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>{% endif %}
+                </ul>
             </div>
+            <div class="col-lg-6 pl-lg-5">
+                <a class="btn btn-primary btn-lg mb-4"
+                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
+                    <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
+                </a>
 
-            <h3 class="mt-5">Mirrors</h3>
-            <ul class="list-unstyled pl-4">
-                {% for mirror in mirrors %}
-                    <li><a href="{{ mirror.url }}{{ release.isoUrl | url_path | trim('/', 'left') }}">{{ mirror.url | url_host }}</a></li>
-                {% endfor %}
-            </ul>
+                <h3>Mirrors</h3>
+                <ul class="list-unstyled ml-4">
+                    {% for mirror in mirrors %}
+                        <li>
+                            <a href="{{ mirror.url }}{{ release.isoUrl | url_path | trim('/', 'left') }}">{{ mirror.url | url_host }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-    </div>
+    </main>
 {% endblock %}

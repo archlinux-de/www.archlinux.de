@@ -32,9 +32,9 @@ class NewsItemFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return iterable
+     * @return \Traversable
      */
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         /** @var ItemInterface $newsEntry */
         foreach ($this->fetchNewsFeed() as $newsEntry) {

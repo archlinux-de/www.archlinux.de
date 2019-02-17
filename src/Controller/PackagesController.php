@@ -6,10 +6,6 @@ use App\Repository\PackageRepository;
 use DatatablesApiBundle\DatatablesColumnConfiguration;
 use DatatablesApiBundle\DatatablesQuery;
 use DatatablesApiBundle\DatatablesRequest;
-use DatatablesApiBundle\DatatablesResponse;
-use DatatablesApiBundle\Request\Column;
-use DatatablesApiBundle\Request\Order;
-use DatatablesApiBundle\Request\Search;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,95 +47,8 @@ class PackagesController extends AbstractController
             'architecture' => $architecture,
             'defaultArchitecture' => $defaultArchitecture,
             'repository' => $repository,
-            'search' => $search,
-            'datatablesResponse' => $this->createDatatablesResponse(
-                $this->createInitialDatatablesRequest($search, $architecture, $repository)
-            )
+            'search' => $search
         ]);
-    }
-
-    /**
-     * @param DatatablesRequest $request
-     * @return DatatablesResponse
-     */
-    private function createDatatablesResponse(DatatablesRequest $request): DatatablesResponse
-    {
-        $columnConfiguration = (new DatatablesColumnConfiguration())
-            ->addCompareableColumn('repository.name', 'repository.name')
-            ->addCompareableColumn('architecture', 'repository.architecture')
-            ->addTextSearchableColumn('name', 'package.name')
-            ->addTextSearchableColumn('description', 'package.description')
-            ->addTextSearchableColumn('groups', 'package.groups')
-            ->addOrderableColumn('builddate', 'package.buildDate')
-            ->addOrderableColumn('name', 'package.name');
-        return $this->datatablesQuery->getResult(
-            $request,
-            $columnConfiguration,
-            $this->packageRepository
-                ->createQueryBuilder('package')
-                ->addSelect('repository')
-                ->join('package.repository', 'repository'),
-            $this->packageRepository->getSize()
-        );
-    }
-
-    /**
-     * @param string|null $search
-     * @param string $architecture
-     * @param string|null $repository
-     * @return DatatablesRequest
-     */
-    private function createInitialDatatablesRequest(
-        ?string $search,
-        string $architecture,
-        ?string $repository
-    ): DatatablesRequest {
-        $datatablesRequest = new DatatablesRequest(0, 0, 25);
-        $datatablesRequest->addOrder(
-            new Order(
-                new Column(
-                    6,
-                    'builddate',
-                    '',
-                    false,
-                    true,
-                    new Search('', false)
-                ),
-                'desc'
-            )
-        );
-        if (!is_null($search)) {
-            $datatablesRequest->setSearch(new Search($search, false));
-        }
-        $datatablesRequest->addColumn(
-            new Column(
-                2,
-                'architecture',
-                '',
-                true,
-                true,
-                new Search(
-                    $architecture,
-                    false
-                )
-            )
-        );
-        if (!is_null($repository)) {
-            $datatablesRequest->addColumn(
-                new Column(
-                    0,
-                    'repository.name',
-                    '',
-                    true,
-                    true,
-                    new Search(
-                        $repository,
-                        false
-                    )
-                )
-            );
-        }
-        return $datatablesRequest;
     }
 
     /**
@@ -149,6 +58,25 @@ class PackagesController extends AbstractController
      */
     public function datatablesAction(DatatablesRequest $request): Response
     {
-        return $this->json($this->createDatatablesResponse($request));
+        $columnConfiguration = (new DatatablesColumnConfiguration())
+            ->addCompareableColumn('repository.name', 'repository.name')
+            ->addCompareableColumn('architecture', 'repository.architecture')
+            ->addTextSearchableColumn('name', 'package.name')
+            ->addTextSearchableColumn('description', 'package.description')
+            ->addTextSearchableColumn('groups', 'package.groups')
+            ->addOrderableColumn('builddate', 'package.buildDate')
+            ->addOrderableColumn('name', 'package.name');
+
+        return $this->json(
+            $this->datatablesQuery->getResult(
+                $request,
+                $columnConfiguration,
+                $this->packageRepository
+                    ->createQueryBuilder('package')
+                    ->addSelect('repository')
+                    ->join('package.repository', 'repository'),
+                $this->packageRepository->getSize()
+            )
+        );
     }
 }

@@ -14,6 +14,7 @@ $(document).ready(function () {
     'serverSide': true,
     'order': [[1, 'desc']],
     'searchDelay': 100,
+    'pagingType': 'numbers',
     'columns': [
       {
         'data': 'version',

@@ -17,19 +17,12 @@ class PackageDatabaseDownloaderTest extends TestCase
     /** @var PackageDatabaseDownloader */
     private $downloader;
 
-    public function setUp()
+    public function setUp(): void
     {
         /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $this->guzzleClient = $this->createMock(ClientInterface::class);
         $this->downloader = new PackageDatabaseDownloader($this->guzzleClient, $packageDatabaseMirror);
-    }
-
-    public function testDownloadReturnsFile()
-    {
-        $this->guzzleClient->method('request')->willReturn(new Response());
-        $download = $this->downloader->download('', '');
-        $this->assertInstanceOf(\SplFileObject::class, $download);
     }
 
     public function testFileModificationTimeIsInSyncWithServerResponse()

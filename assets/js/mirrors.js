@@ -70,6 +70,7 @@ $(document).ready(function () {
     'lengthMenu': [25, 50, 100],
     'pageLength': 25,
     'order': [[4, 'desc']],
+    'pagingType': 'numbers',
     'columns': [
       {
         'data': 'url',

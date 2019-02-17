@@ -79,7 +79,7 @@ class Repository implements \JsonSerializable
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getMTime(): ?\DateTime
     {

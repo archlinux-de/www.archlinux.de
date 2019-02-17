@@ -12,6 +12,11 @@ external_wiki:
     host: wiki.archlinux.de
     schemes: ['https']
 
+external_aur:
+    path: /
+    host: aur.archlinux.de
+    schemes: ['https']
+
 external_contact:
     path: /contact
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction

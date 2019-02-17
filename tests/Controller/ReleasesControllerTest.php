@@ -40,8 +40,8 @@ class ReleasesControllerTest extends DatabaseTestCase
         $crawler = $client->request('GET', '/releases/2018.01.01');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertContains('2018.01.01', $crawler->filter('h1')->text());
-        $this->assertContains('release.iso', $client->getResponse()->getContent());
+        $this->assertStringContainsString('2018.01.01', $crawler->filter('h1')->text());
+        $this->assertStringContainsString('release.iso', $client->getResponse()->getContent());
     }
 
     public function testDatatablesAction()

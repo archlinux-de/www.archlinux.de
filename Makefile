@@ -56,6 +56,7 @@ shell-node:
 	${NODE-RUN} bash
 
 test:
+	${PHP-RUN} composer validate
 	${PHP-RUN} vendor/bin/phpcs
 	${NODE-RUN} node_modules/.bin/standard 'assets/js/**/*.js' '*.js'
 	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'

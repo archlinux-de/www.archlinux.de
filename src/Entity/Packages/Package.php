@@ -553,7 +553,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getMTime(): ?\DateTime
     {
@@ -679,7 +679,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUrl(): ?string
     {
@@ -697,7 +697,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return string[]
+     * @return string[]|null
      */
     public function getLicenses(): ?array
     {

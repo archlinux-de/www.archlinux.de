@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class DatabaseTestCase extends KernelTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         static::bootKernel();
@@ -29,7 +29,7 @@ class DatabaseTestCase extends KernelTestCase
     protected function isPersistentDatabase(): bool
     {
         $params = $this->getEntityManager()->getConnection()->getParams();
-        return (isset($params['path']) && $params['path']) || (isset($params['dbname']) && $params['dbname']);
+        return !empty($params['path']) || !empty($params['dbname']);
     }
 
     /**
@@ -79,7 +79,7 @@ class DatabaseTestCase extends KernelTestCase
         ]));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         if ($this->isPersistentDatabase()) {
             $this->dropDatabase();

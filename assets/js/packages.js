@@ -45,17 +45,15 @@ $(document).ready(function () {
   const dataTable = $('#packages')
   const packageUrlTemplate = dataTable.data('packageUrlTemplate')
   const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
-  const recordsTotal = dataTable.data('recordsTotal')
-  const recordsFiltered = dataTable.data('recordsFiltered')
   dataTable.DataTable({
     'language': language,
     'lengthMenu': [25, 50, 100],
     'pageLength': 25,
-    'deferLoading': [recordsFiltered, recordsTotal],
     'processing': false,
     'serverSide': true,
     'order': [[6, 'desc']],
     'searchDelay': 100,
+    'pagingType': 'numbers',
     'columns': [
       {
         'data': 'repository.name',
@@ -81,19 +79,19 @@ $(document).ready(function () {
         'orderable': true,
         'searchable': true,
         'render': Renderer.renderName(packageUrlTemplate),
-        'className': 'text-nowrap'
+        'className': 'text-break'
       },
       {
         'data': 'version',
         'orderable': false,
         'searchable': false,
-        'className': 'break-word mw-10vw'
+        'className': 'text-break'
       },
       {
         'data': 'description',
         'orderable': false,
         'searchable': true,
-        'className': 'mw-50vw d-none d-sm-table-cell'
+        'className': 'text-break d-none d-sm-table-cell'
       },
       {
         'data': 'builddate',
@@ -108,9 +106,6 @@ $(document).ready(function () {
         'searchable': true,
         'visible': false
       }
-    ],
-    'initComplete': function () {
-      dataTable.removeClass('invisible')
-    }
+    ]
   })
 })

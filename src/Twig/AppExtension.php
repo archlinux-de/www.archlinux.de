@@ -5,7 +5,7 @@ namespace App\Twig;
 class AppExtension extends \Twig_Extension
 {
     /**
-     * @return array
+     * @return \Twig_Filter[]
      */
     public function getFilters(): array
     {

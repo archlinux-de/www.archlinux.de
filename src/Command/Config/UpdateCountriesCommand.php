@@ -53,8 +53,9 @@ class UpdateCountriesCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $codes = [];
         /** @var Country $country */
@@ -71,5 +72,7 @@ class UpdateCountriesCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

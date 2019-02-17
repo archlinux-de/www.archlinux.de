@@ -5,16 +5,16 @@
 {% block canonical %}{{ absolute_url(path('app_news_item', {'slug': news.slug})) }}{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">{{ news.title }}</h1>
-    <div class="container ml-0 pl-0">
+    <main role="main" class="container">
+        <h1 class="mb-4">{{ news.title }}</h1>
         <div class="mb-3 text-muted">
             {{ news.lastModified | date('d.m.Y') }}
             &ndash; <a class="text-muted" href="{{ news.author.uri }}">{{ news.author.name }}</a>
         </div>
-        <div class="break-word mb-4">
+        <div class="text-break mb-4">
             {{ news.description | purify('news') }}
         </div>
         <a class="btn btn-outline-secondary btn-sm" role="button" href="{{ path('app_news_index') }}">zum Archiv</a>
         <a class="btn btn-primary btn-sm" role="button" href="{{ news.link }}">Kommentare</a>
-    </div>
+    </main>
 {% endblock %}
