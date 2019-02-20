@@ -25,5 +25,5 @@
     "watch": "encore dev --watch",
     "build": "encore production"
   },
-  "browserslist": "> 0.5% in DE"
+  "browserslist": ">= 1% in DE"
 }
