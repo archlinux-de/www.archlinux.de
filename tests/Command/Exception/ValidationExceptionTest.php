@@ -38,9 +38,9 @@ class ValidationExceptionTest extends TestCase
 
         $requestException = new ValidationException($violationList);
 
-        $this->assertContains('foo', $requestException->getMessage());
-        $this->assertContains('bar', $requestException->getMessage());
-        $this->assertContains('nope', $requestException->getMessage());
-        $this->assertContains('baz', $requestException->getMessage());
+        $this->assertStringContainsString('foo', $requestException->getMessage());
+        $this->assertStringContainsString('bar', $requestException->getMessage());
+        $this->assertStringContainsString('nope', $requestException->getMessage());
+        $this->assertStringContainsString('baz', $requestException->getMessage());
     }
 }
