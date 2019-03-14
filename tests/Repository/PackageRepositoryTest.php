@@ -47,7 +47,9 @@ class PackageRepositoryTest extends DatabaseTestCase
         $packageRepository = $entityManager->getRepository(Package::class);
         $inverseRelations = $packageRepository->findByInverseRelationType($glibc, Dependency::class);
         $this->assertCount(1, $inverseRelations);
-        $this->assertEquals($pacman->getName(), array_shift($inverseRelations)->getName());
+        $inverseRelation = array_shift($inverseRelations);
+        $this->assertInstanceOf(Package::class, $inverseRelation);
+        $this->assertEquals($pacman->getName(), $inverseRelation->getName());
     }
 
     public function testFindByRepositoryAndName()
@@ -69,6 +71,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
         $databasePacman = $packageRepository->findByRepositoryAndName($coreRepository, $pacman->getName());
+        $this->assertInstanceOf(Package::class, $databasePacman);
         $this->assertEquals($pacman->getId(), $databasePacman->getId());
     }
 
@@ -132,7 +135,9 @@ class PackageRepositoryTest extends DatabaseTestCase
         $packageRepository = $entityManager->getRepository(Package::class);
         $packages = $packageRepository->findByRepositoryOlderThan($coreRepository, $oldMtime);
         $this->assertCount(1, $packages);
-        $this->assertEquals($pacman->getId(), array_shift($packages)->getId());
+        $package = array_shift($packages);
+        $this->assertInstanceOf(Package::class, $package);
+        $this->assertEquals($pacman->getId(), $package->getId());
     }
 
     public function testFindLatestByArchitecture()

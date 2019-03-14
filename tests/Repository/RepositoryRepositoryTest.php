@@ -21,6 +21,7 @@ class RepositoryRepositoryTest extends DatabaseTestCase
         /** @var RepositoryRepository $repositoryRepository */
         $repositoryRepository = $this->getRepository(Repository::class);
         $databaseRepository = $repositoryRepository->findByNameAndArchitecture('core', Architecture::X86_64);
+        $this->assertInstanceOf(Repository::class, $databaseRepository);
         $this->assertEquals($repository->getId(), $databaseRepository->getId());
     }
 }
