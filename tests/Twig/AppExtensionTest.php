@@ -4,6 +4,8 @@ namespace App\Tests\Twig;
 
 use App\Twig\AppExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 class AppExtensionTest extends TestCase
 {
@@ -22,13 +24,13 @@ class AppExtensionTest extends TestCase
     }
 
     /**
-     * @param \Twig_Extension $extension
+     * @param AbstractExtension $extension
      * @param string $filterName
      * @return callable|null
      */
-    private function getFilterCallableFromExtension(\Twig_Extension $extension, string $filterName): ?callable
+    private function getFilterCallableFromExtension(AbstractExtension $extension, string $filterName): ?callable
     {
-        /** @var \Twig_Filter $filter */
+        /** @var TwigFilter $filter */
         foreach ($extension->getFilters() as $filter) {
             if ($filter->getName() == $filterName) {
                 return $filter->getCallable();

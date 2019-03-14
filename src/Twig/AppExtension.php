@@ -2,17 +2,20 @@
 
 namespace App\Twig;
 
-class AppExtension extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+
+class AppExtension extends AbstractExtension
 {
     /**
-     * @return \Twig_Filter[]
+     * @return TwigFilter[]
      */
     public function getFilters(): array
     {
         return [
-            new \Twig_Filter('format_bytes', [$this, 'formatBytes']),
-            new \Twig_Filter('url_path', [$this, 'urlPath']),
-            new \Twig_Filter('url_host', [$this, 'urlHost']),
+            new TwigFilter('format_bytes', [$this, 'formatBytes']),
+            new TwigFilter('url_path', [$this, 'urlPath']),
+            new TwigFilter('url_host', [$this, 'urlHost']),
         ];
     }
 

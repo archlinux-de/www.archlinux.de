@@ -1,4 +1,4 @@
-{% spaceless %}
+{% filter spaceless %}
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
@@ -23,8 +23,8 @@
     {% for package in packages %}
         <url>
             <loc>{{ absolute_url(path(
-                'app_packagedetails_index',
-                {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+                    'app_packagedetails_index',
+                    {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
                 )) }}</loc>
             <lastmod>{{ package.mtime | date('Y-m-d') }}</lastmod>
         </url>
@@ -44,4 +44,4 @@
         </url>
     {% endfor %}
 </urlset>
-{% endspaceless %}
+{% endfilter %}
