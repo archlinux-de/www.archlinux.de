@@ -4,8 +4,8 @@ namespace App\Tests\Util;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -75,7 +75,8 @@ class DatabaseTestCase extends KernelTestCase
     protected function createDatabaseSchema()
     {
         $this->runCommand(new ArrayInput([
-            'command' => 'doctrine:schema:create'
+            'command' => 'doctrine:schema:create',
+            '--quiet' => true
         ]));
     }
 
@@ -97,11 +98,11 @@ class DatabaseTestCase extends KernelTestCase
     }
 
     /**
-     * @return Client
+     * @return KernelBrowser
      */
-    protected function getClient(): Client
+    protected function getClient(): KernelBrowser
     {
-        /** @var Client $client */
+        /** @var KernelBrowser $client */
         $client = static::$container->get('test.client');
         return $client;
     }
