@@ -45,7 +45,8 @@ class DatabaseTestCase extends KernelTestCase
         $this->runCommand(new ArrayInput([
             'command' => 'doctrine:database:drop',
             '--force' => true,
-            '--if-exists' => true
+            '--if-exists' => true,
+            '--quiet' => true
         ]));
     }
 
