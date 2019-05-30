@@ -196,12 +196,6 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertEquals('pacman', $responseData['data'][0]['name']);
     }
 
-    public function testCache()
-    {
-        $this->testEmptyRequest();
-        $this->testEmptyRequest();
-    }
-
     public function testEmptyRequest()
     {
         $client = $this->getClient();
