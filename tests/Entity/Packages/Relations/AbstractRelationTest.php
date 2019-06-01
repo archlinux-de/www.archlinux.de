@@ -29,6 +29,10 @@ class AbstractRelationTest extends TestCase
             ['php>=7.2', 'php', '>=7.2'],
             ['php:foo', 'php', null],
             ['php', 'php', null],
+            ['openssl-1.0', 'openssl-1.0', null],
+            ['openssl-1.0>1.0', 'openssl-1.0', '>1.0'],
+            ['foo+bar', 'foo+bar', null],
+            ['foo@123', 'foo@123', null],
             ['🐱', '🐱', null]
         ];
     }

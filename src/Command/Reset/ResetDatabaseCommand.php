@@ -11,6 +11,7 @@ use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,13 +27,17 @@ class ResetDatabaseCommand extends Command
     /** @var array */
     private $locks = [];
 
+    /** @var CacheItemPoolInterface */
+    private $cache;
+
     /**
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, CacheItemPoolInterface $cache)
     {
         parent::__construct();
         $this->entityManager = $entityManager;
+        $this->cache = $cache;
     }
 
     protected function configure(): void
@@ -59,6 +64,9 @@ class ResetDatabaseCommand extends Command
                 $classNames,
                 [AbstractRelation::class, Files::class, Package::class, Repository::class]
             );
+
+            $item = $this->cache->getItem('UpdatePackages-lastupdate')->set(0);
+            $this->cache->save($item);
         }
         if ($input->getOption('countries')) {
             $this->lock('countries.lock');
