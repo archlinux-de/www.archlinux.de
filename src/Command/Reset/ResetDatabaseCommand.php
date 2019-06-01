@@ -32,6 +32,7 @@ class ResetDatabaseCommand extends Command
 
     /**
      * @param EntityManagerInterface $entityManager
+     * @param CacheItemPoolInterface $cache
      */
     public function __construct(EntityManagerInterface $entityManager, CacheItemPoolInterface $cache)
     {
