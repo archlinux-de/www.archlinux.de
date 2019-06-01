@@ -5,6 +5,7 @@ namespace App\Command\Reset;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Entity\NewsItem;
+use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
@@ -54,7 +55,10 @@ class ResetDatabaseCommand extends Command
         $classNames = [];
         if ($input->getOption('packages')) {
             $this->lock('packages.lock');
-            $classNames = array_merge($classNames, [AbstractRelation::class, Package::class, Repository::class]);
+            $classNames = array_merge(
+                $classNames,
+                [AbstractRelation::class, Files::class, Package::class, Repository::class]
+            );
         }
         if ($input->getOption('countries')) {
             $this->lock('countries.lock');

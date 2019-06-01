@@ -10,6 +10,8 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
+use Doctrine\DBAL\FetchMode;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,20 +33,26 @@ class ValidatePackagesCommand extends Command
     /** @var PackageRepository */
     private $packageRepository;
 
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param RepositoryRepository $repositoryRepository
      * @param PackageRepository $packageRepository
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         PackageDatabaseDownloader $packageDatabaseDownloader,
         RepositoryRepository $repositoryRepository,
-        PackageRepository $packageRepository
+        PackageRepository $packageRepository,
+        EntityManagerInterface $entityManager
     ) {
         parent::__construct();
         $this->packageDatabaseDownloader = $packageDatabaseDownloader;
         $this->repositoryRepository = $repositoryRepository;
         $this->packageRepository = $packageRepository;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -73,6 +81,16 @@ class ValidatePackagesCommand extends Command
 
         foreach ($this->findObsoletePackages() as $repo => $package) {
             $output->writeln(sprintf('Obsolete package: %s [%s]', $package->getName(), $repo));
+            $result = 1;
+        }
+
+        foreach ($this->findOrphanedFiles() as $filesId) {
+            $output->writeln(sprintf('Orphaned files: %d', $filesId));
+            $result = 1;
+        }
+
+        foreach ($this->findOrphanedRelations() as $packageId) {
+            $output->writeln(sprintf('Orphaned relation for package: %d', $packageId));
             $result = 1;
         }
 
@@ -131,5 +149,35 @@ class ValidatePackagesCommand extends Command
                 }
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function findOrphanedFiles(): array
+    {
+        return $this
+            ->entityManager
+            ->getConnection()
+            ->executeQuery(
+                'SELECT files.id FROM files WHERE NOT EXISTS '
+                . '(SELECT * FROM package WHERE files.id = package.files_id)'
+            )
+            ->fetchAll(FetchMode::COLUMN);
+    }
+
+    /**
+     * @return array
+     */
+    private function findOrphanedRelations(): array
+    {
+        return $this
+            ->entityManager
+            ->getConnection()
+            ->executeQuery(
+                'SELECT packages_relation.source_id FROM packages_relation WHERE NOT EXISTS '
+                . '(SELECT * FROM package WHERE packages_relation.source_id = package.id)'
+            )
+            ->fetchAll(FetchMode::COLUMN);
     }
 }

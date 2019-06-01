@@ -278,7 +278,8 @@ class Package implements \JsonSerializable
      *     targetEntity="App\Entity\Packages\Files",
      *     cascade={"remove", "persist"},
      *     fetch="LAZY",
-     *     inversedBy="package"
+     *     inversedBy="package",
+     *     orphanRemoval=true
      * )
      */
     private $files;
