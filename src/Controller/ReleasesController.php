@@ -7,11 +7,15 @@ use App\Repository\ReleaseRepository;
 use DatatablesApiBundle\DatatablesColumnConfiguration;
 use DatatablesApiBundle\DatatablesQuery;
 use DatatablesApiBundle\DatatablesRequest;
+use FeedIo\Factory;
+use FeedIo\Feed;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ReleasesController extends AbstractController
 {
@@ -82,5 +86,54 @@ class ReleasesController extends AbstractController
             'releases/release.html.twig',
             ['release' => $release]
         );
+    }
+
+    /**
+     * @Route(
+     *     "/releases/feed.{_format}",
+     *     methods={"GET"},
+     *     defaults={"_format": "atom"},
+     *     requirements={"_format": "atom|rss|json"}
+     * )
+     * @Cache(smaxage="900")
+     * @param string $_format
+     * @param Packages $assetPackages
+     * @return Response
+     */
+    public function feedAction(string $_format, Packages $assetPackages): Response
+    {
+        $feed = new Feed();
+        $feedUrl = $this->generateUrl('app_releases_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $feed->setUrl($feedUrl);
+        $feed->setTitle('Arch Linux Releases');
+        $feed->setPublicId($feedUrl);
+        $feed->setLink($this->generateUrl('app_releases_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
+
+        $icon = $feed->newElement();
+        $icon->setName('icon')->setValue($assetPackages->getUrl('build/images/archicon.svg'));
+        $feed->addElement($icon);
+
+        $logo = $feed->newElement();
+        $logo->setName('logo')->setValue($assetPackages->getUrl('build/images/archicon.svg'));
+        $feed->addElement($logo);
+
+        foreach ($this->releaseRepository->findAllAvailable() as $release) {
+            $releaseUrl = $this->generateUrl(
+                'app_releases_release',
+                ['version' => $release->getVersion()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+            $item = $feed->newItem();
+            $item->setPublicId($releaseUrl);
+            $item->setTitle($release->getVersion());
+            $item->setLastModified($release->getReleaseDate());
+            $item->setLink($releaseUrl);
+            $item->setDescription($release->getInfo());
+
+            $feed->add($item);
+        }
+
+        $feedIo = Factory::create()->getFeedIo();
+        return (new Response($feedIo->format($feed, $_format)));
     }
 }

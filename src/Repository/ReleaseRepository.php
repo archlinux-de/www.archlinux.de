@@ -73,4 +73,17 @@ class ReleaseRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @return Release[]
+     */
+    public function findAllAvailable(): array
+    {
+        return $this
+            ->createQueryBuilder('release')
+            ->where('release.available = true')
+            ->orderBy('release.releaseDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

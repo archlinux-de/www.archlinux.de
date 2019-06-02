@@ -103,4 +103,25 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $releaseRepository = $this->getRepository(Release::class);
         $this->assertEquals(2, $releaseRepository->getSize());
     }
+
+    public function testFindAllAvailable()
+    {
+        $release = new Release('2018-01-01');
+        $release->setAvailable(true);
+        $release->setInfo('');
+        $release->setIsoUrl('');
+        $release->setCreated(new \DateTime());
+        $release->setReleaseDate(new \DateTime());
+
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($release);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        /** @var ReleaseRepository $releaseRepository */
+        $releaseRepository = $this->getRepository(Release::class);
+        $releases = $releaseRepository->findAllAvailable();
+        $this->assertCount(1, $releases);
+        $this->assertEquals($release->getVersion(), $releases[0]->getVersion());
+    }
 }
