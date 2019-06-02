@@ -48,7 +48,7 @@ class MirrorRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('mirror')
             ->where('mirror.protocol = :protocol')
             ->andWhere('mirror.country = :country')
-            ->andWhere('mirror.lastSync > :lastsync')
+            ->andWhere('mirror.lastSync > DATE_ADD(:lastsync, mirror.delay, \'second\')')
             ->andWhere('mirror.active = true')
             ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
@@ -67,7 +67,7 @@ class MirrorRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('mirror')
             ->where('mirror.protocol = :protocol')
-            ->andWhere('mirror.lastSync > :lastsync')
+            ->andWhere('mirror.lastSync > DATE_ADD(:lastsync, mirror.delay, \'second\')')
             ->andWhere('mirror.active = true')
             ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
