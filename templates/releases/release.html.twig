@@ -60,7 +60,7 @@
                     {% endif %}
                     <tr>
                         <th>Veröffentlichung</th>
-                        <td>{{ release.releaseDate | date }}</td>
+                        <td>{{ release.releaseDate | date('d.m.Y') }}</td>
                     </tr>
                     <tr>
                         <th>Erstellung</th>
