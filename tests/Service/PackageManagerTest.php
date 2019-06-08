@@ -98,9 +98,7 @@ class PackageManagerTest extends TestCase
             ->willReturn($packageDatabaseFile);
         $packageDatabaseDownloader
             ->expects($this->never())
-            ->method('createDatabase')
-            ->with($packageDatabaseFile)
-            ->willReturn([$databasePackage]);
+            ->method('createDatabase');
 
         /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
