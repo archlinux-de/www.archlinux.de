@@ -12,17 +12,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class DatabaseTestCase extends WebTestCase
 {
-    /**
-     * @return KernelBrowser
-     */
-    protected static function getClient(): KernelBrowser
-    {
-        if (!static::$client instanceof KernelBrowser) {
-            static::fail();
-        }
-
-        return static::$client;
-    }
+    /** @var KernelBrowser */
+    protected static $client;
 
     /**
      * @param string $className
@@ -38,13 +29,23 @@ class DatabaseTestCase extends WebTestCase
      */
     protected static function getEntityManager(): EntityManagerInterface
     {
-        return static::$container->get('doctrine.orm.entity_manager');
+        $container = static::getClient()->getContainer();
+        static::assertNotNull($container);
+        return $container->get('doctrine.orm.entity_manager');
+    }
+
+    /**
+     * @return KernelBrowser
+     */
+    protected static function getClient(): KernelBrowser
+    {
+        return static::$client;
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-        static::createClient();
+        static::$client = static::createClient();
 
         if (static::isPersistentDatabase()) {
             static::dropDatabase();
@@ -77,7 +78,7 @@ class DatabaseTestCase extends WebTestCase
      */
     protected static function runCommand(ArrayInput $input): void
     {
-        $application = new Application(static::$kernel);
+        $application = new Application(static::getClient()->getKernel());
         $application->setAutoExit(false);
 
         $output = new BufferedOutput();

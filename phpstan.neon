@@ -17,3 +17,8 @@ parameters:
 		- public
 		- config
 		- bin
+	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		-
+			path: %rootDir%/../../../tests/Controller/*
+			message: '#on an unknown class Symfony\\Component\\HttpKernel\\Response#'
