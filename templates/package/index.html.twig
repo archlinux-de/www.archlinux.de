@@ -189,22 +189,21 @@
                         </div>
                     {% endif %}
                 {% endmacro %}
-                {% import _self as macro %}
 
                 <div class="row">
-                    {{ macro.relate('von', package.dependencies) }}
-                    {{ macro.relate('optional von', package.optionalDependencies) }}
+                    {{ _self.relate('von', package.dependencies) }}
+                    {{ _self.relate('optional von', package.optionalDependencies) }}
 
-                    {{ macro.relate('stellt bereit', package.provisions) }}
-                    {{ macro.relate('ersetzt', package.replacements) }}
-                    {{ macro.relate('kollidiert mit', package.conflicts) }}
+                    {{ _self.relate('stellt bereit', package.provisions) }}
+                    {{ _self.relate('ersetzt', package.replacements) }}
+                    {{ _self.relate('kollidiert mit', package.conflicts) }}
 
-                    {{ macro.relate('Bauen von', package.makeDependencies) }}
-                    {{ macro.relate('Test von', package.checkDependencies) }}
+                    {{ _self.relate('Bauen von', package.makeDependencies) }}
+                    {{ _self.relate('Test von', package.checkDependencies) }}
 
-                    {{ macro.related('benötigt von', inverse_depends) }}
-                    {{ macro.related('optional für', inverse_optdepends) }}
-                    {{ macro.related('Zum Bauen von', inverse_makedepends) }}
+                    {{ _self.related('benötigt von', inverse_depends) }}
+                    {{ _self.related('optional für', inverse_optdepends) }}
+                    {{ _self.related('Zum Bauen von', inverse_makedepends) }}
                 </div>
             </div>
 
