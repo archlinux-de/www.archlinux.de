@@ -17,6 +17,7 @@ parameters:
 		- public
 		- config
 		- bin
+	reportUnmatchedIgnoredErrors: false
 	ignoreErrors:
 		-
 			path: %rootDir%/../../../tests/Controller/*
