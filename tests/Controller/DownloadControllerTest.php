@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\Mirror;
 use App\Entity\Release;
 use App\Entity\Torrent;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 /**
  * @covers \App\Controller\DownloadController

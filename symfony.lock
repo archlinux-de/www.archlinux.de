@@ -218,6 +218,12 @@
     "pierres/datatables-api-bundle": {
         "version": "1.0.0"
     },
+    "pierres/doctrine-migrations-test": {
+        "version": "1.0.0"
+    },
+    "pierres/symfony-database-test": {
+        "version": "1.0.0"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },

@@ -10,7 +10,7 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 class AbstractRelationRepositoryTest extends DatabaseTestCase
 {

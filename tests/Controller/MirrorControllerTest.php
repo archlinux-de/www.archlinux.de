@@ -8,7 +8,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Entity\Torrent;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 /**
  * @covers \App\Controller\MirrorController

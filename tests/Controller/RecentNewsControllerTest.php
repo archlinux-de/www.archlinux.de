@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 /**
  * @covers \App\Controller\RecentNewsController

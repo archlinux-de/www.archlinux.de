@@ -5,7 +5,7 @@ namespace App\Tests\Repository;
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 class NewsItemRepositoryTest extends DatabaseTestCase
 {

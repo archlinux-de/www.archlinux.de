@@ -4,7 +4,7 @@ namespace App\Tests\Repository;
 
 use App\Entity\Release;
 use App\Repository\ReleaseRepository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 class ReleaseRepositoryTest extends DatabaseTestCase
 {

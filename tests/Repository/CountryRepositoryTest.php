@@ -4,7 +4,7 @@ namespace App\Tests\Repository;
 
 use App\Entity\Country;
 use App\Repository\CountryRepository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 class CountryRepositoryTest extends DatabaseTestCase
 {

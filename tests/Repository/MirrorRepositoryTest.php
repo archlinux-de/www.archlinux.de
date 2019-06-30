@@ -5,7 +5,7 @@ namespace App\Tests\Repository;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 class MirrorRepositoryTest extends DatabaseTestCase
 {

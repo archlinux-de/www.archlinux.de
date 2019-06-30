@@ -6,7 +6,7 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 /**
  * @covers \App\Controller\PackageDetailsController

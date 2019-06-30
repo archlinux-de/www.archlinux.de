@@ -7,7 +7,7 @@ use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\FilesRepository;
-use App\Tests\Util\DatabaseTestCase;
+use SymfonyDatabaseTest\DatabaseTestCase;
 
 class FilesRepositoryTest extends DatabaseTestCase
 {
