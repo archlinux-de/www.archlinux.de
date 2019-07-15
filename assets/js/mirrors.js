@@ -66,63 +66,63 @@ class Renderer {
 
 $(document).ready(function () {
   $('#mirrors').DataTable({
-    'language': language,
-    'lengthMenu': [25, 50, 100],
-    'pageLength': 25,
-    'order': [[4, 'desc']],
-    'pagingType': 'numbers',
-    'columns': [
+    language: language,
+    lengthMenu: [25, 50, 100],
+    pageLength: 25,
+    order: [[4, 'desc']],
+    pagingType: 'numbers',
+    columns: [
       {
-        'data': 'url',
-        'orderable': false,
-        'render': Renderer.renderUrl
+        data: 'url',
+        orderable: false,
+        render: Renderer.renderUrl
       },
       {
-        'data': 'country',
-        'className': 'd-none d-md-table-cell',
-        'render': Renderer.renderCountry
+        data: 'country',
+        className: 'd-none d-md-table-cell',
+        render: Renderer.renderCountry
       },
       {
-        'data': 'durationAvg',
-        'searchable': false,
-        'className': 'd-none d-lg-table-cell',
-        'render': Renderer.renderDuration
+        data: 'durationAvg',
+        searchable: false,
+        className: 'd-none d-lg-table-cell',
+        render: Renderer.renderDuration
       },
       {
-        'data': 'delay',
-        'searchable': false,
-        'className': 'd-none d-lg-table-cell',
-        'render': Renderer.renderDuration
+        data: 'delay',
+        searchable: false,
+        className: 'd-none d-lg-table-cell',
+        render: Renderer.renderDuration
       },
       {
-        'data': 'lastsync',
-        'searchable': false,
-        'className': 'd-none d-sm-table-cell',
-        'render': Renderer.renderTime
+        data: 'lastsync',
+        searchable: false,
+        className: 'd-none d-sm-table-cell',
+        render: Renderer.renderTime
       },
       {
-        'data': 'isos',
-        'searchable': false,
-        'className': 'd-none d-md-table-cell text-center',
-        'render': Renderer.renderBoolean
+        data: 'isos',
+        searchable: false,
+        className: 'd-none d-md-table-cell text-center',
+        render: Renderer.renderBoolean
       },
       {
-        'data': 'ipv4',
-        'searchable': false,
-        'className': 'd-none d-xl-table-cell text-center',
-        'render': Renderer.renderBoolean
+        data: 'ipv4',
+        searchable: false,
+        className: 'd-none d-xl-table-cell text-center',
+        render: Renderer.renderBoolean
       },
       {
-        'data': 'ipv6',
-        'searchable': false,
-        'className': 'd-none d-md-table-cell text-center',
-        'render': Renderer.renderBoolean
+        data: 'ipv6',
+        searchable: false,
+        className: 'd-none d-md-table-cell text-center',
+        render: Renderer.renderBoolean
       },
       {
-        'data': 'active',
-        'searchable': false,
-        'className': 'd-none d-xl-table-cell text-center',
-        'render': Renderer.renderBoolean
+        data: 'active',
+        searchable: false,
+        className: 'd-none d-xl-table-cell text-center',
+        render: Renderer.renderBoolean
       }
     ]
   })

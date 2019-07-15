@@ -29,7 +29,7 @@ Encore
   })
   .autoProvidejQuery()
   .autoProvideVariables({
-    'Popper': 'popper.js'
+    Popper: 'popper.js'
   })
 
 if (Encore.isProduction()) {
