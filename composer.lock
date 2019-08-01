@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "composer/ca-bundle",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "13a8d67799a4f1c0e6bb0abd788abbe9e95dee8e"
+                "reference": "33810d865dd06a674130fceb729b2f279dc79e8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/13a8d67799a4f1c0e6bb0abd788abbe9e95dee8e",
-                "reference": "13a8d67799a4f1c0e6bb0abd788abbe9e95dee8e",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/33810d865dd06a674130fceb729b2f279dc79e8c",
+                "reference": "33810d865dd06a674130fceb729b2f279dc79e8c",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2019-07-30T05:22:27+00:00"
+            "time": "2019-07-31T08:13:16+00:00"
         },
         {
             "name": "debril/feed-io",
