@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d80e2cf5c334c5ae6c7d35997b2c80d",
+    "content-hash": "9cdfaf761823bd468c36e096fe84895b",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -6687,8 +6687,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "The PHP Unit Testing framework.",
