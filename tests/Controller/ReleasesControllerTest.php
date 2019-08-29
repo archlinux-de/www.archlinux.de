@@ -41,6 +41,7 @@ class ReleasesControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertStringContainsString('2018.01.01', $crawler->filter('h1')->text());
+        $this->assertIsString($client->getResponse()->getContent());
         $this->assertStringContainsString('release.iso', $client->getResponse()->getContent());
     }
 
@@ -87,6 +88,7 @@ class ReleasesControllerTest extends DatabaseTestCase
         );
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(1, $responseData['data']);
         $this->assertEquals('2018.01.01', $responseData['data'][0]['version']);
@@ -112,6 +114,7 @@ class ReleasesControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $response = $client->getResponse()->getContent();
+        $this->assertIsString($response);
         $xml = \simplexml_load_string($response);
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());

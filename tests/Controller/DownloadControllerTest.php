@@ -43,9 +43,10 @@ class DownloadControllerTest extends DatabaseTestCase
         $primaryButtons = $crawler->filter('.btn-primary');
         $this->assertEquals(1, $primaryButtons->count());
         $this->assertNotNull($primaryButtons->getNode(0));
+        $this->assertNotNull($primaryButtons->getNode(0)->attributes->getNamedItem('href'));
         $this->assertStringContainsString(
             'archlinux-2018.01.01-x86_64.iso',
-            $primaryButtons->getNode(0)->getAttribute('href')
+            $primaryButtons->getNode(0)->attributes->getNamedItem('href')->nodeValue
         );
     }
 

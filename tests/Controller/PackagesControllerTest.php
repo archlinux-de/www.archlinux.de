@@ -19,6 +19,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $client->request('GET', '/packages/datatables', ['draw' => 42, 'length' => 1]);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertEquals(42, $responseData['draw']);
     }
@@ -84,6 +85,7 @@ class PackagesControllerTest extends DatabaseTestCase
         );
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(2, $responseData['data']);
         $this->assertEquals('pacman', $responseData['data'][0]['name']);
@@ -140,6 +142,7 @@ class PackagesControllerTest extends DatabaseTestCase
         );
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(1, $responseData['data']);
         $this->assertEquals('pacman', $responseData['data'][0]['name']);
@@ -191,6 +194,7 @@ class PackagesControllerTest extends DatabaseTestCase
         );
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(1, $responseData['data']);
         $this->assertEquals('pacman', $responseData['data'][0]['name']);
@@ -203,6 +207,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $client->request('GET', '/packages/datatables', ['draw' => 1, 'length' => 1]);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $this->assertJson($client->getResponse()->getContent());
         $this->assertStringContainsString(
             'application/json',

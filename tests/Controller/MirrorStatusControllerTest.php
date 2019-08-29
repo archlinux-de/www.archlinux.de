@@ -30,6 +30,7 @@ class MirrorStatusControllerTest extends DatabaseTestCase
         $response = $client->getResponse();
 
         $this->assertTrue($response->isSuccessful());
+        $this->assertIsString($response->getContent());
         $this->assertJson($response->getContent());
         $jsonArray = json_decode($response->getContent(), true);
         $this->assertCount(1, $jsonArray['data']);
@@ -49,6 +50,7 @@ class MirrorStatusControllerTest extends DatabaseTestCase
         $response = $client->getResponse();
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($response->getContent());
         $this->assertJson($response->getContent());
         $jsonArray = json_decode($response->getContent(), true);
         $this->assertCount(0, $jsonArray['data']);

@@ -43,6 +43,7 @@ class NewsControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals('Breaking News', $crawler->filter('h1')->text());
+        $this->assertIsString($client->getResponse()->getContent());
         $this->assertStringContainsString('Hell has frozen over!', $client->getResponse()->getContent());
     }
 
@@ -91,6 +92,7 @@ class NewsControllerTest extends DatabaseTestCase
         );
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(1, $responseData['data']);
         $this->assertEquals('Breaking News', $responseData['data'][0]['title']);

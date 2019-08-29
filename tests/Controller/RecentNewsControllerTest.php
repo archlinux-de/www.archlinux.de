@@ -34,6 +34,7 @@ class RecentNewsControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $response = $client->getResponse()->getContent();
+        $this->assertIsString($response);
         $xml = \simplexml_load_string($response);
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());

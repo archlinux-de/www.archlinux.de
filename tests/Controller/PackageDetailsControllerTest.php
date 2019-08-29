@@ -42,6 +42,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals('pacman', $crawler->filter('h1')->text());
         $content = $client->getResponse()->getContent();
+        $this->assertIsString($content);
         $this->assertStringContainsString('5.0.2-2', $content);
     }
 
@@ -95,6 +96,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $client->request('GET', '/packages/core/x86_64/pacman/files');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $this->assertJson($client->getResponse()->getContent());
         $files = json_decode($client->getResponse()->getContent(), true);
         $this->assertEquals($pacmanFiles, $files);

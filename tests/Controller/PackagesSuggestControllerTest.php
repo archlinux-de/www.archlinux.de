@@ -19,6 +19,7 @@ class PackagesSuggestControllerTest extends DatabaseTestCase
         $client->request('GET', '/packages/suggest', ['term' => '']);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(0, $responseData);
     }
@@ -50,6 +51,7 @@ class PackagesSuggestControllerTest extends DatabaseTestCase
         $client->request('GET', '/packages/suggest', ['term' => 'pac']);
 
         $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
         $this->assertCount(1, $responseData);
         $this->assertEquals('pacman', $responseData[0]);
