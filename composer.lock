@@ -64,16 +64,16 @@
         },
         {
             "name": "debril/feed-io",
-            "version": "v4.3.8",
+            "version": "v4.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alexdebril/feed-io.git",
-                "reference": "e805f342879bcf63daa7b1e0b338f8bc69740aaf"
+                "reference": "e713055e1c56704191bf20883c9d8b4c541ecf84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/e805f342879bcf63daa7b1e0b338f8bc69740aaf",
-                "reference": "e805f342879bcf63daa7b1e0b338f8bc69740aaf",
+                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/e713055e1c56704191bf20883c9d8b4c541ecf84",
+                "reference": "e713055e1c56704191bf20883c9d8b4c541ecf84",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "news",
                 "rss"
             ],
-            "time": "2019-04-19T07:39:58+00:00"
+            "time": "2019-09-03T11:29:11+00:00"
         },
         {
             "name": "doctrine/annotations",
