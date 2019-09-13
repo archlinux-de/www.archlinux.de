@@ -1,0 +1,12 @@
+name: security
+
+on:
+  schedule:
+    - cron: '0 5 */1 * *'
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: make test-security

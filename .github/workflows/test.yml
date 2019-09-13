@@ -3,11 +3,13 @@ name: test
 on:
   push:
   schedule:
-    - cron: '0 0 */1 * *'
+    - cron: '0 1 */1 * *'
 
 jobs:
-  update:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: make ci-build
+      - run: make install
+      - run: make test
+      - run: make test-db
