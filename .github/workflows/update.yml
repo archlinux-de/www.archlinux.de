@@ -12,7 +12,7 @@ jobs:
       - run: make update
       - run: make test
       - run: make test-db
-      - name: auto commit
+      - name: Run auto commit
         uses: stefanzweifel/git-auto-commit-action@v2.0.0
         with:
           commit_author_email: bob@archlinux.de
