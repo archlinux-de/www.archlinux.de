@@ -87,7 +87,7 @@ update:
 
 deploy:
 	yarn install
-	yarn run encore production
+	yarn run encore prod
 	composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader
 	sudo -u php-www bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 	sudo -u php-www bin/console app:config:update-countries
