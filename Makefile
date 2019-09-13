@@ -83,14 +83,12 @@ test-security:
 
 update:
 	${PHP-RUN} composer --no-interaction update
-	${PHP-RUN} rm -rf var/cache/*
 	${NODE-RUN} yarn upgrade --latest
 
 deploy:
 	yarn install
 	yarn run encore production
 	composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader
-	bin/console cache:clear
-	bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-	bin/console app:config:update-countries
-	bin/console app:update:repositories
+	sudo -u php-www bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+	sudo -u php-www bin/console app:config:update-countries
+	sudo -u php-www bin/console app:update:repositories
