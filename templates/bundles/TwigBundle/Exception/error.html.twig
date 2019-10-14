@@ -6,7 +6,7 @@
     <link rel="icon" href="{{ absolute_url(asset('build/images/archicon.svg')) }}" sizes="any" type="image/svg+xml">
     <link rel="icon" href="{{ absolute_url(asset('favicon.ico')) }}" type="image/x-icon">
     <title>Fehler: {{ status_text }}</title>
-    {{ encore_entry_link_tags('css/app') }}
+    {{ encore_entry_link_tags('base') }}
     <meta name="robots" content="noindex,nofollow"/>
 </head>
 <body>
@@ -24,6 +24,6 @@
         </div>
     </div>
 </div>
-{{ encore_entry_script_tags('js/app') }}
+{{ encore_entry_script_tags('base') }}
 </body>
 </html>

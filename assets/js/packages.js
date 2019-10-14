@@ -1,6 +1,7 @@
+import '@/js/base'
+import '@/js/_datatables'
+
 import $ from 'jquery'
-import 'datatables.net'
-import 'datatables.net-bs4'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
 class Renderer {

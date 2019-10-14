@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ encore_entry_link_tags('packages') }}
+{% endblock %}
+
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('js/packages') }}
+    {{ encore_entry_script_tags('packages') }}
 {% endblock %}
 
 {% block title %}Paket-Suche{% endblock %}

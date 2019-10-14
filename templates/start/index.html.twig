@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ encore_entry_link_tags('start') }}
+{% endblock %}
+
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('js/start') }}
+    {{ encore_entry_script_tags('start') }}
     <script type="application/ld+json">{% include('start/ld+json.json.twig') %}</script>
 {% endblock %}
 

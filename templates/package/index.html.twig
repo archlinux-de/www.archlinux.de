@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ encore_entry_link_tags('package') }}
+{% endblock %}
+
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('js/package') }}
+    {{ encore_entry_script_tags('package') }}
 {% endblock %}
 
 {% block title %}{{ package.name }}{% endblock %}

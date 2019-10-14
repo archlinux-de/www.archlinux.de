@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ encore_entry_link_tags('releases') }}
+{% endblock %}
+
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('js/releases') }}
+    {{ encore_entry_script_tags('releases') }}
 {% endblock %}
 
 {% block title %}Releases{% endblock %}

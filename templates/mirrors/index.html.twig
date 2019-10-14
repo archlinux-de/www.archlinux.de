@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ encore_entry_link_tags('mirrors') }}
+{% endblock %}
+
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('js/mirrors') }}
+    {{ encore_entry_script_tags('mirrors') }}
 {% endblock %}
 
 {% block title %}Mirror-Status{% endblock %}

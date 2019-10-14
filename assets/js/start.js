@@ -1,3 +1,6 @@
+import '@/js/base'
+import '@/css/start.scss'
+
 import $ from 'jquery'
 import AutoComplete from 'js-autocomplete'
 

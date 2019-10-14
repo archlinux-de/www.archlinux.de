@@ -1,3 +1,4 @@
+import '@/js/base'
 import $ from 'jquery'
 
 $(document).ready(function () {

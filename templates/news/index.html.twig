@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ encore_entry_link_tags('news') }}
+{% endblock %}
+
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('js/news') }}
+    {{ encore_entry_script_tags('news') }}
 {% endblock %}
 
 {% block title %}Neuigkeiten{% endblock %}

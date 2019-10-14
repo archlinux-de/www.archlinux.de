@@ -1,3 +1,7 @@
+@import "@/css/_bootstrap.scss";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
 .autocomplete-suggestions {
   text-align: left;
   cursor: default;

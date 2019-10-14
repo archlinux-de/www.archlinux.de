@@ -1,21 +1,18 @@
 const Encore = require('@symfony/webpack-encore')
 const CompressionPlugin = require('compression-webpack-plugin')
+const path = require('path')
 
 Encore
   .setOutputPath((process.env.PUBLIC_PATH || 'public') + '/build')
   .setPublicPath('/build')
-  .addEntry('js/app', './assets/js/app.js')
-  .addEntry('js/start', './assets/js/start.js')
-  .addEntry('js/packages', './assets/js/packages.js')
-  .addEntry('js/mirrors', './assets/js/mirrors.js')
-  .addEntry('js/package', './assets/js/package.js')
-  .addEntry('js/news', './assets/js/news.js')
-  .addEntry('js/releases', './assets/js/releases.js')
-  .addStyleEntry('css/app', './assets/css/app.scss')
-  .copyFiles({
-    from: 'assets/images',
-    to: 'images/[path][name].[hash:8].[ext]'
-  })
+  .addAliases({ '@': path.resolve(__dirname, 'assets') })
+  .addEntry('base', './assets/js/base.js')
+  .addEntry('start', './assets/js/start.js')
+  .addEntry('packages', './assets/js/packages.js')
+  .addEntry('mirrors', './assets/js/mirrors.js')
+  .addEntry('package', './assets/js/package.js')
+  .addEntry('news', './assets/js/news.js')
+  .addEntry('releases', './assets/js/releases.js')
   .splitEntryChunks()
   .enableSingleRuntimeChunk()
   .enableSassLoader()
@@ -24,7 +21,7 @@ Encore
   .enablePostCssLoader()
   .addLoader({
     test: /\.lang$/,
-    loader: './assets/js/lang-loader.js'
+    loader: './assets/js/_lang-loader.js'
   })
   .configureBabel(() => {}, {
     useBuiltIns: 'usage',

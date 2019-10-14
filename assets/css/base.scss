@@ -1,0 +1,12 @@
+@import "@/css/_bootstrap.scss";
+@import "~bootstrap";
+
+.navbar-border-brand {
+  border-bottom: 0.313rem solid $primary;
+}
+
+a.navbar-brand:focus,
+button.navbar-toggler:focus,
+a.nav-link:focus {
+  outline: 0;
+}
