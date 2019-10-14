@@ -6,6 +6,8 @@ import language from 'datatables.net-plugins/i18n/German.lang'
 
 const dataTable = $('#news')
 const newsItemUrlTemplate = dataTable.data('newsItemUrlTemplate')
+const ajaxUrl = dataTable.data('ajaxUrl')
+
 dataTable.DataTable({
   language: language,
   lengthMenu: [25, 50, 100],
@@ -15,10 +17,7 @@ dataTable.DataTable({
   order: [[0, 'desc']],
   searchDelay: 100,
   pagingType: 'numbers',
-  ajax: {
-    cache: true,
-    url: dataTable.data('ajaxUrl')
-  },
+  ajax: { cache: true, url: ajaxUrl },
   columns: [
     {
       data: 'lastModified',

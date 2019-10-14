@@ -7,6 +7,7 @@ import language from 'datatables.net-plugins/i18n/German.lang'
 const dataTable = $('#packages')
 const packageUrlTemplate = dataTable.data('packageUrlTemplate')
 const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
+const ajaxUrl = dataTable.data('ajaxUrl')
 
 const renderTime = (data, type) => {
   if (data) {
@@ -49,10 +50,7 @@ dataTable.DataTable({
   order: [[6, 'desc']],
   searchDelay: 100,
   pagingType: 'numbers',
-  ajax: {
-    cache: true,
-    url: dataTable.data('ajaxUrl')
-  },
+  ajax: { cache: true, url: ajaxUrl },
   columns: [
     {
       data: 'repository.name',

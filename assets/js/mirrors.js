@@ -5,6 +5,7 @@ import $ from 'jquery'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
 const dataTable = $('#mirrors')
+const ajaxUrl = dataTable.data('ajaxUrl')
 
 const renderDuration = (data, type) => {
   if (type === 'display' && data) {
@@ -71,10 +72,7 @@ dataTable.DataTable({
   pageLength: 25,
   order: [[4, 'desc']],
   pagingType: 'numbers',
-  ajax: {
-    cache: true,
-    url: dataTable.data('ajaxUrl')
-  },
+  ajax: { cache: true, url: ajaxUrl },
   columns: [
     {
       data: 'url',
