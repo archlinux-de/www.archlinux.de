@@ -26,10 +26,6 @@ Encore
     test: /\.lang$/,
     loader: './assets/js/lang-loader.js'
   })
-  .autoProvidejQuery()
-  .autoProvideVariables({
-    Popper: 'popper.js'
-  })
   .configureBabel(() => {}, {
     useBuiltIns: 'usage',
     corejs: 3
