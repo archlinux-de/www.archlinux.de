@@ -13,20 +13,15 @@ Encore
   .addEntry('package', './assets/js/package.js')
   .addEntry('news', './assets/js/news.js')
   .addEntry('releases', './assets/js/releases.js')
+  .copyFiles({ from: 'assets/images', to: 'images/[path][name].[hash:8].[ext]' })
   .splitEntryChunks()
   .enableSingleRuntimeChunk()
   .enableSassLoader()
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
   .enablePostCssLoader()
-  .addLoader({
-    test: /\.lang$/,
-    loader: './assets/js/_lang-loader.js'
-  })
-  .configureBabel(() => {}, {
-    useBuiltIns: 'usage',
-    corejs: 3
-  })
+  .addLoader({ test: /\.lang$/, loader: './assets/js/_lang-loader.js' })
+  .configureBabel(() => {}, { useBuiltIns: 'usage', corejs: 3 })
 
 if (Encore.isProduction()) {
   Encore.addPlugin(new CompressionPlugin())
