@@ -8,5 +8,5 @@
 a.navbar-brand:focus,
 button.navbar-toggler:focus,
 a.nav-link:focus {
-  outline: 0;
+  outline: 0; /* stylelint-disable-line plugin/no-unsupported-browser-features */
 }
