@@ -35,6 +35,7 @@
     "build": "encore production"
   },
   "browserslist": [
-    ">= 1% in DE"
+    ">= 1% in DE",
+    "not IE 11"
   ]
 }
