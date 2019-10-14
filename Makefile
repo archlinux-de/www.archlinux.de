@@ -58,7 +58,7 @@ shell-node:
 test:
 	${PHP-RUN} composer validate
 	${PHP-RUN} vendor/bin/phpcs
-	${NODE-RUN} node_modules/.bin/standard 'assets/js/**/*.js' '*.js'
+	${NODE-RUN} node_modules/.bin/eslint assets
 	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'
 	${PHP-RUN} bin/console lint:yaml config
 	${PHP-RUN} bin/console lint:twig templates
