@@ -20,7 +20,7 @@ class Renderer {
     return function (data, type) {
       if (type === 'display' && data) {
         const repositoryUrl = repositoryUrlTemplate
-          .replace('_repository_', data)
+          .replace('_repository_', encodeURI(data))
         return `<a href="${repositoryUrl}">${data}</a>`
       }
       return data
@@ -33,7 +33,7 @@ class Renderer {
         const packageUrl = packageUrlTemplate
           .replace('_repository_', row.repository.name)
           .replace('_architecture_', row.repository.architecture)
-          .replace('_package_', data)
+          .replace('_package_', encodeURI(data))
         return `<a href="${packageUrl}">${data}</a>`
       }
       return data
@@ -54,6 +54,10 @@ $(document).ready(function () {
     order: [[6, 'desc']],
     searchDelay: 100,
     pagingType: 'numbers',
+    ajax: {
+      cache: true,
+      url: dataTable.data('ajaxUrl')
+    },
     columns: [
       {
         data: 'repository.name',

@@ -67,16 +67,22 @@ class PackagesController extends AbstractController
             ->addOrderableColumn('builddate', 'package.buildDate')
             ->addOrderableColumn('name', 'package.name');
 
-        return $this->json(
-            $this->datatablesQuery->getResult(
-                $request,
-                $columnConfiguration,
-                $this->packageRepository
-                    ->createQueryBuilder('package')
-                    ->addSelect('repository')
-                    ->join('package.repository', 'repository'),
-                $this->packageRepository->getSize()
-            )
+        $response = $this->datatablesQuery->getResult(
+            $request,
+            $columnConfiguration,
+            $this->packageRepository
+                ->createQueryBuilder('package')
+                ->addSelect('repository')
+                ->join('package.repository', 'repository'),
+            $this->packageRepository->getSize()
         );
+
+        $jsonResponse = $this->json($response);
+        // Only cache the first draw
+        if ($response->getDraw() == 1) {
+            $jsonResponse->setMaxAge(300);
+            $jsonResponse->setSharedMaxAge(3600);
+        }
+        return $jsonResponse;
     }
 }

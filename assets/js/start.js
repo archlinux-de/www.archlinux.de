@@ -2,7 +2,7 @@ import $ from 'jquery'
 import AutoComplete from 'js-autocomplete'
 
 $(document).ready(function () {
-  const searchInput = document.getElementById('searchfield')
+  const searchInput = document.querySelector('#searchfield')
   const suggest = searchInput.dataset.suggest
   AutoComplete({
     selector: searchInput,

@@ -28,6 +28,14 @@ class MirrorStatusController extends AbstractController
      */
     public function datatablesAction(MirrorRepository $mirrorRepository): Response
     {
-        return $this->json(new DatatablesResponse($mirrorRepository->findSecure()));
+        $response = new DatatablesResponse($mirrorRepository->findSecure());
+
+        $jsonResponse = $this->json($response);
+        // Only cache the first draw
+        if ($response->getDraw() == 1) {
+            $jsonResponse->setMaxAge(300);
+            $jsonResponse->setSharedMaxAge(3600);
+        }
+        return $jsonResponse;
     }
 }

@@ -20,7 +20,7 @@
     <main role="main" class="container-fluid">
         <h1 class="mb-4">Paket-Suche</h1>
         <table id="packages" class="table table-striped table-bordered table-sm table-fixed" width="100%"
-               data-ajax="{{ path('app_packages_datatables') }}"
+               data-ajax-url="{{ path('app_packages_datatables') }}"
                data-search-cols='[{"search": "{{ repository }}"}, null, {"search": "{{ architecture }}"}, null, null, null, null, null]'
                data-search='{"search": "{{ search }}"}'
                data-package-url-template="{{ path('app_packagedetails_index', {'repo': '_repository_', 'arch': '_architecture_', 'pkgname': '_package_'}) }}"

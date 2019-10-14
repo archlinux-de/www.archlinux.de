@@ -15,6 +15,10 @@ $(document).ready(function () {
     order: [[1, 'desc']],
     searchDelay: 100,
     pagingType: 'numbers',
+    ajax: {
+      cache: true,
+      url: dataTable.data('ajaxUrl')
+    },
     columns: [
       {
         data: 'version',
@@ -23,7 +27,7 @@ $(document).ready(function () {
         render: function (data, type, row) {
           if (type === 'display' && data) {
             const releaseUrl = releaseUrlTemplate
-              .replace('1_version_', row.version)
+              .replace('1_version_', encodeURI(row.version))
             return `<a href="${releaseUrl}">${data}</a>`
           }
           return data

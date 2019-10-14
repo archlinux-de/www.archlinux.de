@@ -15,6 +15,10 @@ $(document).ready(function () {
     order: [[0, 'desc']],
     searchDelay: 100,
     pagingType: 'numbers',
+    ajax: {
+      cache: true,
+      url: dataTable.data('ajaxUrl')
+    },
     columns: [
       {
         data: 'lastModified',
@@ -39,7 +43,7 @@ $(document).ready(function () {
         render: function (data, type, row) {
           if (type === 'display' && data) {
             const newsItemUrl = newsItemUrlTemplate
-              .replace('1-slug', row.slug)
+              .replace('1-slug', encodeURI(row.slug))
             return `<a href="${newsItemUrl}">${data}</a>`
           }
           return data

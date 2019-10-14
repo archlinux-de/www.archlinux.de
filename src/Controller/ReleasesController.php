@@ -71,7 +71,13 @@ class ReleasesController extends AbstractController
             $this->releaseRepository->getSize()
         );
 
-        return $this->json($response);
+        $jsonResponse = $this->json($response);
+        // Only cache the first draw
+        if ($response->getDraw() == 1) {
+            $jsonResponse->setMaxAge(300);
+            $jsonResponse->setSharedMaxAge(3600);
+        }
+        return $jsonResponse;
     }
 
     /**

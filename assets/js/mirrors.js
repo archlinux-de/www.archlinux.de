@@ -65,12 +65,17 @@ class Renderer {
 }
 
 $(document).ready(function () {
-  $('#mirrors').DataTable({
+  const dataTable = $('#mirrors')
+  dataTable.DataTable({
     language: language,
     lengthMenu: [25, 50, 100],
     pageLength: 25,
     order: [[4, 'desc']],
     pagingType: 'numbers',
+    ajax: {
+      cache: true,
+      url: dataTable.data('ajaxUrl')
+    },
     columns: [
       {
         data: 'url',
