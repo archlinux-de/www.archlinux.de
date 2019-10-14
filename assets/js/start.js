@@ -1,16 +1,20 @@
 import '@/js/base'
 import '@/css/start.scss'
 
-import $ from 'jquery'
 import AutoComplete from 'js-autocomplete'
 
 const searchInput = document.querySelector('#searchfield')
-const suggest = searchInput.dataset.suggest
+const suggestApiUrl = searchInput.dataset.suggest
 AutoComplete({
   selector: searchInput,
   delay: 100,
   minChars: 1,
   source: (term, response) => {
-    $.getJSON(suggest, { term: term }, data => response(data))
+    fetch(
+      `${suggestApiUrl}?term=${encodeURI(term)}`,
+      { credentials: 'omit', headers: { Accept: 'application/json' } }
+    )
+      .then(response => response.json())
+      .then(data => response(data))
   }
 })
