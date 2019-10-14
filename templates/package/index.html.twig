@@ -217,7 +217,7 @@
                         data-toggle="collapse" data-target="#fileList"
                         aria-expanded="false" aria-controls="fileList">Dateien anzeigen
                 </button>
-                <ul id="fileList" class="d-none collapse list-unstyled ml-4 overflow-auto" data-ajax="{{ path(
+                <ul id="fileList" class="d-none collapse list-unstyled ml-4 overflow-auto" data-url="{{ path(
                     'app_packagedetails_files',
                     {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
                 ) }}">
