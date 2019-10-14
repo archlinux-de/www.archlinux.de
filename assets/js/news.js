@@ -24,7 +24,7 @@ dataTable.DataTable({
       orderable: true,
       searchable: false,
       className: 'd-none d-md-table-cell',
-      render: (data, type, row) => {
+      render: (data, type) => {
         if (data) {
           const date = new Date(data)
           if (type === 'display') {

@@ -7,6 +7,7 @@ import language from 'datatables.net-plugins/i18n/German.lang'
 const dataTable = $('#releases')
 const releaseUrlTemplate = dataTable.data('releaseUrlTemplate')
 const ajaxUrl = dataTable.data('ajaxUrl')
+
 dataTable.DataTable({
   language: language,
   lengthMenu: [25, 50, 100],
@@ -35,7 +36,7 @@ dataTable.DataTable({
       data: 'releaseDate',
       orderable: true,
       searchable: false,
-      render: (data, type, row) => {
+      render: (data, type) => {
         if (data) {
           const date = new Date(data)
           if (type === 'display') {
@@ -57,7 +58,7 @@ dataTable.DataTable({
       orderable: false,
       searchable: false,
       className: 'd-none d-md-table-cell',
-      render: (data, type, row) => {
+      render: (data, type) => {
         if (type === 'display' && data != null) {
           return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
         }

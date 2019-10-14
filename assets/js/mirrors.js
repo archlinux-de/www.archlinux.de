@@ -59,13 +59,6 @@ const renderUrl = (data, type) => {
   return data
 }
 
-const renderCountry = data => {
-  if (data && data.name) {
-    return data.name
-  }
-  return data
-}
-
 dataTable.DataTable({
   language: language,
   lengthMenu: [25, 50, 100],
@@ -82,7 +75,7 @@ dataTable.DataTable({
     {
       data: 'country',
       className: 'd-none d-md-table-cell',
-      render: renderCountry
+      render: data => data && data.name ? data.name : data
     },
     {
       data: 'durationAvg',
