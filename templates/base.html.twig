@@ -58,9 +58,9 @@
 
 {% block body %}{% endblock %}
 
-<footer class="container-fluid mt-auto py-3 text-right">
-    <a href="{{ path('app_legal_privacypolicy') }}">Datenschutz</a> &ndash;
-    <a href="{{ path('app_legal_impressum') }}">Impressum</a>
+<footer class="nav justify-content-end py-3">
+    <a href="{{ path('app_legal_privacypolicy') }}" class="nav-link">Datenschutz</a>
+    <a href="{{ path('app_legal_impressum') }}" class="nav-link">Impressum</a>
 </footer>
 
 {% block javascripts %}
