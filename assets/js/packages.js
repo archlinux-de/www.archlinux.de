@@ -4,8 +4,12 @@ import '@/js/_datatables'
 import $ from 'jquery'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
-class Renderer {
-  static renderTime (data, type) {
+$(document).ready(() => {
+  const dataTable = $('#packages')
+  const packageUrlTemplate = dataTable.data('packageUrlTemplate')
+  const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
+
+  const renderTime = (data, type) => {
     if (data) {
       const date = new Date(data)
       if (type === 'display') {
@@ -17,35 +21,26 @@ class Renderer {
     return data
   }
 
-  static renderRepository (repositoryUrlTemplate) {
-    return function (data, type) {
-      if (type === 'display' && data) {
-        const repositoryUrl = repositoryUrlTemplate
-          .replace('_repository_', encodeURI(data))
-        return `<a href="${repositoryUrl}">${data}</a>`
-      }
-      return data
+  const createRenderRepository = repositoryUrlTemplate => (data, type) => {
+    if (type === 'display' && data) {
+      const repositoryUrl = repositoryUrlTemplate
+        .replace('_repository_', encodeURI(data))
+      return `<a href="${repositoryUrl}">${data}</a>`
     }
+    return data
   }
 
-  static renderName (packageUrlTemplate) {
-    return function (data, type, row) {
-      if (type === 'display' && data) {
-        const packageUrl = packageUrlTemplate
-          .replace('_repository_', row.repository.name)
-          .replace('_architecture_', row.repository.architecture)
-          .replace('_package_', encodeURI(data))
-        return `<a href="${packageUrl}">${data}</a>`
-      }
-      return data
+  const createRenderName = packageUrlTemplate => (data, type, row) => {
+    if (type === 'display' && data) {
+      const packageUrl = packageUrlTemplate
+        .replace('_repository_', row.repository.name)
+        .replace('_architecture_', row.repository.architecture)
+        .replace('_package_', encodeURI(data))
+      return `<a href="${packageUrl}">${data}</a>`
     }
+    return data
   }
-}
 
-$(document).ready(function () {
-  const dataTable = $('#packages')
-  const packageUrlTemplate = dataTable.data('packageUrlTemplate')
-  const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
   dataTable.DataTable({
     language: language,
     lengthMenu: [25, 50, 100],
@@ -65,7 +60,7 @@ $(document).ready(function () {
         orderable: true,
         searchable: true,
         className: 'd-none d-lg-table-cell',
-        render: Renderer.renderRepository(repositoryUrlTemplate)
+        render: createRenderRepository(repositoryUrlTemplate)
       },
       {
         data: 'repository.architecture',
@@ -83,7 +78,7 @@ $(document).ready(function () {
         data: 'name',
         orderable: true,
         searchable: true,
-        render: Renderer.renderName(packageUrlTemplate),
+        render: createRenderName(packageUrlTemplate),
         className: 'text-break'
       },
       {
@@ -102,7 +97,7 @@ $(document).ready(function () {
         data: 'builddate',
         orderable: true,
         searchable: false,
-        render: Renderer.renderTime,
+        render: renderTime,
         className: 'd-none d-lg-table-cell'
       },
       {

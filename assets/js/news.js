@@ -4,7 +4,7 @@ import '@/js/_datatables'
 import $ from 'jquery'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
-$(document).ready(function () {
+$(document).ready(() => {
   const dataTable = $('#news')
   const newsItemUrlTemplate = dataTable.data('newsItemUrlTemplate')
   dataTable.DataTable({
@@ -26,7 +26,7 @@ $(document).ready(function () {
         orderable: true,
         searchable: false,
         className: 'd-none d-md-table-cell',
-        render: function (data, type, row) {
+        render: (data, type, row) => {
           if (data) {
             const date = new Date(data)
             if (type === 'display') {
@@ -41,7 +41,7 @@ $(document).ready(function () {
         data: 'title',
         orderable: false,
         searchable: true,
-        render: function (data, type, row) {
+        render: (data, type, row) => {
           if (type === 'display' && data) {
             const newsItemUrl = newsItemUrlTemplate
               .replace('1-slug', encodeURI(row.slug))
@@ -55,7 +55,7 @@ $(document).ready(function () {
         orderable: false,
         searchable: true,
         className: 'd-none d-xl-table-cell',
-        render: function (data, type, row) {
+        render: (data, type, row) => {
           if (type === 'display' && data) {
             return `<a href="${row.author.uri}">${data}</a>`
           }

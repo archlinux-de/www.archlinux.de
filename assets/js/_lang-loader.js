@@ -1,5 +1,7 @@
-module.exports = function (source) {
-  if (this.cacheable) this.cacheable()
+module.exports = source => {
+  if (this.cacheable) {
+    this.cacheable()
+  }
   source = source.replace(/^\/\*\*[^{]+/g, '')
 
   let value = JSON.parse(source)

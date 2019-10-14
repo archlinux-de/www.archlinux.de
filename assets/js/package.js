@@ -1,18 +1,18 @@
 import '@/js/base'
 import $ from 'jquery'
 
-$(document).ready(function () {
+$(document).ready(() => {
   const fileList = $('#fileList')
   const fileListToggle = $('#fileListToggle')
   const showFileListEvent = 'show.bs.collapse'
   const shownFileListEvent = 'shown.bs.collapse'
 
-  fileList.one(showFileListEvent, function () {
+  fileList.one(showFileListEvent, () => {
     fileListToggle.prop('disabled', true)
     const filesUrl = fileList.data('ajax')
 
-    $.getJSON(filesUrl, function (files) {
-      const fileListItems = $.map(files, function (file) {
+    $.getJSON(filesUrl, files => {
+      const fileListItems = $.map(files, file => {
         if (file.match(/\/$/)) {
           return [`<li class="text-muted">${file}</li>`]
         } else {
@@ -28,7 +28,7 @@ $(document).ready(function () {
     })
   })
 
-  fileList.one(shownFileListEvent, function () {
+  fileList.one(shownFileListEvent, () => {
     fileList.removeClass('d-none')
     fileListToggle.addClass('d-none')
   })

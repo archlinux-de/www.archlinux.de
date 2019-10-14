@@ -4,8 +4,10 @@ import '@/js/_datatables'
 import $ from 'jquery'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
-class Renderer {
-  static renderDuration (data, type) {
+$(document).ready(() => {
+  const dataTable = $('#mirrors')
+
+  const renderDuration = (data, type) => {
     if (type === 'display' && data) {
       if (data < 0) {
         data = 0
@@ -31,14 +33,14 @@ class Renderer {
     return data
   }
 
-  static renderBoolean (data, type) {
+  const renderBoolean = (data, type) => {
     if (type === 'display' && data != null) {
       return (data ? '<span class="text-success">✓</span>' : '<span class="text-danger">×</span>')
     }
     return data
   }
 
-  static renderTime (data, type) {
+  const renderTime = (data, type) => {
     if (data) {
       const date = new Date(data)
       if (type === 'display') {
@@ -50,23 +52,20 @@ class Renderer {
     return data
   }
 
-  static renderUrl (data, type) {
+  const renderUrl = (data, type) => {
     if (type === 'display' && data) {
       return `<a href="${data}" rel="nofollow">${new window.URL(data).hostname}</a>`
     }
     return data
   }
 
-  static renderCountry (data) {
+  const renderCountry = data => {
     if (data && data.name) {
       return data.name
     }
     return data
   }
-}
 
-$(document).ready(function () {
-  const dataTable = $('#mirrors')
   dataTable.DataTable({
     language: language,
     lengthMenu: [25, 50, 100],
@@ -81,54 +80,54 @@ $(document).ready(function () {
       {
         data: 'url',
         orderable: false,
-        render: Renderer.renderUrl
+        render: renderUrl
       },
       {
         data: 'country',
         className: 'd-none d-md-table-cell',
-        render: Renderer.renderCountry
+        render: renderCountry
       },
       {
         data: 'durationAvg',
         searchable: false,
         className: 'd-none d-lg-table-cell',
-        render: Renderer.renderDuration
+        render: renderDuration
       },
       {
         data: 'delay',
         searchable: false,
         className: 'd-none d-lg-table-cell',
-        render: Renderer.renderDuration
+        render: renderDuration
       },
       {
         data: 'lastsync',
         searchable: false,
         className: 'd-none d-sm-table-cell',
-        render: Renderer.renderTime
+        render: renderTime
       },
       {
         data: 'isos',
         searchable: false,
         className: 'd-none d-md-table-cell text-center',
-        render: Renderer.renderBoolean
+        render: renderBoolean
       },
       {
         data: 'ipv4',
         searchable: false,
         className: 'd-none d-xl-table-cell text-center',
-        render: Renderer.renderBoolean
+        render: renderBoolean
       },
       {
         data: 'ipv6',
         searchable: false,
         className: 'd-none d-md-table-cell text-center',
-        render: Renderer.renderBoolean
+        render: renderBoolean
       },
       {
         data: 'active',
         searchable: false,
         className: 'd-none d-xl-table-cell text-center',
-        render: Renderer.renderBoolean
+        render: renderBoolean
       }
     ]
   })
