@@ -64,16 +64,16 @@
         },
         {
             "name": "debril/feed-io",
-            "version": "v4.3.10",
+            "version": "v4.3.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alexdebril/feed-io.git",
-                "reference": "fe3f7208c13a0a78ccd3bf092c2e10e321453726"
+                "reference": "9cf96491f562efd0ef0d397694c75a36b6ebef6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/fe3f7208c13a0a78ccd3bf092c2e10e321453726",
-                "reference": "fe3f7208c13a0a78ccd3bf092c2e10e321453726",
+                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/9cf96491f562efd0ef0d397694c75a36b6ebef6e",
+                "reference": "9cf96491f562efd0ef0d397694c75a36b6ebef6e",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "news",
                 "rss"
             ],
-            "time": "2019-10-03T14:30:41+00:00"
+            "time": "2019-10-17T11:07:58+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -4804,16 +4804,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.12.0",
+            "version": "v2.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "c7a85fd08348ca04b4d8f234f49583d9910906aa"
+                "reference": "ddd4134af9bfc6dba4eff7c8447444ecc45b9ee5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/c7a85fd08348ca04b4d8f234f49583d9910906aa",
-                "reference": "c7a85fd08348ca04b4d8f234f49583d9910906aa",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ddd4134af9bfc6dba4eff7c8447444ecc45b9ee5",
+                "reference": "ddd4134af9bfc6dba4eff7c8447444ecc45b9ee5",
                 "shasum": ""
             },
             "require": {
@@ -4867,7 +4867,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-10-05T16:42:38+00:00"
+            "time": "2019-10-17T07:34:53+00:00"
         },
         {
             "name": "zendframework/zend-code",
