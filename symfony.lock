@@ -110,6 +110,9 @@
     "league/iso3166": {
         "version": "2.0.0"
     },
+    "malukenho/mcbumpface": {
+        "version": "0.1.3"
+    },
     "maxmind-db/reader": {
         "version": "v1.2.0"
     },
