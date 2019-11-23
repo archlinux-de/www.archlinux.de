@@ -84,7 +84,7 @@ test-security:
 update:
 	${PHP-RUN} composer --no-interaction update
 	${PHP-RUN} composer --no-interaction update --lock
-	${NODE-RUN} yarn upgrade --latest
+	${NODE-RUN} yarn upgrade
 
 deploy:
 	yarn install
