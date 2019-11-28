@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab72baaafa2469319ad28128bac10900",
+    "content-hash": "51700925c4df748d081bfe9211e20cf3",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -64,16 +64,16 @@
         },
         {
             "name": "debril/feed-io",
-            "version": "v4.4.1",
+            "version": "v4.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alexdebril/feed-io.git",
-                "reference": "bba403f15f65f274713c61e765dd8bad79c96a0a"
+                "reference": "718077ce64f67ae3b80d621730d8a750356e6388"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/bba403f15f65f274713c61e765dd8bad79c96a0a",
-                "reference": "bba403f15f65f274713c61e765dd8bad79c96a0a",
+                "url": "https://api.github.com/repos/alexdebril/feed-io/zipball/718077ce64f67ae3b80d621730d8a750356e6388",
+                "reference": "718077ce64f67ae3b80d621730d8a750356e6388",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "news",
                 "rss"
             ],
-            "time": "2019-11-13T10:31:19+00:00"
+            "time": "2019-11-27T16:40:16+00:00"
         },
         {
             "name": "doctrine/annotations",
