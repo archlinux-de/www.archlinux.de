@@ -83,9 +83,6 @@
     "ezyang/htmlpurifier": {
         "version": "v4.9.3"
     },
-    "fig/link-util": {
-        "version": "1.0.0"
-    },
     "geoip2/geoip2": {
         "version": "v2.7.0"
     },

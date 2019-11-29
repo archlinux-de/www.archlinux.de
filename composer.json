@@ -18,7 +18,6 @@
         "doctrine/doctrine-migrations-bundle": "^2.1.2",
         "doctrine/orm": "^v2.7.0",
         "exercise/htmlpurifier-bundle": "^V2.0.4",
-        "fig/link-util": "^1.0.0",
         "geoip2/geoip2": "^v2.9.0",
         "league/iso3166": "^2.1.4",
         "pierres/datatables-api-bundle": "^1.0.2",
