@@ -39,8 +39,9 @@ class ReleaseFetcher implements \IteratorAggregate
                 ->setCreated(new \DateTime($releaseData['created']))
                 ->setKernelVersion($releaseData['kernel_version'])
                 ->setReleaseDate(new \DateTime($releaseData['release_date']))
-                ->setSha1Sum($releaseData['sha1_sum'])
-                ->setTorrent(
+                ->setSha1Sum($releaseData['sha1_sum']);
+            if ($releaseData['torrent']) {
+                $release->setTorrent(
                     (new Torrent())
                         ->setUrl($releaseData['torrent_url'])
                         ->setComment($releaseData['torrent']['comment'])
@@ -54,6 +55,7 @@ class ReleaseFetcher implements \IteratorAggregate
                         ->setCreationDate(new \DateTime($releaseData['torrent']['creation_date']))
                         ->setMagnetUri($releaseData['magnet_uri'])
                 );
+            }
 
             yield $release;
         }
