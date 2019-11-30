@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(indexes={@ORM\Index(columns={"last_sync"})})
@@ -158,6 +158,16 @@ class Mirror implements \JsonSerializable
     public function getProtocol(): string
     {
         return $this->protocol;
+    }
+
+    /**
+     * @param string $protocol
+     * @return Mirror
+     */
+    public function setProtocol(string $protocol): Mirror
+    {
+        $this->protocol = $protocol;
+        return $this;
     }
 
     /**
@@ -319,13 +329,31 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param bool|null $active
+     * @param Mirror $mirror
      * @return Mirror
      */
-    public function setActive(?bool $active): Mirror
+    public function update(Mirror $mirror): Mirror
     {
-        $this->active = $active;
-        return $this;
+        if ($this->getUrl() !== $mirror->getUrl()) {
+            throw new \InvalidArgumentException(sprintf(
+                'Url mismatch "%s" instead of "%s"',
+                $mirror->getUrl(),
+                $this->getUrl()
+            ));
+        }
+        return $this
+            ->setActive($mirror->isActive())
+            ->setCompletionPct($mirror->getCompletionPct())
+            ->setCountry($mirror->getCountry())
+            ->setDelay($mirror->getDelay())
+            ->setDurationAvg($mirror->getDurationAvg())
+            ->setIpv4($mirror->hasIpv4())
+            ->setDurationStddev($mirror->getDurationStddev())
+            ->setIpv6($mirror->hasIpv6())
+            ->setIsos($mirror->hasIsos())
+            ->setLastSync($mirror->getLastSync())
+            ->setScore($mirror->getScore())
+            ->setProtocol($mirror->getProtocol());
     }
 
     /**
@@ -335,6 +363,16 @@ class Mirror implements \JsonSerializable
     public function setIsos(?bool $isos): Mirror
     {
         $this->isos = $isos;
+        return $this;
+    }
+
+    /**
+     * @param bool|null $ipv6
+     * @return Mirror
+     */
+    public function setIpv6(?bool $ipv6): Mirror
+    {
+        $this->ipv6 = $ipv6;
         return $this;
     }
 
@@ -349,12 +387,12 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @param bool|null $ipv6
+     * @param bool|null $active
      * @return Mirror
      */
-    public function setIpv6(?bool $ipv6): Mirror
+    public function setActive(?bool $active): Mirror
     {
-        $this->ipv6 = $ipv6;
+        $this->active = $active;
         return $this;
     }
 }

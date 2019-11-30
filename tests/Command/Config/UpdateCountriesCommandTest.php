@@ -32,7 +32,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('merge')->with($newCountry);
+        $entityManager->expects($this->once())->method('persist')->with($newCountry);
         $entityManager->expects($this->once())->method('remove')->with($oldCountry);
         $entityManager->expects($this->once())->method('flush');
 
@@ -86,5 +86,38 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $this->expectException(ValidationException::class);
         $commandTester->execute(['command' => $command->getName()]);
+    }
+
+    public function testUpdateCountry()
+    {
+        $country = (new Country('DE'))->setName('Germany');
+
+        /** @var CountryRepository|MockObject $countryRepository */
+        $countryRepository = $this->createMock(CountryRepository::class);
+        $countryRepository->expects($this->once())->method('find')->with($country->getCode())->willReturn($country);
+
+        /** @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('persist')->with($country);
+        $entityManager->expects($this->once())->method('flush');
+
+        /** @var CountryFetcher|MockObject $countryFetcher */
+        $countryFetcher = $this->createMock(CountryFetcher::class);
+        $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$country]));
+
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
+        $kernel = self::bootKernel();
+        $application = new Application($kernel);
+
+        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+
+        $command = $application->find('app:config:update-countries');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['command' => $command->getName()]);
+
+        $this->assertEquals(0, $commandTester->getStatusCode());
     }
 }

@@ -17,6 +17,3 @@ parameters:
 		- public
 		- config
 		- bin
-	ignoreErrors:
-		- '#Call to deprecated method merge\(\) of class Doctrine\\Common\\Persistence\\ObjectManager.*#'
-		- '#Call to deprecated method getName\(\) of class Doctrine\\DBAL\\Driver.*#'

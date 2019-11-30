@@ -65,4 +65,37 @@ class NewsItemTest extends TestCase
             $jsonArray
         );
     }
+
+    public function testUpdate()
+    {
+        $newsItem = (new NewsItem('abc'))
+            ->setTitle('title')
+            ->setSlug('slug')
+            ->setLink('link')
+            ->setLastModified(new \DateTime())
+            ->setDescription('description')
+            ->setAuthor(new NewsAuthor());
+
+        $newsItem->update((new NewsItem('abc'))
+            ->setTitle('foo')
+            ->setSlug('bar')
+            ->setLink('baz')
+            ->setLastModified(new \DateTime('2019-01-01'))
+            ->setDescription('another description')
+            ->setAuthor((new NewsAuthor())->setName('bob')));
+
+        $this->assertEquals('foo', $newsItem->getTitle());
+        $this->assertEquals('bar', $newsItem->getSlug());
+        $this->assertEquals('baz', $newsItem->getLink());
+        $this->assertEquals(new \DateTime('2019-01-01'), $newsItem->getLastModified());
+        $this->assertEquals('another description', $newsItem->getDescription());
+        $this->assertEquals('bob', $newsItem->getAuthor()->getName());
+    }
+
+    public function testUpdateFailsOnMismatchedId()
+    {
+        $newsItem = new NewsItem('foo');
+        $this->expectException(\InvalidArgumentException::class);
+        $newsItem->update(new NewsItem('bar'));
+    }
 }

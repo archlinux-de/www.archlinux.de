@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="releng_release", indexes={@ORM\Index(columns={"available", "release_date"})})
@@ -100,114 +100,6 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    public function getInfo(): string
-    {
-        return $this->info;
-    }
-
-    /**
-     * @param string $info
-     * @return Release
-     */
-    public function setInfo(string $info): Release
-    {
-        $this->info = $info;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIsoUrl(): string
-    {
-        return $this->isoUrl;
-    }
-
-    /**
-     * @param string $isoUrl
-     * @return Release
-     */
-    public function setIsoUrl(string $isoUrl): Release
-    {
-        $this->isoUrl = $isoUrl;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getMd5Sum(): ?string
-    {
-        return $this->md5Sum;
-    }
-
-    /**
-     * @param string|null $md5Sum
-     * @return Release
-     */
-    public function setMd5Sum(?string $md5Sum): Release
-    {
-        $this->md5Sum = $md5Sum;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreated(): \DateTime
-    {
-        return $this->created;
-    }
-
-    /**
-     * @param \DateTime $created
-     * @return Release
-     */
-    public function setCreated(\DateTime $created): Release
-    {
-        $this->created = $created;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSha1Sum(): ?string
-    {
-        return $this->sha1Sum;
-    }
-
-    /**
-     * @param string|null $sha1Sum
-     * @return Release
-     */
-    public function setSha1Sum(?string $sha1Sum): Release
-    {
-        $this->sha1Sum = $sha1Sum;
-        return $this;
-    }
-
-    /**
-     * @return Torrent
-     */
-    public function getTorrent(): Torrent
-    {
-        return $this->torrent;
-    }
-
-    /**
-     * @param Torrent $torrent
-     * @return Release
-     */
-    public function setTorrent(Torrent $torrent): Release
-    {
-        $this->torrent = $torrent;
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function jsonSerialize(): array
@@ -279,6 +171,139 @@ class Release implements \JsonSerializable
     public function setAvailable(bool $available): Release
     {
         $this->available = $available;
+        return $this;
+    }
+
+    /**
+     * @param Release $release
+     * @return Release
+     */
+    public function update(Release $release): Release
+    {
+        if ($this->getVersion() !== $release->getVersion()) {
+            throw new \InvalidArgumentException(sprintf(
+                'Version mismatch "%s" instead of "%s"',
+                $release->getVersion(),
+                $this->getVersion()
+            ));
+        }
+        return $this
+            ->setAvailable($release->isAvailable())
+            ->setCreated($release->getCreated())
+            ->setInfo($release->getInfo())
+            ->setIsoUrl($release->getIsoUrl())
+            ->setKernelVersion($release->getKernelVersion())
+            ->setMd5Sum($release->getMd5Sum())
+            ->setReleaseDate($release->getReleaseDate())
+            ->setSha1Sum($release->getSha1Sum())
+            ->setTorrent($release->getTorrent());
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreated(): \DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param \DateTime $created
+     * @return Release
+     */
+    public function setCreated(\DateTime $created): Release
+    {
+        $this->created = $created;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInfo(): string
+    {
+        return $this->info;
+    }
+
+    /**
+     * @param string $info
+     * @return Release
+     */
+    public function setInfo(string $info): Release
+    {
+        $this->info = $info;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIsoUrl(): string
+    {
+        return $this->isoUrl;
+    }
+
+    /**
+     * @param string $isoUrl
+     * @return Release
+     */
+    public function setIsoUrl(string $isoUrl): Release
+    {
+        $this->isoUrl = $isoUrl;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMd5Sum(): ?string
+    {
+        return $this->md5Sum;
+    }
+
+    /**
+     * @param string|null $md5Sum
+     * @return Release
+     */
+    public function setMd5Sum(?string $md5Sum): Release
+    {
+        $this->md5Sum = $md5Sum;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSha1Sum(): ?string
+    {
+        return $this->sha1Sum;
+    }
+
+    /**
+     * @param string|null $sha1Sum
+     * @return Release
+     */
+    public function setSha1Sum(?string $sha1Sum): Release
+    {
+        $this->sha1Sum = $sha1Sum;
+        return $this;
+    }
+
+    /**
+     * @return Torrent
+     */
+    public function getTorrent(): Torrent
+    {
+        return $this->torrent;
+    }
+
+    /**
+     * @param Torrent $torrent
+     * @return Release
+     */
+    public function setTorrent(Torrent $torrent): Release
+    {
+        $this->torrent = $torrent;
         return $this;
     }
 }

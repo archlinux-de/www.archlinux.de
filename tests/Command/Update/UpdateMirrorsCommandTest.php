@@ -32,7 +32,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('merge')->with($newMirror);
+        $entityManager->expects($this->once())->method('persist')->with($newMirror);
         $entityManager->expects($this->once())->method('remove')->with($oldMirror);
         $entityManager->expects($this->once())->method('flush');
 
@@ -88,5 +88,38 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $this->expectException(ValidationException::class);
         $commandTester->execute(['command' => $command->getName()]);
+    }
+
+    public function testUpdateMirror()
+    {
+        $mirror = new Mirror('https://127.0.0.2', 'https');
+
+        /** @var MirrorRepository|MockObject $mirrorRepository */
+        $mirrorRepository = $this->createMock(MirrorRepository::class);
+        $mirrorRepository->expects($this->once())->method('find')->with($mirror->getUrl())->willReturn($mirror);
+
+        /** @var EntityManagerInterface|MockObject $entityManager */
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('persist')->with($mirror);
+        $entityManager->expects($this->once())->method('flush');
+
+        /** @var MirrorFetcher|MockObject $mirrorFetcher */
+        $mirrorFetcher = $this->createMock(MirrorFetcher::class);
+        $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$mirror]));
+
+        /** @var ValidatorInterface|MockObject $validator */
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
+
+        $kernel = self::bootKernel();
+        $application = new Application($kernel);
+
+        $application->add(new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator));
+
+        $command = $application->find('app:update:mirrors');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['command' => $command->getName()]);
+
+        $this->assertEquals(0, $commandTester->getStatusCode());
     }
 }

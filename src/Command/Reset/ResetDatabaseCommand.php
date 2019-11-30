@@ -10,6 +10,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
+use Doctrine\DBAL\Driver\AbstractSQLiteDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Command\Command;
@@ -135,7 +136,7 @@ class ResetDatabaseCommand extends Command
         $connection = $this->entityManager->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
 
-        if ($connection->getDriver()->getName() == 'pdo_sqlite') {
+        if ($connection->getDriver() instanceof AbstractSQLiteDriver) {
             $connection->query('PRAGMA foreign_keys = OFF');
         } else {
             // @codeCoverageIgnoreStart

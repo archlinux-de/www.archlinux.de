@@ -70,7 +70,13 @@ class UpdateMirrorsCommand extends Command
                 throw new ValidationException($errors);
             }
 
-            $this->entityManager->merge($mirror);
+            /** @var Mirror|null $persistedMirror */
+            $persistedMirror = $this->mirrorRepository->find($mirror->getUrl());
+            if ($persistedMirror) {
+                $mirror = $persistedMirror->update($mirror);
+            }
+
+            $this->entityManager->persist($mirror);
             $urls[] = $mirror->getUrl();
         }
         foreach ($this->mirrorRepository->findAllExceptByUrls($urls) as $mirror) {

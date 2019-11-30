@@ -69,7 +69,14 @@ class UpdateCountriesCommand extends Command
             if ($errors->count() > 0) {
                 throw new ValidationException($errors);
             }
-            $this->entityManager->merge($country);
+
+            /** @var Country|null $persistedCountry */
+            $persistedCountry = $this->countryRepository->find($country->getCode());
+            if ($persistedCountry) {
+                $country = $persistedCountry->update($country);
+            }
+
+            $this->entityManager->persist($country);
             $codes[] = $country->getCode();
         }
         foreach ($this->countryRepository->findAllExceptByCodes($codes) as $country) {

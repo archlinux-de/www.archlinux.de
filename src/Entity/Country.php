@@ -72,4 +72,20 @@ class Country implements \JsonSerializable
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @param Country $country
+     * @return Country
+     */
+    public function update(Country $country): Country
+    {
+        if ($this->getCode() !== $country->getCode()) {
+            throw new \InvalidArgumentException(sprintf(
+                'Code mismatch "%s" instead of "%s"',
+                $country->getCode(),
+                $this->getCode()
+            ));
+        }
+        return $this->setName($country->getName());
+    }
 }

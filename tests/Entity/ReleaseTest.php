@@ -62,4 +62,46 @@ class ReleaseTest extends TestCase
             $jsonArray
         );
     }
+
+    public function testUpdate()
+    {
+        $release = (new Release('2019.01.01'))
+            ->setTorrent(new Torrent())
+            ->setSha1Sum('abc')
+            ->setReleaseDate(new \DateTime())
+            ->setMd5Sum('cde')
+            ->setKernelVersion('2.4.1')
+            ->setIsoUrl('foo')
+            ->setInfo('bar')
+            ->setCreated(new \DateTime())
+            ->setAvailable(true);
+
+        $release->update((new Release('2019.01.01'))
+            ->setTorrent((new Torrent())->setCreatedBy('me'))
+            ->setSha1Sum('1234')
+            ->setReleaseDate(new \DateTime('2019-01-01'))
+            ->setMd5Sum('5678')
+            ->setKernelVersion('1.2')
+            ->setIsoUrl('localhost')
+            ->setInfo('info')
+            ->setCreated(new \DateTime('2018-01-01'))
+            ->setAvailable(false));
+
+        $this->assertEquals('me', $release->getTorrent()->getCreatedBy());
+        $this->assertEquals('1234', $release->getSha1Sum());
+        $this->assertEquals(new \DateTime('2019-01-01'), $release->getReleaseDate());
+        $this->assertEquals('5678', $release->getMd5Sum());
+        $this->assertEquals('1.2', $release->getKernelVersion());
+        $this->assertEquals('localhost', $release->getIsoUrl());
+        $this->assertEquals('info', $release->getInfo());
+        $this->assertEquals(new \DateTime('2018-01-01'), $release->getCreated());
+        $this->assertFalse($release->isAvailable());
+    }
+
+    public function testUpdateFailsOnMismatchedVersion()
+    {
+        $release = new Release('foo');
+        $this->expectException(\InvalidArgumentException::class);
+        $release->update(new Release('bar'));
+    }
 }

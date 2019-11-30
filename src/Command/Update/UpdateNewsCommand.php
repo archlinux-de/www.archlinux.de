@@ -71,7 +71,13 @@ class UpdateNewsCommand extends Command
                 throw new ValidationException($errors);
             }
 
-            $this->entityManager->merge($newsItem);
+            /** @var NewsItem|null $persistedNewsItem */
+            $persistedNewsItem = $this->newsItemRepository->find($newsItem->getId());
+            if ($persistedNewsItem) {
+                $newsItem = $persistedNewsItem->update($newsItem);
+            }
+
+            $this->entityManager->persist($newsItem);
             $ids[] = $newsItem->getId();
             if ($oldestLastModified > $newsItem->getLastModified()) {
                 $oldestLastModified = $newsItem->getLastModified();

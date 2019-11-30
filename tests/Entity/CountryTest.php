@@ -9,8 +9,8 @@ class CountryTest extends TestCase
 {
     public function testJsonSerialize()
     {
-        $country = new Country('de');
-        $country->setName('Germany');
+        $country = (new Country('de'))
+            ->setName('Germany');
 
         $json = (string)json_encode($country);
         $this->assertJson($json);
@@ -22,5 +22,25 @@ class CountryTest extends TestCase
             ],
             $jsonArray
         );
+    }
+
+    public function testUpdate()
+    {
+        $country = (new Country('de'))
+            ->setName('Germany');
+
+        $this->assertEquals('Germany', $country->getName());
+        $country->update((new Country('de'))->setName('Deutschland'));
+        $this->assertEquals('Deutschland', $country->getName());
+    }
+
+    public function testUpdateFailsOnMismatchedCode()
+    {
+        $country = (new Country('de'))
+            ->setName('Germany');
+
+        $this->assertEquals('Germany', $country->getName());
+        $this->expectException(\InvalidArgumentException::class);
+        $country->update((new Country('ger'))->setName('Deutschland'));
     }
 }

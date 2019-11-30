@@ -67,7 +67,13 @@ class UpdateReleasesCommand extends Command
                 throw new ValidationException($errors);
             }
 
-            $this->entityManager->merge($release);
+            /** @var Release|null $persistedRelease */
+            $persistedRelease = $this->releaseRepository->find($release->getVersion());
+            if ($persistedRelease) {
+                $release = $persistedRelease->update($release);
+            }
+
+            $this->entityManager->persist($release);
             $versions[] = $release->getVersion();
         }
         foreach ($this->releaseRepository->findAllExceptByVersions($versions) as $release) {

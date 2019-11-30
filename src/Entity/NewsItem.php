@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(indexes={@ORM\Index(columns={"last_modified"})})
@@ -77,14 +77,6 @@ class NewsItem implements \JsonSerializable
     public function __construct(string $id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**
@@ -208,5 +200,35 @@ class NewsItem implements \JsonSerializable
     {
         $this->lastModified = $lastModified;
         return $this;
+    }
+
+    /**
+     * @param NewsItem $newsItem
+     * @return NewsItem
+     */
+    public function update(NewsItem $newsItem): NewsItem
+    {
+        if ($this->getId() !== $newsItem->getId()) {
+            throw new \InvalidArgumentException(sprintf(
+                'Id mismatch "%s" instead of "%s"',
+                $newsItem->getId(),
+                $this->getId()
+            ));
+        }
+        return $this
+            ->setAuthor($newsItem->getAuthor())
+            ->setDescription($newsItem->getDescription())
+            ->setLastModified($newsItem->getLastModified())
+            ->setLink($newsItem->getLink())
+            ->setSlug($newsItem->getSlug())
+            ->setTitle($newsItem->getTitle());
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 }
