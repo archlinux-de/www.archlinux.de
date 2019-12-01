@@ -41,7 +41,7 @@ class NewsItem implements \JsonSerializable
     /**
      * @var string
      * @Assert\NotBlank()
-     * @Assert\Length(min="10", max="255")
+     * @Assert\Length(min="10", max="255", allowEmptyString="false")
      *
      * @ORM\Column()
      */

@@ -22,7 +22,7 @@ class Country implements \JsonSerializable
 
     /**
      * @var string
-     * @Assert\Length(min="2", max="100")
+     * @Assert\Length(min="2", max="100", allowEmptyString="false")
      *
      * @ORM\Column()
      */

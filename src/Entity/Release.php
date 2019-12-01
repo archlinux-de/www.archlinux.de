@@ -39,7 +39,7 @@ class Release implements \JsonSerializable
 
     /**
      * @var string
-     * @Assert\Length(min="10", max="255")
+     * @Assert\Length(min="10", max="255", allowEmptyString="false")
      *
      * @ORM\Column()
      */

@@ -85,7 +85,7 @@ class Package implements \JsonSerializable
     /**
      * @var string[]
      * @Assert\All({
-     *      @Assert\Length(min="2", max="100")
+     *      @Assert\Length(min="2", max="100", allowEmptyString="false")
      * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
@@ -126,7 +126,7 @@ class Package implements \JsonSerializable
 
     /**
      * @var string|null
-     * @Assert\Length(min="50", max="2048")
+     * @Assert\Length(min="50", max="2048", allowEmptyString="true")
      *
      * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
      */
@@ -143,7 +143,7 @@ class Package implements \JsonSerializable
     /**
      * @var string[]
      * @Assert\All({
-     *      @Assert\Length(min="3", max="50")
+     *      @Assert\Length(min="3", max="50", allowEmptyString="false")
      * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
