@@ -97,6 +97,7 @@ class Release implements \JsonSerializable
     public function __construct(string $version)
     {
         $this->version = $version;
+        $this->torrent = new Torrent();
     }
 
     /**
@@ -181,11 +182,13 @@ class Release implements \JsonSerializable
     public function update(Release $release): Release
     {
         if ($this->getVersion() !== $release->getVersion()) {
-            throw new \InvalidArgumentException(sprintf(
-                'Version mismatch "%s" instead of "%s"',
-                $release->getVersion(),
-                $this->getVersion()
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Version mismatch "%s" instead of "%s"',
+                    $release->getVersion(),
+                    $this->getVersion()
+                )
+            );
         }
         return $this
             ->setAvailable($release->isAvailable())
