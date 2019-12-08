@@ -5,6 +5,9 @@ namespace App\Service;
 use App\Entity\Country;
 use League\ISO3166\ISO3166;
 
+/**
+ * @phpstan-implements \IteratorAggregate<Country>
+ */
 class CountryFetcher implements \IteratorAggregate
 {
     /** @var ISO3166 */

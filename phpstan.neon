@@ -7,7 +7,6 @@ includes:
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 parameters:
 	level: max
-	checkGenericClassInNonGenericObjectType: false
 	symfony:
 		container_xml_path: '%rootDir%/../../../var/cache/dev/srcApp_KernelDevDebugContainer.xml'
 	autoload_directories:

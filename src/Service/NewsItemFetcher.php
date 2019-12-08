@@ -8,6 +8,9 @@ use FeedIo\Feed\ItemInterface;
 use FeedIo\FeedInterface;
 use FeedIo\FeedIo;
 
+/**
+ * @phpstan-implements \IteratorAggregate<NewsItem>
+ */
 class NewsItemFetcher implements \IteratorAggregate
 {
     /** @var FeedIo */

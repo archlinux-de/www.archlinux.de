@@ -6,6 +6,9 @@ use App\Entity\Release;
 use App\Entity\Torrent;
 use GuzzleHttp\ClientInterface;
 
+/**
+ * @phpstan-implements \IteratorAggregate<Release>
+ */
 class ReleaseFetcher implements \IteratorAggregate
 {
     /** @var ClientInterface */

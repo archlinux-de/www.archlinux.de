@@ -46,7 +46,7 @@ class Repository implements \JsonSerializable
     private $architecture;
 
     /**
-     * @var Collection
+     * @var Collection<int, Package>
      *
      * @ORM\OneToMany(targetEntity="Package", mappedBy="repository", cascade={"remove"})
      */
@@ -97,7 +97,7 @@ class Repository implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, Package>
      */
     public function getPackages(): Collection
     {

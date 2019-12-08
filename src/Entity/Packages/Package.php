@@ -2,7 +2,6 @@
 
 namespace App\Entity\Packages;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Packages\Relations\CheckDependency;
 use App\Entity\Packages\Relations\Conflict;
 use App\Entity\Packages\Relations\Dependency;
@@ -13,6 +12,7 @@ use App\Entity\Packages\Relations\Replacement;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PackageRepository")
@@ -181,7 +181,7 @@ class Package implements \JsonSerializable
     private $packager;
 
     /**
-     * @var Collection
+     * @var Collection<int, Replacement>
      * @Assert\Valid()
      *
      * @ORM\OneToMany(
@@ -194,7 +194,7 @@ class Package implements \JsonSerializable
     private $replaces;
 
     /**
-     * @var Collection
+     * @var Collection<int, Conflict>
      * @Assert\Valid()
      *
      * @ORM\OneToMany(
@@ -207,7 +207,7 @@ class Package implements \JsonSerializable
     private $conflicts;
 
     /**
-     * @var Collection
+     * @var Collection<int, Provision>
      * @Assert\Valid()
      *
      * @ORM\OneToMany(
@@ -220,7 +220,7 @@ class Package implements \JsonSerializable
     private $provides;
 
     /**
-     * @var Collection
+     * @var Collection<int, Dependency>
      * @Assert\Valid()
      *
      * @ORM\OneToMany(
@@ -233,7 +233,7 @@ class Package implements \JsonSerializable
     private $depends;
 
     /**
-     * @var Collection
+     * @var Collection<int, OptionalDependency>
      * @Assert\Valid()
      *
      * @ORM\OneToMany(
@@ -246,7 +246,7 @@ class Package implements \JsonSerializable
     private $optdepends;
 
     /**
-     * @var Collection
+     * @var Collection<int, MakeDependency>
      *
      * @ORM\OneToMany(
      *     targetEntity="App\Entity\Packages\Relations\MakeDependency",
@@ -258,7 +258,7 @@ class Package implements \JsonSerializable
     private $makedepends;
 
     /**
-     * @var Collection
+     * @var Collection<int, CheckDependency>
      * @Assert\Valid()
      *
      * @ORM\OneToMany(
@@ -395,7 +395,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, Dependency>
      */
     public function getDependencies(): Collection
     {
@@ -414,7 +414,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, Conflict>
      */
     public function getConflicts(): Collection
     {
@@ -433,7 +433,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, Replacement>
      */
     public function getReplacements(): Collection
     {
@@ -452,7 +452,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, OptionalDependency>
      */
     public function getOptionalDependencies(): Collection
     {
@@ -471,7 +471,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, Provision>
      */
     public function getProvisions(): Collection
     {
@@ -490,7 +490,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, MakeDependency>
      */
     public function getMakeDependencies(): Collection
     {
@@ -509,7 +509,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, CheckDependency>
      */
     public function getCheckDependencies(): Collection
     {

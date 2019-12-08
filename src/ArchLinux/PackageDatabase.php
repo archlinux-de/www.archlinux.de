@@ -2,6 +2,9 @@
 
 namespace App\ArchLinux;
 
+/**
+ * @phpstan-implements \IteratorAggregate<Package>
+ */
 class PackageDatabase implements \IteratorAggregate
 {
     /** @var PackageDatabaseReader */

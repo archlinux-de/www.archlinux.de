@@ -7,6 +7,9 @@ use App\Entity\Mirror;
 use App\Repository\CountryRepository;
 use GuzzleHttp\ClientInterface;
 
+/**
+ * @phpstan-implements \IteratorAggregate<Mirror>
+ */
 class MirrorFetcher implements \IteratorAggregate
 {
     /** @var ClientInterface */
