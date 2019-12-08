@@ -152,7 +152,7 @@ class ResetDatabaseCommand extends Command
     /**
      * @codeCoverageIgnore
      */
-    private function release()
+    private function release(): void
     {
         foreach ($this->locks as $name => $lock) {
             if ($lock) {

@@ -7,6 +7,7 @@ includes:
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 parameters:
 	level: max
+	checkGenericClassInNonGenericObjectType: false
 	symfony:
 		container_xml_path: '%rootDir%/../../../var/cache/dev/srcApp_KernelDevDebugContainer.xml'
 	autoload_directories:
@@ -17,3 +18,16 @@ parameters:
 		- public
 		- config
 		- bin
+	ignoreErrors:
+		-
+			message: '#Unsafe usage of new static\(\)\.#'
+			path: src/Entity/Packages/Relations/AbstractRelation.php
+		-
+			message: '#Variable \$candidate in PHPDoc tag @var does not match assigned variable \$candidates\.#'
+			path: src/Repository/AbstractRelationRepository.php
+		-
+			message: '#has no return typehint specified\.#'
+			path: tests
+		-
+			message: '#no value type specified#'
+			path: .
