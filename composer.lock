@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b73a57fa03f7f2280769b281eabb0b3",
+    "content-hash": "cad192e98e01abb04f4960e737e68f52",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -5474,16 +5474,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.0",
+            "version": "0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "1cc06d8493917d16b1742f6c9fd2963c51a4e773"
+                "reference": "c33f6f7c83377510b4c134d66869a7c55453c41d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1cc06d8493917d16b1742f6c9fd2963c51a4e773",
-                "reference": "1cc06d8493917d16b1742f6c9fd2963c51a4e773",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c33f6f7c83377510b4c134d66869a7c55453c41d",
+                "reference": "c33f6f7c83377510b4c134d66869a7c55453c41d",
                 "shasum": ""
             },
             "require": {
@@ -5510,7 +5510,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-12-04T00:09:47+00:00"
+            "time": "2019-12-08T15:07:52+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -5566,16 +5566,16 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.0",
+            "version": "0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "1822c4d69d978a7753cd5be47c8b777a42084d6f"
+                "reference": "cab43df5287c3c142210704dbc3f1ea62d6dfd06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/1822c4d69d978a7753cd5be47c8b777a42084d6f",
-                "reference": "1822c4d69d978a7753cd5be47c8b777a42084d6f",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/cab43df5287c3c142210704dbc3f1ea62d6dfd06",
+                "reference": "cab43df5287c3c142210704dbc3f1ea62d6dfd06",
                 "shasum": ""
             },
             "require": {
@@ -5626,20 +5626,20 @@
                 "MIT"
             ],
             "description": "Doctrine extensions for PHPStan",
-            "time": "2019-12-03T08:29:26+00:00"
+            "time": "2019-12-07T20:33:11+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.0",
+            "version": "0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "a9790e1bee7feea2a9dac7e1f39fc9e6aac0b703"
+                "reference": "cc14b74ba437bb08ce189aada455946890a8414b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/a9790e1bee7feea2a9dac7e1f39fc9e6aac0b703",
-                "reference": "a9790e1bee7feea2a9dac7e1f39fc9e6aac0b703",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/cc14b74ba437bb08ce189aada455946890a8414b",
+                "reference": "cc14b74ba437bb08ce189aada455946890a8414b",
                 "shasum": ""
             },
             "require": {
@@ -5682,7 +5682,7 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2019-11-27T16:24:02+00:00"
+            "time": "2019-12-07T20:34:22+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
