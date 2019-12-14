@@ -34,9 +34,12 @@ class RecentPackagesControllerTest extends DatabaseTestCase
         $client->request('GET', '/packages/feed');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
-        $response = $client->getResponse()->getContent();
-        $this->assertIsString($response);
-        $xml = \simplexml_load_string($response);
+        $this->assertStringStartsWith(
+            'application/atom+xml; charset=UTF-8',
+            (string)$client->getResponse()->headers->get('Content-Type')
+        );
+        $this->assertEquals('UTF-8', $client->getResponse()->getCharset());
+        $xml = \simplexml_load_string((string)($client->getResponse()->getContent()));
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());
         $this->assertEquals($php->getName() . ' ' . $php->getVersion(), $xml->entry->title->__toString());

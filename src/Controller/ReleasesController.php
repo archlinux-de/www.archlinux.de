@@ -134,6 +134,10 @@ class ReleasesController extends AbstractController
         }
 
         $feedIo = Factory::create()->getFeedIo();
-        return (new Response($feedIo->toAtom($feed)));
+        return (new Response(
+            $feedIo->toAtom($feed),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/atom+xml; charset=UTF-8']
+        ));
     }
 }
