@@ -95,18 +95,12 @@ class ReleasesController extends AbstractController
     }
 
     /**
-     * @Route(
-     *     "/releases/feed.{_format}",
-     *     methods={"GET"},
-     *     defaults={"_format": "atom"},
-     *     requirements={"_format": "atom|rss|json"}
-     * )
+     * @Route("/releases/feed", methods={"GET"})
      * @Cache(smaxage="900")
-     * @param string $_format
      * @param Packages $assetPackages
      * @return Response
      */
-    public function feedAction(string $_format, Packages $assetPackages): Response
+    public function feedAction(Packages $assetPackages): Response
     {
         $feed = new Feed();
         $feedUrl = $this->generateUrl('app_releases_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -140,6 +134,6 @@ class ReleasesController extends AbstractController
         }
 
         $feedIo = Factory::create()->getFeedIo();
-        return (new Response($feedIo->format($feed, $_format)));
+        return (new Response($feedIo->toAtom($feed)));
     }
 }

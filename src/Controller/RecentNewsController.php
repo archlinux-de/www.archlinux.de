@@ -18,21 +18,14 @@ class RecentNewsController extends AbstractController
 {
 
     /**
-     * @Route(
-     *     "/news/feed.{_format}",
-     *     methods={"GET"},
-     *     defaults={"_format": "atom"},
-     *     requirements={"_format": "atom|rss|json"}
-     * )
+     * @Route("/news/feed", methods={"GET"})
      * @Cache(smaxage="600")
-     * @param string $_format
      * @param NewsItemRepository $newsItemRepository
      * @param Packages $assetPackages
      * @param HTMLPurifiersRegistryInterface $purifiersRegistry
      * @return Response
      */
     public function indexAction(
-        string $_format,
         NewsItemRepository $newsItemRepository,
         Packages $assetPackages,
         HTMLPurifiersRegistryInterface $purifiersRegistry
@@ -72,6 +65,6 @@ class RecentNewsController extends AbstractController
         }
 
         $feedIo = Factory::create()->getFeedIo();
-        return (new Response($feedIo->format($feed, $_format)));
+        return (new Response($feedIo->toAtom($feed)));
     }
 }

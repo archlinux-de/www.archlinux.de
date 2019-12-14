@@ -17,23 +17,14 @@ class RecentPackagesController extends AbstractController
 {
 
     /**
-     * @Route(
-     *     "/packages/feed.{_format}",
-     *     methods={"GET"},
-     *     defaults={"_format": "atom"},
-     *     requirements={"_format": "atom|rss|json"}
-     * )
+     * @Route("/packages/feed", methods={"GET"})
      * @Cache(smaxage="600")
-     * @param string $_format
      * @param Packages $assetPackages
      * @param PackageRepository $packageRepository
      * @return Response
      */
-    public function indexAction(
-        string $_format,
-        Packages $assetPackages,
-        PackageRepository $packageRepository
-    ): Response {
+    public function indexAction(Packages $assetPackages, PackageRepository $packageRepository): Response
+    {
         $packages = $packageRepository->findLatestByArchitecture(
             $this->getParameter('app.packages.default_architecture'),
             25
@@ -55,11 +46,15 @@ class RecentPackagesController extends AbstractController
         $feed->addElement($logo);
         /** @var Package $package */
         foreach ($packages as $package) {
-            $packageUrl = $this->generateUrl('app_packagedetails_index', [
-                'repo' => $package->getRepository()->getName(),
-                'arch' => $package->getRepository()->getArchitecture(),
-                'pkgname' => $package->getName(),
-            ], UrlGeneratorInterface::ABSOLUTE_URL);
+            $packageUrl = $this->generateUrl(
+                'app_packagedetails_index',
+                [
+                    'repo' => $package->getRepository()->getName(),
+                    'arch' => $package->getRepository()->getArchitecture(),
+                    'pkgname' => $package->getName(),
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
             $item = $feed->newItem();
             $item->setPublicId($packageUrl);
             $item->setTitle($package->getName() . ' ' . $package->getVersion());
@@ -78,6 +73,6 @@ class RecentPackagesController extends AbstractController
         }
 
         $feedIo = Factory::create()->getFeedIo();
-        return (new Response($feedIo->format($feed, $_format)));
+        return (new Response($feedIo->toAtom($feed)));
     }
 }
