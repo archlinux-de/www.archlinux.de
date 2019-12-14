@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "346050de1fd1db4d6b44d5ce7f5961e7",
+    "content-hash": "02130e02a2c1f20ce7b3e8546b503edd",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1259,29 +1259,30 @@
         },
         {
             "name": "exercise/htmlpurifier-bundle",
-            "version": "V2.0.4",
+            "version": "v2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Exercise/HTMLPurifierBundle.git",
-                "reference": "d39f309a9759a04669bc6aa21fbb03d2c5299446"
+                "reference": "7a55d73311ee4e8a4b9639d7a3760cc0a7afddf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/d39f309a9759a04669bc6aa21fbb03d2c5299446",
-                "reference": "d39f309a9759a04669bc6aa21fbb03d2c5299446",
+                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/7a55d73311ee4e8a4b9639d7a3760cc0a7afddf0",
+                "reference": "7a55d73311ee4e8a4b9639d7a3760cc0a7afddf0",
                 "shasum": ""
             },
             "require": {
                 "ezyang/htmlpurifier": "~4.0",
                 "php": "^5.5.9|>=7.0.8",
-                "symfony/config": "~3.3 || ~4.0",
-                "symfony/dependency-injection": "~3.4.1 || ^4.0.1",
-                "symfony/http-kernel": "~3.4.1 || ^4.0.1"
+                "symfony/config": "~3.4 || ~4.0 || ^5.0",
+                "symfony/dependency-injection": "~3.4.1 || ^4.0.1 || ^5.0",
+                "symfony/http-kernel": "~3.4.1 || ^4.0.1 || ^5.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.2",
-                "symfony/form": "~3.4.1 || ^4.0.1",
-                "twig/twig": "^1.34.4 || ^2.4.3"
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "symfony/form": "~3.4.1 || ^4.0.1 || ^5.0",
+                "symfony/phpunit-bridge": "4.4.*",
+                "twig/twig": "^1.35.0 || ^2.4.4 || ^3.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -1291,7 +1292,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Exercise\\HTMLPurifierBundle\\": ""
+                    "Exercise\\HTMLPurifierBundle\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1312,7 +1313,7 @@
                 "htmlpurifier",
                 "symfony"
             ],
-            "time": "2019-02-21T01:33:48+00:00"
+            "time": "2019-12-14T11:57:47+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -5480,16 +5481,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.2",
+            "version": "0.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "15a2c2b7d4195aa712506e14763ef7646ac6a08c"
+                "reference": "c15a6ea55da71d8133399306f560cfe4d30301b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/15a2c2b7d4195aa712506e14763ef7646ac6a08c",
-                "reference": "15a2c2b7d4195aa712506e14763ef7646ac6a08c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c15a6ea55da71d8133399306f560cfe4d30301b7",
+                "reference": "c15a6ea55da71d8133399306f560cfe4d30301b7",
                 "shasum": ""
             },
             "require": {
@@ -5516,7 +5517,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-12-09T09:13:49+00:00"
+            "time": "2019-12-14T13:41:17+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
