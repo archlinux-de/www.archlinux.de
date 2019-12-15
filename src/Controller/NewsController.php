@@ -88,4 +88,19 @@ class NewsController extends AbstractController
             ['news' => $newsItem]
         );
     }
+
+    /**
+     * @Route("/news/feed", methods={"GET"})
+     * @Cache(smaxage="600")
+     * @return Response
+     */
+    public function feedAction(): Response
+    {
+        $response = $this->render(
+            'news/feed.xml.twig',
+            ['items' => $this->newsRepository->findLatest(25)]
+        );
+        $response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
+        return $response;
+    }
 }

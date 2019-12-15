@@ -17,7 +17,7 @@ class LegacyController extends AbstractController
     private $internalPages = array(
         'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_packages_opensearch',
-        'GetRecentNews' => 'app_recentnews_index',
+        'GetRecentNews' => 'app_news_feed',
         'GetRecentPackages' => 'app_recentpackages_index',
         'MirrorStatus' => 'app_mirrorstatus_index',
         'PackageDetails' => 'app_packagedetails_index',

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>{{ url('app_recentnews_index') }}</id>
+    <id>{{ url('app_news_feed') }}</id>
     <title>Aktuelle Arch Linux Neuigkeiten</title>
     <updated>{{ 'now' | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
     <link rel="alternate" href="{{ url('app_news_index') }}"/>
-    <link rel="self" href="{{ url('app_recentnews_index') }}"/>
+    <link rel="self" href="{{ url('app_news_feed') }}"/>
     <icon>{{ absolute_url(asset('build/images/archicon.svg')) }}</icon>
     <logo>{{ absolute_url(asset('build/images/archicon.svg')) }}</logo>
     {# @var items \App\Entity\NewsItem[] #}
