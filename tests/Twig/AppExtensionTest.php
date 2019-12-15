@@ -13,10 +13,7 @@ class AppExtensionTest extends TestCase
     {
         $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'format_bytes');
         if (is_callable($callable)) {
-            $result = call_user_func(
-                $callable,
-                '1'
-            );
+            $result = $callable('1');
             $this->assertEquals('1,00 Byte', $result);
         } else {
             $this->fail('Filter has no callable');
@@ -68,10 +65,7 @@ class AppExtensionTest extends TestCase
     {
         $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'url_path');
         if (is_callable($callable)) {
-            $result = call_user_func(
-                $callable,
-                'https://www.archlinux.de/packages'
-            );
+            $result = $callable('https://www.archlinux.de/packages');
             $this->assertEquals('/packages', $result);
         } else {
             $this->fail('Filter has no callable');
@@ -89,10 +83,7 @@ class AppExtensionTest extends TestCase
     {
         $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'url_host');
         if (is_callable($callable)) {
-            $result = call_user_func(
-                $callable,
-                'https://www.archlinux.de/packages'
-            );
+            $result = $callable('https://www.archlinux.de/packages');
             $this->assertEquals('www.archlinux.de', $result);
         } else {
             $this->fail('Filter has no callable');
