@@ -267,12 +267,12 @@ class PackagesControllerTest extends DatabaseTestCase
         $xml = \simplexml_load_string((string)($client->getResponse()->getContent()));
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());
-        $this->assertEquals($php->getName() . ' ' . $php->getVersion(), $xml->entry->title->__toString());
-        $this->assertEquals($php->getDescription(), $xml->entry->content->__toString());
+        $this->assertEquals($php->getName() . ' ' . $php->getVersion(), (string)$xml->entry->title);
+        $this->assertEquals($php->getDescription(), (string)$xml->entry->content);
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertEquals(
             'http://localhost/packages/core/x86_64/php',
-            $xml->entry->link->attributes()->href->__toString()
+            (string)$xml->entry->link->attributes()->href
         );
     }
 

@@ -128,9 +128,9 @@ class NewsControllerTest extends DatabaseTestCase
         $xml = \simplexml_load_string((string)($client->getResponse()->getContent()));
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());
-        $this->assertEquals($news->getTitle(), $xml->entry->title->__toString());
-        $this->assertEquals($news->getDescription(), $xml->entry->content->__toString());
+        $this->assertEquals($news->getTitle(), (string)$xml->entry->title);
+        $this->assertEquals($news->getDescription(), (string)$xml->entry->content);
         $this->assertNotNull($xml->entry->link->attributes());
-        $this->assertEquals($news->getLink(), $xml->entry->link->attributes()->href->__toString());
+        $this->assertEquals($news->getLink(), (string)$xml->entry->link->attributes()->href);
     }
 }

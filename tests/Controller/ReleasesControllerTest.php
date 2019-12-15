@@ -121,12 +121,12 @@ class ReleasesControllerTest extends DatabaseTestCase
         $xml = \simplexml_load_string((string)($client->getResponse()->getContent()));
         $this->assertNotFalse($xml);
         $this->assertEmpty(\libxml_get_errors());
-        $this->assertEquals($release->getVersion(), $xml->entry->title->__toString());
-        $this->assertEquals($release->getInfo(), $xml->entry->content->__toString());
+        $this->assertEquals($release->getVersion(), (string)$xml->entry->title);
+        $this->assertEquals($release->getInfo(), (string)$xml->entry->content);
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertStringContainsString(
             $release->getVersion(),
-            $xml->entry->link->attributes()->href->__toString()
+            (string)$xml->entry->link->attributes()->href
         );
     }
 }
