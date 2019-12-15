@@ -1,7 +1,4 @@
 {
-    "composer/ca-bundle": {
-        "version": "1.1.0"
-    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -77,9 +74,6 @@
     "ezyang/htmlpurifier": {
         "version": "v4.9.3"
     },
-    "geoip2/geoip2": {
-        "version": "v2.7.0"
-    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
@@ -91,9 +85,6 @@
     },
     "maxmind-db/reader": {
         "version": "v1.2.0"
-    },
-    "maxmind/web-service-common": {
-        "version": "v0.4.0"
     },
     "monolog/monolog": {
         "version": "1.23.0"
