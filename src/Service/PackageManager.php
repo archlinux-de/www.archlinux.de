@@ -49,10 +49,10 @@ class PackageManager
             $repository->getArchitecture()
         );
         if ((
-                !is_null($repository->getMTime())
+                $repository->getMTime() !== null
                 && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp()
             )
-            || is_null($repository->getMTime())
+            || $repository->getMTime() === null
         ) {
             $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
             /** @TODO Should not persist here */
@@ -74,10 +74,10 @@ class PackageManager
     ): bool {
         $packageMTime = $this->getRepositoryPackageMTime($repository);
 
-        if (is_null($packageMTime)
+        if ($packageMTime === null
             || $databasePackage->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
             $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
-            if (is_null($package)) {
+            if ($package === null) {
                 $package = Package::createFromPackageDatabase($repository, $databasePackage);
             } else {
                 $package->updateFromPackageDatabase($databasePackage);
@@ -108,7 +108,7 @@ class PackageManager
     public function cleanupObsoletePackages(Repository $repository, array $allPackages): bool
     {
         $packageMTime = $this->getRepositoryPackageMTime($repository);
-        if (is_null($packageMTime)) {
+        if ($packageMTime === null) {
             $repoPackages = $this->packageRepository->findByRepository($repository);
         } else {
             $repoPackages = $this->packageRepository->findByRepositoryOlderThan($repository, $packageMTime);

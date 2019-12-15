@@ -44,12 +44,12 @@ class MirrorFetcher implements \IteratorAggregate
         foreach ($this->fetchMirrorStatusUrls() as $mirrorData) {
             $mirror = new Mirror($mirrorData['url'], $mirrorData['protocol']);
 
-            if (!is_null($mirrorData['country_code'])) {
+            if ($mirrorData['country_code'] !== null) {
                 /** @var Country $country */
                 $country = $this->countryRepository->find($mirrorData['country_code']);
                 $mirror->setCountry($country);
             }
-            if (!is_null($mirrorData['last_sync'])) {
+            if ($mirrorData['last_sync'] !== null) {
                 $mirror->setLastSync(new \DateTime($mirrorData['last_sync']));
             }
             $mirror->setDelay($mirrorData['delay']);

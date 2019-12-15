@@ -55,7 +55,7 @@ class Package
      */
     private function readList(string $key, array $default = []): array
     {
-        if (is_null($this->desc)) {
+        if ($this->desc === null) {
             $this->desc = $this->loadInfo($this->descFile);
         }
         if (isset($this->desc[$key])) {
@@ -201,7 +201,7 @@ class Package
     public function getBuildDate(): ?\DateTime
     {
         $buildTimestamp = $this->readValue('BUILDDATE') ?: null;
-        if (is_null($buildTimestamp)) {
+        if ($buildTimestamp === null) {
             return null;
         }
         return (new \DateTime())->setTimestamp((int)$buildTimestamp);
@@ -276,7 +276,7 @@ class Package
      */
     public function getFiles(): array
     {
-        if (is_null($this->files)) {
+        if ($this->files === null) {
             $this->files = $this->loadInfo(
                 new \SplFileInfo($this->packageDir->getPathname() . '/files')
             )['FILES'];

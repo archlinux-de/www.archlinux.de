@@ -106,7 +106,7 @@ class ValidatePackagesCommand extends Command
         foreach ($this->repositoryRepository->findAll() as $repo) {
             /** @var DatabasePackage $package */
             foreach ($this->downloadPackagesForRepository($repo) as $package) {
-                if (is_null($this->packageRepository->findByRepositoryAndName($repo, $package->getName()))) {
+                if ($this->packageRepository->findByRepositoryAndName($repo, $package->getName()) === null) {
                     yield $repo->getName() => $package->getName();
                 }
             }

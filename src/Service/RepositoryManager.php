@@ -73,7 +73,7 @@ class RepositoryManager
         foreach ($this->repositoryConfiguration as $repoName => $archNames) {
             foreach ($archNames as $archName) {
                 $repository = $this->repositoryRepository->findByNameAndArchitecture($repoName, $archName);
-                if (is_null($repository)) {
+                if ($repository === null) {
                     $repository = new Repository($repoName, $archName);
                     $repository->setTesting(preg_match('/(-|^)testing$/', $repoName) > 0);
 

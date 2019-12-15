@@ -726,7 +726,7 @@ class Package implements \JsonSerializable
             'name' => $this->getName(),
             'version' => $this->getVersion(),
             'description' => $this->getDescription(),
-            'builddate' => !is_null($this->getBuildDate())
+            'builddate' => $this->getBuildDate() !== null
                 ? $this->getBuildDate()->format(\DateTime::RFC2822)
                 : null,
             'groups' => $this->getGroups()

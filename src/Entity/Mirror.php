@@ -136,7 +136,7 @@ class Mirror implements \JsonSerializable
             'durationStddev' => $this->getDurationStddev(),
             'completionPct' => $this->getCompletionPct(),
             'score' => $this->getScore(),
-            'lastsync' => !is_null($this->getLastSync()) ? $this->getLastSync()->format(\DateTime::RFC2822) : null,
+            'lastsync' => $this->getLastSync() !== null ? $this->getLastSync()->format(\DateTime::RFC2822) : null,
             'isos' => $this->hasIsos(),
             'ipv4' => $this->hasIpv4(),
             'ipv6' => $this->hasIpv6(),

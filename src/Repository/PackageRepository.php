@@ -66,7 +66,7 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('repository', $repository)
             ->getQuery()
             ->getSingleScalarResult();
-        if (!is_null($mtime)) {
+        if ($mtime !== null) {
             $mtime = new \DateTime($mtime);
         }
         return $mtime;

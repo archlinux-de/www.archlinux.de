@@ -38,15 +38,15 @@ class NewsItemFetcher implements \IteratorAggregate
     public function getIterator(): \Traversable
     {
         foreach ($this->fetchNewsFeed()->entry as $newsEntry) {
-            if (is_null($newsEntry->id)
-                || is_null($newsEntry->title)
-                || is_null($newsEntry->link)
-                || is_null($newsEntry->link->attributes())
-                || is_null($newsEntry->summary)
-                || is_null($newsEntry->author)
-                || is_null($newsEntry->author->name)
-                || is_null($newsEntry->author->uri)
-                || is_null($newsEntry->updated)
+            if ($newsEntry->id === null
+                || $newsEntry->title === null
+                || $newsEntry->link === null
+                || $newsEntry->link->attributes() === null
+                || $newsEntry->summary === null
+                || $newsEntry->author === null
+                || $newsEntry->author->name === null
+                || $newsEntry->author->uri === null
+                || $newsEntry->updated === null
             ) {
                 throw new \RuntimeException('Invalid news entry');
             }
