@@ -25,6 +25,7 @@ class PackageDetailsController extends AbstractController
      * @param string $arch
      * @param string $pkgname
      * @param PackageRepository $packageRepository
+     * @param string $cgitUrl
      * @return Response
      * @throws NonUniqueResultException
      */
@@ -32,7 +33,8 @@ class PackageDetailsController extends AbstractController
         string $repo,
         string $arch,
         string $pkgname,
-        PackageRepository $packageRepository
+        PackageRepository $packageRepository,
+        string $cgitUrl
     ): Response {
         try {
             try {
@@ -46,21 +48,32 @@ class PackageDetailsController extends AbstractController
             throw $this->createNotFoundException('Package not found', $f);
         }
 
-        $cgitUrl = $this->getParameter('app.packages.cgit') . (in_array($package->getRepository()->getName(), array(
-                'community',
-                'community-testing',
-                'multilib',
-                'multilib-testing',
-            )) ? 'community' : 'packages')
+        $cgitLink = $cgitUrl . (
+            in_array(
+                $package->getRepository()->getName(),
+                array(
+                    'community',
+                    'community-testing',
+                    'multilib',
+                    'multilib-testing',
+                )
+            ) ? 'community' : 'packages'
+            )
             . '.git/';
 
-        return $this->render('package/index.html.twig', [
-            'package' => $package,
-            'cgit_url' => $cgitUrl,
-            'inverse_depends' => $packageRepository->findByInverseRelationType($package, Dependency::class),
-            'inverse_optdepends' => $packageRepository->findByInverseRelationType($package, OptionalDependency::class),
-            'inverse_makedepends' => $packageRepository->findByInverseRelationType($package, MakeDependency::class),
-        ]);
+        return $this->render(
+            'package/index.html.twig',
+            [
+                'package' => $package,
+                'cgit_url' => $cgitLink,
+                'inverse_depends' => $packageRepository->findByInverseRelationType($package, Dependency::class),
+                'inverse_optdepends' => $packageRepository->findByInverseRelationType(
+                    $package,
+                    OptionalDependency::class
+                ),
+                'inverse_makedepends' => $packageRepository->findByInverseRelationType($package, MakeDependency::class),
+            ]
+        );
     }
 
     /**

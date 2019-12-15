@@ -28,25 +28,29 @@ class StartController extends AbstractController
      */
     public function newsAction(NewsItemRepository $newsItemRepository): Response
     {
-        return $this->render('start/news.html.twig', [
-            'news_items' => $newsItemRepository->findLatest(6)
-        ]);
+        return $this->render(
+            'start/news.html.twig',
+            [
+                'news_items' => $newsItemRepository->findLatest(6)
+            ]
+        );
     }
 
     /**
      * @param PackageRepository $packageRepository
+     * @param string $defaultArchitecture
      * @return Response
      * @Cache(smaxage="600")
      */
-    public function recentPackagesAction(PackageRepository $packageRepository): Response
+    public function recentPackagesAction(PackageRepository $packageRepository, string $defaultArchitecture): Response
     {
-        $packages = $packageRepository->findLatestByArchitecture(
-            $this->getParameter('app.packages.default_architecture'),
-            20
-        );
+        $packages = $packageRepository->findLatestByArchitecture($defaultArchitecture, 20);
 
-        return $this->render('start/recent_packages.html.twig', [
-            'packages' => $packages
-        ]);
+        return $this->render(
+            'start/recent_packages.html.twig',
+            [
+                'packages' => $packages
+            ]
+        );
     }
 }

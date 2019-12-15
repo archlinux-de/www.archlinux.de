@@ -18,16 +18,16 @@ class SitemapController extends AbstractController
      * @param PackageRepository $packageRepository
      * @param NewsItemRepository $newsItemRepository
      * @param ReleaseRepository $releaseRepository
+     * @param string $defaultArchitecture
      * @return Response
      */
     public function indexAction(
         PackageRepository $packageRepository,
         NewsItemRepository $newsItemRepository,
-        ReleaseRepository $releaseRepository
+        ReleaseRepository $releaseRepository,
+        string $defaultArchitecture
     ): Response {
-        $packages = $packageRepository->findStableByArchitecture(
-            $this->getParameter('app.packages.default_architecture')
-        );
+        $packages = $packageRepository->findStableByArchitecture($defaultArchitecture);
 
         $response = $this->render(
             'sitemap/index.xml.twig',

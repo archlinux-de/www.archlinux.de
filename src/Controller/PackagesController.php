@@ -20,14 +20,22 @@ class PackagesController extends AbstractController
     /** @var DatatablesQuery */
     private $datatablesQuery;
 
+    /** @var string */
+    private $defaultArchitecture;
+
     /**
      * @param PackageRepository $packageRepository
      * @param DatatablesQuery $datatablesQuery
+     * @param string $defaultArchitecture
      */
-    public function __construct(PackageRepository $packageRepository, DatatablesQuery $datatablesQuery)
-    {
+    public function __construct(
+        PackageRepository $packageRepository,
+        DatatablesQuery $datatablesQuery,
+        string $defaultArchitecture
+    ) {
         $this->packageRepository = $packageRepository;
         $this->datatablesQuery = $datatablesQuery;
+        $this->defaultArchitecture = $defaultArchitecture;
     }
 
     /**
@@ -39,15 +47,14 @@ class PackagesController extends AbstractController
     public function indexAction(Request $request): Response
     {
         $search = $request->get('search');
-        $defaultArchitecture = $this->getParameter('app.packages.default_architecture');
-        $architecture = $request->get('architecture', $defaultArchitecture);
+        $architecture = $request->get('architecture', $this->defaultArchitecture);
         $repository = $request->get('repository');
 
         return $this->render(
             'packages/index.html.twig',
             [
                 'architecture' => $architecture,
-                'defaultArchitecture' => $defaultArchitecture,
+                'defaultArchitecture' => $this->defaultArchitecture,
                 'repository' => $repository,
                 'search' => $search
             ]
@@ -104,14 +111,12 @@ class PackagesController extends AbstractController
     /**
      * @Route("/packages/feed", methods={"GET"})
      * @Cache(smaxage="600")
+     * @param string $defaultArchitecture
      * @return Response
      */
-    public function feedAction(): Response
+    public function feedAction(string $defaultArchitecture): Response
     {
-        $packages = $this->packageRepository->findLatestByArchitecture(
-            $this->getParameter('app.packages.default_architecture'),
-            25
-        );
+        $packages = $this->packageRepository->findLatestByArchitecture($defaultArchitecture, 25);
 
         $response = $this->render(
             'packages/feed.xml.twig',

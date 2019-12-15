@@ -17,17 +17,23 @@ class MirrorController extends AbstractController
 {
     /** @var GeoIp */
     private $geoIp;
+
     /** @var MirrorRepository */
     private $mirrorRepository;
+
+    /** @var string */
+    private $mirrorCountry;
 
     /**
      * @param GeoIp $geoIp
      * @param MirrorRepository $mirrorRepository
+     * @param string $mirrorCountry
      */
-    public function __construct(GeoIp $geoIp, MirrorRepository $mirrorRepository)
+    public function __construct(GeoIp $geoIp, MirrorRepository $mirrorRepository, string $mirrorCountry)
     {
         $this->geoIp = $geoIp;
         $this->mirrorRepository = $mirrorRepository;
+        $this->mirrorCountry = $mirrorCountry;
     }
 
     /**
@@ -82,7 +88,7 @@ class MirrorController extends AbstractController
     {
         $countryCode = $this->geoIp->getCountryCode($clientIp);
         if (empty($countryCode)) {
-            $countryCode = $this->getParameter('app.mirrors.country');
+            $countryCode = $this->mirrorCountry;
         }
         $mirrors = $this->mirrorRepository->findBestByCountryAndLastSync($countryCode, $lastSync);
 

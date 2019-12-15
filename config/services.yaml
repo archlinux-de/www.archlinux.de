@@ -12,6 +12,8 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $defaultArchitecture: '%app.packages.default_architecture%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -50,3 +52,15 @@ services:
 
     App\Service\NewsItemFetcher:
         $newsFeedUrl: '%app.news.feed%'
+
+    App\Controller\PackageDetailsController:
+        bind:
+            $cgitUrl: '%app.packages.cgit%'
+
+    App\Controller\DownloadController:
+        bind:
+            $mirrorCountry: '%app.mirrors.country%'
+
+    App\Controller\MirrorController:
+        bind:
+            $mirrorCountry: '%app.mirrors.country%'

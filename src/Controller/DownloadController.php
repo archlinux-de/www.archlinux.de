@@ -17,10 +17,14 @@ class DownloadController extends AbstractController
      * @Cache(smaxage="600")
      * @param ReleaseRepository $releaseRepository
      * @param MirrorRepository $mirrorRepository
+     * @param string $mirrorCountry
      * @return Response
      */
-    public function indexAction(ReleaseRepository $releaseRepository, MirrorRepository $mirrorRepository): Response
-    {
+    public function indexAction(
+        ReleaseRepository $releaseRepository,
+        MirrorRepository $mirrorRepository,
+        string $mirrorCountry
+    ): Response {
         try {
             $release = $releaseRepository->getLatestAvailable();
         } catch (UnexpectedResultException $e) {
@@ -28,13 +32,16 @@ class DownloadController extends AbstractController
         }
 
         $mirrors = $mirrorRepository->findBestByCountryAndLastSync(
-            $this->getParameter('app.mirrors.country'),
+            $mirrorCountry,
             $release->getCreated()
         );
 
-        return $this->render('download/index.html.twig', [
-            'release' => $release,
-            'mirrors' => $mirrors
-        ]);
+        return $this->render(
+            'download/index.html.twig',
+            [
+                'release' => $release,
+                'mirrors' => $mirrors
+            ]
+        );
     }
 }
