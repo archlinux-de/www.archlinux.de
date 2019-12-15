@@ -96,7 +96,7 @@ class MirrorController extends AbstractController
             throw $this->createNotFoundException('Mirror not found');
         }
 
-        srand(crc32($clientIp));
+        mt_srand(crc32($clientIp));
         $randomMirrorIndex = array_rand($mirrors, 1);
         if (is_array($randomMirrorIndex)) {
             // @codeCoverageIgnoreStart
