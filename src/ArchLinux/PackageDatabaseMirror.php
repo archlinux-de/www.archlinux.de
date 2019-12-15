@@ -53,9 +53,9 @@ class PackageDatabaseMirror
             $this->lastMirrorUpdate = (int)$content;
 
             return $this->lastMirrorUpdate !== (int)$lastLocalUpdateCache->get();
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public function updateLastUpdate(): void

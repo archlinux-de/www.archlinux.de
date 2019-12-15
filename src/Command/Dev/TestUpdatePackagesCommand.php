@@ -105,7 +105,9 @@ class TestUpdatePackagesCommand extends Command
                     if (date('Y') == $year) {
                         if ($month > date('n')) {
                             continue;
-                        } elseif ($month == date('n')) {
+                        }
+
+                        if ($month == date('n')) {
                             if ($day > date('j')) {
                                 continue;
                             }

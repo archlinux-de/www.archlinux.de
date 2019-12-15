@@ -81,9 +81,9 @@ class NewsItemFetcher implements \IteratorAggregate
             $error = libxml_get_last_error();
             if ($error) {
                 throw new \RuntimeException($error->message, $error->code);
-            } else {
-                throw new \RuntimeException('empty news feed');
             }
+
+            throw new \RuntimeException('empty news feed');
         }
 
         return $feed;

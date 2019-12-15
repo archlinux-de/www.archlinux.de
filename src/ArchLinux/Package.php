@@ -43,9 +43,9 @@ class Package
         $list = $this->readList($key);
         if (isset($list[0])) {
             return $list[0];
-        } else {
-            return $default;
         }
+
+        return $default;
     }
 
     /**
@@ -60,9 +60,9 @@ class Package
         }
         if (isset($this->desc[$key])) {
             return $this->desc[$key];
-        } else {
-            return $default;
         }
+
+        return $default;
     }
 
     /**

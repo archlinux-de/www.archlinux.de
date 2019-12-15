@@ -38,7 +38,9 @@ class NewsItemSlugger
     {
         if (preg_match('/id=(\d+)/', $id, $matches)) {
             return (int)$matches[1];
-        } elseif (preg_match('/^\d+$/', $id)) {
+        }
+
+        if (preg_match('/^\d+$/', $id)) {
             return (int)$id;
         }
         return crc32($id);

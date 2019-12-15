@@ -86,9 +86,9 @@ class Files implements \IteratorAggregate, \JsonSerializable
     {
         if (empty($this->files)) {
             return [];
-        } else {
-            return explode("\n", $this->files);
         }
+
+        return explode("\n", $this->files);
     }
 
     /**
