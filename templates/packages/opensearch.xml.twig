@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>Paket-Suche</ShortName>
+    <Description>Suche nach Arch Linux Paketen</Description>
+    <Image type="image/svg+xml">{{ absolute_url(asset('build/images/archicon.svg')) }}</Image>
+    <Url template="{{ url('app_packages_index') }}" type="text/html">
+        <Param name="search" value="{searchTerms}"/>
+    </Url>
+    <Url template="{{ url('app_packagessuggest_suggest') }}" type="application/x-suggestions+json" rel="suggestions">
+        <Param name="search" value="{searchTerms}"/>
+    </Url>
+    <Url template="{{ url('app_getopensearch_index') }}" type="application/opensearchdescription+xml" rel="self"/>
+</OpenSearchDescription>

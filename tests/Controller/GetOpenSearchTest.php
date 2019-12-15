@@ -20,6 +20,6 @@ class GetOpenSearchTest extends WebTestCase
         $this->assertIsString($response);
         $this->assertNotFalse(\simplexml_load_string($response));
         $this->assertEmpty(\libxml_get_errors());
-        $this->assertStringContainsString('/packages?search=', $response);
+        $this->assertStringContainsString('{searchTerms}', $response);
     }
 }

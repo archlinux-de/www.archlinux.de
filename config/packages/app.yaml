@@ -1,5 +1,4 @@
 parameters:
-    app.common.email: 'bob@archlinux.de'
     env(PACKAGES_MIRROR): 'https://mirror.leaseweb.net/archlinux/'
     app.packages.mirror: '%env(PACKAGES_MIRROR)%'
     app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
