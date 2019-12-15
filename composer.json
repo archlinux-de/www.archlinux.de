@@ -24,21 +24,21 @@
         "league/iso3166": "^2.1.4",
         "pierres/datatables-api-bundle": "^1.0.2",
         "sensio/framework-extra-bundle": "^v5.5.2",
-        "symfony/asset": "^v4.4.1",
-        "symfony/console": "^v4.4.1",
-        "symfony/dotenv": "^v4.4.1",
-        "symfony/expression-language": "^v4.4.1",
+        "symfony/asset": "^v5.0.1",
+        "symfony/console": "^v5.0.1",
+        "symfony/dotenv": "^v5.0.1",
+        "symfony/expression-language": "^v5.0.1",
         "symfony/flex": "^v1.6.0",
-        "symfony/framework-bundle": "^v4.4.1",
-        "symfony/http-client": "^v4.4.1",
-        "symfony/lock": "^v4.4.1",
+        "symfony/framework-bundle": "^v5.0.1",
+        "symfony/http-client": "^v5.0.1",
+        "symfony/lock": "^v5.0.1",
         "symfony/monolog-bundle": "^v3.5.0",
-        "symfony/process": "^v4.4.1",
-        "symfony/twig-bundle": "^v4.4.1",
-        "symfony/validator": "^v4.4.1",
-        "symfony/web-link": "^v4.4.1",
+        "symfony/process": "^v5.0.1",
+        "symfony/twig-bundle": "^v5.0.1",
+        "symfony/validator": "^v5.0.1",
+        "symfony/web-link": "^v5.0.1",
         "symfony/webpack-encore-bundle": "^v1.7.2",
-        "symfony/yaml": "^v4.4.1"
+        "symfony/yaml": "^v5.0.1"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
@@ -53,11 +53,11 @@
         "pierres/symfony-database-test": "^1.0.3",
         "sensiolabs/security-checker": "^v6.0.3",
         "squizlabs/php_codesniffer": "^3.5.3",
-        "symfony/browser-kit": "^v4.4.1",
-        "symfony/css-selector": "^v4.4.1",
-        "symfony/phpunit-bridge": "^v4.4.1",
-        "symfony/stopwatch": "^v4.4.1",
-        "symfony/web-profiler-bundle": "^v4.4.1"
+        "symfony/browser-kit": "^v5.0.1",
+        "symfony/css-selector": "^v5.0.1",
+        "symfony/phpunit-bridge": "^v5.0.1",
+        "symfony/stopwatch": "^v5.0.1",
+        "symfony/web-profiler-bundle": "^v5.0.1"
     },
     "config": {
         "preferred-install": {
@@ -106,7 +106,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "4.4.*"
+            "require": "5.0.*"
         }
     }
 }
