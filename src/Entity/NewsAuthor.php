@@ -28,7 +28,7 @@ class NewsAuthor implements \JsonSerializable
     private $uri;
 
     /**
-     * @return array
+     * @return array<string|null>
      */
     public function jsonSerialize(): array
     {

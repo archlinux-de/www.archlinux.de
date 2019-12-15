@@ -6,11 +6,14 @@ class Package
 {
     /** @var \SplFileInfo */
     private $packageDir;
+
     /** @var \SplFileInfo */
     private $descFile;
-    /** @var array|null */
+
+    /** @var array<array<string>>|null */
     private $desc;
-    /** @var array|null */
+
+    /** @var array<string>|null */
     private $files;
 
     /**
@@ -47,8 +50,8 @@ class Package
 
     /**
      * @param string $key
-     * @param array $default
-     * @return array
+     * @param array<string> $default
+     * @return array<string>
      */
     private function readList(string $key, array $default = []): array
     {
@@ -65,7 +68,7 @@ class Package
     /**
      * @param \SplFileInfo $descFile
      *
-     * @return array
+     * @return array<array<string>>
      */
     private function loadInfo(\SplFileInfo $descFile): array
     {
@@ -121,7 +124,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getGroups(): array
     {
@@ -177,7 +180,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getLicenses(): array
     {
@@ -213,7 +216,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getReplaces(): array
     {
@@ -221,7 +224,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getDepends(): array
     {
@@ -229,7 +232,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getConflicts(): array
     {
@@ -237,7 +240,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getProvides(): array
     {
@@ -245,7 +248,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getOptDepends(): array
     {
@@ -253,7 +256,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getMakeDepends(): array
     {
@@ -261,7 +264,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getCheckDepends(): array
     {
@@ -269,7 +272,7 @@ class Package
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getFiles(): array
     {

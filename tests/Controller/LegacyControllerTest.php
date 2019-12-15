@@ -12,7 +12,7 @@ class LegacyControllerTest extends WebTestCase
 {
     /**
      * @param string $legacyPage
-     * @param array $parameters
+     * @param string[] $parameters
      * @dataProvider provideLegacyPages
      */
     public function testLegacyPagesAreRedirected(string $legacyPage, array $parameters = []): void
@@ -28,7 +28,7 @@ class LegacyControllerTest extends WebTestCase
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function provideLegacyPages(): array
     {
@@ -63,7 +63,7 @@ class LegacyControllerTest extends WebTestCase
 
     /**
      * @param string $legacyPage
-     * @param array $parameters
+     * @param string[] $parameters
      * @dataProvider provideInvalidLegacyPages
      */
     public function testInvalidParametersWillReturnNotFoundStatus(string $legacyPage, array $parameters = []): void
@@ -76,7 +76,7 @@ class LegacyControllerTest extends WebTestCase
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function provideInvalidLegacyPages(): array
     {

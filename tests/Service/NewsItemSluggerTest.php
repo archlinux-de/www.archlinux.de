@@ -51,7 +51,7 @@ class NewsItemSluggerTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideIdSlugs(): array
     {

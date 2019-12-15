@@ -13,7 +13,7 @@ class RepositoryManager
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var array */
+    /** @var array<array<string>> */
     private $repositoryConfiguration;
 
     /** @var RepositoryRepository */
@@ -24,7 +24,7 @@ class RepositoryManager
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param array $repositoryConfiguration
+     * @param array<array<string>> $repositoryConfiguration
      * @param RepositoryRepository $repositoryRepository
      * @param ValidatorInterface $validator
      */

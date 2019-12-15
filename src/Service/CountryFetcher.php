@@ -10,11 +10,11 @@ use League\ISO3166\ISO3166;
  */
 class CountryFetcher implements \IteratorAggregate
 {
-    /** @var ISO3166 */
+    /** @var ISO3166<array<string>> */
     private $iso3166;
 
     /**
-     * @param ISO3166 $iso3166
+     * @param ISO3166<array<string>> $iso3166
      */
     public function __construct(ISO3166 $iso3166)
     {
@@ -22,7 +22,7 @@ class CountryFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable
+     * @return \Traversable<Country>
      */
     public function getIterator(): \Traversable
     {

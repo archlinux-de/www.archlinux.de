@@ -37,7 +37,7 @@ class MirrorFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable
+     * @return \Traversable<Mirror>
      */
     public function getIterator(): \Traversable
     {
@@ -66,6 +66,9 @@ class MirrorFetcher implements \IteratorAggregate
         }
     }
 
+    /**
+     * @return mixed[]
+     */
     private function fetchMirrorStatusUrls(): array
     {
         $response = $this->httpClient->request('GET', $this->mirrorStatusUrl);

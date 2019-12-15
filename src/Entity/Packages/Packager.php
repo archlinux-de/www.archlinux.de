@@ -51,7 +51,7 @@ class Packager implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string|null>
      */
     public function jsonSerialize(): array
     {

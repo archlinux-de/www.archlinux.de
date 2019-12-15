@@ -716,7 +716,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string|null|string[]|Repository>
      */
     public function jsonSerialize(): array
     {
@@ -840,7 +840,7 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @param array $groups
+     * @param string[] $groups
      * @return Package
      */
     public function setGroups(array $groups)

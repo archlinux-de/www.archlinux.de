@@ -80,7 +80,7 @@ class NewsItem implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string|NewsAuthor>
      */
     public function jsonSerialize(): array
     {

@@ -14,6 +14,11 @@ class PackageTest extends TestCase
         $this->assertGreaterThan(time() - 42, $package->getMTime()->getTimestamp());
     }
 
+    /**
+     * @param array<string|int> $desc
+     * @param string[] $files
+     * @return Package
+     */
     private function createPackage(array $desc = [], array $files = []): Package
     {
         $packageDirectory = new TemporaryDirectory();
@@ -112,7 +117,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideStringValues(): array
     {
@@ -156,7 +161,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideLists(): array
     {

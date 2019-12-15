@@ -97,7 +97,7 @@ class SmokeTest extends DatabaseTestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideUrls(): array
     {
@@ -127,7 +127,7 @@ class SmokeTest extends DatabaseTestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideRedirectUrls(): array
     {

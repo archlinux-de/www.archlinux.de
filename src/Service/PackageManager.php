@@ -20,7 +20,7 @@ class PackageManager
     /** @var PackageRepository */
     private $packageRepository;
 
-    /** @var array */
+    /** @var array<\DateTime|null> */
     private $packageMTimes;
 
     /**
@@ -40,7 +40,7 @@ class PackageManager
 
     /**
      * @param Repository $repository
-     * @return \Generator
+     * @return \Generator<DatabasePackage>
      */
     public function downloadPackagesForRepository(Repository $repository): \Generator
     {
@@ -102,7 +102,7 @@ class PackageManager
 
     /**
      * @param Repository $repository
-     * @param array $allPackages
+     * @param string[] $allPackages
      * @return bool
      */
     public function cleanupObsoletePackages(Repository $repository, array $allPackages): bool

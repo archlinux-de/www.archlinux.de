@@ -21,7 +21,7 @@ class AbstractRelationTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string|null>>
      */
     public function provideTargets(): array
     {

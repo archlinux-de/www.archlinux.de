@@ -28,7 +28,7 @@ class PackageDatabaseTest extends TestCase
     }
 
     /**
-     * @param array $fileNames
+     * @param string[] $fileNames
      * @return MockObject|\FilesystemIterator
      */
     private function createFilesystemIteratorMock(array $fileNames = []): \FilesystemIterator

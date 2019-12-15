@@ -72,7 +72,7 @@ class Files implements \IteratorAggregate, \JsonSerializable
     }
 
     /**
-     * @return \Iterator
+     * @return \Iterator<string>
      */
     public function getIterator(): \Iterator
     {
@@ -92,7 +92,7 @@ class Files implements \IteratorAggregate, \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function jsonSerialize(): array
     {

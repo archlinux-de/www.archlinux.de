@@ -13,7 +13,7 @@ class LegacyController extends AbstractController
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var array */
+    /** @var string[] */
     private $internalPages = array(
         'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_packages_opensearch',
@@ -26,7 +26,7 @@ class LegacyController extends AbstractController
         'Start' => 'app_start_index'
     );
 
-    /** @var array */
+    /** @var string[] */
     private $externalPages = array(
         'ArchitectureDifferences' => 'https://www.archlinux.org/packages/differences/',
         'MirrorProblems' => 'https://www.archlinux.org/mirrors/status/#outofsync',

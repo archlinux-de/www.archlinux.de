@@ -8,7 +8,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class ValidationException extends \RuntimeException
 {
     /**
-     * @param ConstraintViolationListInterface $constraintViolationList
+     * @param ConstraintViolationListInterface<ConstraintViolationInterface> $constraintViolationList
      */
     public function __construct(ConstraintViolationListInterface $constraintViolationList)
     {

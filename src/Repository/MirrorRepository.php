@@ -119,7 +119,7 @@ class MirrorRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array $urls
+     * @param string[] $urls
      * @return Mirror[]
      */
     public function findAllExceptByUrls(array $urls): array

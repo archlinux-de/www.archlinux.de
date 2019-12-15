@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class FilesTest extends TestCase
 {
-    /** @var array */
+    /** @var string[] */
     private $files = ['usr/bin', 'usr/bin/pacman'];
 
     public function testGetPackage(): void
@@ -22,7 +22,7 @@ class FilesTest extends TestCase
     }
 
     /**
-     * @param array $files
+     * @param string[] $files
      * @dataProvider provideFilesArray
      */
     public function testGetIterator(array $files): void
@@ -31,7 +31,7 @@ class FilesTest extends TestCase
     }
 
     /**
-     * @param array $filesArray
+     * @param string[] $filesArray
      * @dataProvider provideFilesArray
      */
     public function testJsonSerialize(array $filesArray): void
@@ -45,7 +45,7 @@ class FilesTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function provideFilesArray(): array
     {

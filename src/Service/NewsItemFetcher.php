@@ -33,7 +33,7 @@ class NewsItemFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable
+     * @return \Traversable<NewsItem>
      */
     public function getIterator(): \Traversable
     {

@@ -83,7 +83,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideUpdateStringMethods(): array
     {
@@ -135,7 +135,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideTimeMethods(): array
     {
@@ -164,7 +164,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideSiteMethods(): array
     {
@@ -194,7 +194,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideListMethods(): array
     {
@@ -228,7 +228,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideRelations(): array
     {

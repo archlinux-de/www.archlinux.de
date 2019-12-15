@@ -37,7 +37,7 @@ class Country implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function jsonSerialize(): array
     {

@@ -20,7 +20,7 @@ class SluggerTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<string>>
      */
     public function provideSlugs(): array
     {

@@ -52,7 +52,7 @@ class RepositoryTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<bool>>
      */
     public function provideTesting(): array
     {

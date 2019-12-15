@@ -123,7 +123,7 @@ class Mirror implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string|bool|float|int|null|Country>
      */
     public function jsonSerialize(): array
     {

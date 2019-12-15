@@ -9,6 +9,7 @@ class PackageDatabase implements \IteratorAggregate
 {
     /** @var PackageDatabaseReader */
     private $databaseReader;
+
     /** @var \FilesystemIterator|null */
     private $databaseDirectory;
 
@@ -21,7 +22,7 @@ class PackageDatabase implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable
+     * @return \Traversable<Package>
      */
     public function getIterator(): \Traversable
     {

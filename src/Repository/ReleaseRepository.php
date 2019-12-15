@@ -50,7 +50,7 @@ class ReleaseRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array $versions
+     * @param string[] $versions
      * @return Release[]
      */
     public function findAllExceptByVersions(array $versions): array

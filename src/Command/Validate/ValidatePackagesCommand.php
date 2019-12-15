@@ -72,15 +72,13 @@ class ValidatePackagesCommand extends Command
 
         $result = 0;
 
-        /** @var DatabasePackage $package */
-
         foreach ($this->findMissingPackages() as $repo => $package) {
-            $output->writeln(sprintf('Missing package: %s [%s]', $package->getName(), $repo));
+            $output->writeln(sprintf('Missing package: %s [%s]', $package, $repo));
             $result = 1;
         }
 
         foreach ($this->findObsoletePackages() as $repo => $package) {
-            $output->writeln(sprintf('Obsolete package: %s [%s]', $package->getName(), $repo));
+            $output->writeln(sprintf('Obsolete package: %s [%s]', $package, $repo));
             $result = 1;
         }
 
@@ -100,7 +98,7 @@ class ValidatePackagesCommand extends Command
     }
 
     /**
-     * @return iterable
+     * @return iterable<string>
      */
     private function findMissingPackages(): iterable
     {
@@ -117,7 +115,7 @@ class ValidatePackagesCommand extends Command
 
     /**
      * @param Repository $repository
-     * @return iterable
+     * @return iterable<DatabasePackage>
      */
     private function downloadPackagesForRepository(Repository $repository): iterable
     {
@@ -129,7 +127,7 @@ class ValidatePackagesCommand extends Command
     }
 
     /**
-     * @return iterable
+     * @return iterable<string>
      */
     private function findObsoletePackages(): iterable
     {
@@ -152,7 +150,7 @@ class ValidatePackagesCommand extends Command
     }
 
     /**
-     * @return array
+     * @return int[]
      */
     private function findOrphanedFiles(): array
     {
@@ -167,7 +165,7 @@ class ValidatePackagesCommand extends Command
     }
 
     /**
-     * @return array
+     * @return int[]
      */
     private function findOrphanedRelations(): array
     {

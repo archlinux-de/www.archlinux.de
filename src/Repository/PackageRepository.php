@@ -200,7 +200,7 @@ class PackageRepository extends ServiceEntityRepository
 
     /**
      * @param Repository $repository
-     * @return array
+     * @return Package[]
      */
     public function findByRepository(Repository $repository): array
     {

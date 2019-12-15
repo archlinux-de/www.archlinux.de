@@ -17,7 +17,7 @@ class CountryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array $codes
+     * @param string[] $codes
      * @return Country[]
      */
     public function findAllExceptByCodes(array $codes): array

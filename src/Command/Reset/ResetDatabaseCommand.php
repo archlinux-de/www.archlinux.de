@@ -17,6 +17,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\LockInterface;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Lock\Store\SemaphoreStore;
 
@@ -25,7 +26,7 @@ class ResetDatabaseCommand extends Command
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var array */
+    /** @var array<LockInterface|null> */
     private $locks = [];
 
     /** @var CacheItemPoolInterface */
@@ -114,7 +115,7 @@ class ResetDatabaseCommand extends Command
         }
 
         $this->locks[$name] = (new LockFactory($store))->createLock($name);
-        if (!$this->locks[$name]->acquire()) {
+        if ($this->locks[$name] && !$this->locks[$name]->acquire()) {
             $this->locks[$name] = null;
 
             return false;
@@ -124,7 +125,7 @@ class ResetDatabaseCommand extends Command
     }
 
     /**
-     * @param array $classNames
+     * @param string[] $classNames
      */
     private function resetDatabase(array $classNames): void
     {

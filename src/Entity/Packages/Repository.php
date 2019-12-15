@@ -115,7 +115,7 @@ class Repository implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string|bool>
      */
     public function jsonSerialize(): array
     {

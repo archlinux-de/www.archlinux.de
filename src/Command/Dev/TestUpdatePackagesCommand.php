@@ -94,7 +94,7 @@ class TestUpdatePackagesCommand extends Command
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     private function generateDateDirectories(): array
     {

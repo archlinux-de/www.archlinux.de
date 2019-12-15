@@ -240,7 +240,7 @@ class PackageRepositoryTest extends DatabaseTestCase
     }
 
     /**
-     * @return array
+     * @return array<array<int|string>>
      */
     public function provideTerms(): array
     {
@@ -317,12 +317,12 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ));
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->flush();
@@ -332,7 +332,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $packageRepository = $entityManager->getRepository(Package::class);
         $packages = $packageRepository->findByRepository($coreRepository);
         $this->assertCount(1, $packages);
-        $this->assertEquals($pacman->getId(), array_shift($packages)->getId());
+        $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
 
     public function testGetByRepositoryArchitectureAndName(): void

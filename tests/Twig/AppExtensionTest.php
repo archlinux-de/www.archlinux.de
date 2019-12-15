@@ -51,7 +51,7 @@ class AppExtensionTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<int|string>>
      */
     public function provideByteFormats(): array
     {

@@ -101,7 +101,7 @@ class Release implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string|bool|null>
      */
     public function jsonSerialize(): array
     {

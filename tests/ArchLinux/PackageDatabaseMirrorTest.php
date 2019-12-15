@@ -84,7 +84,7 @@ class PackageDatabaseMirrorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<array<int>>
      */
     public function provideLastUpdated(): array
     {

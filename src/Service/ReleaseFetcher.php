@@ -28,7 +28,7 @@ class ReleaseFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable
+     * @return \Traversable<Release>
      */
     public function getIterator(): \Traversable
     {
@@ -65,7 +65,7 @@ class ReleaseFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     private function fetchRelengReleases(): array
     {
