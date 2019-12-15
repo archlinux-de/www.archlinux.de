@@ -45,8 +45,7 @@ class NewsItemFetcherTest extends TestCase
         $slugger = $this->createMock(NewsItemSlugger::class);
         $slugger->expects($this->once())->method('slugify')->willReturn('slug');
 
-        $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
+        $newsItemFetcher = new NewsItemFetcher('', $slugger, $guzzleClient);
 
         /** @var NewsItem[] $newsItems */
         $newsItems = iterator_to_array($newsItemFetcher);
@@ -73,8 +72,7 @@ class NewsItemFetcherTest extends TestCase
         $slugger = $this->createMock(NewsItemSlugger::class);
         $slugger->expects($this->never())->method('slugify');
 
-        $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
+        $newsItemFetcher = new NewsItemFetcher('', $slugger, $guzzleClient);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($newsItemFetcher);
@@ -92,10 +90,9 @@ class NewsItemFetcherTest extends TestCase
         $slugger = $this->createMock(NewsItemSlugger::class);
         $slugger->expects($this->never())->method('slugify');
 
-        $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
+        $newsItemFetcher = new NewsItemFetcher('', $slugger, $guzzleClient);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Exception::class);
         iterator_to_array($newsItemFetcher);
     }
 
@@ -118,10 +115,9 @@ class NewsItemFetcherTest extends TestCase
         $slugger = $this->createMock(NewsItemSlugger::class);
         $slugger->expects($this->never())->method('slugify');
 
-        $feedIo = new FeedIo(new \FeedIo\Adapter\Guzzle\Client($guzzleClient), new NullLogger());
-        $newsItemFetcher = new NewsItemFetcher($feedIo, '', $slugger);
+        $newsItemFetcher = new NewsItemFetcher('', $slugger, $guzzleClient);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Throwable::class);
         iterator_to_array($newsItemFetcher);
     }
 }

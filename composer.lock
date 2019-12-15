@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02130e02a2c1f20ce7b3e8546b503edd",
+    "content-hash": "9b139bf2174e19d2c949c9dff98f0060",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -7433,18 +7433,18 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^7.3",
+        "ext-simplexml": "*",
         "ext-apcu": "^5.1",
         "ext-ctype": "*",
         "ext-dom": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*"
     },
     "platform-dev": {
-        "ext-simplexml": "*",
-        "ext-libxml": "*",
         "ext-pdo_sqlite": "*"
     }
 }

@@ -50,12 +50,6 @@ services:
 
     League\ISO3166\ISO3166:
 
-    FeedIo\Adapter\Guzzle\Client:
-
-    FeedIo\FeedIo:
-        bind:
-            $client: '@FeedIo\Adapter\Guzzle\Client'
-
     App\Service\MirrorFetcher:
         $mirrorStatusUrl: '%app.mirrors.status%'
 

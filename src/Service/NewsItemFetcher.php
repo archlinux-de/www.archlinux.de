@@ -4,34 +4,32 @@ namespace App\Service;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use FeedIo\Feed\ItemInterface;
-use FeedIo\FeedInterface;
-use FeedIo\FeedIo;
+use GuzzleHttp\ClientInterface;
 
 /**
  * @phpstan-implements \IteratorAggregate<NewsItem>
  */
 class NewsItemFetcher implements \IteratorAggregate
 {
-    /** @var FeedIo */
-    private $feedIo;
-
     /** @var string */
     private $newsFeedUrl;
 
     /** @var NewsItemSlugger */
     private $slugger;
 
+    /** @var ClientInterface */
+    private $guzzleClient;
+
     /**
-     * @param FeedIo $feedIo
      * @param string $newsFeedUrl
      * @param NewsItemSlugger $slugger
+     * @param ClientInterface $guzzleClient
      */
-    public function __construct(FeedIo $feedIo, string $newsFeedUrl, NewsItemSlugger $slugger)
+    public function __construct(string $newsFeedUrl, NewsItemSlugger $slugger, ClientInterface $guzzleClient)
     {
-        $this->feedIo = $feedIo;
         $this->newsFeedUrl = $newsFeedUrl;
         $this->slugger = $slugger;
+        $this->guzzleClient = $guzzleClient;
     }
 
     /**
@@ -39,43 +37,55 @@ class NewsItemFetcher implements \IteratorAggregate
      */
     public function getIterator(): \Traversable
     {
-        /** @var ItemInterface $newsEntry */
-        foreach ($this->fetchNewsFeed() as $newsEntry) {
-            if (is_null($newsEntry->getPublicId())
-                || is_null($newsEntry->getAuthor())
-                || is_null($newsEntry->getTitle())
-                || is_null($newsEntry->getLink())
-                || is_null($newsEntry->getDescription())
-                || is_null($newsEntry->getAuthor()->getName())
-                || is_null($newsEntry->getLastModified())
+        foreach ($this->fetchNewsFeed()->entry as $newsEntry) {
+            if (is_null($newsEntry->id)
+                || is_null($newsEntry->title)
+                || is_null($newsEntry->link)
+                || is_null($newsEntry->link->attributes())
+                || is_null($newsEntry->summary)
+                || is_null($newsEntry->author)
+                || is_null($newsEntry->author->name)
+                || is_null($newsEntry->author->uri)
+                || is_null($newsEntry->updated)
             ) {
                 throw new \RuntimeException('Invalid news entry');
             }
-            $newsItem = new NewsItem($newsEntry->getPublicId());
+            $newsItem = new NewsItem((string)$newsEntry->id);
             $newsItem
-                ->setTitle($newsEntry->getTitle())
-                ->setLink($newsEntry->getLink())
-                ->setDescription($newsEntry->getDescription())
+                ->setTitle((string)$newsEntry->title)
+                ->setLink((string)$newsEntry->link->attributes()->href)
+                ->setDescription((string)$newsEntry->summary)
                 ->setAuthor(
                     (new NewsAuthor())
-                        ->setUri($newsEntry->getAuthor()->getUri())
-                        ->setName($newsEntry->getAuthor()->getName())
+                        ->setUri((string)$newsEntry->author->uri)
+                        ->setName((string)$newsEntry->author->name)
                 )
-                ->setLastModified($newsEntry->getLastModified());
+                ->setLastModified(new \DateTime((string)$newsEntry->updated));
             $newsItem->setSlug($this->slugger->slugify($newsItem));
             yield $newsItem;
         }
     }
 
     /**
-     * @return FeedInterface
+     * @return \SimpleXMLElement
      */
-    private function fetchNewsFeed(): FeedInterface
+    private function fetchNewsFeed(): \SimpleXMLElement
     {
-        $feed = $this->feedIo->read($this->newsFeedUrl)->getFeed();
-        if ($feed->count() == 0) {
-            throw new \RuntimeException('empty news feed');
+        $response = $this->guzzleClient->request('GET', $this->newsFeedUrl);
+        $content = $response->getBody()->getContents();
+
+        libxml_use_internal_errors(true);
+        $feed = simplexml_load_string($content);
+
+        if (!$feed) {
+            $error = libxml_get_last_error();
+            if ($error) {
+                throw new \RuntimeException($error->message, $error->code);
+            } else {
+                throw new \RuntimeException('empty news feed');
+            }
         }
+
         return $feed;
     }
 }
