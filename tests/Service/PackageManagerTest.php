@@ -71,9 +71,6 @@ class PackageManagerTest extends TestCase
             ->method('getMTime')
             ->willReturn(new \DateTime());
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
-
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
