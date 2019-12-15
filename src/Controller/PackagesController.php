@@ -120,4 +120,21 @@ class PackagesController extends AbstractController
         $response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
         return $response;
     }
+
+    /**
+     * @Route("/packages/suggest", methods={"GET"})
+     * @Cache(smaxage="600")
+     * @param Request $request
+     * @return Response
+     */
+    public function suggestAction(Request $request): Response
+    {
+        $term = $request->get('term');
+        if (strlen($term) < 1 || strlen($term) > 50) {
+            return $this->json([]);
+        }
+        $suggestions = $this->packageRepository->findByTerm($term, 10);
+
+        return $this->json(array_column($suggestions, 'name'));
+    }
 }

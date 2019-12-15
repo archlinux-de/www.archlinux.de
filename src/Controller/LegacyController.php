@@ -22,7 +22,7 @@ class LegacyController extends AbstractController
         'MirrorStatus' => 'app_mirrorstatus_index',
         'PackageDetails' => 'app_packagedetails_index',
         'Packages' => 'app_packages_index',
-        'PackagesSuggest' => 'app_packagessuggest_suggest',
+        'PackagesSuggest' => 'app_packages_suggest',
         'Start' => 'app_start_index'
     );
 
