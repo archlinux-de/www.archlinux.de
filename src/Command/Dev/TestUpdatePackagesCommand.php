@@ -107,10 +107,8 @@ class TestUpdatePackagesCommand extends Command
                             continue;
                         }
 
-                        if ($month == date('n')) {
-                            if ($day > date('j')) {
-                                continue;
-                            }
+                        if (($month == date('n')) && $day > date('j')) {
+                            continue;
                         }
                     }
 
