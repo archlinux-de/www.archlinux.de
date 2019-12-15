@@ -92,7 +92,7 @@ abstract class AbstractRelation
      * @param Package $package
      * @return $this
      */
-    public function setSource(Package $package)
+    public function setSource(Package $package): self
     {
         $this->source = $package;
         return $this;
@@ -110,7 +110,7 @@ abstract class AbstractRelation
      * @param Package|null $target
      * @return $this
      */
-    public function setTarget(?Package $target)
+    public function setTarget(?Package $target): self
     {
         $this->target = $target;
         return $this;

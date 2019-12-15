@@ -406,7 +406,7 @@ class Package implements \JsonSerializable
      * @param Dependency $dependency
      * @return Package
      */
-    public function addDependency(Dependency $dependency)
+    public function addDependency(Dependency $dependency): Package
     {
         $dependency->setSource($this);
         $this->depends->add($dependency);
@@ -425,7 +425,7 @@ class Package implements \JsonSerializable
      * @param Conflict $conflict
      * @return Package
      */
-    public function addConflict(Conflict $conflict)
+    public function addConflict(Conflict $conflict): Package
     {
         $conflict->setSource($this);
         $this->conflicts->add($conflict);
@@ -444,7 +444,7 @@ class Package implements \JsonSerializable
      * @param Replacement $replacement
      * @return Package
      */
-    public function addReplacement(Replacement $replacement)
+    public function addReplacement(Replacement $replacement): Package
     {
         $replacement->setSource($this);
         $this->replaces->add($replacement);
@@ -463,7 +463,7 @@ class Package implements \JsonSerializable
      * @param OptionalDependency $optionalDependency
      * @return Package
      */
-    public function addOptionalDependency(OptionalDependency $optionalDependency)
+    public function addOptionalDependency(OptionalDependency $optionalDependency): Package
     {
         $optionalDependency->setSource($this);
         $this->optdepends->add($optionalDependency);
@@ -482,7 +482,7 @@ class Package implements \JsonSerializable
      * @param Provision $provision
      * @return Package
      */
-    public function addProvision(Provision $provision)
+    public function addProvision(Provision $provision): Package
     {
         $provision->setSource($this);
         $this->provides->add($provision);
@@ -501,7 +501,7 @@ class Package implements \JsonSerializable
      * @param MakeDependency $makeDependency
      * @return Package
      */
-    public function addMakeDependency(MakeDependency $makeDependency)
+    public function addMakeDependency(MakeDependency $makeDependency): Package
     {
         $makeDependency->setSource($this);
         $this->makedepends->add($makeDependency);
@@ -520,7 +520,7 @@ class Package implements \JsonSerializable
      * @param CheckDependency $checkDependency
      * @return Package
      */
-    public function addCheckDependency(CheckDependency $checkDependency)
+    public function addCheckDependency(CheckDependency $checkDependency): Package
     {
         $checkDependency->setSource($this);
         $this->checkdepends->add($checkDependency);
@@ -565,7 +565,7 @@ class Package implements \JsonSerializable
      * @param \DateTime $mTime
      * @return Package
      */
-    public function setMTime(\DateTime $mTime)
+    public function setMTime(\DateTime $mTime): Package
     {
         $this->mTime = $mTime;
         return $this;
@@ -709,7 +709,7 @@ class Package implements \JsonSerializable
      * @param string[] $licenses
      * @return Package
      */
-    public function setLicenses(array $licenses)
+    public function setLicenses(array $licenses): Package
     {
         $this->licenses = $licenses;
         return $this;
@@ -843,7 +843,7 @@ class Package implements \JsonSerializable
      * @param string[] $groups
      * @return Package
      */
-    public function setGroups(array $groups)
+    public function setGroups(array $groups): Package
     {
         $this->groups = $groups;
         return $this;
