@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class CountryFetcherTest extends TestCase
 {
-    public function testFetchCountries()
+    public function testFetchCountries(): void
     {
         $countryFetcher = new CountryFetcher(
             new ISO3166(

@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class PackageDatabaseDownloaderTest extends TestCase
 {
-    public function testFileModificationTimeIsInSyncWithServerResponse()
+    public function testFileModificationTimeIsInSyncWithServerResponse(): void
     {
         $timestamp = 42;
         $responseMock = new MockResponse(
@@ -40,7 +40,7 @@ class PackageDatabaseDownloaderTest extends TestCase
         return new PackageDatabaseDownloader(new MockHttpClient($response), $packageDatabaseMirror);
     }
 
-    public function testFileIsWritten()
+    public function testFileIsWritten(): void
     {
         $responseMock = new MockResponse(
             'foo',
@@ -53,7 +53,7 @@ class PackageDatabaseDownloaderTest extends TestCase
         $this->assertStringEqualsFile($fileName, 'foo');
     }
 
-    public function testTemporaryFileIsRemovedByGarbageCollector()
+    public function testTemporaryFileIsRemovedByGarbageCollector(): void
     {
         $responseMock = new MockResponse(
             '',
@@ -69,7 +69,7 @@ class PackageDatabaseDownloaderTest extends TestCase
         $this->assertFileNotExists($fileName);
     }
 
-    public function testCreateDatabase()
+    public function testCreateDatabase(): void
     {
         /** @var \SplFileObject|MockObject $packageDatabaseFile */
         $packageDatabaseFile = $this

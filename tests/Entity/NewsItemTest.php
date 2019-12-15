@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class NewsItemTest extends TestCase
 {
-    public function testEntity()
+    public function testEntity(): void
     {
         $newsAuthor = new NewsAuthor();
         $this->assertSame($newsAuthor, $newsAuthor->setName('Bob'));
@@ -33,7 +33,7 @@ class NewsItemTest extends TestCase
         $this->assertEquals('http://localhost', $newsItem->getAuthor()->getUri());
     }
 
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $newsAuthor = (new NewsAuthor())
             ->setName('Bob')
@@ -66,7 +66,7 @@ class NewsItemTest extends TestCase
         );
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $newsItem = (new NewsItem('abc'))
             ->setTitle('title')
@@ -92,7 +92,7 @@ class NewsItemTest extends TestCase
         $this->assertEquals('bob', $newsItem->getAuthor()->getName());
     }
 
-    public function testUpdateFailsOnMismatchedId()
+    public function testUpdateFailsOnMismatchedId(): void
     {
         $newsItem = new NewsItem('foo');
         $this->expectException(\InvalidArgumentException::class);

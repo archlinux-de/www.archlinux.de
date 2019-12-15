@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseMirrorTest extends TestCase
 {
-    public function testGetMirrorUrl()
+    public function testGetMirrorUrl(): void
     {
         /** @var HttpClientInterface|MockObject $httpClient */
         $httpClient = $this->createMock(HttpClientInterface::class);
@@ -27,7 +27,7 @@ class PackageDatabaseMirrorTest extends TestCase
         $this->assertEquals('foo', $packageDatabaseMirror->getMirrorUrl());
     }
 
-    public function testHasUpdatedIsTrueForNewMirror()
+    public function testHasUpdatedIsTrueForNewMirror(): void
     {
         /** @var HttpClientInterface|MockObject $httpClient */
         $httpClient = $this->createMock(HttpClientInterface::class);
@@ -43,7 +43,7 @@ class PackageDatabaseMirrorTest extends TestCase
      * @param int $newLastUpdated
      * @dataProvider provideLastUpdated
      */
-    public function testHasUpdated(int $oldLastUpdated, int $newLastUpdated)
+    public function testHasUpdated(int $oldLastUpdated, int $newLastUpdated): void
     {
         $httpClient = new MockHttpClient(new MockResponse((string)$newLastUpdated));
 
@@ -70,7 +70,7 @@ class PackageDatabaseMirrorTest extends TestCase
         $this->assertEquals($oldLastUpdated != $newLastUpdated, $packageDatabaseMirror->hasUpdated());
     }
 
-    public function testUpdateLastUpdate()
+    public function testUpdateLastUpdate(): void
     {
         /** @var HttpClientInterface|MockObject $httpClient */
         $httpClient = $this->createMock(HttpClientInterface::class);

@@ -13,7 +13,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class PackageDetailsControllerTest extends DatabaseTestCase
 {
-    public function testUnknownPackageReturnsCorrectHttpStatus()
+    public function testUnknownPackageReturnsCorrectHttpStatus(): void
     {
         $client = $this->getClient();
         $client->request('GET', '/packages/core/x86_64/not-found');
@@ -21,7 +21,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function testPackageDetails()
+    public function testPackageDetails(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -46,7 +46,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertStringContainsString('5.0.2-2', $content);
     }
 
-    public function testRedirectToPackageFromAnotherRepository()
+    public function testRedirectToPackageFromAnotherRepository(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -67,7 +67,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isRedirection());
     }
 
-    public function testUnknownPackageReturnsCorrectHttpStatusForFiles()
+    public function testUnknownPackageReturnsCorrectHttpStatusForFiles(): void
     {
         $client = $this->getClient();
         $client->request('GET', '/packages/core/x86_64/not-found/files');
@@ -75,7 +75,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function testPackageFiles()
+    public function testPackageFiles(): void
     {
         $entityManager = $this->getEntityManager();
 

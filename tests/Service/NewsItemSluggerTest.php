@@ -15,7 +15,7 @@ class NewsItemSluggerTest extends TestCase
      * @param string $expected
      * @dataProvider provideIdSlugs
      */
-    public function testSlugifyId(string $id, string $expected)
+    public function testSlugifyId(string $id, string $expected): void
     {
         $newsItem = new NewsItem($id);
         $newsItem->setTitle('Test Title');
@@ -33,7 +33,7 @@ class NewsItemSluggerTest extends TestCase
         $this->assertEquals($expected . '-test-title', $newsItemSlugger->slugify($newsItem));
     }
 
-    public function testLimitSlugLength()
+    public function testLimitSlugLength(): void
     {
         $newsItem = new NewsItem('1');
         $newsItem->setTitle('');

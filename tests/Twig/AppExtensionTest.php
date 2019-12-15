@@ -9,7 +9,7 @@ use Twig\TwigFilter;
 
 class AppExtensionTest extends TestCase
 {
-    public function testFormatBytesIsCallable()
+    public function testFormatBytesIsCallable(): void
     {
         $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'format_bytes');
         if (is_callable($callable)) {
@@ -44,7 +44,7 @@ class AppExtensionTest extends TestCase
      * @param string $output
      * @dataProvider provideByteFormats
      */
-    public function testFormatBytes(int $input, string $output)
+    public function testFormatBytes(int $input, string $output): void
     {
         $appExtension = new AppExtension();
         $this->assertEquals($output, $appExtension->formatBytes($input));
@@ -64,7 +64,7 @@ class AppExtensionTest extends TestCase
         ];
     }
 
-    public function testUrlPathIsCallable()
+    public function testUrlPathIsCallable(): void
     {
         $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'url_path');
         if (is_callable($callable)) {
@@ -78,14 +78,14 @@ class AppExtensionTest extends TestCase
         }
     }
 
-    public function testUrlPath()
+    public function testUrlPath(): void
     {
         $input = 'https://user:pass@www.archlinux.de:443/path/blah?foo#bar';
         $appExtension = new AppExtension();
         $this->assertEquals('/path/blah', $appExtension->urlPath($input));
     }
 
-    public function testUrlHostIsCallable()
+    public function testUrlHostIsCallable(): void
     {
         $callable = $this->getFilterCallableFromExtension(new AppExtension(), 'url_host');
         if (is_callable($callable)) {
@@ -99,7 +99,7 @@ class AppExtensionTest extends TestCase
         }
     }
 
-    public function testUrlHost()
+    public function testUrlHost(): void
     {
         $input = 'https://user:pass@www.archlinux.de:443/path/blah?foo#bar';
         $appExtension = new AppExtension();

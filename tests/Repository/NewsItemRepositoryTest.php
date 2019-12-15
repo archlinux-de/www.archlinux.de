@@ -9,7 +9,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class NewsItemRepositoryTest extends DatabaseTestCase
 {
-    public function testFindLatestItemIsReturned()
+    public function testFindLatestItemIsReturned(): void
     {
         $oldItem = $this->createNewsItem('1', new \DateTime('- 2 day'));
         $newItem = $this->createNewsItem('2', new \DateTime('now'));
@@ -43,7 +43,7 @@ class NewsItemRepositoryTest extends DatabaseTestCase
             ->setAuthor((new NewsAuthor())->setName(''));
     }
 
-    public function testFindLatestItemsAreLimited()
+    public function testFindLatestItemsAreLimited(): void
     {
         $oldItem = $this->createNewsItem('1', new \DateTime('- 2 day'));
         $newItem = $this->createNewsItem('2', new \DateTime('now'));
@@ -59,7 +59,7 @@ class NewsItemRepositoryTest extends DatabaseTestCase
         $this->assertCount(1, $newsItemRepository->findLatest(1));
     }
 
-    public function testFindAllExceptByIdsNewerThan()
+    public function testFindAllExceptByIdsNewerThan(): void
     {
         $newsItemA = $this->createNewsItem('A', new \DateTime('- 2 day'));
         $newsItemB = $this->createNewsItem('B', new \DateTime('- 2 day'));
@@ -78,7 +78,7 @@ class NewsItemRepositoryTest extends DatabaseTestCase
         $this->assertEquals('B', $newsItems[0]->getId());
     }
 
-    public function testGetSize()
+    public function testGetSize(): void
     {
         $oldItem = $this->createNewsItem('1', new \DateTime('now'));
         $newItem = $this->createNewsItem('2', new \DateTime('now'));

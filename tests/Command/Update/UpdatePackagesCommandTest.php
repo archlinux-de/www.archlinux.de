@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class UpdatePackagesCommandTest extends KernelTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -104,7 +104,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         return true;
     }
 
-    public function testUpdateFailsOnInvalidPackage()
+    public function testUpdateFailsOnInvalidPackage(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);

@@ -16,7 +16,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class UpdateRepositoriesCommandTest extends KernelTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);

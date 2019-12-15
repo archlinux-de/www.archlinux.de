@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class LegalControllerTest extends WebTestCase
 {
-    public function testImpressumAction()
+    public function testImpressumAction(): void
     {
         $client = static::createClient();
 
@@ -23,7 +23,7 @@ class LegalControllerTest extends WebTestCase
         $this->assertStringContainsString('pierre@archlinux.de', $response);
     }
 
-    public function testPrivacyAction()
+    public function testPrivacyAction(): void
     {
         $client = static::createClient();
 

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class MirrorTest extends TestCase
 {
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $mirror = (new Mirror('localhost', 'https'))
             ->setCountry((new Country('de'))->setName('Germany'))
@@ -49,7 +49,7 @@ class MirrorTest extends TestCase
         );
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $mirror = (new Mirror('localhost', 'https'))
             ->setCountry((new Country('de'))->setName('Germany'))
@@ -94,7 +94,7 @@ class MirrorTest extends TestCase
         $this->assertFalse($mirror->isActive());
     }
 
-    public function testUpdateFailsOnMismatchedUrl()
+    public function testUpdateFailsOnMismatchedUrl(): void
     {
         $mirror = new Mirror('localhost', 'https');
         $this->expectException(\InvalidArgumentException::class);

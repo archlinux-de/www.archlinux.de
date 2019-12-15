@@ -11,7 +11,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class NewsControllerTest extends DatabaseTestCase
 {
-    public function testIndexAction()
+    public function testIndexAction(): void
     {
         $client = $this->getClient();
 
@@ -20,7 +20,7 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
-    public function testItemAction()
+    public function testItemAction(): void
     {
         $entityManager = $this->getEntityManager();
         $news = new NewsItem('1');
@@ -47,7 +47,7 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertStringContainsString('Hell has frozen over!', $client->getResponse()->getContent());
     }
 
-    public function testDatatablesAction()
+    public function testDatatablesAction(): void
     {
         $entityManager = $this->getEntityManager();
         $news = new NewsItem('1');
@@ -98,7 +98,7 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertEquals('Breaking News', $responseData['data'][0]['title']);
     }
 
-    public function testFeedAction()
+    public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
         $news = new NewsItem('1');

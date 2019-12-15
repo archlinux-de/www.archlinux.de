@@ -9,7 +9,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class RepositoryRepositoryTest extends DatabaseTestCase
 {
-    public function testFindByNameAndArchitecture()
+    public function testFindByNameAndArchitecture(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
 

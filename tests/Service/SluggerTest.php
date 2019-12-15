@@ -12,7 +12,7 @@ class SluggerTest extends TestCase
      * @param string $expected
      * @dataProvider provideSlugs
      */
-    public function testSlugify(string $input, string $expected)
+    public function testSlugify(string $input, string $expected): void
     {
         $slugger = new Slugger();
 

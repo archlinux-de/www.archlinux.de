@@ -12,7 +12,7 @@ class FilesTest extends TestCase
     /** @var array */
     private $files = ['usr/bin', 'usr/bin/pacman'];
 
-    public function testGetPackage()
+    public function testGetPackage(): void
     {
         /** @var Package|MockObject $packge */
         $packge = $this->createMock(Package::class);
@@ -25,7 +25,7 @@ class FilesTest extends TestCase
      * @param array $files
      * @dataProvider provideFilesArray
      */
-    public function testGetIterator(array $files)
+    public function testGetIterator(array $files): void
     {
         $this->assertEquals($files, iterator_to_array(Files::createFromArray($files)->getIterator()));
     }
@@ -34,7 +34,7 @@ class FilesTest extends TestCase
      * @param array $filesArray
      * @dataProvider provideFilesArray
      */
-    public function testJsonSerialize(array $filesArray)
+    public function testJsonSerialize(array $filesArray): void
     {
         $files = Files::createFromArray($filesArray);
 

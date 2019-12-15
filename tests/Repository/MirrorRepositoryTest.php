@@ -9,7 +9,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class MirrorRepositoryTest extends DatabaseTestCase
 {
-    public function testFindBestByCountry()
+    public function testFindBestByCountry(): void
     {
         $country = (new Country('de'))->setName('Germany');
         $lastSync = new \DateTime('2018-01-01');
@@ -32,7 +32,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
-    public function testFindBestLastSync()
+    public function testFindBestLastSync(): void
     {
         $lastSync = new \DateTime('2018-01-01');
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
@@ -52,7 +52,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
-    public function testFindBestSecure()
+    public function testFindBestSecure(): void
     {
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
         $mirror->setActive(true);
@@ -70,7 +70,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
-    public function testFindSecure()
+    public function testFindSecure(): void
     {
         $country = (new Country('de'))->setName('Germany');
         $lastSync = new \DateTime('2018-01-01');
@@ -93,7 +93,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }
 
-    public function testFindAllExceptByUrls()
+    public function testFindAllExceptByUrls(): void
     {
         $mirrorA = new Mirror('a', 'https');
         $mirrorB = new Mirror('b', 'https');

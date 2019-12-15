@@ -17,6 +17,7 @@ parameters:
 		- public
 		- config
 		- bin
+	checkMissingIterableValueType: false
 	ignoreErrors:
 		-
 			message: '#Unsafe usage of new static\(\)\.#'
@@ -24,9 +25,3 @@ parameters:
 		-
 			message: '#Variable \$candidate in PHPDoc tag @var does not match assigned variable \$candidates\.#'
 			path: src/Repository/AbstractRelationRepository.php
-		-
-			message: '#has no return typehint specified\.#'
-			path: tests
-		-
-			message: '#no value type specified#'
-			path: .

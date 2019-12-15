@@ -11,7 +11,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class FilesRepositoryTest extends DatabaseTestCase
 {
-    public function testGetByPackageName()
+    public function testGetByPackageName(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -35,7 +35,7 @@ class FilesRepositoryTest extends DatabaseTestCase
         $this->assertEquals($filesArray, iterator_to_array($files));
     }
 
-    public function testFileRelationIsRemovedWithPackage()
+    public function testFileRelationIsRemovedWithPackage(): void
     {
         $entityManager = $this->getEntityManager();
 

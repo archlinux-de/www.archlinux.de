@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class UpdateNewsCommandTest extends KernelTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         $newNewsItem = (new NewsItem('2'))->setLastModified(new \DateTime('-1 day'));
         $oldNewsItem = (new NewsItem('1'))->setLastModified(new \DateTime('-2 day'));
@@ -57,7 +57,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
-    public function testArchivedItemsAreKept()
+    public function testArchivedItemsAreKept(): void
     {
         $newNewsItem = (new NewsItem('2'))->setLastModified(new \DateTime('-1 day'));
         $oldNewsItem = (new NewsItem('1'))->setLastModified(new \DateTime('-2 day'));
@@ -95,7 +95,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
-    public function testUpdateFailsOnInvalidItems()
+    public function testUpdateFailsOnInvalidItems(): void
     {
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
@@ -127,7 +127,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $commandTester->execute(['command' => $command->getName()]);
     }
 
-    public function testUpdateNews()
+    public function testUpdateNews(): void
     {
         $newsItem = (new NewsItem('2'))
             ->setLastModified(new \DateTime('-1 day'))

@@ -12,7 +12,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class DownloadControllerTest extends DatabaseTestCase
 {
-    public function testDownloadButton()
+    public function testDownloadButton(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -50,7 +50,7 @@ class DownloadControllerTest extends DatabaseTestCase
         );
     }
 
-    public function testErrorCodeIfReleaseIsMissing()
+    public function testErrorCodeIfReleaseIsMissing(): void
     {
         $client = $this->getClient();
 

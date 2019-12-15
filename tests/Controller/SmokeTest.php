@@ -65,7 +65,7 @@ class SmokeTest extends DatabaseTestCase
      * @param string $url
      * @dataProvider provideUrls
      */
-    public function testRequestIsSuccessful(string $url)
+    public function testRequestIsSuccessful(string $url): void
     {
         $client = $this->getClient();
 
@@ -78,7 +78,7 @@ class SmokeTest extends DatabaseTestCase
      * @param string $url
      * @dataProvider provideRedirectUrls
      */
-    public function testRequestIsRedirect(string $url)
+    public function testRequestIsRedirect(string $url): void
     {
         $client = $this->getClient();
 
@@ -87,7 +87,7 @@ class SmokeTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isRedirection());
     }
 
-    public function testUnknownUrlFails()
+    public function testUnknownUrlFails(): void
     {
         $client = $this->getClient();
 

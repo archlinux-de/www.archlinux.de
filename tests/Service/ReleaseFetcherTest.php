@@ -10,7 +10,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class ReleaseFetcherTest extends TestCase
 {
-    public function testFetchReleases()
+    public function testFetchReleases(): void
     {
         $responseMock = new MockResponse(
             (string)json_encode(
@@ -56,7 +56,7 @@ class ReleaseFetcherTest extends TestCase
         $this->assertTrue($releases[0]->isAvailable());
     }
 
-    public function testExceptionOnEmptyResponse()
+    public function testExceptionOnEmptyResponse(): void
     {
         $httpClient = new MockHttpClient(new MockResponse(''));
 
@@ -66,7 +66,7 @@ class ReleaseFetcherTest extends TestCase
         iterator_to_array($releaseFetcher);
     }
 
-    public function testExceptionOnInvalidResponse()
+    public function testExceptionOnInvalidResponse(): void
     {
         $httpClient = new MockHttpClient(new MockResponse('foo'));
 
@@ -76,7 +76,7 @@ class ReleaseFetcherTest extends TestCase
         iterator_to_array($releaseFetcher);
     }
 
-    public function testExceptionOnUnknownVersion()
+    public function testExceptionOnUnknownVersion(): void
     {
         $httpClient = new MockHttpClient(
             new MockResponse(
@@ -94,7 +94,7 @@ class ReleaseFetcherTest extends TestCase
         iterator_to_array($releaseFetcher);
     }
 
-    public function testExceptionOnEmptyMirrorList()
+    public function testExceptionOnEmptyMirrorList(): void
     {
         $httpClient = new MockHttpClient(
             new MockResponse(

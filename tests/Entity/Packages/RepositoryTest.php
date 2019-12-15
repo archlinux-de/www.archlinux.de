@@ -14,7 +14,7 @@ class RepositoryTest extends TestCase
      * @param bool $testing
      * @dataProvider provideTesting
      */
-    public function testJsonSerialize(bool $testing)
+    public function testJsonSerialize(bool $testing): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $repository->setTesting($testing);
@@ -32,7 +32,7 @@ class RepositoryTest extends TestCase
         );
     }
 
-    public function testMTime()
+    public function testMTime(): void
     {
         $mTime = new \DateTime();
         $repository = new Repository('core', Architecture::X86_64);
@@ -40,7 +40,7 @@ class RepositoryTest extends TestCase
         $this->assertSame($mTime, $repository->getMTime());
     }
 
-    public function testAddPackage()
+    public function testAddPackage(): void
     {
         /** @var Package|MockObject $package */
         $package = $this->createMock(Package::class);

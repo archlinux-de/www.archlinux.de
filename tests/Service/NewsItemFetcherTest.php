@@ -12,7 +12,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class NewsItemFetcherTest extends TestCase
 {
-    public function testFetchNewsItems()
+    public function testFetchNewsItems(): void
     {
         $responseMock = new MockResponse(
             '<?xml version="1.0" encoding="utf-8"?>
@@ -51,7 +51,7 @@ class NewsItemFetcherTest extends TestCase
         $this->assertEquals('https://127.0.0.1/author/1', $newsItems[0]->getAuthor()->getUri());
     }
 
-    public function testExceptionOnEmptyResponse()
+    public function testExceptionOnEmptyResponse(): void
     {
         $httpClient = new MockHttpClient(new MockResponse(''));
 
@@ -65,7 +65,7 @@ class NewsItemFetcherTest extends TestCase
         iterator_to_array($newsItemFetcher);
     }
 
-    public function testExceptionOnInvalidResponse()
+    public function testExceptionOnInvalidResponse(): void
     {
         $httpClient = new MockHttpClient(new MockResponse('foo'));
 
@@ -79,7 +79,7 @@ class NewsItemFetcherTest extends TestCase
         iterator_to_array($newsItemFetcher);
     }
 
-    public function testExceptionOnIncompleteResponse()
+    public function testExceptionOnIncompleteResponse(): void
     {
         $httpClient = new MockHttpClient(
             new MockResponse(

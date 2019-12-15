@@ -13,7 +13,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class PackagesControllerTest extends DatabaseTestCase
 {
-    public function testDrawIsReturnedCorrectly()
+    public function testDrawIsReturnedCorrectly(): void
     {
         $client = $this->getClient();
 
@@ -25,7 +25,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertEquals(42, $responseData['draw']);
     }
 
-    public function testIndexAction()
+    public function testIndexAction(): void
     {
         $client = $this->getClient();
 
@@ -34,7 +34,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
-    public function testOrderByName()
+    public function testOrderByName(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -93,7 +93,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertEquals('php', $responseData['data'][1]['name']);
     }
 
-    public function testSearch()
+    public function testSearch(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -149,7 +149,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertEquals('pacman', $responseData['data'][0]['name']);
     }
 
-    public function testFilterByName()
+    public function testFilterByName(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -201,7 +201,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertEquals('pacman', $responseData['data'][0]['name']);
     }
 
-    public function testEmptyRequest()
+    public function testEmptyRequest(): void
     {
         $client = $this->getClient();
 
@@ -224,7 +224,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertIsArray($responseData['data']);
     }
 
-    public function testOpenSearchAction()
+    public function testOpenSearchAction(): void
     {
         $client = static::createClient();
 
@@ -238,7 +238,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertStringContainsString('{searchTerms}', $response);
     }
 
-    public function testFeedAction()
+    public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -276,7 +276,7 @@ class PackagesControllerTest extends DatabaseTestCase
         );
     }
 
-    public function testEmptySuggest()
+    public function testEmptySuggest(): void
     {
         $client = $this->getClient();
 
@@ -288,7 +288,7 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertCount(0, $responseData);
     }
 
-    public function testSuggest()
+    public function testSuggest(): void
     {
         $entityManager = $this->getEntityManager();
 

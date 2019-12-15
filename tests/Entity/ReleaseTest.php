@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ReleaseTest extends TestCase
 {
-    public function testEntity()
+    public function testEntity(): void
     {
         $releaseDate = new \DateTime('2018-01-01');
         $createdDate = new \DateTime('2017-12-31');
@@ -40,7 +40,7 @@ class ReleaseTest extends TestCase
         $this->assertSame($torrent, $release->getTorrent());
     }
 
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $releaseDate = new \DateTime('2018-01-01');
 
@@ -63,7 +63,7 @@ class ReleaseTest extends TestCase
         );
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $release = (new Release('2019.01.01'))
             ->setTorrent(new Torrent())
@@ -98,7 +98,7 @@ class ReleaseTest extends TestCase
         $this->assertFalse($release->isAvailable());
     }
 
-    public function testUpdateFailsOnMismatchedVersion()
+    public function testUpdateFailsOnMismatchedVersion(): void
     {
         $release = new Release('foo');
         $this->expectException(\InvalidArgumentException::class);

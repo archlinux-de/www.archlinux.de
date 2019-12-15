@@ -15,7 +15,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class MirrorControllerTest extends DatabaseTestCase
 {
-    public function testIsoAction()
+    public function testIsoAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -41,7 +41,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isRedirect('https://127.0.0.2/' . $filePath));
     }
 
-    public function testFailIfIsoIsUnkown()
+    public function testFailIfIsoIsUnkown(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -57,7 +57,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function testPackageAction()
+    public function testPackageAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -82,7 +82,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isRedirect('https://127.0.0.2/' . $filePath));
     }
 
-    public function testPackageNotFoundAction()
+    public function testPackageNotFoundAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -98,7 +98,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function testInvalidPackageNotFoundAction()
+    public function testInvalidPackageNotFoundAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -114,7 +114,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function testFallbackAction()
+    public function testFallbackAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -130,7 +130,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isRedirect('https://127.0.0.2/' . $filePath));
     }
 
-    public function testMirrorNotFound()
+    public function testMirrorNotFound(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('http://127.0.0.2/', 'http');

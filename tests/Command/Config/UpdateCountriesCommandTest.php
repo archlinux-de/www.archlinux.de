@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class UpdateCountriesCommandTest extends KernelTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         $newCountry = new Country('DE');
         $oldCountry = new Country('DD');
@@ -56,7 +56,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
-    public function testFailOnInvalidCountries()
+    public function testFailOnInvalidCountries(): void
     {
         /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
@@ -88,7 +88,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $commandTester->execute(['command' => $command->getName()]);
     }
 
-    public function testUpdateCountry()
+    public function testUpdateCountry(): void
     {
         $country = (new Country('DE'))->setName('Germany');
 

@@ -15,7 +15,7 @@ class LegacyControllerTest extends WebTestCase
      * @param array $parameters
      * @dataProvider provideLegacyPages
      */
-    public function testLegacyPagesAreRedirected(string $legacyPage, array $parameters = [])
+    public function testLegacyPagesAreRedirected(string $legacyPage, array $parameters = []): void
     {
         $client = static::createClient();
 
@@ -52,7 +52,7 @@ class LegacyControllerTest extends WebTestCase
         ];
     }
 
-    public function testUnknownPageWillReturnNotFoundStatus()
+    public function testUnknownPageWillReturnNotFoundStatus(): void
     {
         $client = static::createClient();
 
@@ -66,7 +66,7 @@ class LegacyControllerTest extends WebTestCase
      * @param array $parameters
      * @dataProvider provideInvalidLegacyPages
      */
-    public function testInvalidParametersWillReturnNotFoundStatus(string $legacyPage, array $parameters = [])
+    public function testInvalidParametersWillReturnNotFoundStatus(string $legacyPage, array $parameters = []): void
     {
         $client = static::createClient();
 
@@ -90,7 +90,7 @@ class LegacyControllerTest extends WebTestCase
         ];
     }
 
-    public function testPostIsInvalid()
+    public function testPostIsInvalid(): void
     {
         $client = static::createClient();
         $client->request('POST', '/?page=foo');

@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class UpdateMirrorsCommandTest extends KernelTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         $newMirror = new Mirror('https://127.0.0.2', 'https');
         $oldMirror = new Mirror('https://127.0.0.1', 'https');
@@ -56,7 +56,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
-    public function testFailOnInvalidMirrors()
+    public function testFailOnInvalidMirrors(): void
     {
         /** @var MirrorRepository|MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);
@@ -90,7 +90,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $commandTester->execute(['command' => $command->getName()]);
     }
 
-    public function testUpdateMirror()
+    public function testUpdateMirror(): void
     {
         $mirror = new Mirror('https://127.0.0.2', 'https');
 

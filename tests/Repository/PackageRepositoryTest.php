@@ -13,7 +13,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class PackageRepositoryTest extends DatabaseTestCase
 {
-    public function testFindByInverseRelation()
+    public function testFindByInverseRelation(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -52,7 +52,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getName(), $inverseRelation->getName());
     }
 
-    public function testFindByRepositoryAndName()
+    public function testFindByRepositoryAndName(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -75,7 +75,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), $databasePacman->getId());
     }
 
-    public function testGetMaxMTimeByRepository()
+    public function testGetMaxMTimeByRepository(): void
     {
         $entityManager = $this->getEntityManager();
         $oldMtime = new \DateTime('2018-01-01');
@@ -106,7 +106,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($newMtime, $mtime);
     }
 
-    public function testFindByRepositoryOlderThan()
+    public function testFindByRepositoryOlderThan(): void
     {
         $entityManager = $this->getEntityManager();
         $oldMtime = new \DateTime('2018-01-01');
@@ -140,7 +140,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), $package->getId());
     }
 
-    public function testFindLatestByArchitecture()
+    public function testFindLatestByArchitecture(): void
     {
         $entityManager = $this->getEntityManager();
         $oldMtime = new \DateTime('2018-01-01');
@@ -172,7 +172,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
 
-    public function testFindStableByArchitecture()
+    public function testFindStableByArchitecture(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -210,7 +210,7 @@ class PackageRepositoryTest extends DatabaseTestCase
      * @param int $matchCount
      * @dataProvider provideTerms
      */
-    public function testFindByTerm(string $term, int $limit, int $matchCount)
+    public function testFindByTerm(string $term, int $limit, int $matchCount): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -253,7 +253,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         ];
     }
 
-    public function testGetByName()
+    public function testGetByName(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -283,7 +283,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), $package->getId());
     }
 
-    public function testGetSize()
+    public function testGetSize(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -312,7 +312,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals(2, $packageRepository->getSize());
     }
 
-    public function testFindByRepository()
+    public function testFindByRepository(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -335,7 +335,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), array_shift($packages)->getId());
     }
 
-    public function testGetByRepositoryArchitectureAndName()
+    public function testGetByRepositoryArchitectureAndName(): void
     {
         $entityManager = $this->getEntityManager();
 

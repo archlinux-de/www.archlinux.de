@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class TorrentTest extends TestCase
 {
-    public function testEntity()
+    public function testEntity(): void
     {
         $creationDate = new \DateTime();
 

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class PackageDatabaseTest extends TestCase
 {
-    public function testIteratorCreatesPackage()
+    public function testIteratorCreatesPackage(): void
     {
         /** @var PackageDatabaseReader|MockObject $reader */
         $reader = $this->createMock(PackageDatabaseReader::class);
@@ -74,7 +74,7 @@ class PackageDatabaseTest extends TestCase
         return $filesystemIterator;
     }
 
-    public function testReaderIsOnlyCalledOnce()
+    public function testReaderIsOnlyCalledOnce(): void
     {
         /** @var PackageDatabaseReader|MockObject $reader */
         $reader = $this->createMock(PackageDatabaseReader::class);

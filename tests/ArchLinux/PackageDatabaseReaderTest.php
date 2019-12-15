@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 
 class PackageDatabaseReaderTest extends TestCase
 {
-    public function testReaderExtractsTar()
+    public function testReaderExtractsTar(): void
     {
         $tarFileDirectory = new TemporaryDirectory();
         $tarFile = $tarFileDirectory->getPathname() . '/foo.tar.gz';

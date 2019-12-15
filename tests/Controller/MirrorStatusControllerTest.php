@@ -10,7 +10,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class MirrorStatusControllerTest extends DatabaseTestCase
 {
-    public function testIndexAction()
+    public function testIndexAction(): void
     {
         $client = $this->getClient();
         $client->request('GET', '/mirrors');
@@ -18,7 +18,7 @@ class MirrorStatusControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
-    public function testDatatablesAction()
+    public function testDatatablesAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -38,7 +38,7 @@ class MirrorStatusControllerTest extends DatabaseTestCase
         $this->assertEquals('https', $jsonArray['data'][0]['protocol']);
     }
 
-    public function testEmptyDatatablesAction()
+    public function testEmptyDatatablesAction(): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('http://127.0.0.2/', 'http');

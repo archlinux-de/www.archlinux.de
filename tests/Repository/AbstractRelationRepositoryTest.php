@@ -14,7 +14,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class AbstractRelationRepositoryTest extends DatabaseTestCase
 {
-    public function testDependencyIsUpdated()
+    public function testDependencyIsUpdated(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -52,7 +52,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
     }
 
-    public function testProvisionIsUpdated()
+    public function testProvisionIsUpdated(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -91,7 +91,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
     }
 
-    public function testDependencyFromAnotherRepositoryIsUpdated()
+    public function testDependencyFromAnotherRepositoryIsUpdated(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -140,7 +140,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
     }
 
-    public function testAmbiguousProvisionIsIgnored()
+    public function testAmbiguousProvisionIsIgnored(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -186,7 +186,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $this->assertNull($databaseGlibc);
     }
 
-    public function testProvisionHasCorrectArchitecture()
+    public function testProvisionHasCorrectArchitecture(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -235,7 +235,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $this->assertEquals($glibcNg64->getId(), $databaseGlibc->getId());
     }
 
-    public function testFindWithTargets()
+    public function testFindWithTargets(): void
     {
         $entityManager = $this->getEntityManager();
 

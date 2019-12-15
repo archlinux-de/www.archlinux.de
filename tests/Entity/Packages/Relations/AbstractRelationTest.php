@@ -13,7 +13,7 @@ class AbstractRelationTest extends TestCase
      * @param null|string $version
      * @dataProvider provideTargets
      */
-    public function testCreateFromString(string $input, ?string $name, ?string $version)
+    public function testCreateFromString(string $input, ?string $name, ?string $version): void
     {
         $dependency = Dependency::createFromString($input);
         $this->assertEquals($name, $dependency->getTargetName());

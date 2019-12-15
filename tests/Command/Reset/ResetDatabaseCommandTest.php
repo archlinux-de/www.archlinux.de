@@ -11,7 +11,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ResetDatabaseCommandTest extends DatabaseTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         $command = (new Application(static::$kernel))->find('app:reset:database');
         $commandTester = new CommandTester($command);

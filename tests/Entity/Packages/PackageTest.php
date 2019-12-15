@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PackageTest extends TestCase
 {
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '6.0-1', Architecture::X86_64);
@@ -46,7 +46,7 @@ class PackageTest extends TestCase
         );
     }
 
-    public function testCreateFromPackageDatabase()
+    public function testCreateFromPackageDatabase(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
 
@@ -68,7 +68,7 @@ class PackageTest extends TestCase
      * @param string $stringMethod
      * @dataProvider provideUpdateStringMethods
      */
-    public function testUpdateFromPackageDatabase(string $stringMethod)
+    public function testUpdateFromPackageDatabase(string $stringMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
@@ -101,7 +101,7 @@ class PackageTest extends TestCase
         ];
     }
 
-    public function testUpdatePackager()
+    public function testUpdatePackager(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
@@ -121,7 +121,7 @@ class PackageTest extends TestCase
      * @param string $timeMethod
      * @dataProvider provideTimeMethods
      */
-    public function testUpdateTime(string $timeMethod)
+    public function testUpdateTime(string $timeMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
@@ -149,7 +149,7 @@ class PackageTest extends TestCase
      * @param string $sizeMethod
      * @dataProvider provideSiteMethods
      */
-    public function testUpdateSize(string $sizeMethod)
+    public function testUpdateSize(string $sizeMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
@@ -178,7 +178,7 @@ class PackageTest extends TestCase
      * @param string $listMethod
      * @dataProvider provideListMethods
      */
-    public function testUpdateLists(string $listMethod)
+    public function testUpdateLists(string $listMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
@@ -209,7 +209,7 @@ class PackageTest extends TestCase
      * @param string $packageMethod
      * @dataProvider provideRelations
      */
-    public function testUpdateRelation(string $databaseMethod, string $packageMethod)
+    public function testUpdateRelation(string $databaseMethod, string $packageMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
@@ -243,7 +243,7 @@ class PackageTest extends TestCase
         ];
     }
 
-    public function testUpdateFiles()
+    public function testUpdateFiles(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');

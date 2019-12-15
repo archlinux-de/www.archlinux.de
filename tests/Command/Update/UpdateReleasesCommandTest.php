@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class UpdateReleasesCommandTest extends KernelTestCase
 {
-    public function testCommand()
+    public function testCommand(): void
     {
         $newRelease = new Release('2');
         $oldRelease = new Release('1');
@@ -57,7 +57,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
-    public function testUpdateFailsOnInvalidRelease()
+    public function testUpdateFailsOnInvalidRelease(): void
     {
         /** @var ReleaseRepository|MockObject $releaseRepository */
         $releaseRepository = $this->createMock(ReleaseRepository::class);
@@ -88,7 +88,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $commandTester->execute(['command' => $command->getName()]);
     }
 
-    public function testUpdateRelease()
+    public function testUpdateRelease(): void
     {
         $release = (new Release('2'))
             ->setAvailable(true)

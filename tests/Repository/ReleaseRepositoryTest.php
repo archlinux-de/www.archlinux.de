@@ -8,7 +8,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class ReleaseRepositoryTest extends DatabaseTestCase
 {
-    public function testGetLatestAvailable()
+    public function testGetLatestAvailable(): void
     {
         $release = new Release('2018-01-01');
         $release->setAvailable(true);
@@ -28,7 +28,7 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $this->assertEquals($release->getVersion(), $latestRelease->getVersion());
     }
 
-    public function testGetAvailableByVersion()
+    public function testGetAvailableByVersion(): void
     {
         $release = new Release('2018-01-01');
         $release->setAvailable(true);
@@ -48,7 +48,7 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $this->assertEquals($release->getVersion(), $latestRelease->getVersion());
     }
 
-    public function testFindAllExceptByVersions()
+    public function testFindAllExceptByVersions(): void
     {
         $releaseA = new Release('A');
         $releaseA->setAvailable(true);
@@ -77,7 +77,7 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $this->assertEquals('B', $releases[0]->getVersion());
     }
 
-    public function testGetSize()
+    public function testGetSize(): void
     {
         $releaseA = new Release('A');
         $releaseA->setAvailable(true);
@@ -104,7 +104,7 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $this->assertEquals(2, $releaseRepository->getSize());
     }
 
-    public function testFindAllAvailable()
+    public function testFindAllAvailable(): void
     {
         $release = new Release('2018-01-01');
         $release->setAvailable(true);

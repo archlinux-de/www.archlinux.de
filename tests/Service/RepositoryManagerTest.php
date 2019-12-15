@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RepositoryManagerTest extends TestCase
 {
-    public function testRemoveObsoleteRepositories()
+    public function testRemoveObsoleteRepositories(): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -47,7 +47,7 @@ class RepositoryManagerTest extends TestCase
         $this->assertTrue($repositoryManager->removeObsoleteRepositories());
     }
 
-    public function testConfiguredRepositoriesAreNotRemoved()
+    public function testConfiguredRepositoriesAreNotRemoved(): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -84,7 +84,7 @@ class RepositoryManagerTest extends TestCase
      * @param bool $isTesting
      * @dataProvider  provideRepositories
      */
-    public function testCreateNewRepositories(string $repositoryName, bool $isTesting)
+    public function testCreateNewRepositories(string $repositoryName, bool $isTesting): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -123,7 +123,7 @@ class RepositoryManagerTest extends TestCase
         $this->assertTrue($repositoryManager->createNewRepositories());
     }
 
-    public function testCreateNewRepositoriesIsSkippedForExistingRepositories()
+    public function testCreateNewRepositoriesIsSkippedForExistingRepositories(): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -156,7 +156,7 @@ class RepositoryManagerTest extends TestCase
         $this->assertFalse($repositoryManager->createNewRepositories());
     }
 
-    public function testFailOnInvalidConfiguration()
+    public function testFailOnInvalidConfiguration(): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);

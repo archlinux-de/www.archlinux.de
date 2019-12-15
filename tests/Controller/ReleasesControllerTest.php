@@ -11,7 +11,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class ReleasesControllerTest extends DatabaseTestCase
 {
-    public function testIndexAction()
+    public function testIndexAction(): void
     {
         $client = $this->getClient();
 
@@ -20,7 +20,7 @@ class ReleasesControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
-    public function testItemAction()
+    public function testItemAction(): void
     {
         $entityManager = $this->getEntityManager();
         $release = (new Release('2018.01.01'))
@@ -45,7 +45,7 @@ class ReleasesControllerTest extends DatabaseTestCase
         $this->assertStringContainsString('release.iso', $client->getResponse()->getContent());
     }
 
-    public function testDatatablesAction()
+    public function testDatatablesAction(): void
     {
         $entityManager = $this->getEntityManager();
         $release = (new Release('2018.01.01'))
@@ -94,7 +94,7 @@ class ReleasesControllerTest extends DatabaseTestCase
         $this->assertEquals('2018.01.01', $responseData['data'][0]['version']);
     }
 
-    public function testFeedAction()
+    public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
         $release = (new Release('2018.01.01'))

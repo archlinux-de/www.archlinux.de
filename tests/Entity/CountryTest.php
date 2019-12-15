@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class CountryTest extends TestCase
 {
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $country = (new Country('de'))
             ->setName('Germany');
@@ -24,7 +24,7 @@ class CountryTest extends TestCase
         );
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $country = (new Country('de'))
             ->setName('Germany');
@@ -34,7 +34,7 @@ class CountryTest extends TestCase
         $this->assertEquals('Deutschland', $country->getName());
     }
 
-    public function testUpdateFailsOnMismatchedCode()
+    public function testUpdateFailsOnMismatchedCode(): void
     {
         $country = (new Country('de'))
             ->setName('Germany');

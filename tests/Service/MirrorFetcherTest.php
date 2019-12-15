@@ -13,7 +13,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class MirrorFetcherTest extends TestCase
 {
-    public function testFetchMirrors()
+    public function testFetchMirrors(): void
     {
         $responseMock = new MockResponse(
             (string)json_encode(
@@ -62,7 +62,7 @@ class MirrorFetcherTest extends TestCase
         $this->assertEquals(5.4, $mirrors[0]->getDurationStddev());
     }
 
-    public function testExceptionOnEmptyResponse()
+    public function testExceptionOnEmptyResponse(): void
     {
         $httpClient = new MockHttpClient(new MockResponse(''));
 
@@ -75,7 +75,7 @@ class MirrorFetcherTest extends TestCase
         iterator_to_array($mirrorFetcher);
     }
 
-    public function testExceptionOnInvalidResponse()
+    public function testExceptionOnInvalidResponse(): void
     {
         $httpClient = new MockHttpClient(new MockResponse('foo'));
 
@@ -88,7 +88,7 @@ class MirrorFetcherTest extends TestCase
         iterator_to_array($mirrorFetcher);
     }
 
-    public function testExceptionOnUnknownVersion()
+    public function testExceptionOnUnknownVersion(): void
     {
         $httpClient = new MockHttpClient(
             new MockResponse(
@@ -109,7 +109,7 @@ class MirrorFetcherTest extends TestCase
         iterator_to_array($mirrorFetcher);
     }
 
-    public function testExceptionOnEmptyMirrorList()
+    public function testExceptionOnEmptyMirrorList(): void
     {
         $httpClient = new MockHttpClient(
             new MockResponse(

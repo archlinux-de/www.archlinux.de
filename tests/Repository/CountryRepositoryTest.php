@@ -8,7 +8,7 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 class CountryRepositoryTest extends DatabaseTestCase
 {
-    public function testFindAllExceptByIds()
+    public function testFindAllExceptByIds(): void
     {
         $countryA = (new Country('A'))->setName('');
         $countryB = (new Country('B'))->setName('');

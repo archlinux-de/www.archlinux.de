@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class PackageManagerTest extends TestCase
 {
-    public function testDownloadPackagesForRepository()
+    public function testDownloadPackagesForRepository(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -62,7 +62,7 @@ class PackageManagerTest extends TestCase
         $this->assertTrue($packageGenerator->getReturn());
     }
 
-    public function testDownloadPackagesForRepositoryIsSkippedIfNoUpdatesAreAvailable()
+    public function testDownloadPackagesForRepositoryIsSkippedIfNoUpdatesAreAvailable(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -111,7 +111,7 @@ class PackageManagerTest extends TestCase
         $this->assertFalse($packageGenerator->getReturn());
     }
 
-    public function testUpdatePackage()
+    public function testUpdatePackage(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -151,7 +151,7 @@ class PackageManagerTest extends TestCase
         $this->assertTrue($packageManager->updatePackage($repository, $databasePackage));
     }
 
-    public function testUpdateNewPackage()
+    public function testUpdateNewPackage(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -191,7 +191,7 @@ class PackageManagerTest extends TestCase
         $this->assertTrue($packageManager->updatePackage($repository, $databasePackage));
     }
 
-    public function testUpdatePackageIsSkippedWhenNoUpdatesAreAvailable()
+    public function testUpdatePackageIsSkippedWhenNoUpdatesAreAvailable(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -223,7 +223,7 @@ class PackageManagerTest extends TestCase
         $this->assertFalse($packageManager->updatePackage($repository, $databasePackage));
     }
 
-    public function testCleanupObsoletePackages()
+    public function testCleanupObsoletePackages(): void
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
@@ -252,7 +252,7 @@ class PackageManagerTest extends TestCase
         $this->assertTrue($packageManager->cleanupObsoletePackages($repository, []));
     }
 
-    public function testCleanupObsoletePackagesKeepsCurrentPackages()
+    public function testCleanupObsoletePackagesKeepsCurrentPackages(): void
     {
         $mTime = new \DateTime();
 

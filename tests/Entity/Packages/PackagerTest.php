@@ -13,7 +13,7 @@ class PackagerTest extends TestCase
      * @param string $email
      * @dataProvider providePackagers
      */
-    public function testCreateFromString(string $input, string $name, string $email)
+    public function testCreateFromString(string $input, string $name, string $email): void
     {
         $packager = Packager::createFromString($input);
         $this->assertEquals($name, $packager->getName());
@@ -31,7 +31,7 @@ class PackagerTest extends TestCase
         ];
     }
 
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $packager = new Packager('foo', 'foo@localhost');
 
