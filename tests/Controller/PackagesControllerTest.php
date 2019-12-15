@@ -222,4 +222,18 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertArrayHasKey('data', $responseData);
         $this->assertIsArray($responseData['data']);
     }
+
+    public function testOpenSearchAction()
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/packages/opensearch');
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $response = $client->getResponse()->getContent();
+        $this->assertIsString($response);
+        $this->assertNotFalse(\simplexml_load_string($response));
+        $this->assertEmpty(\libxml_get_errors());
+        $this->assertStringContainsString('{searchTerms}', $response);
+    }
 }

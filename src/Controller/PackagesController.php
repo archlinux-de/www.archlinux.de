@@ -85,4 +85,16 @@ class PackagesController extends AbstractController
         }
         return $jsonResponse;
     }
+
+    /**
+     * @Route("/packages/opensearch", methods={"GET"})
+     * @Cache(smaxage="900")
+     * @return Response
+     */
+    public function openSearchAction(): Response
+    {
+        $response = $this->render('packages/opensearch.xml.twig');
+        $response->headers->set('Content-Type', 'application/opensearchdescription+xml; charset=UTF-8');
+        return $response;
+    }
 }

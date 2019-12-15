@@ -16,7 +16,7 @@
           href="{{ path('app_recentpackages_index') }}"/>
     <link rel="search" type="application/opensearchdescription+xml"
           title="Suche nach Arch Linux Paketen"
-          href="{{ path('app_getopensearch_index') }}"/>
+          href="{{ path('app_packages_opensearch') }}"/>
     <meta name="robots" content="{% block robots %}index,follow{% endblock %}"/>
     <link rel="canonical" href="{% block canonical %}{{ absolute_url(path(
         app.request.attributes.get('_route'),
