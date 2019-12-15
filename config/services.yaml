@@ -28,14 +28,6 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    GuzzleHttp\Client:
-        arguments:
-            - connect_timeout: 60
-              timeout: 1800
-
-    GuzzleHttp\ClientInterface:
-        alias: 'GuzzleHttp\Client'
-
     App\ArchLinux\PackageDatabaseMirror:
         bind:
             $mirrorUrl: '%app.packages.mirror%'

@@ -2,29 +2,29 @@
 
 namespace App\Command\Dev;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @codeCoverageIgnore
  */
 class TestUpdatePackagesCommand extends Command
 {
-    /** @var ClientInterface */
-    private $guzzleClient;
+    /** @var HttpClientInterface */
+    private $httpClient;
 
     /**
-     * @param ClientInterface $guzzleClient
+     * @param HttpClientInterface $httpClient
      */
-    public function __construct(ClientInterface $guzzleClient)
+    public function __construct(HttpClientInterface $httpClient)
     {
         parent::__construct();
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
     }
 
     protected function configure(): void
@@ -132,12 +132,12 @@ class TestUpdatePackagesCommand extends Command
     private function checkMirrorUrl(string $url): bool
     {
         try {
-            $content = $this->guzzleClient->request(
+            $content = $this->httpClient->request(
                 'GET',
                 $url . 'lastupdate'
-            )->getBody()->getContents();
+            )->getContent();
             return $content > 1;
-        } catch (GuzzleException $e) {
+        } catch (HttpExceptionInterface $e) {
             return false;
         }
     }

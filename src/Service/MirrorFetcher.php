@@ -5,15 +5,15 @@ namespace App\Service;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Repository\CountryRepository;
-use GuzzleHttp\ClientInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @phpstan-implements \IteratorAggregate<Mirror>
  */
 class MirrorFetcher implements \IteratorAggregate
 {
-    /** @var ClientInterface */
-    private $guzzleClient;
+    /** @var HttpClientInterface */
+    private $httpClient;
 
     /** @var string */
     private $mirrorStatusUrl;
@@ -22,16 +22,16 @@ class MirrorFetcher implements \IteratorAggregate
     private $countryRepository;
 
     /**
-     * @param ClientInterface $guzzleClient
+     * @param HttpClientInterface $httpClient
      * @param string $mirrorStatusUrl
      * @param CountryRepository $countryRepository
      */
     public function __construct(
-        ClientInterface $guzzleClient,
+        HttpClientInterface $httpClient,
         string $mirrorStatusUrl,
         CountryRepository $countryRepository
     ) {
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
         $this->mirrorStatusUrl = $mirrorStatusUrl;
         $this->countryRepository = $countryRepository;
     }
@@ -68,8 +68,8 @@ class MirrorFetcher implements \IteratorAggregate
 
     private function fetchMirrorStatusUrls(): array
     {
-        $response = $this->guzzleClient->request('GET', $this->mirrorStatusUrl);
-        $content = $response->getBody()->getContents();
+        $response = $this->httpClient->request('GET', $this->mirrorStatusUrl);
+        $content = $response->getContent();
         if (empty($content)) {
             throw new \RuntimeException('empty mirrorstatus');
         }

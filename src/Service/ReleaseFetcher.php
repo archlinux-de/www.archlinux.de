@@ -4,26 +4,26 @@ namespace App\Service;
 
 use App\Entity\Release;
 use App\Entity\Torrent;
-use GuzzleHttp\ClientInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @phpstan-implements \IteratorAggregate<Release>
  */
 class ReleaseFetcher implements \IteratorAggregate
 {
-    /** @var ClientInterface */
-    private $guzzleClient;
+    /** @var HttpClientInterface */
+    private $httpClient;
 
     /** @var string */
     private $releaseUrl;
 
     /**
-     * @param ClientInterface $guzzleClient
+     * @param HttpClientInterface $httpClient
      * @param string $releaseUrl
      */
-    public function __construct(ClientInterface $guzzleClient, string $releaseUrl)
+    public function __construct(HttpClientInterface $httpClient, string $releaseUrl)
     {
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
         $this->releaseUrl = $releaseUrl;
     }
 
@@ -69,8 +69,8 @@ class ReleaseFetcher implements \IteratorAggregate
      */
     private function fetchRelengReleases(): array
     {
-        $response = $this->guzzleClient->request('GET', $this->releaseUrl);
-        $content = $response->getBody()->getContents();
+        $response = $this->httpClient->request('GET', $this->releaseUrl);
+        $content = $response->getContent();
         if (empty($content)) {
             throw new \RuntimeException('empty releng releases');
         }

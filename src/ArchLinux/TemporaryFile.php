@@ -22,7 +22,7 @@ class TemporaryFile extends \SplFileObject
             // @codeCoverageIgnoreEnd
         }
         $this->fileName = $fileName;
-        parent::__construct($this->fileName);
+        parent::__construct($this->fileName, 'w+');
         $this->mTime = parent::getMTime();
     }
 

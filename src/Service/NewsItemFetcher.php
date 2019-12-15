@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use GuzzleHttp\ClientInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @phpstan-implements \IteratorAggregate<NewsItem>
@@ -17,19 +17,19 @@ class NewsItemFetcher implements \IteratorAggregate
     /** @var NewsItemSlugger */
     private $slugger;
 
-    /** @var ClientInterface */
-    private $guzzleClient;
+    /** @var HttpClientInterface */
+    private $httpClient;
 
     /**
      * @param string $newsFeedUrl
      * @param NewsItemSlugger $slugger
-     * @param ClientInterface $guzzleClient
+     * @param HttpClientInterface $httpClient
      */
-    public function __construct(string $newsFeedUrl, NewsItemSlugger $slugger, ClientInterface $guzzleClient)
+    public function __construct(string $newsFeedUrl, NewsItemSlugger $slugger, HttpClientInterface $httpClient)
     {
         $this->newsFeedUrl = $newsFeedUrl;
         $this->slugger = $slugger;
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -71,8 +71,8 @@ class NewsItemFetcher implements \IteratorAggregate
      */
     private function fetchNewsFeed(): \SimpleXMLElement
     {
-        $response = $this->guzzleClient->request('GET', $this->newsFeedUrl);
-        $content = $response->getBody()->getContents();
+        $response = $this->httpClient->request('GET', $this->newsFeedUrl);
+        $content = $response->getContent();
 
         libxml_use_internal_errors(true);
         $feed = simplexml_load_string($content);

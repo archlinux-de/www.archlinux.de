@@ -4,51 +4,50 @@ namespace App\Tests\Service;
 
 use App\Entity\Release;
 use App\Service\ReleaseFetcher;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 class ReleaseFetcherTest extends TestCase
 {
     public function testFetchReleases()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], (string)json_encode([
-                'version' => 1,
-                'releases' => [
-                    [
-                        'available' => true,
-                        'info' => '',
-                        'iso_url' => '',
-                        'md5_sum' => '',
-                        'created' => '',
-                        'kernel_version' => '',
-                        'release_date' => '',
-                        'torrent_url' => '',
-                        'version' => '2018.01.01',
-                        'sha1_sum' => '',
-                        'torrent' => [
-                            'comment' => '',
-                            'info_hash' => '',
-                            'piece_length' => 0,
-                            'file_name' => '',
-                            'announce' => '',
-                            'file_length' => 0,
-                            'piece_count' => 0,
-                            'created_by' => '',
-                            'creation_date' => ''
-                        ],
-                        'magnet_uri' => ''
+        $responseMock = new MockResponse(
+            (string)json_encode(
+                [
+                    'version' => 1,
+                    'releases' => [
+                        [
+                            'available' => true,
+                            'info' => '',
+                            'iso_url' => '',
+                            'md5_sum' => '',
+                            'created' => '',
+                            'kernel_version' => '',
+                            'release_date' => '',
+                            'torrent_url' => '',
+                            'version' => '2018.01.01',
+                            'sha1_sum' => '',
+                            'torrent' => [
+                                'comment' => '',
+                                'info_hash' => '',
+                                'piece_length' => 0,
+                                'file_name' => '',
+                                'announce' => '',
+                                'file_length' => 0,
+                                'piece_count' => 0,
+                                'created_by' => '',
+                                'creation_date' => ''
+                            ],
+                            'magnet_uri' => ''
+                        ]
                     ]
                 ]
-            ]))
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+            )
+        );
+        $httpClient = new MockHttpClient($responseMock);
 
-        $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
+        $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo');
         /** @var Release[] $releases */
         $releases = iterator_to_array($releaseFetcher);
 
@@ -59,13 +58,9 @@ class ReleaseFetcherTest extends TestCase
 
     public function testExceptionOnEmptyResponse()
     {
-        $guzzleMock = new MockHandler([
-            new Response()
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(new MockResponse(''));
 
-        $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
+        $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo');
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($releaseFetcher);
@@ -73,13 +68,9 @@ class ReleaseFetcherTest extends TestCase
 
     public function testExceptionOnInvalidResponse()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], 'foo')
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(new MockResponse('foo'));
 
-        $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
+        $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo');
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($releaseFetcher);
@@ -87,13 +78,17 @@ class ReleaseFetcherTest extends TestCase
 
     public function testExceptionOnUnknownVersion()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], (string)json_encode(['version' => 2]))
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(
+            new MockResponse(
+                (string)json_encode(
+                    [
+                        'version' => 2
+                    ]
+                )
+            )
+        );
 
-        $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
+        $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo');
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($releaseFetcher);
@@ -101,13 +96,18 @@ class ReleaseFetcherTest extends TestCase
 
     public function testExceptionOnEmptyMirrorList()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], (string)json_encode(['version' => 1, 'releases' => []]))
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(
+            new MockResponse(
+                (string)json_encode(
+                    [
+                        'version' => 1,
+                        'releases' => []
+                    ]
+                )
+            )
+        );
 
-        $releaseFetcher = new ReleaseFetcher($guzzleClient, '');
+        $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo');
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($releaseFetcher);

@@ -6,47 +6,46 @@ use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Repository\CountryRepository;
 use App\Service\MirrorFetcher;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 class MirrorFetcherTest extends TestCase
 {
     public function testFetchMirrors()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], (string)json_encode([
-                'version' => 3,
-                'urls' => [
-                    [
-                        'url' => 'https://127.0.0.1',
-                        'protocol' => 'https',
-                        'country_code' => 'DE',
-                        'last_sync' => '2018-01-01',
-                        'delay' => 1,
-                        'duration_avg' => 2.1,
-                        'score' => 3.2,
-                        'completion_pct' => 4.3,
-                        'duration_stddev' => 5.4,
-                        'isos' => true,
-                        'ipv4' => true,
-                        'ipv6' => true,
-                        'active' => true
+        $responseMock = new MockResponse(
+            (string)json_encode(
+                [
+                    'version' => 3,
+                    'urls' => [
+                        [
+                            'url' => 'https://127.0.0.1',
+                            'protocol' => 'https',
+                            'country_code' => 'DE',
+                            'last_sync' => '2018-01-01',
+                            'delay' => 1,
+                            'duration_avg' => 2.1,
+                            'score' => 3.2,
+                            'completion_pct' => 4.3,
+                            'duration_stddev' => 5.4,
+                            'isos' => true,
+                            'ipv4' => true,
+                            'ipv6' => true,
+                            'active' => true
+                        ]
                     ]
                 ]
-            ]))
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+            )
+        );
+        $httpClient = new MockHttpClient($responseMock);
 
         /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
         $countryRepository->method('find')->with('DE')->willReturn(new Country('DE'));
 
-        $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
+        $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $countryRepository);
         /** @var Mirror[] $mirrors */
         $mirrors = iterator_to_array($mirrorFetcher);
 
@@ -65,16 +64,12 @@ class MirrorFetcherTest extends TestCase
 
     public function testExceptionOnEmptyResponse()
     {
-        $guzzleMock = new MockHandler([
-            new Response()
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(new MockResponse(''));
 
         /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
-        $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
+        $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($mirrorFetcher);
@@ -82,16 +77,12 @@ class MirrorFetcherTest extends TestCase
 
     public function testExceptionOnInvalidResponse()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], 'foo')
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(new MockResponse('foo'));
 
         /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
-        $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
+        $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($mirrorFetcher);
@@ -99,16 +90,20 @@ class MirrorFetcherTest extends TestCase
 
     public function testExceptionOnUnknownVersion()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], (string)json_encode(['version' => 2]))
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(
+            new MockResponse(
+                (string)json_encode(
+                    [
+                        'version' => 2
+                    ]
+                )
+            )
+        );
 
         /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
-        $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
+        $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($mirrorFetcher);
@@ -116,16 +111,21 @@ class MirrorFetcherTest extends TestCase
 
     public function testExceptionOnEmptyMirrorList()
     {
-        $guzzleMock = new MockHandler([
-            new Response(200, [], (string)json_encode(['version' => 3, 'urls' => []]))
-        ]);
-        $guzzleHhandler = HandlerStack::create($guzzleMock);
-        $guzzleClient = new Client(['handler' => $guzzleHhandler]);
+        $httpClient = new MockHttpClient(
+            new MockResponse(
+                (string)json_encode(
+                    [
+                        'version' => 3,
+                        'urls' => []
+                    ]
+                )
+            )
+        );
 
         /** @var CountryRepository|MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
 
-        $mirrorFetcher = new MirrorFetcher($guzzleClient, '', $countryRepository);
+        $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $countryRepository);
 
         $this->expectException(\RuntimeException::class);
         iterator_to_array($mirrorFetcher);

@@ -2,25 +2,25 @@
 
 namespace App\ArchLinux;
 
-use GuzzleHttp\ClientInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseDownloader
 {
     private const DB_EXT = '.files';
 
-    /** @var ClientInterface */
-    private $guzzleClient;
+    /** @var HttpClientInterface */
+    private $httpClient;
 
     /** @var PackageDatabaseMirror */
     private $packageDatabaseMirror;
 
     /**
-     * @param ClientInterface $guzzleClient
+     * @param HttpClientInterface $httpClient
      * @param PackageDatabaseMirror $packageDatabaseMirror
      */
-    public function __construct(ClientInterface $guzzleClient, PackageDatabaseMirror $packageDatabaseMirror)
+    public function __construct(HttpClientInterface $httpClient, PackageDatabaseMirror $packageDatabaseMirror)
     {
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
         $this->packageDatabaseMirror = $packageDatabaseMirror;
     }
 
@@ -37,8 +37,13 @@ class PackageDatabaseDownloader
         $tmpFilePrefix = strtolower((string)preg_replace('/\W+/', '_', $url));
         $tmpFile = new TemporaryFile($tmpFilePrefix);
 
-        $response = $this->guzzleClient->request('GET', $url, ['sink' => $tmpFile->getRealPath()]);
-        $mtime = strtotime($response->getHeaderLine('Last-Modified'));
+        $response = $this->httpClient->request('GET', $url);
+        foreach ($this->httpClient->stream($response) as $chunk) {
+            $tmpFile->fwrite($chunk->getContent());
+        }
+        $tmpFile->fflush();
+
+        $mtime = strtotime($response->getHeaders()['last-modified'][0]);
         $tmpFile->setMTime((int)$mtime);
 
         return $tmpFile;

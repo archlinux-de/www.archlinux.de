@@ -2,16 +2,16 @@
 
 namespace App\ArchLinux;
 
-use GuzzleHttp\ClientInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseMirror
 {
     /** @var int */
     private $lastMirrorUpdate = 0;
 
-    /** @var ClientInterface */
-    private $guzzleClient;
+    /** @var HttpClientInterface */
+    private $httpClient;
 
     /** @var CacheItemPoolInterface */
     private $cache;
@@ -20,13 +20,13 @@ class PackageDatabaseMirror
     private $mirrorUrl;
 
     /**
-     * @param ClientInterface $guzzleClient
+     * @param HttpClientInterface $httpClient
      * @param CacheItemPoolInterface $cache
      * @param string $mirrorUrl
      */
-    public function __construct(ClientInterface $guzzleClient, CacheItemPoolInterface $cache, string $mirrorUrl)
+    public function __construct(HttpClientInterface $httpClient, CacheItemPoolInterface $cache, string $mirrorUrl)
     {
-        $this->guzzleClient = $guzzleClient;
+        $this->httpClient = $httpClient;
         $this->cache = $cache;
         $this->mirrorUrl = $mirrorUrl;
     }
@@ -46,10 +46,10 @@ class PackageDatabaseMirror
     {
         $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate');
         if ($lastLocalUpdateCache->isHit()) {
-            $content = $this->guzzleClient->request(
+            $content = $this->httpClient->request(
                 'GET',
                 $this->mirrorUrl . 'lastupdate'
-            )->getBody()->getContents();
+            )->getContent();
             $this->lastMirrorUpdate = (int)$content;
 
             return $this->lastMirrorUpdate !== (int)$lastLocalUpdateCache->get();
