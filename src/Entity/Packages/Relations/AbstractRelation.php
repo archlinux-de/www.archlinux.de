@@ -67,10 +67,10 @@ abstract class AbstractRelation
      */
     public static function createFromString(string $targetDefinition): self
     {
-        if (preg_match('/^([\w\-\+@\.]+?)((?:<|<=|=|>=|>)+[\w\.:]+)/', $targetDefinition, $matches) > 0) {
+        if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:]+)/', $targetDefinition, $matches) > 0) {
             $targetName = $matches[1];
             $targetVersion = $matches[2];
-        } elseif (preg_match('/^([\w\-\+@\.]+)/', $targetDefinition, $matches) > 0) {
+        } elseif (preg_match('/^([\w\-+@.]+)/', $targetDefinition, $matches) > 0) {
             $targetName = $matches[1];
             $targetVersion = null;
         } else {

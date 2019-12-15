@@ -12,7 +12,7 @@ class Slugger
     {
         return trim(
             (string)preg_replace(
-                ['/[^a-z0-9_\-\.]+/', '/\-+/'],
+                ['/[^a-z0-9_\-.]+/', '/-+/'],
                 '-',
                 $this->translit(
                     mb_strtolower($input)
