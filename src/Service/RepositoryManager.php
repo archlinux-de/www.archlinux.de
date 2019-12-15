@@ -49,8 +49,10 @@ class RepositoryManager
 
         /** @var Repository $repo */
         foreach ($this->repositoryRepository->findAll() as $repo) {
-            if (!isset($this->repositoryConfiguration[$repo->getName()])
-                || !in_array($repo->getArchitecture(), $this->repositoryConfiguration[$repo->getName()])) {
+            if (
+                !isset($this->repositoryConfiguration[$repo->getName()])
+                || !in_array($repo->getArchitecture(), $this->repositoryConfiguration[$repo->getName()])
+            ) {
                 $this->entityManager->remove($repo);
                 $repositoryWasRemoved = true;
             }

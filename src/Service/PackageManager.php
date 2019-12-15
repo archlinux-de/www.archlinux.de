@@ -48,7 +48,8 @@ class PackageManager
             $repository->getName(),
             $repository->getArchitecture()
         );
-        if ((
+        if (
+            (
                 $repository->getMTime() !== null
                 && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp()
             )
@@ -74,8 +75,10 @@ class PackageManager
     ): bool {
         $packageMTime = $this->getRepositoryPackageMTime($repository);
 
-        if ($packageMTime === null
-            || $databasePackage->getMTime()->getTimestamp() > $packageMTime->getTimestamp()) {
+        if (
+            $packageMTime === null
+            || $databasePackage->getMTime()->getTimestamp() > $packageMTime->getTimestamp()
+        ) {
             $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
             if ($package === null) {
                 $package = Package::createFromPackageDatabase($repository, $databasePackage);

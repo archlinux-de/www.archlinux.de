@@ -38,7 +38,8 @@ class NewsItemFetcher implements \IteratorAggregate
     public function getIterator(): \Traversable
     {
         foreach ($this->fetchNewsFeed()->entry as $newsEntry) {
-            if ($newsEntry->id === null
+            if (
+                $newsEntry->id === null
                 || $newsEntry->title === null
                 || $newsEntry->link === null
                 || $newsEntry->link->attributes() === null

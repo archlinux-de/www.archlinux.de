@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
@@ -26,7 +28,7 @@ final class Version20181230070059 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function postUp(Schema $schema):void
+    public function postUp(Schema $schema): void
     {
         if ($this->hasColumn('news_item', 'slug')) {
             $this->write('foo');

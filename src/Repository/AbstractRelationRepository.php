@@ -52,8 +52,10 @@ class AbstractRelationRepository extends ServiceEntityRepository
             /** @var Package $candidate */
             foreach ($candidates as $candidate) {
                 $candidateRepository = $candidate->getRepository();
-                if (!$candidateRepository->isTesting()
-                    && $candidateRepository->getArchitecture() == $relationRepository->getArchitecture()) {
+                if (
+                    !$candidateRepository->isTesting()
+                    && $candidateRepository->getArchitecture() == $relationRepository->getArchitecture()
+                ) {
                     return $candidate;
                 }
             }
