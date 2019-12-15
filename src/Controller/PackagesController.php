@@ -43,12 +43,15 @@ class PackagesController extends AbstractController
         $architecture = $request->get('architecture', $defaultArchitecture);
         $repository = $request->get('repository');
 
-        return $this->render('packages/index.html.twig', [
-            'architecture' => $architecture,
-            'defaultArchitecture' => $defaultArchitecture,
-            'repository' => $repository,
-            'search' => $search
-        ]);
+        return $this->render(
+            'packages/index.html.twig',
+            [
+                'architecture' => $architecture,
+                'defaultArchitecture' => $defaultArchitecture,
+                'repository' => $repository,
+                'search' => $search
+            ]
+        );
     }
 
     /**
@@ -95,6 +98,26 @@ class PackagesController extends AbstractController
     {
         $response = $this->render('packages/opensearch.xml.twig');
         $response->headers->set('Content-Type', 'application/opensearchdescription+xml; charset=UTF-8');
+        return $response;
+    }
+
+    /**
+     * @Route("/packages/feed", methods={"GET"})
+     * @Cache(smaxage="600")
+     * @return Response
+     */
+    public function feedAction(): Response
+    {
+        $packages = $this->packageRepository->findLatestByArchitecture(
+            $this->getParameter('app.packages.default_architecture'),
+            25
+        );
+
+        $response = $this->render(
+            'packages/feed.xml.twig',
+            ['packages' => $packages]
+        );
+        $response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
         return $response;
     }
 }

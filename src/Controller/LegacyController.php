@@ -18,7 +18,7 @@ class LegacyController extends AbstractController
         'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_packages_opensearch',
         'GetRecentNews' => 'app_news_feed',
-        'GetRecentPackages' => 'app_recentpackages_index',
+        'GetRecentPackages' => 'app_packages_feed',
         'MirrorStatus' => 'app_mirrorstatus_index',
         'PackageDetails' => 'app_packagedetails_index',
         'Packages' => 'app_packages_index',
