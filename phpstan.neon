@@ -18,10 +18,3 @@ parameters:
 		- config
 		- bin
 	checkMissingIterableValueType: false
-	ignoreErrors:
-		-
-			message: '#Unsafe usage of new static\(\)\.#'
-			path: src/Entity/Packages/Relations/AbstractRelation.php
-		-
-			message: '#Variable \$candidate in PHPDoc tag @var does not match assigned variable \$candidates\.#'
-			path: src/Repository/AbstractRelationRepository.php

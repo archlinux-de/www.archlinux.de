@@ -55,7 +55,7 @@ abstract class AbstractRelation
      * @param string $targetName
      * @param string|null $targetVersion
      */
-    public function __construct(string $targetName, ?string $targetVersion = null)
+    final public function __construct(string $targetName, ?string $targetVersion = null)
     {
         $this->targetName = $targetName;
         $this->targetVersion = $targetVersion;

@@ -69,7 +69,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
     private function getProviderByRelation(AbstractRelation $relation): ?Package
     {
         $repositoryArchitecture = $relation->getSource()->getRepository()->getArchitecture();
-        /** @var AbstractRelation $candidate */
+        /** @var AbstractRelation[] $candidates */
         $candidates = $this->createQueryBuilder('relation')
             ->where('relation INSTANCE OF App:Packages\Relations\Provision')
             ->andWhere('relation.targetName = :targetName')
