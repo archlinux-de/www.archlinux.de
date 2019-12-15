@@ -41,11 +41,7 @@ class Package
     private function readValue(string $key, string $default = ''): string
     {
         $list = $this->readList($key);
-        if (isset($list[0])) {
-            return $list[0];
-        }
-
-        return $default;
+        return $list[0] ?? $default;
     }
 
     /**
@@ -58,11 +54,7 @@ class Package
         if ($this->desc === null) {
             $this->desc = $this->loadInfo($this->descFile);
         }
-        if (isset($this->desc[$key])) {
-            return $this->desc[$key];
-        }
-
-        return $default;
+        return $this->desc[$key] ?? $default;
     }
 
     /**

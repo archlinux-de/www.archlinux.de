@@ -2,8 +2,8 @@
 
 namespace App\Entity\Packages;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Embeddable
@@ -44,8 +44,8 @@ class Packager implements \JsonSerializable
     public static function createFromString(string $packagerDefinition): self
     {
         preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
-        $name = trim(!empty($matches[1]) ? $matches[1] : $packagerDefinition);
-        $email = trim(isset($matches[2]) ? $matches[2] : '');
+        $name = trim($matches[1] ?? $packagerDefinition);
+        $email = trim($matches[2] ?? '');
 
         return new self($name, $email);
     }
