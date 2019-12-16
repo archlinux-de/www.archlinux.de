@@ -134,7 +134,8 @@ class SmokeTest extends DatabaseTestCase
         return [
             ['/download/foo'],
             ['/download/iso/2018.01.01/archlinux-2018.01.01-x86_64.iso'],
-            ['/download/core/os/x86_64/pacman-5.0.2-2-x86_64.pkg.tar.xz']
+            ['/download/core/os/x86_64/pacman-5.0.2-2-x86_64.pkg.tar.xz'],
+            ['/download/core/os/x86_64/pacman-6.0.0-1-x86_64.pkg.tar.zst']
         ];
     }
 }

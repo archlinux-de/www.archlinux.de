@@ -57,7 +57,11 @@ class MirrorControllerTest extends DatabaseTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function testPackageAction(): void
+    /**
+     * @param string $packageExtension
+     * @dataProvider providePackageExtensions
+     */
+    public function testPackageAction(string $packageExtension): void
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
@@ -75,7 +79,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $entityManager->persist($pacman);
         $entityManager->flush();
 
-        $filePath = 'core/os/x86_64/linux-3.11-1-x86_64.pkg.tar.xz';
+        $filePath = 'core/os/x86_64/linux-3.11-1-x86_64.pkg.tar.' . $packageExtension;
         $client = $this->getClient();
 
         $client->request('GET', '/download/' . $filePath);
@@ -144,5 +148,17 @@ class MirrorControllerTest extends DatabaseTestCase
 
         $client->request('GET', '/download/' . $filePath);
         $this->assertTrue($client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @return array<array>
+     */
+    public function providePackageExtensions(): array
+    {
+        return [
+            ['gz'],
+            ['xz'],
+            ['zst'],
+        ];
     }
 }

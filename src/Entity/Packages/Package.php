@@ -23,8 +23,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Package implements \JsonSerializable
 {
-    private const PKGEXT = '.pkg.tar.xz';
-
     /**
      * @var int
      *
@@ -298,8 +296,7 @@ class Package implements \JsonSerializable
         $this->version = $version;
         $this->architecture = $architecture;
 
-        $this->base = $name;
-        $this->fileName = $name . '-' . $version . '-' . $architecture . self::PKGEXT;
+        $this->fileName = $name . '-' . $version . '-' . $architecture . '.pkg.tar.xz';
 
         $this->makedepends = new ArrayCollection();
         $this->checkdepends = new ArrayCollection();
