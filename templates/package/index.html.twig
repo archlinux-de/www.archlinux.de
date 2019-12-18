@@ -63,10 +63,12 @@
                             {{ package.architecture }}
                         </td>
                     </tr>
-                    <tr>
-                        <th>Gruppen</th>
-                        <td>{{ package.groups | join(', ') }}</td>
-                    </tr>
+                    {% if package.groups %}
+                        <tr>
+                            <th>Gruppen</th>
+                            <td>{{ package.groups | join(', ') }}</td>
+                        </tr>
+                    {% endif %}
                     {% if package.packager %}
                         <tr>
                             <th>Packer</th>
