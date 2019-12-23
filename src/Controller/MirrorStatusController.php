@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\MirrorRepository;
-use DatatablesApiBundle\DatatablesResponse;
+use App\Datatables\DatatablesResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

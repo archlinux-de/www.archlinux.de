@@ -22,7 +22,6 @@
         "exercise/htmlpurifier-bundle": "^v2.0.5",
         "league/iso3166": "^2.1.4",
         "maxmind-db/reader": "^v1.6.0",
-        "pierres/datatables-api-bundle": "^1.0.3",
         "sensio/framework-extra-bundle": "^v5.5.2",
         "symfony/asset": "^v5.0.2",
         "symfony/console": "^v5.0.2",

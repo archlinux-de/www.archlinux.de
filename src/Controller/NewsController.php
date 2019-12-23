@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
-use DatatablesApiBundle\DatatablesColumnConfiguration;
-use DatatablesApiBundle\DatatablesQuery;
-use DatatablesApiBundle\DatatablesRequest;
+use App\Datatables\DatatablesColumnConfiguration;
+use App\Datatables\DatatablesQuery;
+use App\Datatables\DatatablesRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

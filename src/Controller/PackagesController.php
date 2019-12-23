@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Repository\PackageRepository;
-use DatatablesApiBundle\DatatablesColumnConfiguration;
-use DatatablesApiBundle\DatatablesQuery;
-use DatatablesApiBundle\DatatablesRequest;
+use App\Datatables\DatatablesColumnConfiguration;
+use App\Datatables\DatatablesQuery;
+use App\Datatables\DatatablesRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
