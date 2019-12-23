@@ -58,7 +58,7 @@ class DatatablesQueryTest extends TestCase
         $this->entityManager->persist($testEntity);
         $this->entityManager->flush();
 
-        /** @var EntityRepository $repository */
+        /** @var EntityRepository<TestEntity> $repository */
         $repository = $this->entityManager->getRepository(TestEntity::class);
         $queryBuilder = $repository->createQueryBuilder('test');
 
@@ -101,7 +101,7 @@ class DatatablesQueryTest extends TestCase
         }
         $this->entityManager->flush();
 
-        /** @var EntityRepository $repository */
+        /** @var EntityRepository<TestEntity> $repository */
         $repository = $this->entityManager->getRepository(TestEntity::class);
         $queryBuilder = $repository->createQueryBuilder('test');
 
@@ -145,7 +145,7 @@ class DatatablesQueryTest extends TestCase
         }
         $this->entityManager->flush();
 
-        /** @var EntityRepository $repository */
+        /** @var EntityRepository<TestEntity> $repository */
         $repository = $this->entityManager->getRepository(TestEntity::class);
         $queryBuilder = $repository->createQueryBuilder('test');
 
@@ -199,7 +199,7 @@ class DatatablesQueryTest extends TestCase
         }
         $this->entityManager->flush();
 
-        /** @var EntityRepository $repository */
+        /** @var EntityRepository<TestEntity> $repository */
         $repository = $this->entityManager->getRepository(TestEntity::class);
         $queryBuilder = $repository->createQueryBuilder('test');
 
