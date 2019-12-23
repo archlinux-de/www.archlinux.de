@@ -4,7 +4,7 @@ namespace App\Datatables\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Order implements \JsonSerializable
+class Order
 {
     public const ASC = 'asc';
     public const DESC = 'desc';
@@ -44,16 +44,5 @@ class Order implements \JsonSerializable
     public function getDir(): string
     {
         return $this->dir;
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'column' => ['id' => $this->column->getId()],
-            'dir' => $this->dir
-        ];
     }
 }

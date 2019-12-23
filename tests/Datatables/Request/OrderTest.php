@@ -14,7 +14,7 @@ class OrderTest extends TestCase
      * @param string $direction
      * @dataProvider provideDirections
      */
-    public function testJsonSerialize(string $direction): void
+    public function testOrder(string $direction): void
     {
         $column = new Column(
             0,
@@ -32,18 +32,8 @@ class OrderTest extends TestCase
             $direction
         );
 
-        $json = (string)json_encode($order);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'column' => [
-                    'id' => 0
-                ],
-                'dir' => $direction
-            ],
-            $jsonArray
-        );
+        $this->assertSame($column, $order->getColumn());
+        $this->assertEquals($direction, $order->getDir());
     }
 
     /**

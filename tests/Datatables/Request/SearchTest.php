@@ -18,7 +18,9 @@ class SearchTest extends TestCase
     public function testIsValid(string $value, bool $isValid): void
     {
         $search = new Search($value, false);
+
         $this->assertEquals($isValid, $search->isValid());
+        $this->assertEquals($value, $search->getValue());
     }
 
     /**
@@ -36,20 +38,12 @@ class SearchTest extends TestCase
      * @param bool $isRegex
      * @dataProvider provideIsRegex
      */
-    public function testJsonSerialize(bool $isRegex): void
+    public function testIsRegex(bool $isRegex): void
     {
         $search = new Search('foo', $isRegex);
 
-        $json = (string)json_encode($search);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'value' => 'foo',
-                'regex' => $isRegex
-            ],
-            $jsonArray
-        );
+        $this->assertEquals($isRegex, $search->isRegex());
+        $this->assertEquals('foo', $search->getValue());
     }
 
     /**

@@ -43,22 +43,12 @@ class DatatablesRequestTest extends TestCase
         ];
     }
 
-    public function testJsonSerialize(): void
+    public function testDatatablesRequest(): void
     {
         $request = new DatatablesRequest(1, 2, 3);
 
-        $json = (string)json_encode($request);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'start' => 2,
-                'length' => 3,
-                'search' => null,
-                'order' => [],
-                'columns' => []
-            ],
-            $jsonArray
-        );
+        $this->assertEquals(1, $request->getDraw());
+        $this->assertEquals(2, $request->getStart());
+        $this->assertEquals(3, $request->getLength());
     }
 }

@@ -4,7 +4,7 @@ namespace App\Datatables\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Column implements \JsonSerializable
+class Column
 {
     /**
      * @var int
@@ -104,20 +104,5 @@ class Column implements \JsonSerializable
     public function getSearch(): Search
     {
         return $this->search;
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'data' => $this->data,
-            'name' => $this->name,
-            'searchable' => $this->searchable,
-            'orderable' => $this->orderable,
-            'search' => $this->search
-        ];
     }
 }

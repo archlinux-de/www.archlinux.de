@@ -4,7 +4,7 @@ namespace App\Datatables\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Search implements \JsonSerializable
+class Search
 {
     /**
      * @var string
@@ -49,16 +49,5 @@ class Search implements \JsonSerializable
     public function isValid(): bool
     {
         return !empty($this->value);
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'value' => $this->value,
-            'regex' => $this->regex
-        ];
     }
 }

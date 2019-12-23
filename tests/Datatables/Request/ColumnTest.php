@@ -3,6 +3,7 @@
 namespace App\Tests\Datatables\Request;
 
 use App\Datatables\Request\Column;
+use App\Datatables\Request\Search;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,7 +16,7 @@ class ColumnTest extends TestCase
      * @param bool $orderable
      * @dataProvider provideColumnFlags
      */
-    public function testJsonSerialize(bool $searchable, bool $orderable): void
+    public function testColumn(bool $searchable, bool $orderable): void
     {
         $column = new Column(
             0,
@@ -29,23 +30,12 @@ class ColumnTest extends TestCase
             )
         );
 
-        $json = (string)json_encode($column);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'id' => 0,
-                'data' => 'FooData',
-                'name' => 'FooName',
-                'searchable' => $searchable,
-                'orderable' => $orderable,
-                'search' => [
-                    'value' => '',
-                    'regex' => false
-                ]
-            ],
-            $jsonArray
-        );
+        $this->assertEquals(0, $column->getId());
+        $this->assertEquals('FooData', $column->getData());
+        $this->assertEquals('FooName', $column->getName());
+        $this->assertEquals($searchable, $column->isSearchable());
+        $this->assertEquals($orderable, $column->isOrderable());
+        $this->assertInstanceOf(Search::class, $column->getSearch());
     }
 
     /**

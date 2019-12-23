@@ -7,7 +7,7 @@ use App\Datatables\Request\Order;
 use App\Datatables\Request\Search;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class DatatablesRequest implements \JsonSerializable
+class DatatablesRequest
 {
     /**
      * @var int
@@ -151,19 +151,5 @@ class DatatablesRequest implements \JsonSerializable
     public function getColumns(): array
     {
         return $this->columns;
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'start' => $this->start,
-            'length' => $this->length,
-            'search' => $this->search,
-            'order' => $this->order,
-            'columns' => $this->columns
-        ];
     }
 }
