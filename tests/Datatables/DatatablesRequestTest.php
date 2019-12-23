@@ -61,11 +61,4 @@ class DatatablesRequestTest extends TestCase
             $jsonArray
         );
     }
-
-    public function testGetId(): void
-    {
-        $requestA = new DatatablesRequest(1, 2, 3);
-        $requestB = new DatatablesRequest(1, 2, 4);
-        $this->assertNotEquals($requestA->getId(), $requestB->getId());
-    }
 }

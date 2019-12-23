@@ -166,12 +166,4 @@ class DatatablesRequest implements \JsonSerializable
             'columns' => $this->columns
         ];
     }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return sha1((string)json_encode($this));
-    }
 }
