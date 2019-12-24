@@ -12,7 +12,7 @@ class ReleaseDenormalizerTest extends TestCase
     {
         $releaseDenormalizer = new ReleaseDenormalizer();
 
-        $this->assertTrue($releaseDenormalizer->supportsDenormalization(['releases' => []], Release::class . '[]'));
+        $this->assertTrue($releaseDenormalizer->supportsDenormalization([], Release::class . '[]'));
     }
 
     public function testDenormalize(): void

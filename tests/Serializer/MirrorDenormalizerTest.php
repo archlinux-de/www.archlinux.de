@@ -15,7 +15,7 @@ class MirrorDenormalizerTest extends TestCase
     {
         $mirrorDenormalizer = new MirrorDenormalizer($this->createMock(CountryRepository::class));
 
-        $this->assertTrue($mirrorDenormalizer->supportsDenormalization(['urls' => []], Mirror::class . '[]'));
+        $this->assertTrue($mirrorDenormalizer->supportsDenormalization([], Mirror::class . '[]'));
     }
 
     public function testDenormalize(): void

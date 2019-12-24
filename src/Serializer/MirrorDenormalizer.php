@@ -63,6 +63,6 @@ class MirrorDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, string $type, string $format = null)
     {
-        return $type == Mirror::class . '[]' && isset($data['urls']);
+        return $type == Mirror::class . '[]';
     }
 }

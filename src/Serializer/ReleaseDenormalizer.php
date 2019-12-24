@@ -58,6 +58,6 @@ class ReleaseDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, string $type, string $format = null)
     {
-        return $type == Release::class . '[]' && isset($data['releases']);
+        return $type == Release::class . '[]';
     }
 }

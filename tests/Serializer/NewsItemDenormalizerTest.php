@@ -55,6 +55,6 @@ class NewsItemDenormalizerTest extends TestCase
     {
         $newsItemDenormalizer = new NewsItemDenormalizer($this->createMock(NewsItemSlugger::class));
 
-        $this->assertTrue($newsItemDenormalizer->supportsDenormalization(['releases' => []], NewsItem::class . '[]'));
+        $this->assertTrue($newsItemDenormalizer->supportsDenormalization([], NewsItem::class . '[]'));
     }
 }
