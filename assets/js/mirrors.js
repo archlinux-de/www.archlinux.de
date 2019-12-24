@@ -90,7 +90,7 @@ dataTable.DataTable({
       render: renderDuration
     },
     {
-      data: 'lastsync',
+      data: 'lastSync',
       searchable: false,
       className: 'd-none d-sm-table-cell',
       render: renderTime

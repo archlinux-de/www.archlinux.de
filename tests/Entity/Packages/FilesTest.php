@@ -31,20 +31,6 @@ class FilesTest extends TestCase
     }
 
     /**
-     * @param string[] $filesArray
-     * @dataProvider provideFilesArray
-     */
-    public function testJsonSerialize(array $filesArray): void
-    {
-        $files = Files::createFromArray($filesArray);
-
-        $json = (string)json_encode($files);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals($filesArray, $jsonArray);
-    }
-
-    /**
      * @return array<array>
      */
     public function provideFilesArray(): array

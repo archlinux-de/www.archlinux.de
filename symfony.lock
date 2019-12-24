@@ -326,6 +326,9 @@
     "symfony/http-kernel": {
         "version": "v4.0.0"
     },
+    "symfony/inflector": {
+        "version": "v5.0.2"
+    },
     "symfony/lock": {
         "version": "v4.0.0"
     },
@@ -356,6 +359,9 @@
     "symfony/process": {
         "version": "v4.0.0"
     },
+    "symfony/property-access": {
+        "version": "v5.0.2"
+    },
     "symfony/proxy-manager-bridge": {
         "version": "v5.0.2"
     },
@@ -367,6 +373,9 @@
             "version": "3.3",
             "ref": "a249484db698d1a847a30291c8f732414ac47e25"
         }
+    },
+    "symfony/serializer": {
+        "version": "v5.0.2"
     },
     "symfony/service-contracts": {
         "version": "v1.1.2"

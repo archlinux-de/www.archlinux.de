@@ -30,20 +30,4 @@ class PackagerTest extends TestCase
             ['foo', 'foo', '']
         ];
     }
-
-    public function testJsonSerialize(): void
-    {
-        $packager = new Packager('foo', 'foo@localhost');
-
-        $json = (string)json_encode($packager);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'name' => 'foo',
-                'email' => 'foo@localhost'
-            ],
-            $jsonArray
-        );
-    }
 }

@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Embeddable
  */
-class Packager implements \JsonSerializable
+class Packager
 {
     /**
      * @var string
@@ -48,17 +48,6 @@ class Packager implements \JsonSerializable
         $email = trim($matches[2] ?? '');
 
         return new self($name, $email);
-    }
-
-    /**
-     * @return array<string|null>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'name' => $this->getName(),
-            'email' => $this->getEmail()
-        ];
     }
 
     /**

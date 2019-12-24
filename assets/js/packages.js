@@ -5,8 +5,6 @@ import $ from 'jquery'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
 const dataTable = $('#packages')
-const packageUrlTemplate = dataTable.data('packageUrlTemplate')
-const repositoryUrlTemplate = dataTable.data('repositoryUrlTemplate')
 const ajaxUrl = dataTable.data('ajaxUrl')
 
 const renderTime = (data, type) => {
@@ -21,22 +19,16 @@ const renderTime = (data, type) => {
   return data
 }
 
-const createRenderRepository = repositoryUrlTemplate => (data, type) => {
+const createRenderRepository = (data, type, row) => {
   if (type === 'display' && data) {
-    const repositoryUrl = repositoryUrlTemplate
-      .replace('_repository_', encodeURI(data))
-    return `<a href="${repositoryUrl}">${data}</a>`
+    return `<a href="${row.repository.url}">${data}</a>`
   }
   return data
 }
 
-const createRenderName = packageUrlTemplate => (data, type, row) => {
+const createRenderName = (data, type, row) => {
   if (type === 'display' && data) {
-    const packageUrl = packageUrlTemplate
-      .replace('_repository_', row.repository.name)
-      .replace('_architecture_', row.repository.architecture)
-      .replace('_package_', encodeURI(data))
-    return `<a href="${packageUrl}">${data}</a>`
+    return `<a href="${row.url}">${data}</a>`
   }
   return data
 }
@@ -57,7 +49,7 @@ dataTable.DataTable({
       orderable: true,
       searchable: true,
       className: 'd-none d-lg-table-cell',
-      render: createRenderRepository(repositoryUrlTemplate)
+      render: createRenderRepository
     },
     {
       data: 'repository.architecture',
@@ -75,7 +67,7 @@ dataTable.DataTable({
       data: 'name',
       orderable: true,
       searchable: true,
-      render: createRenderName(packageUrlTemplate),
+      render: createRenderName,
       className: 'text-break'
     },
     {
@@ -91,7 +83,7 @@ dataTable.DataTable({
       className: 'text-break d-none d-sm-table-cell'
     },
     {
-      data: 'builddate',
+      data: 'buildDate',
       orderable: true,
       searchable: false,
       render: renderTime,

@@ -15,37 +15,6 @@ use PHPUnit\Framework\TestCase;
  */
 class PackageTest extends TestCase
 {
-    public function testJsonSerialize(): void
-    {
-        $repository = new Repository('core', Architecture::X86_64);
-        $package = new Package($repository, 'pacman', '6.0-1', Architecture::X86_64);
-        $package->setBuildDate(new \DateTime('2018-01-30'));
-        $package->setDescription('foo bar');
-        $package->setGroups(['base']);
-
-        $json = (string)json_encode($package);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'name' => 'pacman',
-                'version' => '6.0-1',
-                'architecture' => 'x86_64',
-                'description' => 'foo bar',
-                'builddate' => 'Tue, 30 Jan 2018 00:00:00 +0000',
-                'repository' => [
-                    'name' => 'core',
-                    'architecture' => 'x86_64',
-                    'testing' => false
-                ],
-                'groups' => [
-                    'base'
-                ]
-            ],
-            $jsonArray
-        );
-    }
-
     public function testCreateFromPackageDatabase(): void
     {
         $repository = new Repository('core', Architecture::X86_64);

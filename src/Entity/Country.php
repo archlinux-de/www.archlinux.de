@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\CountryRepository")
  * @ORM\Table()
  */
-class Country implements \JsonSerializable
+class Country
 {
     /**
      * @var string
@@ -34,17 +34,6 @@ class Country implements \JsonSerializable
     public function __construct(string $code)
     {
         $this->code = $code;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'code' => $this->getCode(),
-            'name' => $this->getName()
-        ];
     }
 
     /**

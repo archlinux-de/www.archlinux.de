@@ -10,28 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class RepositoryTest extends TestCase
 {
-    /**
-     * @param bool $testing
-     * @dataProvider provideTesting
-     */
-    public function testJsonSerialize(bool $testing): void
-    {
-        $repository = new Repository('core', Architecture::X86_64);
-        $repository->setTesting($testing);
-
-        $json = (string)json_encode($repository);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'name' => 'core',
-                'architecture' => Architecture::X86_64,
-                'testing' => $testing
-            ],
-            $jsonArray
-        );
-    }
-
     public function testMTime(): void
     {
         $mTime = new \DateTime();
@@ -49,16 +27,5 @@ class RepositoryTest extends TestCase
         $packages = $repository->getPackages();
         $this->assertEquals(1, $packages->count());
         $this->assertSame($package, $packages->first());
-    }
-
-    /**
-     * @return array<array<bool>>
-     */
-    public function provideTesting(): array
-    {
-        return [
-            [true],
-            [false]
-        ];
     }
 }

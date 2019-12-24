@@ -2,7 +2,7 @@
 
 namespace App\Datatables;
 
-class DatatablesResponse implements \JsonSerializable
+class DatatablesResponse
 {
     /** @var int */
     private $draw = 0;
@@ -22,19 +22,6 @@ class DatatablesResponse implements \JsonSerializable
     public function __construct(array $data = [])
     {
         $this->data = $data;
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'draw' => $this->getDraw(),
-            'recordsTotal' => $this->getRecordsTotal(),
-            'recordsFiltered' => $this->getRecordsFiltered(),
-            'data' => $this->getData(),
-        ];
     }
 
     /**

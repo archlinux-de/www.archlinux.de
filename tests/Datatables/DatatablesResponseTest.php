@@ -13,27 +13,4 @@ class DatatablesResponseTest extends TestCase
 
         $this->assertEquals(['foo' => 'bar'], $response->getData());
     }
-
-    public function testSerialization(): void
-    {
-        $response = new DatatablesResponse();
-        $response->setData(['foo' => 'bar']);
-        $response->setDraw(12);
-        $response->setRecordsFiltered(34);
-        $response->setRecordsTotal(56);
-
-        $recodedResponse = json_decode((string)json_encode($response), true);
-
-        $this->assertEquals(
-            [
-                'draw' => 12,
-                'recordsTotal' => 56,
-                'recordsFiltered' => 34,
-                'data' => [
-                    'foo' => 'bar'
-                ]
-            ],
-            $recodedResponse
-        );
-    }
 }

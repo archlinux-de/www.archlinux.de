@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Embeddable
  */
-class NewsAuthor implements \JsonSerializable
+class NewsAuthor
 {
     /**
      * @var string
@@ -26,17 +26,6 @@ class NewsAuthor implements \JsonSerializable
      * @ORM\Column(nullable=true)
      */
     private $uri;
-
-    /**
-     * @return array<string|null>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'name' => $this->getName(),
-            'uri' => $this->getUri()
-        ];
-    }
 
     /**
      * @return string

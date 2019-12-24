@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(indexes={@ORM\Index(columns={"last_sync"})})
  * @ORM\Entity(repositoryClass="App\Repository\MirrorRepository")
  */
-class Mirror implements \JsonSerializable
+class Mirror
 {
     /**
      * @var string
@@ -120,28 +120,6 @@ class Mirror implements \JsonSerializable
     {
         $this->url = $url;
         $this->protocol = $protocol;
-    }
-
-    /**
-     * @return array<string|bool|float|int|null|Country>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'url' => $this->getUrl(),
-            'protocol' => $this->getProtocol(),
-            'country' => $this->getCountry(),
-            'durationAvg' => $this->getDurationAvg(),
-            'delay' => $this->getDelay(),
-            'durationStddev' => $this->getDurationStddev(),
-            'completionPct' => $this->getCompletionPct(),
-            'score' => $this->getScore(),
-            'lastsync' => $this->getLastSync() !== null ? $this->getLastSync()->format(\DateTime::RFC2822) : null,
-            'isos' => $this->hasIsos(),
-            'ipv4' => $this->hasIpv4(),
-            'ipv6' => $this->hasIpv6(),
-            'active' => $this->isActive()
-        ];
     }
 
     /**

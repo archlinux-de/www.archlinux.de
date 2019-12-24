@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     @ORM\Index(columns={"name"})
  * })
  */
-class Package implements \JsonSerializable
+class Package
 {
     /**
      * @var int
@@ -663,7 +663,7 @@ class Package implements \JsonSerializable
      */
     public function getPgpSignature(): ?string
     {
-        return $this->pgpSignature;
+        return (string)$this->pgpSignature;
     }
 
     /**
@@ -710,24 +710,6 @@ class Package implements \JsonSerializable
     {
         $this->licenses = $licenses;
         return $this;
-    }
-
-    /**
-     * @return array<string|null|string[]|Repository>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'repository' => $this->getRepository(),
-            'architecture' => $this->getArchitecture(),
-            'name' => $this->getName(),
-            'version' => $this->getVersion(),
-            'description' => $this->getDescription(),
-            'builddate' => $this->getBuildDate() !== null
-                ? $this->getBuildDate()->format(\DateTime::RFC2822)
-                : null,
-            'groups' => $this->getGroups()
-        ];
     }
 
     /**

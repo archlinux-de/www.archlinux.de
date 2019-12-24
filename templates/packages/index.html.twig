@@ -25,9 +25,7 @@
         <table id="packages" class="table table-striped table-bordered table-sm table-fixed" width="100%"
                data-ajax-url="{{ path('app_packages_datatables') }}"
                data-search-cols='[{"search": "{{ repository }}"}, null, {"search": "{{ architecture }}"}, null, null, null, null, null]'
-               data-search='{"search": "{{ search }}"}'
-               data-package-url-template="{{ path('app_packagedetails_index', {'repo': '_repository_', 'arch': '_architecture_', 'pkgname': '_package_'}) }}"
-               data-repository-url-template="{{ path('app_packages_index', {'repository': '_repository_', 'architecture': architecture, 'search': search}) }}">
+               data-search='{"search": "{{ search }}"}'>
             <thead>
             <tr>
                 <th>Repositorium</th>

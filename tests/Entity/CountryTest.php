@@ -7,23 +7,6 @@ use PHPUnit\Framework\TestCase;
 
 class CountryTest extends TestCase
 {
-    public function testJsonSerialize(): void
-    {
-        $country = (new Country('de'))
-            ->setName('Germany');
-
-        $json = (string)json_encode($country);
-        $this->assertJson($json);
-        $jsonArray = json_decode($json, true);
-        $this->assertEquals(
-            [
-                'code' => 'de',
-                'name' => 'Germany'
-            ],
-            $jsonArray
-        );
-    }
-
     public function testUpdate(): void
     {
         $country = (new Country('de'))

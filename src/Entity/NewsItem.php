@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(indexes={@ORM\Index(columns={"last_modified"})})
  * @ORM\Entity(repositoryClass="App\Repository\NewsItemRepository")
  */
-class NewsItem implements \JsonSerializable
+class NewsItem
 {
     /**
      * @var string
@@ -77,21 +77,6 @@ class NewsItem implements \JsonSerializable
     public function __construct(string $id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return array<string|NewsAuthor>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'slug' => $this->getSlug(),
-            'title' => $this->getTitle(),
-            'link' => $this->getLink(),
-            'description' => $this->getDescription(),
-            'author' => $this->getAuthor(),
-            'lastModified' => $this->getLastModified()->format(\DateTime::RFC2822)
-        ];
     }
 
     /**

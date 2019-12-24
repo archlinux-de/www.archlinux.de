@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\RepositoryRepository")
  * @ORM\Table(indexes={@ORM\Index(columns={"name", "architecture"})})
  */
-class Repository implements \JsonSerializable
+class Repository
 {
     /**
      * @var int
@@ -112,18 +112,6 @@ class Repository implements \JsonSerializable
     {
         $this->packages->add($package);
         return $this;
-    }
-
-    /**
-     * @return array<string|bool>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'name' => $this->getName(),
-            'architecture' => $this->getArchitecture(),
-            'testing' => $this->isTesting()
-        ];
     }
 
     /**

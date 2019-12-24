@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\FilesRepository")
  * @phpstan-implements \IteratorAggregate<string>
  */
-class Files implements \IteratorAggregate, \JsonSerializable
+class Files implements \IteratorAggregate
 {
     /**
      * @var int
@@ -89,13 +89,5 @@ class Files implements \IteratorAggregate, \JsonSerializable
         }
 
         return explode("\n", $this->files);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function jsonSerialize(): array
-    {
-        return $this->getFiles();
     }
 }

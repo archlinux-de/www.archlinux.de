@@ -5,7 +5,6 @@ import $ from 'jquery'
 import language from 'datatables.net-plugins/i18n/German.lang'
 
 const dataTable = $('#news')
-const newsItemUrlTemplate = dataTable.data('newsItemUrlTemplate')
 const ajaxUrl = dataTable.data('ajaxUrl')
 
 dataTable.DataTable({
@@ -41,9 +40,7 @@ dataTable.DataTable({
       searchable: true,
       render: (data, type, row) => {
         if (type === 'display' && data) {
-          const newsItemUrl = newsItemUrlTemplate
-            .replace('1-slug', encodeURI(row.slug))
-          return `<a href="${newsItemUrl}">${data}</a>`
+          return `<a href="${row.url}">${data}</a>`
         }
         return data
       }

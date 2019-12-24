@@ -22,8 +22,7 @@
         <h1 class="mb-4">Neuigkeiten</h1>
         <table id="news" class="table table-striped table-bordered table-sm" width="100%"
                data-ajax-url="{{ path('app_news_datatables') }}"
-               data-search='{"search": "{{ search }}"}'
-               data-news-item-url-template="{{ path('app_news_item', {'slug': '1-slug'}) }}">
+               data-search='{"search": "{{ search }}"}'>
             <thead>
             <tr>
                 <th>Veröffentlichung</th>

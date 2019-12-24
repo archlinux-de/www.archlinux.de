@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="releng_release", indexes={@ORM\Index(columns={"available", "release_date"})})
  * @ORM\Entity(repositoryClass="App\Repository\ReleaseRepository")
  */
-class Release implements \JsonSerializable
+class Release
 {
     /**
      * @var string
@@ -98,19 +98,6 @@ class Release implements \JsonSerializable
     {
         $this->version = $version;
         $this->torrent = new Torrent();
-    }
-
-    /**
-     * @return array<string|bool|null>
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'version' => $this->getVersion(),
-            'kernelVersion' => $this->getKernelVersion(),
-            'releaseDate' => $this->getReleaseDate()->format(\DateTime::RFC2822),
-            'available' => $this->isAvailable()
-        ];
     }
 
     /**
