@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -14,22 +14,22 @@ class NewsItemFetcher implements \IteratorAggregate
     /** @var string */
     private $newsFeedUrl;
 
-    /** @var NewsItemSlugger */
-    private $slugger;
-
     /** @var HttpClientInterface */
     private $httpClient;
 
+    /** @var SerializerInterface */
+    private $serializer;
+
     /**
      * @param string $newsFeedUrl
-     * @param NewsItemSlugger $slugger
      * @param HttpClientInterface $httpClient
+     * @param SerializerInterface $serializer
      */
-    public function __construct(string $newsFeedUrl, NewsItemSlugger $slugger, HttpClientInterface $httpClient)
+    public function __construct(string $newsFeedUrl, HttpClientInterface $httpClient, SerializerInterface $serializer)
     {
         $this->newsFeedUrl = $newsFeedUrl;
-        $this->slugger = $slugger;
         $this->httpClient = $httpClient;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -37,56 +37,15 @@ class NewsItemFetcher implements \IteratorAggregate
      */
     public function getIterator(): \Traversable
     {
-        foreach ($this->fetchNewsFeed()->entry as $newsEntry) {
-            if (
-                $newsEntry->id === null
-                || $newsEntry->title === null
-                || $newsEntry->link === null
-                || $newsEntry->link->attributes() === null
-                || $newsEntry->summary === null
-                || $newsEntry->author === null
-                || $newsEntry->author->name === null
-                || $newsEntry->author->uri === null
-                || $newsEntry->updated === null
-            ) {
-                throw new \RuntimeException('Invalid news entry');
-            }
-            $newsItem = new NewsItem((string)$newsEntry->id);
-            $newsItem
-                ->setTitle((string)$newsEntry->title)
-                ->setLink((string)$newsEntry->link->attributes()->href)
-                ->setDescription((string)$newsEntry->summary)
-                ->setAuthor(
-                    (new NewsAuthor())
-                        ->setUri((string)$newsEntry->author->uri)
-                        ->setName((string)$newsEntry->author->name)
-                )
-                ->setLastModified(new \DateTime((string)$newsEntry->updated));
-            $newsItem->setSlug($this->slugger->slugify($newsItem));
-            yield $newsItem;
-        }
-    }
-
-    /**
-     * @return \SimpleXMLElement
-     */
-    private function fetchNewsFeed(): \SimpleXMLElement
-    {
         $response = $this->httpClient->request('GET', $this->newsFeedUrl);
         $content = $response->getContent();
 
-        libxml_use_internal_errors(true);
-        $feed = simplexml_load_string($content);
+        $newsItems = $this->serializer->deserialize($content, NewsItem::class . '[]', 'xml');
 
-        if (!$feed) {
-            $error = libxml_get_last_error();
-            if ($error) {
-                throw new \RuntimeException($error->message, $error->code);
-            }
-
+        if (empty($newsItems)) {
             throw new \RuntimeException('empty news feed');
         }
 
-        return $feed;
+        return new \ArrayIterator($newsItems);
     }
 }
