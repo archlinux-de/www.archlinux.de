@@ -32,8 +32,7 @@ class NewsItemDenormalizer implements DenormalizerInterface
         return [
             ...(function () use ($data) {
                 foreach ($data['entry'] as $newsEntry) {
-                    $newsItem = new NewsItem($newsEntry['id']);
-                    $newsItem
+                    $newsItem = (new NewsItem($newsEntry['id']))
                         ->setTitle($newsEntry['title']['#'])
                         ->setLink($newsEntry['link']['@href'])
                         ->setDescription($newsEntry['summary']['#'])

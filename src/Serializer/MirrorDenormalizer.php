@@ -32,7 +32,16 @@ class MirrorDenormalizer implements DenormalizerInterface
         return [
             ...(function () use ($data) {
                 foreach ($data['urls'] as $mirrorData) {
-                    $mirror = new Mirror($mirrorData['url'], $mirrorData['protocol']);
+                    $mirror = (new Mirror($mirrorData['url'], $mirrorData['protocol']))
+                        ->setDelay($mirrorData['delay'])
+                        ->setDurationAvg($mirrorData['duration_avg'])
+                        ->setScore($mirrorData['score'])
+                        ->setCompletionPct($mirrorData['completion_pct'])
+                        ->setDurationStddev($mirrorData['duration_stddev'])
+                        ->setIsos($mirrorData['isos'])
+                        ->setIpv4($mirrorData['ipv4'])
+                        ->setIpv6($mirrorData['ipv6'])
+                        ->setActive($mirrorData['active']);
 
                     if ($mirrorData['country_code'] !== null) {
                         /** @var Country $country */
@@ -42,15 +51,6 @@ class MirrorDenormalizer implements DenormalizerInterface
                     if ($mirrorData['last_sync'] !== null) {
                         $mirror->setLastSync(new \DateTime($mirrorData['last_sync']));
                     }
-                    $mirror->setDelay($mirrorData['delay']);
-                    $mirror->setDurationAvg($mirrorData['duration_avg']);
-                    $mirror->setScore($mirrorData['score']);
-                    $mirror->setCompletionPct($mirrorData['completion_pct']);
-                    $mirror->setDurationStddev($mirrorData['duration_stddev']);
-                    $mirror->setIsos($mirrorData['isos']);
-                    $mirror->setIpv4($mirrorData['ipv4']);
-                    $mirror->setIpv6($mirrorData['ipv6']);
-                    $mirror->setActive($mirrorData['active']);
 
                     yield $mirror;
                 }

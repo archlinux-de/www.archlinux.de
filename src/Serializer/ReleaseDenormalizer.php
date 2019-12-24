@@ -20,8 +20,7 @@ class ReleaseDenormalizer implements DenormalizerInterface
         return [
             ...(function () use ($data) {
                 foreach ($data['releases'] as $releaseData) {
-                    $release = new Release($releaseData['version']);
-                    $release
+                    $release = (new Release($releaseData['version']))
                         ->setAvailable($releaseData['available'])
                         ->setInfo($releaseData['info'])
                         ->setIsoUrl($releaseData['iso_url'])
