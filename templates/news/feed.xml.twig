@@ -13,7 +13,7 @@
             <id>{{ item.id }}</id>
             <title>{{ item.title }}</title>
             <updated>{{ item.lastModified | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
-            <link rel="alternate" href="{{ item.link }}"/>
+            <link rel="alternate" href="{{ url('app_news_item', {'id': item.id, 'slug': item.title | slug}) }}"/>
             <author>
                 <name>{{ item.author.name }}</name>
                 {% if item.author.uri %}

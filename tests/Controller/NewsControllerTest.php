@@ -128,7 +128,7 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertEquals($news->getTitle(), (string)$xml->entry->title);
         $this->assertEquals($news->getDescription(), (string)$xml->entry->content);
         $this->assertNotNull($xml->entry->link->attributes());
-        $this->assertEquals($news->getLink(), (string)$xml->entry->link->attributes()->href);
+        $this->assertEquals('http://localhost/news/1-Breaking-News', (string)$xml->entry->link->attributes()->href);
     }
 
     public function testRedirectToCorrectSlug(): void
