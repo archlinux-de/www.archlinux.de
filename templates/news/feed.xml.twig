@@ -16,7 +16,9 @@
             <link rel="alternate" href="{{ item.link }}"/>
             <author>
                 <name>{{ item.author.name }}</name>
-                <uri>{{ item.author.uri }}</uri>
+                {% if item.author.uri %}
+                    <uri>{{ item.author.uri }}</uri>
+                {% endif %}
             </author>
             <content type="html">{{ item.description | purify('news') | escape('html') }}</content>
         </entry>

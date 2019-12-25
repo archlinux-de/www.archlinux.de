@@ -9,7 +9,12 @@
         <h1 class="mb-4">{{ news.title }}</h1>
         <div class="mb-3 text-muted">
             {{ news.lastModified | date('d.m.Y') }}
-            &ndash; <a class="text-muted" href="{{ news.author.uri }}">{{ news.author.name }}</a>
+            &ndash;
+            {% if news.author.uri %}
+                <a class="text-muted" href="{{ news.author.uri }}">{{ news.author.name }}</a>
+            {% else %}
+                {{ news.author.name }}
+            {% endif %}
         </div>
         <div class="text-break mb-4">
             {{ news.description | purify('news') }}

@@ -38,7 +38,7 @@ class NewsItemDenormalizer implements DenormalizerInterface
                         ->setDescription($newsEntry['summary']['#'])
                         ->setAuthor(
                             (new NewsAuthor())
-                                ->setUri($newsEntry['author']['uri'])
+                                ->setUri($newsEntry['author']['uri'] ?? null)
                                 ->setName($newsEntry['author']['name'])
                         )
                         ->setLastModified(new \DateTime($newsEntry['updated']));

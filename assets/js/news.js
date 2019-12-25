@@ -51,7 +51,7 @@ dataTable.DataTable({
       searchable: true,
       className: 'd-none d-xl-table-cell',
       render: (data, type, row) => {
-        if (type === 'display' && data) {
+        if (type === 'display' && data && row.author.uri) {
           return `<a href="${row.author.uri}">${data}</a>`
         }
         return data
