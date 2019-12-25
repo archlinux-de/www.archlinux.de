@@ -11,8 +11,8 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 {
     public function testFindLatestItemIsReturned(): void
     {
-        $oldItem = $this->createNewsItem('1', new \DateTime('- 2 day'));
-        $newItem = $this->createNewsItem('2', new \DateTime('now'));
+        $oldItem = $this->createNewsItem(1, new \DateTime('- 2 day'));
+        $newItem = $this->createNewsItem(2, new \DateTime('now'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newItem);
@@ -28,25 +28,24 @@ class NewsItemRepositoryTest extends DatabaseTestCase
     }
 
     /**
-     * @param string $id
+     * @param int $id
      * @param \DateTime $lastModified
      * @return NewsItem
      */
-    private function createNewsItem(string $id, \DateTime $lastModified): NewsItem
+    private function createNewsItem(int $id, \DateTime $lastModified): NewsItem
     {
         return (new NewsItem($id))
             ->setLastModified($lastModified)
             ->setTitle('')
-            ->setSlug($id . '-')
-            ->setLink('')
+            ->setLink('http://localhost/news/' . $id)
             ->setDescription('')
             ->setAuthor((new NewsAuthor())->setName(''));
     }
 
     public function testFindLatestItemsAreLimited(): void
     {
-        $oldItem = $this->createNewsItem('1', new \DateTime('- 2 day'));
-        $newItem = $this->createNewsItem('2', new \DateTime('now'));
+        $oldItem = $this->createNewsItem(1, new \DateTime('- 2 day'));
+        $newItem = $this->createNewsItem(2, new \DateTime('now'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newItem);
@@ -61,9 +60,9 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
     public function testFindAllExceptByIdsNewerThan(): void
     {
-        $newsItemA = $this->createNewsItem('A', new \DateTime('- 2 day'));
-        $newsItemB = $this->createNewsItem('B', new \DateTime('- 2 day'));
-        $newsItemC = $this->createNewsItem('C', new \DateTime('- 4 day'));
+        $newsItemA = $this->createNewsItem(1, new \DateTime('- 2 day'));
+        $newsItemB = $this->createNewsItem(2, new \DateTime('- 2 day'));
+        $newsItemC = $this->createNewsItem(3, new \DateTime('- 4 day'));
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newsItemA);
         $entityManager->persist($newsItemB);
@@ -72,16 +71,16 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
         /** @var NewsItemRepository $newsItemRepository */
         $newsItemRepository = $this->getRepository(NewsItem::class);
-        $newsItems = $newsItemRepository->findAllExceptByIdsNewerThan(['A'], new \DateTime('- 3 day'));
+        $newsItems = $newsItemRepository->findAllExceptByIdsNewerThan([1], new \DateTime('- 3 day'));
 
         $this->assertCount(1, $newsItems);
-        $this->assertEquals('B', $newsItems[0]->getId());
+        $this->assertEquals(2, $newsItems[0]->getId());
     }
 
     public function testGetSize(): void
     {
-        $oldItem = $this->createNewsItem('1', new \DateTime('now'));
-        $newItem = $this->createNewsItem('2', new \DateTime('now'));
+        $oldItem = $this->createNewsItem(1, new \DateTime('now'));
+        $newItem = $this->createNewsItem(2, new \DateTime('now'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newItem);

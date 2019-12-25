@@ -31,7 +31,7 @@ class NewsItemRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string[] $ids
+     * @param int[] $ids
      * @param \DateTime $lastModified
      * @return NewsItem[]
      */

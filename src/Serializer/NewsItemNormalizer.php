@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class NewsItemNormalizer implements NormalizerInterface
 {
@@ -16,14 +17,19 @@ class NewsItemNormalizer implements NormalizerInterface
     /** @var ObjectNormalizer */
     private $normalizer;
 
+    /** @var SluggerInterface */
+    private $slugger;
+
     /**
      * @param UrlGeneratorInterface $router
      * @param ObjectNormalizer $normalizer
+     * @param SluggerInterface $slugger
      */
-    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer)
+    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer, SluggerInterface $slugger)
     {
         $this->router = $router;
         $this->normalizer = $normalizer;
+        $this->slugger = $slugger;
     }
 
     /**
@@ -60,7 +66,8 @@ class NewsItemNormalizer implements NormalizerInterface
         $data['url'] = $this->router->generate(
             'app_news_item',
             [
-                'slug' => $object->getSlug(),
+                'id' => $object->getId(),
+                'slug' => $this->slugger->slug($object->getTitle())
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );

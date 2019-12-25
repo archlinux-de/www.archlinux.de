@@ -18,3 +18,4 @@ framework:
         default_options:
             timeout: 60
             max_duration: 1800
+    default_locale: de

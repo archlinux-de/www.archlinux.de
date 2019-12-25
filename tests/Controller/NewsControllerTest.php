@@ -23,9 +23,8 @@ class NewsControllerTest extends DatabaseTestCase
     public function testItemAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $news = new NewsItem('1');
+        $news = new NewsItem(1);
         $news->setTitle('Breaking News');
-        $news->setSlug('1-breaking-news');
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime());
         $news->setAuthor(
@@ -39,7 +38,7 @@ class NewsControllerTest extends DatabaseTestCase
 
         $client = $this->getClient();
 
-        $crawler = $client->request('GET', '/news/1-breaking-news');
+        $crawler = $client->request('GET', '/news/1-Breaking-News');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertEquals('Breaking News', $crawler->filter('h1')->text());
@@ -50,9 +49,8 @@ class NewsControllerTest extends DatabaseTestCase
     public function testDatatablesAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $news = new NewsItem('1');
+        $news = new NewsItem(1);
         $news->setTitle('Breaking News');
-        $news->setSlug('1-breaking-news');
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime());
         $news->setAuthor(
@@ -101,9 +99,8 @@ class NewsControllerTest extends DatabaseTestCase
     public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $news = new NewsItem('1');
+        $news = new NewsItem(1);
         $news->setTitle('Breaking News');
-        $news->setSlug('1-breaking-news');
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime());
         $news->setAuthor(
@@ -132,5 +129,28 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertEquals($news->getDescription(), (string)$xml->entry->content);
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertEquals($news->getLink(), (string)$xml->entry->link->attributes()->href);
+    }
+
+    public function testRedirectToCorrectSlug(): void
+    {
+        $entityManager = $this->getEntityManager();
+        $news = new NewsItem(1);
+        $news->setTitle('Breaking News');
+        $news->setDescription('Hell has frozen over!');
+        $news->setLastModified(new \DateTime());
+        $news->setAuthor(
+            (new NewsAuthor())
+                ->setName('')
+                ->setUri('')
+        );
+        $news->setLink('https://www.archlinux.de/');
+        $entityManager->persist($news);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/news/1-wrong');
+
+        $this->assertTrue($client->getResponse()->isRedirect('/news/1-Breaking-News'));
     }
 }

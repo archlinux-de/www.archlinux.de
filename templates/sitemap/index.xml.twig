@@ -32,7 +32,7 @@
     {# @var item \App\Entity\NewsItem #}
     {% for item in news %}
         <url>
-            <loc>{{ absolute_url(path('app_news_item', {'slug': item.slug})) }}</loc>
+            <loc>{{ absolute_url(path('app_news_item', {'id': item.id, 'slug': item.title | slug})) }}</loc>
             <lastmod>{{ item.lastModified | date('Y-m-d') }}</lastmod>
         </url>
     {% endfor %}

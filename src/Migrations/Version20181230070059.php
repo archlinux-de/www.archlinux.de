@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace DoctrineMigrations;
 
 use App\Entity\NewsItem;
-use App\Service\NewsItemSlugger;
 use App\Service\Slugger;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final class Version20181230070059 extends AbstractMigration
 {
@@ -31,13 +31,12 @@ final class Version20181230070059 extends AbstractMigration
     public function postUp(Schema $schema): void
     {
         if ($this->hasColumn('news_item', 'slug')) {
-            $this->write('foo');
-            $newsItemSlugger = new NewsItemSlugger(new Slugger());
+            $slugger = new AsciiSlugger();
             foreach ($this->connection->fetchAll('SELECT id, title FROM news_item') as $row) {
                 $newsItem = (new NewsItem($row['id']))->setTitle($row['title']);
                 $this->connection->update(
                     'news_item',
-                    ['slug' => $newsItemSlugger->slugify($newsItem)],
+                    ['slug' => $slugger->slug($newsItem->getTitle())],
                     ['id' => $newsItem->getId()]
                 );
             }
@@ -56,7 +55,6 @@ final class Version20181230070059 extends AbstractMigration
      */
     private function hasColumn(string $table, string $columnName): bool
     {
-
         foreach ($this->connection->getSchemaManager()->listTableColumns($table) as $column) {
             if ($column->getName() == $columnName) {
                 return true;

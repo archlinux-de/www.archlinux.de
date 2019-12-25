@@ -383,6 +383,9 @@
     "symfony/stopwatch": {
         "version": "v4.0.3"
     },
+    "symfony/string": {
+        "version": "v5.0.2"
+    },
     "symfony/translation-contracts": {
         "version": "v1.1.2"
     },

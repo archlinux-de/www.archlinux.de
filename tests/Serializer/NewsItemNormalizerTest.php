@@ -22,7 +22,7 @@ class NewsItemNormalizerTest extends KernelTestCase
     public function testSupportsNormalization(): void
     {
         $this->assertTrue(
-            self::$container->get(NewsItemNormalizer::class)->supportsNormalization(new NewsItem(''))
+            self::$container->get(NewsItemNormalizer::class)->supportsNormalization(new NewsItem(1))
         );
     }
 
@@ -32,9 +32,8 @@ class NewsItemNormalizerTest extends KernelTestCase
             ->setName('Bob')
             ->setUri('http://localhost');
         $lastModified = new \DateTime('1982-02-05');
-        $newsItem = (new NewsItem('1'))
+        $newsItem = (new NewsItem(1))
             ->setAuthor($newsAuthor)
-            ->setSlug('1-big-story')
             ->setTitle('Big Story')
             ->setDescription('Foo bar')
             ->setLink('https://www.archlinux.de/')
@@ -46,7 +45,7 @@ class NewsItemNormalizerTest extends KernelTestCase
         $this->assertEquals(
             [
                 'title' => 'Big Story',
-                'url' => 'http://localhost/news/1-big-story',
+                'url' => 'http://localhost/news/1-Big-Story',
                 'author' => [
                     'name' => 'Bob',
                     'uri' => 'http://localhost'

@@ -2,7 +2,7 @@
 
 {% block title %}{{ news.title }}{% endblock %}
 
-{% block canonical %}{{ absolute_url(path('app_news_item', {'slug': news.slug})) }}{% endblock %}
+{% block canonical %}{{ absolute_url(path('app_news_item', {'id': news.id, 'slug': news.title | slug})) }}{% endblock %}
 
 {% block body %}
     <main role="main" class="container">

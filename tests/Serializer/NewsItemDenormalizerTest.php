@@ -4,7 +4,7 @@ namespace App\Tests\Serializer;
 
 use App\Entity\NewsItem;
 use App\Serializer\NewsItemDenormalizer;
-use App\Service\NewsItemSlugger;
+use App\Service\NewsItemIdParser;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -12,14 +12,15 @@ class NewsItemDenormalizerTest extends TestCase
 {
     public function testDenormalize(): void
     {
-        /** @var NewsItemSlugger|MockObject $newsItemSlugger */
-        $newsItemSlugger = $this->createMock(NewsItemSlugger::class);
-        $newsItemSlugger
+        /** @var NewsItemIdParser|MockObject $newsItemIdParser */
+        $newsItemIdParser = $this->createMock(NewsItemIdParser::class);
+        $newsItemIdParser
             ->expects($this->once())
-            ->method('slugify')
-            ->willReturn('slug');
+            ->method('parseId')
+            ->with('https://127.0.0.1/news/1')
+            ->willReturn(1);
 
-        $newsItemDenormalizer = new NewsItemDenormalizer($newsItemSlugger);
+        $newsItemDenormalizer = new NewsItemDenormalizer($newsItemIdParser);
         /** @var NewsItem[] $newsItems */
         $newsItems = $newsItemDenormalizer->denormalize(
             [
@@ -41,8 +42,7 @@ class NewsItemDenormalizerTest extends TestCase
         );
 
         $this->assertCount(1, $newsItems);
-        $this->assertEquals('https://127.0.0.1/news/1', $newsItems[0]->getId());
-        $this->assertEquals('slug', $newsItems[0]->getSlug());
+        $this->assertEquals(1, $newsItems[0]->getId());
         $this->assertEquals(new \DateTime('2018-02-22T19:06:26Z'), $newsItems[0]->getLastModified());
         $this->assertEquals('Test Title', $newsItems[0]->getTitle());
         $this->assertEquals('https://127.0.0.1/news/1.html', $newsItems[0]->getLink());
@@ -53,7 +53,10 @@ class NewsItemDenormalizerTest extends TestCase
 
     public function testSupportsDenormalization(): void
     {
-        $newsItemDenormalizer = new NewsItemDenormalizer($this->createMock(NewsItemSlugger::class));
+        /** @var NewsItemIdParser|MockObject $newsItemIdParser */
+        $newsItemIdParser = $this->createMock(NewsItemIdParser::class);
+
+        $newsItemDenormalizer = new NewsItemDenormalizer($newsItemIdParser);
 
         $this->assertTrue($newsItemDenormalizer->supportsDenormalization([], NewsItem::class . '[]'));
     }

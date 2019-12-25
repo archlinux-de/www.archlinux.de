@@ -16,7 +16,7 @@ class NewsItemTest extends TestCase
 
         $lastModified = new \DateTime();
 
-        $newsItem = new NewsItem('1');
+        $newsItem = new NewsItem(1);
         $this->assertSame($newsItem, $newsItem->setDescription('description'));
         $this->assertSame($newsItem, $newsItem->setAuthor($newsAuthor));
         $this->assertSame($newsItem, $newsItem->setLastModified($lastModified));
@@ -35,24 +35,21 @@ class NewsItemTest extends TestCase
 
     public function testUpdate(): void
     {
-        $newsItem = (new NewsItem('abc'))
+        $newsItem = (new NewsItem(1))
             ->setTitle('title')
-            ->setSlug('slug')
             ->setLink('link')
             ->setLastModified(new \DateTime())
             ->setDescription('description')
             ->setAuthor(new NewsAuthor());
 
-        $newsItem->update((new NewsItem('abc'))
+        $newsItem->update((new NewsItem(1))
             ->setTitle('foo')
-            ->setSlug('bar')
             ->setLink('baz')
             ->setLastModified(new \DateTime('2019-01-01'))
             ->setDescription('another description')
             ->setAuthor((new NewsAuthor())->setName('bob')));
 
         $this->assertEquals('foo', $newsItem->getTitle());
-        $this->assertEquals('bar', $newsItem->getSlug());
         $this->assertEquals('baz', $newsItem->getLink());
         $this->assertEquals(new \DateTime('2019-01-01'), $newsItem->getLastModified());
         $this->assertEquals('another description', $newsItem->getDescription());
@@ -61,8 +58,8 @@ class NewsItemTest extends TestCase
 
     public function testUpdateFailsOnMismatchedId(): void
     {
-        $newsItem = new NewsItem('foo');
+        $newsItem = new NewsItem(1);
         $this->expectException(\InvalidArgumentException::class);
-        $newsItem->update(new NewsItem('bar'));
+        $newsItem->update(new NewsItem(2));
     }
 }

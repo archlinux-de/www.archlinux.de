@@ -24,7 +24,7 @@ class NewsItemFetcherTest extends TestCase
             ->expects($this->once())
             ->method('deserialize')
             ->with($content, NewsItem::class . '[]', 'xml')
-            ->willReturn([new NewsItem('')]);
+            ->willReturn([new NewsItem(1)]);
 
         $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
 

@@ -4,20 +4,20 @@ namespace App\Serializer;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use App\Service\NewsItemSlugger;
+use App\Service\NewsItemIdParser;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class NewsItemDenormalizer implements DenormalizerInterface
 {
-    /** @var NewsItemSlugger */
-    private $slugger;
+    /** @var NewsItemIdParser */
+    private $newsItemIdParser;
 
     /**
-     * @param NewsItemSlugger $slugger
+     * @param NewsItemIdParser $newsItemIdParser
      */
-    public function __construct(NewsItemSlugger $slugger)
+    public function __construct(NewsItemIdParser $newsItemIdParser)
     {
-        $this->slugger = $slugger;
+        $this->newsItemIdParser = $newsItemIdParser;
     }
 
     /**
@@ -32,7 +32,7 @@ class NewsItemDenormalizer implements DenormalizerInterface
         return [
             ...(function () use ($data) {
                 foreach ($data['entry'] as $newsEntry) {
-                    $newsItem = (new NewsItem($newsEntry['id']))
+                    $newsItem = (new NewsItem($this->newsItemIdParser->parseId($newsEntry['id'])))
                         ->setTitle($newsEntry['title']['#'])
                         ->setLink($newsEntry['link']['@href'])
                         ->setDescription($newsEntry['summary']['#'])
@@ -42,7 +42,6 @@ class NewsItemDenormalizer implements DenormalizerInterface
                                 ->setName($newsEntry['author']['name'])
                         )
                         ->setLastModified(new \DateTime($newsEntry['updated']));
-                    $newsItem->setSlug($this->slugger->slugify($newsItem));
                     yield $newsItem;
                 }
             })()

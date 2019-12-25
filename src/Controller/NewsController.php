@@ -2,16 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\NewsItem;
-use App\Repository\NewsItemRepository;
 use App\Datatables\DatatablesColumnConfiguration;
 use App\Datatables\DatatablesQuery;
 use App\Datatables\DatatablesRequest;
+use App\Entity\NewsItem;
+use App\Repository\NewsItemRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class NewsController extends AbstractController
 {
@@ -21,14 +22,22 @@ class NewsController extends AbstractController
     /** @var DatatablesQuery */
     private $datatablesQuery;
 
+    /** @var SluggerInterface */
+    private $slugger;
+
     /**
      * @param NewsItemRepository $newsRepository
      * @param DatatablesQuery $datatablesQuery
+     * @param SluggerInterface $slugger
      */
-    public function __construct(NewsItemRepository $newsRepository, DatatablesQuery $datatablesQuery)
-    {
+    public function __construct(
+        NewsItemRepository $newsRepository,
+        DatatablesQuery $datatablesQuery,
+        SluggerInterface $slugger
+    ) {
         $this->newsRepository = $newsRepository;
         $this->datatablesQuery = $datatablesQuery;
+        $this->slugger = $slugger;
     }
 
     /**
@@ -76,13 +85,22 @@ class NewsController extends AbstractController
     }
 
     /**
-     * @Route("/news/{slug}", methods={"GET"}, requirements={"slug": "^[0-9]+-[a-z0-9_\-\.]+$"})
+     * @Route("/news/{id<[0-9]+>}-{slug<[\w\-\.]+>}", methods={"GET"})
      * @Cache(smaxage="900")
      * @param NewsItem $newsItem
+     * @param string $slug
      * @return Response
      */
-    public function itemAction(NewsItem $newsItem): Response
+    public function itemAction(NewsItem $newsItem, string $slug): Response
     {
+        $newsItemSlug = $this->slugger->slug($newsItem->getTitle());
+        if ($slug != $newsItemSlug) {
+            return $this->redirectToRoute(
+                'app_news_item',
+                ['id' => $newsItem->getId(), 'slug' => $newsItemSlug],
+                Response::HTTP_MOVED_PERMANENTLY
+            );
+        }
         return $this->render(
             'news/item.html.twig',
             ['news' => $newsItem]

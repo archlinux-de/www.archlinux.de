@@ -24,8 +24,8 @@ class UpdateNewsCommandTest extends KernelTestCase
 {
     public function testCommand(): void
     {
-        $newNewsItem = (new NewsItem('2'))->setLastModified(new \DateTime('-1 day'));
-        $oldNewsItem = (new NewsItem('1'))->setLastModified(new \DateTime('-2 day'));
+        $newNewsItem = (new NewsItem(2))->setLastModified(new \DateTime('-1 day'));
+        $oldNewsItem = (new NewsItem(1))->setLastModified(new \DateTime('-2 day'));
 
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
@@ -59,8 +59,8 @@ class UpdateNewsCommandTest extends KernelTestCase
 
     public function testArchivedItemsAreKept(): void
     {
-        $newNewsItem = (new NewsItem('2'))->setLastModified(new \DateTime('-1 day'));
-        $oldNewsItem = (new NewsItem('1'))->setLastModified(new \DateTime('-2 day'));
+        $newNewsItem = (new NewsItem(2))->setLastModified(new \DateTime('-1 day'));
+        $oldNewsItem = (new NewsItem(1))->setLastModified(new \DateTime('-2 day'));
 
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
@@ -106,7 +106,7 @@ class UpdateNewsCommandTest extends KernelTestCase
 
         /** @var NewsItemFetcher|MockObject $newsItemFetcher */
         $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
-        $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([new NewsItem('2')]));
+        $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([new NewsItem(2)]));
 
         /** @var ValidatorInterface|MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
@@ -129,11 +129,10 @@ class UpdateNewsCommandTest extends KernelTestCase
 
     public function testUpdateNews(): void
     {
-        $newsItem = (new NewsItem('2'))
+        $newsItem = (new NewsItem(2))
             ->setLastModified(new \DateTime('-1 day'))
             ->setDescription('')
             ->setLink('')
-            ->setSlug('')
             ->setTitle('')
             ->setAuthor(new NewsAuthor());
 
