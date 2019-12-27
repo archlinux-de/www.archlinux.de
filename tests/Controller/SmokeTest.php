@@ -23,12 +23,12 @@ class SmokeTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
 

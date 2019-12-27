@@ -26,12 +26,12 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->flush();
@@ -51,12 +51,12 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->flush();
@@ -81,12 +81,12 @@ class PackageDetailsControllerTest extends DatabaseTestCase
 
         $coreRepository = new Repository('core', Architecture::X86_64);
         $pacmanFiles = ['usr/bin', 'usr/bin/pacman'];
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->setFiles(Files::createFromArray($pacmanFiles));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);

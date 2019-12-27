@@ -12,16 +12,14 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class PackageDatabaseDownloaderTest extends TestCase
 {
-    public function testFileModificationTimeIsInSyncWithServerResponse(): void
+    public function testFileIsWritten(): void
     {
-        $timestamp = 42;
-        $responseMock = new MockResponse(
-            '',
-            ['response_headers' => ['last-modified' => date(\DateTime::RFC1123, $timestamp)]]
-        );
-
+        $responseMock = new MockResponse('foo');
         $download = $this->createDownloader($responseMock)->download('', '');
-        $this->assertEquals($timestamp, $download->getMTime());
+
+        $fileName = (string)$download->getRealPath();
+        $this->assertFileExists($fileName);
+        $this->assertStringEqualsFile($fileName, 'foo');
     }
 
     /**
@@ -40,25 +38,9 @@ class PackageDatabaseDownloaderTest extends TestCase
         return new PackageDatabaseDownloader(new MockHttpClient($response), $packageDatabaseMirror);
     }
 
-    public function testFileIsWritten(): void
-    {
-        $responseMock = new MockResponse(
-            'foo',
-            ['response_headers' => ['last-modified' => date(\DateTime::RFC1123)]]
-        );
-        $download = $this->createDownloader($responseMock)->download('', '');
-
-        $fileName = (string)$download->getRealPath();
-        $this->assertFileExists($fileName);
-        $this->assertStringEqualsFile($fileName, 'foo');
-    }
-
     public function testTemporaryFileIsRemovedByGarbageCollector(): void
     {
-        $responseMock = new MockResponse(
-            '',
-            ['response_headers' => ['last-modified' => date(\DateTime::RFC1123)]]
-        );
+        $responseMock = new MockResponse('');
         $download = $this->createDownloader($responseMock)->download('', '');
 
         $fileName = (string)$download->getRealPath();

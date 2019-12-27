@@ -109,8 +109,7 @@ class PackageTest extends TestCase
     public function provideTimeMethods(): array
     {
         return [
-            ['getBuildDate'],
-            ['getMTime']
+            ['getBuildDate']
         ];
     }
 

@@ -112,13 +112,13 @@ class PackageManagerTest extends TestCase
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
-        $repository
-            ->expects($this->atLeastOnce())
-            ->method('getId')
-            ->willReturn(1);
 
         /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
+        $databasePackage
+            ->expects($this->once())
+            ->method('getSha256sum')
+            ->willReturn('bar');
 
         /** @var Package|MockObject $package */
         $package = $this->createMock(Package::class);
@@ -126,6 +126,10 @@ class PackageManagerTest extends TestCase
             ->expects($this->once())
             ->method('updateFromPackageDatabase')
             ->with($databasePackage);
+        $package
+            ->expects($this->once())
+            ->method('getSha256sum')
+            ->willReturn('foo');
 
         /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
@@ -152,10 +156,6 @@ class PackageManagerTest extends TestCase
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
-        $repository
-            ->expects($this->atLeastOnce())
-            ->method('getId')
-            ->willReturn(1);
 
         /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
@@ -196,13 +196,24 @@ class PackageManagerTest extends TestCase
     {
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
-        $repository
-            ->expects($this->atLeastOnce())
-            ->method('getId')
-            ->willReturn(1);
 
         /** @var DatabasePackage|MockObject $databasePackage */
         $databasePackage = $this->createMock(DatabasePackage::class);
+        $databasePackage
+            ->expects($this->once())
+            ->method('getSha256sum')
+            ->willReturn('foo');
+
+        /** @var Package|MockObject $package */
+        $package = $this->createMock(Package::class);
+        $package
+            ->expects($this->never())
+            ->method('updateFromPackageDatabase')
+            ->with($databasePackage);
+        $package
+            ->expects($this->once())
+            ->method('getSha256sum')
+            ->willReturn('foo');
 
         /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
@@ -217,8 +228,8 @@ class PackageManagerTest extends TestCase
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
-            ->method('getMaxMTimeByRepository')
-            ->willReturn(new \DateTime());
+            ->method('findByRepositoryAndName')
+            ->willReturn($package);
 
         $packageManager = new PackageManager($packageDatabaseDownloader, $entityManager, $packageRepository);
         $this->assertFalse($packageManager->updatePackage($repository, $databasePackage));
@@ -246,7 +257,7 @@ class PackageManagerTest extends TestCase
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
-            ->method('findByRepository')
+            ->method('findByRepositoryExceptNames')
             ->willReturn([$package]);
 
         $packageManager = new PackageManager($packageDatabaseDownloader, $entityManager, $packageRepository);
@@ -255,14 +266,8 @@ class PackageManagerTest extends TestCase
 
     public function testCleanupObsoletePackagesKeepsCurrentPackages(): void
     {
-        $mTime = new \DateTime();
-
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
-        $repository
-            ->expects($this->atLeastOnce())
-            ->method('getId')
-            ->willReturn(1);
 
         /** @var Package|MockObject $package */
         $package = $this->createMock(Package::class);
@@ -284,13 +289,9 @@ class PackageManagerTest extends TestCase
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
             ->expects($this->once())
-            ->method('findByRepositoryOlderThan')
-            ->with($repository, $mTime)
-            ->willReturn([$package]);
-        $packageRepository
-            ->expects($this->once())
-            ->method('getMaxMTimeByRepository')
-            ->willReturn($mTime);
+            ->method('findByRepositoryExceptNames')
+            ->with($repository)
+            ->willReturn([]);
 
         $packageManager = new PackageManager($packageDatabaseDownloader, $entityManager, $packageRepository);
         $this->assertFalse($packageManager->cleanupObsoletePackages($repository, [$package->getName()]));

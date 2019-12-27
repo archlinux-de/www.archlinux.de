@@ -164,13 +164,6 @@ class Package
     private $buildDate;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="mTime", type="datetime", nullable=true)
-     */
-    private $mTime;
-
-    /**
      * @var Packager
      * @Assert\Valid()
      *
@@ -347,7 +340,6 @@ class Package
         $this->setPackager(Packager::createFromString($databasePackage->getPackager()));
         $this->setSha256sum($databasePackage->getSha256sum());
         $this->setPgpSignature($databasePackage->getPgpSignature());
-        $this->setMTime($databasePackage->getMTime());
         $this->setLicenses($databasePackage->getLicenses());
         $this->setGroups($databasePackage->getGroups());
 
@@ -548,24 +540,6 @@ class Package
     public function getId(): int
     {
         return $this->id;
-    }
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getMTime(): ?\DateTime
-    {
-        return $this->mTime;
-    }
-
-    /**
-     * @param \DateTime $mTime
-     * @return Package
-     */
-    public function setMTime(\DateTime $mTime): Package
-    {
-        $this->mTime = $mTime;
-        return $this;
     }
 
     /**

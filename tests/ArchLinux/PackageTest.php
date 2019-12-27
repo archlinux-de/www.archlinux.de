@@ -8,12 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class PackageTest extends TestCase
 {
-    public function testModificationTimeIsValid(): void
-    {
-        $package = $this->createPackage();
-        $this->assertGreaterThan(time() - 42, $package->getMTime()->getTimestamp());
-    }
-
     /**
      * @param array<string|int> $desc
      * @param string[] $files
