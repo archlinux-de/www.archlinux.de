@@ -74,7 +74,7 @@ class PackagesController extends AbstractController
             ->addTextSearchableColumn('name', 'package.name')
             ->addTextSearchableColumn('description', 'package.description')
             ->addTextSearchableColumn('groups', 'package.groups')
-            ->addOrderableColumn('builddate', 'package.buildDate')
+            ->addOrderableColumn('buildDate', 'package.buildDate')
             ->addOrderableColumn('name', 'package.name');
 
         $response = $this->datatablesQuery->getResult(
