@@ -35,8 +35,8 @@ class PackageManagerTest extends TestCase
             ->setConstructorArgs(['/dev/null'])
             ->getMock();
         $packageDatabaseFile
-            ->method('getMTime')
-            ->willReturn(1);
+            ->method('getRealPath')
+            ->willReturn('/dev/null');
 
         /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
@@ -68,8 +68,8 @@ class PackageManagerTest extends TestCase
         $repository = $this->createMock(Repository::class);
         $repository
             ->expects($this->atLeastOnce())
-            ->method('getMTime')
-            ->willReturn(new \DateTime());
+            ->method('getSha256sum')
+            ->willReturn(hash('sha256', ''));
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -84,8 +84,8 @@ class PackageManagerTest extends TestCase
             ->setConstructorArgs(['/dev/null'])
             ->getMock();
         $packageDatabaseFile
-            ->method('getMTime')
-            ->willReturn(1);
+            ->method('getRealPath')
+            ->willReturn('/dev/null');
 
         /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
@@ -172,10 +172,14 @@ class PackageManagerTest extends TestCase
         $entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(function (Package $package) {
-                $this->assertEquals('pacman', $package->getName());
-                return true;
-            }));
+            ->with(
+                $this->callback(
+                    function (Package $package) {
+                        $this->assertEquals('pacman', $package->getName());
+                        return true;
+                    }
+                )
+            );
 
         /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
