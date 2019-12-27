@@ -7,9 +7,6 @@ class TemporaryFile extends \SplFileObject
     /** @var string */
     private $fileName;
 
-    /** @var int */
-    private $mTime;
-
     /**
      * @param string $prefix
      */
@@ -23,7 +20,6 @@ class TemporaryFile extends \SplFileObject
         }
         $this->fileName = $fileName;
         parent::__construct($this->fileName, 'w+');
-        $this->mTime = parent::getMTime();
     }
 
     public function __destruct()
@@ -31,28 +27,5 @@ class TemporaryFile extends \SplFileObject
         if (is_writable($this->fileName)) {
             unlink($this->fileName);
         }
-    }
-
-    /**
-     * @return int
-     */
-    public function getMTime(): int
-    {
-        return $this->mTime;
-    }
-
-    /**
-     * @param int $mtime
-     */
-    public function setMTime(int $mtime): void
-    {
-        $filePath = $this->getRealPath();
-        if (!$filePath) {
-            // @codeCoverageIgnoreStart
-            throw new \RuntimeException(sprintf('Could not find file "%s".', $filePath));
-            // @codeCoverageIgnoreEnd
-        }
-        touch($filePath, $mtime);
-        $this->mTime = $mtime;
     }
 }

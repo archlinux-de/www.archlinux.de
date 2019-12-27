@@ -19,18 +19,18 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
@@ -57,18 +57,18 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc-ng',
             '1.0-1',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $glibc->addProvision(new Provision('glibc'));
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
@@ -98,24 +98,24 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $coreRepository = new Repository('core', Architecture::X86_64);
         $extraRepository = new Repository('extra', Architecture::X86_64);
         $testingRepository = (new Repository('testing', Architecture::X86_64))->setTesting();
-        $pacman = (new Package(
+        $pacman = new Package(
             $extraRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $testingGlibc = (new Package(
+        );
+        $testingGlibc = new Package(
             $testingRepository,
             'glibc',
             '3.0-1',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($extraRepository);
@@ -145,24 +145,24 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc4 = (new Package(
+        );
+        $glibc4 = new Package(
             $coreRepository,
             'glibc4',
             '4.0-1',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibcNg = (new Package(
+        );
+        $glibcNg = new Package(
             $coreRepository,
             'glibc-ng',
             '1.0-1',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $glibc4->addProvision(new Provision('glibc'));
         $glibcNg->addProvision(new Provision('glibc'));
         $pacman->addDependency(new Dependency('glibc'));
@@ -192,24 +192,24 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         $core64Repository = new Repository('core', Architecture::X86_64);
         $core32Repository = new Repository('core', Architecture::I686);
-        $pacman = (new Package(
+        $pacman = new Package(
             $core64Repository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibcNg32 = (new Package(
+        );
+        $glibcNg32 = new Package(
             $core32Repository,
             'glibc-ng',
             '1.0-1',
             Architecture::I686
-        ))->setMTime(new \DateTime());
-        $glibcNg64 = (new Package(
+        );
+        $glibcNg64 = new Package(
             $core64Repository,
             'glibc-ng',
             '1.0-1',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $glibcNg32->addProvision(new Provision('glibc'));
         $glibcNg64->addProvision(new Provision('glibc'));
         $pacman->addDependency(new Dependency('glibc'));
@@ -240,18 +240,18 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);

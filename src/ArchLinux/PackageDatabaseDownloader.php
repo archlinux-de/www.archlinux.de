@@ -43,9 +43,6 @@ class PackageDatabaseDownloader
         }
         $tmpFile->fflush();
 
-        $mtime = strtotime($response->getHeaders()['last-modified'][0]);
-        $tmpFile->setMTime((int)$mtime);
-
         return $tmpFile;
     }
 

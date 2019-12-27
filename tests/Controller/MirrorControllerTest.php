@@ -68,12 +68,12 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror->setActive(true);
         $mirror->setIsos(true);
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'linux',
             '3.11-1',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($mirror);
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);

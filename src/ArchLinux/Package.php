@@ -276,12 +276,4 @@ class Package
 
         return $this->files;
     }
-
-    /**
-     * @return \DateTime
-     */
-    public function getMTime(): \DateTime
-    {
-        return (new \DateTime())->setTimestamp($this->descFile->getMTime());
-    }
 }

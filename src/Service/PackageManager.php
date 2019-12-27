@@ -20,9 +20,6 @@ class PackageManager
     /** @var PackageRepository */
     private $packageRepository;
 
-    /** @var array<\DateTime|null> */
-    private $packageMTimes;
-
     /**
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param EntityManagerInterface $entityManager
@@ -68,34 +65,17 @@ class PackageManager
         Repository $repository,
         DatabasePackage $databasePackage
     ): bool {
-        $packageMTime = $this->getRepositoryPackageMTime($repository);
-
-        if (
-            $packageMTime === null
-            || $databasePackage->getMTime()->getTimestamp() > $packageMTime->getTimestamp()
-        ) {
-            $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
-            if ($package === null) {
-                $package = Package::createFromPackageDatabase($repository, $databasePackage);
-            } else {
-                $package->updateFromPackageDatabase($databasePackage);
-            }
-            $this->entityManager->persist($package);
-            return true;
+        $package = $this->packageRepository->findByRepositoryAndName($repository, $databasePackage->getName());
+        if ($package === null) {
+            $package = Package::createFromPackageDatabase($repository, $databasePackage);
+        } elseif ($package->getSha256sum() !== $databasePackage->getSha256sum()) {
+            $package->updateFromPackageDatabase($databasePackage);
+        } else {
+            return false;
         }
-        return false;
-    }
 
-    /**
-     * @param Repository $repository
-     * @return \DateTime|null
-     */
-    private function getRepositoryPackageMTime(Repository $repository): ?\DateTime
-    {
-        if (!isset($this->packageMTimes[$repository->getId()])) {
-            $this->packageMTimes[$repository->getId()] = $this->packageRepository->getMaxMTimeByRepository($repository);
-        }
-        return $this->packageMTimes[$repository->getId()];
+        $this->entityManager->persist($package);
+        return true;
     }
 
     /**
@@ -105,22 +85,12 @@ class PackageManager
      */
     public function cleanupObsoletePackages(Repository $repository, array $allPackages): bool
     {
-        $packageMTime = $this->getRepositoryPackageMTime($repository);
-        if ($packageMTime === null) {
-            $repoPackages = $this->packageRepository->findByRepository($repository);
-        } else {
-            $repoPackages = $this->packageRepository->findByRepositoryOlderThan($repository, $packageMTime);
-        }
-        $packagesRemoved = false;
+        $obsoletePackages = $this->packageRepository->findByRepositoryExceptNames($repository, $allPackages);
 
-        /** @var Package $repoPackage */
-        foreach ($repoPackages as $repoPackage) {
-            if (!in_array($repoPackage->getName(), $allPackages)) {
-                $this->entityManager->remove($repoPackage);
-                $packagesRemoved = true;
-            }
+        foreach ($obsoletePackages as $obsoletePackage) {
+            $this->entityManager->remove($obsoletePackage);
         }
 
-        return $packagesRemoved;
+        return !empty($obsoletePackages);
     }
 }

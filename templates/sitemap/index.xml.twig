@@ -26,7 +26,7 @@
                     'app_packagedetails_index',
                     {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
                 )) }}</loc>
-            <lastmod>{{ package.mtime | date('Y-m-d') }}</lastmod>
+            <lastmod>{{ package.buildDate | date('Y-m-d') }}</lastmod>
         </url>
     {% endfor %}
     {# @var item \App\Entity\NewsItem #}

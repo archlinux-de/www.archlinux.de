@@ -87,10 +87,6 @@
                         <td>{{ package.buildDate | date }}</td>
                     </tr>
                     <tr>
-                        <th>Veröffentlicht am</th>
-                        <td>{{ package.mTime | date }}</td>
-                    </tr>
-                    <tr>
                         <th>Quelltext</th>
                         <td><a href="{{ cgit_url }}tree/trunk?h=packages/{{ package.base }}">Quelldateien</a>,
                             <a href="{{ cgit_url }}log/trunk?h=packages/{{ package.base }}">Änderungshistorie</a></td>

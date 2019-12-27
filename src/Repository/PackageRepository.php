@@ -54,42 +54,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Repository $repository
-     * @return \DateTime|null
-     */
-    public function getMaxMTimeByRepository(Repository $repository): ?\DateTime
-    {
-        $mtime = $this
-            ->createQueryBuilder('package')
-            ->select('MAX(package.mTime)')
-            ->where('package.repository = :repository')
-            ->setParameter('repository', $repository)
-            ->getQuery()
-            ->getSingleScalarResult();
-        if ($mtime !== null) {
-            $mtime = new \DateTime($mtime);
-        }
-        return $mtime;
-    }
-
-    /**
-     * @param Repository $repository
-     * @param \DateTime $mTime
-     * @return Package[]
-     */
-    public function findByRepositoryOlderThan(Repository $repository, \DateTime $mTime): array
-    {
-        return $this
-            ->createQueryBuilder('package')
-            ->where('package.repository = :repository')
-            ->andWhere('package.mTime <= :mtime')
-            ->setParameter('repository', $repository)
-            ->setParameter('mtime', $mTime)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
      * @param string $architecture
      * @param int $limit
      * @return Package[]
@@ -208,6 +172,23 @@ class PackageRepository extends ServiceEntityRepository
             ->createQueryBuilder('package')
             ->where('package.repository = :repository')
             ->setParameter('repository', $repository)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param Repository $repository
+     * @param string[] $packageNames
+     * @return Package[]
+     */
+    public function findByRepositoryExceptNames(Repository $repository, array $packageNames): array
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->where('package.repository = :repository')
+            ->andWhere('package.name NOT IN (:packageNames)')
+            ->setParameter('repository', $repository)
+            ->setParameter('packageNames', $packageNames)
             ->getQuery()
             ->getResult();
     }

@@ -18,18 +18,18 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
@@ -57,12 +57,12 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->flush();
@@ -75,90 +75,22 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), $databasePacman->getId());
     }
 
-    public function testGetMaxMTimeByRepository(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $oldMtime = new \DateTime('2018-01-01');
-        $newMtime = new \DateTime('2018-02-01');
-
-        $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
-            $coreRepository,
-            'pacman',
-            '5.0.2-2',
-            Architecture::X86_64
-        ))->setMTime($oldMtime);
-        $glibc = (new Package(
-            $coreRepository,
-            'glibc',
-            '2.26-10',
-            Architecture::X86_64
-        ))->setMTime($newMtime);
-        $entityManager->persist($coreRepository);
-        $entityManager->persist($pacman);
-        $entityManager->persist($glibc);
-        $entityManager->flush();
-        $entityManager->clear();
-
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $entityManager->getRepository(Package::class);
-        $mtime = $packageRepository->getMaxMTimeByRepository($coreRepository);
-        $this->assertEquals($newMtime, $mtime);
-    }
-
-    public function testFindByRepositoryOlderThan(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $oldMtime = new \DateTime('2018-01-01');
-        $newMtime = new \DateTime('2018-02-01');
-
-        $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
-            $coreRepository,
-            'pacman',
-            '5.0.2-2',
-            Architecture::X86_64
-        ))->setMTime($oldMtime);
-        $glibc = (new Package(
-            $coreRepository,
-            'glibc',
-            '2.26-10',
-            Architecture::X86_64
-        ))->setMTime($newMtime);
-        $entityManager->persist($coreRepository);
-        $entityManager->persist($pacman);
-        $entityManager->persist($glibc);
-        $entityManager->flush();
-        $entityManager->clear();
-
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $entityManager->getRepository(Package::class);
-        $packages = $packageRepository->findByRepositoryOlderThan($coreRepository, $oldMtime);
-        $this->assertCount(1, $packages);
-        $package = array_shift($packages);
-        $this->assertInstanceOf(Package::class, $package);
-        $this->assertEquals($pacman->getId(), $package->getId());
-    }
-
     public function testFindLatestByArchitecture(): void
     {
         $entityManager = $this->getEntityManager();
-        $oldMtime = new \DateTime('2018-01-01');
-        $newMtime = new \DateTime('2018-02-01');
-
         $coreRepository = new Repository('core', Architecture::X86_64);
         $pacman = (new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime($newMtime)->setBuildDate($newMtime);
+        ))->setBuildDate(new \DateTime('2018-02-01'));
         $glibc = (new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime($oldMtime)->setBuildDate($oldMtime);
+        ))->setBuildDate(new \DateTime('2018-01-01'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->persist($glibc);
@@ -178,18 +110,18 @@ class PackageRepositoryTest extends DatabaseTestCase
 
         $coreRepository = new Repository('core', Architecture::X86_64);
         $testingRepository = (new Repository('testing', Architecture::X86_64))->setTesting();
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $testingPacman = (new Package(
+        );
+        $testingPacman = new Package(
             $testingRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($testingRepository);
         $entityManager->persist($pacman);
@@ -215,18 +147,18 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $pacwoman = (new Package(
+        );
+        $pacwoman = new Package(
             $coreRepository,
             'pacwoman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->persist($pacwoman);
@@ -258,18 +190,18 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
@@ -288,18 +220,18 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
-        $glibc = (new Package(
+        );
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setMTime(new \DateTime());
+        );
         $pacman->addDependency(new Dependency('glibc'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
@@ -358,5 +290,39 @@ class PackageRepositoryTest extends DatabaseTestCase
             $pacman->getName()
         );
         $this->assertEquals($pacman->getId(), $package->getId());
+    }
+
+    public function testFindByRepositoryExceptNames(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $pacman = new Package(
+            $coreRepository,
+            'pacman',
+            '5.0.2-2',
+            Architecture::X86_64
+        );
+        $glibc = new Package(
+            $coreRepository,
+            'glibc',
+            '2.26-10',
+            Architecture::X86_64
+        );
+        $pacman->addDependency(new Dependency('glibc'));
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($pacman);
+        $entityManager->persist($glibc);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $entityManager->getRepository(Package::class);
+        $packages = $packageRepository->findByRepositoryExceptNames(
+            $coreRepository,
+            ['glibc']
+        );
+        $this->assertCount(1, $packages);
+        $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
 }
