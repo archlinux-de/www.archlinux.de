@@ -53,11 +53,11 @@ class Repository
     private $packages;
 
     /**
-     * @var \DateTime
+     * @var string|null
      *
-     * @ORM\Column(name="mTime", type="datetime", nullable=true)
+     * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
      */
-    private $mTime;
+    private $sha256sum;
 
     /**
      * @param string $name
@@ -71,29 +71,29 @@ class Repository
     }
 
     /**
+     * @return string|null
+     */
+    public function getSha256sum(): ?string
+    {
+        return $this->sha256sum;
+    }
+
+    /**
+     * @param string|null $sha256sum
+     * @return Repository
+     */
+    public function setSha256sum(?string $sha256sum): Repository
+    {
+        $this->sha256sum = $sha256sum;
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getId(): int
     {
         return $this->id;
-    }
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getMTime(): ?\DateTime
-    {
-        return $this->mTime;
-    }
-
-    /**
-     * @param \DateTime $mTime
-     * @return Repository
-     */
-    public function setMTime(\DateTime $mTime): Repository
-    {
-        $this->mTime = $mTime;
-        return $this;
     }
 
     /**

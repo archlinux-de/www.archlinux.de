@@ -48,14 +48,9 @@ class PackageManager
             $repository->getName(),
             $repository->getArchitecture()
         );
-        if (
-            (
-                $repository->getMTime() !== null
-                && $packageDatabaseFile->getMTime() > $repository->getMTime()->getTimestamp()
-            )
-            || $repository->getMTime() === null
-        ) {
-            $repository->setMTime((new \DateTime())->setTimestamp($packageDatabaseFile->getMTime()));
+        $sha256sum = hash_file('sha256', (string)$packageDatabaseFile->getRealPath());
+        if ($sha256sum !== $repository->getSha256sum()) {
+            $repository->setSha256sum($sha256sum);
             /** @TODO Should not persist here */
             $this->entityManager->persist($repository);
             yield from $this->packageDatabaseDownloader->createDatabase($packageDatabaseFile);
