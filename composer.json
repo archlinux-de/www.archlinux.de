@@ -22,7 +22,7 @@
         "exercise/htmlpurifier-bundle": "^v2.0.5",
         "league/iso3166": "^2.1.4",
         "maxmind-db/reader": "^v1.6.0",
-        "sensio/framework-extra-bundle": "^v5.5.2",
+        "sensio/framework-extra-bundle": "^v5.5.3",
         "symfony/asset": "^v5.0.2",
         "symfony/console": "^v5.0.2",
         "symfony/dotenv": "^v5.0.2",
