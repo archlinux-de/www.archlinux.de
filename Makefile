@@ -47,7 +47,7 @@ rebuild: clean
 
 install:
 	${PHP-RUN} composer --no-interaction install
-	${NODE-RUN} yarn install
+	${NODE-RUN} yarn install --non-interactive --frozen-lockfile
 
 shell-php:
 	${PHP-DB-RUN} bash
@@ -84,11 +84,10 @@ test-security:
 update:
 	${PHP-RUN} composer --no-interaction update
 	${PHP-RUN} composer --no-interaction update --lock
-	${NODE-RUN} yarn install
-	${NODE-RUN} yarn upgrade
+	${NODE-RUN} yarn upgrade --non-interactive
 
 deploy:
-	yarn install
+	yarn install --non-interactive --frozen-lockfile --prod
 	yarn run encore prod
 	find public/build -type f -mtime +30 -delete
 	find public/build -type d -empty -delete
