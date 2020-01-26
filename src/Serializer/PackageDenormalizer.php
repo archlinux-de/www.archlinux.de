@@ -42,7 +42,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->setCompressedSize($data['CSIZE'])
             ->setInstalledSize($data['ISIZE'])
             ->setMd5sum($data['MD5SUM'])
-            ->setPackager(Packager::createFromString($this->normalizeEmail($data['PACKAGER'])))
+            ->setPackager($this->createPackagerFromString($this->normalizeEmail($data['PACKAGER'])))
             ->setSha256sum($data['SHA256SUM'])
             ->setPgpSignature($data['PGPSIG'])
             ->setLicenses((array)($data['LICENSE'] ?? []))
@@ -50,25 +50,25 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->setFiles(Files::createFromArray((array)$data['FILES']));
 
         foreach ((array)($data['DEPENDS'] ?? []) as $depend) {
-            $package->addDependency(Dependency::createFromString($depend));
+            $package->addDependency($this->createDependency($depend));
         }
         foreach ((array)($data['CONFLICTS'] ?? []) as $conflict) {
-            $package->addConflict(Conflict::createFromString($conflict));
+            $package->addConflict($this->createConflict($conflict));
         }
         foreach ((array)($data['REPLACES'] ?? []) as $replacement) {
-            $package->addReplacement(Replacement::createFromString($replacement));
+            $package->addReplacement($this->createReplacement($replacement));
         }
         foreach ((array)($data['OPTDEPENDS'] ?? []) as $optDepend) {
-            $package->addOptionalDependency(OptionalDependency::createFromString($optDepend));
+            $package->addOptionalDependency($this->createOptionalDependency($optDepend));
         }
         foreach ((array)($data['PROVIDES'] ?? []) as $provide) {
-            $package->addProvision(Provision::createFromString($provide));
+            $package->addProvision($this->createProvision($provide));
         }
         foreach ((array)($data['MAKEDEPENDS'] ?? []) as $makeDepend) {
-            $package->addMakeDependency(MakeDependency::createFromString($makeDepend));
+            $package->addMakeDependency($this->createMakeDependency($makeDepend));
         }
         foreach ((array)($data['CHECKDEPENDS'] ?? []) as $checkDepend) {
-            $package->addCheckDependency(CheckDependency::createFromString($checkDepend));
+            $package->addCheckDependency($this->createCheckDependency($checkDepend));
         }
 
         return $package;
@@ -90,10 +90,22 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         }
         $urlString = $urlString
             ->replace(' ', '%20')
-            ->trim("\u{200e}")
-        ;
+            ->trim("\u{200e}");
 
         return $urlString->toString();
+    }
+
+    /**
+     * @param string $packagerDefinition
+     * @return Packager
+     */
+    private function createPackagerFromString(string $packagerDefinition): Packager
+    {
+        preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
+        $name = trim($matches[1] ?? $packagerDefinition);
+        $email = trim($matches[2] ?? '');
+
+        return new Packager($name, $email);
     }
 
     /**
@@ -107,6 +119,95 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->replaceMatches('/(\s+at\s+)/i', '@')
             ->replaceMatches('/gmail-com:\s*(\S+)/i', '$1@gmail.com')
             ->toString();
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return Dependency
+     */
+    private function createDependency(string $targetDefinition): Dependency
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new Dependency($target['name'], $target['version']);
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return array<string>
+     */
+    private function createTargetFromString(string $targetDefinition): array
+    {
+        if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:]+)/', $targetDefinition, $matches) > 0) {
+            $targetName = $matches[1];
+            $targetVersion = $matches[2];
+        } elseif (preg_match('/^([\w\-+@.]+)/', $targetDefinition, $matches) > 0) {
+            $targetName = $matches[1];
+            $targetVersion = null;
+        } else {
+            $targetName = $targetDefinition;
+            $targetVersion = null;
+        }
+        return ['name' => $targetName, 'version' => $targetVersion];
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return Conflict
+     */
+    private function createConflict(string $targetDefinition): Conflict
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new Conflict($target['name'], $target['version']);
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return Replacement
+     */
+    private function createReplacement(string $targetDefinition): Replacement
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new Replacement($target['name'], $target['version']);
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return OptionalDependency
+     */
+    private function createOptionalDependency(string $targetDefinition): OptionalDependency
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new OptionalDependency($target['name'], $target['version']);
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return Provision
+     */
+    private function createProvision(string $targetDefinition): Provision
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new Provision($target['name'], $target['version']);
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return MakeDependency
+     */
+    private function createMakeDependency(string $targetDefinition): MakeDependency
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new MakeDependency($target['name'], $target['version']);
+    }
+
+    /**
+     * @param string $targetDefinition
+     * @return CheckDependency
+     */
+    private function createCheckDependency(string $targetDefinition): CheckDependency
+    {
+        $target = $this->createTargetFromString($targetDefinition);
+        return new CheckDependency($target['name'], $target['version']);
     }
 
     /**

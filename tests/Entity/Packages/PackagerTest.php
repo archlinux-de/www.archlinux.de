@@ -7,27 +7,10 @@ use PHPUnit\Framework\TestCase;
 
 class PackagerTest extends TestCase
 {
-    /**
-     * @param string $input
-     * @param string $name
-     * @param string $email
-     * @dataProvider providePackagers
-     */
-    public function testCreateFromString(string $input, string $name, string $email): void
+    public function testEntity(): void
     {
-        $packager = Packager::createFromString($input);
-        $this->assertEquals($name, $packager->getName());
-        $this->assertEquals($email, $packager->getEmail());
-    }
-
-    /**
-     * @return array<array<string>>
-     */
-    public function providePackagers(): array
-    {
-        return [
-            ['foo<foo@localhost>', 'foo', 'foo@localhost'],
-            ['foo', 'foo', '']
-        ];
+        $packager = new Packager('foo', 'foo@localhost');
+        $this->assertEquals('foo', $packager->getName());
+        $this->assertEquals('foo@localhost', $packager->getEmail());
     }
 }

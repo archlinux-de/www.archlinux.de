@@ -3,6 +3,8 @@
 namespace App\Tests\Serializer;
 
 use App\Entity\Packages\Package;
+use App\Entity\Packages\Packager;
+use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Repository;
 use App\Serializer\PackageDenormalizer;
 use PHPUnit\Framework\TestCase;
@@ -39,13 +41,13 @@ class PackageDenormalizerTest extends TestCase
                 'CSIZE' => 0,
                 'ISIZE' => 0,
                 'MD5SUM' => '',
-                'PACKAGER' => '',
+                'PACKAGER' => 'foo<foo@localhost>',
                 'SHA256SUM' => '',
                 'PGPSIG' => '',
                 'LICENSE' => '',
                 'GROUPS' => '',
                 'FILES' => '',
-                'DEPENDS' => '',
+                'DEPENDS' => 'glibc>=1.0',
                 'CONFLICTS' => '',
                 'REPLACES' => '',
                 'OPTDEPENDS' => '',
@@ -59,5 +61,18 @@ class PackageDenormalizerTest extends TestCase
         );
 
         $this->assertEquals('pacman', $package->getName());
+
+        $packager = $package->getPackager();
+        $this->assertInstanceOf(Packager::class, $packager);
+        $this->assertEquals('foo', $packager->getName());
+        $this->assertEquals('foo@localhost', $packager->getEmail());
+
+        $dependencies = $package->getDependencies();
+        $this->assertCount(1, $dependencies);
+        /** @var Dependency $dependency */
+        $dependency = $dependencies->first();
+        $this->assertInstanceOf(Dependency::class, $dependency);
+        $this->assertEquals('glibc', $dependency->getTargetName());
+        $this->assertEquals('>=1.0', $dependency->getTargetVersion());
     }
 }
