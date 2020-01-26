@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ArchLinux;
+namespace App\Filesystem;
 
 use Symfony\Component\Process\Process;
 

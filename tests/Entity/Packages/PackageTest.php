@@ -2,11 +2,13 @@
 
 namespace App\Tests\Entity\Packages;
 
-use App\ArchLinux\Package as DatabasePackage;
 use App\Entity\Packages\Architecture;
+use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
+use App\Entity\Packages\Packager;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
+use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -15,38 +17,27 @@ use PHPUnit\Framework\TestCase;
  */
 class PackageTest extends TestCase
 {
-    public function testCreateFromPackageDatabase(): void
-    {
-        $repository = new Repository('core', Architecture::X86_64);
-
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
-        $databasePackage->method('getName')->willReturn('pacman');
-        $databasePackage->method('getVersion')->willReturn('1.0-1');
-        $databasePackage->method('getArchitecture')->willReturn('x86_64');
-
-        $package = Package::createFromPackageDatabase($repository, $databasePackage);
-
-        $this->assertEquals('pacman', $package->getName());
-        $this->assertEquals('1.0-1', $package->getVersion());
-        $this->assertEquals('x86_64', $package->getArchitecture());
-        $this->assertEquals('core', $package->getRepository()->getName());
-    }
-
     /**
      * @param string $stringMethod
      * @dataProvider provideUpdateStringMethods
      */
-    public function testUpdateFromPackageDatabase(string $stringMethod): void
+    public function testUpdate(string $stringMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
         $databasePackage->method($stringMethod)->willReturn('foo');
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
+        $databasePackage->method('getOptionalDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection());
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection());
 
-        $package->updateFromPackageDatabase($databasePackage);
+        $package->update($databasePackage);
 
         $this->assertEquals('foo', $package->$stringMethod());
     }
@@ -58,8 +49,6 @@ class PackageTest extends TestCase
     {
         return [
             ['getFileName'],
-            ['getBase'],
-            ['getName'],
             ['getVersion'],
             ['getDescription'],
             ['getMd5sum'],
@@ -75,11 +64,18 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
-        $databasePackage->method('getPackager')->willReturn('foo<foo@localhost>');
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
+        $databasePackage->method('getOptionalDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection());
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getPackager')->willReturn(new Packager('foo', 'foo@localhost'));
 
-        $package->updateFromPackageDatabase($databasePackage);
+        $package->update($databasePackage);
 
         $this->assertNotNull($package->getPackager());
         $this->assertEquals('foo', $package->getPackager()->getName());
@@ -95,11 +91,18 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
         $databasePackage->method($timeMethod)->willReturn(new \DateTime('2018-01-30'));
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
+        $databasePackage->method('getOptionalDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection());
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection());
 
-        $package->updateFromPackageDatabase($databasePackage);
+        $package->update($databasePackage);
         $this->assertEquals(new \DateTime('2018-01-30'), $package->$timeMethod());
     }
 
@@ -122,11 +125,18 @@ class PackageTest extends TestCase
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
         $databasePackage->method($sizeMethod)->willReturn(1234);
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
+        $databasePackage->method('getOptionalDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection());
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection());
 
-        $package->updateFromPackageDatabase($databasePackage);
+        $package->update($databasePackage);
 
         $this->assertEquals(1234, $package->$sizeMethod());
     }
@@ -152,11 +162,18 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
         $list = ['foo', 'bar'];
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
         $databasePackage->method($listMethod)->willReturn($list);
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
+        $databasePackage->method('getOptionalDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection());
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection());
 
-        $package->updateFromPackageDatabase($databasePackage);
+        $package->update($databasePackage);
 
         $this->assertEquals($list, $package->$listMethod());
     }
@@ -172,56 +189,24 @@ class PackageTest extends TestCase
         ];
     }
 
-    /**
-     * @param string $databaseMethod
-     * @param string $packageMethod
-     * @dataProvider provideRelations
-     */
-    public function testUpdateRelation(string $databaseMethod, string $packageMethod): void
-    {
-        $repository = new Repository('core', Architecture::X86_64);
-        $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
-
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
-        $databasePackage->method($databaseMethod)->willReturn(['foo', 'bar']);
-
-        $package->updateFromPackageDatabase($databasePackage);
-
-        /** @var AbstractRelation[] $relations */
-        $relations = $package->$packageMethod();
-        $this->assertCount(2, $relations);
-        $this->assertEquals('foo', $relations[0]->getTargetName());
-        $this->assertEquals('bar', $relations[1]->getTargetName());
-    }
-
-    /**
-     * @return array<array<string>>
-     */
-    public function provideRelations(): array
-    {
-        return [
-            ['getDepends', 'getDependencies'],
-            ['getConflicts', 'getConflicts'],
-            ['getReplaces', 'getReplacements'],
-            ['getOptDepends', 'getOptionalDependencies'],
-            ['getProvides', 'getProvisions'],
-            ['getMakeDepends', 'getMakeDependencies'],
-            ['getCheckDepends', 'getCheckDependencies']
-        ];
-    }
-
     public function testUpdateFiles(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
         $pacmanFiles = ['usr/bin', 'usr/bin/pacman'];
 
-        /** @var DatabasePackage|MockObject $databasePackage */
-        $databasePackage = $this->createMock(DatabasePackage::class);
-        $databasePackage->method('getFiles')->willReturn($pacmanFiles);
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
+        $databasePackage->method('getFiles')->willReturn(Files::createFromArray($pacmanFiles));
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
+        $databasePackage->method('getOptionalDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection());
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection());
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection());
 
-        $package->updateFromPackageDatabase($databasePackage);
+        $package->update($databasePackage);
 
         $this->assertEquals($pacmanFiles, iterator_to_array($package->getFiles()));
     }

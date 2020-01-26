@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Tests\ArchLinux;
+namespace App\Tests\Service;
 
-use App\ArchLinux\PackageDatabaseDownloader;
-use App\ArchLinux\PackageDatabaseMirror;
+use App\Service\PackageDatabaseMirror;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -24,18 +23,18 @@ class PackageDatabaseDownloaderTest extends TestCase
 
     /**
      * @param ResponseInterface $response
-     * @return PackageDatabaseDownloader
+     * @return \App\Service\PackageDatabaseDownloader
      */
-    public function createDownloader(ResponseInterface $response): PackageDatabaseDownloader
+    public function createDownloader(ResponseInterface $response): \App\Service\PackageDatabaseDownloader
     {
         /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
-        $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
+        $packageDatabaseMirror = $this->createMock(\App\Service\PackageDatabaseMirror::class);
         $packageDatabaseMirror
             ->expects($this->any())
             ->method('getMirrorUrl')
             ->willReturn('http://foo');
 
-        return new PackageDatabaseDownloader(new MockHttpClient($response), $packageDatabaseMirror);
+        return new \App\Service\PackageDatabaseDownloader(new MockHttpClient($response), $packageDatabaseMirror);
     }
 
     public function testTemporaryFileIsRemovedByGarbageCollector(): void
@@ -49,21 +48,5 @@ class PackageDatabaseDownloaderTest extends TestCase
         unset($download);
         gc_collect_cycles();
         $this->assertFileNotExists($fileName);
-    }
-
-    public function testCreateDatabase(): void
-    {
-        /** @var \SplFileObject|MockObject $packageDatabaseFile */
-        $packageDatabaseFile = $this
-            ->getMockBuilder(\SplFileObject::class)
-            ->setConstructorArgs(['/dev/null'])
-            ->getMock();
-        $packageDatabaseFile
-            ->method('getRealPath')
-            ->willReturn('/dev/null');
-
-        $database = $this->createDownloader(new MockResponse())->createDatabase($packageDatabaseFile);
-
-        $this->assertCount(0, iterator_to_array($database));
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\ArchLinux;
+namespace App\Tests\Service;
 
-use App\ArchLinux\PackageDatabaseMirror;
+use App\Service\PackageDatabaseMirror;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
@@ -56,14 +56,14 @@ class PackageDatabaseMirrorTest extends TestCase
         $cacheItem
             ->expects($this->once())
             ->method('get')
-            ->willReturn($oldLastUpdated);
+            ->willReturn(hash('sha256', (string)$oldLastUpdated));
 
         /** @var CacheItemPoolInterface|MockObject $cache */
         $cache = $this->createMock(CacheItemPoolInterface::class);
         $cache
             ->expects($this->once())
             ->method('getItem')
-            ->with('UpdatePackages-lastupdate')
+            ->with(PackageDatabaseMirror::CACHE_KEY)
             ->willReturn($cacheItem);
 
         $packageDatabaseMirror = new PackageDatabaseMirror($httpClient, $cache, 'http://foo');
@@ -80,7 +80,7 @@ class PackageDatabaseMirrorTest extends TestCase
         $packageDatabaseMirror = new PackageDatabaseMirror($httpClient, $cache, '');
         $packageDatabaseMirror->updateLastUpdate();
 
-        $this->assertEquals(0, $cache->getItem('UpdatePackages-lastupdate')->get());
+        $this->assertEquals('', $cache->getItem(PackageDatabaseMirror::CACHE_KEY)->get());
     }
 
     /**

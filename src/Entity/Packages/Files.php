@@ -22,7 +22,7 @@ class Files implements \IteratorAggregate
 
     /**
      * @var string
-     * @Assert\Length(max="255")
+     * @Assert\Length(max="4294967295")
      *
      * @ORM\Column(type="text", nullable=true)
      */

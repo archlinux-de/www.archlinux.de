@@ -164,6 +164,26 @@ class PackageRepository extends ServiceEntityRepository
 
     /**
      * @param Repository $repository
+     * @param string[] $packageNames
+     * @return Package[]
+     */
+    public function findByRepositoryExceptNames(Repository $repository, array $packageNames): array
+    {
+        if (empty($packageNames)) {
+            return $this->findByRepository($repository);
+        }
+        return $this
+            ->createQueryBuilder('package')
+            ->where('package.repository = :repository')
+            ->andWhere('package.name NOT IN (:packageNames)')
+            ->setParameter('repository', $repository)
+            ->setParameter('packageNames', $packageNames)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param Repository $repository
      * @return Package[]
      */
     public function findByRepository(Repository $repository): array
@@ -172,23 +192,6 @@ class PackageRepository extends ServiceEntityRepository
             ->createQueryBuilder('package')
             ->where('package.repository = :repository')
             ->setParameter('repository', $repository)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @param Repository $repository
-     * @param string[] $packageNames
-     * @return Package[]
-     */
-    public function findByRepositoryExceptNames(Repository $repository, array $packageNames): array
-    {
-        return $this
-            ->createQueryBuilder('package')
-            ->where('package.repository = :repository')
-            ->andWhere('package.name NOT IN (:packageNames)')
-            ->setParameter('repository', $repository)
-            ->setParameter('packageNames', $packageNames)
             ->getQuery()
             ->getResult();
     }
