@@ -1,14 +1,17 @@
 <?php
 
-namespace App\ArchLinux;
+namespace App\Service;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseMirror
 {
-    /** @var int */
-    private $lastMirrorUpdate = 0;
+    /** @var string */
+    public const CACHE_KEY = 'PackageDatabaseMirror_lastupdate';
+
+    /** @var string */
+    private $lastUpdateHash = '';
 
     /** @var HttpClientInterface */
     private $httpClient;
@@ -44,15 +47,17 @@ class PackageDatabaseMirror
      */
     public function hasUpdated(): bool
     {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate');
+        $lastLocalUpdateCache = $this->cache->getItem(self::CACHE_KEY);
         if ($lastLocalUpdateCache->isHit()) {
-            $content = $this->httpClient->request(
-                'GET',
-                $this->mirrorUrl . 'lastupdate'
-            )->getContent();
-            $this->lastMirrorUpdate = (int)$content;
-
-            return $this->lastMirrorUpdate !== (int)$lastLocalUpdateCache->get();
+            $contentHash = hash(
+                'sha256',
+                $this->httpClient->request(
+                    'GET',
+                    $this->mirrorUrl . 'lastupdate'
+                )->getContent()
+            );
+            $this->lastUpdateHash = $contentHash;
+            return $this->lastUpdateHash !== (string)$lastLocalUpdateCache->get();
         }
 
         return true;
@@ -60,7 +65,7 @@ class PackageDatabaseMirror
 
     public function updateLastUpdate(): void
     {
-        $lastLocalUpdateCache = $this->cache->getItem('UpdatePackages-lastupdate')->set($this->lastMirrorUpdate);
+        $lastLocalUpdateCache = $this->cache->getItem(self::CACHE_KEY)->set($this->lastUpdateHash);
         $this->cache->save($lastLocalUpdateCache);
     }
 }

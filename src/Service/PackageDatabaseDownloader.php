@@ -1,7 +1,8 @@
 <?php
 
-namespace App\ArchLinux;
+namespace App\Service;
 
+use App\Filesystem\TemporaryFile;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseDownloader
@@ -44,14 +45,5 @@ class PackageDatabaseDownloader
         $tmpFile->fflush();
 
         return $tmpFile;
-    }
-
-    /**
-     * @param \SplFileInfo $packageDatabaseFile
-     * @return \IteratorAggregate<Package>
-     */
-    public function createDatabase(\SplFileInfo $packageDatabaseFile): \IteratorAggregate
-    {
-        return new PackageDatabase(new PackageDatabaseReader($packageDatabaseFile));
     }
 }

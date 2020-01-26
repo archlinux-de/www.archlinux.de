@@ -16,10 +16,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PackageRepository")
- * @ORM\Table(indexes={
- *     @ORM\Index(columns={"buildDate"}),
- *     @ORM\Index(columns={"name"})
- * })
+ * @ORM\Table(
+ *     indexes={
+ *          @ORM\Index(columns={"buildDate"}),
+ *          @ORM\Index(columns={"name"})
+ *     },
+ *     uniqueConstraints={
+ *          @ORM\UniqueConstraint(columns={"name", "repository_id"})
+ *     }
+ * )
  */
 class Package
 {
@@ -50,7 +55,7 @@ class Package
 
     /**
      * @var string
-     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
      *
      * @ORM\Column(name="name", type="string")
      */
@@ -58,7 +63,7 @@ class Package
 
     /**
      * @var string
-     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
      *
      * @ORM\Column(name="base", type="string")
      */
@@ -66,7 +71,7 @@ class Package
 
     /**
      * @var string
-     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_]{1,255}$/")
+     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_:~]{1,255}$/")
      *
      * @ORM\Column(name="version", type="string")
      */
@@ -131,17 +136,17 @@ class Package
     private $pgpSignature;
 
     /**
-     * @var string
-     * @Assert\Url()
+     * @var string|null
+     * @Assert\Url(protocols={"http", "https", "ftp"})
      *
      * @ORM\Column(name="url", type="string", nullable=true)
      */
     private $url;
 
     /**
-     * @var string[]
+     * @var string[]|null
      * @Assert\All({
-     *      @Assert\Length(min="3", max="50", allowEmptyString="false")
+     *      @Assert\Length(min="3", max="100", allowEmptyString="false")
      * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
@@ -164,7 +169,7 @@ class Package
     private $buildDate;
 
     /**
-     * @var Packager
+     * @var Packager|null
      * @Assert\Valid()
      *
      * @ORM\Embedded(class="App\Entity\Packages\Packager")
@@ -301,85 +306,352 @@ class Package
     }
 
     /**
-     * @param Repository $repository
-     * @param \App\ArchLinux\Package $databasePackage
+     * @param Package $package
      * @return Package
      */
-    public static function createFromPackageDatabase(
-        Repository $repository,
-        \App\ArchLinux\Package $databasePackage
-    ): Package {
-        $package = new self(
-            $repository,
-            $databasePackage->getName(),
-            $databasePackage->getVersion(),
-            $databasePackage->getArchitecture()
-        );
-
-        return $package->updateFromPackageDatabase($databasePackage);
-    }
-
-    /**
-     * @param \App\ArchLinux\Package $databasePackage
-     * @return Package
-     */
-    public function updateFromPackageDatabase(\App\ArchLinux\Package $databasePackage): Package
+    public function update(Package $package): Package
     {
-        $this->setName($databasePackage->getName());
-        $this->setVersion($databasePackage->getVersion());
-        $this->setArchitecture($databasePackage->getArchitecture());
+        $this->setVersion($package->getVersion());
+        $this->setArchitecture($package->getArchitecture());
 
-        $this->setFileName($databasePackage->getFileName());
-        $this->setUrl($databasePackage->getUrl());
-        $this->setDescription($databasePackage->getDescription());
-        $this->setBase($databasePackage->getBase());
-        $this->setBuildDate($databasePackage->getBuildDate());
-        $this->setCompressedSize($databasePackage->getCompressedSize());
-        $this->setInstalledSize($databasePackage->getInstalledSize());
-        $this->setMd5sum($databasePackage->getMd5sum());
-        $this->setPackager(Packager::createFromString($databasePackage->getPackager()));
-        $this->setSha256sum($databasePackage->getSha256sum());
-        $this->setPgpSignature($databasePackage->getPgpSignature());
-        $this->setLicenses($databasePackage->getLicenses());
-        $this->setGroups($databasePackage->getGroups());
+        $this->setFileName($package->getFileName());
+        $this->setUrl($package->getUrl());
+        $this->setDescription($package->getDescription());
+        $this->setBase($package->getBase());
+        $this->setBuildDate($package->getBuildDate());
+        $this->setCompressedSize($package->getCompressedSize());
+        $this->setInstalledSize($package->getInstalledSize());
+        $this->setMd5sum($package->getMd5sum());
+        $this->setPackager($package->getPackager());
+        $this->setSha256sum($package->getSha256sum());
+        $this->setPgpSignature($package->getPgpSignature());
+        $this->setLicenses($package->getLicenses());
+        $this->setGroups($package->getGroups());
+        $this->setFiles($package->getFiles());
 
         $this->getDependencies()->clear();
-        foreach ($databasePackage->getDepends() as $depend) {
-            $this->addDependency(Dependency::createFromString($depend));
+        foreach ($package->getDependencies() as $depend) {
+            $this->addDependency($depend);
         }
 
         $this->getConflicts()->clear();
-        foreach ($databasePackage->getConflicts() as $conflict) {
-            $this->addConflict(Conflict::createFromString($conflict));
+        foreach ($package->getConflicts() as $conflict) {
+            $this->addConflict($conflict);
         }
 
         $this->getReplacements()->clear();
-        foreach ($databasePackage->getReplaces() as $replacement) {
-            $this->addReplacement(Replacement::createFromString($replacement));
+        foreach ($package->getReplacements() as $replacement) {
+            $this->addReplacement($replacement);
         }
 
         $this->getOptionalDependencies()->clear();
-        foreach ($databasePackage->getOptDepends() as $optDepend) {
-            $this->addOptionalDependency(OptionalDependency::createFromString($optDepend));
+        foreach ($package->getOptionalDependencies() as $optDepend) {
+            $this->addOptionalDependency($optDepend);
         }
 
         $this->getProvisions()->clear();
-        foreach ($databasePackage->getProvides() as $provide) {
-            $this->addProvision(Provision::createFromString($provide));
+        foreach ($package->getProvisions() as $provide) {
+            $this->addProvision($provide);
         }
 
         $this->getMakeDependencies()->clear();
-        foreach ($databasePackage->getMakeDepends() as $makeDepend) {
-            $this->addMakeDependency(MakeDependency::createFromString($makeDepend));
+        foreach ($package->getMakeDependencies() as $makeDepend) {
+            $this->addMakeDependency($makeDepend);
         }
 
         $this->getCheckDependencies()->clear();
-        foreach ($databasePackage->getCheckDepends() as $checkDepend) {
-            $this->addCheckDependency(CheckDependency::createFromString($checkDepend));
+        foreach ($package->getCheckDependencies() as $checkDepend) {
+            $this->addCheckDependency($checkDepend);
         }
 
-        $this->setFiles(Files::createFromArray($databasePackage->getFiles()));
+        return $this;
+    }
 
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     * @return Package
+     */
+    public function setVersion(string $version): Package
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArchitecture(): string
+    {
+        return $this->architecture;
+    }
+
+    /**
+     * @param string $architecture
+     * @return Package
+     */
+    public function setArchitecture(string $architecture): Package
+    {
+        $this->architecture = $architecture;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param string $fileName
+     * @return Package
+     */
+    public function setFileName(string $fileName): Package
+    {
+        $this->fileName = $fileName;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url
+     * @return Package
+     */
+    public function setUrl(?string $url): Package
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return Package
+     */
+    public function setDescription(string $description): Package
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBase(): string
+    {
+        return $this->base;
+    }
+
+    /**
+     * @param string $base
+     * @return Package
+     */
+    public function setBase(string $base): Package
+    {
+        $this->base = $base;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getBuildDate(): ?\DateTime
+    {
+        return $this->buildDate;
+    }
+
+    /**
+     * @param \DateTime|null $buildDate
+     * @return Package
+     */
+    public function setBuildDate(?\DateTime $buildDate): Package
+    {
+        $this->buildDate = $buildDate;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCompressedSize(): int
+    {
+        return $this->compressedSize;
+    }
+
+    /**
+     * @param int $compressedSize
+     * @return Package
+     */
+    public function setCompressedSize(int $compressedSize): Package
+    {
+        $this->compressedSize = $compressedSize;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInstalledSize(): int
+    {
+        return $this->installedSize;
+    }
+
+    /**
+     * @param int $installedSize
+     * @return Package
+     */
+    public function setInstalledSize(int $installedSize): Package
+    {
+        $this->installedSize = $installedSize;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMd5sum(): string
+    {
+        return $this->md5sum;
+    }
+
+    /**
+     * @param string $md5sum
+     * @return Package
+     */
+    public function setMd5sum(string $md5sum): Package
+    {
+        $this->md5sum = $md5sum;
+        return $this;
+    }
+
+    /**
+     * @return Packager|null
+     */
+    public function getPackager(): ?Packager
+    {
+        return $this->packager;
+    }
+
+    /**
+     * @param Packager|null $packager
+     * @return Package
+     */
+    public function setPackager(?Packager $packager): Package
+    {
+        $this->packager = $packager;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSha256sum(): ?string
+    {
+        return $this->sha256sum;
+    }
+
+    /**
+     * @param string|null $sha256sum
+     * @return Package
+     */
+    public function setSha256sum(?string $sha256sum): Package
+    {
+        $this->sha256sum = $sha256sum;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPgpSignature(): ?string
+    {
+        return (string)$this->pgpSignature;
+    }
+
+    /**
+     * @param string|null $pgpSignature
+     * @return Package
+     */
+    public function setPgpSignature(?string $pgpSignature): Package
+    {
+        $this->pgpSignature = $pgpSignature;
+        return $this;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getLicenses(): ?array
+    {
+        return $this->licenses;
+    }
+
+    /**
+     * @param string[]|null $licenses
+     * @return Package
+     */
+    public function setLicenses(?array $licenses): Package
+    {
+        $this->licenses = $licenses;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getGroups(): array
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param string[] $groups
+     * @return Package
+     */
+    public function setGroups(array $groups): Package
+    {
+        $this->groups = $groups;
+        return $this;
+    }
+
+    /**
+     * @return Files
+     */
+    public function getFiles(): Files
+    {
+        return $this->files;
+    }
+
+    /**
+     * @param Files $files
+     * @return Package
+     */
+    public function setFiles(Files $files): Package
+    {
+        $this->files = $files;
         return $this;
     }
 
@@ -517,202 +789,6 @@ class Package
     }
 
     /**
-     * @return Files
-     */
-    public function getFiles(): Files
-    {
-        return $this->files;
-    }
-
-    /**
-     * @param Files $files
-     * @return Package
-     */
-    public function setFiles(Files $files): Package
-    {
-        $this->files = $files;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBase(): string
-    {
-        return $this->base;
-    }
-
-    /**
-     * @param string $base
-     * @return Package
-     */
-    public function setBase(string $base): Package
-    {
-        $this->base = $base;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCompressedSize(): int
-    {
-        return $this->compressedSize;
-    }
-
-    /**
-     * @param int $compressedSize
-     * @return Package
-     */
-    public function setCompressedSize(int $compressedSize): Package
-    {
-        $this->compressedSize = $compressedSize;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getInstalledSize(): int
-    {
-        return $this->installedSize;
-    }
-
-    /**
-     * @param int $installedSize
-     * @return Package
-     */
-    public function setInstalledSize(int $installedSize): Package
-    {
-        $this->installedSize = $installedSize;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMd5sum(): string
-    {
-        return $this->md5sum;
-    }
-
-    /**
-     * @param string $md5sum
-     * @return Package
-     */
-    public function setMd5sum(string $md5sum): Package
-    {
-        $this->md5sum = $md5sum;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSha256sum(): ?string
-    {
-        return $this->sha256sum;
-    }
-
-    /**
-     * @param string|null $sha256sum
-     * @return Package
-     */
-    public function setSha256sum(?string $sha256sum): Package
-    {
-        $this->sha256sum = $sha256sum;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPgpSignature(): ?string
-    {
-        return (string)$this->pgpSignature;
-    }
-
-    /**
-     * @param string|null $pgpSignature
-     * @return Package
-     */
-    public function setPgpSignature(?string $pgpSignature): Package
-    {
-        $this->pgpSignature = $pgpSignature;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    /**
-     * @param string $url
-     * @return Package
-     */
-    public function setUrl(string $url): Package
-    {
-        $this->url = $url;
-        return $this;
-    }
-
-    /**
-     * @return string[]|null
-     */
-    public function getLicenses(): ?array
-    {
-        return $this->licenses;
-    }
-
-    /**
-     * @param string[] $licenses
-     * @return Package
-     */
-    public function setLicenses(array $licenses): Package
-    {
-        $this->licenses = $licenses;
-        return $this;
-    }
-
-    /**
-     * @return Repository
-     */
-    public function getRepository(): Repository
-    {
-        return $this->repository;
-    }
-
-    /**
-     * @return string
-     */
-    public function getArchitecture(): string
-    {
-        return $this->architecture;
-    }
-
-    /**
-     * @param string $architecture
-     * @return Package
-     */
-    public function setArchitecture(string $architecture): Package
-    {
-        $this->architecture = $architecture;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string
@@ -731,110 +807,18 @@ class Package
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getVersion(): string
+    public function getId(): int
     {
-        return $this->version;
+        return $this->id;
     }
 
     /**
-     * @param string $version
-     * @return Package
+     * @return Repository
      */
-    public function setVersion(string $version): Package
+    public function getRepository(): Repository
     {
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     * @return Package
-     */
-    public function setDescription(string $description): Package
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getBuildDate(): ?\DateTime
-    {
-        return $this->buildDate;
-    }
-
-    /**
-     * @param \DateTime|null $buildDate
-     * @return Package
-     */
-    public function setBuildDate(?\DateTime $buildDate): Package
-    {
-        $this->buildDate = $buildDate;
-        return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getGroups(): array
-    {
-        return $this->groups;
-    }
-
-    /**
-     * @param string[] $groups
-     * @return Package
-     */
-    public function setGroups(array $groups): Package
-    {
-        $this->groups = $groups;
-        return $this;
-    }
-
-    /**
-     * @return Packager|null
-     */
-    public function getPackager(): ?Packager
-    {
-        return $this->packager;
-    }
-
-    /**
-     * @param Packager $packager
-     * @return Package
-     */
-    public function setPackager(Packager $packager): Package
-    {
-        $this->packager = $packager;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFileName(): string
-    {
-        return $this->fileName;
-    }
-
-    /**
-     * @param string $fileName
-     * @return Package
-     */
-    public function setFileName(string $fileName): Package
-    {
-        $this->fileName = $fileName;
-        return $this;
+        return $this->repository;
     }
 }

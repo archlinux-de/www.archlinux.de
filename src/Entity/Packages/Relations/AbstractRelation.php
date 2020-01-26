@@ -29,7 +29,7 @@ abstract class AbstractRelation
 
     /**
      * @var string
-     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{,255}$/")
+     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
      *
      * @ORM\Column(type="string")
      */
@@ -37,7 +37,7 @@ abstract class AbstractRelation
 
     /**
      * @var string|null
-     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_]{1,255}$/")
+     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_:<=>~]{1,255}$/")
      *
      * @ORM\Column(type="string", nullable=true)
      */

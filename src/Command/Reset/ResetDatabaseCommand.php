@@ -10,6 +10,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
+use App\Service\PackageDatabaseMirror;
 use Doctrine\DBAL\Driver\AbstractSQLiteDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -68,8 +69,7 @@ class ResetDatabaseCommand extends Command
                 [AbstractRelation::class, Files::class, Package::class, Repository::class]
             );
 
-            $item = $this->cache->getItem('UpdatePackages-lastupdate')->set(0);
-            $this->cache->save($item);
+            $this->cache->deleteItem(PackageDatabaseMirror::CACHE_KEY);
         }
         if ($input->getOption('countries')) {
             $this->lock('countries.lock');

@@ -2,13 +2,15 @@
 
 namespace App\Command\Update;
 
-use App\ArchLinux\Package as DatabasePackage;
-use App\ArchLinux\PackageDatabaseMirror;
 use App\Command\Exception\ValidationException;
+use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
+use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use App\Service\PackageManager;
+use App\Service\PackageDatabaseDirectoryReader;
+use App\Service\PackageDatabaseDownloader;
+use App\Service\PackageDatabaseMirror;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -32,35 +34,47 @@ class UpdatePackagesCommand extends Command
     /** @var AbstractRelationRepository */
     private $relationRepository;
 
-    /** @var PackageManager */
-    private $packageManager;
+    /** @var PackageDatabaseDirectoryReader */
+    private $packageDatabaseDirectoryReader;
 
     /** @var ValidatorInterface */
     private $validator;
+
+    /** @var PackageDatabaseDownloader */
+    private $packageDatabaseDownloader;
+
+    /** @var PackageRepository */
+    private $packageRepository;
 
     /**
      * @param EntityManagerInterface $entityManager
      * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param RepositoryRepository $repositoryRepository
      * @param AbstractRelationRepository $relationRepository
-     * @param PackageManager $packageManager
+     * @param PackageDatabaseDirectoryReader $packageDatabaseDirectoryReader
      * @param ValidatorInterface $validator
+     * @param PackageDatabaseDownloader $packageDatabaseDownloader
+     * @param PackageRepository $packageRepository
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         PackageDatabaseMirror $packageDatabaseMirror,
         RepositoryRepository $repositoryRepository,
         AbstractRelationRepository $relationRepository,
-        PackageManager $packageManager,
-        ValidatorInterface $validator
+        PackageDatabaseDirectoryReader $packageDatabaseDirectoryReader,
+        ValidatorInterface $validator,
+        PackageDatabaseDownloader $packageDatabaseDownloader,
+        PackageRepository $packageRepository
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->packageDatabaseMirror = $packageDatabaseMirror;
         $this->repositoryRepository = $repositoryRepository;
         $this->relationRepository = $relationRepository;
-        $this->packageManager = $packageManager;
+        $this->packageDatabaseDirectoryReader = $packageDatabaseDirectoryReader;
         $this->validator = $validator;
+        $this->packageDatabaseDownloader = $packageDatabaseDownloader;
+        $this->packageRepository = $packageRepository;
     }
 
     protected function configure(): void
@@ -76,44 +90,72 @@ class UpdatePackagesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');
-        ini_set('memory_limit', '-1');
-
-        $updatedPackages = false;
+        ini_set('memory_limit', '4G');
 
         if ($this->packageDatabaseMirror->hasUpdated()) {
+            $this->entityManager->beginTransaction();
+            $updatedPackages = false;
+
             /** @var Repository $repository */
             foreach ($this->repositoryRepository->findAll() as $repository) {
-                $allPackageNames = [];
-                $packageRepositoryGenerator = $this->packageManager->downloadPackagesForRepository($repository);
-                /** @var DatabasePackage $package */
-                foreach ($packageRepositoryGenerator as $package) {
-                    $errors = $this->validator->validate($package);
-                    if ($errors->count() > 0) {
-                        throw new ValidationException($errors);
+                $packageDatabase = $this->packageDatabaseDownloader->download(
+                    $repository->getName(),
+                    $repository->getArchitecture()
+                );
+                $repositorySha256sum = hash_file('sha256', (string)$packageDatabase->getRealPath());
+
+                if ($repositorySha256sum !== $repository->getSha256sum()) {
+                    $repository->setSha256sum($repositorySha256sum);
+                    $this->entityManager->persist($repository);
+
+                    $allPackageNames = [];
+                    /** @var Package $package */
+                    foreach (
+                        $this->packageDatabaseDirectoryReader->readPackages($repository, $packageDatabase) as $package
+                    ) {
+                        $errors = $this->validator->validate($package);
+                        if ($errors->count() > 0) {
+                            throw new ValidationException($errors);
+                        }
+
+                        $allPackageNames[] = $package->getName();
+
+                        $persistedPackage = $this->packageRepository->findByRepositoryAndName(
+                            $repository,
+                            $package->getName()
+                        );
+                        if ($persistedPackage) {
+                            if ($package->getSha256sum() !== $persistedPackage->getSha256sum()) {
+                                $package = $persistedPackage->update($package);
+                                $this->entityManager->persist($package);
+                                $updatedPackages = true;
+                            }
+                        } else {
+                            $this->entityManager->persist($package);
+                            $updatedPackages = true;
+                        }
                     }
 
-                    $allPackageNames[] = $package->getName();
-                    if ($this->packageManager->updatePackage($repository, $package)) {
-                        $updatedPackages = true;
-                    }
-                }
-
-                if ($packageRepositoryGenerator->getReturn()) {
-                    $this->entityManager->flush();
-                    if ($this->packageManager->cleanupObsoletePackages($repository, $allPackageNames)) {
+                    $obsoletePackages = $this->packageRepository->findByRepositoryExceptNames(
+                        $repository,
+                        $allPackageNames
+                    );
+                    foreach ($obsoletePackages as $obsoletePackage) {
+                        $this->entityManager->remove($obsoletePackage);
                         $updatedPackages = true;
                     }
                 }
             }
-        }
 
-        if ($updatedPackages) {
+            if ($updatedPackages) {
+                $this->entityManager->flush();
+                $this->relationRepository->updateTargets();
+            }
+
             $this->entityManager->flush();
-            $this->relationRepository->updateTargets();
+            $this->entityManager->commit();
+            $this->packageDatabaseMirror->updateLastUpdate();
         }
-
-        $this->entityManager->flush();
-        $this->packageDatabaseMirror->updateLastUpdate();
 
         $this->release();
 

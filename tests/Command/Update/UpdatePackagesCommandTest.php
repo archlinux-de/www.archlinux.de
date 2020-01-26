@@ -2,14 +2,16 @@
 
 namespace App\Tests\Command\Update;
 
-use App\ArchLinux\Package as DatabasePackage;
-use App\ArchLinux\PackageDatabaseMirror;
 use App\Command\Exception\ValidationException;
 use App\Command\Update\UpdatePackagesCommand;
+use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
+use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use App\Service\PackageManager;
+use App\Service\PackageDatabaseDirectoryReader;
+use App\Service\PackageDatabaseDownloader;
+use App\Service\PackageDatabaseMirror;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -29,8 +31,8 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var DatabasePackage|MockObject $package */
-        $package = $this->createMock(DatabasePackage::class);
+        /** @var Package|MockObject $package */
+        $package = $this->createMock(Package::class);
         $package
             ->expects($this->atLeastOnce())
             ->method('getName')
@@ -40,7 +42,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->atLeastOnce())->method('flush');
 
-        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
+        /** @var \App\Service\PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror->expects($this->once())->method('hasUpdated')->willReturn(true);
 
@@ -51,23 +53,41 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var AbstractRelationRepository|MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
 
-        /** @var PackageManager|MockObject $packageManager */
-        $packageManager = $this->createMock(PackageManager::class);
-        $packageManager
+        /** @var \SplFileObject|MockObject $packageDatabase */
+        $packageDatabase = $this
+            ->getMockBuilder(\SplFileObject::class)
+            ->setConstructorArgs(['/dev/null'])
+            ->getMock();
+        $packageDatabase
+            ->method('getRealPath')
+            ->willReturn('/dev/null');
+
+        /** @var PackageDatabaseDirectoryReader|MockObject $packageDatabaseDirectoryReader */
+        $packageDatabaseDirectoryReader = $this->createMock(PackageDatabaseDirectoryReader::class);
+        $packageDatabaseDirectoryReader
             ->expects($this->once())
-            ->method('downloadPackagesForRepository')
-            ->with($repository)
+            ->method('readPackages')
+            ->with($repository, $packageDatabase)
             ->willReturn($this->createGenerator([$package]));
-        $packageManager
+
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
+        $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
+        $packageDatabaseDownloader
             ->expects($this->once())
-            ->method('updatePackage')
-            ->with($repository, $package)
-            ->willReturn(true);
-        $packageManager
+            ->method('download')
+            ->with($repository->getName(), $repository->getArchitecture())
+            ->willReturn($packageDatabase);
+
+        /** @var PackageRepository|MockObject $packageRepository */
+        $packageRepository = $this->createMock(PackageRepository::class);
+        $packageRepository
             ->expects($this->once())
-            ->method('cleanupObsoletePackages')
-            ->with($repository, [$package->getName()])
-            ->willReturn(true);
+            ->method('findByRepositoryAndName')
+            ->willReturn(null);
+        $packageRepository
+            ->expects($this->once())
+            ->method('findByRepositoryExceptNames')
+            ->willReturn([]);
 
         /** @var ValidatorInterface|MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
@@ -76,14 +96,18 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdatePackagesCommand(
-            $entityManager,
-            $packageDatabaseMirror,
-            $repositoryRepository,
-            $relationRepository,
-            $packageManager,
-            $validator
-        ));
+        $application->add(
+            new UpdatePackagesCommand(
+                $entityManager,
+                $packageDatabaseMirror,
+                $repositoryRepository,
+                $relationRepository,
+                $packageDatabaseDirectoryReader,
+                $validator,
+                $packageDatabaseDownloader,
+                $packageRepository
+            )
+        );
 
         $command = $application->find('app:update:packages');
         $commandTester = new CommandTester($command);
@@ -93,8 +117,8 @@ class UpdatePackagesCommandTest extends KernelTestCase
     }
 
     /**
-     * @param iterable<DatabasePackage> $iterable
-     * @return \Generator<DatabasePackage>
+     * @param iterable<Package> $iterable
+     * @return \Generator<Package>
      */
     private function createGenerator(iterable $iterable): \Generator
     {
@@ -109,14 +133,14 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var DatabasePackage|MockObject $package */
-        $package = $this->createMock(DatabasePackage::class);
+        /** @var Package|MockObject $package */
+        $package = $this->createMock(Package::class);
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('flush');
 
-        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
+        /** @var \App\Service\PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror->expects($this->once())->method('hasUpdated')->willReturn(true);
 
@@ -127,13 +151,33 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var AbstractRelationRepository|MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
 
-        /** @var PackageManager|MockObject $packageManager */
-        $packageManager = $this->createMock(PackageManager::class);
-        $packageManager
+        /** @var \SplFileObject|MockObject $packageDatabase */
+        $packageDatabase = $this
+            ->getMockBuilder(\SplFileObject::class)
+            ->setConstructorArgs(['/dev/null'])
+            ->getMock();
+        $packageDatabase
+            ->method('getRealPath')
+            ->willReturn('/dev/null');
+
+        /** @var PackageDatabaseDirectoryReader|MockObject $packageDatabaseDirectoryReader */
+        $packageDatabaseDirectoryReader = $this->createMock(PackageDatabaseDirectoryReader::class);
+        $packageDatabaseDirectoryReader
             ->expects($this->once())
-            ->method('downloadPackagesForRepository')
-            ->with($repository)
+            ->method('readPackages')
+            ->with($repository, $packageDatabase)
             ->willReturn($this->createGenerator([$package]));
+
+        /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
+        $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
+        $packageDatabaseDownloader
+            ->expects($this->once())
+            ->method('download')
+            ->with($repository->getName(), $repository->getArchitecture())
+            ->willReturn($packageDatabase);
+
+        /** @var PackageRepository|MockObject $packageRepository */
+        $packageRepository = $this->createMock(PackageRepository::class);
 
         /** @var ValidatorInterface|MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
@@ -145,14 +189,18 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdatePackagesCommand(
-            $entityManager,
-            $packageDatabaseMirror,
-            $repositoryRepository,
-            $relationRepository,
-            $packageManager,
-            $validator
-        ));
+        $application->add(
+            new UpdatePackagesCommand(
+                $entityManager,
+                $packageDatabaseMirror,
+                $repositoryRepository,
+                $relationRepository,
+                $packageDatabaseDirectoryReader,
+                $validator,
+                $packageDatabaseDownloader,
+                $packageRepository
+            )
+        );
 
         $command = $application->find('app:update:packages');
         $commandTester = new CommandTester($command);

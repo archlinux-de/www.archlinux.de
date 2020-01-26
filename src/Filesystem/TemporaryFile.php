@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ArchLinux;
+namespace App\Filesystem;
 
 class TemporaryFile extends \SplFileObject
 {
@@ -15,7 +15,7 @@ class TemporaryFile extends \SplFileObject
         $fileName = tempnam(sys_get_temp_dir(), $prefix);
         if (!$fileName) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException(sprintf('Could not create temporyry file "%s".', $prefix));
+            throw new \RuntimeException(sprintf('Could not create temporary file "%s".', $prefix));
             // @codeCoverageIgnoreEnd
         }
         $this->fileName = $fileName;

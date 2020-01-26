@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tests\ArchLinux;
+namespace App\Tests\Filesystem;
 
-use App\ArchLinux\PackageDatabaseReader;
-use App\ArchLinux\TemporaryDirectory;
+use App\Filesystem\TarFileReader;
+use App\Filesystem\TemporaryDirectory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
-class PackageDatabaseReaderTest extends TestCase
+class TarFileReaderTest extends TestCase
 {
     public function testReaderExtractsTar(): void
     {
@@ -19,8 +19,8 @@ class PackageDatabaseReaderTest extends TestCase
         $tar = new Process(['bsdtar', '-cf', $tarFile, '--strip-components', '3', $contentDirectory->getPathname()]);
         $tar->mustRun();
 
-        $reader = new PackageDatabaseReader(new \SplFileInfo($tarFile));
-        $extractedFileDirectory = $reader->extract();
+        $reader = new TarFileReader();
+        $extractedFileDirectory = $reader->extract(new \SplFileInfo($tarFile));
         $extractedFiles = iterator_to_array($extractedFileDirectory);
 
         $this->assertCount(1, $extractedFiles);
