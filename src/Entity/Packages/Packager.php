@@ -38,19 +38,6 @@ class Packager
     }
 
     /**
-     * @param string $packagerDefinition
-     * @return Packager
-     */
-    public static function createFromString(string $packagerDefinition): self
-    {
-        preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
-        $name = trim($matches[1] ?? $packagerDefinition);
-        $email = trim($matches[2] ?? '');
-
-        return new self($name, $email);
-    }
-
-    /**
      * @return string|null
      */
     public function getName(): ?string

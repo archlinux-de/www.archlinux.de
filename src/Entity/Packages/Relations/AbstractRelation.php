@@ -62,25 +62,6 @@ abstract class AbstractRelation
     }
 
     /**
-     * @param string $targetDefinition
-     * @return static
-     */
-    public static function createFromString(string $targetDefinition): self
-    {
-        if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:]+)/', $targetDefinition, $matches) > 0) {
-            $targetName = $matches[1];
-            $targetVersion = $matches[2];
-        } elseif (preg_match('/^([\w\-+@.]+)/', $targetDefinition, $matches) > 0) {
-            $targetName = $matches[1];
-            $targetVersion = null;
-        } else {
-            $targetName = $targetDefinition;
-            $targetVersion = null;
-        }
-        return new static($targetName, $targetVersion);
-    }
-
-    /**
      * @return Package
      */
     public function getSource(): Package
