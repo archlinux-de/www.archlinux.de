@@ -6,7 +6,6 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
-use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -48,6 +47,7 @@ class PackageTest extends TestCase
     public function provideUpdateStringMethods(): array
     {
         return [
+            ['getBase'],
             ['getFileName'],
             ['getVersion'],
             ['getDescription'],
