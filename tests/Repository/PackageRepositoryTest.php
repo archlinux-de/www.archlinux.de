@@ -325,4 +325,27 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertCount(1, $packages);
         $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
+
+    public function testFindByRepositoryExceptNamesWithEmptyPackageList(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $pacman = new Package(
+            $coreRepository,
+            'pacman',
+            '5.0.2-2',
+            Architecture::X86_64
+        );
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($pacman);
+        $entityManager->flush();
+        $entityManager->clear();
+
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $entityManager->getRepository(Package::class);
+        $packages = $packageRepository->findByRepositoryExceptNames($coreRepository, []);
+        $this->assertCount(1, $packages);
+        $this->assertEquals($pacman->getId(), $packages[0]->getId());
+    }
 }

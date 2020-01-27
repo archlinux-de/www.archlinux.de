@@ -797,16 +797,6 @@ class Package
     }
 
     /**
-     * @param string $name
-     * @return Package
-     */
-    public function setName(string $name): Package
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getId(): int

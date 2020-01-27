@@ -6,6 +6,13 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
+use App\Entity\Packages\Relations\CheckDependency;
+use App\Entity\Packages\Relations\Conflict;
+use App\Entity\Packages\Relations\Dependency;
+use App\Entity\Packages\Relations\MakeDependency;
+use App\Entity\Packages\Relations\OptionalDependency;
+use App\Entity\Packages\Relations\Provision;
+use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -209,5 +216,46 @@ class PackageTest extends TestCase
         $package->update($databasePackage);
 
         $this->assertEquals($pacmanFiles, iterator_to_array($package->getFiles()));
+    }
+
+    public function testUpdateRelations(): void
+    {
+        $repository = new Repository('core', Architecture::X86_64);
+        $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
+
+        /** @var Package|MockObject $databasePackage */
+        $databasePackage = $this->createMock(Package::class);
+        $databasePackage->method('getDependencies')->willReturn(new ArrayCollection([new Dependency('a')]));
+        $databasePackage->method('getConflicts')->willReturn(new ArrayCollection([new Conflict('b')]));
+        $databasePackage->method('getReplacements')->willReturn(new ArrayCollection([new Replacement('c')]));
+        $databasePackage->method('getOptionalDependencies')->willReturn(
+            new ArrayCollection([new OptionalDependency('d')])
+        );
+        $databasePackage->method('getProvisions')->willReturn(new ArrayCollection([new Provision('e')]));
+        $databasePackage->method('getMakeDependencies')->willReturn(new ArrayCollection([new MakeDependency('f')]));
+        $databasePackage->method('getCheckDependencies')->willReturn(new ArrayCollection([new CheckDependency('g')]));
+
+        $package->update($databasePackage);
+
+        $this->assertInstanceOf(Dependency::class, $package->getDependencies()->first());
+        $this->assertEquals('a', $package->getDependencies()->first()->getTargetName());
+
+        $this->assertInstanceOf(Conflict::class, $package->getConflicts()->first());
+        $this->assertEquals('b', $package->getConflicts()->first()->getTargetName());
+
+        $this->assertInstanceOf(Replacement::class, $package->getReplacements()->first());
+        $this->assertEquals('c', $package->getReplacements()->first()->getTargetName());
+
+        $this->assertInstanceOf(OptionalDependency::class, $package->getOptionalDependencies()->first());
+        $this->assertEquals('d', $package->getOptionalDependencies()->first()->getTargetName());
+
+        $this->assertInstanceOf(Provision::class, $package->getProvisions()->first());
+        $this->assertEquals('e', $package->getProvisions()->first()->getTargetName());
+
+        $this->assertInstanceOf(MakeDependency::class, $package->getMakeDependencies()->first());
+        $this->assertEquals('f', $package->getMakeDependencies()->first()->getTargetName());
+
+        $this->assertInstanceOf(CheckDependency::class, $package->getCheckDependencies()->first());
+        $this->assertEquals('g', $package->getCheckDependencies()->first()->getTargetName());
     }
 }

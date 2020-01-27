@@ -22,10 +22,10 @@ class PackageDatabaseDirectoryReader
 
     /**
      * @param Repository $repository
-     * @param \SplFileObject $packageDatabaseFile
+     * @param \SplFileInfo $packageDatabaseFile
      * @return \Generator<Package>
      */
-    public function readPackages(Repository $repository, \SplFileObject $packageDatabaseFile): \Generator
+    public function readPackages(Repository $repository, \SplFileInfo $packageDatabaseFile): \Generator
     {
         /** @var \SplFileInfo $packageDirectory */
         foreach ((new TarFileReader())->extract($packageDatabaseFile) as $packageDirectory) {

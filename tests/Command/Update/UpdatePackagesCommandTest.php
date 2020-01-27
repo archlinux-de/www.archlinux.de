@@ -31,12 +31,26 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var Package|MockObject $package */
-        $package = $this->createMock(Package::class);
-        $package
+        /** @var Package|MockObject $packageA */
+        $packageA = $this->createMock(Package::class);
+        $packageA
             ->expects($this->atLeastOnce())
             ->method('getName')
-            ->willReturn('foo');
+            ->willReturn('packageA');
+        $packageA
+            ->expects($this->atLeastOnce())
+            ->method('getSha256sum')
+            ->willReturn('abc', 'def');
+
+        /** @var Package|MockObject $packageB */
+        $packageB = $this->createMock(Package::class);
+        $packageB
+            ->expects($this->atLeastOnce())
+            ->method('getName')
+            ->willReturn('packageB');
+
+        /** @var Package|MockObject $packageC */
+        $packageC = $this->createMock(Package::class);
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -68,7 +82,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
             ->expects($this->once())
             ->method('readPackages')
             ->with($repository, $packageDatabase)
-            ->willReturn($this->createGenerator([$package]));
+            ->willReturn($this->createGenerator([$packageA, $packageB]));
 
         /** @var PackageDatabaseDownloader|MockObject $packageDatabaseDownloader */
         $packageDatabaseDownloader = $this->createMock(PackageDatabaseDownloader::class);
@@ -81,13 +95,13 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var PackageRepository|MockObject $packageRepository */
         $packageRepository = $this->createMock(PackageRepository::class);
         $packageRepository
-            ->expects($this->once())
+            ->expects($this->atLeastOnce())
             ->method('findByRepositoryAndName')
-            ->willReturn(null);
+            ->willReturn($packageA, null);
         $packageRepository
             ->expects($this->once())
             ->method('findByRepositoryExceptNames')
-            ->willReturn([]);
+            ->willReturn([$packageC]);
 
         /** @var ValidatorInterface|MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
