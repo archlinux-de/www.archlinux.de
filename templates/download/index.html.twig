@@ -34,8 +34,8 @@
                 <h2>BitTorrent Download</h2>
                 <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
                 <ul class="list-unstyled ml-4">
-                    <li><a href="{{ release.torrent.magnetUri }}">Magnet link für {{ release.version }}</a></li>
-                    <li><a href="https://www.archlinux.org{{ release.torrent.url }}">
+                    <li><a href="{{ release.torrent.magnetUri }}" target="_blank">Magnet link für {{ release.version }}</a></li>
+                    <li><a href="https://www.archlinux.org{{ release.torrent.url }}" target="_blank">
                             Torrent für {{ release.version }}
                         </a></li>
                 </ul>
@@ -45,7 +45,7 @@
 
                 <h3>Prüfsummen</h3>
                 <ul class="list-unstyled ml-4">
-                    <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a></li>
+                    <li><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig" target="_blank">PGP-Signatur</a></li>
                     {% if release.sha1Sum %}
                         <li class="text-break"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>{% endif %}
                 </ul>
