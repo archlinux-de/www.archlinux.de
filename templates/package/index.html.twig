@@ -39,11 +39,7 @@
                         <tr>
                             <th>URL</th>
                             <td class="text-break">
-                                {% if package.url matches('#^(https?|ftp)://.+$#') %}
-                                    <a rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
-                                {% else %}
-                                    {{ package.url }}
-                                {% endif %}
+                                <a rel="nofollow" href="{{ package.url }}">{{ package.url }}</a>
                             </td>
                         </tr>
                     {% endif %}
