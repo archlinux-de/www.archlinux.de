@@ -99,7 +99,7 @@
                             <a href="{{ path(
                                 'app_mirror_package',
                                 {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename}
-                            ) }}">{{ package.filename }}</a>
+                            ) }}" target="_blank">{{ package.filename }}</a>
                         </td>
                     </tr>
                     <tr>
@@ -108,7 +108,7 @@
                             <a href="{{ path(
                                 'app_mirror_package',
                                 {'repository': package.repository.name, 'architecture': package.repository.architecture, 'file': package.filename~'.sig'}
-                            ) }}">{{ package.filename }}.sig</a>
+                            ) }}" target="_blank">{{ package.filename }}.sig</a>
                         </td>
                     </tr>
                     <tr>

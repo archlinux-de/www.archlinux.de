@@ -52,7 +52,7 @@
             </div>
             <div class="col-lg-6 pl-lg-5">
                 <a class="btn btn-primary btn-lg mb-4"
-                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
+                   href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}" target="_blank">
                     <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
                 </a>
 
@@ -60,7 +60,7 @@
                 <ul class="list-unstyled ml-4">
                     {% for mirror in mirrors %}
                         <li>
-                            <a href="{{ mirror.url }}{{ release.isoUrl | url_path | trim('/', 'left') }}">{{ mirror.url | url_host }}</a>
+                            <a href="{{ mirror.url }}{{ release.isoUrl | url_path | trim('/', 'left') }}" target="_blank">{{ mirror.url | url_host }}</a>
                         </li>
                     {% endfor %}
                 </ul>

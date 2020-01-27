@@ -42,7 +42,7 @@
                     {% if release.available %}
                         <tr>
                             <th>PGP</th>
-                            <td><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig">PGP-Signatur</a>
+                            <td><a href="https://www.archlinux.org{{ release.isoUrl | url_path }}.sig" target="_blank">PGP-Signatur</a>
                             </td>
                         </tr>
                     {% endif %}
@@ -67,7 +67,7 @@
                 </a>
                 {% if release.available %}
                     <a class="btn btn-primary btn-sm" role="button"
-                       href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}">
+                       href="{{ path('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}" target="_blank">
                         <span class="font-weight-bold">Download</span>
                         <span class="d-none d-sm-inline">Arch Linux {{ release.version }}</span>
                     </a>
@@ -86,7 +86,7 @@
                             <tr>
                                 <th>Torrent URL</th>
                                 <td>
-                                    <a href="https://www.archlinux.org{{ release.torrent.url }}">
+                                    <a href="https://www.archlinux.org{{ release.torrent.url }}" target="_blank">
                                         {{ release.torrent.fileName }}
                                     </a>
                                 </td>
@@ -149,7 +149,7 @@
                         {% if release.torrent.magnetUri %}
                             <tr>
                                 <th>Magnet URI</th>
-                                <td><a href="{{ release.torrent.magnetUri }}">{{ release.torrent.fileName }}</a></td>
+                                <td><a href="{{ release.torrent.magnetUri }}" target="_blank">{{ release.torrent.fileName }}</a></td>
                             </tr>
                         {% endif %}
                     </table>
