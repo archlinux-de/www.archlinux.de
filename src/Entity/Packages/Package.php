@@ -112,14 +112,6 @@ class Package
     private $installedSize = 0;
 
     /**
-     * @var string
-     * @Assert\Regex("/^[0-9a-f]{32}$/")
-     *
-     * @ORM\Column(name="md5sum", type="string", length=32, nullable=true)
-     */
-    private $md5sum;
-
-    /**
      * @var string|null
      * @Assert\Regex("/^[0-9a-f]{64}$/")
      *
@@ -321,7 +313,6 @@ class Package
         $this->setBuildDate($package->getBuildDate());
         $this->setCompressedSize($package->getCompressedSize());
         $this->setInstalledSize($package->getInstalledSize());
-        $this->setMd5sum($package->getMd5sum());
         $this->setPackager($package->getPackager());
         $this->setSha256sum($package->getSha256sum());
         $this->setPgpSignature($package->getPgpSignature());
@@ -526,24 +517,6 @@ class Package
     public function setInstalledSize(int $installedSize): Package
     {
         $this->installedSize = $installedSize;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMd5sum(): string
-    {
-        return $this->md5sum;
-    }
-
-    /**
-     * @param string $md5sum
-     * @return Package
-     */
-    public function setMd5sum(string $md5sum): Package
-    {
-        $this->md5sum = $md5sum;
         return $this;
     }
 

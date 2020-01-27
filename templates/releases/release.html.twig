@@ -33,12 +33,6 @@
                             <td>{{ release.info | purify('release') }}</td>
                         </tr>
                     {% endif %}
-                    {% if release.md5Sum %}
-                        <tr>
-                            <th>MD5</th>
-                            <td class="text-break">{{ release.md5Sum }}</td>
-                        </tr>
-                    {% endif %}
                     {% if release.sha1Sum %}
                         <tr>
                             <th>SHA1</th>

@@ -22,7 +22,6 @@ class ReleaseTest extends TestCase
         $this->assertSame($release, $release->setInfo('info'));
         $this->assertSame($release, $release->setAvailable(true));
         $this->assertSame($release, $release->setKernelVersion('3.11'));
-        $this->assertSame($release, $release->setMd5Sum('md5'));
         $this->assertSame($release, $release->setSha1Sum('sha1'));
         $this->assertSame($release, $release->setTorrent($torrent));
 
@@ -33,7 +32,6 @@ class ReleaseTest extends TestCase
         $this->assertEquals('info', $release->getInfo());
         $this->assertTrue($release->isAvailable());
         $this->assertEquals('3.11', $release->getKernelVersion());
-        $this->assertEquals('md5', $release->getMd5Sum());
         $this->assertEquals('sha1', $release->getSha1Sum());
         $this->assertEquals('info', $release->getInfo());
 
@@ -46,7 +44,6 @@ class ReleaseTest extends TestCase
             ->setTorrent(new Torrent())
             ->setSha1Sum('abc')
             ->setReleaseDate(new \DateTime())
-            ->setMd5Sum('cde')
             ->setKernelVersion('2.4.1')
             ->setIsoUrl('foo')
             ->setInfo('bar')
@@ -57,7 +54,6 @@ class ReleaseTest extends TestCase
             ->setTorrent((new Torrent())->setCreatedBy('me'))
             ->setSha1Sum('1234')
             ->setReleaseDate(new \DateTime('2019-01-01'))
-            ->setMd5Sum('5678')
             ->setKernelVersion('1.2')
             ->setIsoUrl('localhost')
             ->setInfo('info')
@@ -67,7 +63,6 @@ class ReleaseTest extends TestCase
         $this->assertEquals('me', $release->getTorrent()->getCreatedBy());
         $this->assertEquals('1234', $release->getSha1Sum());
         $this->assertEquals(new \DateTime('2019-01-01'), $release->getReleaseDate());
-        $this->assertEquals('5678', $release->getMd5Sum());
         $this->assertEquals('1.2', $release->getKernelVersion());
         $this->assertEquals('localhost', $release->getIsoUrl());
         $this->assertEquals('info', $release->getInfo());

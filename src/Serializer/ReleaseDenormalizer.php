@@ -24,7 +24,6 @@ class ReleaseDenormalizer implements DenormalizerInterface
                         ->setAvailable($releaseData['available'])
                         ->setInfo($releaseData['info'])
                         ->setIsoUrl($releaseData['iso_url'])
-                        ->setMd5Sum($releaseData['md5_sum'])
                         ->setCreated(new \DateTime($releaseData['created']))
                         ->setKernelVersion($releaseData['kernel_version'])
                         ->setReleaseDate(new \DateTime($releaseData['release_date']))

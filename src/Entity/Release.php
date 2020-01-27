@@ -46,14 +46,6 @@ class Release
     private $isoUrl;
 
     /**
-     * @var string|null
-     * @Assert\Regex("/^[0-9a-f]{32}$/")
-     *
-     * @ORM\Column(length=32, nullable=true)
-     */
-    private $md5Sum;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
@@ -183,7 +175,6 @@ class Release
             ->setInfo($release->getInfo())
             ->setIsoUrl($release->getIsoUrl())
             ->setKernelVersion($release->getKernelVersion())
-            ->setMd5Sum($release->getMd5Sum())
             ->setReleaseDate($release->getReleaseDate())
             ->setSha1Sum($release->getSha1Sum())
             ->setTorrent($release->getTorrent());
@@ -240,24 +231,6 @@ class Release
     public function setIsoUrl(string $isoUrl): Release
     {
         $this->isoUrl = $isoUrl;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getMd5Sum(): ?string
-    {
-        return $this->md5Sum;
-    }
-
-    /**
-     * @param string|null $md5Sum
-     * @return Release
-     */
-    public function setMd5Sum(?string $md5Sum): Release
-    {
-        $this->md5Sum = $md5Sum;
         return $this;
     }
 

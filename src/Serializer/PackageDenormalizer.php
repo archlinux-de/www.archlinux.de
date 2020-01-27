@@ -41,7 +41,6 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->setBuildDate((new \DateTime())->setTimestamp($data['BUILDDATE']))
             ->setCompressedSize($data['CSIZE'])
             ->setInstalledSize($data['ISIZE'])
-            ->setMd5sum($data['MD5SUM'])
             ->setPackager($this->createPackagerFromString($this->normalizeEmail($data['PACKAGER'])))
             ->setSha256sum($data['SHA256SUM'])
             ->setPgpSignature($data['PGPSIG'])

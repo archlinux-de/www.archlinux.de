@@ -26,7 +26,6 @@ class ReleaseDenormalizerTest extends TestCase
                         'available' => true,
                         'info' => '',
                         'iso_url' => '',
-                        'md5_sum' => '',
                         'created' => '',
                         'kernel_version' => '',
                         'release_date' => '',
