@@ -104,7 +104,6 @@ class UpdateReleasesCommandTest extends KernelTestCase
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('persist')->with($release);
         $entityManager->expects($this->once())->method('flush');
 
         /** @var ReleaseFetcher|MockObject $releaseFetcher */

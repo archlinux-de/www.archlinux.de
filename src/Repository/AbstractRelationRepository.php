@@ -22,7 +22,6 @@ class AbstractRelationRepository extends ServiceEntityRepository
         /** @var AbstractRelation $relation */
         foreach ($this->findAll() as $relation) {
             $relation->setTarget($this->getBestPackageByRelation($relation));
-            $this->getEntityManager()->persist($relation);
         }
     }
 

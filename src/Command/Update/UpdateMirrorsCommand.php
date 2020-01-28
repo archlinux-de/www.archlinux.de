@@ -74,9 +74,10 @@ class UpdateMirrorsCommand extends Command
             $persistedMirror = $this->mirrorRepository->find($mirror->getUrl());
             if ($persistedMirror) {
                 $mirror = $persistedMirror->update($mirror);
+            } else {
+                $this->entityManager->persist($mirror);
             }
 
-            $this->entityManager->persist($mirror);
             $urls[] = $mirror->getUrl();
         }
         foreach ($this->mirrorRepository->findAllExceptByUrls($urls) as $mirror) {

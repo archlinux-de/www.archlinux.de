@@ -100,7 +100,6 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('persist')->with($mirror);
         $entityManager->expects($this->once())->method('flush');
 
         /** @var MirrorFetcher|MockObject $mirrorFetcher */

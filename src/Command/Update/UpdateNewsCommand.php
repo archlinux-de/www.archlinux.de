@@ -75,9 +75,10 @@ class UpdateNewsCommand extends Command
             $persistedNewsItem = $this->newsItemRepository->find($newsItem->getId());
             if ($persistedNewsItem) {
                 $newsItem = $persistedNewsItem->update($newsItem);
+            } else {
+                $this->entityManager->persist($newsItem);
             }
 
-            $this->entityManager->persist($newsItem);
             $ids[] = $newsItem->getId();
             if ($oldestLastModified > $newsItem->getLastModified()) {
                 $oldestLastModified = $newsItem->getLastModified();

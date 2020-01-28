@@ -74,9 +74,10 @@ class UpdateCountriesCommand extends Command
             $persistedCountry = $this->countryRepository->find($country->getCode());
             if ($persistedCountry) {
                 $country = $persistedCountry->update($country);
+            } else {
+                $this->entityManager->persist($country);
             }
 
-            $this->entityManager->persist($country);
             $codes[] = $country->getCode();
         }
         foreach ($this->countryRepository->findAllExceptByCodes($codes) as $country) {

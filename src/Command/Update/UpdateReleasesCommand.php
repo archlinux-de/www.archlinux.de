@@ -71,9 +71,10 @@ class UpdateReleasesCommand extends Command
             $persistedRelease = $this->releaseRepository->find($release->getVersion());
             if ($persistedRelease) {
                 $release = $persistedRelease->update($release);
+            } else {
+                $this->entityManager->persist($release);
             }
 
-            $this->entityManager->persist($release);
             $versions[] = $release->getVersion();
         }
         foreach ($this->releaseRepository->findAllExceptByVersions($versions) as $release) {

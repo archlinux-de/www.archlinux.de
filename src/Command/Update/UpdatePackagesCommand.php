@@ -106,7 +106,6 @@ class UpdatePackagesCommand extends Command
 
                 if ($repositorySha256sum !== $repository->getSha256sum()) {
                     $repository->setSha256sum($repositorySha256sum);
-                    $this->entityManager->persist($repository);
 
                     $allPackageNames = [];
                     /** @var Package $package */
@@ -126,8 +125,7 @@ class UpdatePackagesCommand extends Command
                         );
                         if ($persistedPackage) {
                             if ($package->getSha256sum() !== $persistedPackage->getSha256sum()) {
-                                $package = $persistedPackage->update($package);
-                                $this->entityManager->persist($package);
+                                $persistedPackage->update($package);
                                 $updatedPackages = true;
                             }
                         } else {
