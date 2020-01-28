@@ -27,7 +27,7 @@
         "symfony/console": "^v5.0.3",
         "symfony/dotenv": "^v5.0.3",
         "symfony/expression-language": "^v5.0.3",
-        "symfony/flex": "^v1.6.0",
+        "symfony/flex": "^v1.6.1",
         "symfony/framework-bundle": "^v5.0.3",
         "symfony/http-client": "^v5.0.3",
         "symfony/lock": "^v5.0.3",
