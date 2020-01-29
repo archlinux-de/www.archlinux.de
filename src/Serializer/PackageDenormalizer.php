@@ -46,7 +46,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->setPgpSignature($data['PGPSIG'])
             ->setLicenses((array)($data['LICENSE'] ?? []))
             ->setGroups((array)($data['GROUPS'] ?? []))
-            ->setFiles(Files::createFromArray((array)$data['FILES']));
+            ->setFiles(Files::createFromArray((array)($data['FILES'] ?? [])));
 
         foreach ((array)($data['DEPENDS'] ?? []) as $depend) {
             $package->addDependency($this->createDependency($depend));

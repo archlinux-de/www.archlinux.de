@@ -8,7 +8,7 @@ use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use App\Service\PackageDatabaseDirectoryReader;
+use App\Service\PackageDatabaseReader;
 use App\Service\PackageDatabaseDownloader;
 use App\Service\PackageDatabaseMirror;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,8 +34,8 @@ class UpdatePackagesCommand extends Command
     /** @var AbstractRelationRepository */
     private $relationRepository;
 
-    /** @var PackageDatabaseDirectoryReader */
-    private $packageDatabaseDirectoryReader;
+    /** @var PackageDatabaseReader */
+    private $packageDatabaseReader;
 
     /** @var ValidatorInterface */
     private $validator;
@@ -51,7 +51,7 @@ class UpdatePackagesCommand extends Command
      * @param PackageDatabaseMirror $packageDatabaseMirror
      * @param RepositoryRepository $repositoryRepository
      * @param AbstractRelationRepository $relationRepository
-     * @param PackageDatabaseDirectoryReader $packageDatabaseDirectoryReader
+     * @param PackageDatabaseReader $packageDatabaseReader
      * @param ValidatorInterface $validator
      * @param PackageDatabaseDownloader $packageDatabaseDownloader
      * @param PackageRepository $packageRepository
@@ -61,7 +61,7 @@ class UpdatePackagesCommand extends Command
         PackageDatabaseMirror $packageDatabaseMirror,
         RepositoryRepository $repositoryRepository,
         AbstractRelationRepository $relationRepository,
-        PackageDatabaseDirectoryReader $packageDatabaseDirectoryReader,
+        PackageDatabaseReader $packageDatabaseReader,
         ValidatorInterface $validator,
         PackageDatabaseDownloader $packageDatabaseDownloader,
         PackageRepository $packageRepository
@@ -71,7 +71,7 @@ class UpdatePackagesCommand extends Command
         $this->packageDatabaseMirror = $packageDatabaseMirror;
         $this->repositoryRepository = $repositoryRepository;
         $this->relationRepository = $relationRepository;
-        $this->packageDatabaseDirectoryReader = $packageDatabaseDirectoryReader;
+        $this->packageDatabaseReader = $packageDatabaseReader;
         $this->validator = $validator;
         $this->packageDatabaseDownloader = $packageDatabaseDownloader;
         $this->packageRepository = $packageRepository;
@@ -102,7 +102,7 @@ class UpdatePackagesCommand extends Command
                     $repository->getName(),
                     $repository->getArchitecture()
                 );
-                $repositorySha256sum = hash_file('sha256', (string)$packageDatabase->getRealPath());
+                $repositorySha256sum = hash('sha256', $packageDatabase);
 
                 if ($repositorySha256sum !== $repository->getSha256sum()) {
                     $repository->setSha256sum($repositorySha256sum);
@@ -110,7 +110,7 @@ class UpdatePackagesCommand extends Command
                     $allPackageNames = [];
                     /** @var Package $package */
                     foreach (
-                        $this->packageDatabaseDirectoryReader->readPackages($repository, $packageDatabase) as $package
+                        $this->packageDatabaseReader->readPackages($repository, $packageDatabase) as $package
                     ) {
                         $errors = $this->validator->validate($package);
                         if ($errors->count() > 0) {

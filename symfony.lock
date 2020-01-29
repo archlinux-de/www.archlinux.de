@@ -365,9 +365,6 @@
             "ref": "55a81726745b54cc6f8d845f1a094ed7d9ed2e32"
         }
     },
-    "symfony/process": {
-        "version": "v4.0.0"
-    },
     "symfony/property-access": {
         "version": "v5.0.2"
     },

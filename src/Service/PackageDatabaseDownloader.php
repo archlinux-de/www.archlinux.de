@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Filesystem\TemporaryFile;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseDownloader
@@ -28,22 +27,15 @@ class PackageDatabaseDownloader
     /**
      * @param string $repository
      * @param string $architecture
-     * @return \SplFileObject
+     * @return string
      */
-    public function download(string $repository, string $architecture): \SplFileObject
+    public function download(string $repository, string $architecture): string
     {
         $url = $this->packageDatabaseMirror->getMirrorUrl()
             . $repository . '/os/' . $architecture . '/' . $repository . self::DB_EXT;
 
-        $tmpFilePrefix = strtolower((string)preg_replace('/\W+/', '_', $url));
-        $tmpFile = new TemporaryFile($tmpFilePrefix);
-
         $response = $this->httpClient->request('GET', $url);
-        foreach ($this->httpClient->stream($response) as $chunk) {
-            $tmpFile->fwrite($chunk->getContent());
-        }
-        $tmpFile->fflush();
 
-        return $tmpFile;
+        return $response->getContent();
     }
 }

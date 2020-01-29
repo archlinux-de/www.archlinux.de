@@ -9,7 +9,7 @@ use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use App\Service\PackageDatabaseDirectoryReader;
+use App\Service\PackageDatabaseReader;
 use App\Service\PackageDatabaseDownloader;
 use App\Service\PackageDatabaseMirror;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,18 +67,11 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var AbstractRelationRepository|MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
 
-        /** @var \SplFileObject|MockObject $packageDatabase */
-        $packageDatabase = $this
-            ->getMockBuilder(\SplFileObject::class)
-            ->setConstructorArgs(['/dev/null'])
-            ->getMock();
-        $packageDatabase
-            ->method('getRealPath')
-            ->willReturn('/dev/null');
+        $packageDatabase = '';
 
-        /** @var PackageDatabaseDirectoryReader|MockObject $packageDatabaseDirectoryReader */
-        $packageDatabaseDirectoryReader = $this->createMock(PackageDatabaseDirectoryReader::class);
-        $packageDatabaseDirectoryReader
+        /** @var PackageDatabaseReader|MockObject $packageDatabaseReader */
+        $packageDatabaseReader = $this->createMock(PackageDatabaseReader::class);
+        $packageDatabaseReader
             ->expects($this->once())
             ->method('readPackages')
             ->with($repository, $packageDatabase)
@@ -116,7 +109,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
                 $packageDatabaseMirror,
                 $repositoryRepository,
                 $relationRepository,
-                $packageDatabaseDirectoryReader,
+                $packageDatabaseReader,
                 $validator,
                 $packageDatabaseDownloader,
                 $packageRepository
@@ -165,18 +158,11 @@ class UpdatePackagesCommandTest extends KernelTestCase
         /** @var AbstractRelationRepository|MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
 
-        /** @var \SplFileObject|MockObject $packageDatabase */
-        $packageDatabase = $this
-            ->getMockBuilder(\SplFileObject::class)
-            ->setConstructorArgs(['/dev/null'])
-            ->getMock();
-        $packageDatabase
-            ->method('getRealPath')
-            ->willReturn('/dev/null');
+        $packageDatabase = '';
 
-        /** @var PackageDatabaseDirectoryReader|MockObject $packageDatabaseDirectoryReader */
-        $packageDatabaseDirectoryReader = $this->createMock(PackageDatabaseDirectoryReader::class);
-        $packageDatabaseDirectoryReader
+        /** @var PackageDatabaseReader|MockObject $packageDatabaseReader */
+        $packageDatabaseReader = $this->createMock(PackageDatabaseReader::class);
+        $packageDatabaseReader
             ->expects($this->once())
             ->method('readPackages')
             ->with($repository, $packageDatabase)
@@ -209,7 +195,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
                 $packageDatabaseMirror,
                 $repositoryRepository,
                 $relationRepository,
-                $packageDatabaseDirectoryReader,
+                $packageDatabaseReader,
                 $validator,
                 $packageDatabaseDownloader,
                 $packageRepository
