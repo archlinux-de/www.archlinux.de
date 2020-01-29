@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Service\PackageDatabaseDownloader;
 use App\Service\PackageDatabaseMirror;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,37 +17,22 @@ class PackageDatabaseDownloaderTest extends TestCase
         $responseMock = new MockResponse('foo');
         $download = $this->createDownloader($responseMock)->download('', '');
 
-        $fileName = (string)$download->getRealPath();
-        $this->assertFileExists($fileName);
-        $this->assertStringEqualsFile($fileName, 'foo');
+        $this->assertEquals($download, 'foo');
     }
 
     /**
      * @param ResponseInterface $response
-     * @return \App\Service\PackageDatabaseDownloader
+     * @return PackageDatabaseDownloader
      */
-    public function createDownloader(ResponseInterface $response): \App\Service\PackageDatabaseDownloader
+    public function createDownloader(ResponseInterface $response): PackageDatabaseDownloader
     {
         /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
-        $packageDatabaseMirror = $this->createMock(\App\Service\PackageDatabaseMirror::class);
+        $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror
             ->expects($this->any())
             ->method('getMirrorUrl')
             ->willReturn('http://foo');
 
-        return new \App\Service\PackageDatabaseDownloader(new MockHttpClient($response), $packageDatabaseMirror);
-    }
-
-    public function testTemporaryFileIsRemovedByGarbageCollector(): void
-    {
-        $responseMock = new MockResponse('');
-        $download = $this->createDownloader($responseMock)->download('', '');
-
-        $fileName = (string)$download->getRealPath();
-        $this->assertFileExists($fileName);
-
-        unset($download);
-        gc_collect_cycles();
-        $this->assertFileNotExists($fileName);
+        return new PackageDatabaseDownloader(new MockHttpClient($response), $packageDatabaseMirror);
     }
 }

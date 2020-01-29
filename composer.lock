@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1453b42ee5641305d57f1358262d7241",
+    "content-hash": "9dce5e3edbb468f4c2426538e7d51a09",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -3776,55 +3776,6 @@
             "time": "2019-11-13T13:11:14+00:00"
         },
         {
-            "name": "symfony/process",
-            "version": "v5.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/process.git",
-                "reference": "f9ffd870f5ac01abec7b2b5e15f904ca9400ecd1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/f9ffd870f5ac01abec7b2b5e15f904ca9400ecd1",
-                "reference": "f9ffd870f5ac01abec7b2b5e15f904ca9400ecd1",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Process\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Process Component",
-            "homepage": "https://symfony.com",
-            "time": "2020-01-09T09:53:06+00:00"
-        },
-        {
             "name": "symfony/property-access",
             "version": "v5.0.4",
             "source": {
@@ -7280,6 +7231,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^7.4",
+        "ext-ffi": "*",
         "ext-simplexml": "*",
         "ext-apcu": "^5.1",
         "ext-ctype": "*",
