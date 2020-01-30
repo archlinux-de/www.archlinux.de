@@ -20,7 +20,7 @@
         "doctrine/doctrine-migrations-bundle": "^2.1.2",
         "doctrine/orm": "^v2.7.0",
         "exercise/htmlpurifier-bundle": "^v2.0.5",
-        "league/iso3166": "^2.1.4",
+        "league/iso3166": "^2.1.5",
         "maxmind-db/reader": "^v1.6.0",
         "sensio/framework-extra-bundle": "^v5.5.3",
         "symfony/asset": "^v5.0.3",

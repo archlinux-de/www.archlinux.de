@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26c231d1b5e03ff933770bb5bb3f554b",
+    "content-hash": "63ee2448b0935e684fc13564e612ac8b",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1476,16 +1476,16 @@
         },
         {
             "name": "league/iso3166",
-            "version": "2.1.4",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/iso3166.git",
-                "reference": "f2dca0b179e3ea4486f8089d0f910716b2896033"
+                "reference": "aed3b32fc293afdf2c6c6a322c2408eb5d20804a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/iso3166/zipball/f2dca0b179e3ea4486f8089d0f910716b2896033",
-                "reference": "f2dca0b179e3ea4486f8089d0f910716b2896033",
+                "url": "https://api.github.com/repos/thephpleague/iso3166/zipball/aed3b32fc293afdf2c6c6a322c2408eb5d20804a",
+                "reference": "aed3b32fc293afdf2c6c6a322c2408eb5d20804a",
                 "shasum": ""
             },
             "require": {
@@ -1526,7 +1526,7 @@
                 "iso",
                 "library"
             ],
-            "time": "2019-10-23T06:57:59+00:00"
+            "time": "2020-01-29T07:08:12+00:00"
         },
         {
             "name": "maxmind-db/reader",
