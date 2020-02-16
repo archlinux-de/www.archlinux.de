@@ -19,7 +19,7 @@
         "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^2.0.7",
         "doctrine/doctrine-migrations-bundle": "^2.1.2",
-        "doctrine/orm": "^v2.7.0",
+        "doctrine/orm": "^v2.7.1",
         "exercise/htmlpurifier-bundle": "^v2.0.5",
         "league/iso3166": "^2.1.5",
         "maxmind-db/reader": "^v1.6.0",
