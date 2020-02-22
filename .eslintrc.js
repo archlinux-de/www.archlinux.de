@@ -6,10 +6,21 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'standard',
+    'plugin:vue/essential',
+    '@vue/standard',
     'plugin:compat/recommended'
   ],
   parserOptions: {
     parser: 'babel-eslint'
-  }
+  },
+  overrides: [
+    {
+      files: [
+        '**/*.test.js'
+      ],
+      env: {
+        jest: true
+      }
+    }
+  ]
 }
