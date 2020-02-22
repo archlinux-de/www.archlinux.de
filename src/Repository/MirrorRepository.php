@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Mirror;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class MirrorRepository extends ServiceEntityRepository
 {
@@ -116,6 +117,31 @@ class MirrorRepository extends ServiceEntityRepository
     public function findSecure(): array
     {
         return $this->findBy(['protocol' => self::PROTOCOL], ['score' => 'DESC']);
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $query
+     * @return Paginator<Mirror>
+     */
+    public function findSecureByQuery(int $offset, int $limit, string $query): Paginator
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('mirror')
+            ->where('mirror.protocol = :protocol')
+            ->orderBy('mirror.score', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->setParameter('protocol', self::PROTOCOL);
+
+        if ($query) {
+            $queryBuilder
+                ->andWhere('mirror.url LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        return new Paginator($queryBuilder);
     }
 
     /**

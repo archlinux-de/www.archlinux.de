@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Release;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class ReleaseRepository extends ServiceEntityRepository
 {
@@ -85,5 +86,30 @@ class ReleaseRepository extends ServiceEntityRepository
             ->orderBy('release.releaseDate', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $query
+     * @return Paginator<Release>
+     */
+    public function findAllByQuery(int $offset, int $limit, string $query): Paginator
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('release')
+            ->orderBy('release.releaseDate', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        if ($query) {
+            $queryBuilder
+                ->where('release.version LIKE :query')
+                ->orWhere('release.kernelVersion LIKE :query')
+                ->orWhere('release.info LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        return new Paginator($queryBuilder);
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Tests\Command\Update;
 
-use App\Command\Exception\ValidationException;
 use App\Command\Update\UpdateReleasesCommand;
 use App\Entity\Release;
 use App\Entity\Torrent;
+use App\Exception\ValidationException;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;

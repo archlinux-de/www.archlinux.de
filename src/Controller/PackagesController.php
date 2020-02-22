@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
-use App\Repository\PackageRepository;
 use App\Datatables\DatatablesColumnConfiguration;
 use App\Datatables\DatatablesQuery;
 use App\Datatables\DatatablesRequest;
+use App\Entity\Packages\Architecture;
+use App\Repository\PackageRepository;
+use App\Request\PaginationRequest;
+use App\Request\QueryRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,7 +101,7 @@ class PackagesController extends AbstractController
 
     /**
      * @Route("/packages/opensearch", methods={"GET"})
-     * @Cache(smaxage="900")
+     * @Cache(maxage="300", smaxage="600")
      * @return Response
      */
     public function openSearchAction(): Response
@@ -110,7 +113,7 @@ class PackagesController extends AbstractController
 
     /**
      * @Route("/packages/feed", methods={"GET"})
-     * @Cache(smaxage="600")
+     * @Cache(maxage="300", smaxage="600")
      * @param string $defaultArchitecture
      * @return Response
      */
@@ -128,7 +131,7 @@ class PackagesController extends AbstractController
 
     /**
      * @Route("/packages/suggest", methods={"GET"})
-     * @Cache(smaxage="600")
+     * @Cache(maxage="300", smaxage="600")
      * @param Request $request
      * @return Response
      */
@@ -141,5 +144,24 @@ class PackagesController extends AbstractController
         $suggestions = $this->packageRepository->findByTerm($term, 10);
 
         return $this->json(array_column($suggestions, 'name'));
+    }
+
+    /**
+     * @Route("/api/packages", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param QueryRequest $queryRequest
+     * @param PaginationRequest $paginationRequest
+     * @return Response
+     */
+    public function packagesAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
+    {
+        return $this->json(
+            $this->packageRepository->findLatestByQueryAndArchitecture(
+                $paginationRequest->getOffset(),
+                $paginationRequest->getLimit(),
+                $queryRequest->getQuery(),
+                Architecture::X86_64
+            )
+        );
     }
 }

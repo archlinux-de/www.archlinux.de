@@ -2,16 +2,16 @@
 
 namespace App\Tests\Command\Update;
 
-use App\Command\Exception\ValidationException;
 use App\Command\Update\UpdatePackagesCommand;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
+use App\Exception\ValidationException;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
-use App\Service\PackageDatabaseReader;
 use App\Service\PackageDatabaseDownloader;
 use App\Service\PackageDatabaseMirror;
+use App\Service\PackageDatabaseReader;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

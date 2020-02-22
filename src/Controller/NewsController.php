@@ -7,6 +7,8 @@ use App\Datatables\DatatablesQuery;
 use App\Datatables\DatatablesRequest;
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
+use App\Request\PaginationRequest;
+use App\Request\QueryRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,8 +110,37 @@ class NewsController extends AbstractController
     }
 
     /**
+     * @Route("/api/news", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param QueryRequest $queryRequest
+     * @param PaginationRequest $paginationRequest
+     * @return Response
+     */
+    public function newsAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
+    {
+        return $this->json(
+            $this->newsRepository->findLatestByQuery(
+                $paginationRequest->getOffset(),
+                $paginationRequest->getLimit(),
+                $queryRequest->getQuery()
+            )
+        );
+    }
+
+    /**
+     * @Route("/api/news/{id<\d+>}", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param NewsItem $newsItem
+     * @return Response
+     */
+    public function newsItemAction(NewsItem $newsItem): Response
+    {
+        return $this->json($newsItem);
+    }
+
+    /**
      * @Route("/news/feed", methods={"GET"})
-     * @Cache(smaxage="600")
+     * @Cache(maxage="300", smaxage="600")
      * @return Response
      */
     public function feedAction(): Response

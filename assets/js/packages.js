@@ -21,14 +21,14 @@ const renderTime = (data, type) => {
 
 const createRenderRepository = (data, type, row) => {
   if (type === 'display' && data) {
-    return `<a href="${row.repository.url}">${data}</a>`
+    return `<a href="${row.repository._url}">${data}</a>`
   }
   return data
 }
 
 const createRenderName = (data, type, row) => {
   if (type === 'display' && data) {
-    return `<a href="${row.url}">${data}</a>`
+    return `<a href="${row._url}">${data}</a>`
   }
   return data
 }

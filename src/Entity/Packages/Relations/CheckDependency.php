@@ -13,7 +13,7 @@ class CheckDependency extends AbstractRelation
     /**
      * @var Package
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="checkdepends")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="checkDependencies")
      */
     protected $source;
 }

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\NewsItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class NewsItemRepository extends ServiceEntityRepository
 {
@@ -56,5 +57,29 @@ class NewsItemRepository extends ServiceEntityRepository
             ->select('COUNT(news)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $query
+     * @return Paginator<NewsItem>
+     */
+    public function findLatestByQuery(int $offset, int $limit, string $query): Paginator
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('newsItem')
+            ->orderBy('newsItem.lastModified', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        if ($query) {
+            $queryBuilder
+                ->where('newsItem.title LIKE :query')
+                ->orWhere('newsItem.description LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        return new Paginator($queryBuilder);
     }
 }

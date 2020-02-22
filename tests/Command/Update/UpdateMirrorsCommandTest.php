@@ -2,9 +2,9 @@
 
 namespace App\Tests\Command\Update;
 
-use App\Command\Exception\ValidationException;
 use App\Command\Update\UpdateMirrorsCommand;
 use App\Entity\Mirror;
+use App\Exception\ValidationException;
 use App\Repository\MirrorRepository;
 use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;

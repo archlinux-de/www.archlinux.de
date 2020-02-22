@@ -6,6 +6,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class PackageRepository extends ServiceEntityRepository
 {
@@ -43,8 +44,8 @@ class PackageRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('source')
-            ->from('App:Packages\Package', 'target')
-            ->from($relationType, 'relation')
+            ->join('App:Packages\Package', 'target')
+            ->join($relationType, 'relation')
             ->andWhere('relation.target = target')
             ->andWhere('relation.source = source')
             ->andWhere('target = :target')
@@ -69,6 +70,43 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('architecture', $architecture)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param int $offset
+     * @param int $limit
+     * @param string $query
+     * @param string $architecture
+     * @return Paginator<Package>
+     */
+    public function findLatestByQueryAndArchitecture(
+        int $offset,
+        int $limit,
+        string $query,
+        string $architecture
+    ): Paginator {
+        $queryBuilder = $this
+            ->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join(
+                'package.repository',
+                'repository',
+                'WITH',
+                'repository.architecture = :architecture'
+            )
+            ->orderBy('package.buildDate', 'DESC')
+            ->setParameter('architecture', $architecture)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        if ($query) {
+            $queryBuilder
+                ->where('package.name LIKE :query')
+                ->orWhere('package.description LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        return new Paginator($queryBuilder);
     }
 
     /**
@@ -104,29 +142,6 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('package', $term . '%')
             ->getQuery()
             ->getScalarResult();
-    }
-
-    /**
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @return Package
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function getByName(string $repository, string $architecture, string $name): Package
-    {
-        return $this->createQueryBuilder('package')
-            ->select('package', 'repository')
-            ->join('package.repository', 'repository')
-            ->where('package.name = :pkgname')
-            ->andWhere('repository.name = :repository')
-            ->andWhere('repository.architecture = :architecture')
-            ->setParameter('pkgname', $name)
-            ->setParameter('repository', $repository)
-            ->setParameter('architecture', $architecture)
-            ->getQuery()
-            ->getSingleResult();
     }
 
     /**
@@ -194,5 +209,62 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('repository', $repository)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param string $repo
+     * @param string $arch
+     * @param string $pkgname
+     * @param string $type
+     * @param int $offset
+     * @param int $limit
+     * @return Paginator<Package>
+     */
+    public function findInverseRelationsByQuery(
+        string $repo,
+        string $arch,
+        string $pkgname,
+        string $type,
+        int $offset,
+        int $limit
+    ): Paginator {
+        $package = $this->getByName($repo, $arch, $pkgname);
+
+        $queryBuilder = $this
+            ->createQueryBuilder('source')
+            ->join('App:Packages\Package', 'target')
+            ->join($type, 'relation')
+            ->andWhere('relation.target = target')
+            ->andWhere('relation.source = source')
+            ->andWhere('target = :target')
+            ->orderBy('source.buildDate', 'DESC')
+            ->setParameter('target', $package)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        return new Paginator($queryBuilder);
+    }
+
+    /**
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
+     * @return Package
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getByName(string $repository, string $architecture, string $name): Package
+    {
+        return $this->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository')
+            ->where('package.name = :pkgname')
+            ->andWhere('repository.name = :repository')
+            ->andWhere('repository.architecture = :architecture')
+            ->setParameter('pkgname', $name)
+            ->setParameter('repository', $repository)
+            ->setParameter('architecture', $architecture)
+            ->getQuery()
+            ->getSingleResult();
     }
 }

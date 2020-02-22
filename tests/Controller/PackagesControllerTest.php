@@ -320,4 +320,38 @@ class PackagesControllerTest extends DatabaseTestCase
         $this->assertCount(1, $responseData);
         $this->assertEquals('pacman', $responseData[0]);
     }
+
+    public function testPackagesAction(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $php = new Package(
+            $coreRepository,
+            'php',
+            '7.3.1-1',
+            Architecture::X86_64
+        );
+        $pacman = new Package(
+            $coreRepository,
+            'pacman',
+            '5.0.2-2',
+            Architecture::X86_64
+        );
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($php);
+        $entityManager->persist($pacman);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/api/packages', ['query' => 'pac']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('pacman', $responseData['items'][0]['name']);
+    }
 }

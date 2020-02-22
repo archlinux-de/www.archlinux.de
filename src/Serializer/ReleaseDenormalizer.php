@@ -4,9 +4,10 @@ namespace App\Serializer;
 
 use App\Entity\Release;
 use App\Entity\Torrent;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class ReleaseDenormalizer implements DenormalizerInterface
+class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
     /**
      * @param array<mixed> $data
@@ -57,5 +58,13 @@ class ReleaseDenormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, string $type, string $format = null)
     {
         return $type == Release::class . '[]';
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

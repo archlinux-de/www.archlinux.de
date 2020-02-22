@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Release;
-use App\Repository\ReleaseRepository;
 use App\Datatables\DatatablesColumnConfiguration;
 use App\Datatables\DatatablesQuery;
 use App\Datatables\DatatablesRequest;
+use App\Entity\Release;
+use App\Repository\ReleaseRepository;
+use App\Request\PaginationRequest;
+use App\Request\QueryRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,7 +94,7 @@ class ReleasesController extends AbstractController
 
     /**
      * @Route("/releases/feed", methods={"GET"})
-     * @Cache(smaxage="900")
+     * @Cache(maxage="300", smaxage="600")
      * @return Response
      */
     public function feedAction(): Response
@@ -103,5 +105,34 @@ class ReleasesController extends AbstractController
         );
         $response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
         return $response;
+    }
+
+    /**
+     * @Route("/api/releases", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param QueryRequest $queryRequest
+     * @param PaginationRequest $paginationRequest
+     * @return Response
+     */
+    public function releasesAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
+    {
+        return $this->json(
+            $this->releaseRepository->findAllByQuery(
+                $paginationRequest->getOffset(),
+                $paginationRequest->getLimit(),
+                $queryRequest->getQuery()
+            )
+        );
+    }
+
+    /**
+     * @Route("/api/releases/{version<^[0-9]+[\.\-\w]+$>}", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param Release $release
+     * @return Response
+     */
+    public function apiReleaseAction(Release $release): Response
+    {
+        return $this->json($release);
     }
 }

@@ -40,7 +40,7 @@ dataTable.DataTable({
       searchable: true,
       render: (data, type, row) => {
         if (type === 'display' && data) {
-          return `<a href="${row.url}">${data}</a>`
+          return `<a href="${row._url}">${data}</a>`
         }
         return data
       }

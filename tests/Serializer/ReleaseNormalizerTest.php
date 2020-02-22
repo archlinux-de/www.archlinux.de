@@ -31,10 +31,12 @@ class ReleaseNormalizerTest extends KernelTestCase
     {
         $releaseDate = new \DateTime('2018-01-01');
 
-        $release = new Release('2018.01.01');
-        $release->setReleaseDate($releaseDate);
-        $release->setAvailable(true);
-        $release->setKernelVersion('3.11');
+        $release = (new Release('2018.01.01'))
+            ->setReleaseDate($releaseDate)
+            ->setAvailable(true)
+            ->setKernelVersion('3.11')
+            ->setInfo('foo bar')
+            ->setIsoUrl('http://localhost/releases/2018.01.01.iso');
 
         $json = $this->serializer->serialize($release, 'json');
         $this->assertJson($json);
@@ -45,7 +47,13 @@ class ReleaseNormalizerTest extends KernelTestCase
                 'kernelVersion' => '3.11',
                 'releaseDate' => '2018-01-01T00:00:00+00:00',
                 'available' => true,
-                'url' => 'http://localhost/releases/2018.01.01'
+                '_url' => 'http://localhost/releases/2018.01.01',
+                'info' => 'foo bar',
+                'isoUrl' => 'http://localhost/releases/2018.01.01.iso',
+                'sha1Sum' => null,
+                'torrentUrl' => null,
+                'fileSize' => null,
+                'magnetUri' => null
             ],
             $jsonArray
         );

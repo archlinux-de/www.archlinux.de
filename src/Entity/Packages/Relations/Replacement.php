@@ -13,7 +13,7 @@ class Replacement extends AbstractRelation
     /**
      * @var Package
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="replaces")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="replacements")
      */
     protected $source;
 }

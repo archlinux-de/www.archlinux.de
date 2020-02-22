@@ -5,10 +5,11 @@ namespace App\Serializer;
 use App\Entity\Release;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class ReleaseNormalizer implements NormalizerInterface
+class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     /** @var UrlGeneratorInterface */
     private $router;
@@ -51,20 +52,37 @@ class ReleaseNormalizer implements NormalizerInterface
                 [
                     AbstractNormalizer::ATTRIBUTES => [
                         'version',
+                        'available',
+                        'info',
+                        'isoUrl',
                         'kernelVersion',
                         'releaseDate',
-                        'available'
+                        'sha1Sum'
                     ]
                 ]
             )
         );
-        $data['url'] = $this->router->generate(
+
+        $data['torrentUrl'] = $object->getTorrent()->getUrl();
+        $data['fileSize'] = $object->getTorrent()->getFileLength();
+        $data['magnetUri'] = $object->getTorrent()->getMagnetUri();
+
+        $data['_url'] = $this->router->generate(
             'app_releases_release',
             [
                 'version' => $object->getVersion(),
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
+
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

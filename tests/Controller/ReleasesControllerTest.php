@@ -129,4 +129,77 @@ class ReleasesControllerTest extends DatabaseTestCase
             (string)$xml->entry->link->attributes()->href
         );
     }
+
+    public function testReleasesAction(): void
+    {
+        $entityManager = $this->getEntityManager();
+        $release = (new Release('2018.01.01'))
+            ->setAvailable(true)
+            ->setInfo('')
+            ->setIsoUrl('')
+            ->setCreated(new \DateTime())
+            ->setReleaseDate(new \DateTime())
+            ->setTorrent(
+                (new Torrent())->setFileLength(1)->setFileName('release.iso')
+            );
+        $entityManager->persist($release);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/api/releases', ['query' => '2018']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('2018.01.01', $responseData['items'][0]['version']);
+    }
+
+    public function testReleaseAction(): void
+    {
+        $entityManager = $this->getEntityManager();
+        $release = (new Release('2018.01.01'))
+            ->setAvailable(true)
+            ->setInfo('info')
+            ->setIsoUrl('http://localhost/iso')
+            ->setCreated(new \DateTime())
+            ->setReleaseDate(new \DateTime('2018-01-01'))
+            ->setSha1Sum('abcdef')
+            ->setTorrent(
+                (new Torrent())
+                    ->setFileLength(1)
+                    ->setFileName('release.iso')
+                    ->setUrl('http://localhost/torrent')
+                    ->setMagnetUri('magnet://localhost/torrent')
+            );
+        $entityManager->persist($release);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/api/releases/2018.01.01');
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(
+            [
+                'version' => '2018.01.01',
+                'kernelVersion' => null,
+                'releaseDate' => '2018-01-01T00:00:00+00:00',
+                'available' => true,
+                'info' => 'info',
+                'isoUrl' => 'http://localhost/iso',
+                'sha1Sum' => 'abcdef',
+                'torrentUrl' => 'http://localhost/torrent',
+                'fileSize' => 1,
+                'magnetUri' => 'magnet://localhost/torrent',
+                '_url' => 'http://localhost/releases/2018.01.01'
+            ],
+            $responseData
+        );
+    }
 }

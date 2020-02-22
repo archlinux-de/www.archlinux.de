@@ -5,10 +5,11 @@ namespace App\Serializer;
 use App\Entity\Packages\Package;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class PackageNormalizer implements NormalizerInterface
+class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     /** @var UrlGeneratorInterface */
     private $router;
@@ -47,17 +48,33 @@ class PackageNormalizer implements NormalizerInterface
                 [
                     AbstractNormalizer::ATTRIBUTES => [
                         'repository',
-                        'architecture',
+                        'fileName',
                         'name',
+                        'base',
                         'version',
                         'description',
+                        'groups',
+                        'compressedSize',
+                        'installedSize',
+                        'sha256sum',
+                        'url',
+                        'licenses',
+                        'architecture',
                         'buildDate',
-                        'groups'
+                        'packager',
+                        'replacements',
+                        'conflicts',
+                        'provisions',
+                        'dependencies',
+                        'optionalDependencies',
+                        'makeDependencies',
+                        'checkDependencies',
                     ]
                 ]
             )
         );
-        $data['url'] = $this->router->generate(
+
+        $data['_url'] = $this->router->generate(
             'app_packagedetails_index',
             [
                 'arch' => $object->getRepository()->getArchitecture(),
@@ -66,6 +83,15 @@ class PackageNormalizer implements NormalizerInterface
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
+
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

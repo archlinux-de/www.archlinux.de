@@ -2,8 +2,8 @@
 
 namespace App\Tests\Service;
 
-use App\Command\Exception\ValidationException;
 use App\Entity\Packages\Repository;
+use App\Exception\ValidationException;
 use App\Repository\RepositoryRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;

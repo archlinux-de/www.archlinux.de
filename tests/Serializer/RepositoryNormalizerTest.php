@@ -45,7 +45,7 @@ class RepositoryNormalizerTest extends KernelTestCase
                 'name' => 'core',
                 'architecture' => Architecture::X86_64,
                 'testing' => $testing,
-                'url' => 'http://localhost/packages?repository=core&architecture=x86_64'
+                '_url' => 'http://localhost/packages?repository=core&architecture=x86_64'
             ],
             $jsonArray
         );

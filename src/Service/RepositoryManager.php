@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Command\Exception\ValidationException;
 use App\Entity\Packages\Repository;
+use App\Exception\ValidationException;
 use App\Repository\RepositoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

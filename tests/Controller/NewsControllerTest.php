@@ -153,4 +153,74 @@ class NewsControllerTest extends DatabaseTestCase
 
         $this->assertTrue($client->getResponse()->isRedirect('/news/1-Breaking-News'));
     }
+
+    public function testNewsAction(): void
+    {
+        $entityManager = $this->getEntityManager();
+        $news = new NewsItem(1);
+        $news->setTitle('Breaking News');
+        $news->setDescription('Hell has frozen over!');
+        $news->setLastModified(new \DateTime());
+        $news->setAuthor(
+            (new NewsAuthor())
+                ->setName('')
+                ->setUri('')
+        );
+        $news->setLink('https://www.archlinux.de/');
+        $entityManager->persist($news);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/api/news', ['query' => 'Hell']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(1, $responseData['count']);
+        $this->assertEquals(1, $responseData['total']);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('Breaking News', $responseData['items'][0]['title']);
+    }
+
+    public function testNewsItemAction(): void
+    {
+        $entityManager = $this->getEntityManager();
+        $news = new NewsItem(1);
+        $news->setTitle('Breaking News');
+        $news->setDescription('Hell has frozen over!');
+        $news->setLastModified(new \DateTime('2020-02-02'));
+        $news->setAuthor(
+            (new NewsAuthor())
+                ->setName('Bob')
+                ->setUri('http://localhost/bob')
+        );
+        $news->setLink('https://www.archlinux.de/');
+        $entityManager->persist($news);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/api/news/1');
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $this->assertEquals(
+            [
+                'id' => 1,
+                'author' => [
+                    'name' => 'Bob',
+                    'uri' => 'http://localhost/bob'
+                ],
+                'description' => 'Hell has frozen over!',
+                'lastModified' => '2020-02-02T00:00:00+00:00',
+                'link' => 'https://www.archlinux.de/',
+                'title' => 'Breaking News',
+                '_url' => 'http://localhost/news/1-Breaking-News'
+            ],
+            json_decode($client->getResponse()->getContent(), true)
+        );
+    }
 }
