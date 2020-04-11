@@ -10,7 +10,7 @@
     "datatables.net": "^1.10.20",
     "datatables.net-bs4": "^1.10.20",
     "datatables.net-plugins": "^1.10.19",
-    "jquery": "^3.4.1",
+    "jquery": "<3.5.0 || >=3.5.1",
     "js-autocomplete": "^1.0.4",
     "node-sass": "^4.13.0",
     "popper.js": "^1.16.0",
