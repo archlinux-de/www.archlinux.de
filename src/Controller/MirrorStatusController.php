@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Datatables\DatatablesResponse;
 use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\Request\PaginationRequest;
@@ -23,26 +22,6 @@ class MirrorStatusController extends AbstractController
     public function __construct(MirrorRepository $mirrorRepository)
     {
         $this->mirrorRepository = $mirrorRepository;
-    }
-
-    /**
-     * @Route("/mirrors", methods={"GET"})
-     * @Cache(smaxage="900")
-     * @return Response
-     */
-    public function indexAction(): Response
-    {
-        return $this->render('mirrors/index.html.twig');
-    }
-
-    /**
-     * @Route("/mirrors/datatables", methods={"GET"})
-     * @Cache(maxage="300", smaxage="3600")
-     * @return Response
-     */
-    public function datatablesAction(): Response
-    {
-        return $this->json(new DatatablesResponse($this->mirrorRepository->findSecure()));
     }
 
     /**

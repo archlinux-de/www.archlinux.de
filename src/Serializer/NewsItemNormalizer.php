@@ -3,7 +3,6 @@
 namespace App\Serializer;
 
 use App\Entity\NewsItem;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -12,9 +11,6 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var UrlGeneratorInterface */
-    private $router;
-
     /** @var ObjectNormalizer */
     private $normalizer;
 
@@ -25,18 +21,12 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
     private $newsPurifier;
 
     /**
-     * @param UrlGeneratorInterface $router
      * @param ObjectNormalizer $normalizer
      * @param SluggerInterface $slugger
      * @param \HTMLPurifier $newsPurifier
      */
-    public function __construct(
-        UrlGeneratorInterface $router,
-        ObjectNormalizer $normalizer,
-        SluggerInterface $slugger,
-        \HTMLPurifier $newsPurifier
-    ) {
-        $this->router = $router;
+    public function __construct(ObjectNormalizer $normalizer, SluggerInterface $slugger, \HTMLPurifier $newsPurifier)
+    {
         $this->normalizer = $normalizer;
         $this->slugger = $slugger;
         $this->newsPurifier = $newsPurifier;
@@ -81,14 +71,7 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
             $data['description'] = $this->newsPurifier->purify($data['description']);
         }
 
-        $data['_url'] = $this->router->generate(
-            'app_news_item',
-            [
-                'id' => $object->getId(),
-                'slug' => $this->slugger->slug($object->getTitle())
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        $data['slug'] = $this->slugger->slug($object->getTitle());
 
         return $data;
     }

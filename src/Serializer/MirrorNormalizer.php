@@ -55,6 +55,8 @@ class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
             )
         );
 
+        $data['host'] = parse_url($data['url'], PHP_URL_HOST);
+
         return $data;
     }
 

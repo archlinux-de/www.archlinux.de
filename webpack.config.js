@@ -6,13 +6,7 @@ Encore
   .setOutputPath((process.env.PUBLIC_PATH || 'public') + '/build')
   .setPublicPath('/build')
   .addAliases({ '@': path.resolve(__dirname, 'assets') })
-  .addEntry('base', './assets/js/base.js')
-  .addEntry('start', './assets/js/start.js')
-  .addEntry('packages', './assets/js/packages.js')
-  .addEntry('mirrors', './assets/js/mirrors.js')
-  .addEntry('package', './assets/js/package.js')
-  .addEntry('news', './assets/js/news.js')
-  .addEntry('releases', './assets/js/releases.js')
+  .addEntry('main', '@/js/main.js')
   .copyFiles({ from: 'assets/images', to: 'images/[path][name].[hash:8].[ext]' })
   .splitEntryChunks()
   .enableSingleRuntimeChunk()
@@ -20,7 +14,7 @@ Encore
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
   .enablePostCssLoader()
-  .addLoader({ test: /\.lang$/, loader: './assets/js/_lang-loader.js' })
+  .enableVueLoader()
   .configureBabel(() => {}, { useBuiltIns: 'usage', corejs: 3 })
 
 if (Encore.isProduction()) {

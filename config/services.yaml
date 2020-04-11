@@ -52,13 +52,9 @@ services:
     App\Service\NewsItemFetcher:
         $newsFeedUrl: '%app.news.feed%'
 
-    App\Controller\PackageDetailsController:
+    App\Serializer\PackageNormalizer:
         bind:
             $cgitUrl: '%app.packages.cgit%'
-
-    App\Controller\DownloadController:
-        bind:
-            $mirrorCountry: '%app.mirrors.country%'
 
     App\Controller\MirrorController:
         bind:

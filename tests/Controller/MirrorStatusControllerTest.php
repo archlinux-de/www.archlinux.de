@@ -11,52 +11,6 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class MirrorStatusControllerTest extends DatabaseTestCase
 {
-    public function testIndexAction(): void
-    {
-        $client = $this->getClient();
-        $client->request('GET', '/mirrors');
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-    }
-
-    public function testDatatablesAction(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $entityManager->persist($mirror);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-        $client->request('GET', '/mirrors/datatables');
-        $response = $client->getResponse();
-
-        $this->assertTrue($response->isSuccessful());
-        $this->assertIsString($response->getContent());
-        $this->assertJson($response->getContent());
-        $jsonArray = json_decode($response->getContent(), true);
-        $this->assertCount(1, $jsonArray['data']);
-        $this->assertEquals('https://127.0.0.2/', $jsonArray['data'][0]['url']);
-        $this->assertEquals('https', $jsonArray['data'][0]['protocol']);
-    }
-
-    public function testEmptyDatatablesAction(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('http://127.0.0.2/', 'http');
-        $entityManager->persist($mirror);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-        $client->request('GET', '/mirrors/datatables');
-        $response = $client->getResponse();
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertIsString($response->getContent());
-        $this->assertJson($response->getContent());
-        $jsonArray = json_decode($response->getContent(), true);
-        $this->assertCount(0, $jsonArray['data']);
-    }
-
     public function testMirrorsAction(): void
     {
         $entityManager = $this->getEntityManager();
@@ -124,7 +78,8 @@ class MirrorStatusControllerTest extends DatabaseTestCase
                 'isos' => true,
                 'ipv4' => true,
                 'ipv6' => true,
-                'active' => true
+                'active' => true,
+                'host' => '127.0.0.2'
             ],
             $jsonArray
         );

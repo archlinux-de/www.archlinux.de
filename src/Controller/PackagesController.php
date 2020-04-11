@@ -2,9 +2,6 @@
 
 namespace App\Controller;
 
-use App\Datatables\DatatablesColumnConfiguration;
-use App\Datatables\DatatablesQuery;
-use App\Datatables\DatatablesRequest;
 use App\Entity\Packages\Architecture;
 use App\Repository\PackageRepository;
 use App\Request\PaginationRequest;
@@ -20,83 +17,19 @@ class PackagesController extends AbstractController
     /** @var PackageRepository */
     private $packageRepository;
 
-    /** @var DatatablesQuery */
-    private $datatablesQuery;
-
     /** @var string */
     private $defaultArchitecture;
 
     /**
      * @param PackageRepository $packageRepository
-     * @param DatatablesQuery $datatablesQuery
      * @param string $defaultArchitecture
      */
     public function __construct(
         PackageRepository $packageRepository,
-        DatatablesQuery $datatablesQuery,
         string $defaultArchitecture
     ) {
         $this->packageRepository = $packageRepository;
-        $this->datatablesQuery = $datatablesQuery;
         $this->defaultArchitecture = $defaultArchitecture;
-    }
-
-    /**
-     * @Route("/packages", methods={"GET"})
-     * @Cache(smaxage="600")
-     * @param Request $request
-     * @return Response
-     */
-    public function indexAction(Request $request): Response
-    {
-        $search = $request->get('search');
-        $architecture = $request->get('architecture', $this->defaultArchitecture);
-        $repository = $request->get('repository');
-
-        return $this->render(
-            'packages/index.html.twig',
-            [
-                'architecture' => $architecture,
-                'defaultArchitecture' => $this->defaultArchitecture,
-                'repository' => $repository,
-                'search' => $search
-            ]
-        );
-    }
-
-    /**
-     * @Route("/packages/datatables", methods={"GET"})
-     * @param DatatablesRequest $request
-     * @return Response
-     */
-    public function datatablesAction(DatatablesRequest $request): Response
-    {
-        $columnConfiguration = (new DatatablesColumnConfiguration())
-            ->addCompareableColumn('repository.name', 'repository.name')
-            ->addCompareableColumn('architecture', 'repository.architecture')
-            ->addTextSearchableColumn('name', 'package.name')
-            ->addTextSearchableColumn('description', 'package.description')
-            ->addTextSearchableColumn('groups', 'package.groups')
-            ->addOrderableColumn('buildDate', 'package.buildDate')
-            ->addOrderableColumn('name', 'package.name');
-
-        $response = $this->datatablesQuery->getResult(
-            $request,
-            $columnConfiguration,
-            $this->packageRepository
-                ->createQueryBuilder('package')
-                ->addSelect('repository')
-                ->join('package.repository', 'repository'),
-            $this->packageRepository->getSize()
-        );
-
-        $jsonResponse = $this->json($response);
-        // Only cache the first draw
-        if ($response->getDraw() == 1) {
-            $jsonResponse->setMaxAge(300);
-            $jsonResponse->setSharedMaxAge(3600);
-        }
-        return $jsonResponse;
     }
 
     /**
@@ -151,16 +84,22 @@ class PackagesController extends AbstractController
      * @Cache(maxage="300", smaxage="600")
      * @param QueryRequest $queryRequest
      * @param PaginationRequest $paginationRequest
+     * @param Request $request
      * @return Response
      */
-    public function packagesAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
-    {
+    public function packagesAction(
+        QueryRequest $queryRequest,
+        PaginationRequest $paginationRequest,
+        Request $request
+    ): Response {
         return $this->json(
             $this->packageRepository->findLatestByQueryAndArchitecture(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery(),
-                Architecture::X86_64
+                // @TODO: Add Parameter Validation
+                $request->get('architecture', Architecture::X86_64),
+                $request->get('repository')
             )
         );
     }

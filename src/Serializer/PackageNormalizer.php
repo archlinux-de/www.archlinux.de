@@ -17,10 +17,14 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     /** @var ObjectNormalizer */
     private $normalizer;
 
-    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer)
+    /** @var string */
+    private $cgitUrl;
+
+    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer, string $cgitUrl)
     {
         $this->router = $router;
         $this->normalizer = $normalizer;
+        $this->cgitUrl = $cgitUrl;
     }
 
     /**
@@ -74,15 +78,31 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             )
         );
 
-        $data['_url'] = $this->router->generate(
-            'app_packagedetails_index',
+        $data['packageUrl'] = $this->router->generate(
+            'app_mirror_package',
             [
-                'arch' => $object->getRepository()->getArchitecture(),
-                'pkgname' => $object->getName(),
-                'repo' => $object->getRepository()->getName()
+                'architecture' => $object->getRepository()->getArchitecture(),
+                'file' => $object->getFileName(),
+                'repository' => $object->getRepository()->getName()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
+
+        $cgitLink = $this->cgitUrl . (
+            in_array(
+                $object->getRepository()->getName(),
+                [
+                    'community',
+                    'community-testing',
+                    'multilib',
+                    'multilib-testing',
+                ]
+            ) ? 'community' : 'packages'
+            )
+            . '.git/';
+
+        $data['sourceUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
+        $data['sourceChangelogUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
 
         return $data;
     }

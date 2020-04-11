@@ -9,7 +9,10 @@ class QueryRequest
     /**
      * @var string
      * @Assert\Length(max=191)
-     * @Assert\Regex("/^[a-zA-Z0-9][a-zA-Z0-9@:\.+_-]*$/")
+     * @Assert\Regex(
+     *     pattern="/^[\w@:\.+\- ]+$/u",
+     *     normalizer="trim"
+     * )
      */
     private $query;
 

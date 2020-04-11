@@ -75,13 +75,11 @@ class PackageNormalizerTest extends KernelTestCase
                 'repository' => [
                     'name' => 'core',
                     'architecture' => 'x86_64',
-                    'testing' => false,
-                    '_url' => 'http://localhost/packages?repository=core&architecture=x86_64'
+                    'testing' => false
                 ],
                 'groups' => [
                     'base'
                 ],
-                '_url' => 'http://localhost/packages/core/x86_64/pacman',
                 'fileName' => 'pacman-6.0-1-x86_64.pkg.tar.xz',
                 'url' => 'http://www.archlinux.org',
                 'base' => 'pacman',
@@ -102,8 +100,7 @@ class PackageNormalizerTest extends KernelTestCase
                             'repository' => [
                                 'name' => 'core',
                                 'architecture' => 'x86_64',
-                                'testing' => false,
-                                '_url' => 'http://localhost/packages?repository=core&architecture=x86_64'
+                                'testing' => false
                             ]
                         ]
                     ]
@@ -113,7 +110,11 @@ class PackageNormalizerTest extends KernelTestCase
                 'checkDependencies' => [['name' => 'check', 'version' => null, 'target' => null]],
                 'optionalDependencies' => [['name' => 'opt', 'version' => null, 'target' => null]],
                 'makeDependencies' => [['name' => 'make', 'version' => null, 'target' => null]],
-                'provisions' => [['name' => 'provider', 'version' => null, 'target' => null]]
+                'provisions' => [['name' => 'provider', 'version' => null, 'target' => null]],
+                'packageUrl' => 'http://localhost/download/core/os/x86_64/pacman-6.0-1-x86_64.pkg.tar.xz',
+                'sourceUrl' => 'https://projects.archlinux.de/svntogit/packages.git/tree/trunk?h=packages/pacman',
+                'sourceChangelogUrl' =>
+                    'https://projects.archlinux.de/svntogit/packages.git/tree/trunk?h=packages/pacman'
             ],
             $jsonArray
         );

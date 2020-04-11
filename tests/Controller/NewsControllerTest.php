@@ -11,91 +11,6 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class NewsControllerTest extends DatabaseTestCase
 {
-    public function testIndexAction(): void
-    {
-        $client = $this->getClient();
-
-        $client->request('GET', '/news', ['search' => 'foo']);
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-    }
-
-    public function testItemAction(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $news = new NewsItem(1);
-        $news->setTitle('Breaking News');
-        $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
-        $news->setAuthor(
-            (new NewsAuthor())
-                ->setName('')
-                ->setUri('')
-        );
-        $news->setLink('https://www.archlinux.de/');
-        $entityManager->persist($news);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-
-        $crawler = $client->request('GET', '/news/1-Breaking-News');
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertEquals('Breaking News', $crawler->filter('h1')->text());
-        $this->assertIsString($client->getResponse()->getContent());
-        $this->assertStringContainsString('Hell has frozen over!', $client->getResponse()->getContent());
-    }
-
-    public function testDatatablesAction(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $news = new NewsItem(1);
-        $news->setTitle('Breaking News');
-        $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
-        $news->setAuthor(
-            (new NewsAuthor())
-                ->setName('')
-                ->setUri('')
-        );
-        $news->setLink('https://www.archlinux.de/');
-        $entityManager->persist($news);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-
-        $client->request(
-            'GET',
-            '/news/datatables',
-            [
-                'draw' => 1,
-                'length' => 2,
-                'columns' => [
-                    [
-                        'data' => 'title',
-                        'name' => '',
-                        'orderable' => false,
-                        'search' => [
-                            'regex' => false,
-                            'value' => ''
-                        ],
-                        'searchable' => true
-                    ]
-                ],
-                'search' => [
-                    'regex' => false,
-                    'value' => 'hell'
-                ]
-            ]
-        );
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertIsString($client->getResponse()->getContent());
-        $responseData = json_decode($client->getResponse()->getContent(), true);
-        $this->assertCount(1, $responseData['data']);
-        $this->assertEquals('Breaking News', $responseData['data'][0]['title']);
-    }
-
     public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
@@ -129,29 +44,6 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertEquals($news->getDescription(), (string)$xml->entry->content);
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertEquals('http://localhost/news/1-Breaking-News', (string)$xml->entry->link->attributes()->href);
-    }
-
-    public function testRedirectToCorrectSlug(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $news = new NewsItem(1);
-        $news->setTitle('Breaking News');
-        $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
-        $news->setAuthor(
-            (new NewsAuthor())
-                ->setName('')
-                ->setUri('')
-        );
-        $news->setLink('https://www.archlinux.de/');
-        $entityManager->persist($news);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-
-        $client->request('GET', '/news/1-wrong');
-
-        $this->assertTrue($client->getResponse()->isRedirect('/news/1-Breaking-News'));
     }
 
     public function testNewsAction(): void
@@ -218,7 +110,7 @@ class NewsControllerTest extends DatabaseTestCase
                 'lastModified' => '2020-02-02T00:00:00+00:00',
                 'link' => 'https://www.archlinux.de/',
                 'title' => 'Breaking News',
-                '_url' => 'http://localhost/news/1-Breaking-News'
+                'slug' => 'Breaking-News'
             ],
             json_decode($client->getResponse()->getContent(), true)
         );

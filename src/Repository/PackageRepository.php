@@ -6,6 +6,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class PackageRepository extends ServiceEntityRepository
@@ -77,23 +78,36 @@ class PackageRepository extends ServiceEntityRepository
      * @param int $limit
      * @param string $query
      * @param string $architecture
+     * @param string|null $repository
      * @return Paginator<Package>
      */
     public function findLatestByQueryAndArchitecture(
         int $offset,
         int $limit,
         string $query,
-        string $architecture
+        string $architecture,
+        ?string $repository
     ): Paginator {
         $queryBuilder = $this
             ->createQueryBuilder('package')
-            ->select('package', 'repository')
-            ->join(
+            ->select('package', 'repository');
+        if ($repository) {
+            $queryBuilder->join(
+                'package.repository',
+                'repository',
+                'WITH',
+                'repository.architecture = :architecture AND repository.name = :repository'
+            )
+                ->setParameter('repository', $repository);
+        } else {
+            $queryBuilder->join(
                 'package.repository',
                 'repository',
                 'WITH',
                 'repository.architecture = :architecture'
-            )
+            );
+        }
+        $queryBuilder
             ->orderBy('package.buildDate', 'DESC')
             ->setParameter('architecture', $architecture)
             ->setFirstResult($offset)
@@ -216,21 +230,21 @@ class PackageRepository extends ServiceEntityRepository
      * @param string $arch
      * @param string $pkgname
      * @param string $type
-     * @param int $offset
-     * @param int $limit
-     * @return Paginator<Package>
+     * @return Package[]
      */
     public function findInverseRelationsByQuery(
         string $repo,
         string $arch,
         string $pkgname,
-        string $type,
-        int $offset,
-        int $limit
-    ): Paginator {
-        $package = $this->getByName($repo, $arch, $pkgname);
+        string $type
+    ): array {
+        try {
+            $package = $this->getByName($repo, $arch, $pkgname);
+        } catch (NoResultException $e) {
+            return [];
+        }
 
-        $queryBuilder = $this
+        return $this
             ->createQueryBuilder('source')
             ->join('App:Packages\Package', 'target')
             ->join($type, 'relation')
@@ -239,10 +253,8 @@ class PackageRepository extends ServiceEntityRepository
             ->andWhere('target = :target')
             ->orderBy('source.buildDate', 'DESC')
             ->setParameter('target', $package)
-            ->setFirstResult($offset)
-            ->setMaxResults($limit);
-
-        return new Paginator($queryBuilder);
+            ->getQuery()
+            ->getResult();
     }
 
     /**

@@ -3,14 +3,14 @@
     <id>{{ url('app_releases_feed') }}</id>
     <title>Arch Linux Releases</title>
     <updated>{{ 'now' | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
-    <link rel="alternate" href="{{ url('app_releases_index') }}"/>
+    <link rel="alternate" href="{{ url('app_releases') }}"/>
     <link rel="self" href="{{ url('app_releases_feed') }}"/>
     <icon>{{ absolute_url(asset('build/images/archicon.svg')) }}</icon>
     <logo>{{ absolute_url(asset('build/images/archicon.svg')) }}</logo>
     {# @var releases \App\Entity\Release[] #}
     {% for release in releases %}
         <entry>
-            {% set releaseURL = url('app_releases_release', {'version': release.version}) %}
+            {% set releaseURL = url('app_release', {'version': release.version}) %}
             <id>{{ releaseURL }}</id>
             <title>{{ release.version }}</title>
             <updated>{{ release.releaseDate | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>

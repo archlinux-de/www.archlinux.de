@@ -53,7 +53,8 @@ class MirrorNormalizerTest extends KernelTestCase
                 'isos' => true,
                 'ipv4' => true,
                 'ipv6' => true,
-                'active' => true
+                'active' => true,
+                'host' => null
             ],
             $jsonArray
         );

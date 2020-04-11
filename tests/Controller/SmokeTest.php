@@ -109,19 +109,15 @@ class SmokeTest extends DatabaseTestCase
             ['/packages/suggest?term=foo'],
             ['/packages/feed'],
             ['/download'],
-            ['/packages/datatables?draw=1&length=1'],
             ['/sitemap.xml'],
             ['/news'],
             ['/news/feed'],
-            ['/news/datatables?draw=1&length=1'],
             ['/news/1-Big-News'],
             ['/releases'],
-            ['/releases/datatables?draw=1&length=1'],
             ['/releases/2018.01.01'],
             ['/releases/feed'],
             ['/impressum'],
-            ['/privacy-policy'],
-            ['/mirrors/datatables']
+            ['/privacy-policy']
         ];
     }
 

@@ -63,17 +63,22 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             )
         );
 
-        $data['torrentUrl'] = $object->getTorrent()->getUrl();
+        $data['torrentUrl'] = $object->getTorrent()->getUrl()
+            ? 'https://www.archlinux.org' . $object->getTorrent()->getUrl()
+            : null;
         $data['fileSize'] = $object->getTorrent()->getFileLength();
         $data['magnetUri'] = $object->getTorrent()->getMagnetUri();
-
-        $data['_url'] = $this->router->generate(
-            'app_releases_release',
+        $data['isoPath'] = $data['isoUrl'];
+        $data['isoUrl'] = $data['available'] ? $this->router->generate(
+            'app_mirror_iso',
             [
-                'version' => $object->getVersion(),
+                'file' => $object->getTorrent()->getFileName(),
+                'version' => $object->getVersion()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        ) : null;
+        $data['isoSigUrl'] = 'https://www.archlinux.org' . $data['isoPath'] . '.sig';
+        $data['fileName'] = $object->getTorrent()->getFileName();
 
         return $data;
     }
