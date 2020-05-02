@@ -21,6 +21,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('')
@@ -47,6 +48,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
 
@@ -67,6 +69,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $coreRepository = new Repository('core', Architecture::X86_64);
         $pacman = new Package(
             $coreRepository,
@@ -92,6 +95,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
 
@@ -108,6 +112,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
 
@@ -124,6 +129,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
 
@@ -140,6 +146,7 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror = new Mirror('http://127.0.0.2/', 'http');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
 

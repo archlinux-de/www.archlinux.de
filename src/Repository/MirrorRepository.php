@@ -51,6 +51,7 @@ class MirrorRepository extends ServiceEntityRepository
             ->andWhere('mirror.country = :country')
             ->andWhere('mirror.lastSync > DATE_ADD(:lastsync, mirror.delay, \'second\')')
             ->andWhere('mirror.active = true')
+            ->andWhere('mirror.score IS NOT NULL')
             ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
             ->setParameter('protocol', self::PROTOCOL)
@@ -70,6 +71,7 @@ class MirrorRepository extends ServiceEntityRepository
             ->where('mirror.protocol = :protocol')
             ->andWhere('mirror.lastSync > DATE_ADD(:lastsync, mirror.delay, \'second\')')
             ->andWhere('mirror.active = true')
+            ->andWhere('mirror.score IS NOT NULL')
             ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
             ->setParameter('protocol', self::PROTOCOL)
@@ -88,6 +90,7 @@ class MirrorRepository extends ServiceEntityRepository
             ->where('mirror.protocol = :protocol')
             ->andWhere('mirror.country = :country')
             ->andWhere('mirror.active = true')
+            ->andWhere('mirror.score IS NOT NULL')
             ->andWhere('mirror.isos = true')
             ->orderBy('mirror.score')
             ->setParameter('protocol', self::PROTOCOL)
@@ -101,22 +104,16 @@ class MirrorRepository extends ServiceEntityRepository
      */
     private function findActive(): array
     {
-        return $this->findBy(
-            [
-                'protocol' => self::PROTOCOL,
-                'active' => true,
-                'isos' => true,
-            ],
-            ['score' => 'ASC']
-        );
-    }
-
-    /**
-     * @return Mirror[]
-     */
-    public function findSecure(): array
-    {
-        return $this->findBy(['protocol' => self::PROTOCOL], ['score' => 'ASC']);
+        return $this
+            ->createQueryBuilder('mirror')
+            ->where('mirror.protocol = :protocol')
+            ->andWhere('mirror.active = true')
+            ->andWhere('mirror.score IS NOT NULL')
+            ->andWhere('mirror.isos = true')
+            ->orderBy('mirror.score')
+            ->setParameter('protocol', self::PROTOCOL)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -130,6 +127,8 @@ class MirrorRepository extends ServiceEntityRepository
         $queryBuilder = $this
             ->createQueryBuilder('mirror')
             ->where('mirror.protocol = :protocol')
+            ->andWhere('mirror.active = true')
+            ->andWhere('mirror.score IS NOT NULL')
             ->orderBy('mirror.score')
             ->setFirstResult($offset)
             ->setMaxResults($limit)

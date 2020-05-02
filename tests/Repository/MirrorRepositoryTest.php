@@ -18,6 +18,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirror->setLastSync($lastSync);
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($country);
@@ -39,6 +40,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirror->setActive(true);
         $mirror->setIsos(true);
         $mirror->setLastSync($lastSync);
+        $mirror->setScore(1);
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($mirror);
@@ -57,6 +59,7 @@ class MirrorRepositoryTest extends DatabaseTestCase
         $mirror = new Mirror('https://downloads.archlinux.de', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($mirror);
@@ -66,29 +69,6 @@ class MirrorRepositoryTest extends DatabaseTestCase
         /** @var MirrorRepository $mirrorRepository */
         $mirrorRepository = $this->getRepository(Mirror::class);
         $mirrors = $mirrorRepository->findBestByCountryAndLastSync('us', new \DateTime());
-        $this->assertCount(1, $mirrors);
-        $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
-    }
-
-    public function testFindSecure(): void
-    {
-        $country = (new Country('de'))->setName('Germany');
-        $lastSync = new \DateTime('2018-01-01');
-        $mirror = new Mirror('https://downloads.archlinux.de', 'https');
-        $mirror->setActive(true);
-        $mirror->setIsos(true);
-        $mirror->setCountry($country);
-        $mirror->setLastSync($lastSync);
-
-        $entityManager = $this->getEntityManager();
-        $entityManager->persist($country);
-        $entityManager->persist($mirror);
-        $entityManager->flush();
-        $entityManager->clear();
-
-        /** @var MirrorRepository $mirrorRepository */
-        $mirrorRepository = $this->getRepository(Mirror::class);
-        $mirrors = $mirrorRepository->findSecure();
         $this->assertCount(1, $mirrors);
         $this->assertEquals($mirror->getUrl(), $mirrors[0]->getUrl());
     }

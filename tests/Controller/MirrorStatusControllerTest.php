@@ -15,6 +15,9 @@ class MirrorStatusControllerTest extends DatabaseTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
+        $mirror->setActive(true);
+        $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
 

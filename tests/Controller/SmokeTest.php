@@ -46,6 +46,7 @@ class SmokeTest extends DatabaseTestCase
         $mirror = new Mirror('', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
+        $mirror->setScore(1);
         $entityManager->persist($mirror);
 
         $newsItem = (new NewsItem(1))
