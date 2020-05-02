@@ -107,7 +107,7 @@ class MirrorRepository extends ServiceEntityRepository
                 'active' => true,
                 'isos' => true,
             ],
-            ['score' => 'DESC']
+            ['score' => 'ASC']
         );
     }
 
@@ -116,7 +116,7 @@ class MirrorRepository extends ServiceEntityRepository
      */
     public function findSecure(): array
     {
-        return $this->findBy(['protocol' => self::PROTOCOL], ['score' => 'DESC']);
+        return $this->findBy(['protocol' => self::PROTOCOL], ['score' => 'ASC']);
     }
 
     /**
@@ -130,7 +130,7 @@ class MirrorRepository extends ServiceEntityRepository
         $queryBuilder = $this
             ->createQueryBuilder('mirror')
             ->where('mirror.protocol = :protocol')
-            ->orderBy('mirror.score', 'DESC')
+            ->orderBy('mirror.score')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->setParameter('protocol', self::PROTOCOL);
