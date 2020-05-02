@@ -1,7 +1,13 @@
 <template>
-  <form action="" method="get">
+  <form :action="this.$router.resolve({name: 'packages'}).href" method="get">
     <div class="input-group">
-      <b-form-input debounce="250" id="searchfield" list="searchfield-list" v-model="term"></b-form-input>
+      <b-form-input
+        name="search"
+        debounce="250"
+        id="searchfield"
+        list="searchfield-list"
+        v-model="term"
+        autocomplete="off"></b-form-input>
       <b-form-datalist :options="options" id="searchfield-list"></b-form-datalist>
       <span class="input-group-btn"><b-button type="submit" variant="primary">Suchen</b-button></span>
     </div>
