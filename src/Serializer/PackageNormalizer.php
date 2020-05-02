@@ -5,10 +5,11 @@ namespace App\Serializer;
 use App\Entity\Packages\Package;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class PackageNormalizer implements NormalizerInterface
+class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     /** @var UrlGeneratorInterface */
     private $router;
@@ -16,10 +17,14 @@ class PackageNormalizer implements NormalizerInterface
     /** @var ObjectNormalizer */
     private $normalizer;
 
-    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer)
+    /** @var string */
+    private $cgitUrl;
+
+    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer, string $cgitUrl)
     {
         $this->router = $router;
         $this->normalizer = $normalizer;
+        $this->cgitUrl = $cgitUrl;
     }
 
     /**
@@ -47,25 +52,66 @@ class PackageNormalizer implements NormalizerInterface
                 [
                     AbstractNormalizer::ATTRIBUTES => [
                         'repository',
-                        'architecture',
+                        'fileName',
                         'name',
+                        'base',
                         'version',
                         'description',
+                        'groups',
+                        'compressedSize',
+                        'installedSize',
+                        'sha256sum',
+                        'url',
+                        'licenses',
+                        'architecture',
                         'buildDate',
-                        'groups'
+                        'packager',
+                        'replacements',
+                        'conflicts',
+                        'provisions',
+                        'dependencies',
+                        'optionalDependencies',
+                        'makeDependencies',
+                        'checkDependencies',
                     ]
                 ]
             )
         );
-        $data['url'] = $this->router->generate(
-            'app_packagedetails_index',
+
+        $data['packageUrl'] = $this->router->generate(
+            'app_mirror_package',
             [
-                'arch' => $object->getRepository()->getArchitecture(),
-                'pkgname' => $object->getName(),
-                'repo' => $object->getRepository()->getName()
+                'architecture' => $object->getRepository()->getArchitecture(),
+                'file' => $object->getFileName(),
+                'repository' => $object->getRepository()->getName()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
+
+        $cgitLink = $this->cgitUrl . (
+            in_array(
+                $object->getRepository()->getName(),
+                [
+                    'community',
+                    'community-testing',
+                    'multilib',
+                    'multilib-testing',
+                ]
+            ) ? 'community' : 'packages'
+            )
+            . '.git/';
+
+        $data['sourceUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
+        $data['sourceChangelogUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
+
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

@@ -5,9 +5,10 @@ namespace App\Serializer;
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
 use App\Service\NewsItemIdParser;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class NewsItemDenormalizer implements DenormalizerInterface
+class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
     /** @var NewsItemIdParser */
     private $newsItemIdParser;
@@ -54,5 +55,13 @@ class NewsItemDenormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, string $type, string $format = null)
     {
         return $type == NewsItem::class . '[]';
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

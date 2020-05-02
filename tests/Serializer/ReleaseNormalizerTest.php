@@ -3,6 +3,7 @@
 namespace App\Tests\Serializer;
 
 use App\Entity\Release;
+use App\Entity\Torrent;
 use App\Serializer\ReleaseNormalizer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Serializer;
@@ -31,10 +32,17 @@ class ReleaseNormalizerTest extends KernelTestCase
     {
         $releaseDate = new \DateTime('2018-01-01');
 
-        $release = new Release('2018.01.01');
-        $release->setReleaseDate($releaseDate);
-        $release->setAvailable(true);
-        $release->setKernelVersion('3.11');
+        $release = (new Release('2018.01.01'))
+            ->setReleaseDate($releaseDate)
+            ->setAvailable(true)
+            ->setKernelVersion('3.11')
+            ->setInfo('foo bar')
+            ->setIsoUrl('/releases/2018.01.01.iso')
+            ->setTorrent(
+                (new Torrent())
+                    ->setFileName('2018.01.01.iso')
+                    ->setUrl('/releases/2018.01.01.iso.torrent')
+            );
 
         $json = $this->serializer->serialize($release, 'json');
         $this->assertJson($json);
@@ -45,7 +53,15 @@ class ReleaseNormalizerTest extends KernelTestCase
                 'kernelVersion' => '3.11',
                 'releaseDate' => '2018-01-01T00:00:00+00:00',
                 'available' => true,
-                'url' => 'http://localhost/releases/2018.01.01'
+                'info' => 'foo bar',
+                'isoUrl' => 'http://localhost/download/iso/2018.01.01/2018.01.01.iso',
+                'sha1Sum' => null,
+                'torrentUrl' => 'https://www.archlinux.org/releases/2018.01.01.iso.torrent',
+                'fileSize' => null,
+                'magnetUri' => null,
+                'isoPath' => '/releases/2018.01.01.iso',
+                'isoSigUrl' => 'https://www.archlinux.org/releases/2018.01.01.iso.sig',
+                'fileName' => '2018.01.01.iso'
             ],
             $jsonArray
         );

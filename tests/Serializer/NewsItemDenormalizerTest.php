@@ -59,5 +59,6 @@ class NewsItemDenormalizerTest extends TestCase
         $newsItemDenormalizer = new NewsItemDenormalizer($newsItemIdParser);
 
         $this->assertTrue($newsItemDenormalizer->supportsDenormalization([], NewsItem::class . '[]'));
+        $this->assertTrue($newsItemDenormalizer->hasCacheableSupportsMethod());
     }
 }

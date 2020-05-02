@@ -1,6 +1,101 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+app_start:
+    path: /
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_impressum:
+    path: /impressum
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_privacy:
+    path: /privacy-policy
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_download:
+    path: /download
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_packages:
+    path: /packages
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_package:
+    path: /packages/{repository}/{architecture}/{name}
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_news:
+    path: /news
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_news_item:
+    path: /news/{id<[0-9]+>}-{slug<[\w\-\.]+>}
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_mirrors:
+    path: /mirrors
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_releases:
+    path: /releases
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
+
+app_release:
+    path: /releases/{version}
+    methods: GET
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
+        template: 'index.html.twig'
+        sharedAge: 3600
+        maxAge: 300
 
 external_forum:
     path: /

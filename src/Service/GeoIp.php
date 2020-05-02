@@ -9,6 +9,7 @@ class GeoIp
 {
     /** @var Reader */
     private $reader;
+
     /** @var LoggerInterface */
     private $logger;
 

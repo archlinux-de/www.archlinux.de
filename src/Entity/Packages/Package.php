@@ -179,7 +179,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $replaces;
+    private $replacements;
 
     /**
      * @var Collection<int, Conflict>
@@ -205,7 +205,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $provides;
+    private $provisions;
 
     /**
      * @var Collection<int, Dependency>
@@ -218,7 +218,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $depends;
+    private $dependencies;
 
     /**
      * @var Collection<int, OptionalDependency>
@@ -231,7 +231,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $optdepends;
+    private $optionalDependencies;
 
     /**
      * @var Collection<int, MakeDependency>
@@ -243,7 +243,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $makedepends;
+    private $makeDependencies;
 
     /**
      * @var Collection<int, CheckDependency>
@@ -256,7 +256,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $checkdepends;
+    private $checkDependencies;
 
     /**
      * @var Files
@@ -288,13 +288,13 @@ class Package
 
         $this->fileName = $name . '-' . $version . '-' . $architecture . '.pkg.tar.xz';
 
-        $this->makedepends = new ArrayCollection();
-        $this->checkdepends = new ArrayCollection();
-        $this->optdepends = new ArrayCollection();
+        $this->makeDependencies = new ArrayCollection();
+        $this->checkDependencies = new ArrayCollection();
+        $this->optionalDependencies = new ArrayCollection();
         $this->conflicts = new ArrayCollection();
-        $this->depends = new ArrayCollection();
-        $this->provides = new ArrayCollection();
-        $this->replaces = new ArrayCollection();
+        $this->dependencies = new ArrayCollection();
+        $this->provisions = new ArrayCollection();
+        $this->replacements = new ArrayCollection();
     }
 
     /**
@@ -633,7 +633,7 @@ class Package
      */
     public function getDependencies(): Collection
     {
-        return $this->depends;
+        return $this->dependencies;
     }
 
     /**
@@ -643,7 +643,7 @@ class Package
     public function addDependency(Dependency $dependency): Package
     {
         $dependency->setSource($this);
-        $this->depends->add($dependency);
+        $this->dependencies->add($dependency);
         return $this;
     }
 
@@ -671,7 +671,7 @@ class Package
      */
     public function getReplacements(): Collection
     {
-        return $this->replaces;
+        return $this->replacements;
     }
 
     /**
@@ -681,7 +681,7 @@ class Package
     public function addReplacement(Replacement $replacement): Package
     {
         $replacement->setSource($this);
-        $this->replaces->add($replacement);
+        $this->replacements->add($replacement);
         return $this;
     }
 
@@ -690,7 +690,7 @@ class Package
      */
     public function getOptionalDependencies(): Collection
     {
-        return $this->optdepends;
+        return $this->optionalDependencies;
     }
 
     /**
@@ -700,7 +700,7 @@ class Package
     public function addOptionalDependency(OptionalDependency $optionalDependency): Package
     {
         $optionalDependency->setSource($this);
-        $this->optdepends->add($optionalDependency);
+        $this->optionalDependencies->add($optionalDependency);
         return $this;
     }
 
@@ -709,7 +709,7 @@ class Package
      */
     public function getProvisions(): Collection
     {
-        return $this->provides;
+        return $this->provisions;
     }
 
     /**
@@ -719,7 +719,7 @@ class Package
     public function addProvision(Provision $provision): Package
     {
         $provision->setSource($this);
-        $this->provides->add($provision);
+        $this->provisions->add($provision);
         return $this;
     }
 
@@ -728,7 +728,7 @@ class Package
      */
     public function getMakeDependencies(): Collection
     {
-        return $this->makedepends;
+        return $this->makeDependencies;
     }
 
     /**
@@ -738,7 +738,7 @@ class Package
     public function addMakeDependency(MakeDependency $makeDependency): Package
     {
         $makeDependency->setSource($this);
-        $this->makedepends->add($makeDependency);
+        $this->makeDependencies->add($makeDependency);
         return $this;
     }
 
@@ -747,7 +747,7 @@ class Package
      */
     public function getCheckDependencies(): Collection
     {
-        return $this->checkdepends;
+        return $this->checkDependencies;
     }
 
     /**
@@ -757,7 +757,7 @@ class Package
     public function addCheckDependency(CheckDependency $checkDependency): Package
     {
         $checkDependency->setSource($this);
-        $this->checkdepends->add($checkDependency);
+        $this->checkDependencies->add($checkDependency);
         return $this;
     }
 

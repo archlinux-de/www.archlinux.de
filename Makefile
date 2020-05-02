@@ -7,7 +7,7 @@ COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml -p www
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} php
 PHP-RUN=${COMPOSE-RUN} --no-deps php
-NODE-RUN=${COMPOSE-RUN} --no-deps encore
+NODE-RUN=${COMPOSE-RUN} --no-deps -e DISABLE_OPENCOLLECTIVE=true encore
 MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
@@ -58,8 +58,9 @@ shell-node:
 test:
 	${PHP-RUN} composer validate
 	${PHP-RUN} vendor/bin/phpcs
-	${NODE-RUN} node_modules/.bin/eslint assets
-	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css'
+	${NODE-RUN} node_modules/.bin/eslint assets --ext js --ext vue
+	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css' 'assets/js/**/*.vue'
+	${NODE-RUN} node_modules/.bin/jest
 	${PHP-RUN} bin/console lint:yaml config
 	${PHP-RUN} bin/console lint:twig templates
 	${NODE-RUN} sh -c "PUBLIC_PATH=/tmp node_modules/.bin/encore prod"
@@ -73,13 +74,20 @@ test-db-migrations: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test'
 
 test-coverage:
-	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage
+	${NODE-RUN} node_modules/.bin/jest --coverage --coverageDirectory var/coverage/jest
+	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 
 test-db-coverage: start-db
 	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
 
 test-security:
 	${PHP-RUN} bin/console security:check
+	${NODE-RUN} yarn audit
+
+fix-code-style:
+	${PHP-RUN} vendor/bin/phpcbf || true
+	${NODE-RUN} node_modules/.bin/eslint assets --fix --ext js --ext vue
+	${NODE-RUN} node_modules/.bin/stylelint --fix 'assets/css/**/*.scss' 'assets/css/**/*.css' 'assets/js/**/*.vue'
 
 update:
 	${PHP-RUN} composer --no-interaction update
@@ -88,7 +96,7 @@ update:
 
 deploy:
 	yarn install --non-interactive --frozen-lockfile --prod
-	yarn run encore prod
+	node_modules/.bin/encore prod
 	find public/build -type f -mtime +30 -delete
 	find public/build -type d -empty -delete
 	composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader

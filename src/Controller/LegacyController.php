@@ -19,11 +19,11 @@ class LegacyController extends AbstractController
         'GetOpenSearch' => 'app_packages_opensearch',
         'GetRecentNews' => 'app_news_feed',
         'GetRecentPackages' => 'app_packages_feed',
-        'MirrorStatus' => 'app_mirrorstatus_index',
-        'PackageDetails' => 'app_packagedetails_index',
-        'Packages' => 'app_packages_index',
+        'MirrorStatus' => 'app_mirrors',
+        'PackageDetails' => 'app_package',
+        'Packages' => 'app_packages',
         'PackagesSuggest' => 'app_packages_suggest',
-        'Start' => 'app_start_index'
+        'Start' => 'app_start'
     );
 
     /** @var string[] */
@@ -56,6 +56,20 @@ class LegacyController extends AbstractController
 
         if (isset($this->internalPages[$page])) {
             $parameters = array_diff_key($request->query->all(), ['page' => '']);
+
+            if (
+                $this->internalPages[$page] == 'app_package'
+                && isset($parameters['repo'])
+                && isset($parameters['arch'])
+                && isset($parameters['pkgname'])
+            ) {
+                $parameters = [
+                    'repository' => $parameters['repo'],
+                    'architecture' => $parameters['arch'],
+                    'name' => $parameters['pkgname']
+                ];
+            }
+
             try {
                 return $this->redirectToRoute(
                     $this->internalPages[$page],

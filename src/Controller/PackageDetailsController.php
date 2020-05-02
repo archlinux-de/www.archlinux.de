@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Packages\Package;
+use App\Entity\Packages\Relations\CheckDependency;
+use App\Entity\Packages\Relations\Conflict;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
+use App\Entity\Packages\Relations\Provision;
+use App\Entity\Packages\Relations\Replacement;
 use App\Repository\FilesRepository;
 use App\Repository\PackageRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -14,66 +18,70 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PackageDetailsController extends AbstractController
 {
+    /** @var PackageRepository */
+    private $packageRepository;
+
+    /** @var FilesRepository */
+    private $filesRepository;
+
     /**
-     * @Route("/packages/{repo}/{arch}/{pkgname}", methods={"GET"})
-     * @Cache(smaxage="600")
-     * @param string $repo
-     * @param string $arch
-     * @param string $pkgname
      * @param PackageRepository $packageRepository
-     * @param string $cgitUrl
+     * @param FilesRepository $filesRepository
+     */
+    public function __construct(PackageRepository $packageRepository, FilesRepository $filesRepository)
+    {
+        $this->packageRepository = $packageRepository;
+        $this->filesRepository = $filesRepository;
+    }
+
+    /**
+     * @Route("/api/packages/{repository}/{architecture}/{name}/files", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
      * @return Response
      * @throws NonUniqueResultException
      */
-    public function indexAction(
-        string $repo,
-        string $arch,
-        string $pkgname,
-        PackageRepository $packageRepository,
-        string $cgitUrl
-    ): Response {
+    public function filesAction(string $repository, string $architecture, string $name): Response
+    {
+        try {
+            $files = $this->filesRepository->getByPackageName($repository, $architecture, $name);
+        } catch (NoResultException $e) {
+            throw $this->createNotFoundException('Package not found', $e);
+        }
+
+        return $this->json($files);
+    }
+
+    /**
+     * @Route("/api/packages/{repository}/{architecture}/{name}", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
+     * @return Response
+     */
+    public function packageAction(string $repository, string $architecture, string $name): Response
+    {
         try {
             try {
-                $package = $packageRepository->getByName($repo, $arch, $pkgname);
+                $package = $this->packageRepository->getByName($repository, $architecture, $name);
             } catch (NoResultException $e) {
                 return $this->redirectToPackage(
-                    $packageRepository->getByRepositoryArchitectureAndName($arch, $pkgname)
+                    $this->packageRepository->getByRepositoryArchitectureAndName($architecture, $name)
                 );
             }
         } catch (NoResultException $f) {
             throw $this->createNotFoundException('Package not found', $f);
         }
 
-        $cgitLink = $cgitUrl . (
-            in_array(
-                $package->getRepository()->getName(),
-                array(
-                    'community',
-                    'community-testing',
-                    'multilib',
-                    'multilib-testing',
-                )
-            ) ? 'community' : 'packages'
-            )
-            . '.git/';
-
-        return $this->render(
-            'package/index.html.twig',
-            [
-                'package' => $package,
-                'cgit_url' => $cgitLink,
-                'inverse_depends' => $packageRepository->findByInverseRelationType($package, Dependency::class),
-                'inverse_optdepends' => $packageRepository->findByInverseRelationType(
-                    $package,
-                    OptionalDependency::class
-                ),
-                'inverse_makedepends' => $packageRepository->findByInverseRelationType($package, MakeDependency::class),
-            ]
-        );
+        return $this->json($package);
     }
 
     /**
@@ -83,37 +91,50 @@ class PackageDetailsController extends AbstractController
     private function redirectToPackage(Package $relatedPackage): RedirectResponse
     {
         return $this->redirectToRoute(
-            'app_packagedetails_index',
+            'app_packagedetails_package',
             [
-                'repo' => $relatedPackage->getRepository()->getName(),
-                'arch' => $relatedPackage->getRepository()->getArchitecture(),
-                'pkgname' => $relatedPackage->getName()
+                'repository' => $relatedPackage->getRepository()->getName(),
+                'architecture' => $relatedPackage->getRepository()->getArchitecture(),
+                'name' => $relatedPackage->getName()
             ]
         );
     }
 
     /**
-     * @Route("/packages/{repo}/{arch}/{pkgname}/files", methods={"GET"})
-     * @Cache(smaxage="600")
-     * @param string $repo
-     * @param string $arch
-     * @param string $pkgname
-     * @param FilesRepository $filesRepository
+     * @Route("/api/packages/{repository}/{architecture}/{name}/inverse/{type}", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
+     * @param string $type
      * @return Response
-     * @throws NonUniqueResultException
      */
-    public function filesAction(
-        string $repo,
-        string $arch,
-        string $pkgname,
-        FilesRepository $filesRepository
+    public function packageInverseDependencyAction(
+        string $repository,
+        string $architecture,
+        string $name,
+        string $type
     ): Response {
-        try {
-            $files = $filesRepository->getByPackageName($repo, $arch, $pkgname);
-        } catch (NoResultException $e) {
-            throw $this->createNotFoundException('Package not found', $e);
+        $types = [
+            'check-dependency' => CheckDependency::class,
+            'conflict' => Conflict::class,
+            'dependency' => Dependency::class,
+            'make-dependency' => MakeDependency::class,
+            'optional-dependency' => OptionalDependency::class,
+            'provision' => Provision::class,
+            'replacement' => Replacement::class,
+        ];
+        if (!isset($types[$type])) {
+            throw new BadRequestHttpException(sprintf('Invalid type: "%s"', $type));
         }
 
-        return $this->json($files);
+        return $this->json(
+            $this->packageRepository->findInverseRelationsByQuery(
+                $repository,
+                $architecture,
+                $name,
+                $types[$type]
+            )
+        );
     }
 }

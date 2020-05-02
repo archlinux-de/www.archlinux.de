@@ -5,9 +5,10 @@ namespace App\Serializer;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Repository\CountryRepository;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class MirrorDenormalizer implements DenormalizerInterface
+class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
     /** @var CountryRepository */
     private $countryRepository;
@@ -64,5 +65,13 @@ class MirrorDenormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, string $type, string $format = null)
     {
         return $type == Mirror::class . '[]';
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

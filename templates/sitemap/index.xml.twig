@@ -2,29 +2,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>{{ absolute_url(path('app_download_index')) }}</loc>
+        <loc>{{ absolute_url(path('app_download')) }}</loc>
     </url>
     <url>
-        <loc>{{ absolute_url(path('app_mirrorstatus_index')) }}</loc>
+        <loc>{{ absolute_url(path('app_mirrors')) }}</loc>
     </url>
     <url>
-        <loc>{{ absolute_url(path('app_packages_index')) }}</loc>
+        <loc>{{ absolute_url(path('app_packages')) }}</loc>
     </url>
     <url>
-        <loc>{{ absolute_url(path('app_start_index')) }}</loc>
+        <loc>{{ absolute_url(path('app_start')) }}</loc>
     </url>
     <url>
-        <loc>{{ absolute_url(path('app_news_index')) }}</loc>
+        <loc>{{ absolute_url(path('app_news')) }}</loc>
     </url>
     <url>
-        <loc>{{ absolute_url(path('app_releases_index')) }}</loc>
+        <loc>{{ absolute_url(path('app_releases')) }}</loc>
     </url>
     {# @var package \App\Entity\Packages\Package #}
     {% for package in packages %}
         <url>
             <loc>{{ absolute_url(path(
-                    'app_packagedetails_index',
-                    {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+                    'app_package',
+                    {'repository': package.repository.name, 'architecture': package.repository.architecture, 'name': package.name}
                 )) }}</loc>
             <lastmod>{{ package.buildDate | date('Y-m-d') }}</lastmod>
         </url>
@@ -39,7 +39,7 @@
     {# @var release \App\Entity\Release #}
     {% for release in releases %}
         <url>
-            <loc>{{ absolute_url(path('app_releases_release', {'version': release.version})) }}</loc>
+            <loc>{{ absolute_url(path('app_release', {'version': release.version})) }}</loc>
             <lastmod>{{ release.created | date('Y-m-d') }}</lastmod>
         </url>
     {% endfor %}

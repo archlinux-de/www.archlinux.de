@@ -13,7 +13,7 @@ class Provision extends AbstractRelation
     /**
      * @var Package
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="provides")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="provisions")
      */
     protected $source;
 }

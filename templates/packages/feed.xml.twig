@@ -3,7 +3,7 @@
     <id>{{ url('app_packages_feed') }}</id>
     <title>Aktuelle Arch Linux Pakete</title>
     <updated>{{ 'now' | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
-    <link rel="alternate" href="{{ url('app_packages_index') }}"/>
+    <link rel="alternate" href="{{ url('app_packages') }}"/>
     <link rel="self" href="{{ url('app_packages_feed') }}"/>
     <icon>{{ absolute_url(asset('build/images/archicon.svg')) }}</icon>
     <logo>{{ absolute_url(asset('build/images/archicon.svg')) }}</logo>
@@ -11,8 +11,8 @@
     {% for package in packages %}
         <entry>
             {% set packageUrl = url(
-                'app_packagedetails_index',
-                {'repo': package.repository.name, 'arch': package.repository.architecture, 'pkgname': package.name}
+                'app_package',
+                {'repository': package.repository.name, 'architecture': package.repository.architecture, 'name': package.name}
                 ) %}
             <id>{{ packageUrl }}</id>
             <title>{{ package.name }} {{ package.version }}</title>

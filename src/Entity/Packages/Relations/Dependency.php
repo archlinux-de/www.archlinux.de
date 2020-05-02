@@ -13,7 +13,7 @@ class Dependency extends AbstractRelation
     /**
      * @var Package
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="depends")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="dependencies")
      */
     protected $source;
 }

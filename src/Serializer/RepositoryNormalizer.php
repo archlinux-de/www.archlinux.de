@@ -3,26 +3,21 @@
 namespace App\Serializer;
 
 use App\Entity\Packages\Repository;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class RepositoryNormalizer implements NormalizerInterface
+class RepositoryNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var UrlGeneratorInterface */
-    private $router;
-
     /** @var ObjectNormalizer */
     private $normalizer;
 
     /**
-     * @param UrlGeneratorInterface $router
      * @param ObjectNormalizer $normalizer
      */
-    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer)
+    public function __construct(ObjectNormalizer $normalizer)
     {
-        $this->router = $router;
         $this->normalizer = $normalizer;
     }
 
@@ -57,14 +52,15 @@ class RepositoryNormalizer implements NormalizerInterface
                 ]
             )
         );
-        $data['url'] = $this->router->generate(
-            'app_packages_index',
-            [
-                'repository' => $object->getName(),
-                'architecture' => $object->getArchitecture()
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

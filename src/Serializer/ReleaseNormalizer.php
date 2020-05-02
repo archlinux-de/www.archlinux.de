@@ -5,10 +5,11 @@ namespace App\Serializer;
 use App\Entity\Release;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class ReleaseNormalizer implements NormalizerInterface
+class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     /** @var UrlGeneratorInterface */
     private $router;
@@ -51,20 +52,42 @@ class ReleaseNormalizer implements NormalizerInterface
                 [
                     AbstractNormalizer::ATTRIBUTES => [
                         'version',
+                        'available',
+                        'info',
+                        'isoUrl',
                         'kernelVersion',
                         'releaseDate',
-                        'available'
+                        'sha1Sum'
                     ]
                 ]
             )
         );
-        $data['url'] = $this->router->generate(
-            'app_releases_release',
+
+        $data['torrentUrl'] = $object->getTorrent()->getUrl()
+            ? 'https://www.archlinux.org' . $object->getTorrent()->getUrl()
+            : null;
+        $data['fileSize'] = $object->getTorrent()->getFileLength();
+        $data['magnetUri'] = $object->getTorrent()->getMagnetUri();
+        $data['isoPath'] = $data['isoUrl'];
+        $data['isoUrl'] = $data['available'] ? $this->router->generate(
+            'app_mirror_iso',
             [
-                'version' => $object->getVersion(),
+                'file' => $object->getTorrent()->getFileName(),
+                'version' => $object->getVersion()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        ) : null;
+        $data['isoSigUrl'] = 'https://www.archlinux.org' . $data['isoPath'] . '.sig';
+        $data['fileName'] = $object->getTorrent()->getFileName();
+
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }

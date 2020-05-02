@@ -2,8 +2,8 @@
 
 namespace App\Command\Update;
 
-use App\Command\Exception\ValidationException;
 use App\Entity\NewsItem;
+use App\Exception\ValidationException;
 use App\Repository\NewsItemRepository;
 use App\Service\NewsItemFetcher;
 use Doctrine\ORM\EntityManagerInterface;

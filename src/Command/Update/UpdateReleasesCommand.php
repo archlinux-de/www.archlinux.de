@@ -2,8 +2,8 @@
 
 namespace App\Command\Update;
 
-use App\Command\Exception\ValidationException;
 use App\Entity\Release;
+use App\Exception\ValidationException;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;

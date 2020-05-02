@@ -45,12 +45,15 @@ class NewsItemNormalizerTest extends KernelTestCase
         $this->assertEquals(
             [
                 'title' => 'Big Story',
-                'url' => 'http://localhost/news/1-Big-Story',
                 'author' => [
                     'name' => 'Bob',
                     'uri' => 'http://localhost'
                 ],
-                'lastModified' => '1982-02-05T00:00:00+00:00'
+                'lastModified' => '1982-02-05T00:00:00+00:00',
+                'description' => 'Foo bar',
+                'id' => 1,
+                'link' => 'https://www.archlinux.de/',
+                'slug' => 'Big-Story'
             ],
             $jsonArray
         );

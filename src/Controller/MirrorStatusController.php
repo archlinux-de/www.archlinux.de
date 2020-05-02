@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
-use App\Datatables\DatatablesResponse;
+use App\Request\PaginationRequest;
+use App\Request\QueryRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,24 +13,43 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MirrorStatusController extends AbstractController
 {
+    /** @var MirrorRepository */
+    private $mirrorRepository;
+
     /**
-     * @Route("/mirrors", methods={"GET"})
-     * @Cache(smaxage="900")
-     * @return Response
+     * @param MirrorRepository $mirrorRepository
      */
-    public function indexAction(): Response
+    public function __construct(MirrorRepository $mirrorRepository)
     {
-        return $this->render('mirrors/index.html.twig');
+        $this->mirrorRepository = $mirrorRepository;
     }
 
     /**
-     * @Route("/mirrors/datatables", methods={"GET"})
-     * @Cache(maxage="300", smaxage="3600")
-     * @param MirrorRepository $mirrorRepository
+     * @Route("/api/mirrors", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param QueryRequest $queryRequest
+     * @param PaginationRequest $paginationRequest
      * @return Response
      */
-    public function datatablesAction(MirrorRepository $mirrorRepository): Response
+    public function mirrorsAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
     {
-        return $this->json(new DatatablesResponse($mirrorRepository->findSecure()));
+        return $this->json(
+            $this->mirrorRepository->findSecureByQuery(
+                $paginationRequest->getOffset(),
+                $paginationRequest->getLimit(),
+                $queryRequest->getQuery()
+            )
+        );
+    }
+
+    /**
+     * @Route("/api/mirrors/{url<.+>}", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param Mirror $mirror
+     * @return Response
+     */
+    public function mirrorAction(Mirror $mirror): Response
+    {
+        return $this->json($mirror);
     }
 }

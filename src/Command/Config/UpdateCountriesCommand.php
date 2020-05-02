@@ -2,8 +2,8 @@
 
 namespace App\Command\Config;
 
-use App\Command\Exception\ValidationException;
 use App\Entity\Country;
+use App\Exception\ValidationException;
 use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
 use Doctrine\ORM\EntityManagerInterface;

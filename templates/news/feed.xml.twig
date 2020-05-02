@@ -3,7 +3,7 @@
     <id>{{ url('app_news_feed') }}</id>
     <title>Aktuelle Arch Linux Neuigkeiten</title>
     <updated>{{ 'now' | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
-    <link rel="alternate" href="{{ url('app_news_index') }}"/>
+    <link rel="alternate" href="{{ url('app_news') }}"/>
     <link rel="self" href="{{ url('app_news_feed') }}"/>
     <icon>{{ absolute_url(asset('build/images/archicon.svg')) }}</icon>
     <logo>{{ absolute_url(asset('build/images/archicon.svg')) }}</logo>

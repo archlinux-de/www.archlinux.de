@@ -11,91 +11,6 @@ use SymfonyDatabaseTest\DatabaseTestCase;
  */
 class NewsControllerTest extends DatabaseTestCase
 {
-    public function testIndexAction(): void
-    {
-        $client = $this->getClient();
-
-        $client->request('GET', '/news', ['search' => 'foo']);
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-    }
-
-    public function testItemAction(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $news = new NewsItem(1);
-        $news->setTitle('Breaking News');
-        $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
-        $news->setAuthor(
-            (new NewsAuthor())
-                ->setName('')
-                ->setUri('')
-        );
-        $news->setLink('https://www.archlinux.de/');
-        $entityManager->persist($news);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-
-        $crawler = $client->request('GET', '/news/1-Breaking-News');
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertEquals('Breaking News', $crawler->filter('h1')->text());
-        $this->assertIsString($client->getResponse()->getContent());
-        $this->assertStringContainsString('Hell has frozen over!', $client->getResponse()->getContent());
-    }
-
-    public function testDatatablesAction(): void
-    {
-        $entityManager = $this->getEntityManager();
-        $news = new NewsItem(1);
-        $news->setTitle('Breaking News');
-        $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
-        $news->setAuthor(
-            (new NewsAuthor())
-                ->setName('')
-                ->setUri('')
-        );
-        $news->setLink('https://www.archlinux.de/');
-        $entityManager->persist($news);
-        $entityManager->flush();
-
-        $client = $this->getClient();
-
-        $client->request(
-            'GET',
-            '/news/datatables',
-            [
-                'draw' => 1,
-                'length' => 2,
-                'columns' => [
-                    [
-                        'data' => 'title',
-                        'name' => '',
-                        'orderable' => false,
-                        'search' => [
-                            'regex' => false,
-                            'value' => ''
-                        ],
-                        'searchable' => true
-                    ]
-                ],
-                'search' => [
-                    'regex' => false,
-                    'value' => 'hell'
-                ]
-            ]
-        );
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertIsString($client->getResponse()->getContent());
-        $responseData = json_decode($client->getResponse()->getContent(), true);
-        $this->assertCount(1, $responseData['data']);
-        $this->assertEquals('Breaking News', $responseData['data'][0]['title']);
-    }
-
     public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
@@ -131,7 +46,7 @@ class NewsControllerTest extends DatabaseTestCase
         $this->assertEquals('http://localhost/news/1-Breaking-News', (string)$xml->entry->link->attributes()->href);
     }
 
-    public function testRedirectToCorrectSlug(): void
+    public function testNewsAction(): void
     {
         $entityManager = $this->getEntityManager();
         $news = new NewsItem(1);
@@ -149,8 +64,55 @@ class NewsControllerTest extends DatabaseTestCase
 
         $client = $this->getClient();
 
-        $client->request('GET', '/news/1-wrong');
+        $client->request('GET', '/api/news', ['query' => 'Hell']);
 
-        $this->assertTrue($client->getResponse()->isRedirect('/news/1-Breaking-News'));
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(1, $responseData['count']);
+        $this->assertEquals(1, $responseData['total']);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('Breaking News', $responseData['items'][0]['title']);
+    }
+
+    public function testNewsItemAction(): void
+    {
+        $entityManager = $this->getEntityManager();
+        $news = new NewsItem(1);
+        $news->setTitle('Breaking News');
+        $news->setDescription('Hell has frozen over!');
+        $news->setLastModified(new \DateTime('2020-02-02'));
+        $news->setAuthor(
+            (new NewsAuthor())
+                ->setName('Bob')
+                ->setUri('http://localhost/bob')
+        );
+        $news->setLink('https://www.archlinux.de/');
+        $entityManager->persist($news);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        $client->request('GET', '/api/news/1');
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $this->assertEquals(
+            [
+                'id' => 1,
+                'author' => [
+                    'name' => 'Bob',
+                    'uri' => 'http://localhost/bob'
+                ],
+                'description' => 'Hell has frozen over!',
+                'lastModified' => '2020-02-02T00:00:00+00:00',
+                'link' => 'https://www.archlinux.de/',
+                'title' => 'Breaking News',
+                'slug' => 'Breaking-News'
+            ],
+            json_decode($client->getResponse()->getContent(), true)
+        );
     }
 }
