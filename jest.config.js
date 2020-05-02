@@ -4,9 +4,6 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/assets/$1'
   },
   transform: {
-    '\\.js$': [require.resolve('babel-jest'), {
-      plugins: ['@babel/plugin-transform-runtime'],
-      presets: ['@babel/preset-env']
-    }]
+    '\\.js$': [require.resolve('babel-jest'), { 'presets': ['@babel/preset-env'] }]
   }
 }

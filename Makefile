@@ -7,7 +7,7 @@ COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/docker-compose.yml -p www
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} php
 PHP-RUN=${COMPOSE-RUN} --no-deps php
-NODE-RUN=${COMPOSE-RUN} --no-deps encore
+NODE-RUN=${COMPOSE-RUN} --no-deps -e DISABLE_OPENCOLLECTIVE=true encore
 MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
@@ -60,7 +60,7 @@ test:
 	${PHP-RUN} vendor/bin/phpcs
 	${NODE-RUN} node_modules/.bin/eslint assets --ext js --ext vue
 	${NODE-RUN} node_modules/.bin/stylelint 'assets/css/**/*.scss' 'assets/css/**/*.css' 'assets/js/**/*.vue'
-	${NODE-RUN} node_modules/.bin/jest --passWithNoTests
+	${NODE-RUN} node_modules/.bin/jest
 	${PHP-RUN} bin/console lint:yaml config
 	${PHP-RUN} bin/console lint:twig templates
 	${NODE-RUN} sh -c "PUBLIC_PATH=/tmp node_modules/.bin/encore prod"
@@ -96,7 +96,7 @@ update:
 
 deploy:
 	yarn install --non-interactive --frozen-lockfile --prod
-	yarn run encore prod
+	node_modules/.bin/encore prod
 	find public/build -type f -mtime +30 -delete
 	find public/build -type d -empty -delete
 	composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader

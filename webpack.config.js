@@ -7,7 +7,6 @@ Encore
   .setPublicPath('/build')
   .addAliases({ '@': path.resolve(__dirname, 'assets') })
   .addEntry('main', '@/js/main.js')
-  .copyFiles({ from: 'assets/images', to: 'images/[path][name].[hash:8].[ext]' })
   .splitEntryChunks()
   .enableSingleRuntimeChunk()
   .enableSassLoader((options) => {
