@@ -10,7 +10,14 @@ Encore
   .copyFiles({ from: 'assets/images', to: 'images/[path][name].[hash:8].[ext]' })
   .splitEntryChunks()
   .enableSingleRuntimeChunk()
-  .enableSassLoader()
+  .enableSassLoader((options) => {
+    options.sourceMap = true
+    options.sassOptions = {
+      outputStyle: options.outputStyle,
+      sourceComments: !Encore.isProduction()
+    }
+    delete options.outputStyle
+  }, {})
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
   .enablePostCssLoader()
