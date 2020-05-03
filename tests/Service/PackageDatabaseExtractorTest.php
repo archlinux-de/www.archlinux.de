@@ -13,7 +13,7 @@ class PackageDatabaseExtractorTest extends TestCase
 
     public function testExtractPackageDescriptions(): void
     {
-        $this->assertFileNotExists($this->archiveFile);
+        $this->assertFileDoesNotExist($this->archiveFile);
 
         $archive = new \PharData($this->archiveFile);
         $archive->addEmptyDir('pacman-1.2.3-1');
