@@ -59,3 +59,9 @@ services:
     App\Controller\MirrorController:
         bind:
             $mirrorCountry: '%app.mirrors.country%'
+
+    App\SearchRepository\PackageSearchRepository:
+        class: App\SearchRepository\PackageSearchRepository
+        factory: ["@fos_elastica.manager", getRepository]
+        arguments:
+            - App\Entity\Packages\Package

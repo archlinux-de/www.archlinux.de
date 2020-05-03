@@ -35,6 +35,7 @@ fos_elastica:
                         model: App\Entity\Packages\Package
                         provider: ~
                         finder: ~
+                        repository: App\SearchRepository\PackageSearchRepository
                     indexable_callback: '!object.getRepository().isTesting()'
         news:
             types:
