@@ -1,0 +1,3 @@
+services:
+    App\Debug\ApiProfilerSubscriber:
+        tags: ['kernel.event_subscriber']
