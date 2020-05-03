@@ -21,6 +21,7 @@
         "doctrine/doctrine-migrations-bundle": "^2.1.2",
         "doctrine/orm": "^v2.7.2",
         "exercise/htmlpurifier-bundle": "^v3.0",
+        "friendsofsymfony/elastica-bundle": "5.x-dev",
         "league/iso3166": "^2.1.5",
         "maxmind-db/reader": "^v1.6.0",
         "sensio/framework-extra-bundle": "^v5.5.4",
