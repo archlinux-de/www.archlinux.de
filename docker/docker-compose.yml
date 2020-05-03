@@ -11,6 +11,7 @@ services:
     working_dir: /app
     environment:
       - HOME=/tmp
+      - ELASTICSEARCH_URL=http://elasticsearch:9200/
     command: php-fpm -F
     user: "${UID}:${GID}"
     volumes:
@@ -21,6 +22,7 @@ services:
       - /tmp
     depends_on:
       - mariadb
+      - elasticsearch
 
   encore:
     build: node
@@ -75,3 +77,12 @@ services:
       - /tmp
     depends_on:
       - mariadb
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.6
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
