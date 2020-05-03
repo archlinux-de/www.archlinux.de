@@ -17,14 +17,22 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     /** @var ObjectNormalizer */
     private $normalizer;
 
+    /** @var \HTMLPurifier */
+    private $releasePurifier;
+
     /**
      * @param UrlGeneratorInterface $router
      * @param ObjectNormalizer $normalizer
+     * @param \HTMLPurifier $releasePurifier
      */
-    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer)
-    {
+    public function __construct(
+        UrlGeneratorInterface $router,
+        ObjectNormalizer $normalizer,
+        \HTMLPurifier $releasePurifier
+    ) {
         $this->router = $router;
         $this->normalizer = $normalizer;
+        $this->releasePurifier = $releasePurifier;
     }
 
     /**
@@ -79,6 +87,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         ) : null;
         $data['isoSigUrl'] = 'https://www.archlinux.org' . $data['isoPath'] . '.sig';
         $data['fileName'] = $object->getTorrent()->getFileName();
+        $data['info'] = $this->releasePurifier->purify($data['info']);
 
         return $data;
     }

@@ -59,7 +59,3 @@ services:
     App\Controller\MirrorController:
         bind:
             $mirrorCountry: '%app.mirrors.country%'
-
-    App\Serializer\NewsItemNormalizer:
-        bind:
-            $newsPurifier: '@exercise_html_purifier.news'

@@ -67,10 +67,7 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
             )
         );
 
-        if (isset($data['description'])) {
-            $data['description'] = $this->newsPurifier->purify($data['description']);
-        }
-
+        $data['description'] = $this->newsPurifier->purify($data['description']);
         $data['slug'] = $this->slugger->slug($object->getTitle());
 
         return $data;
