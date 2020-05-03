@@ -3,4 +3,89 @@ fos_elastica:
     clients:
         default: { url: '%env(ELASTICSEARCH_URL)%' }
     indexes:
-        app: null
+        packages:
+            types:
+                package:
+                    properties:
+                        name:
+                            boost: 4
+                            fielddata: true
+                        base:
+                        description: { boost: 3 }
+                        url: ~
+                        groups: { boost: 2 }
+                        buildDate:
+                            type: "date"
+                        replacements:
+                            type: "object"
+                            properties:
+                                targetName: ~
+                        provisions:
+                            type: "object"
+                            properties:
+                                targetName: ~
+                        repository:
+                            type: "object"
+                            properties:
+                                architecture: ~
+                                name:
+                                    fielddata: true
+                    persistence:
+                        driver: orm
+                        model: App\Entity\Packages\Package
+                        provider: ~
+                        finder: ~
+                    indexable_callback: '!object.getRepository().isTesting()'
+        news:
+            types:
+                newsItem:
+                    properties:
+                        title:
+                            boost: 2
+                            analyzer: "german"
+                        description:
+                            analyzer: "german"
+                        author:
+                            type: "object"
+                            properties:
+                                name: ~
+                    persistence:
+                        driver: orm
+                        model: App\Entity\NewsItem
+                        provider: ~
+                        finder: ~
+        releases:
+            types:
+                release:
+                    properties:
+                        version:
+                            boost: 2
+                        info: ~
+                        kernelVersion: ~
+                        releaseDate:
+                            type: "date"
+                    persistence:
+                        identifier: version
+                        driver: orm
+                        model: App\Entity\Release
+                        provider: ~
+                        finder: ~
+        mirrors:
+            types:
+                mirror:
+                    properties:
+                        url:
+                            boost: 2
+                        country:
+                            type: "object"
+                            properties:
+                                code: ~
+                                name: ~
+                        protocol:
+                    persistence:
+                        identifier: url
+                        driver: orm
+                        model: App\Entity\Mirror
+                        provider: ~
+                        finder: ~
+                    indexable_callback: 'object.isActive()'
