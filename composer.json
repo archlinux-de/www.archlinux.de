@@ -23,7 +23,7 @@
         "exercise/htmlpurifier-bundle": "^v3.0",
         "league/iso3166": "^2.1.5",
         "maxmind-db/reader": "^v1.6.0",
-        "sensio/framework-extra-bundle": "^v5.5.4",
+        "sensio/framework-extra-bundle": "^v5.5.5",
         "symfony/asset": "^v5.0.8",
         "symfony/console": "^v5.0.8",
         "symfony/dotenv": "^v5.0.8",
@@ -45,7 +45,7 @@
     "require-dev": {
         "ext-pdo_sqlite": "*",
         "malukenho/mcbumpface": "^1.1.2",
-        "phpstan/phpstan": "^0.12.22",
+        "phpstan/phpstan": "^0.12.23",
         "phpstan/phpstan-deprecation-rules": "^0.12.2",
         "phpstan/phpstan-doctrine": "^0.12.11",
         "phpstan/phpstan-phpunit": "^0.12.8",
