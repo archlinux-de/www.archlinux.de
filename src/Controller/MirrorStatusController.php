@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Mirror;
-use App\Repository\MirrorRepository;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
+use App\SearchRepository\MirrorSearchRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,15 +13,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MirrorStatusController extends AbstractController
 {
-    /** @var MirrorRepository */
-    private $mirrorRepository;
+    /** @var MirrorSearchRepository */
+    private $mirrorSearchRepository;
 
     /**
-     * @param MirrorRepository $mirrorRepository
+     * @param MirrorSearchRepository $mirrorSearchRepository
      */
-    public function __construct(MirrorRepository $mirrorRepository)
+    public function __construct(MirrorSearchRepository $mirrorSearchRepository)
     {
-        $this->mirrorRepository = $mirrorRepository;
+        $this->mirrorSearchRepository = $mirrorSearchRepository;
     }
 
     /**
@@ -34,7 +34,7 @@ class MirrorStatusController extends AbstractController
     public function mirrorsAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
     {
         return $this->json(
-            $this->mirrorRepository->findSecureByQuery(
+            $this->mirrorSearchRepository->findSecureByQuery(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery()

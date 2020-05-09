@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Mirror;
-use App\Repository\MirrorRepository;
 use App\Repository\PackageRepository;
 use App\Repository\ReleaseRepository;
+use App\SearchRepository\MirrorSearchRepository;
 use App\Service\GeoIp;
 use Doctrine\ORM\UnexpectedResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,22 +18,22 @@ class MirrorController extends AbstractController
     /** @var GeoIp */
     private $geoIp;
 
-    /** @var MirrorRepository */
-    private $mirrorRepository;
+    /** @var MirrorSearchRepository */
+    private $mirrorSearchRepository;
 
     /** @var string */
     private $mirrorCountry;
 
     /**
      * @param GeoIp $geoIp
-     * @param MirrorRepository $mirrorRepository
      * @param string $mirrorCountry
+     * @param MirrorSearchRepository $mirrorSearchRepository
      */
-    public function __construct(GeoIp $geoIp, MirrorRepository $mirrorRepository, string $mirrorCountry)
+    public function __construct(GeoIp $geoIp, string $mirrorCountry, MirrorSearchRepository $mirrorSearchRepository)
     {
         $this->geoIp = $geoIp;
-        $this->mirrorRepository = $mirrorRepository;
         $this->mirrorCountry = $mirrorCountry;
+        $this->mirrorSearchRepository = $mirrorSearchRepository;
     }
 
     /**
@@ -90,7 +90,7 @@ class MirrorController extends AbstractController
         if (empty($countryCode)) {
             $countryCode = $this->mirrorCountry;
         }
-        $mirrors = $this->mirrorRepository->findBestByCountryAndLastSync($countryCode, $lastSync);
+        $mirrors = $this->mirrorSearchRepository->findBestByCountryAndLastSync($countryCode, $lastSync);
 
         if (empty($mirrors)) {
             throw $this->createNotFoundException('Mirror not found');

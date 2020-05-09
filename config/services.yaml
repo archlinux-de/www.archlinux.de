@@ -60,8 +60,28 @@ services:
         bind:
             $mirrorCountry: '%app.mirrors.country%'
 
+    App\SearchRepository\MirrorSearchRepository:
+        class: App\SearchRepository\MirrorSearchRepository
+        factory: ["@fos_elastica.manager", getRepository]
+        arguments:
+            - App\Entity\Mirror
+        calls:
+            - [setDefaultCountry, ['%app.mirrors.country%']]
+
+    App\SearchRepository\NewsItemSearchRepository:
+        class: App\SearchRepository\NewsItemSearchRepository
+        factory: ["@fos_elastica.manager", getRepository]
+        arguments:
+            - App\Entity\NewsItem
+
     App\SearchRepository\PackageSearchRepository:
         class: App\SearchRepository\PackageSearchRepository
         factory: ["@fos_elastica.manager", getRepository]
         arguments:
             - App\Entity\Packages\Package
+
+    App\SearchRepository\ReleaseSearchRepository:
+        class: App\SearchRepository\ReleaseSearchRepository
+        factory: ["@fos_elastica.manager", getRepository]
+        arguments:
+            - App\Entity\Release

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Packages\Architecture;
+use App\Entity\Packages\Package;
 use App\Repository\PackageRepository;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
@@ -81,9 +82,9 @@ class PackagesController extends AbstractController
         if (strlen($term) < 1 || strlen($term) > 50) {
             return $this->json([]);
         }
-        $suggestions = $this->packageRepository->findByTerm($term, 10);
+        $suggestions = $this->packageSearchRepository->findByTerm($term, 10);
 
-        return $this->json(array_column($suggestions, 'name'));
+        return $this->json(array_map(fn(Package $package): string => $package->getName(), $suggestions));
     }
 
     /**
@@ -99,48 +100,15 @@ class PackagesController extends AbstractController
         PaginationRequest $paginationRequest,
         Request $request
     ): Response {
-        // @TODO: Add Parameter Validation
-
-        $query = new \Elastica\Query();
-        $query->addSort(['_score' => ['order' => 'desc']]);
-        $query->addSort(['buildDate' => ['order' => 'desc']]);
-
-        $boolQuery = new \Elastica\Query\BoolQuery();
-
-        if ($queryRequest->getQuery()) {
-            $searchQuery = new \Elastica\Query\Wildcard();
-            $searchQuery->setValue('name', '*' . $queryRequest->getQuery() . '*');
-            $boolQuery->addMust($searchQuery);
-
-            $searchQuery = new \Elastica\Query\QueryString();
-            $searchQuery->setQuery($queryRequest->getQuery());
-            $boolQuery->addShould($searchQuery);
-        }
-
-        $architectureQuery = new \Elastica\Query\Term();
-        $architectureQuery->setTerm('repository.architecture', $request->get('architecture', Architecture::X86_64));
-        $boolQuery->addMust($architectureQuery);
-
-        if ($request->get('repository')) {
-            $repositoryQuery = new \Elastica\Query\Term();
-            $repositoryQuery->setTerm('repository.name', $request->get('repository'));
-            $boolQuery->addMust($repositoryQuery);
-        }
-
-        $query->setQuery($boolQuery);
-
-        $paginator = $this->packageSearchRepository->createPaginatorAdapter($query);
-        $results = $paginator->getResults($paginationRequest->getOffset(), $paginationRequest->getLimit());
-        $packages = $results->toArray();
-
         return $this->json(
-            [
-                'offset' => $paginationRequest->getOffset(),
-                'limit' => $paginationRequest->getLimit(),
-                'total' => $results->getTotalHits(),
-                'count' => count($packages),
-                'items' => $packages
-            ]
+            $this->packageSearchRepository->findLatestByQueryAndArchitecture(
+                $paginationRequest->getOffset(),
+                $paginationRequest->getLimit(),
+                $queryRequest->getQuery(),
+                // @TODO: Add Parameter Validation
+                $request->get('architecture', Architecture::X86_64),
+                $request->get('repository')
+            )
         );
     }
 }

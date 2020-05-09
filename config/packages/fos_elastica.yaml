@@ -1,16 +1,19 @@
 # Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
 fos_elastica:
     clients:
-        default: { url: '%env(ELASTICSEARCH_URL)%' }
+        default: { url: '%env(resolve:ELASTICSEARCH_URL)%' }
     indexes:
         packages:
+            settings:
+                index:
+                    max_result_window: 20000
             types:
                 package:
                     properties:
                         name:
-                            boost: 4
+                            boost: 5
                             fielddata: true
-                        base:
+                        base: { boost: 4 }
                         description: { boost: 3 }
                         url: ~
                         groups: { boost: 2 }
@@ -27,7 +30,8 @@ fos_elastica:
                         repository:
                             type: "object"
                             properties:
-                                architecture: ~
+                                architecture:
+                                    type: keyword
                                 name:
                                     fielddata: true
                     persistence:
@@ -50,11 +54,14 @@ fos_elastica:
                             type: "object"
                             properties:
                                 name: ~
+                        lastModified:
+                            type: "date"
                     persistence:
                         driver: orm
                         model: App\Entity\NewsItem
                         provider: ~
                         finder: ~
+                        repository: App\SearchRepository\NewsItemSearchRepository
         releases:
             types:
                 release:
@@ -71,6 +78,7 @@ fos_elastica:
                         model: App\Entity\Release
                         provider: ~
                         finder: ~
+                        repository: App\SearchRepository\ReleaseSearchRepository
         mirrors:
             types:
                 mirror:
@@ -80,13 +88,21 @@ fos_elastica:
                         country:
                             type: "object"
                             properties:
-                                code: ~
+                                code:
+                                    type: keyword
                                 name: ~
                         protocol:
+                            type: keyword
+                        active:
+                            type: boolean
+                        score: { fielddata: true }
+                        lastSync:
+                            type: date
                     persistence:
                         identifier: url
                         driver: orm
                         model: App\Entity\Mirror
                         provider: ~
                         finder: ~
+                        repository: App\SearchRepository\MirrorSearchRepository
                     indexable_callback: 'object.isActive()'

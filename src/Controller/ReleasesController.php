@@ -6,6 +6,7 @@ use App\Entity\Release;
 use App\Repository\ReleaseRepository;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
+use App\SearchRepository\ReleaseSearchRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,12 +17,17 @@ class ReleasesController extends AbstractController
     /** @var ReleaseRepository */
     private $releaseRepository;
 
+    /** @var ReleaseSearchRepository */
+    private $releaseSearchRepository;
+
     /**
      * @param ReleaseRepository $releaseRepository
+     * @param ReleaseSearchRepository $releaseSearchRepository
      */
-    public function __construct(ReleaseRepository $releaseRepository)
+    public function __construct(ReleaseRepository $releaseRepository, ReleaseSearchRepository $releaseSearchRepository)
     {
         $this->releaseRepository = $releaseRepository;
+        $this->releaseSearchRepository = $releaseSearchRepository;
     }
 
     /**
@@ -49,7 +55,7 @@ class ReleasesController extends AbstractController
     public function releasesAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
     {
         return $this->json(
-            $this->releaseRepository->findAllByQuery(
+            $this->releaseSearchRepository->findAllByQuery(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery()

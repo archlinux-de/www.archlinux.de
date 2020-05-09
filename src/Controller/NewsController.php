@@ -6,6 +6,7 @@ use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
+use App\SearchRepository\NewsItemSearchRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,19 +18,25 @@ class NewsController extends AbstractController
     /** @var NewsItemRepository */
     private $newsRepository;
 
+    /** @var NewsItemSearchRepository */
+    private $newsItemSearchRepository;
+
     /** @var SluggerInterface */
     private $slugger;
 
     /**
      * @param NewsItemRepository $newsRepository
      * @param SluggerInterface $slugger
+     * @param NewsItemSearchRepository $newsItemSearchRepository
      */
     public function __construct(
         NewsItemRepository $newsRepository,
-        SluggerInterface $slugger
+        SluggerInterface $slugger,
+        NewsItemSearchRepository $newsItemSearchRepository
     ) {
         $this->newsRepository = $newsRepository;
         $this->slugger = $slugger;
+        $this->newsItemSearchRepository = $newsItemSearchRepository;
     }
 
     /**
@@ -42,7 +49,7 @@ class NewsController extends AbstractController
     public function newsAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
     {
         return $this->json(
-            $this->newsRepository->findLatestByQuery(
+            $this->newsItemSearchRepository->findLatestByQuery(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery()

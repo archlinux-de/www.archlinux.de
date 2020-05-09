@@ -4,12 +4,12 @@ namespace App\Tests\Controller;
 
 use App\Entity\Country;
 use App\Entity\Mirror;
-use SymfonyDatabaseTest\DatabaseTestCase;
+use App\Tests\DatabaseSearchTestCase;
 
 /**
  * @covers \App\Controller\MirrorStatusController
  */
-class MirrorStatusControllerTest extends DatabaseTestCase
+class MirrorStatusControllerTest extends DatabaseSearchTestCase
 {
     public function testMirrorsAction(): void
     {
@@ -20,6 +20,8 @@ class MirrorStatusControllerTest extends DatabaseTestCase
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
+
+        sleep(1);
 
         $client = $this->getClient();
         $client->request('GET', '/api/mirrors', ['query' => '127']);
@@ -55,6 +57,8 @@ class MirrorStatusControllerTest extends DatabaseTestCase
         $entityManager->persist($country);
         $entityManager->persist($mirror);
         $entityManager->flush();
+
+        sleep(1);
 
         $client = $this->getClient();
         $client->request('GET', '/api/mirrors/' . urlencode($mirror->getUrl()));
