@@ -3,6 +3,7 @@
 namespace App\SearchRepository;
 
 use App\Entity\Packages\Package;
+use Elastica\Aggregation\Terms;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchPhrasePrefix;
@@ -49,17 +50,28 @@ class PackageSearchRepository extends Repository
         }
 
         $elasticQuery->setQuery($boolQuery);
+        $elasticQuery->addAggregation((new Terms('repository'))->setField('repository.name'));
+        $elasticQuery->addAggregation((new Terms('architecture'))->setField('repository.architecture'));
 
         $paginator = $this->createPaginatorAdapter($elasticQuery);
         $results = $paginator->getResults($offset, $limit);
         $packages = $results->toArray();
+        $aggregations = $results->getAggregations();
 
         return [
             'offset' => $offset,
             'limit' => $limit,
             'total' => $results->getTotalHits(),
             'count' => count($packages),
-            'items' => $packages
+            'items' => $packages,
+            'repositories' => array_map(
+                fn(array $repository): string => $repository['key'],
+                $aggregations['repository']['buckets']
+            ),
+            'architectures' => array_map(
+                fn(array $repository): string => $repository['key'],
+                $aggregations['architecture']['buckets']
+            )
         ];
     }
 

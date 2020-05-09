@@ -33,14 +33,13 @@ fos_elastica:
                                 architecture:
                                     type: keyword
                                 name:
-                                    fielddata: true
+                                    type: keyword
                     persistence:
                         driver: orm
                         model: App\Entity\Packages\Package
                         provider: ~
                         finder: ~
                         repository: App\SearchRepository\PackageSearchRepository
-                    indexable_callback: '!object.getRepository().isTesting()'
         news:
             types:
                 newsItem:
@@ -105,4 +104,3 @@ fos_elastica:
                         provider: ~
                         finder: ~
                         repository: App\SearchRepository\MirrorSearchRepository
-                    indexable_callback: 'object.isActive()'

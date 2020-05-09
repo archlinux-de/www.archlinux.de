@@ -2,14 +2,40 @@
   <b-container fluid role="main" tag="main">
     <h1 class="mb-4">Paket-Suche</h1>
 
-    <b-form-group>
+    <b-input-group>
       <b-form-input
         debounce="250"
         placeholder="Pakete suchen"
         type="search"
         autocomplete="off"
-        v-model="query"></b-form-input>
-    </b-form-group>
+        class="search-input mb-2"
+        v-model="currentQuery"></b-form-input>
+
+      <b-input-group-append>
+        <b-button-toolbar key-nav class="mb-2">
+          <b-button-group>
+            <b-button variant="outline-primary"
+                      :pressed="currentRepository == repository"
+                      :key="id"
+                      :to="currentRepository == repository ? {name: 'packages'} : {name: 'packages', query: {repository: repository}}"
+                      v-for="(repository, id) in repositories">
+              {{ repository }}
+            </b-button>
+          </b-button-group>
+
+          <b-button-group
+            v-if="architectures.length > 1 || (architectures.length == 1 && currentArchitecture == architectures[0])">
+            <b-button variant="outline-secondary"
+                      :pressed="currentArchitecture == architecture"
+                      :key="id"
+                      :to="currentArchitecture == architecture ? {name: 'packages'} : {name: 'packages', query: {architecture: architecture}}"
+                      v-for="(architecture, id) in architectures">
+              {{ architecture }}
+            </b-button>
+          </b-button-group>
+        </b-button-toolbar>
+      </b-input-group-append>
+    </b-input-group>
 
     <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
 
@@ -17,7 +43,7 @@
              v-show="total > 0"
              :items="fetchPackages"
              :fields="fields"
-             :filter="query"
+             :filter="currentQuery"
              :per-page="perPage"
              :current-page="currentPage">
 
@@ -60,6 +86,12 @@
 
   </b-container>
 </template>
+
+<style scoped>
+  .search-input {
+    min-width: 50vw;
+  }
+</style>
 
 <script>
 export default {
@@ -107,24 +139,28 @@ export default {
         label: 'Aktualisierung',
         class: 'd-none d-lg-table-cell'
       }],
-      query: this.$route.query.search ?? '',
+      currentQuery: this.$route.query.search ?? '',
+      currentArchitecture: this.$route.query.architecture ?? null,
+      currentRepository: this.$route.query.repository ?? null,
       perPage: 25,
       currentPage: 1,
       total: null,
       count: null,
       offset: null,
+      architectures: [],
+      repositories: [],
       error: ''
     }
   },
   watch: {
-    query () {
-      if (this.query.length > 255) {
-        this.query = this.query.substring(0, 255)
+    currentQuery () {
+      if (this.currentQuery.length > 255) {
+        this.currentQuery = this.currentQuery.substring(0, 255)
       }
 
-      this.query = this.query.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_-]+)/, '')
+      this.currentQuery = this.currentQuery.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
 
-      if (this.$route.query.search !== this.query) {
+      if (this.$route.query.search !== this.currentQuery) {
         this.$router.replace({ query: this.getQuery() })
       }
     }
@@ -132,6 +168,8 @@ export default {
   beforeRouteUpdate (to, from, next) {
     next()
     if (from.query.architecture !== to.query.architecture || from.query.repository !== to.query.repository) {
+      this.$data.currentArchitecture = to.query.architecture
+      this.$data.currentRepository = to.query.repository
       this.$refs.table.refresh()
     }
   },
@@ -141,13 +179,15 @@ export default {
         query: context.filter,
         limit: context.perPage,
         offset: (context.currentPage - 1) * context.perPage,
-        architecture: this.$route.query.architecture,
-        repository: this.$route.query.repository
+        architecture: this.currentArchitecture,
+        repository: this.currentRepository
       })
         .then(data => {
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
+          this.repositories = data.repositories
+          this.architectures = data.architectures
           this.error = ''
           return data.items
         })
@@ -155,20 +195,22 @@ export default {
           this.total = 0
           this.count = 0
           this.offset = 0
+          this.repositories = []
+          this.architectures = []
           this.error = error
           return []
         })
     },
     getQuery () {
       const query = {}
-      if (this.$route.query.architecture) {
-        query.architecture = this.$route.query.architecture
+      if (this.$data.currentArchitecture) {
+        query.architecture = this.$data.currentArchitecture
       }
-      if (this.$route.query.repository) {
-        query.repository = this.$route.query.repository
+      if (this.$data.currentRepository) {
+        query.repository = this.$data.currentRepository
       }
-      if (this.$data.query) {
-        query.search = this.$data.query
+      if (this.$data.currentQuery) {
+        query.search = this.$data.currentQuery
       }
       return query
     }
