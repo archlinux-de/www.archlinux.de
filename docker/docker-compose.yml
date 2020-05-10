@@ -81,6 +81,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.8.6
     environment:
+      - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -90,6 +91,7 @@ services:
   elasticsearch-test:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.8.6
     environment:
+      - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
