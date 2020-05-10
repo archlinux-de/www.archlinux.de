@@ -97,4 +97,7 @@ services:
         hard: -1
 
   wait:
-      image: dokku/wait
+    image: dokku/wait
+    depends_on:
+      - elasticsearch
+      - elasticsearch-test
