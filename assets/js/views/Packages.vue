@@ -2,38 +2,19 @@
   <b-container fluid role="main" tag="main">
     <h1 class="mb-4">Paket-Suche</h1>
 
-    <b-input-group>
+    <b-input-group class="mb-2">
       <b-form-input
         debounce="250"
+        trim
         placeholder="Pakete suchen"
         type="search"
         autocomplete="off"
-        class="search-input mb-2"
         v-model="currentQuery"></b-form-input>
 
       <b-input-group-append>
-        <b-button-toolbar key-nav class="mb-2">
-          <b-button-group>
-            <b-button variant="outline-primary"
-                      :pressed="currentRepository == repository"
-                      :key="id"
-                      :to="currentRepository == repository ? {name: 'packages'} : {name: 'packages', query: {repository: repository}}"
-                      v-for="(repository, id) in repositories">
-              {{ repository }}
-            </b-button>
-          </b-button-group>
-
-          <b-button-group
-            v-if="architectures.length > 1 || (architectures.length == 1 && currentArchitecture == architectures[0])">
-            <b-button variant="outline-secondary"
-                      :pressed="currentArchitecture == architecture"
-                      :key="id"
-                      :to="currentArchitecture == architecture ? {name: 'packages'} : {name: 'packages', query: {architecture: architecture}}"
-                      v-for="(architecture, id) in architectures">
-              {{ architecture }}
-            </b-button>
-          </b-button-group>
-        </b-button-toolbar>
+        <b-form-select v-model="currentRepository" :options="repositories"></b-form-select>
+        <b-form-select v-if="currentArchitecture" v-model="currentArchitecture" :options="architectures"
+                       class="d-none d-sm-block"></b-form-select>
       </b-input-group-append>
     </b-input-group>
 
@@ -87,12 +68,6 @@
   </b-container>
 </template>
 
-<style scoped>
-  .search-input {
-    min-width: 50vw;
-  }
-</style>
-
 <script>
 export default {
   name: 'Packages',
@@ -140,8 +115,8 @@ export default {
         class: 'd-none d-lg-table-cell'
       }],
       currentQuery: this.$route.query.search ?? '',
-      currentArchitecture: this.$route.query.architecture ?? null,
-      currentRepository: this.$route.query.repository ?? null,
+      currentArchitecture: this.$route.query.architecture ?? '',
+      currentRepository: this.$route.query.repository ?? '',
       perPage: 25,
       currentPage: 1,
       total: null,
@@ -160,9 +135,13 @@ export default {
 
       this.currentQuery = this.currentQuery.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
 
-      if (this.$route.query.search !== this.currentQuery) {
-        this.$router.replace({ query: this.getQuery() })
-      }
+      this.updateRoute()
+    },
+    currentRepository () {
+      this.updateRoute()
+    },
+    currentArchitecture () {
+      this.updateRoute()
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -186,8 +165,8 @@ export default {
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
-          this.repositories = data.repositories
-          this.architectures = data.architectures
+          this.repositories = ['', ...data.repositories]
+          this.architectures = ['', ...data.architectures]
           this.error = ''
           return data.items
         })
@@ -213,6 +192,13 @@ export default {
         query.search = this.$data.currentQuery
       }
       return query
+    },
+    updateRoute () {
+      const fromQuery = this.$route.query
+      const toQuery = this.getQuery()
+      if (JSON.stringify(fromQuery) !== JSON.stringify(toQuery)) {
+        this.$router.replace({ query: toQuery })
+      }
     }
   }
 }
