@@ -6,12 +6,12 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
 use App\Entity\Packages\Repository;
-use SymfonyDatabaseTest\DatabaseTestCase;
+use App\Tests\DatabaseSearchTestCase;
 
 /**
  * @covers \App\Controller\PackagesController
  */
-class PackagesControllerTest extends DatabaseTestCase
+class PackagesControllerTest extends DatabaseSearchTestCase
 {
     public function testOpenSearchAction(): void
     {
@@ -99,6 +99,8 @@ class PackagesControllerTest extends DatabaseTestCase
         $entityManager->persist($pacman);
         $entityManager->flush();
 
+        sleep(1);
+
         $client = $this->getClient();
 
         $client->request('GET', '/packages/suggest', ['term' => 'pac']);
@@ -131,6 +133,8 @@ class PackagesControllerTest extends DatabaseTestCase
         $entityManager->persist($php);
         $entityManager->persist($pacman);
         $entityManager->flush();
+
+        sleep(1);
 
         $client = $this->getClient();
 

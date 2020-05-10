@@ -41,7 +41,7 @@ class Package
      * @var Repository
      * @Assert\Valid()
      *
-     * @ORM\ManyToOne(targetEntity="Repository", inversedBy="packages")
+     * @ORM\ManyToOne(targetEntity="Repository", inversedBy="packages", fetch="EAGER")
      */
     private $repository;
 

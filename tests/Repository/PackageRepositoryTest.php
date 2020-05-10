@@ -137,41 +137,6 @@ class PackageRepositoryTest extends DatabaseTestCase
     }
 
     /**
-     * @param string $term
-     * @param int $limit
-     * @param int $matchCount
-     * @dataProvider provideTerms
-     */
-    public function testFindByTerm(string $term, int $limit, int $matchCount): void
-    {
-        $entityManager = $this->getEntityManager();
-
-        $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = new Package(
-            $coreRepository,
-            'pacman',
-            '5.0.2-2',
-            Architecture::X86_64
-        );
-        $pacwoman = new Package(
-            $coreRepository,
-            'pacwoman',
-            '5.0.2-2',
-            Architecture::X86_64
-        );
-        $entityManager->persist($coreRepository);
-        $entityManager->persist($pacman);
-        $entityManager->persist($pacwoman);
-        $entityManager->flush();
-        $entityManager->clear();
-
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $entityManager->getRepository(Package::class);
-        $matches = $packageRepository->findByTerm($term, $limit);
-        $this->assertCount($matchCount, $matches);
-    }
-
-    /**
      * @return array<array<int|string>>
      */
     public function provideTerms(): array

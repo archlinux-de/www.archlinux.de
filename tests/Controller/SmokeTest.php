@@ -10,12 +10,12 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Entity\Torrent;
-use SymfonyDatabaseTest\DatabaseTestCase;
+use App\Tests\DatabaseSearchTestCase;
 
 /**
  * @coversNothing
  */
-class SmokeTest extends DatabaseTestCase
+class SmokeTest extends DatabaseSearchTestCase
 {
     public function setUp(): void
     {
@@ -43,7 +43,7 @@ class SmokeTest extends DatabaseTestCase
             );
         $entityManager->persist($release);
 
-        $mirror = new Mirror('', 'https');
+        $mirror = new Mirror('https://download.archlinux.de/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
         $mirror->setScore(1);
@@ -59,6 +59,8 @@ class SmokeTest extends DatabaseTestCase
 
         $entityManager->flush();
         $entityManager->clear();
+
+        sleep(1);
     }
 
     /**

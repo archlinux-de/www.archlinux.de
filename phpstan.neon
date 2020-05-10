@@ -17,3 +17,5 @@ parameters:
 		- public
 		- config
 		- bin
+	ignoreErrors:
+		- '#createPaginatorAdapter\(\) expects string, Elastica\\Query given#'

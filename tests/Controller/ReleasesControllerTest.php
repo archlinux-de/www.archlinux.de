@@ -4,12 +4,12 @@ namespace App\Tests\Controller;
 
 use App\Entity\Release;
 use App\Entity\Torrent;
-use SymfonyDatabaseTest\DatabaseTestCase;
+use App\Tests\DatabaseSearchTestCase;
 
 /**
  * @covers \App\Controller\ReleasesController
  */
-class ReleasesControllerTest extends DatabaseTestCase
+class ReleasesControllerTest extends DatabaseSearchTestCase
 {
     public function testFeedAction(): void
     {
@@ -61,6 +61,8 @@ class ReleasesControllerTest extends DatabaseTestCase
             );
         $entityManager->persist($release);
         $entityManager->flush();
+
+        sleep(1);
 
         $client = $this->getClient();
 

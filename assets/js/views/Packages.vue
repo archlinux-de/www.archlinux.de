@@ -2,14 +2,21 @@
   <b-container fluid role="main" tag="main">
     <h1 class="mb-4">Paket-Suche</h1>
 
-    <b-form-group>
+    <b-input-group class="mb-2">
       <b-form-input
         debounce="250"
+        trim
         placeholder="Pakete suchen"
         type="search"
         autocomplete="off"
-        v-model="query"></b-form-input>
-    </b-form-group>
+        v-model="currentQuery"></b-form-input>
+
+      <b-input-group-append>
+        <b-form-select v-model="currentRepository" :options="repositories"></b-form-select>
+        <b-form-select v-if="currentArchitecture" v-model="currentArchitecture" :options="architectures"
+                       class="d-none d-sm-block"></b-form-select>
+      </b-input-group-append>
+    </b-input-group>
 
     <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
 
@@ -17,7 +24,7 @@
              v-show="total > 0"
              :items="fetchPackages"
              :fields="fields"
-             :filter="query"
+             :filter="currentQuery"
              :per-page="perPage"
              :current-page="currentPage">
 
@@ -107,31 +114,41 @@ export default {
         label: 'Aktualisierung',
         class: 'd-none d-lg-table-cell'
       }],
-      query: this.$route.query.search ?? '',
+      currentQuery: this.$route.query.search ?? '',
+      currentArchitecture: this.$route.query.architecture ?? '',
+      currentRepository: this.$route.query.repository ?? '',
       perPage: 25,
       currentPage: 1,
       total: null,
       count: null,
       offset: null,
+      architectures: [],
+      repositories: [],
       error: ''
     }
   },
   watch: {
-    query () {
-      if (this.query.length > 255) {
-        this.query = this.query.substring(0, 255)
+    currentQuery () {
+      if (this.currentQuery.length > 255) {
+        this.currentQuery = this.currentQuery.substring(0, 255)
       }
 
-      this.query = this.query.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_-]+)/, '')
+      this.currentQuery = this.currentQuery.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
 
-      if (this.$route.query.search !== this.query) {
-        this.$router.replace({ query: this.getQuery() })
-      }
+      this.updateRoute()
+    },
+    currentRepository () {
+      this.updateRoute()
+    },
+    currentArchitecture () {
+      this.updateRoute()
     }
   },
   beforeRouteUpdate (to, from, next) {
     next()
     if (from.query.architecture !== to.query.architecture || from.query.repository !== to.query.repository) {
+      this.$data.currentArchitecture = to.query.architecture
+      this.$data.currentRepository = to.query.repository
       this.$refs.table.refresh()
     }
   },
@@ -141,13 +158,15 @@ export default {
         query: context.filter,
         limit: context.perPage,
         offset: (context.currentPage - 1) * context.perPage,
-        architecture: this.$route.query.architecture,
-        repository: this.$route.query.repository
+        architecture: this.currentArchitecture,
+        repository: this.currentRepository
       })
         .then(data => {
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
+          this.repositories = ['', ...data.repositories]
+          this.architectures = ['', ...data.architectures]
           this.error = ''
           return data.items
         })
@@ -155,22 +174,33 @@ export default {
           this.total = 0
           this.count = 0
           this.offset = 0
+          this.repositories = []
+          this.architectures = []
           this.error = error
           return []
         })
     },
     getQuery () {
       const query = {}
-      if (this.$route.query.architecture) {
-        query.architecture = this.$route.query.architecture
+      if (this.$data.currentArchitecture) {
+        query.architecture = this.$data.currentArchitecture
       }
-      if (this.$route.query.repository) {
-        query.repository = this.$route.query.repository
+      if (this.$data.currentRepository) {
+        query.repository = this.$data.currentRepository
       }
-      if (this.$data.query) {
-        query.search = this.$data.query
+      if (this.$data.currentQuery) {
+        query.search = this.$data.currentQuery
       }
       return query
+    },
+    updateRoute () {
+      const fromQuery = this.$route.query
+      const toQuery = this.getQuery()
+      if (fromQuery.architecture !== toQuery.architecture ||
+        fromQuery.repository !== toQuery.repository ||
+        fromQuery.search !== toQuery.search) {
+        this.$router.replace({ query: toQuery })
+      }
     }
   }
 }

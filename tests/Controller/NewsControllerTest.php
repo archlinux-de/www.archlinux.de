@@ -4,12 +4,12 @@ namespace App\Tests\Controller;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use SymfonyDatabaseTest\DatabaseTestCase;
+use App\Tests\DatabaseSearchTestCase;
 
 /**
  * @covers \App\Controller\NewsController
  */
-class NewsControllerTest extends DatabaseTestCase
+class NewsControllerTest extends DatabaseSearchTestCase
 {
     public function testFeedAction(): void
     {
@@ -61,6 +61,8 @@ class NewsControllerTest extends DatabaseTestCase
         $news->setLink('https://www.archlinux.de/');
         $entityManager->persist($news);
         $entityManager->flush();
+
+        sleep(1);
 
         $client = $this->getClient();
 

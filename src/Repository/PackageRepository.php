@@ -7,7 +7,6 @@ use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class PackageRepository extends ServiceEntityRepository
 {
@@ -74,56 +73,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int $offset
-     * @param int $limit
-     * @param string $query
-     * @param string $architecture
-     * @param string|null $repository
-     * @return Paginator<Package>
-     */
-    public function findLatestByQueryAndArchitecture(
-        int $offset,
-        int $limit,
-        string $query,
-        string $architecture,
-        ?string $repository
-    ): Paginator {
-        $queryBuilder = $this
-            ->createQueryBuilder('package')
-            ->select('package', 'repository');
-        if ($repository) {
-            $queryBuilder->join(
-                'package.repository',
-                'repository',
-                'WITH',
-                'repository.architecture = :architecture AND repository.name = :repository'
-            )
-                ->setParameter('repository', $repository);
-        } else {
-            $queryBuilder->join(
-                'package.repository',
-                'repository',
-                'WITH',
-                'repository.architecture = :architecture'
-            );
-        }
-        $queryBuilder
-            ->orderBy('package.buildDate', 'DESC')
-            ->setParameter('architecture', $architecture)
-            ->setFirstResult($offset)
-            ->setMaxResults($limit);
-
-        if ($query) {
-            $queryBuilder
-                ->where('package.name LIKE :query')
-                ->orWhere('package.description LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
-        }
-
-        return new Paginator($queryBuilder);
-    }
-
-    /**
      * @param string $architecture
      * @return Package[]
      */
@@ -137,25 +86,6 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('architecture', $architecture)
             ->getQuery()
             ->getResult();
-    }
-
-    /**
-     * @param string $term
-     * @param int $limit
-     * @return Package[]
-     */
-    public function findByTerm(string $term, int $limit): array
-    {
-        return $this
-            ->createQueryBuilder('package')
-            ->select('package.name')
-            ->distinct()
-            ->where('package.name LIKE :package')
-            ->orderBy('package.name')
-            ->setMaxResults($limit)
-            ->setParameter('package', $term . '%')
-            ->getQuery()
-            ->getScalarResult();
     }
 
     /**

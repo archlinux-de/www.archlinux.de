@@ -43,39 +43,44 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
      */
     public function normalize($object, string $format = null, array $context = [])
     {
+        $attributes = [
+            'repository',
+            'fileName',
+            'name',
+            'base',
+            'version',
+            'description',
+            'groups',
+            'compressedSize',
+            'installedSize',
+            'sha256sum',
+            'url',
+            'licenses',
+            'architecture',
+            'buildDate',
+            'packager'
+        ];
+
+        if (!isset($context['excludeDependencies']) || !$context['excludeDependencies']) {
+            $attributes = array_merge(
+                $attributes,
+                [
+                    'replacements',
+                    'conflicts',
+                    'provisions',
+                    'dependencies',
+                    'optionalDependencies',
+                    'makeDependencies',
+                    'checkDependencies'
+                ]
+            );
+        }
+
         /** @var array<mixed> $data */
         $data = $this->normalizer->normalize(
             $object,
             $format,
-            array_merge(
-                $context,
-                [
-                    AbstractNormalizer::ATTRIBUTES => [
-                        'repository',
-                        'fileName',
-                        'name',
-                        'base',
-                        'version',
-                        'description',
-                        'groups',
-                        'compressedSize',
-                        'installedSize',
-                        'sha256sum',
-                        'url',
-                        'licenses',
-                        'architecture',
-                        'buildDate',
-                        'packager',
-                        'replacements',
-                        'conflicts',
-                        'provisions',
-                        'dependencies',
-                        'optionalDependencies',
-                        'makeDependencies',
-                        'checkDependencies',
-                    ]
-                ]
-            )
+            array_merge($context, [AbstractNormalizer::ATTRIBUTES => $attributes])
         );
 
         $data['packageUrl'] = $this->router->generate(

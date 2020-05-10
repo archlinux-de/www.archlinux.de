@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Packages\Architecture;
+use App\Entity\Packages\Package;
 use App\Repository\PackageRepository;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
+use App\SearchRepository\PackageSearchRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,15 +22,21 @@ class PackagesController extends AbstractController
     /** @var string */
     private $defaultArchitecture;
 
+    /** @var PackageSearchRepository */
+    private $packageSearchRepository;
+
     /**
      * @param PackageRepository $packageRepository
      * @param string $defaultArchitecture
+     * @param PackageSearchRepository $packageSearchRepository
      */
     public function __construct(
         PackageRepository $packageRepository,
+        PackageSearchRepository $packageSearchRepository,
         string $defaultArchitecture
     ) {
         $this->packageRepository = $packageRepository;
+        $this->packageSearchRepository = $packageSearchRepository;
         $this->defaultArchitecture = $defaultArchitecture;
     }
 
@@ -74,9 +82,9 @@ class PackagesController extends AbstractController
         if (strlen($term) < 1 || strlen($term) > 50) {
             return $this->json([]);
         }
-        $suggestions = $this->packageRepository->findByTerm($term, 10);
+        $suggestions = $this->packageSearchRepository->findByTerm($term, 10);
 
-        return $this->json(array_column($suggestions, 'name'));
+        return $this->json(array_map(fn(Package $package): string => $package->getName(), $suggestions));
     }
 
     /**
@@ -93,14 +101,17 @@ class PackagesController extends AbstractController
         Request $request
     ): Response {
         return $this->json(
-            $this->packageRepository->findLatestByQueryAndArchitecture(
+            $this->packageSearchRepository->findLatestByQueryAndArchitecture(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery(),
                 // @TODO: Add Parameter Validation
                 $request->get('architecture', Architecture::X86_64),
                 $request->get('repository')
-            )
+            ),
+            Response::HTTP_OK,
+            [],
+            ['excludeDependencies' => true]
         );
     }
 }

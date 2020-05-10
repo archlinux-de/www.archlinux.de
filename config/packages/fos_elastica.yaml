@@ -1,0 +1,106 @@
+# Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
+fos_elastica:
+    clients:
+        default: { url: '%env(resolve:ELASTICSEARCH_URL)%' }
+    indexes:
+        packages:
+            settings:
+                index:
+                    max_result_window: 20000
+            types:
+                package:
+                    properties:
+                        name:
+                            boost: 5
+                            fielddata: true
+                        base: { boost: 4 }
+                        description: { boost: 3 }
+                        url: ~
+                        groups: { boost: 2 }
+                        buildDate:
+                            type: "date"
+                        replacements:
+                            type: "object"
+                            properties:
+                                targetName: ~
+                        provisions:
+                            type: "object"
+                            properties:
+                                targetName: ~
+                        repository:
+                            type: "object"
+                            properties:
+                                architecture:
+                                    type: keyword
+                                name:
+                                    type: keyword
+                    persistence:
+                        driver: orm
+                        model: App\Entity\Packages\Package
+                        provider: ~
+                        finder: ~
+                        repository: App\SearchRepository\PackageSearchRepository
+        news:
+            types:
+                newsItem:
+                    properties:
+                        title:
+                            boost: 2
+                            analyzer: "german"
+                        description:
+                            analyzer: "german"
+                        author:
+                            type: "object"
+                            properties:
+                                name: ~
+                        lastModified:
+                            type: "date"
+                    persistence:
+                        driver: orm
+                        model: App\Entity\NewsItem
+                        provider: ~
+                        finder: ~
+                        repository: App\SearchRepository\NewsItemSearchRepository
+        releases:
+            types:
+                release:
+                    properties:
+                        version:
+                            boost: 2
+                        info: ~
+                        kernelVersion: ~
+                        releaseDate:
+                            type: "date"
+                    persistence:
+                        identifier: version
+                        driver: orm
+                        model: App\Entity\Release
+                        provider: ~
+                        finder: ~
+                        repository: App\SearchRepository\ReleaseSearchRepository
+        mirrors:
+            types:
+                mirror:
+                    properties:
+                        url:
+                            boost: 2
+                        country:
+                            type: "object"
+                            properties:
+                                code:
+                                    type: keyword
+                                name: ~
+                        protocol:
+                            type: keyword
+                        active:
+                            type: boolean
+                        score: { fielddata: true }
+                        lastSync:
+                            type: date
+                    persistence:
+                        identifier: url
+                        driver: orm
+                        model: App\Entity\Mirror
+                        provider: ~
+                        finder: ~
+                        repository: App\SearchRepository\MirrorSearchRepository

@@ -27,10 +27,13 @@ init: start
 start:
 	${COMPOSE} up -d
 	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
+	${COMPOSE-RUN} wait -c elasticsearch:9200 -t 60
+	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 start-db:
-	${COMPOSE} up -d mariadb
+	${COMPOSE} up -d mariadb elasticsearch-test
 	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
+	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 stop:
 	${COMPOSE} stop
@@ -55,7 +58,7 @@ shell-php:
 shell-node:
 	${NODE-RUN} bash
 
-test:
+test: start-db
 	${PHP-RUN} composer validate
 	${PHP-RUN} vendor/bin/phpcs
 	${NODE-RUN} node_modules/.bin/eslint assets --ext js --ext vue
@@ -65,7 +68,7 @@ test:
 	${PHP-RUN} bin/console lint:twig templates
 	${NODE-RUN} sh -c "PUBLIC_PATH=/tmp node_modules/.bin/encore prod"
 	${PHP-RUN} vendor/bin/phpstan analyse
-	${PHP-RUN} vendor/bin/phpunit
+	${PHP-DB-RUN} vendor/bin/phpunit
 
 test-db: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
@@ -73,7 +76,7 @@ test-db: start-db
 test-db-migrations: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test'
 
-test-coverage:
+test-coverage: start-db
 	${NODE-RUN} node_modules/.bin/jest --coverage --coverageDirectory var/coverage/jest
 	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 

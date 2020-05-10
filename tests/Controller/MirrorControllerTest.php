@@ -2,26 +2,32 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Entity\Torrent;
-use SymfonyDatabaseTest\DatabaseTestCase;
+use App\Tests\DatabaseSearchTestCase;
 
 /**
  * @covers \App\Controller\MirrorController
  */
-class MirrorControllerTest extends DatabaseTestCase
+class MirrorControllerTest extends DatabaseSearchTestCase
 {
     public function testIsoAction(): void
     {
         $entityManager = $this->getEntityManager();
+        $country = (new Country('de'))->setName('Germany');
+
         $mirror = new Mirror('https://127.0.0.2/', 'https');
         $mirror->setActive(true);
         $mirror->setIsos(true);
         $mirror->setScore(1);
+        $mirror->setLastSync(new \DateTime());
+        $mirror->setCountry($country);
+
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('')
@@ -31,9 +37,13 @@ class MirrorControllerTest extends DatabaseTestCase
             ->setTorrent(
                 (new Torrent())->setFileLength(1)
             );
+
+        $entityManager->persist($country);
         $entityManager->persist($mirror);
         $entityManager->persist($release);
         $entityManager->flush();
+
+        sleep(1);
 
         $filePath = 'iso/2018.01.01/archlinux-2018.01.01-x86_64.iso';
         $client = $this->getClient();
@@ -51,6 +61,8 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
+
+        sleep(1);
 
         $filePath = 'iso/2018.01.01/archlinux-2018.01.01-x86_64.iso';
         $client = $this->getClient();
@@ -82,6 +94,8 @@ class MirrorControllerTest extends DatabaseTestCase
         $entityManager->persist($pacman);
         $entityManager->flush();
 
+        sleep(1);
+
         $filePath = 'core/os/x86_64/linux-3.11-1-x86_64.pkg.tar.' . $packageExtension;
         $client = $this->getClient();
 
@@ -98,6 +112,8 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
+
+        sleep(1);
 
         $filePath = 'core/os/x86_64/linux-3.11-1-x86_64.pkg.tar.xz';
         $client = $this->getClient();
@@ -116,6 +132,8 @@ class MirrorControllerTest extends DatabaseTestCase
         $entityManager->persist($mirror);
         $entityManager->flush();
 
+        sleep(1);
+
         $filePath = 'core/os/x86_64/linux-3.11-1-2-1-2-4-x86_64.pkg.tar.xz';
         $client = $this->getClient();
 
@@ -133,6 +151,8 @@ class MirrorControllerTest extends DatabaseTestCase
         $entityManager->persist($mirror);
         $entityManager->flush();
 
+        sleep(1);
+
         $filePath = 'foo.txt';
         $client = $this->getClient();
 
@@ -149,6 +169,8 @@ class MirrorControllerTest extends DatabaseTestCase
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
+
+        sleep(1);
 
         $filePath = 'foo.txt';
         $client = $this->getClient();
