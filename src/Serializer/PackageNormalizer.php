@@ -107,7 +107,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             . '.git/';
 
         $data['sourceUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
-        $data['sourceChangelogUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
+        $data['sourceChangelogUrl'] = $cgitLink . 'log/trunk?h=packages/' . $object->getBase();
 
         return $data;
     }

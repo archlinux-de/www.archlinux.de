@@ -114,7 +114,7 @@ class PackageNormalizerTest extends KernelTestCase
                 'packageUrl' => 'http://localhost/download/core/os/x86_64/pacman-6.0-1-x86_64.pkg.tar.xz',
                 'sourceUrl' => 'https://projects.archlinux.de/svntogit/packages.git/tree/trunk?h=packages/pacman',
                 'sourceChangelogUrl' =>
-                    'https://projects.archlinux.de/svntogit/packages.git/tree/trunk?h=packages/pacman'
+                    'https://projects.archlinux.de/svntogit/packages.git/log/trunk?h=packages/pacman'
             ],
             $jsonArray
         );
