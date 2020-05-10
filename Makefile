@@ -27,13 +27,13 @@ init: start
 start:
 	${COMPOSE} up -d
 	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
-	${COMPOSE-RUN} wait -c elasticsearch:9200
-	${COMPOSE-RUN} wait -c elasticsearch-test:9200
+	${COMPOSE-RUN} wait -c elasticsearch:9200 -t 60
+	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 start-db:
 	${COMPOSE} up -d mariadb elasticsearch-test
 	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
-	${COMPOSE-RUN} wait -c elasticsearch-test:9200
+	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 stop:
 	${COMPOSE} stop
