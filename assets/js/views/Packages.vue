@@ -196,7 +196,9 @@ export default {
     updateRoute () {
       const fromQuery = this.$route.query
       const toQuery = this.getQuery()
-      if (JSON.stringify(fromQuery) !== JSON.stringify(toQuery)) {
+      if (fromQuery.architecture !== toQuery.architecture ||
+        fromQuery.repository !== toQuery.repository ||
+        fromQuery.search !== toQuery.search) {
         this.$router.replace({ query: toQuery })
       }
     }
