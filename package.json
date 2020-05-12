@@ -2,12 +2,12 @@
   "license": "GPL-3.0",
   "private": true,
   "dependencies": {
-    "@symfony/webpack-encore": "^0.29.1",
+    "@symfony/webpack-encore": "^0.30.0",
     "@vue/cli-service": "^4.3.1",
     "autoprefixer": "^9.7.6",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.13.0",
-    "compression-webpack-plugin": "^3.1.0",
+    "compression-webpack-plugin": "^4.0.0",
     "core-js": "^3.6.5",
     "node-sass": "^4.14.0",
     "postcss-loader": "^3.0.0",
@@ -22,7 +22,7 @@
   "devDependencies": {
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0",
+    "eslint": "^7.0.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-compat": "^3.5.1",
     "eslint-plugin-import": "^2.20.2",
@@ -30,7 +30,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^6.2.2",
-    "jest": "^25.5.4",
+    "jest": "^26.0.1",
     "stylelint": "^13.3.3",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-no-unsupported-browser-features": "^4.0.0"

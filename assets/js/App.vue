@@ -2,7 +2,7 @@
   <div>
     <b-navbar class="navbar-border-brand nav-no-outline mb-4" toggleable="sm" type="dark" variant="dark">
       <b-navbar-brand :to="{name: 'start'}">
-        <img alt="Arch Linux" height="40" src="@/images/archlogo.svg"/>
+        <img alt="Arch Linux" height="40" :src="logo"/>
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -49,6 +49,9 @@
 </style>
 
 <script>
+import LogoImage from '@/images/archlogo.svg'
+import IconImage from '@/images/archicon.svg'
+
 export default {
   name: 'App',
   metaInfo () {
@@ -56,7 +59,13 @@ export default {
       title: 'archlinux.de',
       titleTemplate: '%s - archlinux.de',
       meta: [{ vmid: 'robots', name: 'robots', content: 'index,follow' }],
-      link: [{ rel: 'icon', href: require('@/images/archicon.svg'), sizes: 'any', type: 'image/svg+xml' }]
+      link: [{ rel: 'icon', href: this.icon, sizes: 'any', type: 'image/svg+xml' }]
+    }
+  },
+  data () {
+    return {
+      logo: LogoImage,
+      icon: IconImage
     }
   }
 }
