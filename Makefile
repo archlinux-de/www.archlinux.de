@@ -23,6 +23,7 @@ init: start
 	${PHP-DB-RUN} bin/console app:update:releases
 	${PHP-DB-RUN} bin/console app:update:repositories
 	${PHP-DB-RUN} bin/console app:update:packages
+	${PHP-DB-RUN} bin/console fos:elastica:populate
 
 start:
 	${COMPOSE} up -d
