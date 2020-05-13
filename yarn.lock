@@ -724,7 +724,7 @@
     "@babel/types" "^7.4.4"
     esutils "^2.0.2"
 
-"@babel/runtime@^7.7.7", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   version "7.9.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.6.tgz#a9102eb5cadedf3f31d08a9ecf294af7827ea29f"
   integrity sha512-64AF1xY3OAkFHqOb9s4jpgk1Mm5vDZ4L3acHvAml+53nO1XbXLuDodsVpO4OIUsmemlUHMxNdYMNJmsvOwLrvQ==
@@ -1085,10 +1085,10 @@
     remark "^12.0.0"
     unist-util-find-all-after "^3.0.1"
 
-"@symfony/webpack-encore@^0.30.0":
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/@symfony/webpack-encore/-/webpack-encore-0.30.0.tgz#e35241fed38748abdd832e306e9ca99b9ed8b928"
-  integrity sha512-IDEYMALbCugd8OjohKQSisiCbbTFzsjuo8BGraI592fP7pP/p8fUfzSVNtXldQTZQK2BN6t8RCaNda9FCtozgw==
+"@symfony/webpack-encore@^0.30.1":
+  version "0.30.1"
+  resolved "https://registry.yarnpkg.com/@symfony/webpack-encore/-/webpack-encore-0.30.1.tgz#7bb9e6295d7f8d3323dae3253eb489ead2344ebc"
+  integrity sha512-92AZ1tJ4a53xk7x2tIhwyTuk4YzDVGKED+XAD2p3IV6PvSg++3U0YytyTWPMx5vUHjHdnyw1DUcirtLscmcOlg==
   dependencies:
     "@babel/core" "^7.7.0"
     "@babel/plugin-syntax-dynamic-import" "^7.0.0"
@@ -2329,7 +2329,7 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browserslist@^4.0.0, browserslist@^4.1.1, browserslist@^4.11.1, browserslist@^4.8.2, browserslist@^4.8.5:
+browserslist@^4.0.0, browserslist@^4.1.1, browserslist@^4.11.1, browserslist@^4.8.5:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.12.0.tgz#06c6d5715a1ede6c51fc39ff67fd647f740b656d"
   integrity sha512-UH2GkcEDSI0k/lRkuDSzFl9ZZ87skSy9w2XAn1MsZnL+4c4rqbBd3e82UWHbYDpztABrPBhZsTEeuxVfHppqDg==
@@ -2569,7 +2569,7 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-db@^1.0.30001017:
+caniuse-db@^1.0.30001040:
   version "1.0.30001055"
   resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30001055.tgz#ffa37bdb3221a2b6c90528f49584b2340631fd1e"
   integrity sha512-WgyNA+lEteIfAQlUfSRb0zvY8EKJnOZ4GcFzKveNb2+4UaFuMk3RiY1mdKA2MQYhVxfLdFdbNxLs6Iym94An7Q==
@@ -3857,9 +3857,9 @@ ejs@^2.6.1:
   integrity sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==
 
 electron-to-chromium@^1.3.413:
-  version "1.3.434"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.434.tgz#a67dcb268e93768e2169399999ccffa4783f048e"
-  integrity sha512-WjzGrE6appXvMyc2kH9Ide7OxsgTuRzag9sjQ5AcbOnbS9ut7P1HzOeEbJFLhr81IR7n2Hlr6qTTSGTXLIX5Pg==
+  version "1.3.435"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.435.tgz#22a7008e8f5a317a6d2d80802bddacebb19ae025"
+  integrity sha512-BVXnq+NCefidU7GOFPx4CPBfPcccLCRBKZYSbvBJMSn2kwGD7ML+eUA9tqfHAumRqy3oX5zaeTI1Bpt7qVat0Q==
 
 elliptic@^6.0.0, elliptic@^6.5.2:
   version "6.5.2"
@@ -4080,18 +4080,18 @@ eslint-module-utils@^2.4.1:
     debug "^2.6.9"
     pkg-dir "^2.0.0"
 
-eslint-plugin-compat@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-compat/-/eslint-plugin-compat-3.5.1.tgz#09f9c05dcfa9b5cd69345d7ab333749813ed8b14"
-  integrity sha512-dhfW12vZxxKLEVhrPoblmEopgwpYU2Sd4GdXj5OSfbQ+as9+1aY+S5pqnJYJvXXNWFFJ6aspLkCyk4NMQ/pgtA==
+eslint-plugin-compat@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-compat/-/eslint-plugin-compat-3.6.0.tgz#2e9b23dec4f6e43aa5396b3102c73fd83dac1e20"
+  integrity sha512-T4ENXFcxtun48dHlruNW+pTlQNfrNjuAbLWWBWj5wJs39Ny2CGqj4rz38ppcDSA1hHmARgS6snV6YsgMGY7pdQ==
   dependencies:
-    "@babel/runtime" "^7.7.7"
     ast-metadata-inferer "^0.1.1"
-    browserslist "^4.8.2"
-    caniuse-db "^1.0.30001017"
+    browserslist "^4.11.1"
+    caniuse-db "^1.0.30001040"
+    core-js "^3.6.5"
     lodash.memoize "4.1.2"
-    mdn-browser-compat-data "^1.0.3"
-    semver "^6.3.0"
+    mdn-browser-compat-data "^1.0.17"
+    semver "7.2.2"
 
 eslint-plugin-es@^3.0.0:
   version "3.0.0"
@@ -6950,7 +6950,7 @@ mdast-util-compact@^2.0.0:
   dependencies:
     unist-util-visit "^2.0.0"
 
-mdn-browser-compat-data@^1.0.3:
+mdn-browser-compat-data@^1.0.17:
   version "1.0.20"
   resolved "https://registry.yarnpkg.com/mdn-browser-compat-data/-/mdn-browser-compat-data-1.0.20.tgz#def4dc45cdacd2b17d4d297e397e00149c06ff8f"
   integrity sha512-6sS4ydJ6+/ZnSwKUN8Jtu7NzD2pobXRolYRjHupKtRBDmx+8WZG1yUdOfF9QfCNPkWKrf3GcSFEurIrnJC56Qw==
@@ -9516,6 +9516,11 @@ semver@7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.0.0.tgz#5f3ca35761e47e05b206c6daff2cf814f0316b8e"
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
+
+semver@7.2.2:
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.2.2.tgz#d01432d74ed3010a20ffaf909d63a691520521cd"
+  integrity sha512-Zo84u6o2PebMSK3zjJ6Zp5wi8VnQZnEaCP13Ul/lt1ANsLACxnJxq4EEm1PY94/por1Hm9+7xpIswdS5AkieMA==
 
 semver@^6.0.0, semver@^6.1.0, semver@^6.3.0:
   version "6.3.0"

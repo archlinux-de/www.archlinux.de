@@ -2,7 +2,7 @@
   "license": "GPL-3.0",
   "private": true,
   "dependencies": {
-    "@symfony/webpack-encore": "^0.30.0",
+    "@symfony/webpack-encore": "^0.30.1",
     "@vue/cli-service": "^4.3.1",
     "autoprefixer": "^9.7.6",
     "bootstrap": "^4.4.1",
@@ -24,7 +24,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.0.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-compat": "^3.5.1",
+    "eslint-plugin-compat": "^3.6.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",

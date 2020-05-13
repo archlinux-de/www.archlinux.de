@@ -13,7 +13,7 @@ Encore
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
   .enablePostCssLoader()
-  .enableVueLoader()
+  .enableVueLoader(() => {}, { runtimeCompilerBuild: false })
   .configureBabel(() => {}, { useBuiltIns: 'usage', corejs: 3 })
 
 if (Encore.isProduction()) {
