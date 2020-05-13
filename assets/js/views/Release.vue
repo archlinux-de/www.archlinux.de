@@ -1,5 +1,5 @@
 <template>
-  <b-container role="main" fluid tag="main">
+  <b-container role="main" tag="main">
 
     <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
 
@@ -8,48 +8,44 @@
       <b-row>
         <b-col cols="12" xl="6">
           <h2 class="mb-3">Release Informationen</h2>
-          <table class="table table-sm mb-4">
-            <colgroup>
-              <col class="w-25">
-              <col class="w-75">
-            </colgroup>
-            <tr>
-              <th>Version</th>
-              <td>{{ release.version }}</td>
-            </tr>
-            <tr>
-              <th>Verfügbarkeit</th>
-              <td>
+          <b-table-simple fixed small class="mb-4">
+            <b-tr>
+              <b-th>Version</b-th>
+              <b-td>{{ release.version }}</b-td>
+            </b-tr>
+            <b-tr>
+              <b-th>Verfügbarkeit</b-th>
+              <b-td>
                 <span v-if="release.available" class="text-success">✓</span>
                 <span v-else class="text-danger">×</span>
-              </td>
-            </tr>
-            <tr v-if="release.info">
-              <th>Informationen</th>
-              <td v-html="release.info"></td>
-            </tr>
-            <tr v-if="release.kernelVersion">
-              <th>Kernel-Version</th>
-              <td>{{ release.kernelVersion }}</td>
-            </tr>
-            <tr>
-              <th>Veröffentlichung</th>
-              <td>{{ (new Date(release.releaseDate)).toLocaleDateString('de-DE') }}</td>
-            </tr>
-            <tr v-if="release.fileSize">
-              <th>ISO Größe</th>
-              <td>{{ release.fileSize | prettyBytes }}</td>
-            </tr>
-            <tr v-if="release.sha1Sum">
-              <th>SHA1</th>
-              <td class="text-break">{{ release.sha1Sum }}</td>
-            </tr>
-            <tr v-if="release.available">
-              <th>PGP</th>
-              <td><a :href="release.isoSigUrl" target="_blank">PGP-Signatur</a>
-              </td>
-            </tr>
-          </table>
+              </b-td>
+            </b-tr>
+            <b-tr v-if="release.info">
+              <b-th>Informationen</b-th>
+              <b-td v-html="release.info"></b-td>
+            </b-tr>
+            <b-tr v-if="release.kernelVersion">
+              <b-th>Kernel-Version</b-th>
+              <b-td>{{ release.kernelVersion }}</b-td>
+            </b-tr>
+            <b-tr>
+              <b-th>Veröffentlichung</b-th>
+              <b-td>{{ (new Date(release.releaseDate)).toLocaleDateString('de-DE') }}</b-td>
+            </b-tr>
+            <b-tr v-if="release.fileSize">
+              <b-th>ISO Größe</b-th>
+              <b-td>{{ release.fileSize | prettyBytes }}</b-td>
+            </b-tr>
+            <b-tr v-if="release.sha1Sum">
+              <b-th>SHA1</b-th>
+              <b-td class="text-break">{{ release.sha1Sum }}</b-td>
+            </b-tr>
+            <b-tr v-if="release.available">
+              <b-th>PGP</b-th>
+              <b-td><a :href="release.isoSigUrl" target="_blank">PGP-Signatur</a>
+              </b-td>
+            </b-tr>
+          </b-table-simple>
         </b-col>
 
         <b-col cols="12" xl="6">
