@@ -64,7 +64,7 @@
         </template>
 
         <h3>Arch Linux Releases</h3>
-        <a class="btn btn-outline-secondary btn-sm" href="">Feed</a>
+        <a class="btn btn-outline-secondary btn-sm" href="/releases/feed">Feed</a>
         <router-link :to="{name: 'releases'}" class="btn btn-secondary btn-sm" role="button">Archiv</router-link>
       </b-col>
     </b-row>

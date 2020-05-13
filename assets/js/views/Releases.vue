@@ -54,7 +54,7 @@
     </b-row>
 
     <div class="mt-4">
-      <a class="btn btn-outline-secondary btn-sm" href="/news/feed">Feed</a>
+      <a class="btn btn-outline-secondary btn-sm" href="/releases/feed">Feed</a>
       <b-button type="secondary" size="sm" :to="{name: 'download'}">Aktueller Download</b-button>
     </div>
 

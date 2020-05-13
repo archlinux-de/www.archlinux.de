@@ -24,7 +24,7 @@
 
     <div class="card-footer text-muted d-inline-flex justify-content-between">
       <router-link to="packages" class="card-link">mehr Pakete</router-link>
-      <a class="card-link" href="">Feed</a>
+      <a class="card-link" href="/packages/feed">Feed</a>
     </div>
   </div>
 </template>
