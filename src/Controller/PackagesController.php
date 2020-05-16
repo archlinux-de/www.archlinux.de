@@ -108,10 +108,7 @@ class PackagesController extends AbstractController
                 // @TODO: Add Parameter Validation
                 $request->get('architecture', Architecture::X86_64),
                 $request->get('repository')
-            ),
-            Response::HTTP_OK,
-            [],
-            ['excludeDependencies' => true]
+            )
         );
     }
 }

@@ -20,6 +20,18 @@ export default {
   name: 'InversePackageRelations',
   inject: ['apiService'],
   props: {
+    repository: {
+      type: String,
+      required: true
+    },
+    architecture: {
+      type: String,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
     type: {
       type: String,
       required: true
@@ -34,22 +46,23 @@ export default {
       relations: []
     }
   },
-  watch: {
-    $route: 'fetchRelations'
-  },
   methods: {
-    fetchRelations () {
-      this.apiService.fetchPackageInverseDependencies(
-        this.$route.params.repository,
-        this.$route.params.architecture,
-        this.$route.params.name, this.type
-      )
+    fetchInverseRelations () {
+      this.apiService.fetchPackageInverseDependencies(this.repository, this.architecture, this.name, this.type)
         .then(data => { this.relations = data })
         .catch(() => {})
     }
   },
   mounted () {
-    this.fetchRelations()
+    this.fetchInverseRelations()
+  },
+  watch: {
+    $props: {
+      handler () {
+        this.fetchInverseRelations()
+      },
+      deep: true
+    }
   }
 }
 </script>

@@ -102,33 +102,32 @@
       <b-col cols="12" xl="6">
         <h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
         <b-row>
-          <package-relations title="von" :relations="pkg.dependencies"></package-relations>
-          <package-relations title="optional von" :relations="pkg.optionalDependencies"></package-relations>
-          <package-relations title="stellt bereit" :relations="pkg.provisions"></package-relations>
-          <package-relations title="ersetzt" :relations="pkg.replacements"></package-relations>
-          <package-relations title="kollidiert mit" :relations="pkg.conflicts"></package-relations>
-          <package-relations title="Bauen von" :relations="pkg.makeDependencies"></package-relations>
-          <package-relations title="Test von" :relations="pkg.checkDependencies"></package-relations>
+          <package-relations
+            v-for="relation in relations"
+            :key="'package-relations-' + relation.type"
+            :repository="pkg.repository.name"
+            :architecture="pkg.repository.architecture"
+            :name="pkg.name"
+            :type="relation.type"
+            :title="relation.title"></package-relations>
 
-          <inverse-package-relations title="benötigt von" type="dependency"></inverse-package-relations>
-          <inverse-package-relations title="optional für" type="optional-dependency"></inverse-package-relations>
-          <!--          <inverse-package-relations title="Bereitgestellt von" type="provision"></inverse-package-relations>-->
-          <!--          <inverse-package-relations title="Ersetzt von" type="replacement"></inverse-package-relations>-->
-          <!--          <inverse-package-relations title="Kollision von" type="conflict"></inverse-package-relations>-->
-          <inverse-package-relations title="Zum Bauen für" type="make-dependency"></inverse-package-relations>
-          <inverse-package-relations title="Zum Testen für" type="check-dependency"></inverse-package-relations>
+          <inverse-package-relations
+            v-for="inverseRelation in inverseRelations"
+            :key="'inverse-package-relations-' + inverseRelation.type"
+            :repository="pkg.repository.name"
+            :architecture="pkg.repository.architecture"
+            :name="pkg.name"
+            :type="inverseRelation.type"
+            :title="inverseRelation.title"></inverse-package-relations>
         </b-row>
       </b-col>
 
       <b-col cols="12">
         <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
-        <b-button variant="outline-secondary" size="sm" class="ml-4"
-                  v-if="files.length === 0" v-on:click.once="fetchFiles">
-          Dateien anzeigen
-        </b-button>
-        <ul class="list-unstyled ml-4 overflow-auto">
-          <li :key="key" v-for="(file, key) in files" :class="file.match(/\/$/) ? 'text-muted' : ''">{{ file }}</li>
-        </ul>
+        <package-files
+            :repository="pkg.repository.name"
+            :architecture="pkg.repository.architecture"
+            :name="pkg.name"></package-files>
       </b-col>
     </b-row>
   </b-container>
@@ -137,33 +136,70 @@
 <script>
 import PackageRelations from '@/js/components/PackageRelations'
 import InversePackageRelations from '@/js/components/InversePackageRelations'
+import PackageFiles from '@/js/components/PackageFiles'
 
 export default {
   name: 'Package',
   metaInfo () {
-    if (this.pkg.name) {
-      return {
-        title: this.pkg.name,
-        link: [{ rel: 'canonical', href: this.canonical }],
-        meta: this.pkg.repository.testing
-          ? [{ vmid: 'robots', name: 'robots', content: 'noindex' }]
-          : [{ vmid: 'robots', name: 'robots', content: 'index,follow' }]
-      }
-    } else {
-      return {
-        meta: [{ vmid: 'robots', name: 'robots', content: 'noindex,follow' }]
-      }
+    const metaInfoObject = {}
+    metaInfoObject.meta = []
+
+    if (!this.pkg.name || this.pkg.repository.testing) {
+      metaInfoObject.meta.push({ vmid: 'robots', name: 'robots', content: 'noindex' })
     }
+
+    if (this.pkg.name) {
+      metaInfoObject.title = this.pkg.name
+      metaInfoObject.link = [{ rel: 'canonical', href: this.canonical }]
+      metaInfoObject.meta.push({ vmid: 'description', name: 'description', content: this.pkg.description })
+    }
+
+    return metaInfoObject
   },
   components: {
     PackageRelations,
-    InversePackageRelations
+    InversePackageRelations,
+    PackageFiles
   },
   inject: ['apiService'],
   data () {
     return {
+      relations: [{
+        title: 'von',
+        type: 'dependency'
+      }, {
+        title: 'optional von',
+        type: 'optional-dependency'
+      }, {
+        title: 'stellt bereit',
+        type: 'provision'
+      }, {
+        title: 'ersetzt',
+        type: 'replacement'
+      }, {
+        title: 'kollidiert mit',
+        type: 'conflict'
+      }, {
+        title: 'Bauen von',
+        type: 'make-dependency'
+      }, {
+        title: 'Test von',
+        type: 'check-dependency'
+      }],
+      inverseRelations: [{
+        title: 'benötigt von',
+        type: 'dependency'
+      }, {
+        title: 'optional für',
+        type: 'optional-dependency'
+      }, {
+        title: 'Zum Bauen für',
+        type: 'make-dependency'
+      }, {
+        title: 'Zum Testen für',
+        type: 'check-dependency'
+      }],
       pkg: {},
-      files: [],
       canonical: '',
       error: ''
     }
@@ -184,16 +220,6 @@ export default {
           }
         })
         .catch(error => { this.error = error })
-    },
-    fetchFiles () {
-      this.apiService.fetchPackageFiles(
-        this.$route.params.repository,
-        this.$route.params.architecture,
-        this.$route.params.name)
-        .then(data => {
-          this.files = data.length ? data : ['Das Paket enthält keine Dateien']
-        })
-        .catch(error => { this.files = [error] })
     },
     createCanonical () {
       return this.$router.resolve({

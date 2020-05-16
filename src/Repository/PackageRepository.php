@@ -3,6 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Packages\Package;
+use App\Entity\Packages\Relations\AbstractRelation;
+use App\Entity\Packages\Relations\CheckDependency;
+use App\Entity\Packages\Relations\Conflict;
+use App\Entity\Packages\Relations\Dependency;
+use App\Entity\Packages\Relations\MakeDependency;
+use App\Entity\Packages\Relations\OptionalDependency;
+use App\Entity\Packages\Relations\Provision;
+use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -156,20 +164,20 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $repo
-     * @param string $arch
-     * @param string $pkgname
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
      * @param string $type
      * @return Package[]
      */
     public function findInverseRelationsByQuery(
-        string $repo,
-        string $arch,
-        string $pkgname,
+        string $repository,
+        string $architecture,
+        string $name,
         string $type
     ): array {
         try {
-            $package = $this->getByName($repo, $arch, $pkgname);
+            $package = $this->getByName($repository, $architecture, $name);
         } catch (NoResultException $e) {
             return [];
         }
@@ -208,5 +216,49 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('architecture', $architecture)
             ->getQuery()
             ->getSingleResult();
+    }
+
+    /**
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
+     * @param string $type
+     * @return AbstractRelation[]
+     */
+    public function findRelationsByQuery(string $repository, string $architecture, string $name, string $type): array
+    {
+        try {
+            $package = $this->getByName($repository, $architecture, $name);
+        } catch (NoResultException $e) {
+            return [];
+        }
+
+        switch ($type) {
+            case CheckDependency::class:
+                $dependencies = $package->getCheckDependencies()->toArray();
+                break;
+            case Conflict::class:
+                $dependencies = $package->getConflicts()->toArray();
+                break;
+            case Dependency::class:
+                $dependencies = $package->getDependencies()->toArray();
+                break;
+            case MakeDependency::class:
+                $dependencies = $package->getMakeDependencies()->toArray();
+                break;
+            case OptionalDependency::class:
+                $dependencies = $package->getOptionalDependencies()->toArray();
+                break;
+            case Provision::class:
+                $dependencies = $package->getProvisions()->toArray();
+                break;
+            case Replacement::class:
+                $dependencies = $package->getReplacements()->toArray();
+                break;
+            default:
+                $dependencies = [];
+        }
+
+        return $dependencies;
     }
 }

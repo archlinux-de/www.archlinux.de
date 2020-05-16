@@ -19,14 +19,50 @@
 <script>
 export default {
   name: 'PackageRelations',
+  inject: ['apiService'],
   props: {
-    relations: {
-      type: Array,
+    repository: {
+      type: String,
+      required: true
+    },
+    architecture: {
+      type: String,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    type: {
+      type: String,
       required: true
     },
     title: {
       type: String,
       required: true
+    }
+  },
+  data () {
+    return {
+      relations: []
+    }
+  },
+  methods: {
+    fetchRelations () {
+      this.apiService.fetchPackageDependencies(this.repository, this.architecture, this.name, this.type)
+        .then(data => { this.relations = data })
+        .catch(() => {})
+    }
+  },
+  mounted () {
+    this.fetchRelations()
+  },
+  watch: {
+    $props: {
+      handler () {
+        this.fetchRelations()
+      },
+      deep: true
     }
   }
 }

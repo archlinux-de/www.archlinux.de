@@ -50,13 +50,6 @@ class PackageDetailsControllerTest extends DatabaseTestCase
                 'sha256sum' => null,
                 'licenses' => null,
                 'groups' => [],
-                'dependencies' => [],
-                'conflicts' => [],
-                'replacements' => [],
-                'optionalDependencies' => [],
-                'provisions' => [],
-                'makeDependencies' => [],
-                'checkDependencies' => [],
                 'name' => 'pacman',
                 'repository' => [
                     'name' => 'core',
@@ -96,7 +89,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $entityManager->flush();
 
         $client = $this->getClient();
-        $client->request('GET', '/api/packages/core/x86_64/pacman/inverse/dependency');
+        $client->request('GET', '/api/packages/core/x86_64/pacman/inverse-dependencies/dependency');
 
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertIsString($client->getResponse()->getContent());
@@ -109,7 +102,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
     public function testPackageInverseDependencyActionFailsWithInvalidType(): void
     {
         $client = $this->getClient();
-        $client->request('GET', '/api/packages/core/x86_64/pacman/inverse/foo');
+        $client->request('GET', '/api/packages/core/x86_64/pacman/inverse-dependencies/foo');
 
         $this->assertTrue($client->getResponse()->isClientError());
     }

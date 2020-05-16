@@ -189,7 +189,8 @@ class Package
      *     targetEntity="App\Entity\Packages\Relations\Conflict",
      *     mappedBy="source",
      *     cascade={"persist"},
-     *     orphanRemoval=true
+     *     orphanRemoval=true,
+     *     fetch="LAZY"
      * )
      */
     private $conflicts;
@@ -202,7 +203,8 @@ class Package
      *     targetEntity="App\Entity\Packages\Relations\Provision",
      *     mappedBy="source",
      *     cascade={"persist"},
-     *     orphanRemoval=true
+     *     orphanRemoval=true,
+     *     fetch="LAZY"
      * )
      */
     private $provisions;
@@ -215,7 +217,8 @@ class Package
      *     targetEntity="App\Entity\Packages\Relations\Dependency",
      *     mappedBy="source",
      *     cascade={"persist"},
-     *     orphanRemoval=true
+     *     orphanRemoval=true,
+     *     fetch="LAZY"
      * )
      */
     private $dependencies;
@@ -228,7 +231,8 @@ class Package
      *     targetEntity="App\Entity\Packages\Relations\OptionalDependency",
      *     mappedBy="source",
      *     cascade={"persist"},
-     *     orphanRemoval=true
+     *     orphanRemoval=true,
+     *     fetch="LAZY"
      * )
      */
     private $optionalDependencies;
@@ -240,7 +244,8 @@ class Package
      *     targetEntity="App\Entity\Packages\Relations\MakeDependency",
      *     mappedBy="source",
      *     cascade={"persist"},
-     *     orphanRemoval=true
+     *     orphanRemoval=true,
+     *     fetch="LAZY"
      * )
      */
     private $makeDependencies;
@@ -253,7 +258,8 @@ class Package
      *     targetEntity="App\Entity\Packages\Relations\CheckDependency",
      *     mappedBy="source",
      *     cascade={"persist"},
-     *     orphanRemoval=true
+     *     orphanRemoval=true,
+     *     fetch="LAZY"
      * )
      */
     private $checkDependencies;

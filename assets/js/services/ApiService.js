@@ -84,7 +84,23 @@ const createApiService = fetch => {
      * @returns {Promise<any>}
      */
     fetchPackageInverseDependencies (repository, architecture, name, type) {
-      return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}/inverse/{type}', {
+      return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}/inverse-dependencies/{type}', {
+        repository: repository,
+        architecture: architecture,
+        name: name,
+        type: type
+      }))
+    },
+
+    /**
+     * @param {string} repository
+     * @param {string} architecture
+     * @param {string} name
+     * @param {string} type
+     * @returns {Promise<any>}
+     */
+    fetchPackageDependencies (repository, architecture, name, type) {
+      return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}/dependencies/{type}', {
         repository: repository,
         architecture: architecture,
         name: name,

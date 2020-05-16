@@ -101,7 +101,7 @@ class PackageDetailsController extends AbstractController
     }
 
     /**
-     * @Route("/api/packages/{repository}/{architecture}/{name}/inverse/{type}", methods={"GET"})
+     * @Route("/api/packages/{repository}/{architecture}/{name}/inverse-dependencies/{type}", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
      * @param string $repository
      * @param string $architecture
@@ -130,6 +130,44 @@ class PackageDetailsController extends AbstractController
 
         return $this->json(
             $this->packageRepository->findInverseRelationsByQuery(
+                $repository,
+                $architecture,
+                $name,
+                $types[$type]
+            )
+        );
+    }
+
+    /**
+     * @Route("/api/packages/{repository}/{architecture}/{name}/dependencies/{type}", methods={"GET"})
+     * @Cache(maxage="300", smaxage="600")
+     * @param string $repository
+     * @param string $architecture
+     * @param string $name
+     * @param string $type
+     * @return Response
+     */
+    public function packageDependencyAction(
+        string $repository,
+        string $architecture,
+        string $name,
+        string $type
+    ): Response {
+        $types = [
+            'check-dependency' => CheckDependency::class,
+            'conflict' => Conflict::class,
+            'dependency' => Dependency::class,
+            'make-dependency' => MakeDependency::class,
+            'optional-dependency' => OptionalDependency::class,
+            'provision' => Provision::class,
+            'replacement' => Replacement::class,
+        ];
+        if (!isset($types[$type])) {
+            throw new BadRequestHttpException(sprintf('Invalid type: "%s"', $type));
+        }
+
+        return $this->json(
+            $this->packageRepository->findRelationsByQuery(
                 $repository,
                 $architecture,
                 $name,
