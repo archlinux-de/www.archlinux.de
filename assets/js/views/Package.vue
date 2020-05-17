@@ -96,6 +96,12 @@
             <th>Installations-Größe</th>
             <td>{{ pkg.installedSize | prettyBytes }}</td>
           </tr>
+          <tr>
+            <th>Beliebtheit</th>
+            <td>
+              <package-popularity :popularity="pkg.popularity"></package-popularity>
+            </td>
+          </tr>
         </table>
       </b-col>
 
@@ -125,9 +131,9 @@
       <b-col cols="12">
         <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
         <package-files
-            :repository="pkg.repository.name"
-            :architecture="pkg.repository.architecture"
-            :name="pkg.name"></package-files>
+          :repository="pkg.repository.name"
+          :architecture="pkg.repository.architecture"
+          :name="pkg.name"></package-files>
       </b-col>
     </b-row>
   </b-container>
@@ -137,6 +143,7 @@
 import PackageRelations from '@/js/components/PackageRelations'
 import InversePackageRelations from '@/js/components/InversePackageRelations'
 import PackageFiles from '@/js/components/PackageFiles'
+import PackagePopularity from '../components/PackagePopularity'
 
 export default {
   name: 'Package',
@@ -157,6 +164,7 @@ export default {
     return metaInfoObject
   },
   components: {
+    PackagePopularity,
     PackageRelations,
     InversePackageRelations,
     PackageFiles

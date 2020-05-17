@@ -34,6 +34,8 @@ fos_elastica:
                                     type: keyword
                                 name:
                                     type: keyword
+                        popularity:
+                            type: "float"
                     persistence:
                         driver: orm
                         model: App\Entity\Packages\Package

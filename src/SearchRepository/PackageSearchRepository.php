@@ -6,6 +6,7 @@ use App\Entity\Packages\Package;
 use Elastica\Aggregation\Terms;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\FunctionScore;
 use Elastica\Query\MatchPhrasePrefix;
 use Elastica\Query\QueryString;
 use Elastica\Query\Term;
@@ -32,11 +33,13 @@ class PackageSearchRepository extends Repository
         $elasticQuery = new Query();
         $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
         $elasticQuery->addSort(['buildDate' => ['order' => 'desc']]);
+        $elasticQuery->addSort(['popularity' => ['order' => 'desc']]);
 
         $boolQuery = new BoolQuery();
 
         if ($query) {
             $boolQuery->addShould(new Term(['name' => ['value' => $query, 'boost' => 7]]));
+            $boolQuery->addShould(new Term(['base' => ['value' => $query, 'boost' => 6]]));
             $boolQuery->addShould(new Wildcard('name', '*' . $query . '*'));
             $boolQuery->addShould(new Wildcard('description', '*' . $query . '*'));
             $boolQuery->addShould(new QueryString($query));
@@ -49,7 +52,16 @@ class PackageSearchRepository extends Repository
             $boolQuery->addMust((new Term())->setTerm('repository.name', $repository));
         }
 
-        $elasticQuery->setQuery($boolQuery);
+        $scoreQuery = new FunctionScore();
+        $scoreQuery->setQuery($boolQuery);
+        $scoreQuery->addFieldValueFactorFunction(
+            'popularity',
+            0.1,
+            FunctionScore::FIELD_VALUE_FACTOR_MODIFIER_SQRT,
+            0
+        );
+
+        $elasticQuery->setQuery($scoreQuery);
         $elasticQuery->addAggregation((new Terms('repository'))->setField('repository.name'));
         $elasticQuery->addAggregation((new Terms('architecture'))->setField('repository.architecture'));
 

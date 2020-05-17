@@ -52,6 +52,9 @@ services:
     App\Service\NewsItemFetcher:
         $newsFeedUrl: '%app.news.feed%'
 
+    App\Service\PackagePopularityFetcher:
+        $packageStatisticsApiUrl: '%app.packages.packageStatisticsApiUrl%'
+
     App\Serializer\PackageNormalizer:
         bind:
             $cgitUrl: '%app.packages.cgit%'

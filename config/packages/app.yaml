@@ -11,6 +11,7 @@ parameters:
         multilib: ['x86_64']
         multilib-testing: ['x86_64']
     app.packages.default_architecture: 'x86_64'
+    app.packages.packageStatisticsApiUrl: 'https://pkgstats.archlinux.de/api/packages'
     app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
     env(DEFAULT_MIRROR): '%app.packages.mirror%'
     app.mirrors.default: '%env(DEFAULT_MIRROR)%'

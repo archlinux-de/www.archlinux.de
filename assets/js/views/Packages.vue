@@ -45,6 +45,10 @@
       <template v-slot:cell(buildDate)="data">
         {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
       </template>
+
+      <template v-slot:cell(popularity)="data">
+        <package-popularity :popularity="data.value"></package-popularity>
+      </template>
     </b-table>
 
     <b-alert :show="total === 0" variant="warning">Keine Pakete gefunden</b-alert>
@@ -68,9 +72,22 @@
   </b-container>
 </template>
 
+<style>
+  @media (min-width: 1200px) {
+    .w-lg-25 {
+      width: 25% !important;
+    }
+  }
+</style>
+
 <script>
+import PackagePopularity from '../components/PackagePopularity'
+
 export default {
   name: 'Packages',
+  components: {
+    PackagePopularity
+  },
   metaInfo () {
     return {
       title: 'Paket-Suche',
@@ -107,12 +124,16 @@ export default {
         key: 'description',
         label: 'Beschreibung',
         class: 'd-none d-sm-table-cell',
-        thClass: 'w-50',
+        thClass: 'w-50 w-lg-25',
         tdClass: 'text-break'
       }, {
         key: 'buildDate',
         label: 'Aktualisierung',
         class: 'd-none d-lg-table-cell'
+      }, {
+        key: 'popularity',
+        label: 'Beliebtheit',
+        class: 'd-none d-xl-table-cell'
       }],
       currentQuery: this.$route.query.search ?? '',
       currentArchitecture: this.$route.query.architecture ?? '',

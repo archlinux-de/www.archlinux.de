@@ -169,6 +169,13 @@ class Package
     private $packager;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="popularity", type="float", nullable=false, options={"default": 0})
+     */
+    private $popularity = 0;
+
+    /**
      * @var Collection<int, Replacement>
      * @Assert\Valid()
      *
@@ -301,6 +308,24 @@ class Package
         $this->dependencies = new ArrayCollection();
         $this->provisions = new ArrayCollection();
         $this->replacements = new ArrayCollection();
+    }
+
+    /**
+     * @return float
+     */
+    public function getPopularity(): float
+    {
+        return $this->popularity;
+    }
+
+    /**
+     * @param float $popularity
+     * @return Package
+     */
+    public function setPopularity(float $popularity): Package
+    {
+        $this->popularity = $popularity;
+        return $this;
     }
 
     /**

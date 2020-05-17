@@ -97,6 +97,20 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return Package[]
+     */
+    public function findStable(): array
+    {
+        return $this
+            ->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository')
+            ->where('repository.testing = 0')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param string $architecture
      * @param string $name
      * @return Package

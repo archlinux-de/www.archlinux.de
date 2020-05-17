@@ -65,7 +65,8 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
                         'licenses',
                         'architecture',
                         'buildDate',
-                        'packager'
+                        'packager',
+                        'popularity'
                     ]
                 ]
             )
