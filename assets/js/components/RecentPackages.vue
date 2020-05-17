@@ -3,9 +3,9 @@
     <h3 class="card-title card-header">Aktuelle Pakete</h3>
 
     <div class="card-body p-1 p-lg-3">
-      <table class="table table-sm table-fixed">
-        <tr :key="key" v-for="(pkg, key) in packages">
-          <td class="pkgname w-75">
+      <b-table-simple small fixed>
+        <b-tr :key="key" v-for="(pkg, key) in packages">
+          <b-td class="pkgname w-75">
             <router-link :to="{
               name: 'package',
                params:{
@@ -16,10 +16,10 @@
             }">
               {{ pkg.name }}
             </router-link>
-          </td>
-          <td :title="pkg.version" class="text-right text-truncate">{{ pkg.version }}</td>
-        </tr>
-      </table>
+          </b-td>
+          <b-td :title="pkg.version" class="text-right text-truncate">{{ pkg.version }}</b-td>
+        </b-tr>
+      </b-table-simple>
     </div>
 
     <div class="card-footer text-muted d-inline-flex justify-content-between">

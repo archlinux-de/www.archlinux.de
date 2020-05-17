@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid role="main" tag="main">
+  <b-container role="main" tag="main">
     <h1 class="mb-4">Paket-Suche</h1>
 
     <b-input-group class="mb-2">
@@ -128,7 +128,7 @@ export default {
         tdClass: 'text-break'
       }, {
         key: 'buildDate',
-        label: 'Aktualisierung',
+        label: 'Datum',
         class: 'd-none d-lg-table-cell'
       }, {
         key: 'popularity',

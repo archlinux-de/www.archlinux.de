@@ -1,7 +1,7 @@
 <template>
-  <b-container fluid role="main" tag="main">
+  <b-container role="main" tag="main">
     <b-row>
-      <b-col cols="12" xl="9">
+      <b-col cols="12" xl="8">
         <b-jumbotron class="p-2 p-xl-3">
           <h1>Willkommen bei Arch Linux</h1>
           <p>
@@ -32,7 +32,7 @@
         <news-item-list :limit="6"></news-item-list>
       </b-col>
 
-      <b-col cols="12" xl="3">
+      <b-col cols="12" xl="4">
 
         <div class="card mb-4">
           <div class="card-body">

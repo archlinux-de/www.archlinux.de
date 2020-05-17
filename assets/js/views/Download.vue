@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid role="main" tag="main">
+  <b-container role="main" tag="main">
     <h1 class="mb-4">Arch Linux Downloads</h1>
 
     <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>

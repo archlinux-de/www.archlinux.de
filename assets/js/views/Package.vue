@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid role="main" tag="main">
+  <b-container role="main" tag="main">
     <h1 class="mb-4" v-if="pkg.name">{{ pkg.name }}</h1>
 
     <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
@@ -7,102 +7,99 @@
     <b-row v-if="pkg.name">
       <b-col cols="12" xl="6">
         <h2 class="mb-3">Paket-Details</h2>
-        <table class="table table-sm">
-          <colgroup>
-            <col class="w-25">
-            <col class="w-75">
-          </colgroup>
-          <tr>
-            <th>Name</th>
-            <td>{{ pkg.name }}</td>
-          </tr>
-          <tr>
-            <th>Version</th>
-            <td>{{ pkg.version }}</td>
-          </tr>
-          <tr>
-            <th>Beschreibung</th>
-            <td class="text-break">{{ pkg.description }}</td>
-          </tr>
-          <tr v-if="pkg.url">
-            <th>URL</th>
-            <td class="text-break">
+        <b-table-simple small fixed>
+          <b-tr>
+            <b-th>Name</b-th>
+            <b-td>{{ pkg.name }}</b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Version</b-th>
+            <b-td>{{ pkg.version }}</b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Beschreibung</b-th>
+            <b-td class="text-break">{{ pkg.description }}</b-td>
+          </b-tr>
+          <b-tr v-if="pkg.url">
+            <b-th>URL</b-th>
+            <b-td class="text-break">
               <a rel="nofollow" :href="pkg.url">{{ pkg.url }}</a>
-            </td>
-          </tr>
-          <tr v-if="pkg.licenses && pkg.licenses.length > 0">
-            <th>Lizenzen</th>
-            <td>{{ pkg.licenses.join(', ') }}</td>
-          </tr>
-          <tr>
-            <th>Repositorium</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr v-if="pkg.licenses && pkg.licenses.length > 0">
+            <b-th>Lizenzen</b-th>
+            <b-td>{{ pkg.licenses.join(', ') }}</b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Repositorium</b-th>
+            <b-td>
               <router-link
                 :to="{name: 'packages', query: {architecture: pkg.repository.architecture, repository: pkg.repository.name}}">
                 {{ pkg.repository.name }}
               </router-link>
-            </td>
-          </tr>
-          <tr>
-            <th>Architektur</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Architektur</b-th>
+            <b-td>
               {{ pkg.architecture }}
-            </td>
-          </tr>
-          <tr v-if="pkg.groups && pkg.groups.length > 0">
-            <th>Gruppen</th>
-            <td>{{ pkg.groups.join(', ') }}</td>
-          </tr>
-          <tr v-if="pkg.packager">
-            <th>Packer</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr v-if="pkg.groups && pkg.groups.length > 0">
+            <b-th>Gruppen</b-th>
+            <b-td>{{ pkg.groups.join(', ') }}</b-td>
+          </b-tr>
+          <b-tr v-if="pkg.packager">
+            <b-th>Packer</b-th>
+            <b-td>
               <template v-if="pkg.packager.email">
                 <a rel="nofollow" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
               </template>
               <template v-else>{{ pkg.packager.name }}</template>
-            </td>
-          </tr>
-          <tr>
-            <th>Erstellt am</th>
-            <td>{{ (new Date(pkg.buildDate)).toLocaleDateString('de-DE') }}</td>
-          </tr>
-          <tr>
-            <th>Quelltext</th>
-            <td><a :href="pkg.sourceUrl">Quelldateien</a>, <a :href="pkg.sourceChangelogUrl">Änderungshistorie</a></td>
-          </tr>
-          <tr>
-            <th>Bugs</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Erstellt am</b-th>
+            <b-td>{{ (new Date(pkg.buildDate)).toLocaleDateString('de-DE') }}</b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Quelltext</b-th>
+            <b-td><a :href="pkg.sourceUrl">Quelldateien</a>, <a :href="pkg.sourceChangelogUrl">Änderungshistorie</a>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Bugs</b-th>
+            <b-td>
               <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'">Bug-Tracker</a>
-            </td>
-          </tr>
-          <tr>
-            <th>Paket</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Paket</b-th>
+            <b-td>
               <a :href="pkg.packageUrl" target="_blank">{{ pkg.fileName }}</a>
-            </td>
-          </tr>
-          <tr>
-            <th>PGP-Signatur</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>PGP-Signatur</b-th>
+            <b-td>
               <a :href="pkg.packageUrl+'.sig'" target="_blank">{{ pkg.fileName }}.sig</a>
-            </td>
-          </tr>
-          <tr>
-            <th>Paket-Größe</th>
-            <td>{{ pkg.compressedSize | prettyBytes }}</td>
-          </tr>
-          <tr>
-            <th>Installations-Größe</th>
-            <td>{{ pkg.installedSize | prettyBytes }}</td>
-          </tr>
-          <tr>
-            <th>Beliebtheit</th>
-            <td>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Paket-Größe</b-th>
+            <b-td>{{ pkg.compressedSize | prettyBytes }}</b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Installations-Größe</b-th>
+            <b-td>{{ pkg.installedSize | prettyBytes }}</b-td>
+          </b-tr>
+          <b-tr>
+            <b-th>Beliebtheit</b-th>
+            <b-td>
               <package-popularity :popularity="pkg.popularity"></package-popularity>
-            </td>
-          </tr>
-        </table>
+            </b-td>
+          </b-tr>
+        </b-table-simple>
       </b-col>
 
       <b-col cols="12" xl="6">
@@ -173,10 +170,10 @@ export default {
   data () {
     return {
       relations: [{
-        title: 'von',
+        title: 'benötigt',
         type: 'dependency'
       }, {
-        title: 'optional von',
+        title: 'optional',
         type: 'optional-dependency'
       }, {
         title: 'stellt bereit',
@@ -188,10 +185,10 @@ export default {
         title: 'kollidiert mit',
         type: 'conflict'
       }, {
-        title: 'Bauen von',
+        title: 'zum bauen',
         type: 'make-dependency'
       }, {
-        title: 'Test von',
+        title: 'zum testen',
         type: 'check-dependency'
       }],
       inverseRelations: [{
@@ -201,10 +198,10 @@ export default {
         title: 'optional für',
         type: 'optional-dependency'
       }, {
-        title: 'Zum Bauen für',
+        title: 'bauen für',
         type: 'make-dependency'
       }, {
-        title: 'Zum Testen für',
+        title: 'testen für',
         type: 'check-dependency'
       }],
       pkg: {},

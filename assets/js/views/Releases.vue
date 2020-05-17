@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid role="main" tag="main">
+  <b-container role="main" tag="main">
     <h1 class="mb-4">Arch Linux Releases</h1>
 
     <b-form-group>
@@ -85,7 +85,7 @@ export default {
         label: 'Version'
       }, {
         key: 'releaseDate',
-        label: 'Veröffentlichung'
+        label: 'Datum'
       }, {
         key: 'kernelVersion',
         label: 'Kernel-Version',

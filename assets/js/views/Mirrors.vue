@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid role="main" tag="main">
+  <b-container role="main" tag="main">
     <h1 class="mb-4">Mirror-Status</h1>
 
     <b-form-group>
@@ -118,7 +118,7 @@ export default {
         thClass: 'text-nowrap'
       }, {
         key: 'lastSync',
-        label: 'Aktualisierung',
+        label: 'Datum',
         class: 'd-none d-sm-table-cell'
       }, {
         key: 'isos',
