@@ -31,9 +31,11 @@ class PackageSearchRepository extends Repository
         ?string $repository
     ): array {
         $elasticQuery = new Query();
-        $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
+        if ($query) {
+            $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
+            $elasticQuery->addSort(['popularity' => ['order' => 'desc']]);
+        }
         $elasticQuery->addSort(['buildDate' => ['order' => 'desc']]);
-        $elasticQuery->addSort(['popularity' => ['order' => 'desc']]);
 
         $boolQuery = new BoolQuery();
 
