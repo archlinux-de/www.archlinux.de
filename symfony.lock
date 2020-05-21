@@ -62,6 +62,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "elasticsearch/elasticsearch": {
+        "version": "v7.7.0"
+    },
     "exercise/htmlpurifier-bundle": {
         "version": "0.2",
         "recipe": {
@@ -70,6 +73,12 @@
             "version": "0.2",
             "ref": "0b76657841c2ba52647bb1b4a5595a0e3b9f485c"
         }
+    },
+    "ezimuel/guzzlestreams": {
+        "version": "3.0.1"
+    },
+    "ezimuel/ringphp": {
+        "version": "1.1.2"
     },
     "ezyang/htmlpurifier": {
         "version": "v4.9.3"
@@ -193,6 +202,9 @@
     },
     "psr/log": {
         "version": "1.0.2"
+    },
+    "react/promise": {
+        "version": "v2.8.0"
     },
     "sebastian/code-unit": {
         "version": "1.0.2"
