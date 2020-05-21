@@ -10,9 +10,8 @@ use Elastica\Query\QueryString;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Wildcard;
-use FOS\ElasticaBundle\Repository;
 
-class MirrorSearchRepository extends Repository
+class MirrorSearchRepository
 {
     private const PROTOCOL = 'https';
 

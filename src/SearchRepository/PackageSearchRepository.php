@@ -11,9 +11,8 @@ use Elastica\Query\MatchPhrasePrefix;
 use Elastica\Query\QueryString;
 use Elastica\Query\Term;
 use Elastica\Query\Wildcard;
-use FOS\ElasticaBundle\Repository;
 
-class PackageSearchRepository extends Repository
+class PackageSearchRepository
 {
     /**
      * @param int $offset

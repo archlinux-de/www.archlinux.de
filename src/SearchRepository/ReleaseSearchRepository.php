@@ -6,9 +6,8 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\QueryString;
 use Elastica\Query\Wildcard;
-use FOS\ElasticaBundle\Repository;
 
-class ReleaseSearchRepository extends Repository
+class ReleaseSearchRepository
 {
     /**
      * @param int $offset
