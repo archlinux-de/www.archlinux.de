@@ -19,7 +19,7 @@
         "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^2.1.0",
         "doctrine/doctrine-migrations-bundle": "^2.1.2",
-        "doctrine/orm": "^v2.7.2",
+        "doctrine/orm": "^v2.7.3",
         "exercise/htmlpurifier-bundle": "^v3.0",
         "friendsofsymfony/elastica-bundle": "5.x-dev",
         "league/iso3166": "^2.1.5",
