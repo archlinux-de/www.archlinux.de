@@ -2,13 +2,28 @@
 
 namespace App\SearchRepository;
 
-use Elastica\Query;
-use Elastica\Query\BoolQuery;
-use Elastica\Query\QueryString;
-use Elastica\Query\Wildcard;
+use App\Entity\NewsItem;
+use App\Repository\NewsItemRepository;
+use Elasticsearch\Client;
 
 class NewsItemSearchRepository
 {
+    /** @var Client */
+    private $client;
+
+    /** @var NewsItemRepository */
+    private $newsItemRepository;
+
+    /**
+     * @param Client $client
+     * @param NewsItemRepository $newsItemRepository
+     */
+    public function __construct(Client $client, NewsItemRepository $newsItemRepository)
+    {
+        $this->client = $client;
+        $this->newsItemRepository = $newsItemRepository;
+    }
+
     /**
      * @param int $offset
      * @param int $limit
@@ -17,29 +32,61 @@ class NewsItemSearchRepository
      */
     public function findLatestByQuery(int $offset, int $limit, string $query): array
     {
-        $elasticQuery = new Query();
-        $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
-        $elasticQuery->addSort(['lastModified' => ['order' => 'desc']]);
-
+        $sort = [];
         if ($query) {
-            $boolQuery = new BoolQuery();
-            $boolQuery->addShould(new Wildcard('title', '*' . $query . '*', 2));
-            $boolQuery->addShould(new Wildcard('description', '*' . $query . '*'));
-            $boolQuery->addShould(new QueryString($query));
-            $boolQuery->setMinimumShouldMatch(1);
-            $elasticQuery->setQuery($boolQuery);
+            $sort[] = ['_score' => ['order' => 'desc']];
+        }
+        $sort[] = ['lastModified' => ['order' => 'desc']];
+
+        $bool = [];
+        if ($query) {
+            $bool['should'][] = ['wildcard' => ['title' => ['value' => '*' . $query . '*', 'boost' => 2]]];
+            $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
+
+            $bool['should'][] = ['query_string' => ['query' => $query]];
+
+            $bool['minimum_should_match'] = 1;
         }
 
-        $paginator = $this->createPaginatorAdapter($elasticQuery);
-        $results = $paginator->getResults($offset, $limit);
-        $newsItems = $results->toArray();
+        $body = ['sort' => $sort];
+        if ($bool) {
+            $body['query'] = ['bool' => $bool];
+        }
+
+        $results = $this->client->search(
+            [
+                'index' => 'news_item',
+                'body' => $body,
+                'from' => $offset,
+                'size' => $limit,
+                '_source' => false,
+                'track_total_hits' => true
+            ]
+        );
+
+        $newsItems = $this->findBySearchResults($results);
 
         return [
             'offset' => $offset,
             'limit' => $limit,
-            'total' => $results->getTotalHits(),
+            'total' => $results['hits']['total']['value'],
             'count' => count($newsItems),
             'items' => $newsItems
         ];
+    }
+
+    /**
+     * @param array<mixed> $results
+     * @return NewsItem[]
+     */
+    private function findBySearchResults(array $results): array
+    {
+        $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
+        $newsItems = $this->newsItemRepository->findBy(['id' => $ids]);
+
+        $positions = array_flip($ids);
+        usort($newsItems, fn(NewsItem $a, NewsItem $b): int => $positions[$a->getId()] <=> $positions[$b->getId()]);
+
+        return $newsItems;
     }
 }

@@ -2,13 +2,28 @@
 
 namespace App\SearchRepository;
 
-use Elastica\Query;
-use Elastica\Query\BoolQuery;
-use Elastica\Query\QueryString;
-use Elastica\Query\Wildcard;
+use App\Entity\Release;
+use App\Repository\ReleaseRepository;
+use Elasticsearch\Client;
 
 class ReleaseSearchRepository
 {
+    /** @var Client */
+    private $client;
+
+    /** @var ReleaseRepository */
+    private $releaseRepository;
+
+    /**
+     * @param Client $client
+     * @param ReleaseRepository $releaseRepository
+     */
+    public function __construct(Client $client, ReleaseRepository $releaseRepository)
+    {
+        $this->client = $client;
+        $this->releaseRepository = $releaseRepository;
+    }
+
     /**
      * @param int $offset
      * @param int $limit
@@ -17,30 +32,65 @@ class ReleaseSearchRepository
      */
     public function findAllByQuery(int $offset, int $limit, string $query): array
     {
-        $elasticQuery = new Query();
-        $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
-        $elasticQuery->addSort(['releaseDate' => ['order' => 'desc']]);
-
+        $sort = [];
         if ($query) {
-            $boolQuery = new BoolQuery();
-            $boolQuery->addShould(new Wildcard('version', '*' . $query . '*', 2));
-            $boolQuery->addShould(new Wildcard('kernelVersion', '*' . $query . '*'));
-            $boolQuery->addShould(new Wildcard('info', '*' . $query . '*'));
-            $boolQuery->addShould(new QueryString($query));
-            $boolQuery->setMinimumShouldMatch(1);
-            $elasticQuery->setQuery($boolQuery);
+            $sort[] = ['_score' => ['order' => 'desc']];
+        }
+        $sort[] = ['releaseDate' => ['order' => 'desc']];
+
+        $bool = [];
+        if ($query) {
+            $bool['should'][] = ['wildcard' => ['version' => ['value' => '*' . $query . '*', 'boost' => 2]]];
+            $bool['should'][] = ['wildcard' => ['kernelVersion' => '*' . $query . '*']];
+            $bool['should'][] = ['wildcard' => ['info' => '*' . $query . '*']];
+
+            $bool['should'][] = ['query_string' => ['query' => $query]];
+
+            $bool['minimum_should_match'] = 1;
         }
 
-        $paginator = $this->createPaginatorAdapter($elasticQuery);
-        $results = $paginator->getResults($offset, $limit);
-        $releases = $results->toArray();
+        $body = ['sort' => $sort];
+        if ($bool) {
+            $body['query'] = ['bool' => $bool];
+        }
+
+        $results = $this->client->search(
+            [
+                'index' => 'release',
+                'body' => $body,
+                'from' => $offset,
+                'size' => $limit,
+                '_source' => false,
+                'track_total_hits' => true
+            ]
+        );
+
+        $releases = $this->findBySearchResults($results);
 
         return [
             'offset' => $offset,
             'limit' => $limit,
-            'total' => $results->getTotalHits(),
+            'total' => $results['hits']['total']['value'],
             'count' => count($releases),
             'items' => $releases
         ];
+    }
+
+    /**
+     * @param array<mixed> $results
+     * @return Release[]
+     */
+    private function findBySearchResults(array $results): array
+    {
+        $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
+        $releases = $this->releaseRepository->findBy(['version' => $ids]);
+
+        $positions = array_flip($ids);
+        usort(
+            $releases,
+            fn(Release $a, Release $b): int => $positions[$a->getVersion()] <=> $positions[$b->getVersion()]
+        );
+
+        return $releases;
     }
 }

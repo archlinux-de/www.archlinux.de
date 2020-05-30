@@ -22,7 +22,7 @@ class NewsItemNormalizerTest extends KernelTestCase
     public function testSupportsNormalization(): void
     {
         $this->assertTrue(
-            self::$container->get(NewsItemNormalizer::class)->supportsNormalization(new NewsItem(1))
+            self::$container->get(NewsItemNormalizer::class)->supportsNormalization(new NewsItem(1), 'json')
         );
     }
 

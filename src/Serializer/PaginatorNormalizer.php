@@ -38,7 +38,7 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
      */
     public function supportsNormalization($data, string $format = null)
     {
-        return $data instanceof Paginator;
+        return $data instanceof Paginator && $format == 'json';
     }
 
     /**

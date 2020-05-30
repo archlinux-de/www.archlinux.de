@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     geoip.database: '/usr/share/GeoIP/GeoLite2-Country.mmdb'
+    elasticsearch.config:
+        hosts: ['%env(resolve:ELASTICSEARCH_URL)%']
 
 services:
     # default configuration for services in *this* file
@@ -29,19 +31,22 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Service\PackageDatabaseMirror:
-        bind:
-            $mirrorUrl: '%app.packages.mirror%'
-
-    App\Service\RepositoryManager:
-        bind:
-            $repositoryConfiguration: '%app.packages.repositories%'
-
     MaxMind\Db\Reader:
         arguments:
             - '%geoip.database%'
 
     League\ISO3166\ISO3166:
+
+    Elasticsearch\Client:
+        factory: [Elasticsearch\ClientBuilder, fromConfig]
+        arguments: ['%elasticsearch.config%']
+        public: true
+
+    App\Service\PackageDatabaseMirror:
+        $mirrorUrl: '%app.packages.mirror%'
+
+    App\Service\RepositoryManager:
+        $repositoryConfiguration: '%app.packages.repositories%'
 
     App\Service\MirrorFetcher:
         $mirrorStatusUrl: '%app.mirrors.status%'
@@ -56,9 +61,25 @@ services:
         $packageStatisticsApiUrl: '%app.packages.packageStatisticsApiUrl%'
 
     App\Serializer\PackageNormalizer:
-        bind:
-            $cgitUrl: '%app.packages.cgit%'
+        $cgitUrl: '%app.packages.cgit%'
 
     App\Controller\MirrorController:
-        bind:
-            $mirrorCountry: '%app.mirrors.country%'
+        $mirrorCountry: '%app.mirrors.country%'
+
+    App\SearchRepository\MirrorSearchRepository:
+        $mirrorCountry: '%app.mirrors.country%'
+
+    App\EventListener\IndexUpdateEventListener:
+        tags:
+            - { name: 'doctrine.event_listener', event: 'postPersist', lazy: true }
+            - { name: 'doctrine.event_listener', event: 'postUpdate', lazy: true }
+            - { name: 'doctrine.event_listener', event: 'preRemove', lazy: true }
+            - { name: 'doctrine.event_listener', event: 'postFlush', lazy: true }
+
+    App\SearchIndex\SearchIndexer:
+        arguments:
+            -
+                - '@App\SearchIndex\MirrorSearchIndexer'
+                - '@App\SearchIndex\NewsSearchIndexer'
+                - '@App\SearchIndex\PackageSearchIndexer'
+                - '@App\SearchIndex\ReleaseSearchIndexer'

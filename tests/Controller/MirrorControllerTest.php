@@ -62,8 +62,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($mirror);
         $entityManager->flush();
 
-        sleep(1);
-
         $filePath = 'iso/2018.01.01/archlinux-2018.01.01-x86_64.iso';
         $client = $this->getClient();
 
@@ -132,8 +130,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($mirror);
         $entityManager->flush();
 
-        sleep(1);
-
         $filePath = 'core/os/x86_64/linux-3.11-1-2-1-2-4-x86_64.pkg.tar.xz';
         $client = $this->getClient();
 
@@ -169,8 +165,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
-
-        sleep(1);
 
         $filePath = 'foo.txt';
         $client = $this->getClient();

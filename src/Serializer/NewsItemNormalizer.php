@@ -37,7 +37,7 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
      */
     public function supportsNormalization($data, string $format = null)
     {
-        return $data instanceof NewsItem;
+        return $data instanceof NewsItem && $format == 'json';
     }
 
     /**
