@@ -54,16 +54,19 @@ class PackageSearchRepository
             $bool['should'][] = ['wildcard' => ['name' => '*' . $query . '*']];
             $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
 
-            //@TODO: Re-Add boosting
-            $bool['should'][] = ['query_string' => ['query' => $query]];
+            $bool['should'][] = [
+                'multi_match' => [
+                    'query' => $query,
+                    'fields' => ['name^5', 'base^4', 'description^3', 'url', 'groups^2', 'replacements', 'provisions']
+                ]
+            ];
 
-            $bool['minimum_should_match'] = 2;
+            $bool['minimum_should_match'] = 1;
         }
         $bool['must'][] = ['term' => ['repository.architecture' => $architecture]];
         if ($repository) {
             $bool['must'][] = ['term' => ['repository.name' => $repository]];
         }
-        $bool['should'][] = ['term' => ['repository.testing' => ['value' => false]]];
 
         $results = $this->client->search(
             [

@@ -49,12 +49,12 @@ class MirrorSearchRepository
             $bool['should'][] = ['wildcard' => ['url' => '*' . $query . '*']];
             $bool['should'][] = ['wildcard' => ['country.name' => '*' . $query . '*']];
 
-            $bool['should'][] = ['query_string' => ['query' => $query]];
+            $bool['should'][] = ['multi_match' => ['query' => $query]];
 
             $bool['minimum_should_match'] = 1;
+        } else {
+            $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.1]]];
         }
-
-        $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.1]]];
 
         $bool['must'][] = ['term' => ['active' => 'true']];
         $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
