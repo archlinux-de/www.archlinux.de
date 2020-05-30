@@ -32,7 +32,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
      */
     public function supportsNormalization($data, string $format = null)
     {
-        return $data instanceof Package;
+        return $data instanceof Package && $format == 'json';
     }
 
     /**

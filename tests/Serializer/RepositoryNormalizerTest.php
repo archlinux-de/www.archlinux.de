@@ -23,7 +23,8 @@ class RepositoryNormalizerTest extends KernelTestCase
     {
         $this->assertTrue(
             self::$container->get(RepositoryNormalizer::class)->supportsNormalization(
-                new Repository('', '')
+                new Repository('', ''),
+                'json'
             )
         );
     }

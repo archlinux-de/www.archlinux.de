@@ -53,7 +53,7 @@ class AbstractRelationNormalizer implements NormalizerInterface, CacheableSuppor
      */
     public function supportsNormalization($data, string $format = null)
     {
-        return $data instanceof AbstractRelation;
+        return $data instanceof AbstractRelation && $format == 'json';
     }
 
     /**

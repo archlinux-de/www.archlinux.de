@@ -23,7 +23,8 @@ class ReleaseNormalizerTest extends KernelTestCase
     {
         $this->assertTrue(
             self::$container->get(ReleaseNormalizer::class)->supportsNormalization(
-                new Release('')
+                new Release(''),
+                'json'
             )
         );
     }

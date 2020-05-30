@@ -25,7 +25,8 @@ class PackageNormalizerTest extends KernelTestCase
     {
         $this->assertTrue(
             self::$container->get(PackageNormalizer::class)->supportsNormalization(
-                new Package(new Repository('', ''), '', '', '')
+                new Package(new Repository('', ''), '', '', ''),
+                'json'
             )
         );
     }

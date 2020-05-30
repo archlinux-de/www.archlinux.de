@@ -40,7 +40,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
      */
     public function supportsNormalization($data, string $format = null)
     {
-        return $data instanceof Release;
+        return $data instanceof Release && $format == 'json';
     }
 
     /**

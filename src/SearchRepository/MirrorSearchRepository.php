@@ -3,30 +3,32 @@
 namespace App\SearchRepository;
 
 use App\Entity\Mirror;
-use Elastica\Query;
-use Elastica\Query\BoolQuery;
-use Elastica\Query\Exists;
-use Elastica\Query\QueryString;
-use Elastica\Query\Range;
-use Elastica\Query\Term;
-use Elastica\Query\Wildcard;
-use FOS\ElasticaBundle\Repository;
+use App\Repository\MirrorRepository;
+use Elasticsearch\Client;
 
-class MirrorSearchRepository extends Repository
+class MirrorSearchRepository
 {
     private const PROTOCOL = 'https';
 
     /** @var string */
-    private $defaultCountry;
+    private $mirrorCountry;
+
+    /** @var Client */
+    private $client;
+
+    /** @var MirrorRepository */
+    private $mirrorRepository;
 
     /**
-     * @param string $defaultCountry
-     * @return MirrorSearchRepository
+     * @param string $mirrorCountry
+     * @param Client $client
+     * @param MirrorRepository $mirrorRepository
      */
-    public function setDefaultCountry(string $defaultCountry): MirrorSearchRepository
+    public function __construct(string $mirrorCountry, Client $client, MirrorRepository $mirrorRepository)
     {
-        $this->defaultCountry = $defaultCountry;
-        return $this;
+        $this->mirrorCountry = $mirrorCountry;
+        $this->client = $client;
+        $this->mirrorRepository = $mirrorRepository;
     }
 
     /**
@@ -37,71 +39,113 @@ class MirrorSearchRepository extends Repository
      */
     public function findSecureByQuery(int $offset, int $limit, string $query): array
     {
-        $elasticQuery = new Query();
-        $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
-        $elasticQuery->addSort(['score' => ['order' => 'asc']]);
+        $sort = [
+            '_score' => ['order' => 'desc'],
+            'score' => ['order' => 'asc']
+        ];
 
-        $boolQuery = new BoolQuery();
-
+        $bool = [];
         if ($query) {
-            $boolQuery->addShould(new Wildcard('url', '*' . $query . '*'));
-            $boolQuery->addShould(new Wildcard('country.name', '*' . $query . '*'));
-            $boolQuery->addShould(new QueryString($query));
-            $boolQuery->setMinimumShouldMatch(1);
+            $bool['should'][] = ['wildcard' => ['url' => '*' . $query . '*']];
+            $bool['should'][] = ['wildcard' => ['country.name' => '*' . $query . '*']];
+
+            $bool['should'][] = ['multi_match' => ['query' => $query]];
+
+            $bool['minimum_should_match'] = 1;
+        } else {
+            $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.1]]];
         }
 
-        $boolQuery->addShould((new Term())->setTerm('country.code', $this->defaultCountry, 0.1));
+        $bool['must'][] = ['term' => ['active' => 'true']];
+        $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
+        $bool['must'][] = ['exists' => ['field' => 'score']];
 
-        $boolQuery->addMust((new Term())->setTerm('active', 'true'));
-        $boolQuery->addMust((new Term())->setTerm('protocol', self::PROTOCOL));
-        $boolQuery->addMust(new Exists('score'));
+        $results = $this->client->search(
+            [
+                'index' => 'mirror',
+                'body' => [
+                    'query' => ['bool' => $bool],
+                    'sort' => $sort
+                ],
+                'from' => $offset,
+                'size' => $limit,
+                '_source' => false,
+                'track_total_hits' => true
+            ]
+        );
 
-        $elasticQuery->setQuery($boolQuery);
-
-        $paginator = $this->createPaginatorAdapter($elasticQuery);
-        $results = $paginator->getResults($offset, $limit);
-        $mirrors = $results->toArray();
+        $mirrors = $this->findBySearchResults($results);
 
         return [
             'offset' => $offset,
             'limit' => $limit,
-            'total' => $results->getTotalHits(),
+            'total' => $results['hits']['total']['value'],
             'count' => count($mirrors),
             'items' => $mirrors
         ];
     }
 
     /**
-     * @param string $countryCode
-     * @param \DateTime $lastSync
+     * @param array<mixed> $results
      * @return Mirror[]
      */
-    public function findBestByCountryAndLastSync(string $countryCode, \DateTime $lastSync): array
+    private function findBySearchResults(array $results): array
     {
-        $elasticQuery = new Query();
-        $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
-        $elasticQuery->addSort(['score' => ['order' => 'asc']]);
+        $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
+        $mirrors = $this->mirrorRepository->findBy(['url' => $ids]);
 
-        $boolQuery = new BoolQuery();
+        $positions = array_flip($ids);
+        usort(
+            $mirrors,
+            fn(Mirror $a, Mirror $b): int => $positions[$a->getUrl()] <=> $positions[$b->getUrl()]
+        );
 
-        $boolQuery->addShould((new Term())->setTerm('country.code', $countryCode));
-        $boolQuery->addShould(
-            (new Range())->addField(
-                'lastSync',
-                [
+        return $mirrors;
+    }
+
+    /**
+     * @param string $countryCode
+     * @param \DateTime $lastSync
+     * @param int $limit
+     * @return Mirror[]
+     */
+    public function findBestByCountryAndLastSync(string $countryCode, \DateTime $lastSync, int $limit = 20): array
+    {
+        $sort = [
+            '_score' => ['order' => 'desc'],
+            'score' => ['order' => 'asc']
+        ];
+
+        $bool = [];
+
+        $bool['should'][] = ['term' => ['country.code' => $countryCode]];
+        $bool['should'][] = [
+            'range' => [
+                'lastSync' => [
                     'gt' => $lastSync->getTimestamp(),
                     'format' => 'epoch_second',
                     'boost' => 2
                 ]
-            )
+            ]
+        ];
+
+        $bool['must'][] = ['term' => ['active' => 'true']];
+        $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
+        $bool['must'][] = ['exists' => ['field' => 'score']];
+
+        $results = $this->client->search(
+            [
+                'index' => 'mirror',
+                'body' => [
+                    'query' => ['bool' => $bool],
+                    'sort' => $sort
+                ],
+                'size' => $limit,
+                '_source' => false,
+                'track_total_hits' => true
+            ]
         );
 
-        $boolQuery->addMust((new Term())->setTerm('active', 'true'));
-        $boolQuery->addMust((new Term())->setTerm('protocol', self::PROTOCOL));
-        $boolQuery->addMust(new Exists('score'));
-
-        $elasticQuery->setQuery($boolQuery);
-
-        return $this->find($elasticQuery);
+        return $this->findBySearchResults($results);
     }
 }

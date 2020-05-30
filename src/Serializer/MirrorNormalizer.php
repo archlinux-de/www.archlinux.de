@@ -67,7 +67,7 @@ class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
      */
     public function supportsNormalization($data, string $format = null): bool
     {
-        return $data instanceof Mirror;
+        return $data instanceof Mirror && $format == 'json';
     }
 
     /**

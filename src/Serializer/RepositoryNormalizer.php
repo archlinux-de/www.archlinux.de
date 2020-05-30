@@ -26,7 +26,7 @@ class RepositoryNormalizer implements NormalizerInterface, CacheableSupportsMeth
      */
     public function supportsNormalization($data, string $format = null)
     {
-        return $data instanceof Repository;
+        return $data instanceof Repository && $format == 'json';
     }
 
     /**

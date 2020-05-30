@@ -66,7 +66,7 @@
         "version": "1.1.1"
     },
     "elasticsearch/elasticsearch": {
-        "version": "v6.7.2"
+        "version": "v7.7.0"
     },
     "exercise/htmlpurifier-bundle": {
         "version": "0.2",
@@ -77,26 +77,14 @@
             "ref": "0b76657841c2ba52647bb1b4a5595a0e3b9f485c"
         }
     },
+    "ezimuel/guzzlestreams": {
+        "version": "3.0.1"
+    },
+    "ezimuel/ringphp": {
+        "version": "1.1.2"
+    },
     "ezyang/htmlpurifier": {
         "version": "v4.9.3"
-    },
-    "friendsofsymfony/elastica-bundle": {
-        "version": "5.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "5.0",
-            "ref": "46c9cd2c1e07f0fcfd97e96f12b03b2e0845c4cd"
-        },
-        "files": [
-            "config/packages/fos_elastica.yaml"
-        ]
-    },
-    "guzzlehttp/ringphp": {
-        "version": "1.1.1"
-    },
-    "guzzlehttp/streams": {
-        "version": "3.0.0"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -133,9 +121,6 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.2"
-    },
-    "pagerfanta/pagerfanta": {
-        "version": "v2.1.3"
     },
     "phar-io/manifest": {
         "version": "1.0.1"
@@ -222,10 +207,7 @@
         "version": "1.0.2"
     },
     "react/promise": {
-        "version": "v2.7.1"
-    },
-    "ruflin/elastica": {
-        "version": "6.1.1"
+        "version": "v2.8.0"
     },
     "sebastian/code-unit": {
         "version": "1.0.2"

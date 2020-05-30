@@ -54,7 +54,7 @@ class CountryNormalizer implements NormalizerInterface, CacheableSupportsMethodI
      */
     public function supportsNormalization($data, string $format = null): bool
     {
-        return $data instanceof Country;
+        return $data instanceof Country && $format == 'json';
     }
 
     /**

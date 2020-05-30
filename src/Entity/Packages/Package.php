@@ -308,6 +308,8 @@ class Package
         $this->dependencies = new ArrayCollection();
         $this->provisions = new ArrayCollection();
         $this->replacements = new ArrayCollection();
+
+        $this->files = Files::createFromArray([]);
     }
 
     /**

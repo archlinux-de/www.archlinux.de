@@ -3,18 +3,27 @@
 namespace App\SearchRepository;
 
 use App\Entity\Packages\Package;
-use Elastica\Aggregation\Terms;
-use Elastica\Query;
-use Elastica\Query\BoolQuery;
-use Elastica\Query\FunctionScore;
-use Elastica\Query\MatchPhrasePrefix;
-use Elastica\Query\QueryString;
-use Elastica\Query\Term;
-use Elastica\Query\Wildcard;
-use FOS\ElasticaBundle\Repository;
+use App\Repository\PackageRepository;
+use Elasticsearch\Client;
 
-class PackageSearchRepository extends Repository
+class PackageSearchRepository
 {
+    /** @var Client */
+    private $client;
+
+    /** @var PackageRepository */
+    private $packageRepository;
+
+    /**
+     * @param PackageRepository $packageRepository
+     * @param Client $client
+     */
+    public function __construct(PackageRepository $packageRepository, Client $client)
+    {
+        $this->packageRepository = $packageRepository;
+        $this->client = $client;
+    }
+
     /**
      * @param int $offset
      * @param int $limit
@@ -30,63 +39,99 @@ class PackageSearchRepository extends Repository
         string $architecture,
         ?string $repository
     ): array {
-        $elasticQuery = new Query();
+        $sort = [];
         if ($query) {
-            $elasticQuery->addSort(['_score' => ['order' => 'desc']]);
-            $elasticQuery->addSort(['popularity' => ['order' => 'desc']]);
+            $sort[] = ['_score' => ['order' => 'desc']];
+            $sort[] = ['popularity' => ['order' => 'desc']];
         }
-        $elasticQuery->addSort(['buildDate' => ['order' => 'desc']]);
+        $sort[] = ['buildDate' => ['order' => 'desc']];
 
-        $boolQuery = new BoolQuery();
-
+        $bool = [];
         if ($query) {
-            $boolQuery->addShould(new Term(['name' => ['value' => $query, 'boost' => 7]]));
-            $boolQuery->addShould(new Term(['base' => ['value' => $query, 'boost' => 6]]));
-            $boolQuery->addShould(new Wildcard('name', '*' . $query . '*'));
-            $boolQuery->addShould(new Wildcard('description', '*' . $query . '*'));
-            $boolQuery->addShould(new QueryString($query));
-            $boolQuery->setMinimumShouldMatch(1);
+            $bool['should'][] = ['term' => ['name' => ['value' => $query, 'boost' => 7]]];
+            $bool['should'][] = ['term' => ['base' => ['value' => $query, 'boost' => 6]]];
+
+            $bool['should'][] = ['wildcard' => ['name' => '*' . $query . '*']];
+            $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
+
+            $bool['should'][] = [
+                'multi_match' => [
+                    'query' => $query,
+                    'fields' => ['name^5', 'base^4', 'description^3', 'url', 'groups^2', 'replacements', 'provisions']
+                ]
+            ];
+
+            $bool['minimum_should_match'] = 1;
         }
-
-        $boolQuery->addMust((new Term())->setTerm('repository.architecture', $architecture));
-
+        $bool['must'][] = ['term' => ['repository.architecture' => $architecture]];
         if ($repository) {
-            $boolQuery->addMust((new Term())->setTerm('repository.name', $repository));
+            $bool['must'][] = ['term' => ['repository.name' => $repository]];
         }
 
-        $scoreQuery = new FunctionScore();
-        $scoreQuery->setQuery($boolQuery);
-        $scoreQuery->addFieldValueFactorFunction(
-            'popularity',
-            0.1,
-            FunctionScore::FIELD_VALUE_FACTOR_MODIFIER_SQRT,
-            0
+        $results = $this->client->search(
+            [
+                'index' => 'package',
+                'body' => [
+                    'query' => [
+                        'function_score' => [
+                            'query' => ['bool' => $bool],
+                            'field_value_factor' => [
+                                'field' => 'popularity',
+                                'factor' => 0.1,
+                                'modifier' => 'sqrt',
+                                'missing' => 0
+                            ]
+                        ]
+                    ],
+                    'aggs' => [
+                        'repository' => [
+                            'terms' => ['field' => 'repository.name']
+                        ],
+                        'architecture' => [
+                            'terms' => ['field' => 'repository.architecture']
+                        ]
+                    ],
+                    'sort' => $sort
+                ],
+                'from' => $offset,
+                'size' => $limit,
+                '_source' => false,
+                'track_total_hits' => true
+            ]
         );
 
-        $elasticQuery->setQuery($scoreQuery);
-        $elasticQuery->addAggregation((new Terms('repository'))->setField('repository.name'));
-        $elasticQuery->addAggregation((new Terms('architecture'))->setField('repository.architecture'));
-
-        $paginator = $this->createPaginatorAdapter($elasticQuery);
-        $results = $paginator->getResults($offset, $limit);
-        $packages = $results->toArray();
-        $aggregations = $results->getAggregations();
+        $packages = $this->findBySearchResults($results);
 
         return [
             'offset' => $offset,
             'limit' => $limit,
-            'total' => $results->getTotalHits(),
+            'total' => $results['hits']['total']['value'],
             'count' => count($packages),
             'items' => $packages,
             'repositories' => array_map(
                 fn(array $repository): string => $repository['key'],
-                $aggregations['repository']['buckets']
+                $results['aggregations']['repository']['buckets']
             ),
             'architectures' => array_map(
                 fn(array $repository): string => $repository['key'],
-                $aggregations['architecture']['buckets']
+                $results['aggregations']['architecture']['buckets']
             )
         ];
+    }
+
+    /**
+     * @param array<mixed> $results
+     * @return Package[]
+     */
+    private function findBySearchResults(array $results): array
+    {
+        $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
+        $packages = $this->packageRepository->findBy(['id' => $ids]);
+
+        $positions = array_flip($ids);
+        usort($packages, fn(Package $a, Package $b): int => $positions[$a->getId()] <=> $positions[$b->getId()]);
+
+        return $packages;
     }
 
     /**
@@ -96,7 +141,23 @@ class PackageSearchRepository extends Repository
      */
     public function findByTerm(string $term, int $limit): array
     {
-        $query = new MatchPhrasePrefix('name', $term);
-        return $this->find($query, $limit);
+        $results = $this->client->search(
+            [
+                'index' => 'package',
+                'body' => [
+                    'query' => [
+                        'prefix' => ['name' => $term]
+                    ],
+                    'sort' => [
+                        'popularity' => ['order' => 'desc'],
+                        '_score' => ['order' => 'desc']
+                    ]
+                ],
+                'size' => $limit,
+                '_source' => false
+            ]
+        );
+
+        return $this->findBySearchResults($results);
     }
 }
