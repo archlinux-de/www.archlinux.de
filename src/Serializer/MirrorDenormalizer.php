@@ -33,9 +33,17 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
         return [
             ...(function () use ($data) {
                 foreach ($data['urls'] as $mirrorData) {
-                    if (!$mirrorData['active']) {
+                    if (
+                        !$mirrorData['active'] ||
+                        !$mirrorData['score'] ||
+                        !$mirrorData['last_sync'] ||
+                        !$mirrorData['delay'] ||
+                        !$mirrorData['duration_avg'] ||
+                        !$mirrorData['duration_stddev']
+                    ) {
                         continue;
                     }
+
                     $mirror = (new Mirror($mirrorData['url'], $mirrorData['protocol']))
                         ->setDelay($mirrorData['delay'])
                         ->setDurationAvg($mirrorData['duration_avg'])
@@ -44,15 +52,13 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
                         ->setDurationStddev($mirrorData['duration_stddev'])
                         ->setIsos($mirrorData['isos'])
                         ->setIpv4($mirrorData['ipv4'])
-                        ->setIpv6($mirrorData['ipv6']);
+                        ->setIpv6($mirrorData['ipv6'])
+                        ->setLastSync(new \DateTime($mirrorData['last_sync']));
 
                     if ($mirrorData['country_code'] !== null) {
                         /** @var Country $country */
                         $country = $this->countryRepository->find($mirrorData['country_code']);
                         $mirror->setCountry($country);
-                    }
-                    if ($mirrorData['last_sync'] !== null) {
-                        $mirror->setLastSync(new \DateTime($mirrorData['last_sync']));
                     }
 
                     yield $mirror;

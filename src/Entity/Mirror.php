@@ -23,7 +23,7 @@ class Mirror
 
     /**
      * @var string
-     * @Assert\Choice({"http", "https", "rsync", "ftp"})
+     * @Assert\Choice({"http", "https", "rsync"})
      *
      * @ORM\Column()
      */
@@ -38,72 +38,72 @@ class Mirror
     private $country;
 
     /**
-     * @var \DateTime|null
+     * @var \DateTime
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime")
      */
     private $lastSync;
 
     /**
-     * @var integer|null
+     * @var integer
      * @Assert\Range(min="0",max="31536000")
      *
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
      */
-    private $delay;
+    private $delay = 0;
 
     /**
-     * @var float|null
+     * @var float
      * @Assert\Range(min="0",max="10240")
      *
-     * @ORM\Column(type="float", nullable=true)
+     * @ORM\Column(type="float")
      */
-    private $durationAvg;
+    private $durationAvg = 0;
 
     /**
-     * @var float|null
+     * @var float
      * @Assert\Range(min="0",max="102400")
      *
-     * @ORM\Column(type="float", nullable=true)
+     * @ORM\Column(type="float")
      */
-    private $score;
+    private $score = 0;
 
     /**
-     * @var float|null
+     * @var float
      * @Assert\Range(min="0",max="1")
      *
-     * @ORM\Column(type="float", nullable=true)
+     * @ORM\Column(type="float")
      */
-    private $completionPct;
+    private $completionPct = 0;
 
     /**
-     * @var float|null
+     * @var float
      * @Assert\Range(min="0",max="10240")
      *
-     * @ORM\Column(type="float", nullable=true)
+     * @ORM\Column(type="float")
      */
-    private $durationStddev;
+    private $durationStddev = 0;
 
     /**
-     * @var bool|null
+     * @var bool
      *
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $isos;
+    private $isos = false;
 
     /**
-     * @var bool|null
+     * @var bool
      *
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $ipv4;
+    private $ipv4 = false;
 
     /**
-     * @var bool|null
+     * @var bool
      *
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $ipv6;
+    private $ipv6 = false;
 
     /**
      * @param string $url
@@ -113,6 +113,7 @@ class Mirror
     {
         $this->url = $url;
         $this->protocol = $protocol;
+        $this->lastSync = new \DateTime();
     }
 
     /**
@@ -160,133 +161,133 @@ class Mirror
     }
 
     /**
-     * @return float|null
+     * @return float
      */
-    public function getDurationAvg(): ?float
+    public function getDurationAvg(): float
     {
         return $this->durationAvg;
     }
 
     /**
-     * @param float|null $durationAvg
+     * @param float $durationAvg
      * @return Mirror
      */
-    public function setDurationAvg(?float $durationAvg): Mirror
+    public function setDurationAvg(float $durationAvg): Mirror
     {
         $this->durationAvg = $durationAvg;
         return $this;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getDelay(): ?int
+    public function getDelay(): int
     {
         return $this->delay;
     }
 
     /**
-     * @param int|null $delay
+     * @param int $delay
      * @return Mirror
      */
-    public function setDelay(?int $delay): Mirror
+    public function setDelay(int $delay): Mirror
     {
         $this->delay = $delay;
         return $this;
     }
 
     /**
-     * @return float|null
+     * @return float
      */
-    public function getDurationStddev(): ?float
+    public function getDurationStddev(): float
     {
         return $this->durationStddev;
     }
 
     /**
-     * @param float|null $durationStddev
+     * @param float $durationStddev
      * @return Mirror
      */
-    public function setDurationStddev(?float $durationStddev): Mirror
+    public function setDurationStddev(float $durationStddev): Mirror
     {
         $this->durationStddev = $durationStddev;
         return $this;
     }
 
     /**
-     * @return float|null
+     * @return float
      */
-    public function getCompletionPct(): ?float
+    public function getCompletionPct(): float
     {
         return $this->completionPct;
     }
 
     /**
-     * @param float|null $completionPct
+     * @param float $completionPct
      * @return Mirror
      */
-    public function setCompletionPct(?float $completionPct): Mirror
+    public function setCompletionPct(float $completionPct): Mirror
     {
         $this->completionPct = $completionPct;
         return $this;
     }
 
     /**
-     * @return float|null
+     * @return float
      */
-    public function getScore(): ?float
+    public function getScore(): float
     {
         return $this->score;
     }
 
     /**
-     * @param float|null $score
+     * @param float $score
      * @return Mirror
      */
-    public function setScore(?float $score): Mirror
+    public function setScore(float $score): Mirror
     {
         $this->score = $score;
         return $this;
     }
 
     /**
-     * @return \DateTime|null
+     * @return \DateTime
      */
-    public function getLastSync(): ?\DateTime
+    public function getLastSync(): \DateTime
     {
         return $this->lastSync;
     }
 
     /**
-     * @param \DateTime|null $lastSync
+     * @param \DateTime $lastSync
      * @return Mirror
      */
-    public function setLastSync(?\DateTime $lastSync): Mirror
+    public function setLastSync(\DateTime $lastSync): Mirror
     {
         $this->lastSync = $lastSync;
         return $this;
     }
 
     /**
-     * @return bool|null
+     * @return bool
      */
-    public function hasIsos(): ?bool
+    public function hasIsos(): bool
     {
         return $this->isos;
     }
 
     /**
-     * @return bool|null
+     * @return bool
      */
-    public function hasIpv4(): ?bool
+    public function hasIpv4(): bool
     {
         return $this->ipv4;
     }
 
     /**
-     * @return bool|null
+     * @return bool
      */
-    public function hasIpv6(): ?bool
+    public function hasIpv6(): bool
     {
         return $this->ipv6;
     }
@@ -319,30 +320,30 @@ class Mirror
     }
 
     /**
-     * @param bool|null $isos
+     * @param bool $isos
      * @return Mirror
      */
-    public function setIsos(?bool $isos): Mirror
+    public function setIsos(bool $isos): Mirror
     {
         $this->isos = $isos;
         return $this;
     }
 
     /**
-     * @param bool|null $ipv6
+     * @param bool $ipv6
      * @return Mirror
      */
-    public function setIpv6(?bool $ipv6): Mirror
+    public function setIpv6(bool $ipv6): Mirror
     {
         $this->ipv6 = $ipv6;
         return $this;
     }
 
     /**
-     * @param bool|null $ipv4
+     * @param bool $ipv4
      * @return Mirror
      */
-    public function setIpv4(?bool $ipv4): Mirror
+    public function setIpv4(bool $ipv4): Mirror
     {
         $this->ipv4 = $ipv4;
         return $this;

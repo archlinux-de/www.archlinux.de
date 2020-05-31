@@ -34,7 +34,7 @@
       </template>
 
       <template v-slot:cell(lastSync)="data">
-        <template v-if="data.value">{{ (new Date(data.value)).toLocaleDateString('de-DE') }}</template>
+        {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
       </template>
 
       <template v-slot:cell(isos)="data">

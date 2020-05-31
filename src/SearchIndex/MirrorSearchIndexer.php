@@ -53,7 +53,7 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
             ] : null,
             'protocol' => $object->getProtocol(),
             'score' => $object->getScore(),
-            'lastSync' => $object->getLastSync() !== null ? $object->getLastSync()->format(DATE_W3C) : null
+            'lastSync' => $object->getLastSync()->format(DATE_W3C)
         ];
 
         return $paramsBody;

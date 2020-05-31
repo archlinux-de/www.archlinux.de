@@ -57,7 +57,6 @@ class MirrorSearchRepository
         }
 
         $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
-        $bool['must'][] = ['exists' => ['field' => 'score']];
 
         $results = $this->client->search(
             [
@@ -129,7 +128,6 @@ class MirrorSearchRepository
         ];
 
         $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
-        $bool['must'][] = ['exists' => ['field' => 'score']];
 
         $results = $this->client->search(
             [
