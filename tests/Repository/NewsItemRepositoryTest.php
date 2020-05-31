@@ -11,8 +11,8 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 {
     public function testFindLatestItemIsReturned(): void
     {
-        $oldItem = $this->createNewsItem(1, new \DateTime('- 2 day'));
-        $newItem = $this->createNewsItem(2, new \DateTime('now'));
+        $oldItem = $this->createNewsItem(1, new \DateTime('2018-01-01'));
+        $newItem = $this->createNewsItem(2, new \DateTime('2018-01-02'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newItem);
@@ -44,8 +44,8 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
     public function testFindLatestItemsAreLimited(): void
     {
-        $oldItem = $this->createNewsItem(1, new \DateTime('- 2 day'));
-        $newItem = $this->createNewsItem(2, new \DateTime('now'));
+        $oldItem = $this->createNewsItem(1, new \DateTime('2018-01-01'));
+        $newItem = $this->createNewsItem(2, new \DateTime('2018-01-02'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newItem);
@@ -60,9 +60,9 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
     public function testFindAllExceptByIdsNewerThan(): void
     {
-        $newsItemA = $this->createNewsItem(1, new \DateTime('- 2 day'));
-        $newsItemB = $this->createNewsItem(2, new \DateTime('- 2 day'));
-        $newsItemC = $this->createNewsItem(3, new \DateTime('- 4 day'));
+        $newsItemA = $this->createNewsItem(1, new \DateTime('2018-01-03'));
+        $newsItemB = $this->createNewsItem(2, new \DateTime('2018-01-03'));
+        $newsItemC = $this->createNewsItem(3, new \DateTime('2018-01-01'));
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newsItemA);
         $entityManager->persist($newsItemB);
@@ -71,7 +71,7 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
         /** @var NewsItemRepository $newsItemRepository */
         $newsItemRepository = $this->getRepository(NewsItem::class);
-        $newsItems = $newsItemRepository->findAllExceptByIdsNewerThan([1], new \DateTime('- 3 day'));
+        $newsItems = $newsItemRepository->findAllExceptByIdsNewerThan([1], new \DateTime('2018-01-02'));
 
         $this->assertCount(1, $newsItems);
         $this->assertEquals(2, $newsItems[0]->getId());
@@ -79,8 +79,8 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
     public function testGetSize(): void
     {
-        $oldItem = $this->createNewsItem(1, new \DateTime('now'));
-        $newItem = $this->createNewsItem(2, new \DateTime('now'));
+        $oldItem = $this->createNewsItem(1, new \DateTime('2018-01-01'));
+        $newItem = $this->createNewsItem(2, new \DateTime('2018-01-01'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($newItem);

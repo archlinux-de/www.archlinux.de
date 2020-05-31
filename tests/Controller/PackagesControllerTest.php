@@ -99,8 +99,6 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($pacman);
         $entityManager->flush();
 
-        sleep(1);
-
         $client = $this->getClient();
 
         $client->request('GET', '/packages/suggest', ['term' => 'pac']);
@@ -133,8 +131,6 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($php);
         $entityManager->persist($pacman);
         $entityManager->flush();
-
-        sleep(1);
 
         $client = $this->getClient();
 

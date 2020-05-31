@@ -9,7 +9,7 @@ class TorrentTest extends TestCase
 {
     public function testEntity(): void
     {
-        $creationDate = new \DateTime();
+        $creationDate = new \DateTime('2018-01-01');
 
         $torrent = new Torrent();
         $this->assertSame($torrent, $torrent->setFileName('file'));

@@ -18,14 +18,19 @@ class IndexUpdateEventListener
     /** @var array<mixed> */
     private $bulkStatements = [];
 
+    /** @var string */
+    private $environment;
+
     /**
      * @param Client $client
      * @param SearchIndexer $searchIndexer
+     * @param string $environment
      */
-    public function __construct(Client $client, SearchIndexer $searchIndexer)
+    public function __construct(Client $client, SearchIndexer $searchIndexer, string $environment)
     {
         $this->client = $client;
         $this->searchIndexer = $searchIndexer;
+        $this->environment = $environment;
     }
 
     /**
@@ -67,7 +72,12 @@ class IndexUpdateEventListener
     {
         if ($this->bulkStatements) {
             foreach (array_chunk($this->bulkStatements, SearchIndexer::BULK_SIZE) as $bulkIndexChunk) {
-                $this->client->bulk(['body' => array_merge(...$bulkIndexChunk)]);
+                $this->client->bulk(
+                    [
+                        'body' => array_merge(...$bulkIndexChunk),
+                        'refresh' => $this->environment != 'prod'
+                    ]
+                );
             }
             $this->bulkStatements = [];
         }

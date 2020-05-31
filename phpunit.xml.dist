@@ -12,6 +12,7 @@
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0" />
+        <env name="ELASTICSEARCH_MOCK_MODE" value="read" />
     </php>
 
     <testsuites>

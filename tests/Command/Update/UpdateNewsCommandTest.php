@@ -24,8 +24,8 @@ class UpdateNewsCommandTest extends KernelTestCase
 {
     public function testCommand(): void
     {
-        $newNewsItem = (new NewsItem(2))->setLastModified(new \DateTime('-1 day'));
-        $oldNewsItem = (new NewsItem(1))->setLastModified(new \DateTime('-2 day'));
+        $newNewsItem = (new NewsItem(2))->setLastModified(new \DateTime('2018-01-02'));
+        $oldNewsItem = (new NewsItem(1))->setLastModified(new \DateTime('2018-01-01'));
 
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
@@ -59,8 +59,8 @@ class UpdateNewsCommandTest extends KernelTestCase
 
     public function testArchivedItemsAreKept(): void
     {
-        $newNewsItem = (new NewsItem(2))->setLastModified(new \DateTime('-1 day'));
-        $oldNewsItem = (new NewsItem(1))->setLastModified(new \DateTime('-2 day'));
+        $newNewsItem = (new NewsItem(2))->setLastModified(new \DateTime('2018-01-02'));
+        $oldNewsItem = (new NewsItem(1))->setLastModified(new \DateTime('2018-01-01'));
 
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
@@ -130,7 +130,7 @@ class UpdateNewsCommandTest extends KernelTestCase
     public function testUpdateNews(): void
     {
         $newsItem = (new NewsItem(2))
-            ->setLastModified(new \DateTime('-1 day'))
+            ->setLastModified(new \DateTime('2018-01-01'))
             ->setDescription('')
             ->setLink('')
             ->setTitle('')

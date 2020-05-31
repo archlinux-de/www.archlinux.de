@@ -92,10 +92,10 @@ class UpdateReleasesCommandTest extends KernelTestCase
     {
         $release = (new Release('2'))
             ->setAvailable(true)
-            ->setCreated(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
             ->setInfo('')
             ->setIsoUrl('')
-            ->setReleaseDate(new \DateTime())
+            ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(new Torrent());
 
         /** @var ReleaseRepository|MockObject $releaseRepository */

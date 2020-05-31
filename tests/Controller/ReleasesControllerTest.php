@@ -18,8 +18,8 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             ->setAvailable(true)
             ->setInfo('')
             ->setIsoUrl('')
-            ->setCreated(new \DateTime())
-            ->setReleaseDate(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
+            ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(
                 (new Torrent())->setFileLength(1)->setFileName('release.iso')
             );
@@ -54,15 +54,13 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             ->setAvailable(true)
             ->setInfo('')
             ->setIsoUrl('')
-            ->setCreated(new \DateTime())
-            ->setReleaseDate(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
+            ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(
                 (new Torrent())->setFileLength(1)->setFileName('release.iso')
             );
         $entityManager->persist($release);
         $entityManager->flush();
-
-        sleep(1);
 
         $client = $this->getClient();
 
@@ -83,7 +81,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             ->setAvailable(true)
             ->setInfo('info')
             ->setIsoUrl('http://localhost/iso')
-            ->setCreated(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setSha1Sum('abcdef')
             ->setTorrent(

@@ -21,17 +21,17 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $entityManager = $this->getEntityManager();
         $country = (new Country('de'))->setName('Germany');
 
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
-        $mirror->setLastSync(new \DateTime());
-        $mirror->setCountry($country);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'))
+            ->setCountry($country);
 
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('')
             ->setIsoUrl('')
-            ->setCreated(new \DateTime())
-            ->setReleaseDate(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
+            ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(
                 (new Torrent())->setFileLength(1)
             );
@@ -40,8 +40,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($mirror);
         $entityManager->persist($release);
         $entityManager->flush();
-
-        sleep(1);
 
         $filePath = 'iso/2018.01.01/archlinux-2018.01.01-x86_64.iso';
         $client = $this->getClient();
@@ -53,8 +51,9 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testFailIfIsoIsUnkown(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
         $entityManager->flush();
 
@@ -72,8 +71,9 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testPackageAction(string $packageExtension): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'));
         $coreRepository = new Repository('core', Architecture::X86_64);
         $pacman = new Package(
             $coreRepository,
@@ -86,8 +86,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($pacman);
         $entityManager->flush();
 
-        sleep(1);
-
         $filePath = 'core/os/x86_64/linux-3.11-1-x86_64.pkg.tar.' . $packageExtension;
         $client = $this->getClient();
 
@@ -98,12 +96,11 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testPackageNotFoundAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
         $entityManager->flush();
-
-        sleep(1);
 
         $filePath = 'core/os/x86_64/linux-3.11-1-x86_64.pkg.tar.xz';
         $client = $this->getClient();
@@ -115,8 +112,9 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testInvalidPackageNotFoundAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
         $entityManager->flush();
 
@@ -130,12 +128,11 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testFallbackAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
         $entityManager->flush();
-
-        sleep(1);
 
         $filePath = 'foo.txt';
         $client = $this->getClient();
@@ -146,12 +143,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
 
     public function testMirrorNotFound(): void
     {
-        $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('http://127.0.0.2/', 'http');
-        $mirror->setScore(1);
-        $entityManager->persist($mirror);
-        $entityManager->flush();
-
         $filePath = 'foo.txt';
         $client = $this->getClient();
 

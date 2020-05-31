@@ -68,11 +68,11 @@ class MirrorController extends AbstractController
 
     /**
      * @param string $file
-     * @param \DateTime $lastsync
+     * @param \DateTime|null $lastsync
      * @param Request $request
      * @return Response
      */
-    private function redirectToMirror(string $file, \DateTime $lastsync, Request $request): Response
+    private function redirectToMirror(string $file, ?\DateTime $lastsync, Request $request): Response
     {
         return $this->redirect(
             $this->getMirror($lastsync, $request->getClientIp() ?? '')->getUrl() . $file
@@ -80,11 +80,11 @@ class MirrorController extends AbstractController
     }
 
     /**
-     * @param \DateTime $lastSync
+     * @param \DateTime|null $lastSync
      * @param string $clientIp
      * @return Mirror
      */
-    private function getMirror(\DateTime $lastSync, string $clientIp): Mirror
+    private function getMirror(?\DateTime $lastSync, string $clientIp): Mirror
     {
         $countryCode = $this->geoIp->getCountryCode($clientIp);
         if (empty($countryCode)) {
@@ -137,7 +137,7 @@ class MirrorController extends AbstractController
 
         return $this->redirectToMirror(
             $repository . '/os/' . $architecture . '/' . $file,
-            $package->getBuildDate() ?? new \DateTime('-1 day'),
+            $package->getBuildDate(),
             $request
         );
     }
@@ -150,6 +150,6 @@ class MirrorController extends AbstractController
      */
     public function fallbackAction(string $file, Request $request): Response
     {
-        return $this->redirectToMirror($file, new \DateTime('yesterday'), $request);
+        return $this->redirectToMirror($file, null, $request);
     }
 }

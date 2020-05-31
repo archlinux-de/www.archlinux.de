@@ -36,29 +36,28 @@ class SmokeTest extends DatabaseSearchTestCase
             ->setAvailable(true)
             ->setInfo('')
             ->setIsoUrl('')
-            ->setCreated(new \DateTime())
-            ->setReleaseDate(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
+            ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(
                 (new Torrent())->setFileLength(1)->setFileName('release.iso')
             );
         $entityManager->persist($release);
 
-        $mirror = new Mirror('https://download.archlinux.de/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
 
         $newsItem = (new NewsItem(1))
             ->setTitle('Big News')
             ->setLink('https://www.archlinux.de/')
             ->setDescription('Foo bar')
-            ->setLastModified(new \DateTime())
+            ->setLastModified(new \DateTime('2018-01-01'))
             ->setAuthor((new NewsAuthor())->setName('Bob'));
         $entityManager->persist($newsItem);
 
         $entityManager->flush();
         $entityManager->clear();
-
-        sleep(1);
     }
 
     /**

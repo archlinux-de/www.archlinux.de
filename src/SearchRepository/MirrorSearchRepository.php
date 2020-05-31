@@ -103,30 +103,33 @@ class MirrorSearchRepository
 
     /**
      * @param string $countryCode
-     * @param \DateTime $lastSync
+     * @param \DateTime|null $lastSync
      * @param int $limit
      * @return Mirror[]
      */
-    public function findBestByCountryAndLastSync(string $countryCode, \DateTime $lastSync, int $limit = 20): array
-    {
+    public function findBestByCountryAndLastSync(
+        string $countryCode,
+        ?\DateTime $lastSync = null,
+        int $limit = 20
+    ): array {
         $sort = [
             '_score' => ['order' => 'desc'],
             'score' => ['order' => 'asc']
         ];
 
         $bool = [];
-
         $bool['should'][] = ['term' => ['country.code' => $countryCode]];
-        $bool['should'][] = [
-            'range' => [
-                'lastSync' => [
-                    'gt' => $lastSync->getTimestamp(),
-                    'format' => 'epoch_second',
-                    'boost' => 2
+        if ($lastSync) {
+            $bool['should'][] = [
+                'range' => [
+                    'lastSync' => [
+                        'gt' => $lastSync->getTimestamp(),
+                        'format' => 'epoch_second',
+                        'boost' => 2
+                    ]
                 ]
-            ]
-        ];
-
+            ];
+        }
         $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
 
         $results = $this->client->search(

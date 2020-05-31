@@ -43,11 +43,11 @@ class ReleaseTest extends TestCase
         $release = (new Release('2019.01.01'))
             ->setTorrent(new Torrent())
             ->setSha1Sum('abc')
-            ->setReleaseDate(new \DateTime())
+            ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setKernelVersion('2.4.1')
             ->setIsoUrl('foo')
             ->setInfo('bar')
-            ->setCreated(new \DateTime())
+            ->setCreated(new \DateTime('2018-01-01'))
             ->setAvailable(true);
 
         $release->update((new Release('2019.01.01'))

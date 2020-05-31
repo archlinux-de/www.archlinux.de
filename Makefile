@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all init start start-db stop clean rebuild install shell-php shell-node test test-db test-db-migrations test-coverage test-db-coverage test-security fix-code-style update deploy
+.PHONY: all init start start-db stop clean rebuild install shell-php shell-node test test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy
 
 UID!=id -u
 GID!=id -g
@@ -58,7 +58,7 @@ shell-php:
 shell-node:
 	${NODE-RUN} bash
 
-test: start-db
+test:
 	${PHP-RUN} composer validate
 	${PHP-RUN} vendor/bin/phpcs
 	${NODE-RUN} node_modules/.bin/eslint assets --ext js --ext vue
@@ -68,7 +68,7 @@ test: start-db
 	${PHP-RUN} bin/console lint:twig templates
 	${NODE-RUN} sh -c "PUBLIC_PATH=/tmp node_modules/.bin/encore prod"
 	${PHP-RUN} vendor/bin/phpstan analyse
-	${PHP-DB-RUN} vendor/bin/phpunit
+	${PHP-RUN} vendor/bin/phpunit
 
 test-db: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
@@ -76,7 +76,11 @@ test-db: start-db
 test-db-migrations: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test'
 
-test-coverage: start-db
+update-elasticsearch-fixtures: start-db
+	rm -f tests/ElasticsearchFixtures/*.json
+	${COMPOSE-RUN} -e ELASTICSEARCH_URL=http://elasticsearch-test:9200 -e ELASTICSEARCH_MOCK_MODE=write php vendor/bin/phpunit
+
+test-coverage:
 	${NODE-RUN} node_modules/.bin/jest --coverage --coverageDirectory var/coverage/jest
 	${PHP-RUN} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 

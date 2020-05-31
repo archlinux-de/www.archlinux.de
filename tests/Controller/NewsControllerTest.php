@@ -17,7 +17,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news = new NewsItem(1);
         $news->setTitle('Breaking News');
         $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
+        $news->setLastModified(new \DateTime('2018-01-01'));
         $news->setAuthor(
             (new NewsAuthor())
                 ->setName('')
@@ -52,7 +52,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news = new NewsItem(1);
         $news->setTitle('Breaking News');
         $news->setDescription('Hell has frozen over!');
-        $news->setLastModified(new \DateTime());
+        $news->setLastModified(new \DateTime('2018-01-01'));
         $news->setAuthor(
             (new NewsAuthor())
                 ->setName('')
@@ -61,8 +61,6 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setLink('https://www.archlinux.de/');
         $entityManager->persist($news);
         $entityManager->flush();
-
-        sleep(1);
 
         $client = $this->getClient();
 

@@ -108,14 +108,14 @@ class PackageSearchRepository
             'total' => $results['hits']['total']['value'],
             'count' => count($packages),
             'items' => $packages,
-            'repositories' => array_map(
+            'repositories' => isset($results['aggregations']['repository']['buckets']) ? array_map(
                 fn(array $repository): string => $repository['key'],
                 $results['aggregations']['repository']['buckets']
-            ),
-            'architectures' => array_map(
+            ) : [],
+            'architectures' => isset($results['aggregations']['architecture']['buckets']) ? array_map(
                 fn(array $repository): string => $repository['key'],
                 $results['aggregations']['architecture']['buckets']
-            )
+            ) : []
         ];
     }
 

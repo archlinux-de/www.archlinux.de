@@ -5,8 +5,6 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     geoip.database: '/usr/share/GeoIP/GeoLite2-Country.mmdb'
-    elasticsearch.config:
-        hosts: ['%env(resolve:ELASTICSEARCH_URL)%']
 
 services:
     # default configuration for services in *this* file
@@ -37,10 +35,12 @@ services:
 
     League\ISO3166\ISO3166:
 
+    Elasticsearch\ClientBuilder:
+        calls:
+            - [setHosts, [['%env(resolve:ELASTICSEARCH_URL)%']]]
+
     Elasticsearch\Client:
-        factory: [Elasticsearch\ClientBuilder, fromConfig]
-        arguments: ['%elasticsearch.config%']
-        public: true
+        factory: ['@Elasticsearch\ClientBuilder', build]
 
     App\Service\PackageDatabaseMirror:
         $mirrorUrl: '%app.packages.mirror%'
@@ -70,6 +70,8 @@ services:
         $mirrorCountry: '%app.mirrors.country%'
 
     App\EventListener\IndexUpdateEventListener:
+        arguments:
+            $environment: '%kernel.environment%'
         tags:
             - { name: 'doctrine.event_listener', event: 'postPersist', lazy: true }
             - { name: 'doctrine.event_listener', event: 'postUpdate', lazy: true }

@@ -14,12 +14,11 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
     public function testMirrorsAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setScore(1);
+        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2020-02-02'));
         $entityManager->persist($mirror);
         $entityManager->flush();
-
-        sleep(1);
 
         $client = $this->getClient();
         $client->request('GET', '/api/mirrors', ['query' => '127']);
@@ -53,8 +52,6 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
         $entityManager->persist($country);
         $entityManager->persist($mirror);
         $entityManager->flush();
-
-        sleep(1);
 
         $client = $this->getClient();
         $client->request('GET', '/api/mirrors/' . urlencode($mirror->getUrl()));

@@ -12,6 +12,8 @@
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="DATABASE_URL" value="mysql://root@localhost/db-test" />
+        <env name="ELASTICSEARCH_URL" value="http://elasticsearch-test:9200" />
+        <env name="ELASTICSEARCH_MOCK_MODE" value="off" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0" />
     </php>
 

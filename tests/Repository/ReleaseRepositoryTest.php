@@ -14,8 +14,8 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $release->setAvailable(true);
         $release->setInfo('');
         $release->setIsoUrl('');
-        $release->setCreated(new \DateTime());
-        $release->setReleaseDate(new \DateTime());
+        $release->setCreated(new \DateTime('2018-01-01'));
+        $release->setReleaseDate(new \DateTime('2018-01-01'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($release);
@@ -34,8 +34,8 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $release->setAvailable(true);
         $release->setInfo('');
         $release->setIsoUrl('');
-        $release->setCreated(new \DateTime());
-        $release->setReleaseDate(new \DateTime());
+        $release->setCreated(new \DateTime('2018-01-01'));
+        $release->setReleaseDate(new \DateTime('2018-01-01'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($release);
@@ -54,15 +54,15 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $releaseA->setAvailable(true);
         $releaseA->setInfo('');
         $releaseA->setIsoUrl('');
-        $releaseA->setCreated(new \DateTime());
-        $releaseA->setReleaseDate(new \DateTime());
+        $releaseA->setCreated(new \DateTime('2018-01-01'));
+        $releaseA->setReleaseDate(new \DateTime('2018-01-01'));
 
         $releaseB = new Release('B');
         $releaseB->setAvailable(true);
         $releaseB->setInfo('');
         $releaseB->setIsoUrl('');
-        $releaseB->setCreated(new \DateTime());
-        $releaseB->setReleaseDate(new \DateTime());
+        $releaseB->setCreated(new \DateTime('2018-01-01'));
+        $releaseB->setReleaseDate(new \DateTime('2018-01-01'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($releaseA);
@@ -83,15 +83,15 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $releaseA->setAvailable(true);
         $releaseA->setInfo('');
         $releaseA->setIsoUrl('');
-        $releaseA->setCreated(new \DateTime());
-        $releaseA->setReleaseDate(new \DateTime());
+        $releaseA->setCreated(new \DateTime('2018-01-01'));
+        $releaseA->setReleaseDate(new \DateTime('2018-01-01'));
 
         $releaseB = new Release('B');
         $releaseB->setAvailable(true);
         $releaseB->setInfo('');
         $releaseB->setIsoUrl('');
-        $releaseB->setCreated(new \DateTime());
-        $releaseB->setReleaseDate(new \DateTime());
+        $releaseB->setCreated(new \DateTime('2018-01-01'));
+        $releaseB->setReleaseDate(new \DateTime('2018-01-01'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($releaseA);
@@ -110,8 +110,8 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $release->setAvailable(true);
         $release->setInfo('');
         $release->setIsoUrl('');
-        $release->setCreated(new \DateTime());
-        $release->setReleaseDate(new \DateTime());
+        $release->setCreated(new \DateTime('2018-01-01'));
+        $release->setReleaseDate(new \DateTime('2018-01-01'));
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($release);

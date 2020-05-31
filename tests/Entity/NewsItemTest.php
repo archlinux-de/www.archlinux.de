@@ -14,7 +14,7 @@ class NewsItemTest extends TestCase
         $this->assertSame($newsAuthor, $newsAuthor->setName('Bob'));
         $this->assertSame($newsAuthor, $newsAuthor->setUri('http://localhost'));
 
-        $lastModified = new \DateTime();
+        $lastModified = new \DateTime('2018-01-01');
 
         $newsItem = new NewsItem(1);
         $this->assertSame($newsItem, $newsItem->setDescription('description'));
@@ -38,7 +38,7 @@ class NewsItemTest extends TestCase
         $newsItem = (new NewsItem(1))
             ->setTitle('title')
             ->setLink('link')
-            ->setLastModified(new \DateTime())
+            ->setLastModified(new \DateTime('2018-01-01'))
             ->setDescription('description')
             ->setAuthor(new NewsAuthor());
 

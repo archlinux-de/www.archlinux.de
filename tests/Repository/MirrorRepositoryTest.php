@@ -10,8 +10,8 @@ class MirrorRepositoryTest extends DatabaseTestCase
 {
     public function testFindAllExceptByUrls(): void
     {
-        $mirrorA = new Mirror('a', 'https');
-        $mirrorB = new Mirror('b', 'https');
+        $mirrorA = (new Mirror('a', 'https'))->setLastSync(new \DateTime('2020-01-01'));
+        $mirrorB = (new Mirror('b', 'https'))->setLastSync(new \DateTime('2020-01-01'));
         $entityManager = $this->getEntityManager();
         $entityManager->persist($mirrorA);
         $entityManager->persist($mirrorB);
