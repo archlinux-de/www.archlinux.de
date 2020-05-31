@@ -39,7 +39,8 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
                         !$mirrorData['last_sync'] ||
                         !$mirrorData['delay'] ||
                         !$mirrorData['duration_avg'] ||
-                        !$mirrorData['duration_stddev']
+                        !$mirrorData['duration_stddev'] ||
+                        !$mirrorData['isos']
                     ) {
                         continue;
                     }
@@ -50,7 +51,6 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
                         ->setScore($mirrorData['score'])
                         ->setCompletionPct($mirrorData['completion_pct'])
                         ->setDurationStddev($mirrorData['duration_stddev'])
-                        ->setIsos($mirrorData['isos'])
                         ->setIpv4($mirrorData['ipv4'])
                         ->setIpv6($mirrorData['ipv6'])
                         ->setLastSync(new \DateTime($mirrorData['last_sync']));

@@ -15,7 +15,6 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
@@ -49,7 +48,6 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
             ->setCompletionPct(5.6)
             ->setScore(7.8)
             ->setLastSync(new \DateTime('2020-02-02'))
-            ->setIsos(true)
             ->setIpv4(true)
             ->setIpv6(true);
         $entityManager->persist($country);
@@ -80,7 +78,6 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
                 'completionPct' => 5.6,
                 'score' => 7.8,
                 'lastSync' => '2020-02-02T00:00:00+00:00',
-                'isos' => true,
                 'ipv4' => true,
                 'ipv6' => true,
                 'host' => '127.0.0.2'

@@ -28,7 +28,6 @@ class MirrorNormalizerTest extends KernelTestCase
             ->setCompletionPct(765.324)
             ->setScore(234.2)
             ->setLastSync(new \DateTime('2018-01-30'))
-            ->setIsos(true)
             ->setIpv4(true)
             ->setIpv6(true);
 
@@ -49,7 +48,6 @@ class MirrorNormalizerTest extends KernelTestCase
                 'completionPct' => 765.324,
                 'score' => 234.2,
                 'lastSync' => '2018-01-30T00:00:00+00:00',
-                'isos' => true,
                 'ipv4' => true,
                 'ipv6' => true,
                 'host' => null

@@ -89,13 +89,6 @@ class Mirror
      *
      * @ORM\Column(type="boolean")
      */
-    private $isos = false;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
     private $ipv4 = false;
 
     /**
@@ -271,14 +264,6 @@ class Mirror
     /**
      * @return bool
      */
-    public function hasIsos(): bool
-    {
-        return $this->isos;
-    }
-
-    /**
-     * @return bool
-     */
     public function hasIpv4(): bool
     {
         return $this->ipv4;
@@ -313,20 +298,9 @@ class Mirror
             ->setIpv4($mirror->hasIpv4())
             ->setDurationStddev($mirror->getDurationStddev())
             ->setIpv6($mirror->hasIpv6())
-            ->setIsos($mirror->hasIsos())
             ->setLastSync($mirror->getLastSync())
             ->setScore($mirror->getScore())
             ->setProtocol($mirror->getProtocol());
-    }
-
-    /**
-     * @param bool $isos
-     * @return Mirror
-     */
-    public function setIsos(bool $isos): Mirror
-    {
-        $this->isos = $isos;
-        return $this;
     }
 
     /**

@@ -22,7 +22,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $country = (new Country('de'))->setName('Germany');
 
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $mirror->setLastSync(new \DateTime());
         $mirror->setCountry($country);
@@ -55,7 +54,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
@@ -75,7 +73,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $coreRepository = new Repository('core', Architecture::X86_64);
         $pacman = new Package(
@@ -102,7 +99,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
@@ -120,7 +116,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
@@ -136,7 +131,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('https://127.0.0.2/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();
@@ -154,7 +148,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     {
         $entityManager = $this->getEntityManager();
         $mirror = new Mirror('http://127.0.0.2/', 'http');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
         $entityManager->flush();

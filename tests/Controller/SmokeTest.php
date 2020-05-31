@@ -44,7 +44,6 @@ class SmokeTest extends DatabaseSearchTestCase
         $entityManager->persist($release);
 
         $mirror = new Mirror('https://download.archlinux.de/', 'https');
-        $mirror->setIsos(true);
         $mirror->setScore(1);
         $entityManager->persist($mirror);
 

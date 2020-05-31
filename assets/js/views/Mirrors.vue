@@ -37,11 +37,6 @@
         {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
       </template>
 
-      <template v-slot:cell(isos)="data">
-        <span v-if="data.value" class="text-success">✓</span>
-        <span v-else class="text-danger">×</span>
-      </template>
-
       <template v-slot:cell(ipv4)="data">
         <span v-if="data.value" class="text-success">✓</span>
         <span v-else class="text-danger">×</span>
@@ -114,10 +109,6 @@ export default {
         key: 'lastSync',
         label: 'Datum',
         class: 'd-none d-sm-table-cell'
-      }, {
-        key: 'isos',
-        label: 'ISOs',
-        class: 'd-none d-md-table-cell text-center'
       }, {
         key: 'ipv4',
         label: 'IPv4',

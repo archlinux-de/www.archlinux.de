@@ -46,7 +46,6 @@ class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
                         'score',
                         'completionPct',
                         'durationStddev',
-                        'isos',
                         'ipv4',
                         'ipv6'
                     ]
