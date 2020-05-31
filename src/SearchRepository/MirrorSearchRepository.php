@@ -56,7 +56,6 @@ class MirrorSearchRepository
             $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.1]]];
         }
 
-        $bool['must'][] = ['term' => ['active' => 'true']];
         $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
         $bool['must'][] = ['exists' => ['field' => 'score']];
 
@@ -129,7 +128,6 @@ class MirrorSearchRepository
             ]
         ];
 
-        $bool['must'][] = ['term' => ['active' => 'true']];
         $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
         $bool['must'][] = ['exists' => ['field' => 'score']];
 

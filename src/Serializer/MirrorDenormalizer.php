@@ -33,6 +33,9 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
         return [
             ...(function () use ($data) {
                 foreach ($data['urls'] as $mirrorData) {
+                    if (!$mirrorData['active']) {
+                        continue;
+                    }
                     $mirror = (new Mirror($mirrorData['url'], $mirrorData['protocol']))
                         ->setDelay($mirrorData['delay'])
                         ->setDurationAvg($mirrorData['duration_avg'])
@@ -41,8 +44,7 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
                         ->setDurationStddev($mirrorData['duration_stddev'])
                         ->setIsos($mirrorData['isos'])
                         ->setIpv4($mirrorData['ipv4'])
-                        ->setIpv6($mirrorData['ipv6'])
-                        ->setActive($mirrorData['active']);
+                        ->setIpv6($mirrorData['ipv6']);
 
                     if ($mirrorData['country_code'] !== null) {
                         /** @var Country $country */

@@ -51,12 +51,6 @@
         <span v-if="data.value" class="text-success">✓</span>
         <span v-else class="text-danger">×</span>
       </template>
-
-      <template v-slot:cell(active)="data">
-        <span v-if="data.value" class="text-success">✓</span>
-        <span v-else class="text-danger">×</span>
-      </template>
-
     </b-table>
 
     <b-alert :show="total === 0" variant="warning">Keine Mirror gefunden</b-alert>
@@ -132,10 +126,6 @@ export default {
         key: 'ipv6',
         label: 'IPv6',
         class: 'd-none d-md-table-cell text-center'
-      }, {
-        key: 'active',
-        label: 'aktiv',
-        class: 'd-none d-xl-table-cell text-center'
       }],
       query: this.$route.query.search ?? '',
       perPage: 25,

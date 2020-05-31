@@ -30,8 +30,7 @@ class MirrorNormalizerTest extends KernelTestCase
             ->setLastSync(new \DateTime('2018-01-30'))
             ->setIsos(true)
             ->setIpv4(true)
-            ->setIpv6(true)
-            ->setActive(true);
+            ->setIpv6(true);
 
         $json = $this->serializer->serialize($mirror, 'json');
         $this->assertJson($json);
@@ -53,7 +52,6 @@ class MirrorNormalizerTest extends KernelTestCase
                 'isos' => true,
                 'ipv4' => true,
                 'ipv6' => true,
-                'active' => true,
                 'host' => null
             ],
             $jsonArray

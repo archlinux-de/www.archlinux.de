@@ -106,13 +106,6 @@ class Mirror
     private $ipv6;
 
     /**
-     * @var bool|null
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $active;
-
-    /**
      * @param string $url
      * @param string $protocol
      */
@@ -299,14 +292,6 @@ class Mirror
     }
 
     /**
-     * @return bool|null
-     */
-    public function isActive(): ?bool
-    {
-        return $this->active;
-    }
-
-    /**
      * @param Mirror $mirror
      * @return Mirror
      */
@@ -320,7 +305,6 @@ class Mirror
             ));
         }
         return $this
-            ->setActive($mirror->isActive())
             ->setCompletionPct($mirror->getCompletionPct())
             ->setCountry($mirror->getCountry())
             ->setDelay($mirror->getDelay())
@@ -361,16 +345,6 @@ class Mirror
     public function setIpv4(?bool $ipv4): Mirror
     {
         $this->ipv4 = $ipv4;
-        return $this;
-    }
-
-    /**
-     * @param bool|null $active
-     * @return Mirror
-     */
-    public function setActive(?bool $active): Mirror
-    {
-        $this->active = $active;
         return $this;
     }
 }

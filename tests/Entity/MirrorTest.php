@@ -20,8 +20,7 @@ class MirrorTest extends TestCase
             ->setLastSync(new \DateTime('2018-01-30'))
             ->setIsos(true)
             ->setIpv4(true)
-            ->setIpv6(true)
-            ->setActive(true);
+            ->setIpv6(true);
 
         $mirror->update(
             (new Mirror('localhost', 'http'))
@@ -35,7 +34,6 @@ class MirrorTest extends TestCase
                 ->setIsos(false)
                 ->setIpv4(false)
                 ->setIpv6(false)
-                ->setActive(false)
         );
 
         $this->assertEquals('http', $mirror->getProtocol());
@@ -50,7 +48,6 @@ class MirrorTest extends TestCase
         $this->assertFalse($mirror->hasIsos());
         $this->assertFalse($mirror->hasIpv4());
         $this->assertFalse($mirror->hasIpv6());
-        $this->assertFalse($mirror->isActive());
     }
 
     public function testUpdateFailsOnMismatchedUrl(): void
