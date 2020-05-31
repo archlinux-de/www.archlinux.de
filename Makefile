@@ -17,6 +17,10 @@ init: start
 	${PHP-DB-RUN} bin/console doctrine:database:create
 	${PHP-DB-RUN} bin/console doctrine:schema:create
 	${PHP-DB-RUN} bin/console doctrine:migrations:version --add --all --no-interaction
+	${PHP-DB-RUN} bin/console app:index:mirrors
+	${PHP-DB-RUN} bin/console app:index:news
+	${PHP-DB-RUN} bin/console app:index:packages
+	${PHP-DB-RUN} bin/console app:index:releases
 	${PHP-DB-RUN} bin/console app:config:update-countries
 	${PHP-DB-RUN} bin/console app:update:mirrors
 	${PHP-DB-RUN} bin/console app:update:news
