@@ -9,6 +9,20 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200531074201 extends AbstractMigration
 {
+    public function preUp(Schema $schema): void
+    {
+        $this->write('Removing incomplete mirrors');
+        $this->connection->delete('mirror', ['last_sync' => null]);
+        $this->connection->delete('mirror', ['delay' => null]);
+        $this->connection->delete('mirror', ['duration_avg' => null]);
+        $this->connection->delete('mirror', ['score' => null]);
+        $this->connection->delete('mirror', ['completion_pct' => null]);
+        $this->connection->delete('mirror', ['duration_stddev' => null]);
+        $this->connection->delete('mirror', ['isos' => null]);
+        $this->connection->delete('mirror', ['ipv4' => null]);
+        $this->connection->delete('mirror', ['ipv6' => null]);
+    }
+
     public function up(Schema $schema): void
     {
         $this->abortIf(

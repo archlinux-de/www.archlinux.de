@@ -9,6 +9,13 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200531080135 extends AbstractMigration
 {
+    public function preUp(Schema $schema): void
+    {
+        $this->write('Removing mirrors without ISOs');
+        $this->connection->delete('mirror', ['isos' => null]);
+        $this->connection->delete('mirror', ['isos' => 0]);
+    }
+
     public function up(Schema $schema): void
     {
         $this->abortIf(
