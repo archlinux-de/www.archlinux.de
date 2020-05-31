@@ -36,8 +36,9 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
                             ]
                         ],
                         'popularity' => ['type' => 'float'],
-                        'files' => ['type' => 'text', 'term_vector' => 'with_positions_offsets']
-                    ]
+                        'files' => ['type' => 'text']
+                    ],
+                    '_source' => ['excludes' => ['files']]
                 ]
             ]
         ];
