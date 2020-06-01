@@ -7,9 +7,16 @@
 </template>
 
 <script>
+import { BIconStar, BIconStarFill, BIconStarHalf } from 'bootstrap-vue'
+
 export default {
   name: 'PackagePopularity',
   inject: ['apiService'],
+  components: {
+    BIconStar,
+    BIconStarFill,
+    BIconStarHalf
+  },
   props: {
     popularity: {
       type: Number,
