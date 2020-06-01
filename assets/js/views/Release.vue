@@ -34,7 +34,7 @@
             </b-tr>
             <b-tr v-if="release.fileSize">
               <b-th>ISO Größe</b-th>
-              <b-td>{{ release.fileSize | prettyBytes }}</b-td>
+              <b-td>{{ release.fileSize | prettyBytes(2, true) }}</b-td>
             </b-tr>
             <b-tr v-if="release.sha1Sum">
               <b-th>SHA1</b-th>

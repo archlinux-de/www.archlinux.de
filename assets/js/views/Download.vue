@@ -20,7 +20,7 @@
             <router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link>
           </li>
           <li><strong>Enthaltener Kernel:</strong> {{ release.kernelVersion }}</li>
-          <li><strong>ISO Größe:</strong> {{ release.fileSize | prettyBytes }}</li>
+          <li><strong>ISO Größe:</strong> {{ release.fileSize | prettyBytes(2, true) }}</li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
           <li>
             <router-link :to="{name: 'release', params: {version: release.version}}">Release-Informationen</router-link>

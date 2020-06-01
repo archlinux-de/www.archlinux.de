@@ -87,11 +87,11 @@
           </b-tr>
           <b-tr>
             <b-th>Paket-Größe</b-th>
-            <b-td>{{ pkg.compressedSize | prettyBytes }}</b-td>
+            <b-td>{{ pkg.compressedSize | prettyBytes(2, true) }}</b-td>
           </b-tr>
           <b-tr>
             <b-th>Installations-Größe</b-th>
-            <b-td>{{ pkg.installedSize | prettyBytes }}</b-td>
+            <b-td>{{ pkg.installedSize | prettyBytes(2, true) }}</b-td>
           </b-tr>
           <b-tr>
             <b-th>Beliebtheit</b-th>
