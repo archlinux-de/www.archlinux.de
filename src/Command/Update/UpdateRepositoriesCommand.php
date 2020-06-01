@@ -62,6 +62,6 @@ class UpdateRepositoriesCommand extends Command
 
         $this->release();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

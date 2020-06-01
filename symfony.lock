@@ -299,6 +299,9 @@
     "symfony/dependency-injection": {
         "version": "v4.0.0"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.1.2"
+    },
     "symfony/doctrine-bridge": {
         "version": "v4.0.0"
     },
@@ -391,6 +394,9 @@
     },
     "symfony/property-access": {
         "version": "v5.0.2"
+    },
+    "symfony/property-info": {
+        "version": "v5.1.0"
     },
     "symfony/proxy-manager-bridge": {
         "version": "v5.0.2"

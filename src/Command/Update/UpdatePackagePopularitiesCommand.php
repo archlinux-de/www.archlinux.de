@@ -68,6 +68,6 @@ class UpdatePackagePopularitiesCommand extends Command
         $this->entityManager->flush();
         $this->release();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

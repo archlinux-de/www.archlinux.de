@@ -157,6 +157,6 @@ class UpdatePackagesCommand extends Command
 
         $this->release();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

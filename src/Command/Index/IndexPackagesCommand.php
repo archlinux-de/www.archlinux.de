@@ -72,6 +72,6 @@ class IndexPackagesCommand extends Command
             $this->client->bulk(['body' => $paramsBody]);
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
