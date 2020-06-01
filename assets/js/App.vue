@@ -44,8 +44,8 @@
     }
   }
 
-  @import "~bootstrap";
-  @import "~bootstrap-vue";
+  @import "~bootstrap/scss/bootstrap.scss";
+  @import "~bootstrap-vue/src/index.scss";
 </style>
 
 <script>

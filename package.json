@@ -43,7 +43,6 @@
     "test": "jest"
   },
   "browserslist": [
-    ">= 1% in DE",
-    "not IE 11"
+    ">= 2% in DE"
   ]
 }
