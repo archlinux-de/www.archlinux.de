@@ -17,7 +17,7 @@ class PackageDatabaseDownloaderTest extends TestCase
         $responseMock = new MockResponse('foo');
         $download = $this->createDownloader($responseMock)->download('', '');
 
-        $this->assertEquals($download, 'foo');
+        $this->assertEquals('foo', $download);
     }
 
     /**
