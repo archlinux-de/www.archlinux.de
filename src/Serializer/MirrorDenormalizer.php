@@ -22,10 +22,10 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
     }
 
     /**
-     * @param array<mixed> $data
+     * @param array $data
      * @param string $type
      * @param string|null $format
-     * @param array<mixed> $context
+     * @param array $context
      * @return Mirror[]
      */
     public function denormalize($data, string $type, string $format = null, array $context = [])

@@ -15,7 +15,7 @@ class IndexUpdateEventListener
     /** @var SearchIndexer */
     private $searchIndexer;
 
-    /** @var array<mixed> */
+    /** @var array */
     private $bulkStatements = [];
 
     /** @var string */

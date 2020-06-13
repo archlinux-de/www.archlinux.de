@@ -6,9 +6,6 @@ use App\Entity\NewsItem;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * @phpstan-implements \IteratorAggregate<NewsItem>
- */
 class NewsItemFetcher implements \IteratorAggregate
 {
     /** @var string */
@@ -33,7 +30,7 @@ class NewsItemFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<NewsItem>
+     * @return \Traversable
      */
     public function getIterator(): \Traversable
     {

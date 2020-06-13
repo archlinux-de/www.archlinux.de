@@ -6,9 +6,6 @@ use App\Entity\Mirror;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * @phpstan-implements \IteratorAggregate<Mirror>
- */
 class MirrorFetcher implements \IteratorAggregate
 {
     /** @var HttpClientInterface */
@@ -36,7 +33,7 @@ class MirrorFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<Mirror>
+     * @return \Traversable
      */
     public function getIterator(): \Traversable
     {

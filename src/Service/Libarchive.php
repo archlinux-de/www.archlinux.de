@@ -45,7 +45,7 @@ class Libarchive
 
     /**
      * @param string $name
-     * @param array<mixed> $arguments
+     * @param array $arguments
      * @return mixed
      */
     public function __call(string $name, array $arguments)

@@ -4,9 +4,6 @@ namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * @phpstan-implements \IteratorAggregate<string,float>
- */
 class PackagePopularityFetcher implements \IteratorAggregate
 {
     /** @var string */

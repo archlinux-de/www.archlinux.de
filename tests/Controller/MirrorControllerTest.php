@@ -151,7 +151,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function providePackageExtensions(): array
     {

@@ -7,7 +7,7 @@ use App\Entity\Release;
 class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
     /**
-     * @return array<mixed>
+     * @return array
      */
     public function createIndexConfiguration(): array
     {
@@ -33,7 +33,7 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Release $object
-     * @return array<mixed>>
+     * @return array>
      */
     public function createBulkIndexStatement(object $object): array
     {
@@ -50,7 +50,7 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Release $object
-     * @return array<mixed>>
+     * @return array>
      */
     public function createBulkDeleteStatement(object $object): array
     {

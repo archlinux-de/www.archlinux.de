@@ -7,7 +7,7 @@ use Symfony\Component\String\ByteString;
 
 class PackageDatabaseExtractor
 {
-    /** @var array<string> */
+    /** @var array */
     private const DESCRIPTION_FILES = ['desc', 'files'];
 
     /** @var Libarchive */
@@ -23,7 +23,7 @@ class PackageDatabaseExtractor
 
     /**
      * @param string $packageDatabase
-     * @return \Traversable<string>
+     * @return \Traversable
      */
     public function extractPackageDescriptions(string $packageDatabase): \Traversable
     {

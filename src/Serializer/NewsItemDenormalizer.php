@@ -22,10 +22,10 @@ class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMe
     }
 
     /**
-     * @param array<mixed> $data
+     * @param array $data
      * @param string $type
      * @param string|null $format
-     * @param array<mixed> $context
+     * @param array $context
      * @return NewsItem[]
      */
     public function denormalize($data, string $type, string $format = null, array $context = [])

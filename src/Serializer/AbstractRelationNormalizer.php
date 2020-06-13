@@ -23,8 +23,8 @@ class AbstractRelationNormalizer implements NormalizerInterface, CacheableSuppor
     /**
      * @param AbstractRelation $object
      * @param string|null $format
-     * @param array<mixed> $context
-     * @return array<mixed>
+     * @param array $context
+     * @return array
      */
     public function normalize($object, string $format = null, array $context = [])
     {

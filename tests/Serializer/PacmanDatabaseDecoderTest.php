@@ -16,7 +16,7 @@ class PacmanDatabaseDecoderTest extends TestCase
 
     /**
      * @param string $input
-     * @param array<mixed> $expected
+     * @param array $expected
      * @dataProvider provideInput
      */
     public function testDecode(string $input, array $expected): void
@@ -27,7 +27,7 @@ class PacmanDatabaseDecoderTest extends TestCase
     }
 
     /**
-     * @return array<mixed>
+     * @return array
      */
     public function provideInput(): array
     {

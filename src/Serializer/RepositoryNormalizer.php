@@ -32,12 +32,12 @@ class RepositoryNormalizer implements NormalizerInterface, CacheableSupportsMeth
     /**
      * @param Repository $object
      * @param string $format
-     * @param array<mixed> $context
-     * @return array<mixed>
+     * @param array $context
+     * @return array
      */
     public function normalize($object, string $format = null, array $context = [])
     {
-        /** @var array<mixed> $data */
+        /** @var array $data */
         $data = $this->normalizer->normalize(
             $object,
             $format,

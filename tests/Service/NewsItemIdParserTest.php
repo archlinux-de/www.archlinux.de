@@ -19,7 +19,7 @@ class NewsItemIdParserTest extends TestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function provideIds(): array
     {

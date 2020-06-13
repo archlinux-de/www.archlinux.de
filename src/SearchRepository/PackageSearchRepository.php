@@ -30,7 +30,7 @@ class PackageSearchRepository
      * @param string $query
      * @param string $architecture
      * @param string|null $repository
-     * @return array<mixed>
+     * @return array
      */
     public function findLatestByQueryAndArchitecture(
         int $offset,
@@ -120,7 +120,7 @@ class PackageSearchRepository
     }
 
     /**
-     * @param array<mixed> $results
+     * @param array $results
      * @return Package[]
      */
     private function findBySearchResults(array $results): array

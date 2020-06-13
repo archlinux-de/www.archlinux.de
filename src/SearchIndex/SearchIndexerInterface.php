@@ -6,13 +6,13 @@ interface SearchIndexerInterface
 {
     /**
      * @param object $object
-     * @return array<mixed>
+     * @return array
      */
     public function createBulkIndexStatement(object $object): array;
 
     /**
      * @param object $object
-     * @return array<mixed>
+     * @return array
      */
     public function createBulkDeleteStatement(object $object): array;
 

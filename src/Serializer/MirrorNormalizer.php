@@ -24,12 +24,12 @@ class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
     /**
      * @param Mirror $object
      * @param string|null $format
-     * @param array<mixed> $context
-     * @return array<mixed>
+     * @param array $context
+     * @return array
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        /** @var array<mixed> $data */
+        /** @var array $data */
         $data = $this->normalizer->normalize(
             $object,
             $format,

@@ -27,7 +27,7 @@ class PackageDatabaseReader
     /**
      * @param Repository $repository
      * @param string $packageDatabase
-     * @return \Generator<Package>
+     * @return \Generator
      */
     public function readPackages(Repository $repository, string $packageDatabase): \Generator
     {

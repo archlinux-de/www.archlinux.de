@@ -7,7 +7,7 @@ use App\Entity\Mirror;
 class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
     /**
-     * @return array<mixed>
+     * @return array
      */
     public function createIndexConfiguration(): array
     {
@@ -40,7 +40,7 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     /**
      * @param Mirror $object
-     * @return array<mixed>>
+     * @return array>
      */
     public function createBulkIndexStatement(object $object): array
     {
@@ -61,7 +61,7 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     /**
      * @param Mirror $object
-     * @return array<mixed>>
+     * @return array>
      */
     public function createBulkDeleteStatement(object $object): array
     {

@@ -19,7 +19,7 @@ class SearchIndexer implements SearchIndexerInterface
 
     /**
      * @param object $object
-     * @return array<mixed>
+     * @return array
      */
     public function createBulkIndexStatement(object $object): array
     {
@@ -33,7 +33,7 @@ class SearchIndexer implements SearchIndexerInterface
 
     /**
      * @param object $object
-     * @return array<mixed>
+     * @return array
      */
     public function createBulkDeleteStatement(object $object): array
     {

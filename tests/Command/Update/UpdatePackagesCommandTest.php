@@ -124,8 +124,8 @@ class UpdatePackagesCommandTest extends KernelTestCase
     }
 
     /**
-     * @param iterable<Package> $iterable
-     * @return \Generator<Package>
+     * @param iterable $iterable
+     * @return \Generator
      */
     private function createGenerator(iterable $iterable): \Generator
     {

@@ -27,8 +27,8 @@ class ElasticsearchFixturesHandler
     }
 
     /**
-     * @param array<mixed> $request
-     * @return CompletedFutureArray<CompletedFutureValue>
+     * @param array $request
+     * @return CompletedFutureArray
      */
     public function __invoke(array $request): CompletedFutureArray
     {
@@ -51,7 +51,7 @@ class ElasticsearchFixturesHandler
             }
             $result = json_decode((string)file_get_contents($filename), true);
         } elseif ($this->mode == 'write') {
-            /** @var CompletedFutureArray<CompletedFutureValue> $response */
+            /** @var CompletedFutureArray $response */
             $response = ($this->defaultHandler)($request);
             $result = $response->wait();
 

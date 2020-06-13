@@ -31,7 +31,7 @@ class FilesTest extends TestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function provideFilesArray(): array
     {

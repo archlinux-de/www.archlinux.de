@@ -6,9 +6,6 @@ use App\Entity\Release;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * @phpstan-implements \IteratorAggregate<Release>
- */
 class ReleaseFetcher implements \IteratorAggregate
 {
     /** @var HttpClientInterface */
@@ -33,7 +30,7 @@ class ReleaseFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<Release>
+     * @return \Traversable
      */
     public function getIterator(): \Traversable
     {

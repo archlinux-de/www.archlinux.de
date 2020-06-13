@@ -9,7 +9,7 @@ use App\Entity\Packages\Relations\Replacement;
 class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
     /**
-     * @return array<mixed>
+     * @return array
      */
     public function createIndexConfiguration(): array
     {
@@ -51,7 +51,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Package $object
-     * @return array<mixed>>
+     * @return array>
      */
     public function createBulkIndexStatement(object $object): array
     {
@@ -83,7 +83,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Package $object
-     * @return array<mixed>>
+     * @return array>
      */
     public function createBulkDeleteStatement(object $object): array
     {

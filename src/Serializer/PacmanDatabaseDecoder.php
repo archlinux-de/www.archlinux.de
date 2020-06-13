@@ -10,8 +10,8 @@ class PacmanDatabaseDecoder implements DecoderInterface
     /**
      * @param string $data
      * @param string $format
-     * @param array<mixed> $context
-     * @return array<mixed>
+     * @param array $context
+     * @return array
      */
     public function decode(string $data, string $format, array $context = []): array
     {

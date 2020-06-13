@@ -32,7 +32,7 @@ class FilesNormalizerTest extends KernelTestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function provideFilesArray(): array
     {

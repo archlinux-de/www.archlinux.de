@@ -28,7 +28,7 @@ class ReleaseSearchRepository
      * @param int $offset
      * @param int $limit
      * @param string $query
-     * @return array<mixed>
+     * @return array
      */
     public function findAllByQuery(int $offset, int $limit, string $query): array
     {
@@ -77,7 +77,7 @@ class ReleaseSearchRepository
     }
 
     /**
-     * @param array<mixed> $results
+     * @param array $results
      * @return Release[]
      */
     private function findBySearchResults(array $results): array

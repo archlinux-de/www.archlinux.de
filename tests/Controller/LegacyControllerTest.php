@@ -28,7 +28,7 @@ class LegacyControllerTest extends WebTestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function provideLegacyPages(): array
     {
@@ -76,7 +76,7 @@ class LegacyControllerTest extends WebTestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function provideInvalidLegacyPages(): array
     {

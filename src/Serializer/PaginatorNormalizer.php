@@ -13,10 +13,10 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
     private $normalizer;
 
     /**
-     * @param Paginator<object> $object
+     * @param Paginator $object
      * @param string|null $format
-     * @param array<mixed> $context
-     * @return array<mixed>
+     * @param array $context
+     * @return array
      */
     public function normalize($object, string $format = null, array $context = []): array
     {

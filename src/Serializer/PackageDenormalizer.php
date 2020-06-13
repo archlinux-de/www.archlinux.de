@@ -22,7 +22,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
      * @param mixed $data
      * @param string $type
      * @param string|null $format
-     * @param array<mixed> $context
+     * @param array $context
      * @return Package
      * @throws \Exception
      */
@@ -132,7 +132,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
 
     /**
      * @param string $targetDefinition
-     * @return array<string>
+     * @return array
      */
     private function createTargetFromString(string $targetDefinition): array
     {
@@ -213,7 +213,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
      * @param mixed $data
      * @param string $type
      * @param string|null $format
-     * @param array<mixed> $context
+     * @param array $context
      * @return bool
      */
     public function supportsDenormalization($data, string $type, string $format = null, array $context = [])

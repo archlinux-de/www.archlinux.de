@@ -52,7 +52,7 @@ class RepositoryNormalizerTest extends KernelTestCase
     }
 
     /**
-     * @return array<array<bool>>
+     * @return array
      */
     public function provideTesting(): array
     {

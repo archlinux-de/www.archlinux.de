@@ -193,7 +193,7 @@ class RepositoryManagerTest extends TestCase
     }
 
     /**
-     * @return array<array>
+     * @return array
      */
     public function provideRepositories(): array
     {

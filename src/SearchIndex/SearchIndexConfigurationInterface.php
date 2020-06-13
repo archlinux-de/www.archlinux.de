@@ -5,7 +5,7 @@ namespace App\SearchIndex;
 interface SearchIndexConfigurationInterface
 {
     /**
-     * @return array<mixed>
+     * @return array
      */
     public function createIndexConfiguration(): array;
 

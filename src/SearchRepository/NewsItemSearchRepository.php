@@ -28,7 +28,7 @@ class NewsItemSearchRepository
      * @param int $offset
      * @param int $limit
      * @param string $query
-     * @return array<mixed>
+     * @return array
      */
     public function findLatestByQuery(int $offset, int $limit, string $query): array
     {
@@ -76,7 +76,7 @@ class NewsItemSearchRepository
     }
 
     /**
-     * @param array<mixed> $results
+     * @param array $results
      * @return NewsItem[]
      */
     private function findBySearchResults(array $results): array

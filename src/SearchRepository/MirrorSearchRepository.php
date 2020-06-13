@@ -35,7 +35,7 @@ class MirrorSearchRepository
      * @param int $offset
      * @param int $limit
      * @param string $query
-     * @return array<mixed>
+     * @return array
      */
     public function findSecureByQuery(int $offset, int $limit, string $query): array
     {
@@ -84,7 +84,7 @@ class MirrorSearchRepository
     }
 
     /**
-     * @param array<mixed> $results
+     * @param array $results
      * @return Mirror[]
      */
     private function findBySearchResults(array $results): array
