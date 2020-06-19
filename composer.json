@@ -20,7 +20,7 @@
         "doctrine/doctrine-bundle": "^2.1.0",
         "doctrine/doctrine-migrations-bundle": "^2.1.2",
         "doctrine/orm": "^2.7.3",
-        "elasticsearch/elasticsearch": "^7.7.0",
+        "elasticsearch/elasticsearch": "^7.8.0",
         "exercise/htmlpurifier-bundle": "^3.0",
         "league/iso3166": "^2.1.5",
         "maxmind-db/reader": "^1.6.0",

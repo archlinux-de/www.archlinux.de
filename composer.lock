@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec3ac8523b2f900395dc85a0375253d9",
+    "content-hash": "d7d0d31b8d0d6f1097dcc9c958d59262",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1357,16 +1357,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v7.7.0",
+            "version": "v7.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "1d90a7ff4fb1936dc4376f09d723af75714f6f05"
+                "reference": "5c2d039ae7bdaa1e28f1e66971c5b3314fc36383"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/1d90a7ff4fb1936dc4376f09d723af75714f6f05",
-                "reference": "1d90a7ff4fb1936dc4376f09d723af75714f6f05",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/5c2d039ae7bdaa1e28f1e66971c5b3314fc36383",
+                "reference": "5c2d039ae7bdaa1e28f1e66971c5b3314fc36383",
                 "shasum": ""
             },
             "require": {
@@ -1416,7 +1416,7 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2020-05-13T15:19:26+00:00"
+            "time": "2020-06-18T19:23:29+00:00"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
