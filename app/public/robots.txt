@@ -1,0 +1,5 @@
+User-agent: *
+sitemap: https://www.archlinux.de/sitemap.xml
+Allow: /
+Disallow: /download/*
+

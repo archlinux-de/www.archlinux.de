@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>{{ url('app_news_feed') }}</id>
+    <title>Aktuelle Arch Linux Neuigkeiten</title>
+    <updated>{{ 'now' | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
+    <link rel="alternate" href="{{ url('app_news') }}"/>
+    <link rel="self" href="{{ url('app_news_feed') }}"/>
+    <icon>{{ absolute_url('img/archicon.svg') }}</icon>
+    <logo>{{ absolute_url('img/archlogo.svg') }}</logo>
+    {# @var items \App\Entity\NewsItem[] #}
+    {% for item in items %}
+        <entry>
+            <id>{{ item.id }}</id>
+            <title>{{ item.title }}</title>
+            <updated>{{ item.lastModified | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
+            <link rel="alternate" href="{{ url('app_news_item', {'id': item.id, 'slug': item.title | slug}) }}"/>
+            <author>
+                <name>{{ item.author.name }}</name>
+                {% if item.author.uri %}
+                    <uri>{{ item.author.uri }}</uri>
+                {% endif %}
+            </author>
+            <content type="html">{{ item.description | purify('news') | escape('html') }}</content>
+        </entry>
+    {% endfor %}
+</feed>
