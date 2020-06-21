@@ -12,6 +12,7 @@ import PrivacyPolicy from './views/PrivacyPolicy'
 import Release from './views/Release'
 import Releases from './views/Releases'
 import Start from './views/Start'
+import NotFound from './views/NotFound'
 
 Vue.use(Router)
 
@@ -30,7 +31,8 @@ export default new Router({
     { path: '/privacy-policy', name: 'privacy-policy', component: PrivacyPolicy },
     { path: '/releases/:version', name: 'release', component: Release },
     { path: '/releases', name: 'releases', component: Releases },
-    { path: '/', name: 'start', component: Start }
+    { path: '/', name: 'start', component: Start },
+    { path: '*', component: NotFound }
   ],
   scrollBehavior (to, from, savedPosition) {
     return savedPosition ?? { x: 0, y: 0 }
