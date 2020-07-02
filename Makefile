@@ -16,6 +16,7 @@ init: start
 	${PHP-DB-RUN} bin/console cache:warmup
 	${PHP-DB-RUN} bin/console doctrine:database:create
 	${PHP-DB-RUN} bin/console doctrine:schema:create
+	${PHP-DB-RUN} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	${PHP-DB-RUN} bin/console doctrine:migrations:version --add --all --no-interaction
 	${PHP-DB-RUN} bin/console app:index:mirrors
 	${PHP-DB-RUN} bin/console app:index:news
