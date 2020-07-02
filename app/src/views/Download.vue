@@ -16,11 +16,9 @@
           mit
           <code>pacman -Syu</code> aktuell gehalten werden!</p>
         <ul class="list-unstyled ml-4">
-          <li><strong>Aktuelles Release:</strong>
-            <router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link>
-          </li>
-          <li><strong>Enthaltener Kernel:</strong> {{ release.kernelVersion }}</li>
-          <li><strong>ISO Größe:</strong> {{ release.fileSize | prettyBytes(2, true) }}</li>
+          <li><strong>Aktuelles Release:</strong>&nbsp;<router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link></li>
+          <li><strong>Enthaltener Kernel:</strong>&nbsp;{{ release.kernelVersion }}</li>
+          <li><strong>ISO Größe:</strong>&nbsp;{{ release.fileSize | prettyBytes(2, true) }}</li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
           <li>
             <router-link :to="{name: 'release', params: {version: release.version}}">Release-Informationen</router-link>
