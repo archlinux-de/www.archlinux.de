@@ -42,7 +42,7 @@ export default {
   },
   data () {
     return {
-      packages: []
+      packages: this.createInitialPackageList()
     }
   },
   methods: {
@@ -50,6 +50,13 @@ export default {
       this.apiService.fetchPackages({ limit: this.limit })
         .then(data => { this.packages = data.items })
         .catch(() => {})
+    },
+    createInitialPackageList () {
+      return Array.from({ length: this.limit }, () => ({
+        name: String.fromCharCode(8239),
+        version: '',
+        repository: { name: ' ', architecture: ' ' }
+      }))
     }
   },
   mounted () {
