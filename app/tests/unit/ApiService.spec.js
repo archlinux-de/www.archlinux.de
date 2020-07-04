@@ -14,7 +14,8 @@ describe('Testing fetchPackages', () => {
       'http://localhost/api/packages',
       {
         credentials: 'omit',
-        headers: { Accept: 'application/json' }
+        headers: { Accept: 'application/json' },
+        signal: (new AbortController()).signal
       }
     )
   })

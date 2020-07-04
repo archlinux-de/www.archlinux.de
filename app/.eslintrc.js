@@ -12,7 +12,9 @@ module.exports = {
     polyfills: [
       'fetch',
       'URL',
-      'Object.entries'
+      'Object.entries',
+      'Promise',
+      'AbortController'
     ]
   },
   parserOptions: {

@@ -9,7 +9,7 @@ module.exports = {
   },
   configureWebpack: config => {
     if (!process.env.VUE_CLI_MODERN_BUILD) {
-      config.entry.app.unshift('whatwg-fetch')
+      config.entry.app.unshift('whatwg-fetch', 'abortcontroller-polyfill')
     }
 
     config.plugins.push(new CopyWebpackPlugin({
