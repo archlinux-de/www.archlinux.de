@@ -85,13 +85,23 @@ export default {
       title: 'archlinux.de',
       titleTemplate: '%s - archlinux.de',
       meta: [{ vmid: 'robots', name: 'robots', content: 'index,follow' }],
-      link: [{ rel: 'icon', href: this.icon, sizes: 'any', type: 'image/svg+xml' }]
+      link: [
+        { rel: 'icon', href: this.icon, sizes: 'any', type: 'image/svg+xml' },
+        { rel: 'manifest', href: '/manifest.webmanifest' }
+      ]
     }
   },
   data () {
     return {
       logo: LogoImage,
       icon: IconImage
+    }
+  },
+  mounted () {
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register(`${process.env.BASE_URL}service-worker.js`)
+      })
     }
   }
 }
