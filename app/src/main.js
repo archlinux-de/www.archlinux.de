@@ -13,7 +13,8 @@ import {
   JumbotronPlugin,
   LayoutPlugin,
   PaginationPlugin,
-  TablePlugin
+  TablePlugin,
+  SpinnerPlugin
 } from 'bootstrap-vue'
 import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import createApiService from './services/ApiService'
@@ -31,6 +32,7 @@ Vue.use(AlertPlugin)
 Vue.use(PaginationPlugin)
 Vue.use(InputGroupPlugin)
 Vue.use(vueFilterPrettyBytes)
+Vue.use(SpinnerPlugin)
 
 Vue.config.productionTip = false
 new Vue({

@@ -1,5 +1,6 @@
 <template>
-  <div v-if="newsItems.length > 0">
+  <div class="news-items">
+    <loading-spinner absolute v-if="newsItems.length === 0"></loading-spinner>
     <div :key="newsItem.id" class="mb-5" v-for="newsItem in newsItems">
       <div
         class="d-lg-flex justify-content-between align-items-baseline border border-top-0 border-left-0 border-right-0 mb-2">
@@ -13,17 +14,28 @@
       <div class="text-break" v-html="newsItem.description"></div>
     </div>
 
-    <div class="py-2 mb-5">
+    <div v-if="newsItems.length > 0" class="py-2 mb-5">
       <a class="btn btn-outline-secondary btn-sm" href="/news/feed">Feed</a>
       <router-link :to="{name: 'news'}" class="btn btn-primary btn-sm">zum Archiv</router-link>
     </div>
   </div>
 </template>
 
+<style scoped>
+  .news-items {
+    min-height: 100vh;
+  }
+</style>
+
 <script>
+import LoadingSpinner from './LoadingSpinner'
+
 export default {
   name: 'NewsItemList',
   inject: ['apiService'],
+  components: {
+    LoadingSpinner
+  },
   props: {
     limit: {
       type: Number,
