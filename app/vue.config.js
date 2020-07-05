@@ -25,6 +25,8 @@ module.exports = {
         exclude: [/robots\.txt$/],
         cleanupOutdatedCaches: true,
         dontCacheBustURLsMatching: /\.[a-f0-9]+\./,
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [new RegExp('^https?://[^/]+/api/')],
         runtimeCaching: [
           {
             urlPattern: new RegExp('^https?://[^/]+/api/(news|packages|mirrors|releases)\\?limit=[0-9]+(&offset=0)?$'),
