@@ -84,7 +84,10 @@ export default {
     return {
       title: 'archlinux.de',
       titleTemplate: '%s - archlinux.de',
-      meta: [{ vmid: 'robots', name: 'robots', content: 'index,follow' }],
+      meta: [
+        { vmid: 'robots', name: 'robots', content: 'index,follow' },
+        { name: 'theme-color', content: '#333' }
+      ],
       link: [
         { rel: 'icon', href: this.icon, sizes: 'any', type: 'image/svg+xml' },
         { rel: 'manifest', href: '/manifest.webmanifest' }
