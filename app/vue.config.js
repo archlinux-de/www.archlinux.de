@@ -26,7 +26,7 @@ module.exports = {
         cleanupOutdatedCaches: true,
         dontCacheBustURLsMatching: /\.[a-f0-9]+\./,
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [new RegExp('^https?://[^/]+/api/')],
+        navigateFallbackDenylist: [new RegExp('^https?://[^/]+/(api/|.+feed$|.+\\.xml$)')],
         runtimeCaching: [
           {
             urlPattern: new RegExp('^https?://[^/]+/api/(news|packages|mirrors|releases)\\?limit=[0-9]+(&offset=0)?$'),
