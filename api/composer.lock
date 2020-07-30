@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e356fd7fc72f2ac4b8a37e4c5be49d9",
+    "content-hash": "032052dbb57829fab859035280264e63",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -6401,16 +6401,16 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.13",
+            "version": "0.12.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "92fb18f91ded4981e24862cc34fb19eeced64099"
+                "reference": "264abf4c789118c63389bb8009e3418f7cd5fbbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/92fb18f91ded4981e24862cc34fb19eeced64099",
-                "reference": "92fb18f91ded4981e24862cc34fb19eeced64099",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/264abf4c789118c63389bb8009e3418f7cd5fbbd",
+                "reference": "264abf4c789118c63389bb8009e3418f7cd5fbbd",
                 "shasum": ""
             },
             "require": {
@@ -6453,7 +6453,7 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2020-07-21T14:48:45+00:00"
+            "time": "2020-07-29T20:54:30+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
