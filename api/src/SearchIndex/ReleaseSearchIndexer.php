@@ -19,7 +19,8 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
                         'version' => ['type' => 'text'],
                         'info' => ['type' => 'text'],
                         'kernelVersion' => ['type' => 'text'],
-                        'releaseDate' => ['type' => 'date']
+                        'releaseDate' => ['type' => 'date'],
+                        'available' => ['type' => 'boolean']
                     ]
                 ]
             ]
@@ -42,7 +43,8 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
             'version' => $object->getVersion(),
             'info' => strip_tags($object->getInfo()),
             'kernelVersion' => $object->getKernelVersion(),
-            'releaseDate' => $object->getReleaseDate()->format(DATE_W3C)
+            'releaseDate' => $object->getReleaseDate()->format(DATE_W3C),
+            'available' => $object->isAvailable(),
         ];
 
         return $paramsBody;

@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     fetchLatestRelease () {
-      this.apiService.fetchReleases({ limit: 1 })
+      this.apiService.fetchReleases({ limit: 1, onlyAvailable: true })
         .then(data => { this.release = data.items[0] })
         .catch(error => { this.error = error })
     },

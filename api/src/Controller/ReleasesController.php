@@ -9,6 +9,7 @@ use App\Request\QueryRequest;
 use App\SearchRepository\ReleaseSearchRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -50,15 +51,20 @@ class ReleasesController extends AbstractController
      * @Cache(maxage="300", smaxage="600")
      * @param QueryRequest $queryRequest
      * @param PaginationRequest $paginationRequest
+     * @param Request $request
      * @return Response
      */
-    public function releasesAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
-    {
+    public function releasesAction(
+        QueryRequest $queryRequest,
+        PaginationRequest $paginationRequest,
+        Request $request
+    ): Response {
         return $this->json(
             $this->releaseSearchRepository->findAllByQuery(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
-                $queryRequest->getQuery()
+                $queryRequest->getQuery(),
+                $request->get('onlyAvailable', 'false') == 'true'
             )
         );
     }

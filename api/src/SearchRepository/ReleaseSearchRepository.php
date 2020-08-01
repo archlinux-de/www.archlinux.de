@@ -28,9 +28,10 @@ class ReleaseSearchRepository
      * @param int $offset
      * @param int $limit
      * @param string $query
+     * @param bool $onlyAvailable
      * @return array
      */
-    public function findAllByQuery(int $offset, int $limit, string $query): array
+    public function findAllByQuery(int $offset, int $limit, string $query, bool $onlyAvailable = false): array
     {
         $sort = [];
         if ($query) {
@@ -47,6 +48,10 @@ class ReleaseSearchRepository
             $bool['should'][] = ['multi_match' => ['query' => $query]];
 
             $bool['minimum_should_match'] = 1;
+        }
+
+        if ($onlyAvailable) {
+            $bool['must'][] = ['term' => ['available' => true]];
         }
 
         $body = ['sort' => $sort];

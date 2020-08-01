@@ -83,7 +83,7 @@ test-db-migrations: start-db
 
 update-elasticsearch-fixtures: start-db
 	rm -f tests/ElasticsearchFixtures/*.json
-	${COMPOSE-RUN} -e ELASTICSEARCH_URL=http://elasticsearch-test:9200 -e ELASTICSEARCH_MOCK_MODE=write php vendor/bin/phpunit
+	${COMPOSE-RUN} -e ELASTICSEARCH_URL=http://elasticsearch-test:9200 -e ELASTICSEARCH_MOCK_MODE=write api vendor/bin/phpunit
 
 test-coverage:
 	${NODE-RUN} node_modules/.bin/jest --coverage --coverageDirectory var/coverage/jest
