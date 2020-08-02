@@ -29,7 +29,7 @@ module.exports = {
         navigateFallbackDenylist: [new RegExp('^/(api/|.+feed$|.+\\.xml$|download/|packages/(opensearch|suggest))')],
         runtimeCaching: [
           {
-            urlPattern: new RegExp('^https?://[^/]+/api/(news|packages|mirrors|releases)\\?limit=[0-9]+(&offset=0)?$'),
+            urlPattern: new RegExp('^https?://[^/]+/api/(news|packages|mirrors|releases)\\?limit=[0-9]+(&onlyAvailable=true|&offset=0)?$'),
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'api' }
           }
