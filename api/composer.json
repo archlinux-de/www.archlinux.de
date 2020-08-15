@@ -4,10 +4,9 @@
     "description": "The German Arch Linux website",
     "license": "GPL-3.0-or-later",
     "require": {
-        "php": "^7.4",
+        "php": "8.0.0beta1 as 7.4.9",
         "ext-FFI": "*",
         "ext-SimpleXML": "*",
-        "ext-apcu": "^5.1",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
