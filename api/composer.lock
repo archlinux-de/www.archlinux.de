@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ffb8dfc2b7b7f7cd96feaca3307960fc",
+    "content-hash": "fe1ace0b128af9ee717bfda7e459a3fb",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1392,16 +1392,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v7.8.0",
+            "version": "v7.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "5c2d039ae7bdaa1e28f1e66971c5b3314fc36383"
+                "reference": "1380925ccd276ab897c76596cf3705cb9714a78c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/5c2d039ae7bdaa1e28f1e66971c5b3314fc36383",
-                "reference": "5c2d039ae7bdaa1e28f1e66971c5b3314fc36383",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/1380925ccd276ab897c76596cf3705cb9714a78c",
+                "reference": "1380925ccd276ab897c76596cf3705cb9714a78c",
                 "shasum": ""
             },
             "require": {
@@ -1451,7 +1451,7 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2020-06-18T19:23:29+00:00"
+            "time": "2020-08-18T13:44:18+00:00"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
@@ -1783,23 +1783,23 @@
         },
         {
             "name": "laminas/laminas-zendframework-bridge",
-            "version": "1.0.4",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-zendframework-bridge.git",
-                "reference": "fcd87520e4943d968557803919523772475e8ea3"
+                "reference": "4939c81f63a8a4968c108c440275c94955753b19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/fcd87520e4943d968557803919523772475e8ea3",
-                "reference": "fcd87520e4943d968557803919523772475e8ea3",
+                "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/4939c81f63a8a4968c108c440275c94955753b19",
+                "reference": "4939c81f63a8a4968c108c440275c94955753b19",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0"
+                "php": "^5.6 || ^7.0 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7 || ^6.5 || ^7.5 || ^8.1",
+                "phpunit/phpunit": "^5.7 || ^6.5 || ^7.5 || ^8.1 || ^9.3",
                 "squizlabs/php_codesniffer": "^3.5"
             },
             "type": "library",
@@ -1837,7 +1837,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-05-20T16:45:56+00:00"
+            "time": "2020-08-18T16:34:51+00:00"
         },
         {
             "name": "league/iso3166",
@@ -5921,16 +5921,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.8.0",
+            "version": "v4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "8c58eb4cd4f3883f82611abeac2efbc3dbed787e"
+                "reference": "aaee038b912e567780949787d5fe1977be11a778"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/8c58eb4cd4f3883f82611abeac2efbc3dbed787e",
-                "reference": "8c58eb4cd4f3883f82611abeac2efbc3dbed787e",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/aaee038b912e567780949787d5fe1977be11a778",
+                "reference": "aaee038b912e567780949787d5fe1977be11a778",
                 "shasum": ""
             },
             "require": {
@@ -5938,7 +5938,7 @@
                 "php": ">=7.0"
             },
             "require-dev": {
-                "ircmaxell/php-yacc": "^0.0.6",
+                "ircmaxell/php-yacc": "^0.0.7",
                 "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0 || ^9.0"
             },
             "bin": [
@@ -5947,7 +5947,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.8-dev"
+                    "dev-master": "4.9-dev"
                 }
             },
             "autoload": {
@@ -5969,7 +5969,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2020-08-09T10:23:20+00:00"
+            "time": "2020-08-18T19:48:01+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -6285,16 +6285,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.37",
+            "version": "0.12.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "5e16d83e6eb2dd784fbdaeaece5e2bca72e4f68a"
+                "reference": "ad606c5f1c641b465b739e79a3a0f1a5a57cf1b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/5e16d83e6eb2dd784fbdaeaece5e2bca72e4f68a",
-                "reference": "5e16d83e6eb2dd784fbdaeaece5e2bca72e4f68a",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ad606c5f1c641b465b739e79a3a0f1a5a57cf1b4",
+                "reference": "ad606c5f1c641b465b739e79a3a0f1a5a57cf1b4",
                 "shasum": ""
             },
             "require": {
@@ -6337,7 +6337,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-09T14:32:41+00:00"
+            "time": "2020-08-19T08:13:30+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",

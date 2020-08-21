@@ -20,7 +20,7 @@
         "doctrine/doctrine-bundle": "^2.1.0",
         "doctrine/doctrine-migrations-bundle": "^3.0.1",
         "doctrine/orm": "^2.7.3",
-        "elasticsearch/elasticsearch": "^7.8.0",
+        "elasticsearch/elasticsearch": "^7.9.0",
         "exercise/htmlpurifier-bundle": "^3.0",
         "league/iso3166": "^2.1.5",
         "maxmind-db/reader": "^1.7.0",
@@ -43,7 +43,7 @@
     "require-dev": {
         "ext-pdo_sqlite": "*",
         "malukenho/mcbumpface": "^1.1.2",
-        "phpstan/phpstan": "^0.12.37",
+        "phpstan/phpstan": "^0.12.38",
         "phpstan/phpstan-deprecation-rules": "^0.12.5",
         "phpstan/phpstan-doctrine": "^0.12.19",
         "phpstan/phpstan-phpunit": "^0.12.16",
