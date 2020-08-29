@@ -17,7 +17,3 @@ parameters:
 		- bin
 	checkMissingIterableValueType: false
 	checkGenericClassInNonGenericObjectType: false
-	ignoreErrors:
-		-
-			message: '#_HumbugBoxadd#'
-			path: src/Service/PackageDatabaseExtractor.php
