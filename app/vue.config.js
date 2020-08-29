@@ -26,7 +26,19 @@ module.exports = {
         cleanupOutdatedCaches: true,
         dontCacheBustURLsMatching: /\.[a-f0-9]+\./,
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [new RegExp('^/(api/|.+feed$|.+\\.xml$|download/|packages/(opensearch|suggest))')],
+        navigateFallbackAllowlist: [
+          new RegExp('^/download$'),
+          new RegExp('^/impressum$'),
+          new RegExp('^/mirrors$'),
+          new RegExp('^/news$'),
+          new RegExp('^/news/[^/-]+-.+$'),
+          new RegExp('^/packages/[^/]+/[^/]+/[^/]+$'),
+          new RegExp('^/packages$'),
+          new RegExp('^/privacy-policy$'),
+          new RegExp('^/releases/[^/]+$'),
+          new RegExp('^/releases$'),
+          new RegExp('^/$')
+        ],
         runtimeCaching: [
           {
             urlPattern: new RegExp('^https?://[^/]+/api/(news|packages|mirrors|releases)\\?limit=[0-9]+(&onlyAvailable=true|&offset=0)?$'),
