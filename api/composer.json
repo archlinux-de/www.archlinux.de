@@ -4,7 +4,7 @@
     "description": "The German Arch Linux website",
     "license": "GPL-3.0-or-later",
     "require": {
-        "php": "8.0.0beta1 as 7.4.9",
+        "php": "^7.4",
         "ext-FFI": "*",
         "ext-SimpleXML": "*",
         "ext-ctype": "*",
@@ -59,7 +59,10 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "7.4.99"
+        }
     },
     "autoload": {
         "psr-4": {
