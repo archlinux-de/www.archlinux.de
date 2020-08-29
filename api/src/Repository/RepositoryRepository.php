@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 class RepositoryRepository extends ServiceEntityRepository
 {

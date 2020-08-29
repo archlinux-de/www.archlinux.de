@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use App\SearchIndex\SearchIndexer;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Elasticsearch\Client;
 
