@@ -43,7 +43,7 @@ module.exports = {
           {
             urlPattern: new RegExp('^https?://[^/]+/api/(news|packages|mirrors|releases)\\?limit=[0-9]+(&onlyAvailable=true|&offset=0)?$'),
             handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'api' }
+            options: { cacheName: 'api', expiration: { maxAgeSeconds: 12 * 60 * 60 } }
           }
         ]
       }))
