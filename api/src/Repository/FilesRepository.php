@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Packages\Files;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query;
 
 class FilesRepository extends ServiceEntityRepository

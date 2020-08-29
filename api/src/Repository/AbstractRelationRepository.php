@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 class AbstractRelationRepository extends ServiceEntityRepository
 {
