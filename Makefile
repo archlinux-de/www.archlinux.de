@@ -82,7 +82,7 @@ test-db-migrations: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test'
 
 update-elasticsearch-fixtures: start-db
-	rm -f tests/ElasticsearchFixtures/*.json
+	rm -f api/tests/ElasticsearchFixtures/*.json
 	${COMPOSE-RUN} -e ELASTICSEARCH_URL=http://elasticsearch-test:9200 -e ELASTICSEARCH_MOCK_MODE=write api vendor/bin/phpunit
 
 test-coverage:
@@ -113,6 +113,7 @@ deploy:
 	cd app && find dist -type d -empty -delete
 	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader
 	cd api && composer dump-env prod
+	systemctl restart php-fpm@www.service
 	cd api && bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	cd api && bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 	cd api && bin/console app:config:update-countries
