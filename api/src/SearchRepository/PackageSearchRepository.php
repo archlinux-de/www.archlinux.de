@@ -57,7 +57,16 @@ class PackageSearchRepository
             $bool['should'][] = [
                 'multi_match' => [
                     'query' => $query,
-                    'fields' => ['name^5', 'base^4', 'description^3', 'url', 'groups^2', 'replacements', 'provisions']
+                    'fields' => [
+                        'name^5',
+                        'base^4',
+                        'description^3',
+                        'url',
+                        'groups^2',
+                        'replacements',
+                        'provisions',
+                        'files'
+                    ]
                 ]
             ];
 
