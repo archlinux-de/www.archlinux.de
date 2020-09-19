@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45918e1423acecd677f17e065924fa6a",
+    "content-hash": "802f88fc6d6e7b3d9252b9d96ff9d602",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1449,16 +1449,16 @@
         },
         {
             "name": "exercise/htmlpurifier-bundle",
-            "version": "v3.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Exercise/HTMLPurifierBundle.git",
-                "reference": "b6c238e9dce45aa8fcb9d1bac3fe3acc0999e489"
+                "reference": "852d00ce4ec6b077fb6f3bfa7931b55ab46666da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/b6c238e9dce45aa8fcb9d1bac3fe3acc0999e489",
-                "reference": "b6c238e9dce45aa8fcb9d1bac3fe3acc0999e489",
+                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/852d00ce4ec6b077fb6f3bfa7931b55ab46666da",
+                "reference": "852d00ce4ec6b077fb6f3bfa7931b55ab46666da",
                 "shasum": ""
             },
             "require": {
@@ -1503,7 +1503,7 @@
                 "htmlpurifier",
                 "symfony"
             ],
-            "time": "2020-03-10T19:35:42+00:00"
+            "time": "2020-09-18T10:46:31+00:00"
         },
         {
             "name": "ezimuel/guzzlestreams",
@@ -6586,16 +6586,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.1.9",
+            "version": "9.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "cf6582906d4b2502c5f4c6be6a3d0b4cd5b3ef7f"
+                "reference": "5134e2a65ec48e2f7126d12f1503a9889c660bdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/cf6582906d4b2502c5f4c6be6a3d0b4cd5b3ef7f",
-                "reference": "cf6582906d4b2502c5f4c6be6a3d0b4cd5b3ef7f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/5134e2a65ec48e2f7126d12f1503a9889c660bdf",
+                "reference": "5134e2a65ec48e2f7126d12f1503a9889c660bdf",
                 "shasum": ""
             },
             "require": {
@@ -6655,7 +6655,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-15T06:14:11+00:00"
+            "time": "2020-09-18T05:25:29+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
