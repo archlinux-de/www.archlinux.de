@@ -138,15 +138,15 @@ class ResetDatabaseCommand extends Command
         $dbPlatform = $connection->getDatabasePlatform();
 
         if ($connection->getDriver() instanceof AbstractSQLiteDriver) {
-            $connection->query('PRAGMA foreign_keys = OFF');
+            $connection->executeQuery('PRAGMA foreign_keys = OFF');
         } else {
             // @codeCoverageIgnoreStart
-            $connection->query('SET FOREIGN_KEY_CHECKS = 0');
+            $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
             // @codeCoverageIgnoreEnd
         }
 
         foreach ($tables as $table) {
-            $connection->executeUpdate($dbPlatform->getTruncateTableSQL($table));
+            $connection->executeStatement($dbPlatform->getTruncateTableSQL($table));
         }
     }
 
