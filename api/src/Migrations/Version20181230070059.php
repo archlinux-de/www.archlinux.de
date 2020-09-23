@@ -32,7 +32,7 @@ final class Version20181230070059 extends AbstractMigration
     {
         if ($this->hasColumn('news_item', 'slug')) {
             $slugger = new AsciiSlugger();
-            foreach ($this->connection->fetchAll('SELECT id, title FROM news_item') as $row) {
+            foreach ($this->connection->fetchAllAssociative('SELECT id, title FROM news_item') as $row) {
                 $newsItem = (new NewsItem($row['id']))->setTitle($row['title']);
                 $this->connection->update(
                     'news_item',

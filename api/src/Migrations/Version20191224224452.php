@@ -13,7 +13,7 @@ final class Version20191224224452 extends AbstractMigration
     public function preUp(Schema $schema): void
     {
         $this->write('Rewriting news item ids');
-        foreach ($this->connection->fetchAll('SELECT id FROM news_item') as $row) {
+        foreach ($this->connection->fetchAllAssociative('SELECT id FROM news_item') as $row) {
             $this->connection->update(
                 'news_item',
                 ['id' => (new NewsItemIdParser())->parseId($row['id'])],
