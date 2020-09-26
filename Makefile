@@ -31,13 +31,13 @@ init: start
 
 start:
 	${COMPOSE} up -d
-	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
+	${MARIADB-RUN} mysqladmin -uroot -hmariadb --wait=10 ping
 	${COMPOSE-RUN} wait -c elasticsearch:9200 -t 60
 	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 start-db:
 	${COMPOSE} up -d mariadb elasticsearch-test
-	${MARIADB-RUN} mysqladmin -uroot --wait=10 ping
+	${MARIADB-RUN} mysqladmin -uroot -hmariadb --wait=10 ping
 	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 stop:
@@ -58,10 +58,10 @@ install:
 	${NODE-RUN} yarn install --non-interactive --frozen-lockfile
 
 shell-php:
-	${PHP-DB-RUN} bash
+	${PHP-DB-RUN} sh
 
 shell-node:
-	${NODE-RUN} bash
+	${NODE-RUN} sh
 
 test:
 	${PHP-RUN} composer validate
@@ -72,7 +72,7 @@ test:
 	${PHP-RUN} bin/console lint:yaml config
 	${PHP-RUN} bin/console lint:twig templates
 	${NODE-RUN} yarn build --modern --dest $(shell mktemp -d)
-	${PHP-RUN} vendor/bin/phpstan analyse
+	${PHP-RUN} php -dmemory_limit=-1 vendor/bin/phpstan analyse
 	${PHP-RUN} vendor/bin/phpunit
 
 test-db: start-db
