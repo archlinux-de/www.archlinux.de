@@ -1,10 +1,13 @@
-FROM archlinux/base
+FROM php:8.0-rc-fpm-alpine
 
-ADD etc/pacman.conf /etc/pacman.conf
-RUN pacman -Syu --noconfirm --needed php php-intl php-sqlite php-phpdbg php-fpm composer geoipupdate git unzip
-RUN echo 'de_DE.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen
-RUN chmod -R 1777 /run
-ADD etc/ /etc
+RUN apk add libarchive
+
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+RUN install-php-extensions opcache ffi apcu intl pdo_mysql
+RUN echo 'ffi.enable = true' >> $PHP_INI_DIR/conf.d/docker-php-ext-ffi.ini
+RUN echo 'arg_separator.input=";&"' > $PHP_INI_DIR/conf.d/legacy.ini
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 ADD https://github.com/maxmind/MaxMind-DB/raw/master/test-data/GeoIP2-Country-Test.mmdb /usr/share/GeoIP/GeoLite2-Country.mmdb
 RUN chmod 644 /usr/share/GeoIP/GeoLite2-Country.mmdb

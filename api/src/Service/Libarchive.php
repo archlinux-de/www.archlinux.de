@@ -39,7 +39,7 @@ class Libarchive
             size_t archive_read_data(struct archive *, void *, size_t);
             int64_t archive_entry_size(struct archive_entry *);
             ',
-            'libarchive.so'
+            'libarchive.so.13'
         );
     }
 
