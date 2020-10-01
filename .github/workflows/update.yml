@@ -13,6 +13,7 @@ jobs:
       - run: make fix-code-style
       - run: make test
       - run: make test-db
+      - run: make test-e2e
       - name: Run auto commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
