@@ -11,8 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: make install
+      - run: make start
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@master
         with:
-          start: make start
           wait-on: 'http://localhost:8080'
+          wait-on-timeout: 120
+          working-directory: app
