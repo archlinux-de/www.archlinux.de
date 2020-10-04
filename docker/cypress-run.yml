@@ -2,12 +2,11 @@ version: "3.4"
 
 services:
   cypress:
-    image: "cypress/included:5.3.0"
+    image: cypress/browsers
     depends_on:
       - nginx
     environment:
       - CYPRESS_baseUrl=http://nginx
-    entrypoint: cypress
     working_dir: /app
     volumes:
       - ../app:/app
