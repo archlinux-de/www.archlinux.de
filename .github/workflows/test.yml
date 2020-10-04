@@ -11,12 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: make install
-      - name: Cypress run
-        uses: cypress-io/github-action@v1
-        with:
-          start: make start
-          wait-on: http://localhost:8080/
-          config_file: app/cypress.json
-          spec: "app/tests/e2e/**/*"
-        env:
-          CYPRESS_baseUrl: http://localhost:8080/
+#      - run: make test
+#      - run: make test-db
+      - run: make test-e2e
