@@ -2,12 +2,12 @@ version: "3.4"
 
 services:
   cypress:
-    image: cypress/browsers
+    image: cypress/included:5.3.0
     depends_on:
       - nginx
     environment:
       - CYPRESS_baseUrl=http://nginx
-      - CYPRESS_CACHE_FOLDER=/app/node_modules/.cache/cypress
+      - DEBUG=cypress:*
     working_dir: /app
     volumes:
       - ../app:/app
