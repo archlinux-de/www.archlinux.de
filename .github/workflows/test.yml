@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@master
-      - run: make install
-      - run: make start
+#      - run: make install
+#      - run: make start
       - name: Cypress run
         uses: cypress-io/github-action@master
         with:
-          wait-on: 'http://localhost:8080'
-          wait-on-timeout: 120
+#          wait-on: 'http://localhost:8080'
+#          wait-on-timeout: 120
           working-directory: app
         env:
-          CYPRESS_baseUrl: http://localhost:8080/
+          CYPRESS_baseUrl: https://www.archlinux.de/
