@@ -7,6 +7,8 @@ services:
       - nginx
     environment:
       - CYPRESS_baseUrl=http://localhost:8080
+      - XDG_CONFIG_HOME=/tmp
+      - HOME=/tmp
       - DISPLAY
     entrypoint: cypress
     working_dir: /app

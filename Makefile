@@ -76,7 +76,7 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-e2e: start
-	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --headless --browser firefox
+	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --headless --record false
 
 cypress-open:
 	${COMPOSE} -f docker/cypress-run.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project /app
