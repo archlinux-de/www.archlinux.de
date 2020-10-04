@@ -9,6 +9,7 @@ services:
       - CYPRESS_baseUrl=http://nginx
       - DEBUG=cypress:*
     ipc: host
+    network_mode: host
     working_dir: /app
     volumes:
       - ../app:/app
