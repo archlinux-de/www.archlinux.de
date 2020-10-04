@@ -18,3 +18,5 @@ jobs:
           wait-on: 'http://localhost:8080'
           wait-on-timeout: 120
           working-directory: app
+        env:
+          CYPRESS_baseUrl: http://localhost:8080/
