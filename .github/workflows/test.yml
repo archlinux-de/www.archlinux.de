@@ -11,6 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: make install
-      - run: make test
-      - run: make test-db
+#      - run: make test
+#      - run: make test-db
       - run: make test-e2e

@@ -76,6 +76,7 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-e2e: start
+	docker pull "cypress/included:5.3.0"
 	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run --headless
 
 cypress-open:
