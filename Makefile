@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all init start start-db stop clean rebuild install shell-php shell-node test test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
+.PHONY: all init start start-db stop clean rebuild install shell-php shell-node test test-e2e cypress-open test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
 
 UID!=id -u
 GID!=id -g
@@ -76,7 +76,10 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-e2e: start
-	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress
+	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run
+
+cypress-open:
+	${COMPOSE} -f docker/cypress-run.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project /app
 
 test-db: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml

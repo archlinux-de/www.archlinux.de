@@ -6,7 +6,14 @@ services:
     depends_on:
       - nginx
     environment:
-      - CYPRESS_baseUrl=http://nginx
+      - CYPRESS_baseUrl=http://localhost:8080
+      - DISPLAY
+    entrypoint: cypress
     working_dir: /app
     volumes:
       - ../app:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    ipc: host
+    network_mode: host
+    tmpfs:
+      - /tmp
