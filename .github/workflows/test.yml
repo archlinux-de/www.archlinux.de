@@ -11,11 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: make install
-#      - run: make test
-#      - run: make test-db
-#      - run: make test-e2e
-  e2e:
-    runs-on: ubuntu-latest
-    container: cypress/included:5.3.0
-    steps:
-      - run: cypress run --project app
+      - run: make test
+      - run: make test-db
+      - run: make test-e2e

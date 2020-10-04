@@ -76,7 +76,7 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-e2e: start
-	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run --headless
+	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --headless --help
 
 cypress-open:
 	${COMPOSE} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project /app
