@@ -7,10 +7,12 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@master
       - run: make install
-#      - run: make test
-#      - run: make test-db
-      - run: make test-e2e
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          start: make start
+          wait-on: 'http://localhost:8080'
