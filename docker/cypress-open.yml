@@ -1,0 +1,21 @@
+version: "3.4"
+
+services:
+  cypress:
+    image: "cypress/included:5.3.0"
+    depends_on:
+      - nginx
+    environment:
+      - CYPRESS_baseUrl=http://localhost:8080
+      - XDG_CONFIG_HOME=/tmp
+      - HOME=/tmp
+      - DISPLAY
+    entrypoint: cypress
+    working_dir: /app
+    volumes:
+      - ../app:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    ipc: host
+    network_mode: host
+    tmpfs:
+      - /tmp

@@ -76,10 +76,10 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-e2e: start
-	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --headless --record false
+	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run --headless
 
 cypress-open:
-	${COMPOSE} -f docker/cypress-run.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project /app
+	${COMPOSE} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project /app
 
 test-db: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
