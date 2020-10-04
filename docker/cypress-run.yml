@@ -7,6 +7,9 @@ services:
       - nginx
     environment:
       - CYPRESS_baseUrl=http://nginx
+      - HOME=/tmp
     working_dir: /app
     volumes:
       - ../app:/app
+    tmpfs:
+      - /tmp
