@@ -13,8 +13,7 @@ MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 all: install
 
 docker-build:
-	${COMPOSE} pull
-	${COMPOSE} build
+	${COMPOSE} build --pull
 
 docker-push:
 	${COMPOSE} push
