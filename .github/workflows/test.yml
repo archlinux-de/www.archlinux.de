@@ -6,43 +6,38 @@ on:
     - cron: '0 1 */1 * *'
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      - uses: actions/checkout@v2
       - run: make install
+      - uses: actions/upload-artifact@v2
+        with:
+          name: setup
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: setup
       - run: make test
 
   test-db:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - run: make install
+      - uses: actions/download-artifact@v2
+        with:
+          name: setup
       - run: make test-db
 
   test-e2e:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - run: make install
+      - uses: actions/download-artifact@v2
+        with:
+          name: setup
       - run: make test-e2e
