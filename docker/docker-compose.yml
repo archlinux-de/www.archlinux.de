@@ -14,7 +14,7 @@ services:
     depends_on:
       - mariadb
       - elasticsearch
-      - elasticsearch-test
+#      - elasticsearch-test
 
   app:
     image: node:alpine
@@ -48,18 +48,18 @@ services:
     tmpfs:
       - /tmp
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      - PMA_HOST=mariadb
-      - PMA_USER=root
-      - PMA_PASSWORD=
-    ports:
-      - "8090:80"
-    tmpfs:
-      - /tmp
-    depends_on:
-      - mariadb
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    environment:
+#      - PMA_HOST=mariadb
+#      - PMA_USER=root
+#      - PMA_PASSWORD=
+#    ports:
+#      - "8090:80"
+#    tmpfs:
+#      - /tmp
+#    depends_on:
+#      - mariadb
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
@@ -73,27 +73,27 @@ services:
     tmpfs:
       - /tmp
 
-  elasticsearch-test:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
-    environment:
-      - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    tmpfs:
-      - /tmp
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.9.1
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-      - elasticsearch-test
-    tmpfs:
-      - /tmp
+#  elasticsearch-test:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+#    environment:
+#      - "discovery.type=single-node"
+#      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    tmpfs:
+#      - /tmp
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.9.1
+#    ports:
+#      - "5601:5601"
+#    depends_on:
+#      - elasticsearch
+#      - elasticsearch-test
+#    tmpfs:
+#      - /tmp
 
   wait:
     image: dokku/wait

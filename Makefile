@@ -33,7 +33,7 @@ start:
 	${COMPOSE} up -d
 	${MARIADB-RUN} mysqladmin -uroot -hmariadb --wait=10 ping
 	${COMPOSE-RUN} wait -c elasticsearch:9200 -t 60
-	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
+	#${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 start-db:
 	${COMPOSE} up -d mariadb elasticsearch-test
@@ -75,7 +75,7 @@ test:
 	${PHP-RUN} php -dmemory_limit=-1 vendor/bin/phpstan analyse
 	${PHP-RUN} vendor/bin/phpunit
 
-test-e2e:
+test-e2e: start
 	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run
 
 cypress-open:
