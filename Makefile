@@ -33,7 +33,7 @@ start:
 	${COMPOSE} up -d
 	${MARIADB-RUN} mysqladmin -uroot -hmariadb --wait=10 ping
 	${COMPOSE-RUN} wait -c elasticsearch:9200 -t 60
-	#${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
+	${COMPOSE-RUN} wait -c elasticsearch-test:9200 -t 60
 
 start-db:
 	${COMPOSE} up -d mariadb elasticsearch-test
@@ -76,10 +76,10 @@ test:
 	${PHP-RUN} vendor/bin/phpunit
 
 test-e2e: start
-	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run
+	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --project tests/e2e
 
 cypress-open:
-	${COMPOSE} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project /app
+	${COMPOSE} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project tests/e2e
 
 test-db: start-db
 	${PHP-DB-RUN} vendor/bin/phpunit -c phpunit-db.xml
