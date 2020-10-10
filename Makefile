@@ -3,7 +3,7 @@
 
 UID!=id -u
 GID!=id -g
-COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/app.yml -f docker/dev.yml -p www_archlinux_de
+COMPOSE=UID=COMPOSE_DOCKER_CLI_BUILD=true ${UID} GID=${GID} docker-compose -f docker/app.yml -f docker/dev.yml -p www_archlinux_de
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} api
 PHP-RUN=${COMPOSE-RUN} --no-deps api
