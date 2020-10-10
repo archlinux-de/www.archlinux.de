@@ -11,8 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: make docker-build
-      - name: Docker Login
-        run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
       - run: make docker-push
 
   test:

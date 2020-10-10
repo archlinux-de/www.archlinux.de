@@ -13,10 +13,12 @@ MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 all: install
 
 docker-build:
-	${COMPOSE} pull
+	docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+	${COMPOSE} pull -q
 	${COMPOSE} build
 
 docker-push:
+	docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
 	${COMPOSE} push
 
 init: start
