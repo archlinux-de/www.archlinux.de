@@ -4,12 +4,13 @@
 ifndef CI
 UID!=id -u
 GID!=id -g
+COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/app.yml -f docker/dev.yml -p www_archlinux_de
 else
 UID=0
 GID=0
+COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/app.yml -p www_archlinux_de
 endif
 
-COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/app.yml -p www_archlinux_de
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} api
 PHP-RUN=${COMPOSE-RUN} --no-deps api
