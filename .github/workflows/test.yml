@@ -38,6 +38,5 @@ jobs:
           restore-keys: yarn-
 
       - run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
-      - run: make docker-build
       - run: make install
       - run: make ${{ matrix.type }}

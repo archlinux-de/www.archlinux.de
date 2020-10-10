@@ -1,8 +1,10 @@
-version: "3.4"
+version: "3.8"
 
 services:
   api:
-    build: php
+    build:
+      context: php
+      cache_from: docker.pkg.github.com/archlinux-de/www.archlinux.de/api
     image: docker.pkg.github.com/archlinux-de/www.archlinux.de/api
     working_dir: /app/api
     environment:
@@ -30,7 +32,9 @@ services:
       - /tmp
 
   nginx:
-    build: nginx
+    build:
+      context: nginx
+      cache_from: docker.pkg.github.com/archlinux-de/www.archlinux.de/nginx
     image: docker.pkg.github.com/archlinux-de/www.archlinux.de/nginx
     ports:
       - "8080:80"
