@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+      - run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
       - run: make docker-build
 
   test:
@@ -36,7 +36,7 @@ jobs:
           key: yarn-${{ hashFiles('app/yarn.lock') }}
           restore-keys: yarn-
 
-      - docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+      - run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
       - run: make docker-build
       - run: make install
       - run: make ${{ matrix.type }}
@@ -46,5 +46,5 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
-      - docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+      - run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
       - run: make docker-push
