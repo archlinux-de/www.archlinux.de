@@ -6,7 +6,7 @@ on:
     - cron: '0 1 */1 * *'
 
 jobs:
-  setup:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,7 +17,7 @@ jobs:
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
-          echo "::set-output name=dir::$(composer -d api config cache-files-dir)"
+          echo "::set-output name=dir::$(composer config -d api cache-files-dir)"
       - uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
