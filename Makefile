@@ -1,5 +1,5 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all docker-build docker-push init start start-db stop clean rebuild install shell-php shell-node test test-e2e cypress-open test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
+.PHONY: all docker-pull docker-build docker-push init start start-db stop clean rebuild install shell-php shell-node test test-e2e cypress-open test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
 
 UID!=id -u
 GID!=id -g
@@ -11,6 +11,9 @@ NODE-RUN=${COMPOSE-RUN} --no-deps -e DISABLE_OPENCOLLECTIVE=true app
 MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
+
+docker-pull:
+	${COMPOSE} pull
 
 docker-build:
 	${COMPOSE} pull api nginx
