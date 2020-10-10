@@ -12,21 +12,21 @@ jobs:
       matrix:
         type: ['test', 'test-db', 'test-e2e']
     steps:
-      - uses: actions/checkout@v2
-      - name: Composer cache
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Maintain Composer cache
         uses: actions/cache@v2
         with:
           path: api/vendor
           key: composer-${{ hashFiles('api/composer.lock') }}
           restore-keys: composer-
-      - name: Yarn cache
+      - name: Maintain Yarn cache
         uses: actions/cache@v2
         with:
           path: app/node_modules
           key: yarn-${{ hashFiles('app/yarn.lock') }}
           restore-keys: yarn-
-      - run: make docker-pull
-      - name: Docker cache
-        uses: satackey/action-docker-layer-caching@v0.0.8
-      - run: make install
-      - run: make ${{ matrix.type }}
+      - name: Install dependencies
+        run: make install
+      - name: Run ${{ matrix.type }}
+        run: make ${{ matrix.type }}
