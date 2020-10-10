@@ -1,8 +1,14 @@
 .EXPORT_ALL_VARIABLES:
 .PHONY: all init start start-db stop clean rebuild install shell-php shell-node test test-e2e cypress-open test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
 
+ifndef CI
 UID!=id -u
 GID!=id -g
+else
+UID=0
+GID=0
+endif
+
 COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/app.yml -p www_archlinux_de
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} api
@@ -77,7 +83,7 @@ test:
 
 test-e2e: start
 	# running as user crashes Cypress on CI
-	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e
+	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --project tests/e2e
 
 cypress-open:
 	${COMPOSE} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project tests/e2e
