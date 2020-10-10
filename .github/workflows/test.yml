@@ -6,11 +6,26 @@ on:
     - cron: '0 1 */1 * *'
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - run: make install
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - run: make test
+
+  test-db:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - run: make test-db
+
+  test-e2e:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - run: make test-e2e
