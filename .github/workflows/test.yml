@@ -11,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: make docker-build
-      - run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+      - name: Docker Login
+        run: docker login https://docker.pkg.github.com -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
       - run: make docker-push
 
   test:
@@ -37,5 +38,6 @@ jobs:
           key: yarn-${{ hashFiles('app/yarn.lock') }}
           restore-keys: yarn-
 
+      - run: make docker-build
       - run: make install
       - run: make ${{ matrix.type }}
