@@ -12,6 +12,12 @@ MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
 
+docker-build:
+	${COMPOSE} build --pull
+
+docker-push:
+	${COMPOSE} push
+
 init: start
 	${PHP-DB-RUN} bin/console cache:warmup
 	${PHP-DB-RUN} bin/console doctrine:database:create

@@ -3,6 +3,7 @@ version: "3.4"
 services:
   api:
     build: php
+    image: docker.pkg.github.com/archlinux-de/www.archlinux.de/api
     working_dir: /app/api
     environment:
       - HOME=/tmp
@@ -30,6 +31,7 @@ services:
 
   nginx:
     build: nginx
+    image: docker.pkg.github.com/archlinux-de/www.archlinux.de/nginx
     ports:
       - "8080:80"
     volumes:
