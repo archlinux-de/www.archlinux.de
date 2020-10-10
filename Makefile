@@ -12,11 +12,11 @@ MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
 
+docker-pull:
+	${COMPOSE} pull api nginx
+
 docker-build:
-	#${COMPOSE} pull
-	#docker pull docker.pkg.github.com/archlinux-de/www.archlinux.de/nginx
-	#docker pull docker.pkg.github.com/archlinux-de/www.archlinux.de/api
-	${COMPOSE} build --pull
+	${COMPOSE} build
 
 docker-push:
 	${COMPOSE} push
