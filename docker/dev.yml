@@ -1,0 +1,25 @@
+version: "3.4"
+
+services:
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    ports:
+      - "8090:80"
+    tmpfs:
+      - /tmp
+    depends_on:
+      - mariadb
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+      - elasticsearch-test
+    tmpfs:
+      - /tmp

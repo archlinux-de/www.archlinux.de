@@ -11,5 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: make install
-      - run: make start
       - run: make test-e2e

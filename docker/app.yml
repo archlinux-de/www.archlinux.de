@@ -1,0 +1,66 @@
+version: "3.4"
+
+services:
+  api:
+    build: php
+    working_dir: /app/api
+    environment:
+      - HOME=/tmp
+    user: "${UID}:${GID}"
+    volumes:
+      - ../api:/app/api
+    tmpfs:
+      - /tmp
+    depends_on:
+      - mariadb
+      - elasticsearch
+      - elasticsearch-test
+
+  app:
+    image: node:alpine
+    working_dir: /app/app
+    environment:
+      - HOME=/tmp
+    command: yarn serve
+    user: "${UID}:${GID}"
+    volumes:
+      - ../app:/app/app
+    tmpfs:
+      - /tmp
+
+  nginx:
+    build: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ../:/app:ro
+    tmpfs:
+      - /tmp
+    depends_on:
+      - api
+      - app
+
+  mariadb:
+    image: mariadb:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    tmpfs:
+      - /tmp
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    environment:
+      - "discovery.type=single-node"
+    tmpfs:
+      - /tmp
+
+  elasticsearch-test:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    environment:
+      - "discovery.type=single-node"
+    tmpfs:
+      - /tmp
+
+  wait:
+    image: dokku/wait
