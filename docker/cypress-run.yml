@@ -3,11 +3,10 @@ version: "3.4"
 services:
   cypress:
     image: cypress/included:5.3.0
-    depends_on:
-      - nginx
+#    depends_on:
+#      - nginx
     environment:
-      - CYPRESS_baseUrl=http://nginx
-      - DEBUG=cypress:*
+      - CYPRESS_baseUrl=https://www.archlinux.de/
     ipc: host
     network_mode: host
     working_dir: /app
