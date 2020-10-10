@@ -1,9 +1,9 @@
 .EXPORT_ALL_VARIABLES:
-.PHONY: all init start start-db stop clean rebuild install shell-php shell-node test test-e2e cypress-open test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
+.PHONY: all docker-build docker-push init start start-db stop clean rebuild install shell-php shell-node test test-e2e cypress-open test-db test-db-migrations update-elasticsearch-fixtures test-coverage test-db-coverage test-security fix-code-style update deploy deploy-permissions
 
 UID!=id -u
 GID!=id -g
-COMPOSE=COMPOSE_DOCKER_CLI_BUILD=true UID=${UID} GID=${GID} docker-compose -f docker/app.yml -f docker/dev.yml -p www_archlinux_de
+COMPOSE=UID=${UID} GID=${GID} docker-compose -f docker/app.yml -f docker/dev.yml -p www_archlinux_de
 COMPOSE-RUN=${COMPOSE} run --rm -u ${UID}:${GID}
 PHP-DB-RUN=${COMPOSE-RUN} api
 PHP-RUN=${COMPOSE-RUN} --no-deps api
@@ -12,11 +12,9 @@ MARIADB-RUN=${COMPOSE-RUN} --no-deps mariadb
 
 all: install
 
-docker-pull:
-	${COMPOSE} pull api nginx
-
 docker-build:
-	${COMPOSE} build
+	${COMPOSE} pull api nginx
+	${COMPOSE} build --pull
 
 docker-push:
 	${COMPOSE} push
