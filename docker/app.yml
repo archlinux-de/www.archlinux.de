@@ -6,9 +6,11 @@ services:
     working_dir: /app/api
     environment:
       - HOME=/tmp
+      - COMPOSER_CACHE_DIR=/composer-cache
     user: "${UID}:${GID}"
     volumes:
       - ../api:/app/api
+      - ${COMPOSER_CACHE_DIR}:/composer-cache
     tmpfs:
       - /tmp
     depends_on:
@@ -21,10 +23,12 @@ services:
     working_dir: /app/app
     environment:
       - HOME=/tmp
+      - YARN_CACHE_FOLDER=/yarn-cache
     command: yarn serve
     user: "${UID}:${GID}"
     volumes:
       - ../app:/app/app
+      - ${YARN_CACHE_FOLDER}:/yarn-cache
     tmpfs:
       - /tmp
 
