@@ -8,6 +8,9 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - run: make install
-      - run: make test-security
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: make install
+      - name:Check security issues
+        run: make test-security
