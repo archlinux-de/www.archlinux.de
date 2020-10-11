@@ -16,7 +16,7 @@
           mit
           <code>pacman -Syu</code> aktuell gehalten werden!</p>
         <ul class="list-unstyled ml-4">
-          <li><strong>Aktuelles Release:</strong>&nbsp;<router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link></li>
+          <li data-test="current-release"><strong>Aktuelles Release:</strong>&nbsp;<router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link></li>
           <li><strong>Enthaltener Kernel:</strong>&nbsp;{{ release.kernelVersion }}</li>
           <li><strong>ISO Größe:</strong>&nbsp;{{ release.fileSize | prettyBytes(2, true) }}</li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
@@ -48,13 +48,13 @@
       </b-col>
 
       <b-col class="pl-lg-5" cols="12" lg="6">
-        <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl">
+        <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl" data-test="download-release">
           <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
         </a>
 
         <template v-if="mirrors.length > 0">
           <h3>Mirrors</h3>
-          <ul class="list-unstyled ml-4">
+          <ul class="list-unstyled ml-4" data-test="mirror-list">
             <li :key="mirror.url" v-for="mirror in mirrors">
               <a :href="mirror.url + release.isoPath" target="_blank">{{ mirror.host }}</a>
             </li>
