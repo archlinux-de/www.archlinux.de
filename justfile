@@ -8,6 +8,9 @@ PHP-RUN := COMPOSE-RUN + ' --no-deps api'
 NODE-RUN := COMPOSE-RUN + ' --no-deps -e DISABLE_OPENCOLLECTIVE=true app'
 MARIADB-RUN := COMPOSE-RUN + ' --no-deps mariadb'
 
+default:
+	just --list
+
 install:
 	{{PHP-RUN}} composer --no-interaction install
 	{{NODE-RUN}} yarn install --non-interactive --frozen-lockfile
@@ -25,14 +28,22 @@ test: test-db test-e2e
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-db:
-    #!/usr/bin/env node
-    console.log('Hello db!')
+	#!/usr/bin/env node
+	console.log('Hello db!')
 
 test-e2e:
-    echo 'Hello e2e!'
+	#!/usr/bin/env php
+	<?php echo 40 + 2;
 
-php args:
-    {{PHP-RUN}} {{args}}
+# Run PHP command
+php +args:
+	{{PHP-RUN}} php {{args}}
 
-composer args:
-    {{PHP-RUN}} composer {{args}}
+composer *args:
+	{{PHP-RUN}} composer {{args}}
+
+console *args:
+	{{PHP-RUN}} bin/console {{args}}
+
+yarn +args:
+	{{NODE-RUN}} yarn {{args}}
