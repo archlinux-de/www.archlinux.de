@@ -122,11 +122,20 @@ fix-code-style:
 	{{NODE-RUN}} node_modules/.bin/eslint src --fix --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
+_get-latest-cypress-tag:
+	#!/usr/bin/env node
+	const https = require('https')
+	https.get('https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1', (response) => {
+		let data = ''
+		response.on('data', (chunk) => { data += chunk })
+		response.on('end', () => { console.log(JSON.parse(data).results[0].name) })
+	})
+
 update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
-	sed -E "s#cypress/included:.+#cypress/included:`node docker/tag cypress/included`#g" -i docker/cypress-*.yml
+	sed -E "s#cypress/included:.+#cypress/included:`just _get-latest-cypress-tag`#g" -i docker/cypress-*.yml
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
