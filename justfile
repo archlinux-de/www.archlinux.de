@@ -1,7 +1,7 @@
 export UID := `id -u`
 export GID := `id -g`
 
-COMPOSE := 'docker-compose -f docker/app.yml '+`[[ "${CI:-false}" != "true" ]] && echo '-f docker/dev.yml' || echo ''`+' -p www_archlinux_de'
+COMPOSE := 'docker-compose -f docker/app.yml '+`[ "${CI:-false}" != "true" ] && echo '-f docker/dev.yml' || echo ''`+' -p www_archlinux_de'
 COMPOSE-RUN := COMPOSE + ' run --rm -u ' + UID + ':' + GID
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
@@ -84,8 +84,8 @@ test:
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-e2e:
-	#!/usr/bin/env bash
-	if [[ "${CI:-false}" == "true" ]]; then
+	#!/usr/bin/env sh
+	if [ "${CI:-false}" == "true" ]; then
 		just init
 		echo Running as user crashes Cypress on CI
 		{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e --browser chrome --headless
