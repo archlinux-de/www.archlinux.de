@@ -84,8 +84,8 @@ test:
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-e2e:
-	#!/usr/bin/env sh
-	if [[ "$CI" == "true" ]]; then
+	#!/usr/bin/env bash
+	if [[ "${CI:-false}" == "true" ]]; then
 		just init
 		echo Running as user crashes Cypress on CI
 		{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e --browser chrome --headless
