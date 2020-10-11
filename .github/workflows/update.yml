@@ -8,15 +8,17 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
+      - name: Install Just
+        run: curl -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Update dependencies
-        run: make update
+        run: just update
       - name: Fix code style
-        run: make fix-code-style
-      - run: make test
-      - run: make test-db
-      - run: make test-e2e
+        run: just fix-code-style
+      - run: just test
+      - run: just test-db
+      - run: just test-e2e
       - name: Commit updates
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

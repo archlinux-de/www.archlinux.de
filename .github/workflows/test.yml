@@ -12,7 +12,7 @@ jobs:
       matrix:
         type: ['test', 'test-db', 'test-e2e']
     steps:
-      - name: Install just
+      - name: Install Just
         run: curl -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
       - name: Checkout code
         uses: actions/checkout@v2
