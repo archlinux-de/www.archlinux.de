@@ -9,7 +9,8 @@
         placeholder="Pakete suchen"
         type="search"
         autocomplete="off"
-        v-model="currentQuery"></b-form-input>
+        v-model="currentQuery"
+        data-test="packages-search"></b-form-input>
 
       <b-input-group-append>
         <b-form-select v-model="currentRepository" :options="repositories"></b-form-select>
@@ -26,7 +27,8 @@
              :fields="fields"
              :filter="currentQuery"
              :per-page="perPage"
-             :current-page="currentPage">
+             :current-page="currentPage"
+             data-test="packages">
 
       <template v-slot:cell(repository)="data">
         <router-link class="d-none d-lg-table-cell"

@@ -8,12 +8,16 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - run: make update
-      - run: make fix-code-style
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Update dependencies
+        run: make update
+      - name: Fix code style
+        run: make fix-code-style
       - run: make test
       - run: make test-db
-      - name: Run auto commit
+      - run: make test-e2e
+      - name: Commit updates
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update dependencies
