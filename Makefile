@@ -121,6 +121,7 @@ update:
 	${PHP-RUN} composer --no-interaction update
 	${PHP-RUN} composer --no-interaction update --lock --no-scripts
 	${NODE-RUN} yarn upgrade --non-interactive --latest
+	sed -E 's#cypress/included:.+#cypress/included:$(shell docker/tag cypress/included)#g' -i docker/cypress-*.yml
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
