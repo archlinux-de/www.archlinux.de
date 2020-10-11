@@ -13,7 +13,7 @@ jobs:
         type: ['test', 'test-db', 'test-e2e']
     steps:
       - name: Install just
-        run: curl -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+        run: curl -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Maintain Composer cache
