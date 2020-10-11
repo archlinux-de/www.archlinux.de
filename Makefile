@@ -120,7 +120,7 @@ fix-code-style:
 update:
 	${PHP-RUN} composer --no-interaction update
 	${PHP-RUN} composer --no-interaction update --lock --no-scripts
-	${NODE-RUN} yarn upgrade --non-interactive
+	${NODE-RUN} yarn upgrade --non-interactive --latest
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
