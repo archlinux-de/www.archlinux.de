@@ -79,12 +79,12 @@ test:
 	${PHP-RUN} php -dmemory_limit=-1 vendor/bin/phpstan analyse
 	${PHP-RUN} vendor/bin/phpunit
 
-test-e2e: start
+test-e2e: init
 ifndef CI
-	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --project tests/e2e
+	${COMPOSE} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --project tests/e2e --browser chrome --headless
 else
 	echo Running as user crashes Cypress on CI
-	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e
+	${COMPOSE} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e --browser chrome --headless
 endif
 
 cypress-open:
