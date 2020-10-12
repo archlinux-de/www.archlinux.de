@@ -55,7 +55,13 @@ install:
 	{{PHP-RUN}} composer --no-interaction install
 	{{NODE-RUN}} yarn install --non-interactive --frozen-lockfile
 
-php +args:
+compose *args:
+	{{COMPOSE}} {{args}}
+
+compose-run *args:
+	{{COMPOSE-RUN}} {{args}}
+
+php *args='-h':
 	{{PHP-RUN}} php {{args}}
 
 composer *args:
@@ -70,10 +76,10 @@ phpunit *args:
 phpstan *args:
 	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan {{args}}
 
-node +args:
+node *args='-h':
 	{{NODE-RUN}} node {{args}}
 
-yarn +args:
+yarn *args='-h':
 	{{NODE-RUN}} yarn {{args}}
 
 jest *args:
