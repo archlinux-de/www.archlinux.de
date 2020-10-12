@@ -161,3 +161,5 @@ deploy:
 deploy-permissions:
 	cd api && sudo setfacl -dR -m u:php-www:rwX -m u:deployer:rwX var
 	cd api && sudo setfacl -R -m u:php-www:rwX -m u:deployer:rwX var
+
+# vim: set ft=make :
