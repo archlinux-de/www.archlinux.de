@@ -122,20 +122,28 @@ fix-code-style:
 	{{NODE-RUN}} node_modules/.bin/eslint src --fix --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
-_get-latest-cypress-tag:
+_update-cypress-image:
 	#!/usr/bin/env node
 	const https = require('https')
-	https.get('https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1', (response) => {
+	const fs = require('fs')
+	https.get('https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1', response => {
 		let data = ''
 		response.on('data', (chunk) => { data += chunk })
-		response.on('end', () => { console.log(JSON.parse(data).results[0].name) })
+		response.on('end', () => {
+			['docker/cypress-open.yml', 'docker/cypress-run.yml'].forEach(file => {
+				const newFile = fs
+					.readFileSync(file, 'utf8')
+					.replace(/cypress\/included:.+/, 'cypress/included:' + JSON.parse(data).results[0].name)
+				fs.writeFileSync(file, newFile)
+			})
+		})
 	})
 
 update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
-	sed -E "s#cypress/included:.+#cypress/included:`just _get-latest-cypress-tag`#g" -i docker/cypress-*.yml
+	just _update-cypress-image
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
