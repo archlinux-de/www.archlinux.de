@@ -14,7 +14,6 @@ services:
     depends_on:
       - mariadb
       - elasticsearch
-      - elasticsearch-test
 
   app:
     image: node:alpine
@@ -49,13 +48,6 @@ services:
       - /tmp
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
-    environment:
-      - "discovery.type=single-node"
-    tmpfs:
-      - /tmp
-
-  elasticsearch-test:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     environment:
       - "discovery.type=single-node"

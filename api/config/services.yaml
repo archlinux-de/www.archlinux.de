@@ -24,7 +24,7 @@ services:
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
         resource: '../src/Controller'
-        tags: ['controller.service_arguments']
+        tags: [ 'controller.service_arguments' ]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -37,10 +37,10 @@ services:
 
     Elasticsearch\ClientBuilder:
         calls:
-            - [setHosts, [['%env(resolve:ELASTICSEARCH_URL)%']]]
+            - [ setHosts, [ [ '%env(resolve:ELASTICSEARCH_URL)%' ] ] ]
 
     Elasticsearch\Client:
-        factory: ['@Elasticsearch\ClientBuilder', build]
+        factory: [ '@Elasticsearch\ClientBuilder', build ]
 
     App\Service\PackageDatabaseMirror:
         $mirrorUrl: '%app.packages.mirror%'
@@ -85,3 +85,15 @@ services:
                 - '@App\SearchIndex\NewsSearchIndexer'
                 - '@App\SearchIndex\PackageSearchIndexer'
                 - '@App\SearchIndex\ReleaseSearchIndexer'
+
+    App\SearchIndex\MirrorSearchIndexer:
+        $environment: '%kernel.environment%'
+
+    App\SearchIndex\NewsSearchIndexer:
+        $environment: '%kernel.environment%'
+
+    App\SearchIndex\PackageSearchIndexer:
+        $environment: '%kernel.environment%'
+
+    App\SearchIndex\ReleaseSearchIndexer:
+        $environment: '%kernel.environment%'

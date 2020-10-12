@@ -6,6 +6,17 @@ use App\Entity\Mirror;
 
 class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
+    /** @var string */
+    private $environment;
+
+    /**
+     * @param string $environment
+     */
+    public function __construct(string $environment)
+    {
+        $this->environment = $environment;
+    }
+
     /**
      * @return array
      */
@@ -35,7 +46,7 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     public function getIndexName(): string
     {
-        return 'mirror';
+        return ($this->environment == 'test' ? 'test-' : '') . 'mirror';
     }
 
     /**
