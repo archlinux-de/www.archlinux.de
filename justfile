@@ -1,7 +1,7 @@
 export UID := `id -u`
 export GID := `id -g`
 
-COMPOSE := 'docker-compose -f docker/app.yml '+`[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''`+' -p www_archlinux_de'
+COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p www_archlinux_de'
 COMPOSE-RUN := COMPOSE + ' run --rm -u ' + UID + ':' + GID
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
@@ -64,11 +64,20 @@ composer *args:
 console *args:
 	{{PHP-RUN}} bin/console {{args}}
 
+phpunit *args:
+	{{PHP-RUN}} vendor/bin/phpunit {{args}}
+
+phpstan *args:
+	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan {{args}}
+
 node +args:
 	{{NODE-RUN}} node {{args}}
 
 yarn +args:
 	{{NODE-RUN}} yarn {{args}}
+
+jest *args:
+	{{NODE-RUN}} node_modules/.bin/jest {{args}}
 
 test:
 	{{PHP-RUN}} composer validate
