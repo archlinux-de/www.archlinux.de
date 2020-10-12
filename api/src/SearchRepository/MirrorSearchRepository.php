@@ -4,6 +4,7 @@ namespace App\SearchRepository;
 
 use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
+use App\SearchIndex\MirrorSearchIndexer;
 use Elasticsearch\Client;
 
 class MirrorSearchRepository
@@ -19,16 +20,25 @@ class MirrorSearchRepository
     /** @var MirrorRepository */
     private $mirrorRepository;
 
+    /** @var MirrorSearchIndexer */
+    private $mirrorSearchIndexer;
+
     /**
      * @param string $mirrorCountry
      * @param Client $client
      * @param MirrorRepository $mirrorRepository
+     * @param MirrorSearchIndexer $mirrorSearchIndexer
      */
-    public function __construct(string $mirrorCountry, Client $client, MirrorRepository $mirrorRepository)
-    {
+    public function __construct(
+        string $mirrorCountry,
+        Client $client,
+        MirrorRepository $mirrorRepository,
+        MirrorSearchIndexer $mirrorSearchIndexer
+    ) {
         $this->mirrorCountry = $mirrorCountry;
         $this->client = $client;
         $this->mirrorRepository = $mirrorRepository;
+        $this->mirrorSearchIndexer = $mirrorSearchIndexer;
     }
 
     /**
@@ -60,7 +70,7 @@ class MirrorSearchRepository
 
         $results = $this->client->search(
             [
-                'index' => 'mirror',
+                'index' => $this->mirrorSearchIndexer->getIndexName(),
                 'body' => [
                     'query' => ['bool' => $bool],
                     'sort' => $sort
@@ -134,7 +144,7 @@ class MirrorSearchRepository
 
         $results = $this->client->search(
             [
-                'index' => 'mirror',
+                'index' => $this->mirrorSearchIndexer->getIndexName(),
                 'body' => [
                     'query' => ['bool' => $bool],
                     'sort' => $sort

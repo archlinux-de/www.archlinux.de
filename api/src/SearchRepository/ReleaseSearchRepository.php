@@ -4,6 +4,7 @@ namespace App\SearchRepository;
 
 use App\Entity\Release;
 use App\Repository\ReleaseRepository;
+use App\SearchIndex\ReleaseSearchIndexer;
 use Elasticsearch\Client;
 
 class ReleaseSearchRepository
@@ -14,14 +15,22 @@ class ReleaseSearchRepository
     /** @var ReleaseRepository */
     private $releaseRepository;
 
+    /** @var ReleaseSearchIndexer */
+    private $releaseSearchIndexer;
+
     /**
      * @param Client $client
      * @param ReleaseRepository $releaseRepository
+     * @param ReleaseSearchIndexer $releaseSearchIndexer
      */
-    public function __construct(Client $client, ReleaseRepository $releaseRepository)
-    {
+    public function __construct(
+        Client $client,
+        ReleaseRepository $releaseRepository,
+        ReleaseSearchIndexer $releaseSearchIndexer
+    ) {
         $this->client = $client;
         $this->releaseRepository = $releaseRepository;
+        $this->releaseSearchIndexer = $releaseSearchIndexer;
     }
 
     /**
@@ -61,7 +70,7 @@ class ReleaseSearchRepository
 
         $results = $this->client->search(
             [
-                'index' => 'release',
+                'index' => $this->releaseSearchIndexer->getIndexName(),
                 'body' => $body,
                 'from' => $offset,
                 'size' => $limit,

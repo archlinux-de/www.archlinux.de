@@ -32,12 +32,11 @@ start:
 	{{COMPOSE}} up -d
 	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
 	{{COMPOSE-RUN}} wait -c elasticsearch:9200 -t 60
-	{{COMPOSE-RUN}} wait -c elasticsearch-test:9200 -t 60
 
 start-db:
-	{{COMPOSE}} up -d mariadb elasticsearch-test
+	{{COMPOSE}} up -d mariadb elasticsearch
 	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
-	{{COMPOSE-RUN}} wait -c elasticsearch-test:9200 -t 60
+	{{COMPOSE-RUN}} wait -c elasticsearch:9200 -t 60
 
 stop:
 	{{COMPOSE}} stop
@@ -104,7 +103,7 @@ test-db-migrations: start-db
 
 update-elasticsearch-fixtures: start-db
 	rm -f api/tests/ElasticsearchFixtures/*.json
-	{{COMPOSE-RUN}} -e ELASTICSEARCH_URL=http://elasticsearch-test:9200 -e ELASTICSEARCH_MOCK_MODE=write api vendor/bin/phpunit
+	{{COMPOSE-RUN}} -e ELASTICSEARCH_MOCK_MODE=write api vendor/bin/phpunit
 
 test-coverage:
 	{{NODE-RUN}} node_modules/.bin/jest --coverage --coverageDirectory var/coverage/jest
