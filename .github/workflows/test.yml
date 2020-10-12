@@ -12,6 +12,8 @@ jobs:
       matrix:
         type: ['test', 'test-db', 'test-e2e']
     steps:
+      - name: Install Just
+        run: curl -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Maintain Composer cache
@@ -27,6 +29,6 @@ jobs:
           key: yarn-${{ hashFiles('app/yarn.lock') }}
           restore-keys: yarn-
       - name: Install dependencies
-        run: make install
+        run: just install
       - name: Run ${{ matrix.type }}
-        run: make ${{ matrix.type }}
+        run: just ${{ matrix.type }}
