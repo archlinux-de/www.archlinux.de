@@ -8,6 +8,17 @@ use App\Entity\Packages\Relations\Replacement;
 
 class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
+    /** @var string */
+    private $environment;
+
+    /**
+     * @param string $environment
+     */
+    public function __construct(string $environment)
+    {
+        $this->environment = $environment;
+    }
+
     /**
      * @return array
      */
@@ -46,7 +57,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     public function getIndexName(): string
     {
-        return 'package';
+        return ($this->environment == 'test' ? 'test-' : '') . 'package';
     }
 
     /**

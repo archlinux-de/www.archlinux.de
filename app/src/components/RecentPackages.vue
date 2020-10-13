@@ -4,8 +4,8 @@
 
     <div class="card-body p-1 p-lg-3">
       <b-table-simple small fixed>
-        <b-tr :key="key" v-for="(pkg, key) in packages">
-          <b-td class="pkgname w-75">
+        <b-tr :key="key" v-for="(pkg, key) in packages" data-test="recent-package">
+          <b-td class="pkgname w-75" data-test="recent-package-name">
             <router-link :to="{
               name: 'package',
                params:{
@@ -17,7 +17,7 @@
               {{ pkg.name }}
             </router-link>
           </b-td>
-          <b-td :title="pkg.version" class="text-right text-truncate">{{ pkg.version }}</b-td>
+          <b-td :title="pkg.version" class="text-right text-truncate" data-test="recent-package-version">{{ pkg.version }}</b-td>
         </b-tr>
       </b-table-simple>
     </div>

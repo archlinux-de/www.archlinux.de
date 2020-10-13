@@ -1,7 +1,7 @@
 <template>
   <div class="news-items">
     <loading-spinner absolute v-if="newsItems.length === 0"></loading-spinner>
-    <div :key="newsItem.id" class="mb-5" v-for="newsItem in newsItems">
+    <div :key="newsItem.id" class="mb-5" v-for="newsItem in newsItems" data-test="news-item">
       <div
         class="d-lg-flex justify-content-between align-items-baseline border border-top-0 border-left-0 border-right-0 mb-2">
         <h2 class="text-break">
@@ -9,9 +9,9 @@
             {{ newsItem.title }}
           </router-link>
         </h2>
-        <div>{{ new Date(newsItem.lastModified).toLocaleDateString('de-DE') }}</div>
+        <div data-test="news-item-last-modified">{{ new Date(newsItem.lastModified).toLocaleDateString('de-DE') }}</div>
       </div>
-      <div class="text-break" v-html="newsItem.description"></div>
+      <div class="text-break" v-html="newsItem.description" data-test="news-item-description"></div>
     </div>
 
     <div v-if="newsItems.length > 0" class="py-2 mb-5">

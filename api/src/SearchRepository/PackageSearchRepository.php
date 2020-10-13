@@ -4,6 +4,7 @@ namespace App\SearchRepository;
 
 use App\Entity\Packages\Package;
 use App\Repository\PackageRepository;
+use App\SearchIndex\PackageSearchIndexer;
 use Elasticsearch\Client;
 
 class PackageSearchRepository
@@ -14,14 +15,22 @@ class PackageSearchRepository
     /** @var PackageRepository */
     private $packageRepository;
 
+    /** @var PackageSearchIndexer */
+    private $packageSearchIndexer;
+
     /**
      * @param PackageRepository $packageRepository
      * @param Client $client
+     * @param PackageSearchIndexer $packageSearchIndexer
      */
-    public function __construct(PackageRepository $packageRepository, Client $client)
-    {
+    public function __construct(
+        PackageRepository $packageRepository,
+        Client $client,
+        PackageSearchIndexer $packageSearchIndexer
+    ) {
         $this->packageRepository = $packageRepository;
         $this->client = $client;
+        $this->packageSearchIndexer = $packageSearchIndexer;
     }
 
     /**
@@ -79,7 +88,7 @@ class PackageSearchRepository
 
         $results = $this->client->search(
             [
-                'index' => 'package',
+                'index' => $this->packageSearchIndexer->getIndexName(),
                 'body' => [
                     'query' => [
                         'function_score' => [
@@ -152,7 +161,7 @@ class PackageSearchRepository
     {
         $results = $this->client->search(
             [
-                'index' => 'package',
+                'index' => $this->packageSearchIndexer->getIndexName(),
                 'body' => [
                     'query' => [
                         'prefix' => ['name' => $term]

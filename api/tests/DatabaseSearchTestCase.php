@@ -16,10 +16,12 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
     {
         parent::setUp();
 
-        $this->createSearchIndex(new MirrorSearchIndexer());
-        $this->createSearchIndex(new NewsSearchIndexer());
-        $this->createSearchIndex(new PackageSearchIndexer());
-        $this->createSearchIndex(new ReleaseSearchIndexer());
+        $environment = $this->getClient()->getKernel()->getEnvironment();
+
+        $this->createSearchIndex(new MirrorSearchIndexer($environment));
+        $this->createSearchIndex(new NewsSearchIndexer($environment));
+        $this->createSearchIndex(new PackageSearchIndexer($environment));
+        $this->createSearchIndex(new ReleaseSearchIndexer($environment));
     }
 
     /**

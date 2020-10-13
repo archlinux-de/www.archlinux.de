@@ -4,6 +4,7 @@ namespace App\SearchRepository;
 
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
+use App\SearchIndex\NewsSearchIndexer;
 use Elasticsearch\Client;
 
 class NewsItemSearchRepository
@@ -14,14 +15,22 @@ class NewsItemSearchRepository
     /** @var NewsItemRepository */
     private $newsItemRepository;
 
+    /** @var NewsSearchIndexer */
+    private $newsSearchIndexer;
+
     /**
      * @param Client $client
      * @param NewsItemRepository $newsItemRepository
+     * @param NewsSearchIndexer $newsSearchIndexer
      */
-    public function __construct(Client $client, NewsItemRepository $newsItemRepository)
-    {
+    public function __construct(
+        Client $client,
+        NewsItemRepository $newsItemRepository,
+        NewsSearchIndexer $newsSearchIndexer
+    ) {
         $this->client = $client;
         $this->newsItemRepository = $newsItemRepository;
+        $this->newsSearchIndexer = $newsSearchIndexer;
     }
 
     /**
@@ -55,7 +64,7 @@ class NewsItemSearchRepository
 
         $results = $this->client->search(
             [
-                'index' => 'news_item',
+                'index' => $this->newsSearchIndexer->getIndexName(),
                 'body' => $body,
                 'from' => $offset,
                 'size' => $limit,

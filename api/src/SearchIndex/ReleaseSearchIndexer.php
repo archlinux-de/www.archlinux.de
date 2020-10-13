@@ -6,6 +6,17 @@ use App\Entity\Release;
 
 class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
+    /** @var string */
+    private $environment;
+
+    /**
+     * @param string $environment
+     */
+    public function __construct(string $environment)
+    {
+        $this->environment = $environment;
+    }
+
     /**
      * @return array
      */
@@ -29,7 +40,7 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     public function getIndexName(): string
     {
-        return 'release';
+        return ($this->environment == 'test' ? 'test-' : '') . 'release';
     }
 
     /**

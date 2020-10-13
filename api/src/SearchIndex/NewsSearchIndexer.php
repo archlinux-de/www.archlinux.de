@@ -6,6 +6,17 @@ use App\Entity\NewsItem;
 
 class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
+    /** @var string */
+    private $environment;
+
+    /**
+     * @param string $environment
+     */
+    public function __construct(string $environment)
+    {
+        $this->environment = $environment;
+    }
+
     /**
      * @return array
      */
@@ -28,7 +39,7 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
 
     public function getIndexName(): string
     {
-        return 'news_item';
+        return ($this->environment == 'test' ? 'test-' : '') . 'news_item';
     }
 
     /**
