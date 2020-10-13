@@ -17,16 +17,17 @@ init: start
 	{{PHP-DB-RUN}} bin/console doctrine:schema:create
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:version --add --all --no-interaction
-	{{PHP-DB-RUN}} bin/console app:index:mirrors
-	{{PHP-DB-RUN}} bin/console app:index:news
-	{{PHP-DB-RUN}} bin/console app:index:packages
-	{{PHP-DB-RUN}} bin/console app:index:releases
 	{{PHP-DB-RUN}} bin/console app:config:update-countries
 	{{PHP-DB-RUN}} bin/console app:update:mirrors
 	{{PHP-DB-RUN}} bin/console app:update:news
 	{{PHP-DB-RUN}} bin/console app:update:releases
 	{{PHP-DB-RUN}} bin/console app:update:repositories
 	{{PHP-DB-RUN}} bin/console app:update:packages
+	{{PHP-DB-RUN}} bin/console app:update:package-popularities
+	{{PHP-DB-RUN}} bin/console app:index:mirrors
+	{{PHP-DB-RUN}} bin/console app:index:news
+	{{PHP-DB-RUN}} bin/console app:index:packages
+	{{PHP-DB-RUN}} bin/console app:index:releases
 
 start:
 	{{COMPOSE}} up -d
