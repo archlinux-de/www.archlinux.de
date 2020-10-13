@@ -16,6 +16,6 @@ class NewsItemIdParser
         if (preg_match('/^\d+$/', $id)) {
             return (int)$id;
         }
-        return (int)hexdec(hash('adler32', $id));
+        return (int)hexdec((string)hash('adler32', $id));
     }
 }

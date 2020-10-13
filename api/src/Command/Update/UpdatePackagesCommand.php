@@ -102,7 +102,7 @@ class UpdatePackagesCommand extends Command
                     $repository->getName(),
                     $repository->getArchitecture()
                 );
-                $repositorySha256sum = hash('sha256', $packageDatabase);
+                $repositorySha256sum = (string)hash('sha256', $packageDatabase);
 
                 if ($repositorySha256sum !== $repository->getSha256sum()) {
                     $repository->setSha256sum($repositorySha256sum);
