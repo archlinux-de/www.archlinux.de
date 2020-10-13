@@ -27,7 +27,7 @@ class FilesTest extends TestCase
      */
     public function testGetIterator(array $files): void
     {
-        $this->assertEquals($files, iterator_to_array(Files::createFromArray($files)->getIterator()));
+        $this->assertEquals($files, [...Files::createFromArray($files)->getIterator()]);
     }
 
     /**

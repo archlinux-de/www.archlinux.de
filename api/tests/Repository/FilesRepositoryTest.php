@@ -32,7 +32,7 @@ class FilesRepositoryTest extends DatabaseTestCase
         /** @var FilesRepository $filesRepository */
         $filesRepository = $entityManager->getRepository(Files::class);
         $files = $filesRepository->getByPackageName('core', Architecture::X86_64, 'pacman');
-        $this->assertEquals($filesArray, iterator_to_array($files));
+        $this->assertEquals($filesArray, [...$files]);
     }
 
     public function testFileRelationIsRemovedWithPackage(): void

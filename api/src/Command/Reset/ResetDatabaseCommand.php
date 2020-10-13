@@ -73,19 +73,19 @@ class ResetDatabaseCommand extends Command
         }
         if ($input->getOption('countries')) {
             $this->lock('countries.lock');
-            $classNames = array_merge($classNames, [Country::class]);
+            $classNames = [...$classNames, ...[Country::class]];
         }
         if ($input->getOption('mirrors')) {
             $this->lock('mirrors.lock');
-            $classNames = array_merge($classNames, [Mirror::class]);
+            $classNames = [...$classNames, ...[Mirror::class]];
         }
         if ($input->getOption('news')) {
             $this->lock('news.lock');
-            $classNames = array_merge($classNames, [NewsItem::class]);
+            $classNames = [...$classNames, ...[NewsItem::class]];
         }
         if ($input->getOption('releases')) {
             $this->lock('releases.lock');
-            $classNames = array_merge($classNames, [Release::class]);
+            $classNames = [...$classNames, ...[Release::class]];
         }
 
         if (!empty($classNames)) {

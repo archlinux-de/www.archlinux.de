@@ -28,7 +28,7 @@ class PackageDatabaseExtractorTest extends TestCase
         $packageDescriptions = $packageDatabaseExtractor
             ->extractPackageDescriptions((string)file_get_contents($this->archiveFile));
 
-        $this->assertEquals(["a\n\nc\n", "b\n\nd\n"], iterator_to_array($packageDescriptions));
+        $this->assertEquals(["a\n\nc\n", "b\n\nd\n"], [...$packageDescriptions]);
     }
 
     protected function setUp(): void

@@ -39,7 +39,7 @@ class PackageDatabaseReaderTest extends TestCase
         $packageDatabaseReader = new PackageDatabaseReader($serializer, $packageDatabaseExtractor);
         $generator = $packageDatabaseReader->readPackages($repository, $packageDatabase);
 
-        $packages = iterator_to_array($generator);
+        $packages = [...$generator];
 
         $this->assertCount(1, $packages);
     }

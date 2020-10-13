@@ -28,7 +28,7 @@ class MirrorFetcherTest extends TestCase
 
         $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $serializer);
         /** @var Mirror[] $mirrors */
-        $mirrors = iterator_to_array($mirrorFetcher);
+        $mirrors = [...$mirrorFetcher];
 
         $this->assertCount(1, $mirrors);
     }
@@ -43,7 +43,7 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $serializer);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($mirrorFetcher);
+        [...$mirrorFetcher];
     }
 
     public function testExceptionOnEmptyMirrorList(): void
@@ -60,6 +60,6 @@ class MirrorFetcherTest extends TestCase
         $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $serializer);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($mirrorFetcher);
+        [...$mirrorFetcher];
     }
 }
