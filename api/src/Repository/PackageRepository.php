@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use Doctrine\ORM\NonUniqueResultException;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Relations\CheckDependency;
@@ -114,8 +115,8 @@ class PackageRepository extends ServiceEntityRepository
      * @param string $architecture
      * @param string $name
      * @return Package
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getByRepositoryArchitectureAndName(string $architecture, string $name): Package
     {
@@ -214,8 +215,8 @@ class PackageRepository extends ServiceEntityRepository
      * @param string $architecture
      * @param string $name
      * @return Package
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getByName(string $repository, string $architecture, string $name): Package
     {

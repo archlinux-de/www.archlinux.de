@@ -56,7 +56,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->atLeastOnce())->method('flush');
 
-        /** @var \App\Service\PackageDatabaseMirror|MockObject $packageDatabaseMirror */
+        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror->expects($this->once())->method('hasUpdated')->willReturn(true);
 
@@ -147,7 +147,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('flush');
 
-        /** @var \App\Service\PackageDatabaseMirror|MockObject $packageDatabaseMirror */
+        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror->expects($this->once())->method('hasUpdated')->willReturn(true);
 

@@ -15,4 +15,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER,
         __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml'
     );
+
+    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
+    $parameters->set(Option::IMPORT_SHORT_CLASSES, false);
 };

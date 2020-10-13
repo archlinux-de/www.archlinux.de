@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
 use App\Entity\Release;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,8 +20,8 @@ class ReleaseRepository extends ServiceEntityRepository
 
     /**
      * @return Release
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getLatestAvailable(): Release
     {
@@ -35,8 +37,8 @@ class ReleaseRepository extends ServiceEntityRepository
     /**
      * @param string $version
      * @return Release
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getAvailableByVersion(string $version): Release
     {
