@@ -137,21 +137,9 @@ fix-code-style:
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
 _update-cypress-image:
-	#!/usr/bin/env node
-	const https = require('https')
-	const fs = require('fs')
-	https.get('https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1', response => {
-		let data = ''
-		response.on('data', (chunk) => { data += chunk })
-		response.on('end', () => {
-			['docker/cypress-open.yml', 'docker/cypress-run.yml'].forEach(file => {
-				const newFile = fs
-					.readFileSync(file, 'utf8')
-					.replace(/cypress\/included:.+/, 'cypress/included:' + JSON.parse(data).results[0].name)
-				fs.writeFileSync(file, newFile)
-			})
-		})
-	})
+	#!/usr/bin/env sh
+	CYPRESS_VERSION=$(curl -sSf 'https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1' | jq -r '."results"[]["name"]')
+	sed -E "s#(cypress/included:)[0-9.]+#\1${CYPRESS_VERSION}#g" -i docker/cypress-*.yml
 
 update:
 	{{PHP-RUN}} composer --no-interaction update
