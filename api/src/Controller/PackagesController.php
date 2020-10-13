@@ -55,12 +55,11 @@ class PackagesController extends AbstractController
     /**
      * @Route("/packages/feed", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param string $defaultArchitecture
      * @return Response
      */
-    public function feedAction(string $defaultArchitecture): Response
+    public function feedAction(): Response
     {
-        $packages = $this->packageRepository->findLatestByArchitecture($defaultArchitecture, 25);
+        $packages = $this->packageRepository->findLatestByArchitecture($this->defaultArchitecture, 25);
 
         $response = $this->render(
             'packages/feed.xml.twig',

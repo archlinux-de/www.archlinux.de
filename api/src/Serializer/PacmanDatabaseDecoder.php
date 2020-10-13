@@ -36,7 +36,7 @@ class PacmanDatabaseDecoder implements DecoderInterface
             }
         }
 
-        $result = array_map(
+        return array_map(
             function (array $entry) {
                 if (empty($entry)) {
                     return null;
@@ -48,8 +48,6 @@ class PacmanDatabaseDecoder implements DecoderInterface
             },
             $result
         );
-
-        return $result;
     }
 
     /**

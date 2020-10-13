@@ -21,21 +21,15 @@ class NewsController extends AbstractController
     /** @var NewsItemSearchRepository */
     private $newsItemSearchRepository;
 
-    /** @var SluggerInterface */
-    private $slugger;
-
     /**
      * @param NewsItemRepository $newsRepository
-     * @param SluggerInterface $slugger
      * @param NewsItemSearchRepository $newsItemSearchRepository
      */
     public function __construct(
         NewsItemRepository $newsRepository,
-        SluggerInterface $slugger,
         NewsItemSearchRepository $newsItemSearchRepository
     ) {
         $this->newsRepository = $newsRepository;
-        $this->slugger = $slugger;
         $this->newsItemSearchRepository = $newsItemSearchRepository;
     }
 
