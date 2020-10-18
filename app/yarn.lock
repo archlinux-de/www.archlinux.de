@@ -1536,16 +1536,16 @@
     semver "^6.1.0"
 
 "@vue/babel-preset-jsx@^1.1.2":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@vue/babel-preset-jsx/-/babel-preset-jsx-1.2.1.tgz#08ada7a606201bbeec93d7ae6be833dd800a0255"
-  integrity sha512-grtrkl7FoNT3l0ZCQUp8UQra2vdGZ1v6Nti5NtSzP5/lS9VA9XUuiZt0tsabOjSw6Q6gfNTvgiZDZdLktyysHQ==
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@vue/babel-preset-jsx/-/babel-preset-jsx-1.2.2.tgz#4a4f934b04d0402913ae1bbd357cf51de2e7dbcb"
+  integrity sha512-+PQKZwoh98oHnRnifT5XD4Ybkwe0McDGkcZcFQRfynL1SFg5zfGRscntZ8Lt4QmYs5NiYc2WOQbyrolUlLZedQ==
   dependencies:
     "@vue/babel-helper-vue-jsx-merge-props" "^1.2.1"
     "@vue/babel-plugin-transform-vue-jsx" "^1.2.1"
     "@vue/babel-sugar-composition-api-inject-h" "^1.2.1"
     "@vue/babel-sugar-composition-api-render-instance" "^1.2.1"
-    "@vue/babel-sugar-functional-vue" "^1.2.1"
-    "@vue/babel-sugar-inject-h" "^1.2.1"
+    "@vue/babel-sugar-functional-vue" "^1.2.2"
+    "@vue/babel-sugar-inject-h" "^1.2.2"
     "@vue/babel-sugar-v-model" "^1.2.1"
     "@vue/babel-sugar-v-on" "^1.2.1"
 
@@ -1563,17 +1563,17 @@
   dependencies:
     "@babel/plugin-syntax-jsx" "^7.2.0"
 
-"@vue/babel-sugar-functional-vue@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@vue/babel-sugar-functional-vue/-/babel-sugar-functional-vue-1.2.1.tgz#dcf4af82f56b6c08f46925a9db9cd4beb47d8874"
-  integrity sha512-SUUrD936wKcgWPauuwrZ9OIitH0Rhc3BzDrdq2LE7JfPSGKR1OXyihnsia++lPufiY7A/cEkbRgNyMFIYm7L9w==
+"@vue/babel-sugar-functional-vue@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@vue/babel-sugar-functional-vue/-/babel-sugar-functional-vue-1.2.2.tgz#267a9ac8d787c96edbf03ce3f392c49da9bd2658"
+  integrity sha512-JvbgGn1bjCLByIAU1VOoepHQ1vFsroSA/QkzdiSs657V79q6OwEWLCQtQnEXD/rLTA8rRit4rMOhFpbjRFm82w==
   dependencies:
     "@babel/plugin-syntax-jsx" "^7.2.0"
 
-"@vue/babel-sugar-inject-h@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@vue/babel-sugar-inject-h/-/babel-sugar-inject-h-1.2.1.tgz#42533a265682917001bbedf07447c39b7a4ff315"
-  integrity sha512-JV8QicpnLaKurpm5K5pBlK8jDTdIpmGW7e1R88DRveLAFlW5un6cl+JM2100/7+t0xI08F3GQ1NWIb8d1YYBzA==
+"@vue/babel-sugar-inject-h@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@vue/babel-sugar-inject-h/-/babel-sugar-inject-h-1.2.2.tgz#d738d3c893367ec8491dcbb669b000919293e3aa"
+  integrity sha512-y8vTo00oRkzQTgufeotjCLPAvlhnpSkcHFEp60+LJUwygGcd5Chrpn5480AQp/thrxVm8m2ifAk0LyFel9oCnw==
   dependencies:
     "@babel/plugin-syntax-jsx" "^7.2.0"
 
