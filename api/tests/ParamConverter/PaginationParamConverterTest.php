@@ -42,9 +42,7 @@ class PaginationParamConverterTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                function (PaginationRequest $_) {
-                    return new ConstraintViolationList();
-                }
+                fn(PaginationRequest $_) => new ConstraintViolationList()
             );
 
         $this->assertTrue($this->paramConverter->apply($request, $configuration));
@@ -71,9 +69,7 @@ class PaginationParamConverterTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                function (PaginationRequest $_) {
-                    return new ConstraintViolationList();
-                }
+                fn(PaginationRequest $_) => new ConstraintViolationList()
             );
 
         $this->assertTrue($this->paramConverter->apply($request, $configuration));
@@ -108,9 +104,7 @@ class PaginationParamConverterTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                function (PaginationRequest $_) {
-                    return new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]);
-                }
+                fn(PaginationRequest $_) => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);

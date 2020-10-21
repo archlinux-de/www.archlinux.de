@@ -61,7 +61,7 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertEquals(
             'http://localhost/packages/core/x86_64/php',
-            (string)$xml->entry->link->attributes()->href
+            (string)$xml->entry->link->attributes()->{'href'}
         );
     }
 

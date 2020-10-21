@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
 use App\Entity\Packages\Files;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,8 +24,8 @@ class FilesRepository extends ServiceEntityRepository
      * @param string $architecture
      * @param string $name
      * @return Files
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getByPackageName(string $repository, string $architecture, string $name): Files
     {

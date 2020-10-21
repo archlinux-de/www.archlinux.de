@@ -65,10 +65,7 @@ class IndexUpdateEventListener
         }
     }
 
-    /**
-     * @param PostFlushEventArgs $eventArgs
-     */
-    public function postFlush(PostFlushEventArgs $eventArgs): void
+    public function postFlush(): void
     {
         if ($this->bulkStatements) {
             foreach (array_chunk($this->bulkStatements, SearchIndexer::BULK_SIZE) as $bulkIndexChunk) {

@@ -43,7 +43,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
         $this->assertNotNull($xml->entry->link->attributes());
         $this->assertStringContainsString(
             $release->getVersion(),
-            (string)$xml->entry->link->attributes()->href
+            (string)$xml->entry->link->attributes()->{'href'}
         );
     }
 

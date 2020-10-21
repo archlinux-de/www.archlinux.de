@@ -12,16 +12,33 @@ use SymfonyDatabaseTest\DatabaseTestCase;
 
 abstract class DatabaseSearchTestCase extends DatabaseTestCase
 {
+    /**
+     * @var SearchIndexConfigurationInterface[]
+     */
+    private $searchIndexers = [];
+
     public function setUp(): void
     {
         parent::setUp();
 
-        $environment = $this->getClient()->getKernel()->getEnvironment();
+        $this->searchIndexers = $this->createSearchIndexers();
+        foreach ($this->searchIndexers as $searchIndexer) {
+            $this->createSearchIndex($searchIndexer);
+        }
+    }
 
-        $this->createSearchIndex(new MirrorSearchIndexer($environment));
-        $this->createSearchIndex(new NewsSearchIndexer($environment));
-        $this->createSearchIndex(new PackageSearchIndexer($environment));
-        $this->createSearchIndex(new ReleaseSearchIndexer($environment));
+    /**
+     * @return SearchIndexConfigurationInterface[]
+     */
+    private function createSearchIndexers(): array
+    {
+        $environment = $this->getClient()->getKernel()->getEnvironment();
+        return [
+            new MirrorSearchIndexer($environment),
+            new NewsSearchIndexer($environment),
+            new PackageSearchIndexer($environment),
+            new ReleaseSearchIndexer($environment)
+        ];
     }
 
     /**
@@ -52,7 +69,9 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
 
     public function tearDown(): void
     {
-        $this->getElasticsearchClient()->indices()->delete(['index' => '*']);
+        foreach ($this->searchIndexers as $searchIndexer) {
+            $this->getElasticsearchClient()->indices()->delete(['index' => $searchIndexer->getIndexName()]);
+        }
 
         parent::tearDown();
     }

@@ -214,7 +214,7 @@ class PackageTest extends TestCase
 
         $package->update($databasePackage);
 
-        $this->assertEquals($pacmanFiles, iterator_to_array($package->getFiles()));
+        $this->assertEquals($pacmanFiles, [...$package->getFiles()]);
     }
 
     public function testUpdateRelations(): void

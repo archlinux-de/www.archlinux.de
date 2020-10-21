@@ -2,6 +2,7 @@
 
 namespace App\Tests\Command\Exception;
 
+use App\Exception\ValidationException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -35,7 +36,7 @@ class ValidationExceptionTest extends TestCase
 
         $violationList = new ConstraintViolationList([$violationA, $violationB]);
 
-        $requestException = new \App\Exception\ValidationException($violationList);
+        $requestException = new ValidationException($violationList);
 
         $this->assertStringContainsString('foo', $requestException->getMessage());
         $this->assertStringContainsString('bar', $requestException->getMessage());

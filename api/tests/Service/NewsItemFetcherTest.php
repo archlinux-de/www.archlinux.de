@@ -29,7 +29,7 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
 
         /** @var NewsItem[] $newsItems */
-        $newsItems = iterator_to_array($newsItemFetcher);
+        $newsItems = [...$newsItemFetcher];
         $this->assertCount(1, $newsItems);
     }
 
@@ -43,7 +43,7 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
 
         $this->expectException(\RuntimeException::class);
-        iterator_to_array($newsItemFetcher);
+        [...$newsItemFetcher];
     }
 
     public function testExceptionOnInvalidResponse(): void
@@ -56,7 +56,7 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
 
         $this->expectException(\Exception::class);
-        iterator_to_array($newsItemFetcher);
+        [...$newsItemFetcher];
     }
 
     public function testExceptionOnIncompleteResponse(): void
@@ -69,6 +69,6 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
 
         $this->expectException(\Throwable::class);
-        iterator_to_array($newsItemFetcher);
+        [...$newsItemFetcher];
     }
 }

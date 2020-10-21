@@ -171,7 +171,7 @@ class Package
     /**
      * @var float
      *
-     * @ORM\Column(name="popularity", type="float", nullable=false, options={"default": 0})
+     * @ORM\Column(name="popularity", type="float", nullable=false, options={"default"= 0})
      */
     private $popularity = 0;
 

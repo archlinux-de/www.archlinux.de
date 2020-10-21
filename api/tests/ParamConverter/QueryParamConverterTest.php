@@ -54,9 +54,7 @@ class QueryParamConverterTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                function (QueryRequest $_) {
-                    return new ConstraintViolationList();
-                }
+                fn(QueryRequest $_) => new ConstraintViolationList()
             );
 
         $this->assertTrue($this->paramConverter->apply($request, $configuration));
@@ -82,9 +80,7 @@ class QueryParamConverterTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                function (QueryRequest $_) {
-                    return new ConstraintViolationList();
-                }
+                fn(QueryRequest $_) => new ConstraintViolationList()
             );
 
         $this->assertTrue($this->paramConverter->apply($request, $configuration));
@@ -106,9 +102,7 @@ class QueryParamConverterTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                function (QueryRequest $_) {
-                    return new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]);
-                }
+                fn(QueryRequest $_) => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);

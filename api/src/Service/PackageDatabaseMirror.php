@@ -49,7 +49,7 @@ class PackageDatabaseMirror
     {
         $lastLocalUpdateCache = $this->cache->getItem(self::CACHE_KEY);
         if ($lastLocalUpdateCache->isHit()) {
-            $contentHash = hash(
+            $contentHash = (string)hash(
                 'sha256',
                 $this->httpClient->request(
                     'GET',
