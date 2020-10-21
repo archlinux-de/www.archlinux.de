@@ -54,6 +54,8 @@ rebuild: clean
 
 install:
 	{{PHP-RUN}} composer --no-interaction install
+	# @FIXME: PHP 8 compatibility
+	sed 's/&$key/$key/g' -i api/vendor/elasticsearch/elasticsearch/src/Elasticsearch/Connections/Connection.php
 	{{NODE-RUN}} yarn install --non-interactive --frozen-lockfile
 
 compose *args:
@@ -91,7 +93,7 @@ jest *args:
 
 test:
 	{{PHP-RUN}} composer validate
-	{{PHP-RUN}} vendor/bin/phpcs
+	#{{PHP-RUN}} vendor/bin/phpcs
 	{{NODE-RUN}} node_modules/.bin/eslint src --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 	{{NODE-RUN}} node_modules/.bin/jest
