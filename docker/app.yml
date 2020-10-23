@@ -16,7 +16,7 @@ services:
       - elasticsearch
 
   app:
-    image: node:alpine
+    image: node:14-alpine
     working_dir: /app/app
     environment:
       - HOME=/tmp
