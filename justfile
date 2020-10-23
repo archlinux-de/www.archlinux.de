@@ -93,7 +93,7 @@ jest *args:
 
 test:
 	{{PHP-RUN}} composer validate
-	#{{PHP-RUN}} vendor/bin/phpcs
+	{{PHP-RUN}} vendor/bin/phpcs
 	{{NODE-RUN}} node_modules/.bin/eslint src --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 	{{NODE-RUN}} node_modules/.bin/jest
