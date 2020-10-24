@@ -1,8 +1,8 @@
 export UID := `id -u`
 export GID := `id -g`
 
-COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p www_archlinux_de'
-COMPOSE-RUN := COMPOSE + ' run --rm -u ' + UID + ':' + GID
+COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p ' + env_var('PROJECT_NAME')
+COMPOSE-RUN := COMPOSE + ' run --rm'
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
 NODE-RUN := COMPOSE-RUN + ' --no-deps -e DISABLE_OPENCOLLECTIVE=true app'
@@ -33,6 +33,7 @@ start:
 	{{COMPOSE}} up -d
 	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
 	{{COMPOSE-RUN}} wait -c elasticsearch:9200 -t 60
+	@echo URL: http://localhost:${PORT}
 
 start-db:
 	{{COMPOSE}} up -d mariadb elasticsearch
@@ -47,7 +48,7 @@ clean:
 	git clean -fdqx -e .idea
 
 rebuild: clean
-	{{COMPOSE}} build --pull
+	{{COMPOSE}} build --pull --parallel
 	just install
 	just init
 	just stop
@@ -91,6 +92,13 @@ yarn *args='-h':
 jest *args:
 	{{NODE-RUN}} node_modules/.bin/jest {{args}}
 
+cypress-run *args:
+	{{COMPOSE}} -f docker/cypress-run.yml run     --rm --no-deps cypress run  --project tests/e2e --browser chrome --headless {{args}}
+
+cypress-open:
+	xhost +local:root
+	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm --no-deps cypress open --project tests/e2e
+
 test:
 	{{PHP-RUN}} composer validate
 	{{PHP-RUN}} vendor/bin/phpcs
@@ -104,17 +112,8 @@ test:
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-e2e:
-	#!/usr/bin/env sh
-	if [ "${CI-}" = "true" ]; then
-		just init
-		echo Running as user crashes Cypress on CI
-		{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e --browser chrome --headless
-	else
-		{{COMPOSE}} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --project tests/e2e --browser chrome --headless
-	fi
-
-cypress-open:
-	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project tests/e2e
+	if [ "${CI-}" = "true" ]; then just init; fi
+	just cypress-run
 
 test-db: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml

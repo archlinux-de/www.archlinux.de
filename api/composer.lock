@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e553df94f6848b88bea35f944927146e",
+    "content-hash": "f19a817759ddf25ae95d56e35383c480",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -77,16 +77,16 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "1.10.4",
+            "version": "1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "bfe91e31984e2ba76df1c1339681770401ec262f"
+                "reference": "88fb6fb1dae011de24dd6b632811c1ff5c2928f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/bfe91e31984e2ba76df1c1339681770401ec262f",
-                "reference": "bfe91e31984e2ba76df1c1339681770401ec262f",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/88fb6fb1dae011de24dd6b632811c1ff5c2928f5",
+                "reference": "88fb6fb1dae011de24dd6b632811c1ff5c2928f5",
                 "shasum": ""
             },
             "require": {
@@ -96,13 +96,14 @@
             },
             "require-dev": {
                 "doctrine/cache": "1.*",
+                "doctrine/coding-standard": "^6.0 || ^8.1",
                 "phpstan/phpstan": "^0.12.20",
                 "phpunit/phpunit": "^7.5 || ^9.1.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9.x-dev"
+                    "dev-master": "1.11.x-dev"
                 }
             },
             "autoload": {
@@ -137,13 +138,13 @@
                 }
             ],
             "description": "Docblock Annotations Parser",
-            "homepage": "http://www.doctrine-project.org",
+            "homepage": "https://www.doctrine-project.org/projects/annotations.html",
             "keywords": [
                 "annotations",
                 "docblock",
                 "parser"
             ],
-            "time": "2020-08-10T19:35:50+00:00"
+            "time": "2020-10-17T22:05:33+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -6958,23 +6959,23 @@
         },
         {
             "name": "pierres/doctrine-migrations-test",
-            "version": "1.1.1",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pierres/doctrine-migrations-test.git",
-                "reference": "4e980beddfe42c86ea3e00abe4fb8ee9579d873a"
+                "reference": "33dab6e6b1e167403a2a0de48f09ee89c040b714"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pierres/doctrine-migrations-test/zipball/4e980beddfe42c86ea3e00abe4fb8ee9579d873a",
-                "reference": "4e980beddfe42c86ea3e00abe4fb8ee9579d873a",
+                "url": "https://api.github.com/repos/pierres/doctrine-migrations-test/zipball/33dab6e6b1e167403a2a0de48f09ee89c040b714",
+                "reference": "33dab6e6b1e167403a2a0de48f09ee89c040b714",
                 "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-bundle": "^2.1",
                 "doctrine/doctrine-migrations-bundle": "^3.0",
                 "doctrine/orm": "^2.7",
-                "php": "^7.2",
+                "php": "^7.3",
                 "symfony/browser-kit": "^5.0",
                 "symfony/framework-bundle": "^5.0"
             },
@@ -6982,7 +6983,7 @@
                 "phpstan/phpstan": "^0.12",
                 "phpstan/phpstan-deprecation-rules": "^0.12",
                 "phpstan/phpstan-phpunit": "^0.12",
-                "phpunit/phpunit": "^9",
+                "phpunit/phpunit": "^9.3",
                 "squizlabs/php_codesniffer": "^3.5"
             },
             "type": "library",
@@ -7005,7 +7006,7 @@
                 }
             ],
             "description": "Test cases to verify Doctrine Migrations",
-            "time": "2020-07-01T17:07:16+00:00"
+            "time": "2020-10-24T13:09:23+00:00"
         },
         {
             "name": "pierres/symfony-database-test",
