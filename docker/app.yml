@@ -30,7 +30,7 @@ services:
   nginx:
     build: nginx
     ports:
-      - "8080:80"
+      - "${PORT}:80"
     volumes:
       - ../:/app:ro
     tmpfs:
