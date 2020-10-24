@@ -1,7 +1,7 @@
 export UID := `id -u`
 export GID := `id -g`
 
-COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p www_archlinux_de'
+COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p ' + env_var('PROJECT_NAME')
 COMPOSE-RUN := COMPOSE + ' run --rm -u ' + UID + ':' + GID
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
@@ -33,6 +33,7 @@ start:
 	{{COMPOSE}} up -d
 	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
 	{{COMPOSE-RUN}} wait -c elasticsearch:9200 -t 60
+	@echo URL: http://localhost:${PORT}
 
 start-db:
 	{{COMPOSE}} up -d mariadb elasticsearch
@@ -47,7 +48,7 @@ clean:
 	git clean -fdqx -e .idea
 
 rebuild: clean
-	{{COMPOSE}} build --pull
+	{{COMPOSE}} build --pull --parallel
 	just install
 	just init
 	just stop
@@ -112,6 +113,7 @@ test-e2e:
 	fi
 
 cypress-open:
+	xhost +local:root
 	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project tests/e2e
 
 test-db: start-db
