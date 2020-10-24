@@ -2,7 +2,7 @@ export UID := `id -u`
 export GID := `id -g`
 
 COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p ' + env_var('PROJECT_NAME')
-COMPOSE-RUN := COMPOSE + ' run --rm -u ' + UID + ':' + GID
+COMPOSE-RUN := COMPOSE + ' run --rm'
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
 NODE-RUN := COMPOSE-RUN + ' --no-deps -e DISABLE_OPENCOLLECTIVE=true app'
