@@ -11,6 +11,7 @@ services:
       - DISPLAY
     entrypoint: cypress
     ipc: host
+    userns_mode: host
     working_dir: /app
     volumes:
       - ../app:/app:ro

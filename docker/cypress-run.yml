@@ -8,6 +8,7 @@ services:
     environment:
       - CYPRESS_baseUrl=http://nginx
     ipc: host
+    userns_mode: host
     working_dir: /app
     volumes:
       - ../app:/app:ro
