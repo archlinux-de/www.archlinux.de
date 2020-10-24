@@ -90,6 +90,13 @@ yarn *args='-h':
 jest *args:
 	{{NODE-RUN}} node_modules/.bin/jest {{args}}
 
+cypress-run *args:
+	{{COMPOSE}} -f docker/cypress-run.yml run     --rm --no-deps cypress run  --project tests/e2e --browser chrome --headless {{args}}
+
+cypress-open:
+	xhost +local:root
+	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm --no-deps cypress open --project tests/e2e
+
 test:
 	{{PHP-RUN}} composer validate
 	{{PHP-RUN}} vendor/bin/phpcs
@@ -103,18 +110,8 @@ test:
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-e2e:
-	#!/usr/bin/env sh
-	if [ "${CI-}" = "true" ]; then
-		just init
-		echo Running as user crashes Cypress on CI
-		{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress run --project tests/e2e --browser chrome --headless
-	else
-		{{COMPOSE}} -f docker/cypress-run.yml run --rm -u ${UID}:${GID} --no-deps cypress run --project tests/e2e --browser chrome --headless
-	fi
-
-cypress-open:
-	xhost +local:root
-	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm -u ${UID}:${GID} --no-deps cypress open --project tests/e2e
+	if [ "${CI-}" = "true" ]; then just init; fi
+	just cypress-run
 
 test-db: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml
