@@ -10,10 +10,10 @@ services:
       - CYPRESS_numTestsKeptInMemory=100
       - DISPLAY
     entrypoint: cypress
+    ipc: host
     working_dir: /app
     volumes:
-      - ../app:/app
+      - ../app:/app:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
-    ipc: host
     tmpfs:
       - /tmp

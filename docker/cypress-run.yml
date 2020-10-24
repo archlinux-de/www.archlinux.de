@@ -10,6 +10,7 @@ services:
     ipc: host
     working_dir: /app
     volumes:
-      - ../app:/app
+      - ../app:/app:ro
+      - ../app/tests/e2e:/app/tests/e2e:rw
     tmpfs:
       - /tmp
