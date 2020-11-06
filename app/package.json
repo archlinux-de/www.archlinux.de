@@ -15,7 +15,7 @@
     "vue": "~2.6.12",
     "vue-filter-pretty-bytes": "~0.1.6",
     "vue-meta": "~2.4.0",
-    "vue-router": "~3.4.8",
+    "vue-router": "~3.4.9",
     "whatwg-fetch": "~3.4.0"
   },
   "devDependencies": {
