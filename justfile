@@ -43,6 +43,14 @@ start-db:
 stop:
 	{{COMPOSE}} stop
 
+# Load a (gzipped) database backup for local testing
+import-db-dump file name='www_archlinux_de': start
+	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb drop -f {{name}} || true
+	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb create {{name}}
+	zcat {{file}} | {{MARIADB-RUN}} mysql -uroot -hmariadb {{name}}
+	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
+	{{PHP-DB-RUN}} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+
 clean:
 	{{COMPOSE}} down -v
 	git clean -fdqx -e .idea
@@ -109,7 +117,7 @@ test:
 	{{NODE-RUN}} node_modules/.bin/jest
 	{{PHP-RUN}} bin/console lint:yaml config
 	{{PHP-RUN}} bin/console lint:twig templates
-	{{NODE-RUN}} yarn build --modern --dest $(mktemp -d)
+	{{NODE-RUN}} yarn build --dest $(mktemp -d)
 	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan analyse
 	{{PHP-RUN}} vendor/bin/phpunit
 
@@ -152,11 +160,13 @@ update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
+	# Downgrade plugin as it would require Webpack 5
+	{{NODE-RUN}} yarn upgrade "compression-webpack-plugin@~6.1.1"
 	just _update-cypress-image
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
-	cd app && yarn build --modern --no-clean
+	cd app && yarn build --no-clean
 	cd app && find dist -type f -mtime +30 -delete
 	cd app && find dist -type d -empty -delete
 	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader

@@ -9,13 +9,7 @@ module.exports = {
     'plugin:compat/recommended'
   ],
   settings: {
-    polyfills: [
-      'fetch',
-      'URL',
-      'Object.entries',
-      'Promise',
-      'AbortController'
-    ]
+    polyfills: []
   },
   parserOptions: {
     parser: 'babel-eslint'

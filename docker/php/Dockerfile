@@ -1,4 +1,4 @@
-FROM php:8.0-rc-fpm-alpine
+FROM php:8-fpm-alpine
 
 RUN apk add libarchive
 

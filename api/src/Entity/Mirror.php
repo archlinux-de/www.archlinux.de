@@ -283,13 +283,17 @@ class Mirror
      */
     public function update(Mirror $mirror): Mirror
     {
-        if ($this->getUrl() !== $mirror->getUrl()) {
-            throw new \InvalidArgumentException(sprintf(
-                'Url mismatch "%s" instead of "%s"',
-                $mirror->getUrl(),
-                $this->getUrl()
-            ));
+        if (strcasecmp($this->getUrl(), $mirror->getUrl()) != 0) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Url mismatch "%s" instead of "%s"',
+                    $mirror->getUrl(),
+                    $this->getUrl()
+                )
+            );
         }
+        // Update URL to support change in case
+        $this->url = $mirror->getUrl();
         return $this
             ->setCompletionPct($mirror->getCompletionPct())
             ->setCountry($mirror->getCountry())
