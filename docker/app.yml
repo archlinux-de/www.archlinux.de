@@ -10,6 +10,7 @@ services:
     userns_mode: host
     volumes:
       - ../api:/app/api
+      - ~/.cache/composer:/tmp/.composer/cache
     tmpfs:
       - /tmp
     depends_on:
@@ -26,6 +27,7 @@ services:
     userns_mode: host
     volumes:
       - ../app:/app/app
+      - ~/.cache/yarn:/tmp/.cache/yarn
     tmpfs:
       - /tmp
 
