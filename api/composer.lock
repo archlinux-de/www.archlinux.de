@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed12f6937907c7359214ee7635bb0df8",
+    "content-hash": "d3b769701960649c3782b87462f03887",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1889,24 +1889,23 @@
         },
         {
             "name": "league/iso3166",
-            "version": "2.1.5",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/iso3166.git",
-                "reference": "aed3b32fc293afdf2c6c6a322c2408eb5d20804a"
+                "reference": "9976d382f270ad3f3df8a68719beb7a7179ffa1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/iso3166/zipball/aed3b32fc293afdf2c6c6a322c2408eb5d20804a",
-                "reference": "aed3b32fc293afdf2c6c6a322c2408eb5d20804a",
+                "url": "https://api.github.com/repos/thephpleague/iso3166/zipball/9976d382f270ad3f3df8a68719beb7a7179ffa1e",
+                "reference": "9976d382f270ad3f3df8a68719beb7a7179ffa1e",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.3|^8.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.12",
-                "phpunit/phpunit": "^5.7.11 || ^6.0 || ^7.0"
+                "phpunit/phpunit": "^9.0"
             },
             "type": "library",
             "extra": {
@@ -1943,7 +1942,7 @@
                 "issues": "https://github.com/thephpleague/iso3166/issues",
                 "source": "https://github.com/thephpleague/iso3166"
             },
-            "time": "2020-01-29T07:08:12+00:00"
+            "time": "2020-12-05T06:50:42+00:00"
         },
         {
             "name": "maxmind-db/reader",
