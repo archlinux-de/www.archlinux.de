@@ -1,6 +1,6 @@
 FROM php:8-fpm-alpine
 
-RUN apk add libarchive
+RUN apk add libarchive git
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 RUN install-php-extensions opcache ffi apcu intl pdo_mysql
