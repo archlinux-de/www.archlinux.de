@@ -34,10 +34,6 @@ const createConfig = isDevelopment => {
     },
 
     plugins: [
-      new webpack.DefinePlugin({
-        // "Should" be default in production
-        'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production')
-      }),
       new VueLoaderPlugin(),
       new CopyPlugin({
         patterns: [
