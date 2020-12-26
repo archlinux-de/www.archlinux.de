@@ -105,6 +105,9 @@
     "ezyang/htmlpurifier": {
         "version": "v4.9.3"
     },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.0"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
