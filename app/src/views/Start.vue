@@ -101,9 +101,9 @@
 </template>
 
 <script>
-import PackageSearch from '@/components/PackageSearch'
-import NewsItemList from '@/components/NewsItemList'
-import RecentPackages from '@/components/RecentPackages'
+import PackageSearch from '../components/PackageSearch'
+import NewsItemList from '../components/NewsItemList'
+import RecentPackages from '../components/RecentPackages'
 
 export default {
   name: 'Start',

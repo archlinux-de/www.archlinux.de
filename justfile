@@ -110,13 +110,13 @@ cypress-open:
 test:
 	{{PHP-RUN}} composer validate
 	{{PHP-RUN}} vendor/bin/phpcs
-	{{NODE-RUN}} node_modules/.bin/eslint src --ext js --ext vue
+	{{NODE-RUN}} node_modules/.bin/eslint src tests --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 	{{NODE-RUN}} node_modules/.bin/jest
 	{{PHP-RUN}} bin/console lint:container
 	{{PHP-RUN}} bin/console lint:yaml config
 	{{PHP-RUN}} bin/console lint:twig templates
-	{{NODE-RUN}} yarn build --dest $(mktemp -d)
+	{{NODE-RUN}} yarn build --output-path $(mktemp -d)
 	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan analyse
 	{{PHP-RUN}} vendor/bin/phpunit
 
@@ -159,13 +159,11 @@ update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
-	# Downgrade plugin as it would require Webpack 5
-	{{NODE-RUN}} yarn upgrade "compression-webpack-plugin@~6.1.1" "copy-webpack-plugin@~6.4.0"
 	just _update-cypress-image
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
-	cd app && yarn build --no-clean
+	cd app && yarn build
 	cd app && find dist -type f -mtime +30 -delete
 	cd app && find dist -type d -empty -delete
 	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader
