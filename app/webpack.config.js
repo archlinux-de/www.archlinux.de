@@ -41,8 +41,6 @@ const createConfig = isDevelopment => {
         ]
       }),
       new HtmlPlugin({
-        appMountId: 'app',
-        filename: 'index.html',
         template: 'public/index.html',
         title: process.env.npm_package_name
       })
