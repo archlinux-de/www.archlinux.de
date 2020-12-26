@@ -2,7 +2,7 @@
   <div id="page">
     <b-navbar class="navbar-border-brand nav-no-outline mb-4" toggleable="sm" type="dark" variant="dark">
       <b-navbar-brand :to="{name: 'start'}">
-        <img alt="Arch Linux" height="40" :src="logo"/>
+        <img alt="Arch Linux" height="40" width="190" :src="logo"/>
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
