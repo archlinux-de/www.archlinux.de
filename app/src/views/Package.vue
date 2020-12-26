@@ -137,9 +137,9 @@
 </template>
 
 <script>
-import PackageRelations from '@/components/PackageRelations'
-import InversePackageRelations from '@/components/InversePackageRelations'
-import PackageFiles from '@/components/PackageFiles'
+import PackageRelations from '../components/PackageRelations'
+import InversePackageRelations from '../components/InversePackageRelations'
+import PackageFiles from '../components/PackageFiles'
 import PackagePopularity from '../components/PackagePopularity'
 
 export default {
