@@ -36,7 +36,7 @@ const createConfig = isDevelopment => {
       new VueLoaderPlugin(),
       new CopyPlugin({
         patterns: [
-          { from: 'public' },
+          { from: 'public', globOptions: { ignore: ['**/index.html'] } },
           { from: 'src/assets/images/arch(icon|logo).svg', to: 'img/[name].[ext]' }
         ]
       }),
