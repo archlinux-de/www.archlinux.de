@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
@@ -33,6 +34,10 @@ const createConfig = isDevelopment => {
     },
 
     plugins: [
+      new webpack.DefinePlugin({
+        // "Should" be default in production
+        'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production')
+      }),
       new VueLoaderPlugin(),
       new CopyPlugin({
         patterns: [
