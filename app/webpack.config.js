@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
@@ -37,7 +36,7 @@ const createConfig = isDevelopment => {
       new VueLoaderPlugin(),
       new CopyPlugin({
         patterns: [
-          { from: 'public', globOptions: { ignore: ['**/index.html'] } },
+          { from: 'public' },
           { from: 'src/assets/images/arch(icon|logo).svg', to: 'img/[name].[ext]' }
         ]
       }),
