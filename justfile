@@ -110,7 +110,7 @@ cypress-open:
 test:
 	{{PHP-RUN}} composer validate
 	{{PHP-RUN}} vendor/bin/phpcs
-	{{NODE-RUN}} node_modules/.bin/eslint src tests --ext js --ext vue
+	{{NODE-RUN}} node_modules/.bin/eslint '*.js' src tests --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 	{{NODE-RUN}} node_modules/.bin/jest
 	{{PHP-RUN}} bin/console lint:container
