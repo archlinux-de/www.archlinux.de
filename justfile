@@ -121,8 +121,16 @@ test:
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-e2e:
-	if [ "${CI-}" = "true" ]; then just init; fi
-	just cypress-run
+	#!/usr/bin/env bash
+	set -e
+	if [ "${CI-}" = "true" ]; then
+		git clean -xdf app/dist
+		just init
+		just yarn build
+		CYPRESS_baseUrl=http://nginx:81 just cypress-run
+	else
+		just cypress-run
+	fi
 
 test-db: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml
@@ -151,7 +159,8 @@ fix-code-style:
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
 _update-cypress-image:
-	#!/usr/bin/env sh
+	#!/usr/bin/env bash
+	set -e
 	CYPRESS_VERSION=$(curl -sSf 'https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1' | jq -r '."results"[]["name"]')
 	sed -E "s#(cypress/included:)[0-9.]+#\1${CYPRESS_VERSION}#g" -i docker/cypress-*.yml
 
