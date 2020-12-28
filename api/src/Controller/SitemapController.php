@@ -12,22 +12,31 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SitemapController extends AbstractController
 {
+    /** @var string */
+    private $defaultArchitecture;
+
+    /**
+     * @param string $defaultArchitecture
+     */
+    public function __construct(string $defaultArchitecture)
+    {
+        $this->defaultArchitecture = $defaultArchitecture;
+    }
+
     /**
      * @Route("/sitemap.xml", methods={"GET"})
      * @Cache(smaxage="600")
      * @param PackageRepository $packageRepository
      * @param NewsItemRepository $newsItemRepository
      * @param ReleaseRepository $releaseRepository
-     * @param string $defaultArchitecture
      * @return Response
      */
     public function indexAction(
         PackageRepository $packageRepository,
         NewsItemRepository $newsItemRepository,
-        ReleaseRepository $releaseRepository,
-        string $defaultArchitecture
+        ReleaseRepository $releaseRepository
     ): Response {
-        $packages = $packageRepository->findStableByArchitecture($defaultArchitecture);
+        $packages = $packageRepository->findStableByArchitecture($this->defaultArchitecture);
 
         $response = $this->render(
             'sitemap/index.xml.twig',
