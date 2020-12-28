@@ -63,4 +63,9 @@ final class Version20180101000000 extends AbstractMigration
         $this->addSql('DROP TABLE releng_release');
         $this->addSql('DROP TABLE files');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

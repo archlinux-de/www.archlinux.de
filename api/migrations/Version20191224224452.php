@@ -48,4 +48,9 @@ final class Version20191224224452 extends AbstractMigration
         );
         $this->addSql('CREATE UNIQUE INDEX UNIQ_CAC6D395989D9B62 ON news_item (slug)');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

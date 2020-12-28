@@ -75,4 +75,9 @@ final class Version20181230070059 extends AbstractMigration
 
         $this->addSql('ALTER TABLE news_item DROP slug');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

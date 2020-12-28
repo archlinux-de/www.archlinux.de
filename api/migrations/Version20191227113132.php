@@ -28,4 +28,9 @@ final class Version20191227113132 extends AbstractMigration
 
         $this->addSql('ALTER TABLE repository ADD mTime DATETIME DEFAULT NULL, DROP sha256sum');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

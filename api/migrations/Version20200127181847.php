@@ -36,4 +36,9 @@ final class Version20200127181847 extends AbstractMigration
         );
         // phpcs:enable
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

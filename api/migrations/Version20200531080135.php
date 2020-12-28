@@ -35,4 +35,9 @@ final class Version20200531080135 extends AbstractMigration
 
         $this->addSql('ALTER TABLE mirror ADD isos TINYINT(1) NOT NULL');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
