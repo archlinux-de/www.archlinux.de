@@ -63,8 +63,6 @@ rebuild: clean
 
 install:
 	{{PHP-RUN}} composer --no-interaction install
-	# @FIXME: PHP 8 compatibility
-	sed 's/&$key/$key/g' -i api/vendor/elasticsearch/elasticsearch/src/Elasticsearch/Connections/Connection.php
 	{{NODE-RUN}} yarn install --non-interactive --frozen-lockfile
 
 compose *args:
