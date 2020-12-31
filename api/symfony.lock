@@ -151,7 +151,7 @@
         "version": "1.0.1"
     },
     "php": {
-        "version": "7.4"
+        "version": "8.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
@@ -471,9 +471,6 @@
             "phpunit.xml.dist",
             "tests/bootstrap.php"
         ]
-    },
-    "symfony/polyfill-php80": {
-        "version": "v1.17.0"
     },
     "symfony/property-access": {
         "version": "v5.0.2"

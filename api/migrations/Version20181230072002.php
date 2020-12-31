@@ -28,4 +28,9 @@ final class Version20181230072002 extends AbstractMigration
 
         $this->addSql('DROP INDEX UNIQ_CAC6D395989D9B62 ON news_item');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

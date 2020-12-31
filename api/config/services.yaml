@@ -74,8 +74,7 @@ services:
         $defaultArchitecture: '%app.packages.default_architecture%'
 
     App\Controller\SitemapController:
-        bind:
-            $defaultArchitecture: '%app.packages.default_architecture%'
+        $defaultArchitecture: '%app.packages.default_architecture%'
 
     App\SearchRepository\MirrorSearchRepository:
         $mirrorCountry: '%app.mirrors.country%'

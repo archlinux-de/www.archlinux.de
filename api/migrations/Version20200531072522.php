@@ -35,4 +35,9 @@ final class Version20200531072522 extends AbstractMigration
 
         $this->addSql('ALTER TABLE mirror ADD active TINYINT(1) DEFAULT NULL');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

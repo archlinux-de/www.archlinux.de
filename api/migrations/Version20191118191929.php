@@ -34,4 +34,9 @@ final class Version20191118191929 extends AbstractMigration
         $this->addSql('ALTER TABLE releng_release CHANGE md5_sum md5sum VARCHAR(32) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE sha1_sum sha1sum VARCHAR(40) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
         // phpcs:enable
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

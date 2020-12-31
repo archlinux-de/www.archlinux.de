@@ -28,4 +28,9 @@ final class Version20200516121823 extends AbstractMigration
 
         $this->addSql('ALTER TABLE package DROP popularity');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
