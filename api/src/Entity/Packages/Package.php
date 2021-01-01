@@ -170,6 +170,7 @@ class Package
 
     /**
      * @var float
+     * @Assert\Range(min="0", max="100")
      *
      * @ORM\Column(name="popularity", type="float", nullable=false, options={"default"= 0})
      */

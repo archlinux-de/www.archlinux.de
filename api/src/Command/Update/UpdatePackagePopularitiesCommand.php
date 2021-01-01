@@ -58,6 +58,9 @@ class UpdatePackagePopularitiesCommand extends Command
         ini_set('memory_limit', '4G');
 
         foreach ($this->packagePopularityFetcher as $name => $popularity) {
+            if ($popularity < 0 || $popularity > 100) {
+                throw new \RuntimeException(sprintf('Invalid popularity of %.2f%% for "%s"', $popularity, $name));
+            }
             $this->packagePopularities[$name] = $popularity;
         }
 
