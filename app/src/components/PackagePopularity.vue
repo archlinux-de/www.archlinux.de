@@ -1,5 +1,5 @@
 <template>
-  <span :title="popularityLabeL">
+  <span :title="popularityLabel">
       <b-icon-star-fill :key="'fill' + id" variant="primary" v-for="id in fullStars"></b-icon-star-fill><!--
     --><b-icon-star-half :key="'half' + id" variant="primary" v-for="id in halfStars"></b-icon-star-half><!--
     --><b-icon-star :key="'empty' + id" variant="primary" v-for="id in emptyStars">></b-icon-star>
@@ -20,16 +20,19 @@ export default {
   props: {
     popularity: {
       type: Number,
-      required: true
+      required: true,
+      default: 0,
+      validator: value => value >= 0 && value <= 100
     },
     stars: {
       type: Number,
       required: false,
-      default: 5
+      default: 5,
+      validator: value => value >= 0 && value <= 5
     }
   },
   computed: {
-    popularityLabeL: function () {
+    popularityLabel: function () {
       return (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 })).format(this.popularity) + '%'
     },
     fullStars: function () {
