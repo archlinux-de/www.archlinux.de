@@ -28,7 +28,7 @@ export default {
       type: Number,
       required: false,
       default: 5,
-      validator: value => value >= 0 && value <= 5
+      validator: value => value > 0
     }
   },
   computed: {
@@ -36,9 +36,18 @@ export default {
       return (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 })).format(this.popularity) + '%'
     },
     fullStars: function () {
+      if (this.popularity <= 0 || this.stars < 1) {
+        return 0
+      }
+      if (this.popularity > 100) {
+        return this.stars
+      }
       return Math.floor(this.popularity / 100 * this.stars)
     },
     halfStars: function () {
+      if (this.popularity > 100 || this.popularity <= 0 || this.stars < 1) {
+        return 0
+      }
       return (Math.ceil(this.popularity / 100 * this.stars) - Math.floor(this.popularity / 100 * this.stars)) >= 0.5 ? 1 : 0
     },
     emptyStars: function () {
