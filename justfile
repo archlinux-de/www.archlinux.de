@@ -7,6 +7,7 @@ PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
 NODE-RUN := COMPOSE-RUN + ' --no-deps -e DISABLE_OPENCOLLECTIVE=true app'
 MARIADB-RUN := COMPOSE-RUN + ' --no-deps mariadb'
+SYMFONY-RUN := 'docker-compose -f docker/symfony.yml ' + ' -p ' + env_var('PROJECT_NAME') + ' run --rm symfony'
 
 default:
 	just --list
@@ -76,6 +77,9 @@ php *args='-h':
 
 composer *args:
 	{{PHP-RUN}} composer {{args}}
+
+symfony *args:
+	{{SYMFONY-RUN}} {{args}}
 
 composer-outdated: (composer "install") (composer "outdated --direct --strict")
 
@@ -150,7 +154,7 @@ test-db-coverage: start-db
 	{{PHP-RUN}} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
 
 test-security:
-	{{PHP-RUN}} bin/console security:check
+	{{SYMFONY-RUN}} check:security
 	{{NODE-RUN}} yarn audit --groups dependencies
 
 fix-code-style:

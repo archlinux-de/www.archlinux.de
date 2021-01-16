@@ -296,18 +296,6 @@
             "config/packages/sensio_framework_extra.yaml"
         ]
     },
-    "sensiolabs/security-checker": {
-        "version": "4.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "4.0",
-            "ref": "160c9b600564faa1224e8f387d49ef13ceb8b793"
-        },
-        "files": [
-            "config/packages/security_checker.yaml"
-        ]
-    },
     "squizlabs/php_codesniffer": {
         "version": "3.0",
         "recipe": {
@@ -435,9 +423,6 @@
         "files": [
             "config/packages/lock.yaml"
         ]
-    },
-    "symfony/mime": {
-        "version": "v4.3.0"
     },
     "symfony/monolog-bridge": {
         "version": "v4.0.0"
