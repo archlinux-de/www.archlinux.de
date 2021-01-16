@@ -22,13 +22,3 @@ services:
       - elasticsearch
     tmpfs:
       - /tmp
-
-  rector:
-    image: rector/rector
-    working_dir: /project
-    user: "${UID}:${GID}"
-    userns_mode: host
-    volumes:
-      - ../api:/project
-    tmpfs:
-      - /tmp
