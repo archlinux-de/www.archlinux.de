@@ -3,10 +3,10 @@
 namespace App\Command\Update;
 
 use App\Entity\Mirror;
-use App\Exception\ValidationException;
 use App\Repository\MirrorRepository;
 use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,23 +29,29 @@ class UpdateMirrorsCommand extends Command
     /** @var ValidatorInterface */
     private $validator;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * @param EntityManagerInterface $entityManager
      * @param MirrorFetcher $mirrorFetcher
      * @param MirrorRepository $mirrorRepository
      * @param ValidatorInterface $validator
+     * @param LoggerInterface $logger
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         MirrorFetcher $mirrorFetcher,
         MirrorRepository $mirrorRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        LoggerInterface $logger
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->mirrorFetcher = $mirrorFetcher;
         $this->mirrorRepository = $mirrorRepository;
         $this->validator = $validator;
+        $this->logger = $logger;
     }
 
     protected function configure(): void
@@ -67,7 +73,11 @@ class UpdateMirrorsCommand extends Command
         foreach ($this->mirrorFetcher as $mirror) {
             $errors = $this->validator->validate($mirror);
             if ($errors->count() > 0) {
-                throw new ValidationException($errors);
+                $this->logger->error(
+                    sprintf('Ignoring "%s" due to validation errors', $mirror->getUrl()),
+                    ['errors' => $errors]
+                );
+                continue;
             }
 
             /** @var Mirror|null $persistedMirror */
