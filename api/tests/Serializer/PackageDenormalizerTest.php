@@ -108,33 +108,4 @@ class PackageDenormalizerTest extends TestCase
 
         $this->assertNull($package->getUrl());
     }
-
-    public function testAddProtocolToUrl(): void
-    {
-        $repository = new Repository('core', 'x86_64');
-        $packageDenormalizer = new PackageDenormalizer();
-
-        $package = $packageDenormalizer->denormalize(
-            [
-                'NAME' => 'pacman',
-                'VERSION' => '5.2.1-4',
-                'ARCH' => 'x86_64',
-                'FILENAME' => 'pacman-5.2.1-4-x86_64.pkg.tar.zst',
-                'URL' => 'www.archlinux.de',
-                'DESC' => 'A library-based package manager with dependency support',
-                'BUILDDATE' => 1578623077,
-                'CSIZE' => 856711,
-                'ISIZE' => 4623024,
-                'PACKAGER' => 'foo<foo@localhost>',
-                'SHA256SUM' => 'a3f6168d59005527b98139607db510fad42a685662f6e86975d941c8c3c476ab',
-                'PGPSIG' => 'abc',
-                'FILES' => '',
-            ],
-            Package::class,
-            'pacman-database',
-            ['repository' => $repository]
-        );
-
-        $this->assertEquals('http://www.archlinux.de', $package->getUrl());
-    }
 }

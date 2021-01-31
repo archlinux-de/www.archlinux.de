@@ -41,7 +41,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->setBuildDate((new \DateTime())->setTimestamp($data['BUILDDATE']))
             ->setCompressedSize($data['CSIZE'])
             ->setInstalledSize($data['ISIZE'])
-            ->setPackager($this->createPackagerFromString($this->normalizeEmail($data['PACKAGER'])))
+            ->setPackager($this->createPackagerFromString($data['PACKAGER']))
             ->setSha256sum($data['SHA256SUM'])
             ->setPgpSignature($data['PGPSIG'])
             ->setLicenses((array)($data['LICENSE'] ?? []))
@@ -84,12 +84,9 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         }
         $urlString = new ByteString($url);
 
-        if (!$urlString->startsWith(['http://', 'https://', 'ftp://'])) {
-            $urlString = $urlString->prepend('http://');
-        }
         $urlString = $urlString
-            ->replace(' ', '%20')
-            ->trim("\u{200e}");
+            ->replace(' ', '%20') // @FIXME https://bugs.archlinux.org/task/69484
+            ->trim("\u{200e}"); // @FIXME https://bugs.archlinux.org/task/69483
 
         return $urlString->toString();
     }
@@ -105,19 +102,6 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         $email = trim($matches[2] ?? '');
 
         return new Packager($name, $email);
-    }
-
-    /**
-     * @param string $email
-     * @return string
-     */
-    private function normalizeEmail(string $email): string
-    {
-        return (new ByteString($email))
-            ->replaceMatches('/(\s+dot\s+)/i', '.')
-            ->replaceMatches('/(\s+at\s+)/i', '@')
-            ->replaceMatches('/gmail-com:\s*(\S+)/i', '$1@gmail.com')
-            ->toString();
     }
 
     /**
