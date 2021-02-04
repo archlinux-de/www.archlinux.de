@@ -11,3 +11,8 @@ parameters:
 		- migrations
 	checkMissingIterableValueType: false
 	checkGenericClassInNonGenericObjectType: false
+	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		-
+			message: '#^Unable to resolve the template type CallbackInput in call to method PHPUnit\\Framework\\Assert::callback\(\)#'
+			path: tests
