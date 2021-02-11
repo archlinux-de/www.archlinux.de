@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d54f01a02378e32830531b6c21a65a68",
+    "content-hash": "1eecb56fe47a2c03885ce52cfefa68f1",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1401,16 +1401,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "7.11.x-dev",
+            "version": "v7.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "9458f5573486ccf6cbd0d68e914ef596c99c4cbd"
+                "reference": "277cd5e182827c59c23e146a836a30470c0f879d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/9458f5573486ccf6cbd0d68e914ef596c99c4cbd",
-                "reference": "9458f5573486ccf6cbd0d68e914ef596c99c4cbd",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/277cd5e182827c59c23e146a836a30470c0f879d",
+                "reference": "277cd5e182827c59c23e146a836a30470c0f879d",
                 "shasum": ""
             },
             "require": {
@@ -1464,9 +1464,9 @@
             ],
             "support": {
                 "issues": "https://github.com/elastic/elasticsearch-php/issues",
-                "source": "https://github.com/elastic/elasticsearch-php/tree/7.11"
+                "source": "https://github.com/elastic/elasticsearch-php/tree/v7.11.0"
             },
-            "time": "2021-02-10T22:24:30+00:00"
+            "time": "2021-02-11T11:04:51+00:00"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
@@ -8475,9 +8475,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "elasticsearch/elasticsearch": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
