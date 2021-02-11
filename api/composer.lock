@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f62d2bef25a1f0a91616b0769f0771e",
+    "content-hash": "d54f01a02378e32830531b6c21a65a68",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1405,12 +1405,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "55f033e4dd55f419a8828f3b3561f3b055a9a439"
+                "reference": "9458f5573486ccf6cbd0d68e914ef596c99c4cbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/55f033e4dd55f419a8828f3b3561f3b055a9a439",
-                "reference": "55f033e4dd55f419a8828f3b3561f3b055a9a439",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/9458f5573486ccf6cbd0d68e914ef596c99c4cbd",
+                "reference": "9458f5573486ccf6cbd0d68e914ef596c99c4cbd",
                 "shasum": ""
             },
             "require": {
@@ -1466,7 +1466,7 @@
                 "issues": "https://github.com/elastic/elasticsearch-php/issues",
                 "source": "https://github.com/elastic/elasticsearch-php/tree/7.11"
             },
-            "time": "2020-12-21T21:18:46+00:00"
+            "time": "2021-02-10T22:24:30+00:00"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
@@ -6399,16 +6399,16 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.31",
+            "version": "0.12.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "2486f59ca63860c0da66bdcf7fd74ba2914d43b5"
+                "reference": "815dd47ade8120c6850c5a3805649c96fbadbdca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/2486f59ca63860c0da66bdcf7fd74ba2914d43b5",
-                "reference": "2486f59ca63860c0da66bdcf7fd74ba2914d43b5",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/815dd47ade8120c6850c5a3805649c96fbadbdca",
+                "reference": "815dd47ade8120c6850c5a3805649c96fbadbdca",
                 "shasum": ""
             },
             "require": {
@@ -6461,9 +6461,9 @@
             "description": "Doctrine extensions for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
-                "source": "https://github.com/phpstan/phpstan-doctrine/tree/0.12.31"
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/0.12.32"
             },
-            "time": "2021-02-09T14:57:13+00:00"
+            "time": "2021-02-09T19:07:47+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
