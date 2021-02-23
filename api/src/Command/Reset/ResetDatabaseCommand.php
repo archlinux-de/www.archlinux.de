@@ -115,7 +115,7 @@ class ResetDatabaseCommand extends Command
         }
 
         $this->locks[$name] = (new LockFactory($store))->createLock($name);
-        if ($this->locks[$name] && !$this->locks[$name]->acquire()) {
+        if (!$this->locks[$name]->acquire()) {
             $this->locks[$name] = null;
 
             return false;
