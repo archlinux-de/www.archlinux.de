@@ -44,7 +44,7 @@ module.exports = {
         new RegExp('^/packages/[^/]+/[^/]+/[^/]+$'),
         new RegExp('^/packages$'),
         new RegExp('^/privacy-policy$'),
-        new RegExp('^/releases/[^/]+$'),
+        new RegExp('^/releases/[0-9][^/]+$'),
         new RegExp('^/releases$'),
         new RegExp('^/$')
       ],
