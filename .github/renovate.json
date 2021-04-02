@@ -10,7 +10,7 @@
     ":automergeLinters",
     ":automergeTesters",
     ":automergeBranch",
-    "schedule:daily"
+    "schedule:nonOfficeHours"
   ],
   "docker-compose": {
     "fileMatch": [
