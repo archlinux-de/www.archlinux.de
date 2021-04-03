@@ -15,7 +15,7 @@ services:
       - mariadb
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.10.1
+    image: docker.elastic.co/kibana/kibana:7.12.0
     ports:
       - "${KIBANA_PORT}:5601"
     depends_on:
