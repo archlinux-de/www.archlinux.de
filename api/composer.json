@@ -23,7 +23,7 @@
         "elasticsearch/elasticsearch": "^7.12.0",
         "exercise/htmlpurifier-bundle": "^3.1.0",
         "league/iso3166": "^3.0.0",
-        "maxmind-db/reader": "^1.10.0",
+        "maxmind-db/reader": "^1.10.1",
         "sensio/framework-extra-bundle": "^6.1.2",
         "symfony/console": "^5.2.6",
         "symfony/dotenv": "^5.2.4",
