@@ -4,21 +4,20 @@ namespace App\Serializer;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use App\Service\NewsItemIdParser;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var NewsItemIdParser */
-    private $newsItemIdParser;
+    /** @var string */
+    private $flarumUrl;
 
     /**
-     * @param NewsItemIdParser $newsItemIdParser
+     * @param string $flarumUrl
      */
-    public function __construct(NewsItemIdParser $newsItemIdParser)
+    public function __construct(string $flarumUrl)
     {
-        $this->newsItemIdParser = $newsItemIdParser;
+        $this->flarumUrl = $flarumUrl;
     }
 
     /**
@@ -32,21 +31,64 @@ class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMe
     {
         return [
             ...(function () use ($data) {
-                foreach ($data['entry'] as $newsEntry) {
-                    $newsItem = (new NewsItem($this->newsItemIdParser->parseId($newsEntry['id'])))
-                        ->setTitle($newsEntry['title']['#'])
-                        ->setLink($newsEntry['link']['@href'])
-                        ->setDescription($newsEntry['summary']['#'])
+                foreach ($data['data'] as $discussions) {
+                    $firstPostContent = $this->getFirstPost(
+                        $data['included'],
+                        $discussions['relationships']['firstPost']['data']['id']
+                    )['attributes']['contentHtml'];
+
+                    if (isset($discussions['relationships']['user']['data']['id'])) {
+                        $user = $this->getUser($data['included'], $discussions['relationships']['user']['data']['id']);
+                    } else {
+                        $user = [
+                            'attributes' => [
+                                'displayName' => '[gelöscht]',
+                                'slug' => null
+                            ]
+                        ];
+                    }
+
+                    $newsItem = (new NewsItem($discussions['id']))
+                        ->setTitle($discussions['attributes']['title'])
+                        ->setLink(sprintf('%s/d/%s', $this->flarumUrl, $discussions['attributes']['slug']))
+                        ->setDescription($firstPostContent)
                         ->setAuthor(
                             (new NewsAuthor())
-                                ->setUri($newsEntry['author']['uri'] ?? null)
-                                ->setName($newsEntry['author']['name'])
+                                ->setUri(
+                                    $user['attributes']['slug'] ? sprintf(
+                                        '%s/u/%s',
+                                        $this->flarumUrl,
+                                        $user['attributes']['slug']
+                                    ) : null
+                                )
+                                ->setName($user['attributes']['displayName'])
                         )
-                        ->setLastModified(new \DateTime($newsEntry['updated']));
+                        ->setLastModified(new \DateTime($discussions['attributes']['createdAt']));
+
                     yield $newsItem;
                 }
             })()
         ];
+    }
+
+    private function getUser(array $included, int $id): array
+    {
+        foreach ($included as $item) {
+            if ($item['type'] === 'users' && (int)$item['id'] === $id) {
+                return $item;
+            }
+        }
+        return [];
+    }
+
+    private function getFirstPost(array $included, int $id): array
+    {
+        foreach ($included as $item) {
+            if ($item['type'] === 'posts' && (int)$item['id'] === $id) {
+                return $item;
+            }
+        }
+        return [];
     }
 
     /**

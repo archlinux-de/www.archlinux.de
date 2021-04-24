@@ -63,7 +63,6 @@ class UpdateNewsCommand extends Command
         $this->lock('news.lock');
 
         $ids = [];
-        $oldestLastModified = new \DateTime();
         /** @var NewsItem $newsItem */
         foreach ($this->newsItemFetcher as $newsItem) {
             $errors = $this->validator->validate($newsItem);
@@ -80,11 +79,8 @@ class UpdateNewsCommand extends Command
             }
 
             $ids[] = $newsItem->getId();
-            if ($oldestLastModified > $newsItem->getLastModified()) {
-                $oldestLastModified = $newsItem->getLastModified();
-            }
         }
-        foreach ($this->newsItemRepository->findAllExceptByIdsNewerThan($ids, $oldestLastModified) as $newsItem) {
+        foreach ($this->newsItemRepository->findAllExceptByIds($ids) as $newsItem) {
             $this->entityManager->remove($newsItem);
         }
 

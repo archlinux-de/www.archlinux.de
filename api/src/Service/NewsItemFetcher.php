@@ -9,7 +9,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class NewsItemFetcher implements \IteratorAggregate
 {
     /** @var string */
-    private $newsFeedUrl;
+    private $flarumUrl;
 
     /** @var HttpClientInterface */
     private $httpClient;
@@ -17,32 +17,58 @@ class NewsItemFetcher implements \IteratorAggregate
     /** @var SerializerInterface */
     private $serializer;
 
+    /** @var string */
+    private $flarumTag;
+
     /**
-     * @param string $newsFeedUrl
+     * @param string $flarumUrl
      * @param HttpClientInterface $httpClient
      * @param SerializerInterface $serializer
      */
-    public function __construct(string $newsFeedUrl, HttpClientInterface $httpClient, SerializerInterface $serializer)
-    {
-        $this->newsFeedUrl = $newsFeedUrl;
+    public function __construct(
+        string $flarumUrl,
+        string $flarumTag,
+        HttpClientInterface $httpClient,
+        SerializerInterface $serializer
+    ) {
+        $this->flarumUrl = $flarumUrl;
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
+        $this->flarumTag = $flarumTag;
     }
 
     /**
-     * @return \Traversable
+     * @return \Traversable<int, NewsItem>
      */
     public function getIterator(): \Traversable
     {
-        $response = $this->httpClient->request('GET', $this->newsFeedUrl);
-        $content = $response->getContent();
+        $offset = 0;
+        $limit = 50;
 
-        $newsItems = $this->serializer->deserialize($content, NewsItem::class . '[]', 'xml');
+        do {
+            $response = $this->httpClient->request(
+                'GET',
+                '/api/discussions',
+                [
+                    'base_uri' => $this->flarumUrl,
+                    'query' => [
+                        'include' => 'user,firstPost',
+                        'filter' => ['tag' => $this->flarumTag],
+                        'page' => ['offset' => $offset, 'limit' => $limit]
+                    ]
+                ]
+            );
+            $content = $response->getContent();
+            $newsItems = $this->serializer->deserialize($content, NewsItem::class . '[]', 'json');
 
-        if (empty($newsItems)) {
-            throw new \RuntimeException('empty news feed');
-        }
+            yield from $newsItems;
 
-        return new \ArrayIterator($newsItems);
+            $count = count($newsItems);
+            $offset += $count;
+
+            if ($count < $limit) {
+                break;
+            }
+        } while ($count != 0);
     }
 }

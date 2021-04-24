@@ -4,24 +4,11 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use App\Service\NewsItemIdParser;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 final class Version20191224224452 extends AbstractMigration
 {
-    public function preUp(Schema $schema): void
-    {
-        $this->write('Rewriting news item ids');
-        foreach ($this->connection->fetchAllAssociative('SELECT id FROM news_item') as $row) {
-            $this->connection->update(
-                'news_item',
-                ['id' => (new NewsItemIdParser())->parseId($row['id'])],
-                ['id' => $row['id']]
-            );
-        }
-    }
-
     public function up(Schema $schema): void
     {
         $this->abortIf(

@@ -4,37 +4,40 @@ namespace App\Tests\Serializer;
 
 use App\Entity\NewsItem;
 use App\Serializer\NewsItemDenormalizer;
-use App\Service\NewsItemIdParser;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class NewsItemDenormalizerTest extends TestCase
 {
     public function testDenormalize(): void
     {
-        /** @var NewsItemIdParser|MockObject $newsItemIdParser */
-        $newsItemIdParser = $this->createMock(NewsItemIdParser::class);
-        $newsItemIdParser
-            ->expects($this->once())
-            ->method('parseId')
-            ->with('https://127.0.0.1/news/1')
-            ->willReturn(1);
-
-        $newsItemDenormalizer = new NewsItemDenormalizer($newsItemIdParser);
+        $newsItemDenormalizer = new NewsItemDenormalizer('https://forum.archlinux.de');
         /** @var NewsItem[] $newsItems */
         $newsItems = $newsItemDenormalizer->denormalize(
             [
-                'entry' => [
+                'data' => [
                     [
-                        'id' => 'https://127.0.0.1/news/1',
-                        'title' => ['#' => 'Test Title'],
-                        'link' => ['@href' => 'https://127.0.0.1/news/1.html'],
-                        'summary' => ['#' => 'Item Summary'],
-                        'author' => [
-                            'name' => 'Author Name',
-                            'uri' => 'https://127.0.0.1/author/1'
+                        'id' => 1,
+                        'attributes' => [
+                            'title' => 'Test Title',
+                            'slug' => '1-test-title',
+                            'createdAt' => (new \DateTime('2018-02-22T19:06:26Z'))->format(\DATE_RFC3339)
                         ],
-                        'updated' => '2018-02-22T19:06:26Z'
+                        'relationships' => [
+                            'user' => ['data' => ['id' => 123]],
+                            'firstPost' => ['data' => ['id' => 1]]
+                        ]
+                    ]
+                ],
+                'included' => [
+                    [
+                        'type' => 'posts',
+                        'id' => 1,
+                        'attributes' => ['contentHtml' => 'Item Summary']
+                    ],
+                    [
+                        'type' => 'users',
+                        'id' => 123,
+                        'attributes' => ['displayName' => 'Author Name', 'slug' => 'author']
                     ]
                 ]
             ],
@@ -45,18 +48,15 @@ class NewsItemDenormalizerTest extends TestCase
         $this->assertEquals(1, $newsItems[0]->getId());
         $this->assertEquals(new \DateTime('2018-02-22T19:06:26Z'), $newsItems[0]->getLastModified());
         $this->assertEquals('Test Title', $newsItems[0]->getTitle());
-        $this->assertEquals('https://127.0.0.1/news/1.html', $newsItems[0]->getLink());
+        $this->assertEquals('https://forum.archlinux.de/d/1-test-title', $newsItems[0]->getLink());
         $this->assertEquals('Item Summary', $newsItems[0]->getDescription());
         $this->assertEquals('Author Name', $newsItems[0]->getAuthor()->getName());
-        $this->assertEquals('https://127.0.0.1/author/1', $newsItems[0]->getAuthor()->getUri());
+        $this->assertEquals('https://forum.archlinux.de/u/author', $newsItems[0]->getAuthor()->getUri());
     }
 
     public function testSupportsDenormalization(): void
     {
-        /** @var NewsItemIdParser|MockObject $newsItemIdParser */
-        $newsItemIdParser = $this->createMock(NewsItemIdParser::class);
-
-        $newsItemDenormalizer = new NewsItemDenormalizer($newsItemIdParser);
+        $newsItemDenormalizer = new NewsItemDenormalizer('');
 
         $this->assertTrue($newsItemDenormalizer->supportsDenormalization([], NewsItem::class . '[]'));
         $this->assertTrue($newsItemDenormalizer->hasCacheableSupportsMethod());

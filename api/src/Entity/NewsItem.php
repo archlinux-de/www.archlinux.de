@@ -41,7 +41,7 @@ class NewsItem
     /**
      * @var string
      * @Assert\NotBlank()
-     * @Assert\Length(max="16384")
+     * @Assert\Length(max="65535")
      *
      * @ORM\Column(type="text")
      */
