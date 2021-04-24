@@ -23,40 +23,14 @@ class NewsItemFetcherTest extends TestCase
         $serializer
             ->expects($this->once())
             ->method('deserialize')
-            ->with($content, NewsItem::class . '[]', 'xml')
+            ->with($content, NewsItem::class . '[]', 'json')
             ->willReturn([new NewsItem(1)]);
 
-        $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
+        $newsItemFetcher = new NewsItemFetcher('http://foo', 'bar', $httpClient, $serializer);
 
         /** @var NewsItem[] $newsItems */
         $newsItems = [...$newsItemFetcher];
         $this->assertCount(1, $newsItems);
-    }
-
-    public function testExceptionOnEmptyResponse(): void
-    {
-        $httpClient = new MockHttpClient(new MockResponse(''));
-
-        /** @var SerializerInterface|MockObject $serializer */
-        $serializer = $this->createMock(SerializerInterface::class);
-
-        $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
-
-        $this->expectException(\RuntimeException::class);
-        [...$newsItemFetcher];
-    }
-
-    public function testExceptionOnInvalidResponse(): void
-    {
-        $httpClient = new MockHttpClient(new MockResponse('foo'));
-
-        /** @var SerializerInterface|MockObject $serializer */
-        $serializer = $this->createMock(SerializerInterface::class);
-
-        $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
-
-        $this->expectException(\Exception::class);
-        [...$newsItemFetcher];
     }
 
     public function testExceptionOnIncompleteResponse(): void
@@ -66,7 +40,7 @@ class NewsItemFetcherTest extends TestCase
         /** @var SerializerInterface|MockObject $serializer */
         $serializer = $this->createMock(SerializerInterface::class);
 
-        $newsItemFetcher = new NewsItemFetcher('http://foo', $httpClient, $serializer);
+        $newsItemFetcher = new NewsItemFetcher('http://foo', 'bar', $httpClient, $serializer);
 
         $this->expectException(\Throwable::class);
         [...$newsItemFetcher];

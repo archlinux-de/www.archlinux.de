@@ -29,7 +29,7 @@ class UpdateNewsCommandTest extends KernelTestCase
 
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
-        $newsItemRepository->method('findAllExceptByIdsNewerThan')->willReturn([$oldNewsItem]);
+        $newsItemRepository->method('findAllExceptByIds')->willReturn([$oldNewsItem]);
 
         /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -65,8 +65,8 @@ class UpdateNewsCommandTest extends KernelTestCase
         /** @var NewsItemRepository|MockObject $newsItemRepository */
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
         $newsItemRepository
-            ->method('findAllExceptByIdsNewerThan')
-            ->with([$oldNewsItem->getId(), $newNewsItem->getId()], $oldNewsItem->getLastModified())
+            ->method('findAllExceptByIds')
+            ->with([$oldNewsItem->getId(), $newNewsItem->getId()])
             ->willReturn([]);
 
         /** @var EntityManagerInterface|MockObject $entityManager */

@@ -11,8 +11,6 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-        bind:
-            $newsPurifier: '@exercise_html_purifier.news'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -61,7 +59,11 @@ services:
         $releaseUrl: '%app.releng.releases%'
 
     App\Service\NewsItemFetcher:
-        $newsFeedUrl: '%app.news.feed%'
+        $flarumUrl: '%app.news.flarum_url%'
+        $flarumTag: '%app.news.flarum_tag%'
+
+    App\Serializer\NewsItemDenormalizer:
+        $flarumUrl: '%app.news.flarum_url%'
 
     App\Service\PackagePopularityFetcher:
         $packageStatisticsApiUrl: '%app.packages.packageStatisticsApiUrl%'
@@ -109,14 +111,3 @@ services:
 
     App\SearchIndex\ReleaseSearchIndexer:
         $environment: '%kernel.environment%'
-
-    exercise_html_purifier.news:
-        tags:
-            -   name: exercise.html_purifier
-                profile: news
-        class: HTMLPurifier
-        arguments:
-            -
-                HTML.Allowed: 'a[href],p,code,pre,ul,ol,li,br,strong,em,del,ins,img[src|alt],blockquote,h3,h4,h5,h6'
-                HTML.Nofollow: true
-                Filter.Custom: [ '@App\Service\NewsItemFilter' ]

@@ -32,17 +32,14 @@ class NewsItemRepository extends ServiceEntityRepository
 
     /**
      * @param int[] $ids
-     * @param \DateTime $lastModified
      * @return NewsItem[]
      */
-    public function findAllExceptByIdsNewerThan(array $ids, \DateTime $lastModified): array
+    public function findAllExceptByIds(array $ids): array
     {
         return $this
             ->createQueryBuilder('newsItem')
             ->where('newsItem.id NOT IN (:ids)')
-            ->andWhere('newsItem.lastModified >= :lastModified')
             ->setParameter('ids', $ids)
-            ->setParameter('lastModified', $lastModified)
             ->getQuery()
             ->getResult();
     }
