@@ -43,7 +43,7 @@
     "require-dev": {
         "ext-pdo_sqlite": "*",
         "phpstan/extension-installer": "^1.1.0",
-        "phpstan/phpstan": "^0.12.84",
+        "phpstan/phpstan": "^0.12.85",
         "phpstan/phpstan-deprecation-rules": "^0.12.6",
         "phpstan/phpstan-doctrine": "^0.12.33",
         "phpstan/phpstan-phpunit": "^0.12.18",
