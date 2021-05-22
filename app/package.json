@@ -40,7 +40,7 @@
     "style-loader": "~2.0.0",
     "stylelint": "~13.13.1",
     "stylelint-config-standard": "~21.0.0",
-    "stylelint-no-unsupported-browser-features": "~4.1.4",
+    "stylelint-no-unsupported-browser-features": "~5.0.1",
     "vue-loader": "~15.9.7",
     "vue-template-compiler": "~2.6.12",
     "webpack": "~5.37.1",
