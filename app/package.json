@@ -18,7 +18,7 @@
     "@babel/core": "~7.14.3",
     "@babel/preset-env": "~7.14.4",
     "babel-loader": "~8.2.2",
-    "compression-webpack-plugin": "~7.1.2",
+    "compression-webpack-plugin": "~8.0.0",
     "copy-webpack-plugin": "~9.0.0",
     "css-loader": "~5.2.6",
     "css-minimizer-webpack-plugin": "~2.0.0",
