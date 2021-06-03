@@ -22,7 +22,7 @@ class Country
 
     /**
      * @var string
-     * @Assert\Length(min="2", max="100", allowEmptyString="false")
+     * @Assert\Length(min="2", max="100")
      *
      * @ORM\Column()
      */
