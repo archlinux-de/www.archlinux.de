@@ -50,6 +50,6 @@
     "workbox-webpack-plugin": "~6.1.5"
   },
   "engines": {
-    "node": ">=15"
+    "node": ">=16"
   }
 }
