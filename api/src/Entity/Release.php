@@ -39,7 +39,7 @@ class Release
 
     /**
      * @var string
-     * @Assert\Length(min="10", max="255", allowEmptyString="false")
+     * @Assert\Length(min="10", max="255")
      *
      * @ORM\Column()
      */

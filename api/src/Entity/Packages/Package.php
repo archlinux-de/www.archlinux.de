@@ -88,7 +88,7 @@ class Package
     /**
      * @var string[]
      * @Assert\All({
-     *      @Assert\Length(min="2", max="100", allowEmptyString="false")
+     *      @Assert\Length(min="2", max="100")
      * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
@@ -121,7 +121,10 @@ class Package
 
     /**
      * @var string|null
-     * @Assert\Length(min="50", max="2048", allowEmptyString="true")
+     * @Assert\AtLeastOneOf({
+     *     @Assert\Blank,
+     *     @Assert\Length(min="50", max="2048")
+     * })
      *
      * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
      */
@@ -138,7 +141,7 @@ class Package
     /**
      * @var string[]|null
      * @Assert\All({
-     *      @Assert\Length(min="3", max="100", allowEmptyString="false")
+     *      @Assert\Length(min="3", max="100")
      * })
      *
      * @ORM\Column(type="simple_array", nullable=true)
