@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57daa1ef7d52189dc1e9d7e86d84878a",
+    "content-hash": "a2263a26c421c73bbe7a8dbf46afa021",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1435,16 +1435,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v7.13.0",
+            "version": "v7.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "7343050106bf73ef9f63cf21490024e001829c81"
+                "reference": "45e17adacd3319958d6135e4ee3a21dbbe36a24b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/7343050106bf73ef9f63cf21490024e001829c81",
-                "reference": "7343050106bf73ef9f63cf21490024e001829c81",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/45e17adacd3319958d6135e4ee3a21dbbe36a24b",
+                "reference": "45e17adacd3319958d6135e4ee3a21dbbe36a24b",
                 "shasum": ""
             },
             "require": {
@@ -1495,9 +1495,9 @@
             ],
             "support": {
                 "issues": "https://github.com/elastic/elasticsearch-php/issues",
-                "source": "https://github.com/elastic/elasticsearch-php/tree/v7.13.0"
+                "source": "https://github.com/elastic/elasticsearch-php/tree/v7.13.1"
             },
-            "time": "2021-05-25T20:30:27+00:00"
+            "time": "2021-06-15T18:36:52+00:00"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
@@ -8198,16 +8198,16 @@
         },
         {
             "name": "sebastian/type",
-            "version": "2.3.2",
+            "version": "2.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/type.git",
-                "reference": "0d1c587401514d17e8f9258a27e23527cb1b06c1"
+                "reference": "b8cd8a1c753c90bc1a0f5372170e3e489136f914"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/type/zipball/0d1c587401514d17e8f9258a27e23527cb1b06c1",
-                "reference": "0d1c587401514d17e8f9258a27e23527cb1b06c1",
+                "url": "https://api.github.com/repos/sebastianbergmann/type/zipball/b8cd8a1c753c90bc1a0f5372170e3e489136f914",
+                "reference": "b8cd8a1c753c90bc1a0f5372170e3e489136f914",
                 "shasum": ""
             },
             "require": {
@@ -8242,7 +8242,7 @@
             "homepage": "https://github.com/sebastianbergmann/type",
             "support": {
                 "issues": "https://github.com/sebastianbergmann/type/issues",
-                "source": "https://github.com/sebastianbergmann/type/tree/2.3.2"
+                "source": "https://github.com/sebastianbergmann/type/tree/2.3.4"
             },
             "funding": [
                 {
@@ -8250,7 +8250,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-04T13:02:07+00:00"
+            "time": "2021-06-15T12:49:02+00:00"
         },
         {
             "name": "sebastian/version",
