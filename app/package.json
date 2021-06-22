@@ -12,11 +12,11 @@
     "vue": "~2.6.14",
     "vue-filter-pretty-bytes": "~0.1.6",
     "vue-meta": "~2.4.0",
-    "vue-router": "~3.5.1"
+    "vue-router": "~3.5.2"
   },
   "devDependencies": {
     "@babel/core": "~7.14.6",
-    "@babel/preset-env": "~7.14.5",
+    "@babel/preset-env": "~7.14.7",
     "babel-loader": "~8.2.2",
     "compression-webpack-plugin": "~8.0.0",
     "copy-webpack-plugin": "~9.0.0",
@@ -43,7 +43,7 @@
     "stylelint-no-unsupported-browser-features": "~5.0.1",
     "vue-loader": "~15.9.7",
     "vue-template-compiler": "~2.6.14",
-    "webpack": "~5.39.1",
+    "webpack": "~5.40.0",
     "webpack-cli": "~4.7.2",
     "webpack-dev-server": "~3.11.2",
     "webpack-merge": "^5.8.0",
