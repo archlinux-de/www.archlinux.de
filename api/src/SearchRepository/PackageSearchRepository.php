@@ -144,6 +144,7 @@ class PackageSearchRepository
     private function findBySearchResults(array $results): array
     {
         $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
+        /** @var Package[] $packages */
         $packages = $this->packageRepository->findBy(['id' => $ids]);
 
         $positions = array_flip($ids);
