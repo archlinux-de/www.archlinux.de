@@ -94,6 +94,7 @@ class NewsItemSearchRepository
         /** @var NewsItem[] $newsItems */
         $newsItems = $this->newsItemRepository->findBy(['id' => $ids]);
 
+        /** @var array<int,string> $positions */
         $positions = array_flip($ids);
         usort($newsItems, fn(NewsItem $a, NewsItem $b): int => $positions[$a->getId()] <=> $positions[$b->getId()]);
 
