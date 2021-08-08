@@ -5,3 +5,7 @@ twig:
     number_format:
         decimal_point: ','
         thousands_separator: '.'
+
+when@test:
+    twig:
+        strict_variables: true

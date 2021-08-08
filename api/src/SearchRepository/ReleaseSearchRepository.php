@@ -97,6 +97,7 @@ class ReleaseSearchRepository
     private function findBySearchResults(array $results): array
     {
         $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
+        /** @var Release[] $releases */
         $releases = $this->releaseRepository->findBy(['version' => $ids]);
 
         $positions = array_flip($ids);

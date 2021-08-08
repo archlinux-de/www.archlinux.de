@@ -46,7 +46,9 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
+        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
         /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
@@ -85,7 +87,9 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
+        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
         /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
@@ -134,7 +138,9 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
+        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
         /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
@@ -181,7 +187,9 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
+        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertNull($databaseGlibc);
     }
@@ -229,7 +237,9 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
+        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
         /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertEquals($glibcNg64->getId(), $databaseGlibc->getId());

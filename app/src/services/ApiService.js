@@ -27,7 +27,7 @@ const createApiService = fetch => {
    * @returns {string}
    */
   const createUrl = (path, options = {}) => {
-    const url = new URL(path, location.toString())
+    const url = new URL(path, window.location.toString())
     Object.entries(options)
       .filter((entry) => typeof entry[1] !== 'undefined' && entry[1] !== null && entry[1].toString().length > 0)
       .forEach(entry => { url.searchParams.set(entry[0], entry[1]) })
@@ -44,7 +44,7 @@ const createApiService = fetch => {
     Object.entries(options)
       .filter((entry) => typeof entry[1] !== 'undefined' && entry[1] !== null && entry[1].toString().length > 0)
       .forEach(entry => { path = path.replace('{' + entry[0] + '}', encodeURIComponent(entry[1])) })
-    return (new URL(path, location.toString())).toString()
+    return (new URL(path, window.location.toString())).toString()
   }
 
   return {

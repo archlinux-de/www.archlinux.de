@@ -13,12 +13,3 @@ services:
       - /tmp
     depends_on:
       - mariadb
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.12.0
-    ports:
-      - "${KIBANA_PORT}:5601"
-    depends_on:
-      - elasticsearch
-    tmpfs:
-      - /tmp

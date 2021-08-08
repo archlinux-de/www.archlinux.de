@@ -159,12 +159,26 @@ fix-code-style:
 	{{NODE-RUN}} node_modules/.bin/eslint src --fix --ext js --ext vue
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
+_update-cypress-image:
+	#!/usr/bin/env bash
+	set -e
+	CYPRESS_VERSION=$(curl -sSf 'https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1' | jq -r '."results"[]["name"]')
+	sed -E "s#(cypress/included:)[0-9.]+#\1${CYPRESS_VERSION}#g" -i docker/cypress-*.yml
+
+update:
+	{{PHP-RUN}} composer --no-interaction update
+	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
+	{{NODE-RUN}} yarn upgrade --non-interactive --latest
+	# vue-loader >= 16 is not compatible with Vue 2
+	{{NODE-RUN}} yarn add --dev --non-interactive 'vue-loader@~15'
+	just _update-cypress-image
+
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
 	cd app && yarn build
 	cd app && find dist -type f -atime +30 -delete
 	cd app && find dist -type d -empty -delete
-	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader
+	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader --classmap-authoritative
 	cd api && composer dump-env prod
 	systemctl restart php-fpm@www.service
 	cd api && bin/console doctrine:migrations:sync-metadata-storage --no-interaction

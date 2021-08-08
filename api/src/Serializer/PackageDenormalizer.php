@@ -86,7 +86,8 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
 
         $urlString = $urlString
             ->replace(' ', '%20') // @FIXME https://bugs.archlinux.org/task/69484
-            ->trim("\u{200e}"); // @FIXME https://bugs.archlinux.org/task/69483
+            ->trim("\u{200e}") // @FIXME https://bugs.archlinux.org/task/69483
+            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1');
 
         return $urlString->toString();
     }

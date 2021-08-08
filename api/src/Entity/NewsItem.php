@@ -32,7 +32,7 @@ class NewsItem
     /**
      * @var string
      * @Assert\NotBlank()
-     * @Assert\Length(min="10", max="255", allowEmptyString="false")
+     * @Assert\Length(min="10", max="255")
      *
      * @ORM\Column(unique=true)
      */
