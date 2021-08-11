@@ -11,7 +11,7 @@
         <b-navbar-nav class="ml-auto mr-4">
           <b-nav-item :to="{name: 'start'}" class="d-none d-md-block ml-3 font-weight-bold" exact>Start</b-nav-item>
           <b-nav-item :to="{name: 'packages'}" class="ml-3 font-weight-bold">Pakete</b-nav-item>
-          <b-nav-item href="https://bbs.archlinux.de/" class="ml-3 font-weight-bold">Forum</b-nav-item>
+          <b-nav-item href="https://forum.archlinux.de/" class="ml-3 font-weight-bold">Forum</b-nav-item>
           <b-nav-item href="https://wiki.archlinux.de/" class="ml-3 font-weight-bold">Wiki</b-nav-item>
           <b-nav-item href="https://aur.archlinux.de/" class="d-none d-md-block ml-3 font-weight-bold">AUR</b-nav-item>
           <b-nav-item :to="{name: 'download'}" class="ml-3 font-weight-bold">Download</b-nav-item>

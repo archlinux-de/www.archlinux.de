@@ -44,7 +44,7 @@ app_release:
 
 external_forum:
     path: /
-    host: bbs.archlinux.de
+    host: forum.archlinux.de
     schemes: ['https']
 
 external_wiki:
@@ -61,4 +61,4 @@ external_contact:
     path: /contact
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
     defaults:
-        path: 'https://bbs.archlinux.de/misc.php?email=486'
+        path: 'https://forum.archlinux.de/misc.php?email=486'

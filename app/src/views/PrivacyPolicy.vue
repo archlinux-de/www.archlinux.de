@@ -20,7 +20,7 @@
         <p>Aus diesen Daten werden anonymisierte Statistiken erstellt. Zusätzlich werden sie zur Erkennung und
           Abwehr von Angriffen verwendet. Die Logdaten werden für einen Monat archiviert.</p>
         <h3>Beiträge im Forum und Wiki</h3>
-        <p>Veröffentlichst Du Beiträge im <a href="https://bbs.archlinux.de/">Forum</a> oder
+        <p>Veröffentlichst Du Beiträge im <a href="https://forum.archlinux.de/">Forum</a> oder
           <a href="https://wiki.archlinux.de/">Wiki</a> so wird auch hier Deine IP-Adresse protokolliert.
           Dies ist notwendig um mögliche Angriffe abzuwehren und Straftaten zu verfolgen. Diese Daten werden
           zusammen mit den jeweiligen Beiträgen entfernt.</p>
@@ -35,17 +35,17 @@
       </b-col>
       <b-col class="pl-lg-5" lg="6">
         <h2>Benutzerkonten</h2>
-        <p>Bei der Registrierung im <a href="https://bbs.archlinux.de/">Forum</a> wird neben einem
+        <p>Bei der Registrierung im <a href="https://forum.archlinux.de/">Forum</a> wird neben einem
           Benutzernamen
           auch Deine E-Mail-Adresse gespeichert. Alle weiteren Angaben im Profil sind freiwillig und
           öffentlich zugänglich. Diese kannst Du jederzeit unter <em>Profil</em> im
-          <a href="https://bbs.archlinux.de/">Forum</a> einsehen und ändern.
-          Dein im <a href="https://bbs.archlinux.de/">Forum</a> angelegtes Benutzer-Konto wird
+          <a href="https://forum.archlinux.de/">Forum</a> einsehen und ändern.
+          Dein im <a href="https://forum.archlinux.de/">Forum</a> angelegtes Benutzer-Konto wird
           zudem für das <a href="https://wiki.archlinux.de/">Wiki</a> verwendet.</p>
         <h2>Löschen des Benutzerkontos</h2>
         <p>Du kannst Dein Konto und die enthaltenen Daten jederzeit im
-          <a href="https://bbs.archlinux.de/">Forum</a> unter <em>Profil</em> löschen. Alle von Dir
-          verfassten Beiträge im <a href="https://bbs.archlinux.de/">Forum</a> oder
+          <a href="https://forum.archlinux.de/">Forum</a> unter <em>Profil</em> löschen. Alle von Dir
+          verfassten Beiträge im <a href="https://forum.archlinux.de/">Forum</a> oder
           <a href="https://wiki.archlinux.de/">Wiki</a> bleiben hierbei erhalten. Dein Benutzername selbst
           wird
           weiterhin als Verfasser angezeigt.</p>
@@ -53,16 +53,16 @@
         <p>Auf besonderne Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt
           vor
           dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage über das
-          <a href="https://bbs.archlinux.de/misc.php?email=486">Kontakt-Formular</a>. Nur durch die Nutzung des Formulars
+          <a href="https://forum.archlinux.de/misc.php?email=486">Kontakt-Formular</a>. Nur durch die Nutzung des Formulars
           ist
           sichergestellt, dass Du Besitzer des jeweiligen Benutzerkontos bist.</p>
         <h2>Auskunft über personenbezogene Daten</h2>
         <p>Du hast das Recht Auskunft über die hier gespeicherten personenbezogenen Daten zu erfragen. Nutze
           auch
-          hierzu das <a href="https://bbs.archlinux.de/misc.php?email=486">Kontakt-Formular</a>.</p>
+          hierzu das <a href="https://forum.archlinux.de/misc.php?email=486">Kontakt-Formular</a>.</p>
         <h2>Kontakt</h2>
         <p>Anfragen zu Deinem Benutzerkonto können nur über den authentifizierten Zugang über das
-          <a href="https://bbs.archlinux.de/misc.php?email=486">Kontakt-Formular</a> erfolgen. Weitere
+          <a href="https://forum.archlinux.de/misc.php?email=486">Kontakt-Formular</a> erfolgen. Weitere
           Kontakt-Möglichkeiten findest Du im <router-link :to="{name: 'impressum'}">Impressum</router-link>.</p>
       </b-col>
     </b-row>
