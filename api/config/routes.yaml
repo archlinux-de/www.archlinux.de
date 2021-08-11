@@ -2,14 +2,6 @@ app_start:
     path: /
     methods: GET
 
-app_impressum:
-    path: /impressum
-    methods: GET
-
-app_privacy:
-    path: /privacy-policy
-    methods: GET
-
 app_download:
     path: /download
     methods: GET
@@ -41,24 +33,3 @@ app_releases:
 app_release:
     path: /releases/{version}
     methods: GET
-
-external_forum:
-    path: /
-    host: forum.archlinux.de
-    schemes: ['https']
-
-external_wiki:
-    path: /
-    host: wiki.archlinux.de
-    schemes: ['https']
-
-external_aur:
-    path: /
-    host: aur.archlinux.de
-    schemes: ['https']
-
-external_contact:
-    path: /contact
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
-    defaults:
-        path: 'https://forum.archlinux.de/misc.php?email=486'
