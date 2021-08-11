@@ -43,27 +43,25 @@
           Dein im <a href="https://forum.archlinux.de/">Forum</a> angelegtes Benutzer-Konto wird
           zudem für das <a href="https://wiki.archlinux.de/">Wiki</a> verwendet.</p>
         <h2>Löschen des Benutzerkontos</h2>
-        <p>Du kannst Dein Konto und die enthaltenen Daten jederzeit im
-          <a href="https://forum.archlinux.de/">Forum</a> unter <em>Profil</em> löschen. Alle von Dir
-          verfassten Beiträge im <a href="https://forum.archlinux.de/">Forum</a> oder
+        <p>Du kannst Dein Konto und die enthaltenen Daten auf Wunsch löschen lassen. Schicke hierzu eine formlose
+          Anfrage an die im <router-link :to="{name: 'impressum'}">Impressum</router-link>
+          hinterlegte E-Mail-Adresse.
+          Alle von Dir verfassten Beiträge im <a href="https://forum.archlinux.de/">Forum</a> oder
           <a href="https://wiki.archlinux.de/">Wiki</a> bleiben hierbei erhalten. Dein Benutzername selbst
-          wird
-          weiterhin als Verfasser angezeigt.</p>
+          wird weiterhin als Verfasser angezeigt.
+        </p>
         <h2>Änderung des Benutzernamens</h2>
         <p>Auf besonderne Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt
-          vor
-          dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage über das
-          <a href="https://forum.archlinux.de/misc.php?email=486">Kontakt-Formular</a>. Nur durch die Nutzung des Formulars
-          ist
-          sichergestellt, dass Du Besitzer des jeweiligen Benutzerkontos bist.</p>
+          vor dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage an die im
+          <router-link :to="{name: 'impressum'}">Impressum</router-link> hinterlegte E-Mail-Adresse.
+        </p>
         <h2>Auskunft über personenbezogene Daten</h2>
         <p>Du hast das Recht Auskunft über die hier gespeicherten personenbezogenen Daten zu erfragen. Nutze
-          auch
-          hierzu das <a href="https://forum.archlinux.de/misc.php?email=486">Kontakt-Formular</a>.</p>
+          auch hierzu die im <router-link :to="{name: 'impressum'}">Impressum</router-link> hinterlegte E-Mail-Adresse.
+        </p>
         <h2>Kontakt</h2>
-        <p>Anfragen zu Deinem Benutzerkonto können nur über den authentifizierten Zugang über das
-          <a href="https://forum.archlinux.de/misc.php?email=486">Kontakt-Formular</a> erfolgen. Weitere
-          Kontakt-Möglichkeiten findest Du im <router-link :to="{name: 'impressum'}">Impressum</router-link>.</p>
+        <p>Weitere Kontakt-Möglichkeiten findest Du im <router-link :to="{name: 'impressum'}">Impressum</router-link>.
+        </p>
       </b-col>
     </b-row>
   </b-container>
