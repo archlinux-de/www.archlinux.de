@@ -19,7 +19,7 @@
         "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^2.4.2",
         "doctrine/doctrine-migrations-bundle": "^3.1.1",
-        "doctrine/orm": "^2.9.3",
+        "doctrine/orm": "^2.9.4",
         "elasticsearch/elasticsearch": "^7.14.0",
         "exercise/htmlpurifier-bundle": "^3.1.0",
         "league/iso3166": "^3.0.0",
