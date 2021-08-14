@@ -20,6 +20,8 @@ framework:
         default_options:
             timeout: 60
             max_duration: 1800
+            headers:
+                'User-Agent': 'www.archlinux.de'
     default_locale: de
 
 when@test:
