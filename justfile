@@ -1,3 +1,5 @@
+set dotenv-load := true
+
 export UID := `id -u`
 export GID := `id -g`
 
