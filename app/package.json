@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "bootstrap-vue": "~2.21.2",
-    "core-js": "~3.16.2",
+    "core-js": "~3.16.3",
     "vue": "~2.6.14",
     "vue-filter-pretty-bytes": "~0.1.6",
     "vue-meta": "~2.4.0",
@@ -26,7 +26,7 @@
     "eslint-config-standard": "~16.0.3",
     "eslint-plugin-compat": "~3.13.0",
     "eslint-plugin-cypress": "^2.11.3",
-    "eslint-plugin-import": "^2.24.1",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "~7.16.0",
