@@ -85,9 +85,12 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         $urlString = new ByteString($url);
 
         $urlString = $urlString
-            ->replace(' ', '%20') // @FIXME https://bugs.archlinux.org/task/69484
-            ->trim("\u{200e}") // @FIXME https://bugs.archlinux.org/task/69483
-            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1'); // @FIXME https://bugs.archlinux.org/task/71957
+            // @FIXME https://bugs.archlinux.org/task/69484
+            ->replace(' ', '%20')
+            // @FIXME https://bugs.archlinux.org/task/69483
+            ->trim("\u{200e}")
+            // @FIXME https://bugs.archlinux.org/task/71957
+            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1');
 
         return $urlString->toString();
     }
