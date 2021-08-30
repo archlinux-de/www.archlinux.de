@@ -51,7 +51,7 @@
           wird weiterhin als Verfasser angezeigt.
         </p>
         <h2>Änderung des Benutzernamens</h2>
-        <p>Auf besonderne Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt
+        <p>Auf besonderen Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt
           vor dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage an die im
           <router-link :to="{name: 'impressum'}">Impressum</router-link> hinterlegte E-Mail-Adresse.
         </p>
