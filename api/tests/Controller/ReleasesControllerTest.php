@@ -85,7 +85,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
                 (new Torrent())
                     ->setFileLength(1)
                     ->setFileName('release.iso')
-                    ->setUrl('http://localhost/torrent')
+                    ->setUrl('/torrent')
                     ->setMagnetUri('magnet://localhost/torrent')
             );
         $entityManager->persist($release);
@@ -108,11 +108,11 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
                 'info' => 'info',
                 'isoUrl' => 'http://localhost/download/iso/2018.01.01/release.iso',
                 'sha1Sum' => 'abcdef',
-                'torrentUrl' => 'https://www.archlinux.orghttp://localhost/torrent',
+                'torrentUrl' => 'https://archlinux.org/torrent',
                 'fileSize' => 1,
                 'magnetUri' => 'magnet://localhost/torrent',
                 'isoPath' => '/iso/2018.01.01/release.iso',
-                'isoSigUrl' => 'https://www.archlinux.org/iso/2018.01.01/release.iso.sig',
+                'isoSigUrl' => 'http://localhost/download/iso/2018.01.01/release.iso.sig',
                 'fileName' => 'release.iso'
             ],
             $responseData

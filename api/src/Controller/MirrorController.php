@@ -24,24 +24,33 @@ class MirrorController extends AbstractController
     /** @var string */
     private $mirrorCountry;
 
+    /** @var string */
+    private $mirrorArchive;
+
     /**
      * @param GeoIp $geoIp
      * @param string $mirrorCountry
      * @param MirrorSearchRepository $mirrorSearchRepository
+     * @param string $mirrorArchive
      */
-    public function __construct(GeoIp $geoIp, string $mirrorCountry, MirrorSearchRepository $mirrorSearchRepository)
-    {
+    public function __construct(
+        GeoIp $geoIp,
+        string $mirrorCountry,
+        MirrorSearchRepository $mirrorSearchRepository,
+        string $mirrorArchive
+    ) {
         $this->geoIp = $geoIp;
         $this->mirrorCountry = $mirrorCountry;
         $this->mirrorSearchRepository = $mirrorSearchRepository;
+        $this->mirrorArchive = $mirrorArchive;
     }
 
     /**
      * @Route(
      *     "/download/iso/{version}/{file}",
      *      requirements={
-     *          "version"= "^[0-9]{4}\.[0-9]{2}\.[0-9]{2}$",
-     *          "file"= "[a-zA-Z0-9\.\-\+_/:]{1,255}"
+     *          "version"= "[\w\.\-]{1,191}",
+     *          "file"= "[\w\.\-\+/:]{0,255}"
      *      },
      *      methods={"GET"}
      *     )
@@ -58,12 +67,27 @@ class MirrorController extends AbstractController
         ReleaseRepository $releaseRepository
     ): Response {
         try {
-            $release = $releaseRepository->getAvailableByVersion($version);
+            $release = $releaseRepository->getByVersion($version);
         } catch (UnexpectedResultException $e) {
             throw $this->createNotFoundException('ISO image not found', $e);
         }
 
-        return $this->redirectToMirror('iso/' . $version . '/' . $file, $release->getCreated(), $request);
+        if ($release->isAvailable()) {
+            return $this->redirectToMirror('iso/' . $version . '/' . $file, $release->getCreated(), $request);
+        } else {
+            return $this->redirect(
+                $this->mirrorArchive . 'iso/' . $this->createDirectoryVersion($version) . '/' . $file
+            );
+        }
+    }
+
+    private function createDirectoryVersion(string $version): string
+    {
+        return match ($version) {
+            '0.7.1', '0.7.2' => '0.7',
+            '2007.08-2' => '2007.08',
+            default => $version,
+        };
     }
 
     /**

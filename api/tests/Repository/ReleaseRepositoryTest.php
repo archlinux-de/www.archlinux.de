@@ -27,7 +27,7 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $this->assertEquals($release->getVersion(), $latestRelease->getVersion());
     }
 
-    public function testGetAvailableByVersion(): void
+    public function testGetByVersion(): void
     {
         $release = new Release('2018-01-01');
         $release->setAvailable(true);
@@ -42,7 +42,7 @@ class ReleaseRepositoryTest extends DatabaseTestCase
 
         /** @var ReleaseRepository $releaseRepository */
         $releaseRepository = $this->getRepository(Release::class);
-        $latestRelease = $releaseRepository->getAvailableByVersion($release->getVersion());
+        $latestRelease = $releaseRepository->getByVersion($release->getVersion());
         $this->assertEquals($release->getVersion(), $latestRelease->getVersion());
     }
 

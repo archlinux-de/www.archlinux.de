@@ -67,6 +67,7 @@ services:
 
     App\Controller\MirrorController:
         $mirrorCountry: '%app.mirrors.country%'
+        $mirrorArchive: '%app.mirrors.archive%'
 
     App\Controller\PackagesController:
         $defaultArchitecture: '%app.packages.default_architecture%'

@@ -40,12 +40,11 @@ class ReleaseRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getAvailableByVersion(string $version): Release
+    public function getByVersion(string $version): Release
     {
         return $this
             ->createQueryBuilder('release')
-            ->where('release.available = true')
-            ->andWhere('release.version = :version')
+            ->where('release.version = :version')
             ->setParameter('version', $version)
             ->getQuery()
             ->getSingleResult();
