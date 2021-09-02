@@ -56,11 +56,11 @@ class ReleaseNormalizerTest extends KernelTestCase
                 'info' => 'foo bar',
                 'isoUrl' => 'http://localhost/download/iso/2018.01.01/2018.01.01.iso',
                 'sha1Sum' => null,
-                'torrentUrl' => 'https://www.archlinux.org/releases/2018.01.01.iso.torrent',
+                'torrentUrl' => 'https://archlinux.org/releases/2018.01.01.iso.torrent',
                 'fileSize' => null,
                 'magnetUri' => null,
                 'isoPath' => '/iso/2018.01.01/2018.01.01.iso',
-                'isoSigUrl' => 'https://www.archlinux.org/iso/2018.01.01/2018.01.01.iso.sig',
+                'isoSigUrl' => 'http://localhost/download/iso/2018.01.01/2018.01.01.iso.sig',
                 'fileName' => '2018.01.01.iso'
             ],
             $jsonArray

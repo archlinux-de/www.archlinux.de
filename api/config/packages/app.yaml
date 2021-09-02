@@ -16,6 +16,7 @@ parameters:
     env(DEFAULT_MIRROR): '%app.packages.mirror%'
     app.mirrors.default: '%env(DEFAULT_MIRROR)%'
     app.mirrors.country: 'DE'
+    app.mirrors.archive: 'https://archive.archlinux.org/'
     app.news.flarum_url: 'https://forum.archlinux.de'
     app.news.flarum_tag: 'neuigkeiten'
     app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'

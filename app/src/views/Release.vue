@@ -40,7 +40,7 @@
               <b-th>SHA1</b-th>
               <b-td class="text-break">{{ release.sha1Sum }}</b-td>
             </b-tr>
-            <b-tr v-if="release.available">
+            <b-tr v-if="release.isoSigUrl">
               <b-th>PGP</b-th>
               <b-td><a :href="release.isoSigUrl" target="_blank">PGP-Signatur</a>
               </b-td>
@@ -49,7 +49,7 @@
         </b-col>
 
         <b-col cols="12" xl="6">
-          <a v-if="release.available" class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl">
+          <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl">
             <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
           </a>
           <ul class="list-unstyled ml-4" v-if="release.torrentUrl">
