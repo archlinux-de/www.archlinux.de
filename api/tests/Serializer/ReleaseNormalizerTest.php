@@ -38,7 +38,6 @@ class ReleaseNormalizerTest extends KernelTestCase
             ->setAvailable(true)
             ->setKernelVersion('3.11')
             ->setInfo('foo bar')
-            ->setIsoUrl('/releases/2018.01.01.iso')
             ->setTorrent(
                 (new Torrent())
                     ->setFileName('2018.01.01.iso')
@@ -60,8 +59,8 @@ class ReleaseNormalizerTest extends KernelTestCase
                 'torrentUrl' => 'https://www.archlinux.org/releases/2018.01.01.iso.torrent',
                 'fileSize' => null,
                 'magnetUri' => null,
-                'isoPath' => '/releases/2018.01.01.iso',
-                'isoSigUrl' => 'https://www.archlinux.org/releases/2018.01.01.iso.sig',
+                'isoPath' => '/iso/2018.01.01/2018.01.01.iso',
+                'isoSigUrl' => 'https://www.archlinux.org/iso/2018.01.01/2018.01.01.iso.sig',
                 'fileName' => '2018.01.01.iso'
             ],
             $jsonArray

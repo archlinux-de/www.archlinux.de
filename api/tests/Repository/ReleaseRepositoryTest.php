@@ -13,7 +13,6 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $release = new Release('2018-01-01');
         $release->setAvailable(true);
         $release->setInfo('');
-        $release->setIsoUrl('');
         $release->setCreated(new \DateTime('2018-01-01'));
         $release->setReleaseDate(new \DateTime('2018-01-01'));
 
@@ -33,7 +32,6 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $release = new Release('2018-01-01');
         $release->setAvailable(true);
         $release->setInfo('');
-        $release->setIsoUrl('');
         $release->setCreated(new \DateTime('2018-01-01'));
         $release->setReleaseDate(new \DateTime('2018-01-01'));
 
@@ -53,14 +51,12 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $releaseA = new Release('A');
         $releaseA->setAvailable(true);
         $releaseA->setInfo('');
-        $releaseA->setIsoUrl('');
         $releaseA->setCreated(new \DateTime('2018-01-01'));
         $releaseA->setReleaseDate(new \DateTime('2018-01-01'));
 
         $releaseB = new Release('B');
         $releaseB->setAvailable(true);
         $releaseB->setInfo('');
-        $releaseB->setIsoUrl('');
         $releaseB->setCreated(new \DateTime('2018-01-01'));
         $releaseB->setReleaseDate(new \DateTime('2018-01-01'));
 
@@ -82,14 +78,12 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $releaseA = new Release('A');
         $releaseA->setAvailable(true);
         $releaseA->setInfo('');
-        $releaseA->setIsoUrl('');
         $releaseA->setCreated(new \DateTime('2018-01-01'));
         $releaseA->setReleaseDate(new \DateTime('2018-01-01'));
 
         $releaseB = new Release('B');
         $releaseB->setAvailable(true);
         $releaseB->setInfo('');
-        $releaseB->setIsoUrl('');
         $releaseB->setCreated(new \DateTime('2018-01-01'));
         $releaseB->setReleaseDate(new \DateTime('2018-01-01'));
 
@@ -109,7 +103,6 @@ class ReleaseRepositoryTest extends DatabaseTestCase
         $release = new Release('2018-01-01');
         $release->setAvailable(true);
         $release->setInfo('');
-        $release->setIsoUrl('');
         $release->setCreated(new \DateTime('2018-01-01'));
         $release->setReleaseDate(new \DateTime('2018-01-01'));
 

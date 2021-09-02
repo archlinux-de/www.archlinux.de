@@ -94,7 +94,6 @@ class UpdateReleasesCommandTest extends KernelTestCase
             ->setAvailable(true)
             ->setCreated(new \DateTime('2018-01-01'))
             ->setInfo('')
-            ->setIsoUrl('')
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(new Torrent());
 

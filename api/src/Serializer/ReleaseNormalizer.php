@@ -62,7 +62,6 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
                         'version',
                         'available',
                         'info',
-                        'isoUrl',
                         'kernelVersion',
                         'releaseDate',
                         'sha1Sum'
@@ -76,7 +75,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             : null;
         $data['fileSize'] = $object->getTorrent()->getFileLength();
         $data['magnetUri'] = $object->getTorrent()->getMagnetUri();
-        $data['isoPath'] = $data['isoUrl'];
+        $data['isoPath'] = '/iso/' . $object->getVersion() . '/' . $object->getTorrent()->getFileName();
         $data['isoUrl'] = $data['available'] ? $this->router->generate(
             'app_mirror_iso',
             [

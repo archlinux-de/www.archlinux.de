@@ -24,7 +24,6 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
                     $release = (new Release($releaseData['version']))
                         ->setAvailable($releaseData['available'])
                         ->setInfo($releaseData['info'])
-                        ->setIsoUrl($releaseData['iso_url'])
                         ->setCreated(new \DateTime($releaseData['created']))
                         ->setKernelVersion($releaseData['kernel_version'])
                         ->setReleaseDate(new \DateTime($releaseData['release_date']))

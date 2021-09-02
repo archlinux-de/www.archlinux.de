@@ -38,14 +38,6 @@ class Release
     private $info;
 
     /**
-     * @var string
-     * @Assert\Length(min="10", max="255")
-     *
-     * @ORM\Column()
-     */
-    private $isoUrl;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
@@ -173,7 +165,6 @@ class Release
             ->setAvailable($release->isAvailable())
             ->setCreated($release->getCreated())
             ->setInfo($release->getInfo())
-            ->setIsoUrl($release->getIsoUrl())
             ->setKernelVersion($release->getKernelVersion())
             ->setReleaseDate($release->getReleaseDate())
             ->setSha1Sum($release->getSha1Sum())
@@ -213,24 +204,6 @@ class Release
     public function setInfo(string $info): Release
     {
         $this->info = $info;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIsoUrl(): string
-    {
-        return $this->isoUrl;
-    }
-
-    /**
-     * @param string $isoUrl
-     * @return Release
-     */
-    public function setIsoUrl(string $isoUrl): Release
-    {
-        $this->isoUrl = $isoUrl;
         return $this;
     }
 
