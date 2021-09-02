@@ -35,7 +35,6 @@ class SmokeTest extends DatabaseSearchTestCase
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('')
-            ->setIsoUrl('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(

@@ -18,7 +18,6 @@ class ReleaseTest extends TestCase
         $release = new Release('2018.01.01');
         $this->assertSame($release, $release->setReleaseDate($releaseDate));
         $this->assertSame($release, $release->setCreated($createdDate));
-        $this->assertSame($release, $release->setIsoUrl('http://localhost'));
         $this->assertSame($release, $release->setInfo('info'));
         $this->assertSame($release, $release->setAvailable(true));
         $this->assertSame($release, $release->setKernelVersion('3.11'));
@@ -28,7 +27,6 @@ class ReleaseTest extends TestCase
         $this->assertEquals('2018.01.01', $release->getVersion());
         $this->assertSame($releaseDate, $release->getReleaseDate());
         $this->assertSame($createdDate, $release->getCreated());
-        $this->assertEquals('http://localhost', $release->getIsoUrl());
         $this->assertEquals('info', $release->getInfo());
         $this->assertTrue($release->isAvailable());
         $this->assertEquals('3.11', $release->getKernelVersion());
@@ -45,7 +43,6 @@ class ReleaseTest extends TestCase
             ->setSha1Sum('abc')
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setKernelVersion('2.4.1')
-            ->setIsoUrl('foo')
             ->setInfo('bar')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setAvailable(true);
@@ -55,7 +52,6 @@ class ReleaseTest extends TestCase
             ->setSha1Sum('1234')
             ->setReleaseDate(new \DateTime('2019-01-01'))
             ->setKernelVersion('1.2')
-            ->setIsoUrl('localhost')
             ->setInfo('info')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setAvailable(false));
@@ -64,7 +60,6 @@ class ReleaseTest extends TestCase
         $this->assertEquals('1234', $release->getSha1Sum());
         $this->assertEquals(new \DateTime('2019-01-01'), $release->getReleaseDate());
         $this->assertEquals('1.2', $release->getKernelVersion());
-        $this->assertEquals('localhost', $release->getIsoUrl());
         $this->assertEquals('info', $release->getInfo());
         $this->assertEquals(new \DateTime('2018-01-01'), $release->getCreated());
         $this->assertFalse($release->isAvailable());

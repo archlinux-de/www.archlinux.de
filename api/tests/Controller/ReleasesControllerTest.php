@@ -17,7 +17,6 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('')
-            ->setIsoUrl('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(
@@ -53,7 +52,6 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('')
-            ->setIsoUrl('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setTorrent(
@@ -80,7 +78,6 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
         $release = (new Release('2018.01.01'))
             ->setAvailable(true)
             ->setInfo('info')
-            ->setIsoUrl('http://localhost/iso')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setSha1Sum('abcdef')
@@ -114,8 +111,8 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
                 'torrentUrl' => 'https://www.archlinux.orghttp://localhost/torrent',
                 'fileSize' => 1,
                 'magnetUri' => 'magnet://localhost/torrent',
-                'isoPath' => 'http://localhost/iso',
-                'isoSigUrl' => 'https://www.archlinux.orghttp://localhost/iso.sig',
+                'isoPath' => '/iso/2018.01.01/release.iso',
+                'isoSigUrl' => 'https://www.archlinux.org/iso/2018.01.01/release.iso.sig',
                 'fileName' => 'release.iso'
             ],
             $responseData
