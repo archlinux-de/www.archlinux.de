@@ -171,8 +171,6 @@ update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
-	# vue-loader >= 16 is not compatible with Vue 2
-	{{NODE-RUN}} yarn add --dev --non-interactive 'vue-loader@~15'
 	just _update-cypress-image
 
 deploy:
