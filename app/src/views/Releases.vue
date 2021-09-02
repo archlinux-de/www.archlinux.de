@@ -30,7 +30,8 @@
       </template>
 
       <template v-slot:cell(fileSize)="data">
-        {{ data.value | prettyBytes(0, true) }}
+        <span v-if="data.value">{{ data.value | prettyBytes(0, true) }}</span>
+        <span v-else>-</span>
       </template>
     </b-table>
 
