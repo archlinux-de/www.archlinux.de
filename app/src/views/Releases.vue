@@ -29,9 +29,8 @@
         {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
       </template>
 
-      <template v-slot:cell(available)="data">
-        <span v-if="data.value" class="text-success">✓</span>
-        <span v-else class="text-danger">×</span>
+      <template v-slot:cell(fileSize)="data">
+        {{ data.value | prettyBytes(0, true) }}
       </template>
     </b-table>
 
@@ -92,8 +91,8 @@ export default {
         class: 'd-none d-xl-table-cell',
         thClass: 'text-nowrap'
       }, {
-        key: 'available',
-        label: 'Verfügbarkeit',
+        key: 'fileSize',
+        label: 'Größe',
         class: 'd-none d-md-table-cell'
       }],
       query: this.$route.query.search ?? '',
