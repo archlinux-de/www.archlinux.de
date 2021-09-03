@@ -1,7 +1,7 @@
 <template>
   <b-col cols="12" md="6" lg="4" v-if="relations.length > 0">
     <h3>{{ title }}</h3>
-    <ul class="list-unstyled pl-4">
+    <ul class="list-unstyled pl-4 link-list">
       <li :key="key" v-for="(relation, key) in relations">
         <router-link
           :to="{name: 'package', params: {
