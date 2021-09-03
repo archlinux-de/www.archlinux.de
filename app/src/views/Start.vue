@@ -53,27 +53,27 @@
         <h4 class="mt-4">Gemeinschaft</h4>
         <ul class="list-unstyled pl-4">
           <li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
-          <li><a href="https://www.archlinux.org/">Archlinux.org</a></li>
-          <li><a href="https://wiki.archlinux.org/index.php/International_Communities">
+          <li><a href="https://www.archlinux.org/" rel="noopener">Archlinux.org</a></li>
+          <li><a href="https://wiki.archlinux.org/index.php/International_Communities" rel="noopener">
             Internationale Gemeinschaft
           </a></li>
         </ul>
         <h4 class="mt-4">Unterstützung</h4>
         <ul class="list-unstyled pl-4">
-          <li><a href="https://www.archlinux.org/donate/">Spenden (international)</a></li>
+          <li><a href="https://www.archlinux.org/donate/" rel="noopener">Spenden (international)</a></li>
         </ul>
         <h4 class="mt-4">Entwicklung</h4>
         <ul class="list-unstyled pl-4">
           <li>
             <router-link to="packages">Pakete</router-link>
           </li>
-          <li><a href="https://www.archlinux.org/packages/differences/">Architektur-Unterschiede</a></li>
+          <li><a href="https://www.archlinux.org/packages/differences/" rel="noopener">Architektur-Unterschiede</a></li>
           <li><a href="https://aur.archlinux.de/">AUR</a></li>
-          <li><a href="https://bugs.archlinux.org/">Bug Tracker</a></li>
-          <li><a href="https://www.archlinux.org/svn/">SVN Repositories</a></li>
-          <li><a href="https://projects.archlinux.org/">Projekte in Git</a></li>
-          <li><a href="https://github.com/archlinux-de">archlinux.de Projekte in Git</a></li>
-          <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki">Entwickler-Wiki</a></li>
+          <li><a href="https://bugs.archlinux.org/" rel="noopener">Bug Tracker</a></li>
+          <li><a href="https://www.archlinux.org/svn/" rel="noopener">SVN Repositories</a></li>
+          <li><a href="https://projects.archlinux.org/" rel="noopener">Projekte in Git</a></li>
+          <li><a href="https://github.com/archlinux-de" rel="nofollow noopener">archlinux.de Projekte in Git</a></li>
+          <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki" rel="noopener">Entwickler-Wiki</a></li>
         </ul>
         <h4 class="mt-4">Informationen</h4>
         <ul class="list-unstyled pl-4">
@@ -85,11 +85,11 @@
             <router-link to="releases">Release-Archiv</router-link>
           </li>
           <li><a href="https://wiki.archlinux.de/title/Arch_in_den_Medien">Arch in den Medien</a></li>
-          <li><a href="https://www.archlinux.org/art/">Logos</a></li>
-          <li><a href="https://www.archlinux.org/people/developers/">Entwickler</a></li>
-          <li><a href="https://www.archlinux.org/people/trusted-users/">Trusted Users</a></li>
-          <li><a href="https://www.archlinux.org/people/developer-fellows/">Ehemalige Entwickler</a></li>
-          <li><a href="https://www.archlinux.org/people/trusted-user-fellows/">Ehemalige Trusted Users</a>
+          <li><a href="https://www.archlinux.org/art/" rel="noopener">Logos</a></li>
+          <li><a href="https://www.archlinux.org/people/developers/" rel="noopener">Entwickler</a></li>
+          <li><a href="https://www.archlinux.org/people/trusted-users/" rel="noopener">Trusted Users</a></li>
+          <li><a href="https://www.archlinux.org/people/developer-fellows/" rel="noopener">Ehemalige Entwickler</a></li>
+          <li><a href="https://www.archlinux.org/people/trusted-user-fellows/" rel="noopener">Ehemalige Trusted Users</a>
           </li>
           <li>
             <router-link to="mirrors">Mirror-Status</router-link>

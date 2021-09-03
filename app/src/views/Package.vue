@@ -23,7 +23,7 @@
           <b-tr v-if="pkg.url">
             <b-th>URL</b-th>
             <b-td class="text-break">
-              <a rel="nofollow" :href="pkg.url">{{ pkg.url }}</a>
+              <a rel="nofollow noopener" :href="pkg.url">{{ pkg.url }}</a>
             </b-td>
           </b-tr>
           <b-tr v-if="pkg.licenses && pkg.licenses.length > 0">
@@ -53,7 +53,7 @@
             <b-th>Packer</b-th>
             <b-td>
               <template v-if="pkg.packager.email">
-                <a rel="nofollow" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
+                <a rel="nofollow noopener" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
               </template>
               <template v-else>{{ pkg.packager.name }}</template>
             </b-td>
@@ -70,19 +70,19 @@
           <b-tr>
             <b-th>Bugs</b-th>
             <b-td>
-              <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'">Bug-Tracker</a>
+              <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'" rel="noopener">Bug-Tracker</a>
             </b-td>
           </b-tr>
           <b-tr>
             <b-th>Paket</b-th>
             <b-td>
-              <a :href="pkg.packageUrl" target="_blank">{{ pkg.fileName }}</a>
+              <a :href="pkg.packageUrl" target="_blank" rel="nofollow noopener">{{ pkg.fileName }}</a>
             </b-td>
           </b-tr>
           <b-tr>
             <b-th>PGP-Signatur</b-th>
             <b-td>
-              <a :href="pkg.packageUrl+'.sig'" target="_blank">{{ pkg.fileName }}.sig</a>
+              <a :href="pkg.packageUrl+'.sig'" target="_blank" rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
             </b-td>
           </b-tr>
           <b-tr>
