@@ -63,12 +63,14 @@
   }
 
   // increase tap size for mobile
-  .link-list li {
-    margin-bottom: $spacer;
-  }
+  @include media-breakpoint-down(md) {
+    .link-list li {
+      margin-bottom: $spacer;
+    }
 
-  .pagination button.page-link {
-    padding: 0.5rem 0.9rem;
+    .pagination button.page-link {
+      padding: 0.5rem 0.9rem;
+    }
   }
 </style>
 
