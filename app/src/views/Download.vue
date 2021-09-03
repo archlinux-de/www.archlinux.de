@@ -17,12 +17,12 @@
           <code>pacman -Syu</code> aktuell gehalten werden!</p>
         <ul class="list-unstyled ml-4">
           <li data-test="current-release"><strong>Aktuelles Release:</strong>&nbsp;<router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link></li>
-          <li><strong>Enthaltener Kernel:</strong>&nbsp;{{ release.kernelVersion }}</li>
-          <li><strong>ISO Größe:</strong>&nbsp;{{ release.fileSize | prettyBytes(2, true) }}</li>
-          <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
           <li>
             <router-link :to="{name: 'release', params: {version: release.version}}">Release-Informationen</router-link>
           </li>
+          <li><strong>Enthaltener Kernel:</strong>&nbsp;{{ release.kernelVersion }}</li>
+          <li><strong>ISO Größe:</strong>&nbsp;{{ release.fileSize | prettyBytes(2, true) }}</li>
+          <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
         </ul>
 
         <h2>Installation</h2>
@@ -30,7 +30,7 @@
           der <a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a>.</p>
         <h2>BitTorrent Download</h2>
         <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
-        <ul class="list-unstyled ml-4">
+        <ul class="list-unstyled ml-4 link-list">
           <li><a :href="release.magnetUri" target="_blank" rel="nofollow noopener">Magnet link für {{ release.version }}</a></li>
           <li><a :href="release.torrentUrl" target="_blank" rel="nofollow noopener">
             Torrent für {{ release.version }}
@@ -54,7 +54,7 @@
 
         <template v-if="mirrors.length > 0">
           <h3>Mirrors</h3>
-          <ul class="list-unstyled ml-4" data-test="mirror-list">
+          <ul class="list-unstyled ml-4 link-list" data-test="mirror-list">
             <li :key="mirror.url" v-for="mirror in mirrors">
               <a :href="mirror.url + release.isoPath" target="_blank" rel="nofollow noopener">{{ mirror.host }}</a>
             </li>

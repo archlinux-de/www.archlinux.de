@@ -52,7 +52,7 @@
           <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl" rel="nofollow noopener">
             <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
           </a>
-          <ul class="list-unstyled ml-4">
+          <ul class="list-unstyled ml-4 link-list">
             <li v-if="release.magnetUri"><a :href="release.magnetUri" target="_blank" rel="nofollow noopener">Magnet link für {{ release.version }}</a></li>
             <li v-if="release.torrentUrl"><a :href="release.torrentUrl" target="_blank" rel="nofollow noopener">Torrent für {{ release.version }}</a></li>
             <li v-if="release.directoryUrl"><a :href="release.directoryUrl" target="_blank" rel="nofollow noopener">Verzeichnis für {{ release.version }}</a></li>

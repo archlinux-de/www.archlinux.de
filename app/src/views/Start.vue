@@ -43,7 +43,7 @@
         <recent-packages :limit="20"></recent-packages>
 
         <h4 class="mt-5">Dokumentation</h4>
-        <ul class="list-unstyled pl-4">
+        <ul class="list-unstyled pl-4 link-list">
           <li><a href="https://wiki.archlinux.de/">Wiki</a></li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Arch Install Scripts</a></li>
           <li><a href="https://wiki.archlinux.de/title/Anleitung_f%C3%BCr_Einsteiger">
@@ -51,7 +51,7 @@
           </a></li>
         </ul>
         <h4 class="mt-4">Gemeinschaft</h4>
-        <ul class="list-unstyled pl-4">
+        <ul class="list-unstyled pl-4 link-list">
           <li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
           <li><a href="https://www.archlinux.org/" rel="noopener">Archlinux.org</a></li>
           <li><a href="https://wiki.archlinux.org/index.php/International_Communities" rel="noopener">
@@ -59,11 +59,11 @@
           </a></li>
         </ul>
         <h4 class="mt-4">Unterstützung</h4>
-        <ul class="list-unstyled pl-4">
+        <ul class="list-unstyled pl-4 link-list">
           <li><a href="https://www.archlinux.org/donate/" rel="noopener">Spenden (international)</a></li>
         </ul>
         <h4 class="mt-4">Entwicklung</h4>
-        <ul class="list-unstyled pl-4">
+        <ul class="list-unstyled pl-4 link-list">
           <li>
             <router-link to="packages">Pakete</router-link>
           </li>
@@ -76,7 +76,7 @@
           <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki" rel="noopener">Entwickler-Wiki</a></li>
         </ul>
         <h4 class="mt-4">Informationen</h4>
-        <ul class="list-unstyled pl-4">
+        <ul class="list-unstyled pl-4 link-list">
           <li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
           <li>
             <router-link to="download">Arch herunterladen</router-link>

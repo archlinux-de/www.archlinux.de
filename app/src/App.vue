@@ -61,6 +61,15 @@
     width: 100%;
     height: 2.3rem;
   }
+
+  // increase tap size for mobile
+  .link-list li {
+    margin-bottom: $spacer;
+  }
+
+  .pagination button.page-link {
+    padding: 0.5rem 0.9rem;
+  }
 </style>
 
 <script>
