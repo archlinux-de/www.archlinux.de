@@ -107,7 +107,8 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
                 'magnetUri' => 'magnet://localhost/torrent',
                 'isoPath' => '/iso/2018.01.01/release.iso',
                 'isoSigUrl' => 'http://localhost/download/iso/2018.01.01/release.iso.sig',
-                'fileName' => 'release.iso'
+                'fileName' => 'release.iso',
+                'directoryUrl' => 'http://localhost/download/iso/2018.01.01/'
             ],
             $responseData
         );

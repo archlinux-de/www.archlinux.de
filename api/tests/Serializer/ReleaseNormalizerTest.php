@@ -57,7 +57,8 @@ class ReleaseNormalizerTest extends KernelTestCase
                 'magnetUri' => null,
                 'isoPath' => '/iso/2018.01.01/2018.01.01.iso',
                 'isoSigUrl' => 'http://localhost/download/iso/2018.01.01/2018.01.01.iso.sig',
-                'fileName' => '2018.01.01.iso'
+                'fileName' => '2018.01.01.iso',
+                'directoryUrl' => 'http://localhost/download/iso/2018.01.01/'
             ],
             $jsonArray
         );

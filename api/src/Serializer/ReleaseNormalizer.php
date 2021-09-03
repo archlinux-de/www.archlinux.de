@@ -78,6 +78,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         $data['isoSigUrl'] = $this->createIsoSigUrl($object);
         $data['fileName'] = $object->getFileName();
         $data['info'] = $this->releasePurifier->purify($data['info']);
+        $data['directoryUrl'] = $this->createDirectoryUrl($object);
 
         return $data;
     }
@@ -89,7 +90,6 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
     private function createIsoUrl(Release $release): string
     {
-        // torrent-filename ab 2010.05
         return $this->router->generate(
             'app_mirror_iso',
             [
@@ -100,9 +100,21 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         );
     }
 
+    private function createDirectoryUrl(Release $release): string
+    {
+        return $this->router->generate(
+            'app_mirror_iso',
+            [
+                'file' => '', // empty to link to directory
+                'version' => $release->getVersion()
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+    }
+
     private function createIsoSigUrl(Release $release): ?string
     {
-        // Erst ab 2012.07.15
+        // Signatures were introduced with version 2012.07.15
         return $release->getFileName() && $release->getReleaseDate() >= new \DateTime('2012-07-15')
             ? $this->createIsoUrl($release) . '.sig'
             : null;
