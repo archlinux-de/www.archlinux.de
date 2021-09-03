@@ -32,15 +32,8 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
                         $release->setTorrent(
                             (new Torrent())
                                 ->setUrl($releaseData['torrent_url'])
-                                ->setComment($releaseData['torrent']['comment'])
-                                ->setInfoHash($releaseData['torrent']['info_hash'])
-                                ->setPieceLength($releaseData['torrent']['piece_length'])
                                 ->setFileName($releaseData['torrent']['file_name'])
-                                ->setAnnounce($releaseData['torrent']['announce'])
                                 ->setFileLength($releaseData['torrent']['file_length'])
-                                ->setPieceCount($releaseData['torrent']['piece_count'])
-                                ->setCreatedBy($releaseData['torrent']['created_by'])
-                                ->setCreationDate(new \DateTime($releaseData['torrent']['creation_date']))
                                 ->setMagnetUri($releaseData['magnet_uri'])
                         );
                     }
