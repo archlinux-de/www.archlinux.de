@@ -4,7 +4,6 @@ namespace App\Tests\Command\Update;
 
 use App\Command\Update\UpdateReleasesCommand;
 use App\Entity\Release;
-use App\Entity\Torrent;
 use App\Exception\ValidationException;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
@@ -94,8 +93,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
             ->setAvailable(true)
             ->setCreated(new \DateTime('2018-01-01'))
             ->setInfo('')
-            ->setReleaseDate(new \DateTime('2018-01-01'))
-            ->setTorrent(new Torrent());
+            ->setReleaseDate(new \DateTime('2018-01-01'));
 
         /** @var ReleaseRepository|MockObject $releaseRepository */
         $releaseRepository = $this->createMock(ReleaseRepository::class);

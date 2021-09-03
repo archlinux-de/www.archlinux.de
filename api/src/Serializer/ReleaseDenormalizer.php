@@ -3,7 +3,6 @@
 namespace App\Serializer;
 
 use App\Entity\Release;
-use App\Entity\Torrent;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -29,13 +28,11 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
                         ->setReleaseDate(new \DateTime($releaseData['release_date']))
                         ->setSha1Sum($releaseData['sha1_sum']);
                     if ($releaseData['torrent']) {
-                        $release->setTorrent(
-                            (new Torrent())
-                                ->setUrl($releaseData['torrent_url'])
-                                ->setFileName($releaseData['torrent']['file_name'])
-                                ->setFileLength($releaseData['torrent']['file_length'])
-                                ->setMagnetUri($releaseData['magnet_uri'])
-                        );
+                        $release
+                            ->setTorrentUrl($releaseData['torrent_url'])
+                            ->setFileName($releaseData['torrent']['file_name'])
+                            ->setFileLength($releaseData['torrent']['file_length'])
+                            ->setMagnetUri($releaseData['magnet_uri']);
                     }
 
                     yield $release;

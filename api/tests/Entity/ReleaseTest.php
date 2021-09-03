@@ -3,7 +3,6 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Release;
-use App\Entity\Torrent;
 use PHPUnit\Framework\TestCase;
 
 class ReleaseTest extends TestCase
@@ -13,8 +12,6 @@ class ReleaseTest extends TestCase
         $releaseDate = new \DateTime('2018-01-01');
         $createdDate = new \DateTime('2017-12-31');
 
-        $torrent = new Torrent();
-
         $release = new Release('2018.01.01');
         $this->assertSame($release, $release->setReleaseDate($releaseDate));
         $this->assertSame($release, $release->setCreated($createdDate));
@@ -22,7 +19,7 @@ class ReleaseTest extends TestCase
         $this->assertSame($release, $release->setAvailable(true));
         $this->assertSame($release, $release->setKernelVersion('3.11'));
         $this->assertSame($release, $release->setSha1Sum('sha1'));
-        $this->assertSame($release, $release->setTorrent($torrent));
+        $this->assertSame($release, $release->setTorrentUrl('/foo.torrent'));
 
         $this->assertEquals('2018.01.01', $release->getVersion());
         $this->assertSame($releaseDate, $release->getReleaseDate());
@@ -33,13 +30,12 @@ class ReleaseTest extends TestCase
         $this->assertEquals('sha1', $release->getSha1Sum());
         $this->assertEquals('info', $release->getInfo());
 
-        $this->assertSame($torrent, $release->getTorrent());
+        $this->assertSame('/foo.torrent', $release->getTorrentUrl());
     }
 
     public function testUpdate(): void
     {
         $release = (new Release('2019.01.01'))
-            ->setTorrent(new Torrent())
             ->setSha1Sum('abc')
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setKernelVersion('2.4.1')

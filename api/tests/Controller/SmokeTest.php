@@ -9,7 +9,6 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
-use App\Entity\Torrent;
 use App\Tests\DatabaseSearchTestCase;
 
 /**
@@ -37,9 +36,8 @@ class SmokeTest extends DatabaseSearchTestCase
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
-            ->setTorrent(
-                (new Torrent())->setFileLength(1)->setFileName('release.iso')
-            );
+            ->setFileLength(1)
+            ->setFileName('release.iso');
         $entityManager->persist($release);
 
         $mirror = (new Mirror('https://127.0.0.2/', 'https'))

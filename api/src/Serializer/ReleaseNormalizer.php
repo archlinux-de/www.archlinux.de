@@ -71,12 +71,12 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         );
 
         $data['torrentUrl'] = $this->createTorrentUrl($object);
-        $data['fileSize'] = $object->getTorrent()->getFileLength();
-        $data['magnetUri'] = $object->getTorrent()->getMagnetUri();
+        $data['fileSize'] = $object->getFileLength();
+        $data['magnetUri'] = $object->getMagnetUri();
         $data['isoPath'] = $this->createIsoPath($object);
         $data['isoUrl'] = $this->createIsoUrl($object);
         $data['isoSigUrl'] = $this->createIsoSigUrl($object);
-        $data['fileName'] = $object->getTorrent()->getFileName();
+        $data['fileName'] = $object->getFileName();
         $data['info'] = $this->releasePurifier->purify($data['info']);
 
         return $data;
@@ -84,7 +84,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
     private function createIsoPath(Release $release): string
     {
-        return '/iso/' . $release->getVersion() . '/' . ($release->getTorrent()->getFileName() ?: '');
+        return '/iso/' . $release->getVersion() . '/' . ($release->getFileName() ?: '');
     }
 
     private function createIsoUrl(Release $release): string
@@ -93,7 +93,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         return $this->router->generate(
             'app_mirror_iso',
             [
-                'file' => $release->getTorrent()->getFileName(),
+                'file' => $release->getFileName(),
                 'version' => $release->getVersion()
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -103,14 +103,14 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     private function createIsoSigUrl(Release $release): ?string
     {
         // Erst ab 2012.07.15
-        return $release->getTorrent()->getFileName() && $release->getReleaseDate() >= new \DateTime('2012-07-15')
+        return $release->getFileName() && $release->getReleaseDate() >= new \DateTime('2012-07-15')
             ? $this->createIsoUrl($release) . '.sig'
             : null;
     }
 
     private function createTorrentUrl(Release $release): ?string
     {
-        return $release->getTorrent()->getUrl() ? 'https://archlinux.org' . $release->getTorrent()->getUrl() : null;
+        return $release->getTorrentUrl() ? 'https://archlinux.org' . $release->getTorrentUrl() : null;
     }
 
     /**
