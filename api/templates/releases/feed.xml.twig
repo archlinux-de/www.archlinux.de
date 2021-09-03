@@ -21,7 +21,7 @@
             <summary>Arch Linux ISO image Version {{ release.version }}</summary>
             {% if release.available %}
                 <content
-                        src="{{ url('app_mirror_iso', {'version': release.version, 'file': release.torrent.fileName }) }}"
+                        src="{{ url('app_mirror_iso', {'version': release.version, 'file': release.fileName }) }}"
                         type="application/x-iso9660-image"/>
             {% endif %}
         </entry>

@@ -3,7 +3,6 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Release;
-use App\Entity\Torrent;
 use App\Tests\DatabaseSearchTestCase;
 
 /**
@@ -19,9 +18,8 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
-            ->setTorrent(
-                (new Torrent())->setFileLength(1)->setFileName('release.iso')
-            );
+            ->setFileLength(1)
+            ->setFileName('release.iso');
         $entityManager->persist($release);
         $entityManager->flush();
 
@@ -54,9 +52,8 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
-            ->setTorrent(
-                (new Torrent())->setFileLength(1)->setFileName('release.iso')
-            );
+            ->setFileLength(1)
+            ->setFileName('release.iso');
         $entityManager->persist($release);
         $entityManager->flush();
 
@@ -81,13 +78,10 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setSha1Sum('abcdef')
-            ->setTorrent(
-                (new Torrent())
-                    ->setFileLength(1)
-                    ->setFileName('release.iso')
-                    ->setUrl('/torrent')
-                    ->setMagnetUri('magnet://localhost/torrent')
-            );
+            ->setFileLength(1)
+            ->setFileName('release.iso')
+            ->setTorrentUrl('/torrent')
+            ->setMagnetUri('magnet://localhost/torrent');
         $entityManager->persist($release);
         $entityManager->flush();
 

@@ -3,7 +3,6 @@
 namespace App\Tests\Serializer;
 
 use App\Entity\Release;
-use App\Entity\Torrent;
 use App\Serializer\ReleaseNormalizer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Serializer;
@@ -38,11 +37,8 @@ class ReleaseNormalizerTest extends KernelTestCase
             ->setAvailable(true)
             ->setKernelVersion('3.11')
             ->setInfo('foo bar')
-            ->setTorrent(
-                (new Torrent())
-                    ->setFileName('2018.01.01.iso')
-                    ->setUrl('/releases/2018.01.01.iso.torrent')
-            );
+            ->setFileName('2018.01.01.iso')
+            ->setTorrentUrl('/releases/2018.01.01.iso.torrent');
 
         $json = $this->serializer->serialize($release, 'json');
         $this->assertJson($json);

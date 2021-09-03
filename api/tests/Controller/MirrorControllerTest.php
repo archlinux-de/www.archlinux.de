@@ -8,7 +8,6 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
-use App\Entity\Torrent;
 use App\Tests\DatabaseSearchTestCase;
 
 /**
@@ -31,9 +30,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
             ->setReleaseDate(new \DateTime('2018-01-01'))
-            ->setTorrent(
-                (new Torrent())->setFileLength(1)
-            );
+            ->setFileLength(1);
 
         $entityManager->persist($country);
         $entityManager->persist($mirror);
