@@ -48,7 +48,6 @@ class ReleaseTest extends TestCase
             ->setAvailable(true);
 
         $release->update((new Release('2019.01.01'))
-            ->setTorrent((new Torrent())->setCreatedBy('me'))
             ->setSha1Sum('1234')
             ->setReleaseDate(new \DateTime('2019-01-01'))
             ->setKernelVersion('1.2')
@@ -56,7 +55,6 @@ class ReleaseTest extends TestCase
             ->setCreated(new \DateTime('2018-01-01'))
             ->setAvailable(false));
 
-        $this->assertEquals('me', $release->getTorrent()->getCreatedBy());
         $this->assertEquals('1234', $release->getSha1Sum());
         $this->assertEquals(new \DateTime('2019-01-01'), $release->getReleaseDate());
         $this->assertEquals('1.2', $release->getKernelVersion());

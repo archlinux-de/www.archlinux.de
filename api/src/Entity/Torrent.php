@@ -22,41 +22,9 @@ class Torrent
      * @var string|null
      * @Assert\Length(max="255")
      *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $comment;
-
-    /**
-     * @var string|null
-     * @Assert\Regex("/^[0-9a-f]{40}$/")
-     *
-     * @ORM\Column(nullable=true)
-     */
-    private $infoHash;
-
-    /**
-     * @var integer|null
-     * @Assert\Range(min="1", max="10485760")
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $pieceLength;
-
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     *
      * @ORM\Column(nullable=true)
      */
     private $fileName;
-
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
-    private $announce;
 
     /**
      * @var integer|null
@@ -65,29 +33,6 @@ class Torrent
      * @ORM\Column(type="bigint", nullable=true)
      */
     private $fileLength;
-
-    /**
-     * @var integer|null
-     * @Assert\Range(min="1", max="81920")
-     *
-     * @ORM\Column(type="smallint", nullable=true)
-     */
-    private $pieceCount;
-
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
-    private $createdBy;
-
-    /**
-     * @var \DateTime|null
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $creationDate;
 
     /**
      * @var string|null
@@ -118,60 +63,6 @@ class Torrent
     /**
      * @return string|null
      */
-    public function getComment(): ?string
-    {
-        return $this->comment;
-    }
-
-    /**
-     * @param string|null $comment
-     * @return Torrent
-     */
-    public function setComment(?string $comment): Torrent
-    {
-        $this->comment = $comment;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getInfoHash(): ?string
-    {
-        return $this->infoHash;
-    }
-
-    /**
-     * @param string|null $infoHash
-     * @return Torrent
-     */
-    public function setInfoHash(?string $infoHash): Torrent
-    {
-        $this->infoHash = $infoHash;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getPieceLength(): ?int
-    {
-        return $this->pieceLength;
-    }
-
-    /**
-     * @param int|null $pieceLength
-     * @return Torrent
-     */
-    public function setPieceLength(?int $pieceLength): Torrent
-    {
-        $this->pieceLength = $pieceLength;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getFileName(): ?string
     {
         return $this->fileName;
@@ -184,24 +75,6 @@ class Torrent
     public function setFileName(?string $fileName): Torrent
     {
         $this->fileName = $fileName;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAnnounce(): ?string
-    {
-        return $this->announce;
-    }
-
-    /**
-     * @param string|null $announce
-     * @return Torrent
-     */
-    public function setAnnounce(?string $announce): Torrent
-    {
-        $this->announce = $announce;
         return $this;
     }
 
@@ -220,60 +93,6 @@ class Torrent
     public function setFileLength(?int $fileLength): Torrent
     {
         $this->fileLength = $fileLength;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getPieceCount(): ?int
-    {
-        return $this->pieceCount;
-    }
-
-    /**
-     * @param int|null $pieceCount
-     * @return Torrent
-     */
-    public function setPieceCount(?int $pieceCount): Torrent
-    {
-        $this->pieceCount = $pieceCount;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * @param string|null $createdBy
-     * @return Torrent
-     */
-    public function setCreatedBy(?string $createdBy): Torrent
-    {
-        $this->createdBy = $createdBy;
-        return $this;
-    }
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getCreationDate(): ?\DateTime
-    {
-        return $this->creationDate;
-    }
-
-    /**
-     * @param \DateTime|null $creationDate
-     * @return Torrent
-     */
-    public function setCreationDate(?\DateTime $creationDate): Torrent
-    {
-        $this->creationDate = $creationDate;
         return $this;
     }
 
