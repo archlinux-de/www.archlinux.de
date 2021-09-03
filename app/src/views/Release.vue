@@ -42,20 +42,20 @@
             </b-tr>
             <b-tr v-if="release.isoSigUrl">
               <b-th>PGP</b-th>
-              <b-td><a :href="release.isoSigUrl" target="_blank">PGP-Signatur</a>
+              <b-td><a :href="release.isoSigUrl" target="_blank" rel="nofollow noopener">PGP-Signatur</a>
               </b-td>
             </b-tr>
           </b-table-simple>
         </b-col>
 
         <b-col cols="12" xl="6">
-          <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl">
+          <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl" rel="nofollow noopener">
             <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
           </a>
           <ul class="list-unstyled ml-4">
-            <li v-if="release.magnetUri"><a :href="release.magnetUri" target="_blank">Magnet link für {{ release.version }}</a></li>
-            <li v-if="release.torrentUrl"><a :href="release.torrentUrl" target="_blank">Torrent für {{ release.version }}</a></li>
-            <li v-if="release.directoryUrl"><a :href="release.directoryUrl" target="_blank">Verzeichnis für {{ release.version }}</a></li>
+            <li v-if="release.magnetUri"><a :href="release.magnetUri" target="_blank" rel="nofollow noopener">Magnet link für {{ release.version }}</a></li>
+            <li v-if="release.torrentUrl"><a :href="release.torrentUrl" target="_blank" rel="nofollow noopener">Torrent für {{ release.version }}</a></li>
+            <li v-if="release.directoryUrl"><a :href="release.directoryUrl" target="_blank" rel="nofollow noopener">Verzeichnis für {{ release.version }}</a></li>
           </ul>
         </b-col>
       </b-row>

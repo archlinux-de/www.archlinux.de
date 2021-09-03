@@ -22,7 +22,7 @@
              :current-page="currentPage">
 
       <template v-slot:cell(url)="data">
-        <a :href="data.value" rel="nofollow" target="_blank">{{ data.item.host }}</a>
+        <a :href="data.value" rel="nofollow noopener" target="_blank">{{ data.item.host }}</a>
       </template>
 
       <template v-slot:cell(durationAvg)="data">
