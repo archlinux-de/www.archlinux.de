@@ -12,8 +12,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class PackageNormalizerTest extends KernelTestCase
 {
-    /** @var Serializer */
-    private $serializer;
+    private Serializer $serializer;
 
     public function setUp(): void
     {

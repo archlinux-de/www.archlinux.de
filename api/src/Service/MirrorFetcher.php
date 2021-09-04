@@ -8,33 +8,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class MirrorFetcher implements \IteratorAggregate
 {
-    /** @var HttpClientInterface */
-    private $httpClient;
-
-    /** @var string */
-    private $mirrorStatusUrl;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /**
-     * @param HttpClientInterface $httpClient
-     * @param string $mirrorStatusUrl
-     * @param SerializerInterface $serializer
-     */
     public function __construct(
-        HttpClientInterface $httpClient,
-        string $mirrorStatusUrl,
-        SerializerInterface $serializer
+        private HttpClientInterface $httpClient,
+        private string $mirrorStatusUrl,
+        private SerializerInterface $serializer
     ) {
-        $this->httpClient = $httpClient;
-        $this->mirrorStatusUrl = $mirrorStatusUrl;
-        $this->serializer = $serializer;
     }
 
-    /**
-     * @return \Traversable
-     */
     public function getIterator(): \Traversable
     {
         $response = $this->httpClient->request('GET', $this->mirrorStatusUrl);

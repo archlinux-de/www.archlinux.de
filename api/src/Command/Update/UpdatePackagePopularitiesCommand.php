@@ -14,32 +14,15 @@ class UpdatePackagePopularitiesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var PackagePopularityFetcher */
-    private $packagePopularityFetcher;
-
-    /** @var PackageRepository */
-    private $packageRepository;
-
     /** @var array<string,float> */
-    private $packagePopularities = [];
+    private array $packagePopularities = [];
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param PackagePopularityFetcher $packagePopularityFetcher
-     * @param PackageRepository $packageRepository
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        PackagePopularityFetcher $packagePopularityFetcher,
-        PackageRepository $packageRepository
+        private EntityManagerInterface $entityManager,
+        private PackagePopularityFetcher $packagePopularityFetcher,
+        private PackageRepository $packageRepository
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->packagePopularityFetcher = $packagePopularityFetcher;
-        $this->packageRepository = $packageRepository;
     }
 
     protected function configure(): void
@@ -47,11 +30,6 @@ class UpdatePackagePopularitiesCommand extends Command
         $this->setName('app:update:package-popularities');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');

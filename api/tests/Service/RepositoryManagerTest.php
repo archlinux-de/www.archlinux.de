@@ -192,9 +192,6 @@ class RepositoryManagerTest extends TestCase
         $repositoryManager->createNewRepositories();
     }
 
-    /**
-     * @return array
-     */
     public function provideRepositories(): array
     {
         return [

@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Conflict extends AbstractRelation
 {
     /**
-     * @var Package
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="conflicts")
      */
-    protected $source;
+    protected Package $source;
 }

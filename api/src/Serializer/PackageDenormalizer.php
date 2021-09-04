@@ -18,15 +18,7 @@ use Symfony\Component\String\ByteString;
 
 class PackageDenormalizer implements ContextAwareDenormalizerInterface
 {
-    /**
-     * @param mixed $data
-     * @param string $type
-     * @param string|null $format
-     * @param array $context
-     * @return Package
-     * @throws \Exception
-     */
-    public function denormalize($data, string $type, string $format = null, array $context = []): Package
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Package
     {
         $package = (new Package(
             $context['repository'],
@@ -72,10 +64,6 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         return $package;
     }
 
-    /**
-     * @param string|null $url
-     * @return string|null
-     */
     private function normalizeUrl(?string $url): ?string
     {
         if ($url == null) {
@@ -94,10 +82,6 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         return $urlString->toString();
     }
 
-    /**
-     * @param string $packagerDefinition
-     * @return Packager
-     */
     private function createPackagerFromString(string $packagerDefinition): Packager
     {
         preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
@@ -107,20 +91,12 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         return new Packager($name, $email);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return Dependency
-     */
     private function createDependency(string $targetDefinition): Dependency
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new Dependency($target['name'], $target['version']);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return array
-     */
     private function createTargetFromString(string $targetDefinition): array
     {
         if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:]+)/', $targetDefinition, $matches) > 0) {
@@ -136,74 +112,43 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         return ['name' => $targetName, 'version' => $targetVersion];
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return Conflict
-     */
     private function createConflict(string $targetDefinition): Conflict
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new Conflict($target['name'], $target['version']);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return Replacement
-     */
     private function createReplacement(string $targetDefinition): Replacement
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new Replacement($target['name'], $target['version']);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return OptionalDependency
-     */
     private function createOptionalDependency(string $targetDefinition): OptionalDependency
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new OptionalDependency($target['name'], $target['version']);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return Provision
-     */
     private function createProvision(string $targetDefinition): Provision
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new Provision($target['name'], $target['version']);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return MakeDependency
-     */
     private function createMakeDependency(string $targetDefinition): MakeDependency
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new MakeDependency($target['name'], $target['version']);
     }
 
-    /**
-     * @param string $targetDefinition
-     * @return CheckDependency
-     */
     private function createCheckDependency(string $targetDefinition): CheckDependency
     {
         $target = $this->createTargetFromString($targetDefinition);
         return new CheckDependency($target['name'], $target['version']);
     }
 
-    /**
-     * @param mixed $data
-     * @param string $type
-     * @param string|null $format
-     * @param array $context
-     * @return bool
-     */
-    public function supportsDenormalization($data, string $type, string $format = null, array $context = [])
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return $type == Package::class
             && $format == 'pacman-database'

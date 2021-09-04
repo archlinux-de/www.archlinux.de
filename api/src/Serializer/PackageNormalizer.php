@@ -11,37 +11,22 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var UrlGeneratorInterface */
-    private $router;
-
-    /** @var ObjectNormalizer */
-    private $normalizer;
-
-    /** @var string */
-    private $cgitUrl;
-
-    public function __construct(UrlGeneratorInterface $router, ObjectNormalizer $normalizer, string $cgitUrl)
-    {
-        $this->router = $router;
-        $this->normalizer = $normalizer;
-        $this->cgitUrl = $cgitUrl;
+    public function __construct(
+        private UrlGeneratorInterface $router,
+        private ObjectNormalizer $normalizer,
+        private string $cgitUrl
+    ) {
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof Package && $format == 'json';
     }
 
     /**
      * @param Package $object
-     * @param string $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         /** @var array $data */
         $data = $this->normalizer->normalize(
@@ -101,9 +86,6 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         return $data;
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

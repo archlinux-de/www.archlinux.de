@@ -10,16 +10,12 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ReleaseRepository extends ServiceEntityRepository
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Release::class);
     }
 
     /**
-     * @return Release
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -35,8 +31,6 @@ class ReleaseRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $version
-     * @return Release
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -64,9 +58,6 @@ class ReleaseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * @return int
-     */
     public function getSize(): int
     {
         return $this->createQueryBuilder('release')

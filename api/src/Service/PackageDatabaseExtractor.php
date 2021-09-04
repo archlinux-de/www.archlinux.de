@@ -7,24 +7,12 @@ use Symfony\Component\String\ByteString;
 
 class PackageDatabaseExtractor
 {
-    /** @var array */
     private const DESCRIPTION_FILES = ['desc', 'files'];
 
-    /** @var Libarchive */
-    private $libarchive;
-
-    /**
-     * @param Libarchive $libarchive
-     */
-    public function __construct(Libarchive $libarchive)
+    public function __construct(private Libarchive $libarchive)
     {
-        $this->libarchive = $libarchive;
     }
 
-    /**
-     * @param string $packageDatabase
-     * @return \Traversable
-     */
     public function extractPackageDescriptions(string $packageDatabase): \Traversable
     {
         $entry = $this->libarchive->new($this->libarchive->type('struct archive_entry*'));

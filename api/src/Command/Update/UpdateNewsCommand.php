@@ -17,35 +17,13 @@ class UpdateNewsCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var NewsItemFetcher */
-    private $newsItemFetcher;
-
-    /** @var NewsItemRepository */
-    private $newsItemRepository;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param NewsItemFetcher $newsItemFetcher
-     * @param NewsItemRepository $newsItemRepository
-     * @param ValidatorInterface $validator
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        NewsItemFetcher $newsItemFetcher,
-        NewsItemRepository $newsItemRepository,
-        ValidatorInterface $validator
+        private EntityManagerInterface $entityManager,
+        private NewsItemFetcher $newsItemFetcher,
+        private NewsItemRepository $newsItemRepository,
+        private ValidatorInterface $validator
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->newsItemFetcher = $newsItemFetcher;
-        $this->newsItemRepository = $newsItemRepository;
-        $this->validator = $validator;
     }
 
     protected function configure(): void
@@ -53,11 +31,6 @@ class UpdateNewsCommand extends Command
         $this->setName('app:update:news');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('news.lock');

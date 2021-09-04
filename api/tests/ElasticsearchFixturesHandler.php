@@ -11,25 +11,16 @@ class ElasticsearchFixturesHandler
     /** @var callable */
     private $defaultHandler;
 
-    /** @var string */
-    private $mode;
+    private string $mode;
 
-    /** @var string */
-    private $fixturesDirectory = __DIR__ . '/ElasticsearchFixtures';
+    private string $fixturesDirectory = __DIR__ . '/ElasticsearchFixtures';
 
-    /**
-     * @param string $mode
-     */
     public function __construct(string $mode)
     {
         $this->mode = $mode;
         $this->defaultHandler = ClientBuilder::defaultHandler();
     }
 
-    /**
-     * @param array $request
-     * @return CompletedFutureArray
-     */
     public function __invoke(array $request): CompletedFutureArray
     {
         if ($this->mode == 'off') {

@@ -16,34 +16,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PackagesController extends AbstractController
 {
-    /** @var PackageRepository */
-    private $packageRepository;
-
-    /** @var string */
-    private $defaultArchitecture;
-
-    /** @var PackageSearchRepository */
-    private $packageSearchRepository;
-
-    /**
-     * @param PackageRepository $packageRepository
-     * @param string $defaultArchitecture
-     * @param PackageSearchRepository $packageSearchRepository
-     */
     public function __construct(
-        PackageRepository $packageRepository,
-        PackageSearchRepository $packageSearchRepository,
-        string $defaultArchitecture
+        private PackageRepository $packageRepository,
+        private PackageSearchRepository $packageSearchRepository,
+        private string $defaultArchitecture
     ) {
-        $this->packageRepository = $packageRepository;
-        $this->packageSearchRepository = $packageSearchRepository;
-        $this->defaultArchitecture = $defaultArchitecture;
     }
 
     /**
      * @Route("/packages/opensearch", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @return Response
      */
     public function openSearchAction(): Response
     {
@@ -55,7 +37,6 @@ class PackagesController extends AbstractController
     /**
      * @Route("/packages/feed", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @return Response
      */
     public function feedAction(): Response
     {
@@ -72,8 +53,6 @@ class PackagesController extends AbstractController
     /**
      * @Route("/packages/suggest", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param Request $request
-     * @return Response
      */
     public function suggestAction(Request $request): Response
     {
@@ -89,10 +68,6 @@ class PackagesController extends AbstractController
     /**
      * @Route("/api/packages", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param QueryRequest $queryRequest
-     * @param PaginationRequest $paginationRequest
-     * @param Request $request
-     * @return Response
      */
     public function packagesAction(
         QueryRequest $queryRequest,

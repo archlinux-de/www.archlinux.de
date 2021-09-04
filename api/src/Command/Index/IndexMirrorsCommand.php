@@ -16,29 +16,12 @@ class IndexMirrorsCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Client */
-    private $client;
-
-    /** @var MirrorRepository */
-    private $mirrorRepository;
-
-    /** @var MirrorSearchIndexer */
-    private $mirrorSearchIndexer;
-
-    /**
-     * @param Client $client
-     * @param MirrorRepository $mirrorRepository
-     * @param MirrorSearchIndexer $mirrorSearchIndexer
-     */
     public function __construct(
-        Client $client,
-        MirrorRepository $mirrorRepository,
-        MirrorSearchIndexer $mirrorSearchIndexer
+        private Client $client,
+        private MirrorRepository $mirrorRepository,
+        private MirrorSearchIndexer $mirrorSearchIndexer
     ) {
         parent::__construct();
-        $this->client = $client;
-        $this->mirrorRepository = $mirrorRepository;
-        $this->mirrorSearchIndexer = $mirrorSearchIndexer;
     }
 
     protected function configure(): void
@@ -46,11 +29,6 @@ class IndexMirrorsCommand extends Command
         $this->setName('app:index:mirrors');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('mirrors.lock');

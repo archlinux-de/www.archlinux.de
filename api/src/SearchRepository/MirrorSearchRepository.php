@@ -11,42 +11,14 @@ class MirrorSearchRepository
 {
     private const PROTOCOL = 'https';
 
-    /** @var string */
-    private $mirrorCountry;
-
-    /** @var Client */
-    private $client;
-
-    /** @var MirrorRepository */
-    private $mirrorRepository;
-
-    /** @var MirrorSearchIndexer */
-    private $mirrorSearchIndexer;
-
-    /**
-     * @param string $mirrorCountry
-     * @param Client $client
-     * @param MirrorRepository $mirrorRepository
-     * @param MirrorSearchIndexer $mirrorSearchIndexer
-     */
     public function __construct(
-        string $mirrorCountry,
-        Client $client,
-        MirrorRepository $mirrorRepository,
-        MirrorSearchIndexer $mirrorSearchIndexer
+        private string $mirrorCountry,
+        private Client $client,
+        private MirrorRepository $mirrorRepository,
+        private MirrorSearchIndexer $mirrorSearchIndexer
     ) {
-        $this->mirrorCountry = $mirrorCountry;
-        $this->client = $client;
-        $this->mirrorRepository = $mirrorRepository;
-        $this->mirrorSearchIndexer = $mirrorSearchIndexer;
     }
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     * @param string $query
-     * @return array
-     */
     public function findSecureByQuery(int $offset, int $limit, string $query): array
     {
         $sort = [
@@ -94,7 +66,6 @@ class MirrorSearchRepository
     }
 
     /**
-     * @param array $results
      * @return Mirror[]
      */
     private function findBySearchResults(array $results): array
@@ -113,9 +84,6 @@ class MirrorSearchRepository
     }
 
     /**
-     * @param string $countryCode
-     * @param \DateTime|null $lastSync
-     * @param int $limit
      * @return Mirror[]
      */
     public function findBestByCountryAndLastSync(

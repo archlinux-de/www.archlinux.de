@@ -7,20 +7,10 @@ use League\ISO3166\ISO3166;
 
 class CountryFetcher implements \IteratorAggregate
 {
-    /** @var ISO3166 */
-    private $iso3166;
-
-    /**
-     * @param ISO3166 $iso3166
-     */
-    public function __construct(ISO3166 $iso3166)
+    public function __construct(private ISO3166 $iso3166)
     {
-        $this->iso3166 = $iso3166;
     }
 
-    /**
-     * @return \Traversable
-     */
     public function getIterator(): \Traversable
     {
         foreach ($this->iso3166 as $iso3166Country) {

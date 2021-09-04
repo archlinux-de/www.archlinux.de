@@ -15,26 +15,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ReleasesController extends AbstractController
 {
-    /** @var ReleaseRepository */
-    private $releaseRepository;
-
-    /** @var ReleaseSearchRepository */
-    private $releaseSearchRepository;
-
-    /**
-     * @param ReleaseRepository $releaseRepository
-     * @param ReleaseSearchRepository $releaseSearchRepository
-     */
-    public function __construct(ReleaseRepository $releaseRepository, ReleaseSearchRepository $releaseSearchRepository)
-    {
-        $this->releaseRepository = $releaseRepository;
-        $this->releaseSearchRepository = $releaseSearchRepository;
+    public function __construct(
+        private ReleaseRepository $releaseRepository,
+        private ReleaseSearchRepository $releaseSearchRepository
+    ) {
     }
 
     /**
      * @Route("/releases/feed", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @return Response
      */
     public function feedAction(): Response
     {
@@ -49,10 +38,6 @@ class ReleasesController extends AbstractController
     /**
      * @Route("/api/releases", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param QueryRequest $queryRequest
-     * @param PaginationRequest $paginationRequest
-     * @param Request $request
-     * @return Response
      */
     public function releasesAction(
         QueryRequest $queryRequest,
@@ -72,8 +57,6 @@ class ReleasesController extends AbstractController
     /**
      * @Route("/api/releases/{version<^[0-9]+[\.\-\w]+$>}", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param Release $release
-     * @return Response
      */
     public function apiReleaseAction(Release $release): Response
     {

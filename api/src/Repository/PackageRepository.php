@@ -19,19 +19,11 @@ use Doctrine\ORM\NoResultException;
 
 class PackageRepository extends ServiceEntityRepository
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Package::class);
     }
 
-    /**
-     * @param Repository $repository
-     * @param string $name
-     * @return Package|null
-     */
     public function findByRepositoryAndName(Repository $repository, string $name): ?Package
     {
         return $this
@@ -45,8 +37,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Package $package
-     * @param string $relationType
      * @return Package[]
      */
     public function findByInverseRelationType(Package $package, string $relationType): array
@@ -64,8 +54,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $architecture
-     * @param int $limit
      * @return Package[]
      */
     public function findLatestByArchitecture(string $architecture, int $limit): array
@@ -82,7 +70,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $architecture
      * @return Package[]
      */
     public function findStableByArchitecture(string $architecture): array
@@ -112,9 +99,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $architecture
-     * @param string $name
-     * @return Package
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -133,9 +117,6 @@ class PackageRepository extends ServiceEntityRepository
             ->getSingleResult();
     }
 
-    /**
-     * @return int
-     */
     public function getSize(): int
     {
         return $this->createQueryBuilder('package')
@@ -145,7 +126,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Repository $repository
      * @param string[] $packageNames
      * @return Package[]
      */
@@ -165,7 +145,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Repository $repository
      * @return Package[]
      */
     public function findByRepository(Repository $repository): array
@@ -179,10 +158,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @param string $type
      * @return Package[]
      */
     public function findInverseRelationsByQuery(
@@ -211,10 +186,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @return Package
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -234,10 +205,6 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @param string $type
      * @return AbstractRelation[]
      */
     public function findRelationsByQuery(string $repository, string $architecture, string $name, string $type): array

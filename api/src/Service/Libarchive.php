@@ -22,8 +22,7 @@ use FFI\CType;
  */
 class Libarchive
 {
-    /** @var FFI */
-    private $ffi;
+    private FFI $ffi;
 
     public function __construct()
     {
@@ -43,12 +42,7 @@ class Libarchive
         );
     }
 
-    /**
-     * @param string $name
-     * @param array $arguments
-     * @return mixed
-     */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         return $this->ffi->$name(...$arguments);
     }

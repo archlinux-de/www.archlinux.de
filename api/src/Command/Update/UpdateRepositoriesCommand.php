@@ -14,29 +14,12 @@ class UpdateRepositoriesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var RepositoryManager */
-    private $repositoryManager;
-
-    /** @var AbstractRelationRepository */
-    private $relationRepository;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param RepositoryManager $repositoryManager
-     * @param AbstractRelationRepository $relationRepository
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        RepositoryManager $repositoryManager,
-        AbstractRelationRepository $relationRepository
+        private EntityManagerInterface $entityManager,
+        private RepositoryManager $repositoryManager,
+        private AbstractRelationRepository $relationRepository
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->repositoryManager = $repositoryManager;
-        $this->relationRepository = $relationRepository;
     }
 
     protected function configure(): void
@@ -44,11 +27,6 @@ class UpdateRepositoriesCommand extends Command
         $this->setName('app:update:repositories');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');

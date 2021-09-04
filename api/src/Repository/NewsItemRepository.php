@@ -8,16 +8,12 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class NewsItemRepository extends ServiceEntityRepository
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, NewsItem::class);
     }
 
     /**
-     * @param int $limit
      * @return NewsItem[]
      */
     public function findLatest(int $limit): array
@@ -44,9 +40,6 @@ class NewsItemRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * @return int
-     */
     public function getSize(): int
     {
         return $this->createQueryBuilder('news')

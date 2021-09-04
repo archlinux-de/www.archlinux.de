@@ -10,32 +10,19 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class RepositoryNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var ObjectNormalizer */
-    private $normalizer;
-
-    /**
-     * @param ObjectNormalizer $normalizer
-     */
-    public function __construct(ObjectNormalizer $normalizer)
+    public function __construct(private ObjectNormalizer $normalizer)
     {
-        $this->normalizer = $normalizer;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof Repository && $format == 'json';
     }
 
     /**
      * @param Repository $object
-     * @param string $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, string $format = null, array $context = []): array
     {
         /** @var array $data */
         $data = $this->normalizer->normalize(
@@ -56,9 +43,6 @@ class RepositoryNormalizer implements NormalizerInterface, CacheableSupportsMeth
         return $data;
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

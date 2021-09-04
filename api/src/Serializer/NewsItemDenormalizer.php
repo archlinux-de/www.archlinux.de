@@ -9,25 +9,15 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var string */
-    private $flarumUrl;
-
-    /**
-     * @param string $flarumUrl
-     */
-    public function __construct(string $flarumUrl)
+    public function __construct(private string $flarumUrl)
     {
-        $this->flarumUrl = $flarumUrl;
     }
 
     /**
      * @param array $data
-     * @param string $type
-     * @param string|null $format
-     * @param array $context
      * @return NewsItem[]
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
@@ -91,17 +81,11 @@ class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMe
         return [];
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
         return $type == NewsItem::class . '[]';
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

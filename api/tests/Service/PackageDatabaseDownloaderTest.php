@@ -20,10 +20,6 @@ class PackageDatabaseDownloaderTest extends TestCase
         $this->assertEquals('foo', $download);
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @return PackageDatabaseDownloader
-     */
     public function createDownloader(ResponseInterface $response): PackageDatabaseDownloader
     {
         /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */

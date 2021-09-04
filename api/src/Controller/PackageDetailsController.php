@@ -23,30 +23,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PackageDetailsController extends AbstractController
 {
-    /** @var PackageRepository */
-    private $packageRepository;
-
-    /** @var FilesRepository */
-    private $filesRepository;
-
-    /**
-     * @param PackageRepository $packageRepository
-     * @param FilesRepository $filesRepository
-     */
-    public function __construct(PackageRepository $packageRepository, FilesRepository $filesRepository)
+    public function __construct(private PackageRepository $packageRepository, private FilesRepository $filesRepository)
     {
-        $this->packageRepository = $packageRepository;
-        $this->filesRepository = $filesRepository;
     }
 
     /**
      * @Route("/api/packages/{repository}/{architecture}/{name}/files", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @return Response
-     * @throws NonUniqueResultException
      */
     public function filesAction(string $repository, string $architecture, string $name): Response
     {
@@ -62,10 +45,6 @@ class PackageDetailsController extends AbstractController
     /**
      * @Route("/api/packages/{repository}/{architecture}/{name}", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @return Response
      */
     public function packageAction(string $repository, string $architecture, string $name): Response
     {
@@ -84,10 +63,6 @@ class PackageDetailsController extends AbstractController
         return $this->json($package);
     }
 
-    /**
-     * @param Package $relatedPackage
-     * @return RedirectResponse
-     */
     private function redirectToPackage(Package $relatedPackage): RedirectResponse
     {
         return $this->redirectToRoute(
@@ -103,11 +78,6 @@ class PackageDetailsController extends AbstractController
     /**
      * @Route("/api/packages/{repository}/{architecture}/{name}/inverse-dependencies/{type}", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @param string $type
-     * @return Response
      */
     public function packageInverseDependencyAction(
         string $repository,
@@ -141,11 +111,6 @@ class PackageDetailsController extends AbstractController
     /**
      * @Route("/api/packages/{repository}/{architecture}/{name}/dependencies/{type}", methods={"GET"})
      * @Cache(maxage="300", smaxage="600")
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @param string $type
-     * @return Response
      */
     public function packageDependencyAction(
         string $repository,

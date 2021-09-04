@@ -8,20 +8,10 @@ use App\Entity\Packages\Relations\Replacement;
 
 class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
-    /** @var string */
-    private $environment;
-
-    /**
-     * @param string $environment
-     */
-    public function __construct(string $environment)
+    public function __construct(private string $environment)
     {
-        $this->environment = $environment;
     }
 
-    /**
-     * @return array
-     */
     public function createIndexConfiguration(): array
     {
         return [
@@ -62,7 +52,6 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Package $object
-     * @return array>
      */
     public function createBulkIndexStatement(object $object): array
     {
@@ -94,7 +83,6 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Package $object
-     * @return array>
      */
     public function createBulkDeleteStatement(object $object): array
     {
@@ -103,7 +91,6 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     /**
      * @param Package $object
-     * @return bool
      */
     public function supportsIndexing(object $object): bool
     {

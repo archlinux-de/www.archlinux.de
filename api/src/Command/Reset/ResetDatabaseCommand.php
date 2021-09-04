@@ -24,24 +24,12 @@ use Symfony\Component\Lock\Store\SemaphoreStore;
 
 class ResetDatabaseCommand extends Command
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     /** @var array<LockInterface|null> */
-    private $locks = [];
+    private array $locks = [];
 
-    /** @var CacheItemPoolInterface */
-    private $cache;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param CacheItemPoolInterface $cache
-     */
-    public function __construct(EntityManagerInterface $entityManager, CacheItemPoolInterface $cache)
+    public function __construct(private EntityManagerInterface $entityManager, private CacheItemPoolInterface $cache)
     {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->cache = $cache;
     }
 
     protected function configure(): void
@@ -54,11 +42,6 @@ class ResetDatabaseCommand extends Command
             ->addOption('releases');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $classNames = [];
@@ -98,8 +81,6 @@ class ResetDatabaseCommand extends Command
     }
 
     /**
-     * @param string $name
-     * @return bool
      * @codeCoverageIgnore
      */
     private function lock(string $name): bool

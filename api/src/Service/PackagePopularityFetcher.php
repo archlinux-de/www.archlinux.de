@@ -6,20 +6,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackagePopularityFetcher implements \IteratorAggregate
 {
-    /** @var string */
-    private $packageStatisticsApiUrl;
-
-    /** @var HttpClientInterface */
-    private $httpClient;
-
-    /**
-     * @param string $packageStatisticsApiUrl
-     * @param HttpClientInterface $httpClient
-     */
-    public function __construct(string $packageStatisticsApiUrl, HttpClientInterface $httpClient)
+    public function __construct(private string $packageStatisticsApiUrl, private HttpClientInterface $httpClient)
     {
-        $this->packageStatisticsApiUrl = $packageStatisticsApiUrl;
-        $this->httpClient = $httpClient;
     }
 
     /**

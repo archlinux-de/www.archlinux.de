@@ -8,33 +8,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class NewsItemFetcher implements \IteratorAggregate
 {
-    /** @var string */
-    private $flarumUrl;
-
-    /** @var HttpClientInterface */
-    private $httpClient;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var string */
-    private $flarumTag;
-
-    /**
-     * @param string $flarumUrl
-     * @param HttpClientInterface $httpClient
-     * @param SerializerInterface $serializer
-     */
     public function __construct(
-        string $flarumUrl,
-        string $flarumTag,
-        HttpClientInterface $httpClient,
-        SerializerInterface $serializer
+        private string $flarumUrl,
+        private string $flarumTag,
+        private HttpClientInterface $httpClient,
+        private SerializerInterface $serializer
     ) {
-        $this->flarumUrl = $flarumUrl;
-        $this->httpClient = $httpClient;
-        $this->serializer = $serializer;
-        $this->flarumTag = $flarumTag;
     }
 
     /**

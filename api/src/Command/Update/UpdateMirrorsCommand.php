@@ -17,41 +17,14 @@ class UpdateMirrorsCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var MirrorFetcher */
-    private $mirrorFetcher;
-
-    /** @var MirrorRepository */
-    private $mirrorRepository;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param MirrorFetcher $mirrorFetcher
-     * @param MirrorRepository $mirrorRepository
-     * @param ValidatorInterface $validator
-     * @param LoggerInterface $logger
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        MirrorFetcher $mirrorFetcher,
-        MirrorRepository $mirrorRepository,
-        ValidatorInterface $validator,
-        LoggerInterface $logger
+        private EntityManagerInterface $entityManager,
+        private MirrorFetcher $mirrorFetcher,
+        private MirrorRepository $mirrorRepository,
+        private ValidatorInterface $validator,
+        private LoggerInterface $logger
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->mirrorFetcher = $mirrorFetcher;
-        $this->mirrorRepository = $mirrorRepository;
-        $this->validator = $validator;
-        $this->logger = $logger;
     }
 
     protected function configure(): void
@@ -59,11 +32,6 @@ class UpdateMirrorsCommand extends Command
         $this->setName('app:update:mirrors');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('mirrors.lock');

@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Replacement extends AbstractRelation
 {
     /**
-     * @var Package
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="replacements")
      */
-    protected $source;
+    protected Package $source;
 }

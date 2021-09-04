@@ -16,29 +16,12 @@ class IndexPackagesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Client */
-    private $client;
-
-    /** @var PackageRepository */
-    private $packageRepository;
-
-    /** @var PackageSearchIndexer */
-    private $packageSearchIndexer;
-
-    /**
-     * @param Client $client
-     * @param PackageRepository $packageRepository
-     * @param PackageSearchIndexer $packageSearchIndexer
-     */
     public function __construct(
-        Client $client,
-        PackageRepository $packageRepository,
-        PackageSearchIndexer $packageSearchIndexer
+        private Client $client,
+        private PackageRepository $packageRepository,
+        private PackageSearchIndexer $packageSearchIndexer
     ) {
         parent::__construct();
-        $this->client = $client;
-        $this->packageRepository = $packageRepository;
-        $this->packageSearchIndexer = $packageSearchIndexer;
     }
 
     protected function configure(): void
@@ -46,11 +29,6 @@ class IndexPackagesCommand extends Command
         $this->setName('app:index:packages');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');

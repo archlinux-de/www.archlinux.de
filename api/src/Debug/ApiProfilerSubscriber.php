@@ -11,17 +11,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ApiProfilerSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @return array
-     */
     public static function getSubscribedEvents(): array
     {
         return [KernelEvents::RESPONSE => ['onKernelResponse']];
     }
 
-    /**
-     * @param ResponseEvent $event
-     */
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest()) {

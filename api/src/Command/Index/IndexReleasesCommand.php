@@ -16,29 +16,12 @@ class IndexReleasesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Client */
-    private $client;
-
-    /** @var ReleaseRepository */
-    private $releaseRepository;
-
-    /** @var ReleaseSearchIndexer */
-    private $releaseSearchIndexer;
-
-    /**
-     * @param Client $client
-     * @param ReleaseRepository $releaseRepository
-     * @param ReleaseSearchIndexer $releaseSearchIndexer
-     */
     public function __construct(
-        Client $client,
-        ReleaseRepository $releaseRepository,
-        ReleaseSearchIndexer $releaseSearchIndexer
+        private Client $client,
+        private ReleaseRepository $releaseRepository,
+        private ReleaseSearchIndexer $releaseSearchIndexer
     ) {
         parent::__construct();
-        $this->client = $client;
-        $this->releaseRepository = $releaseRepository;
-        $this->releaseSearchIndexer = $releaseSearchIndexer;
     }
 
     protected function configure(): void
@@ -46,11 +29,6 @@ class IndexReleasesCommand extends Command
         $this->setName('app:index:releases');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('releases.lock');

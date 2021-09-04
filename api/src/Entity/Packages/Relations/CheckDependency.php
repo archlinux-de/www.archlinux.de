@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class CheckDependency extends AbstractRelation
 {
     /**
-     * @var Package
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="checkDependencies")
      */
-    protected $source;
+    protected Package $source;
 }

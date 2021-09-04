@@ -11,52 +11,36 @@ use Doctrine\ORM\Mapping as ORM;
 class NewsAuthor
 {
     /**
-     * @var string
      * @Assert\NotBlank()
      * @Assert\Length(max="255")
      *
      * @ORM\Column()
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var string|null
      * @Assert\Length(max="255")
      *
      * @ORM\Column(nullable=true)
      */
-    private $uri;
+    private ?string $uri = null;
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return NewsAuthor
-     */
     public function setName(string $name): NewsAuthor
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUri(): ?string
     {
         return $this->uri;
     }
 
-    /**
-     * @param string|null $uri
-     * @return NewsAuthor
-     */
     public function setUri(?string $uri): NewsAuthor
     {
         $this->uri = $uri;

@@ -11,19 +11,12 @@ use Doctrine\ORM\Query;
 
 class FilesRepository extends ServiceEntityRepository
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Files::class);
     }
 
     /**
-     * @param string $repository
-     * @param string $architecture
-     * @param string $name
-     * @return Files
      * @throws NoResultException
      * @throws NonUniqueResultException
      */

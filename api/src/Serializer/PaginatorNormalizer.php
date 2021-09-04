@@ -9,16 +9,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterface, CacheableSupportsMethodInterface
 {
-    /** @var NormalizerInterface */
-    private $normalizer;
+    private NormalizerInterface $normalizer;
 
     /**
      * @param Paginator $object
-     * @param string|null $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         /** @var \ArrayIterator<int, object> $objectIterator */
         $objectIterator = $object->getIterator();
@@ -31,27 +27,16 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
         ];
     }
 
-    /**
-     * @param mixed $data
-     * @param string|null $format
-     * @return bool
-     */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof Paginator && $format == 'json';
     }
 
-    /**
-     * @param NormalizerInterface $normalizer
-     */
     public function setNormalizer(NormalizerInterface $normalizer): void
     {
         $this->normalizer = $normalizer;
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

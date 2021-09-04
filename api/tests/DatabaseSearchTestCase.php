@@ -15,7 +15,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
     /**
      * @var SearchIndexConfigurationInterface[]
      */
-    private $searchIndexers = [];
+    private array $searchIndexers = [];
 
     public function setUp(): void
     {
@@ -41,9 +41,6 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
         ];
     }
 
-    /**
-     * @param SearchIndexConfigurationInterface $searchIndexer
-     */
     private function createSearchIndex(SearchIndexConfigurationInterface $searchIndexer): void
     {
         $elasticsearchClient = $this->getElasticsearchClient();
@@ -54,9 +51,6 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
         $elasticsearchClient->indices()->create($searchIndexer->createIndexConfiguration());
     }
 
-    /**
-     * @return Client
-     */
     private function getElasticsearchClient(): Client
     {
         $container = static::getClient()->getContainer();
