@@ -50,11 +50,10 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return ($this->environment == 'test' ? 'test-' : '') . 'package';
     }
 
-    /**
-     * @param Package $object
-     */
     public function createBulkIndexStatement(object $object): array
     {
+        assert($object instanceof Package);
+
         $paramsBody[] = ['index' => ['_index' => $this->getIndexName(), '_id' => $object->getId()]];
         $paramsBody[] = [
             'name' => $object->getName(),
@@ -81,17 +80,13 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return $paramsBody;
     }
 
-    /**
-     * @param Package $object
-     */
     public function createBulkDeleteStatement(object $object): array
     {
+        assert($object instanceof Package);
+
         return [['delete' => ['_index' => $this->getIndexName(), '_id' => $object->getId()]]];
     }
 
-    /**
-     * @param Package $object
-     */
     public function supportsIndexing(object $object): bool
     {
         return $object instanceof Package;

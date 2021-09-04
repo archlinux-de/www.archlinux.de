@@ -17,13 +17,13 @@ class PackageNormalizerTest extends KernelTestCase
     public function setUp(): void
     {
         self::bootKernel();
-        $this->serializer = self::$container->get('serializer');
+        $this->serializer = static::getContainer()->get('serializer');
     }
 
     public function testSupportsNormalization(): void
     {
         $this->assertTrue(
-            self::$container->get(PackageNormalizer::class)->supportsNormalization(
+            static::getContainer()->get(PackageNormalizer::class)->supportsNormalization(
                 new Package(new Repository('', ''), '', '', ''),
                 'json'
             )

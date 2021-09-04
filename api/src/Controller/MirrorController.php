@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MirrorController extends AbstractController
 {
-
     public function __construct(
         private GeoIp $geoIp,
         private string $mirrorCountry,
@@ -82,7 +81,7 @@ class MirrorController extends AbstractController
         }
 
         mt_srand(crc32($clientIp));
-        $randomMirrorIndex = array_rand($mirrors, 1);
+        $randomMirrorIndex = array_rand($mirrors);
         return $mirrors[$randomMirrorIndex];
     }
 

@@ -107,7 +107,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $replacements;
+    private Collection $replacements;
 
     /**
      * @var Collection<int, Conflict>
@@ -120,7 +120,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $conflicts;
+    private Collection $conflicts;
 
     /**
      * @var Collection<int, Provision>
@@ -133,7 +133,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $provisions;
+    private Collection $provisions;
 
     /**
      * @var Collection<int, Dependency>
@@ -146,7 +146,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $dependencies;
+    private Collection $dependencies;
 
     /**
      * @var Collection<int, OptionalDependency>
@@ -159,7 +159,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $optionalDependencies;
+    private Collection $optionalDependencies;
 
     /**
      * @var Collection<int, MakeDependency>
@@ -172,7 +172,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $makeDependencies;
+    private Collection $makeDependencies;
 
     /**
      * @var Collection<int, CheckDependency>
@@ -185,7 +185,7 @@ class Package
         orphanRemoval: true
     )]
     #[Assert\Valid]
-    private Collection|ArrayCollection $checkDependencies;
+    private Collection $checkDependencies;
 
     #[ORM\OneToOne(
         inversedBy: 'package',

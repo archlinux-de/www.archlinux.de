@@ -43,7 +43,7 @@ class ReleaseFetcherTest extends TestCase
         $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo', $serializer);
 
         $this->expectException(\RuntimeException::class);
-        [...$releaseFetcher];
+        $this->assertIsArray([...$releaseFetcher]);
     }
 
     public function testExceptionOnEmptyMirrorList(): void
@@ -60,6 +60,6 @@ class ReleaseFetcherTest extends TestCase
         $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo', $serializer);
 
         $this->expectException(\RuntimeException::class);
-        [...$releaseFetcher];
+        $this->assertIsArray([...$releaseFetcher]);
     }
 }

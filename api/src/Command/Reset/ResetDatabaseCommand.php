@@ -83,7 +83,7 @@ class ResetDatabaseCommand extends Command
     /**
      * @codeCoverageIgnore
      */
-    private function lock(string $name): bool
+    private function lock(string $name): void
     {
         if (isset($this->locks[$name])) {
             throw new \LogicException(sprintf('A lock for "%s" is already in place.', $name));
@@ -98,11 +98,7 @@ class ResetDatabaseCommand extends Command
         $this->locks[$name] = (new LockFactory($store))->createLock($name);
         if (!$this->locks[$name]->acquire()) {
             $this->locks[$name] = null;
-
-            return false;
         }
-
-        return true;
     }
 
     /**

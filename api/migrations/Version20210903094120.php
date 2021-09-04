@@ -16,11 +16,9 @@ final class Version20210903094120 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        // phpcs:disable
         $this->addSql(
             'ALTER TABLE releng_release RENAME COLUMN torrent_file_name TO file_name, RENAME COLUMN torrent_magnet_uri TO magnet_uri, RENAME COLUMN torrent_file_length TO file_length'
         );
-        // phpcs:enable
     }
 
     public function down(Schema $schema): void
@@ -30,11 +28,9 @@ final class Version20210903094120 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        // phpcs:disable
         $this->addSql(
             'ALTER TABLE releng_release RENAME COLUMN file_name TO torrent_file_name, RENAME COLUMN magnet_uri TO torrent_magnet_uri, RENAME COLUMN file_length TO torrent_file_length'
         );
-        // phpcs:enable
     }
 
     public function isTransactional(): bool

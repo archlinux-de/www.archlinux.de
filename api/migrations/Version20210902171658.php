@@ -26,11 +26,9 @@ final class Version20210902171658 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        // phpcs:disable
         $this->addSql(
             'ALTER TABLE releng_release ADD iso_url VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`'
         );
-        // phpcs:enable
     }
 
     public function isTransactional(): bool

@@ -4,7 +4,6 @@ namespace App\Tests;
 
 use Elasticsearch\ClientBuilder;
 use GuzzleHttp\Ring\Future\CompletedFutureArray;
-use GuzzleHttp\Ring\Future\CompletedFutureValue;
 
 class ElasticsearchFixturesHandler
 {

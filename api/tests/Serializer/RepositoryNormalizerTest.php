@@ -15,13 +15,13 @@ class RepositoryNormalizerTest extends KernelTestCase
     public function setUp(): void
     {
         self::bootKernel();
-        $this->serializer = self::$container->get('serializer');
+        $this->serializer = static::getContainer()->get('serializer');
     }
 
     public function testNormalize(): void
     {
         $this->assertTrue(
-            self::$container->get(RepositoryNormalizer::class)->supportsNormalization(
+            static::getContainer()->get(RepositoryNormalizer::class)->supportsNormalization(
                 new Repository('', ''),
                 'json'
             )

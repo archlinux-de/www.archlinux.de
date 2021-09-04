@@ -30,11 +30,9 @@ final class Version20200127181847 extends AbstractMigration
         $this->addSql(
             'ALTER TABLE package ADD md5sum VARCHAR(32) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`'
         );
-        // phpcs:disable
         $this->addSql(
             'ALTER TABLE releng_release ADD md5_sum VARCHAR(32) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`'
         );
-        // phpcs:enable
     }
 
     public function isTransactional(): bool

@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace DoctrineMigrations;
 
 use App\Entity\NewsItem;
-use App\Service\Slugger;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final class Version20181230070059 extends AbstractMigration
 {
-    /**
-     * @param Schema $schema
-     */
     public function up(Schema $schema): void
     {
         $this->abortIf(
@@ -25,9 +21,6 @@ final class Version20181230070059 extends AbstractMigration
         $this->addSql('ALTER TABLE news_item ADD slug VARCHAR(191) NOT NULL AFTER id');
     }
 
-    /**
-     * @param Schema $schema
-     */
     public function postUp(Schema $schema): void
     {
         if ($this->hasColumn('news_item', 'slug')) {
@@ -48,11 +41,6 @@ final class Version20181230070059 extends AbstractMigration
         }
     }
 
-    /**
-     * @param string $table
-     * @param string $columnName
-     * @return bool
-     */
     private function hasColumn(string $table, string $columnName): bool
     {
         foreach ($this->connection->getSchemaManager()->listTableColumns($table) as $column) {
@@ -63,9 +51,6 @@ final class Version20181230070059 extends AbstractMigration
         return false;
     }
 
-    /**
-     * @param Schema $schema
-     */
     public function down(Schema $schema): void
     {
         $this->abortIf(
