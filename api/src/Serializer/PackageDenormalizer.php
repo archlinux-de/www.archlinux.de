@@ -43,7 +43,6 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->setInstalledSize($data['ISIZE'])
             ->setPackager($this->createPackagerFromString($data['PACKAGER']))
             ->setSha256sum($data['SHA256SUM'])
-            ->setPgpSignature($data['PGPSIG'])
             ->setLicenses((array)($data['LICENSE'] ?? []))
             ->setGroups((array)($data['GROUPS'] ?? []))
             ->setFiles(Files::createFromArray((array)($data['FILES'] ?? [])));

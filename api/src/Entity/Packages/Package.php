@@ -121,17 +121,6 @@ class Package
 
     /**
      * @var string|null
-     * @Assert\AtLeastOneOf({
-     *     @Assert\Blank,
-     *     @Assert\Length(min="50", max="2048")
-     * })
-     *
-     * @ORM\Column(name="pgp_signature", type="blob", nullable=true)
-     */
-    private $pgpSignature;
-
-    /**
-     * @var string|null
      * @Assert\Url(protocols={"http", "https", "ftp"})
      *
      * @ORM\Column(name="url", type="string", nullable=true)
@@ -352,7 +341,6 @@ class Package
         $this->setInstalledSize($package->getInstalledSize());
         $this->setPackager($package->getPackager());
         $this->setSha256sum($package->getSha256sum());
-        $this->setPgpSignature($package->getPgpSignature());
         $this->setLicenses($package->getLicenses());
         $this->setGroups($package->getGroups());
         $this->setFiles($package->getFiles());
@@ -590,24 +578,6 @@ class Package
     public function setSha256sum(?string $sha256sum): Package
     {
         $this->sha256sum = $sha256sum;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPgpSignature(): ?string
-    {
-        return (string)$this->pgpSignature;
-    }
-
-    /**
-     * @param string|null $pgpSignature
-     * @return Package
-     */
-    public function setPgpSignature(?string $pgpSignature): Package
-    {
-        $this->pgpSignature = $pgpSignature;
         return $this;
     }
 

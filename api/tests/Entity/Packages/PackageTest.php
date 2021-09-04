@@ -59,7 +59,6 @@ class PackageTest extends TestCase
             ['getVersion'],
             ['getDescription'],
             ['getSha256sum'],
-            ['getPgpSignature'],
             ['getUrl'],
             ['getArchitecture']
         ];
