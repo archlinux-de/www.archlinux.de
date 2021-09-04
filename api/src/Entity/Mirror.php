@@ -28,7 +28,7 @@ class Mirror
     private \DateTime $lastSync;
 
     #[ORM\Column(type: 'integer')]
-    #[Assert\Range(min: '0', max: '31536000')]
+    #[Assert\Range(min: 0, max: 31536000)]
     private int $delay = 0;
 
     #[ORM\Column(type: 'float')]
