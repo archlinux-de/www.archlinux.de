@@ -9,72 +9,43 @@ use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
 use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
+use App\Repository\PackageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\PackageRepository")
- * @ORM\Table(
- *     indexes={
- *          @ORM\Index(columns={"buildDate"}),
- *          @ORM\Index(columns={"name"})
- *     },
- *     uniqueConstraints={
- *          @ORM\UniqueConstraint(columns={"name", "repository_id"})
- *     }
- * )
- */
+#[ORM\Entity(repositoryClass: PackageRepository::class)]
+#[ORM\Index(columns: ['buildDate'])]
+#[ORM\Index(columns: ['name'])]
+#[ORM\UniqueConstraint(columns: ['name', 'repository_id'])]
 class Package
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @Assert\Valid()
-     *
-     * @ORM\ManyToOne(targetEntity="Repository", inversedBy="packages", fetch="EAGER")
-     */
+    #[ORM\ManyToOne(targetEntity: Repository::class, fetch: 'EAGER', inversedBy: 'packages')]
+    #[Assert\Valid]
     private Repository $repository;
 
-    /**
-     * @Assert\Regex("/^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$/")
-     *
-     * @ORM\Column(name="fileName", type="string")
-     */
+    #[ORM\Column(name: 'fileName', type: 'string')]
+    #[Assert\Regex('/^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$/')]
     private string $fileName;
 
-    /**
-     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
-     *
-     * @ORM\Column(name="name", type="string")
-     */
+    #[ORM\Column(name: 'name', type: 'string')]
+    #[Assert\Regex('/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/')]
     private string $name;
 
-    /**
-     * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
-     *
-     * @ORM\Column(name="base", type="string")
-     */
+    #[ORM\Column(name: 'base', type: 'string')]
+    #[Assert\Regex('/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/')]
     private string $base;
 
-    /**
-     * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_:~]{1,255}$/")
-     *
-     * @ORM\Column(name="version", type="string")
-     */
+    #[ORM\Column(name: 'version', type: 'string')]
+    #[Assert\Regex('/^[a-zA-Z0-9@\.\-\+_:~]{1,255}$/')]
     private string $version;
 
-    /**
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(name="description", type="string")
-     */
+    #[ORM\Column(name: 'description', type: 'string')]
+    #[Assert\Length(max: 255)]
     private string $description = '';
 
     /**
@@ -82,37 +53,24 @@ class Package
      * @Assert\All({
      *      @Assert\Length(min="2", max="100")
      * })
-     *
-     * @ORM\Column(type="simple_array", nullable=true)
      */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $groups = [];
 
-    /**
-     * @Assert\Range(min="0", max="10737418240")
-     *
-     * @ORM\Column(name="compressedSize", type="bigint")
-     */
+    #[ORM\Column(name: 'compressedSize', type: 'bigint')]
+    #[Assert\Range(min: '0', max: '10737418240')]
     private int $compressedSize = 0;
 
-    /**
-     * @Assert\Range(min="0", max="10737418240")
-     *
-     * @ORM\Column(name="installedSize", type="bigint")
-     */
+    #[ORM\Column(name: 'installedSize', type: 'bigint')]
+    #[Assert\Range(min: '0', max: '10737418240')]
     private int $installedSize = 0;
 
-    /**
-     * @Assert\Regex("/^[0-9a-f]{64}$/")
-     *
-     * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
-     */
+    #[ORM\Column(name: 'sha256sum', type: 'string', length: 64, nullable: true)]
+    #[Assert\Regex('/^[0-9a-f]{64}$/')]
     private ?string $sha256sum = null;
 
-    /**
-     * @Assert\Url(protocols={"http", "https", "ftp"})
-     *
-     * @ORM\Column(name="url", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'url', type: 'string', nullable: true)]
+    #[Assert\Url(protocols: ['http', 'https', 'ftp'])]
     private ?string $url = null;
 
     /**
@@ -120,144 +78,123 @@ class Package
      * @Assert\All({
      *      @Assert\Length(min="3", max="100")
      * })
-     *
-     * @ORM\Column(type="simple_array", nullable=true)
      */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     private ?array $licenses = null;
 
-    /**
-     * @Assert\Choice({"x86_64", "any"})
-     *
-     * @ORM\Column(name="architecture", type="string")
-     */
+    #[ORM\Column(name: 'architecture', type: 'string')]
+    #[Assert\Choice(['x86_64', 'any'])]
     private string $architecture;
 
-    /**
-     * @ORM\Column(name="buildDate", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'buildDate', type: 'datetime', nullable: true)]
     private ?\DateTime $buildDate = null;
 
-    /**
-     * @Assert\Valid()
-     *
-     * @ORM\Embedded(class="App\Entity\Packages\Packager")
-     */
+    #[ORM\Embedded(class: Packager::class)]
+    #[Assert\Valid]
     private ?Packager $packager = null;
 
-    /**
-     * @Assert\Range(min="0", max="100")
-     *
-     * @ORM\Column(name="popularity", type="float", nullable=false, options={"default"= 0})
-     */
+    #[ORM\Column(name: 'popularity', type: 'float', nullable: false, options: ['default' => 0])]
+    #[Assert\Range(min: '0', max: '100')]
     private int|float $popularity = 0;
 
     /**
      * @var Collection<int, Replacement>
-     * @Assert\Valid()
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\Replacement",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: Replacement::class,
+        cascade: ['persist'],
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $replacements;
 
     /**
      * @var Collection<int, Conflict>
-     * @Assert\Valid()
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\Conflict",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true,
-     *     fetch="LAZY"
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: Conflict::class,
+        cascade: ['persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $conflicts;
 
     /**
      * @var Collection<int, Provision>
-     * @Assert\Valid()
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\Provision",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true,
-     *     fetch="LAZY"
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: Provision::class,
+        cascade: ['persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $provisions;
 
     /**
      * @var Collection<int, Dependency>
-     * @Assert\Valid()
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\Dependency",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true,
-     *     fetch="LAZY"
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: Dependency::class,
+        cascade: ['persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $dependencies;
 
     /**
      * @var Collection<int, OptionalDependency>
-     * @Assert\Valid()
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\OptionalDependency",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true,
-     *     fetch="LAZY"
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: OptionalDependency::class,
+        cascade: ['persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $optionalDependencies;
 
     /**
      * @var Collection<int, MakeDependency>
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\MakeDependency",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true,
-     *     fetch="LAZY"
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: MakeDependency::class,
+        cascade: ['persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $makeDependencies;
 
     /**
      * @var Collection<int, CheckDependency>
-     * @Assert\Valid()
-     *
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Packages\Relations\CheckDependency",
-     *     mappedBy="source",
-     *     cascade={"persist"},
-     *     orphanRemoval=true,
-     *     fetch="LAZY"
-     * )
      */
+    #[ORM\OneToMany(
+        mappedBy: 'source',
+        targetEntity: CheckDependency::class,
+        cascade: ['persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Collection|ArrayCollection $checkDependencies;
 
-    /**
-     * @Assert\Valid()
-     *
-     * @ORM\OneToOne(
-     *     targetEntity="App\Entity\Packages\Files",
-     *     cascade={"remove", "persist"},
-     *     fetch="LAZY",
-     *     inversedBy="package",
-     *     orphanRemoval=true
-     * )
-     */
+    #[ORM\OneToOne(
+        inversedBy: 'package',
+        targetEntity: Files::class,
+        cascade: ['remove', 'persist'],
+        fetch: 'LAZY',
+        orphanRemoval: true
+    )]
+    #[Assert\Valid]
     private Files $files;
 
     public function __construct(Repository $repository, string $name, string $version, string $architecture)

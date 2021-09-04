@@ -2,53 +2,37 @@
 
 namespace App\Entity\Packages;
 
+use App\Repository\RepositoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\RepositoryRepository")
- * @ORM\Table(indexes={@ORM\Index(columns={"name", "architecture"})})
- */
+#[ORM\Entity(repositoryClass: RepositoryRepository::class)]
+#[ORM\Index(columns: ['name', 'architecture'])]
 class Repository
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(name="name", type="string")
-     */
+    #[ORM\Column(name: 'name', type: 'string')]
+    #[Assert\Length(max: 255)]
     private string $name;
 
-    /**
-     * @ORM\Column(name="testing", type="boolean")
-     */
+    #[ORM\Column(name: 'testing', type: 'boolean')]
     private bool $testing = false;
 
-    /**
-     * @Assert\Choice({"x86_64"})
-     *
-     * @ORM\Column(name="architecture", type="string")
-     */
+    #[ORM\Column(name: 'architecture', type: 'string')]
+    #[Assert\Choice(['x86_64'])]
     private string $architecture;
 
     /**
      * @var Collection<int, Package>
-     *
-     * @ORM\OneToMany(targetEntity="Package", mappedBy="repository", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'repository', targetEntity: Package::class, cascade: ['remove'])]
     private Collection|ArrayCollection $packages;
 
-    /**
-     * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
-     */
+    #[ORM\Column(name: 'sha256sum', type: 'string', length: 64, nullable: true)]
     private ?string $sha256sum = null;
 
     public function __construct(string $name, string $architecture)

@@ -23,10 +23,8 @@ class PackagesController extends AbstractController
     ) {
     }
 
-    /**
-     * @Route("/packages/opensearch", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/packages/opensearch', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function openSearchAction(): Response
     {
         $response = $this->render('packages/opensearch.xml.twig');
@@ -34,10 +32,8 @@ class PackagesController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/packages/feed", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/packages/feed', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function feedAction(): Response
     {
         $packages = $this->packageRepository->findLatestByArchitecture($this->defaultArchitecture, 25);
@@ -50,10 +46,8 @@ class PackagesController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/packages/suggest", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/packages/suggest', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function suggestAction(Request $request): Response
     {
         $term = $request->get('term');
@@ -65,10 +59,8 @@ class PackagesController extends AbstractController
         return $this->json(array_map(fn(Package $package): string => $package->getName(), $suggestions));
     }
 
-    /**
-     * @Route("/api/packages", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/packages', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function packagesAction(
         QueryRequest $queryRequest,
         PaginationRequest $paginationRequest,

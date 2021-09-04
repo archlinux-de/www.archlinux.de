@@ -16,10 +16,8 @@ class SitemapController extends AbstractController
     {
     }
 
-    /**
-     * @Route("/sitemap.xml", methods={"GET"})
-     * @Cache(smaxage="600")
-     */
+    #[Route(path: '/sitemap.xml', methods: ['GET'])]
+    #[Cache(smaxage: 600)]
     public function indexAction(
         PackageRepository $packageRepository,
         NewsItemRepository $newsItemRepository,

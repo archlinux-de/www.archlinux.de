@@ -5,24 +5,16 @@ namespace App\Entity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 class NewsAuthor
 {
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column()
-     */
+    #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $name;
 
-    /**
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $uri = null;
 
     public function getName(): string

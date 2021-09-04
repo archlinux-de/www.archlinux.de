@@ -2,57 +2,38 @@
 
 namespace App\Entity;
 
+use App\Repository\NewsItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(indexes={@ORM\Index(columns={"last_modified"})})
- * @ORM\Entity(repositoryClass="App\Repository\NewsItemRepository")
- */
+#[ORM\Entity(repositoryClass: NewsItemRepository::class)]
+#[ORM\Index(columns: ['last_modified'])]
 class NewsItem
 {
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Range(min="1", max="2147483648")
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     */
+    #[ORM\Id, ORM\Column(type: 'integer')]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 1, max: 2147483648)]
     private int $id;
 
-    /**
-     * @Assert\NotBlank()
-     *
-     * @ORM\Column()
-     */
+    #[ORM\Column]
+    #[Assert\NotBlank]
     private string $title;
 
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Length(min="10", max="255")
-     *
-     * @ORM\Column(unique=true)
-     */
+    #[ORM\Column(unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 10, max: 255)]
     private string $link;
 
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max="65535")
-     *
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 65535)]
     private string $description;
 
-    /**
-     * @Assert\Valid()
-     *
-     * @ORM\Embedded(class="NewsAuthor")
-     */
+    #[ORM\Embedded(class: 'NewsAuthor')]
+    #[Assert\Valid]
     private NewsAuthor $author;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private \DateTime $lastModified;
 
     public function __construct(int $id)

@@ -2,31 +2,21 @@
 
 namespace App\Entity\Packages;
 
+use App\Repository\FilesRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\FilesRepository")
- */
+#[ORM\Entity(repositoryClass: FilesRepository::class)]
 class Files implements \IteratorAggregate
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /**
-     * @Assert\Length(max="4294967295")
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Length(max: 4294967295)]
     private string $files;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Packages\Package", mappedBy="files", fetch="LAZY")
-     */
+    #[ORM\OneToOne(mappedBy: 'files', targetEntity: Package::class, fetch: 'LAZY')]
     private Package $package;
 
     private function __construct(string $files)

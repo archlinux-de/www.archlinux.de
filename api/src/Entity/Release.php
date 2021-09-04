@@ -2,177 +2,102 @@
 
 namespace App\Entity;
 
+use App\Repository\ReleaseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(name="releng_release", indexes={@ORM\Index(columns={"available", "release_date"})})
- * @ORM\Entity(repositoryClass="App\Repository\ReleaseRepository")
- */
+#[ORM\Table(name: 'releng_release')]
+#[ORM\Entity(repositoryClass: ReleaseRepository::class)]
+#[ORM\Index(columns: ['available', 'release_date'])]
 class Release
 {
-    /**
-     * @var string
-     * @Assert\NotBlank()
-     * @Assert\Length(max="255")
-     * @Assert\Regex("/^[0-9]+[\.\-\w]+$/")
-     *
-     * @ORM\Column(length=191)
-     * @ORM\Id
-     */
+    #[ORM\Column(length: 191)]
+    #[ORM\Id]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    #[Assert\Regex('/^[0-9]+[\.\-\w]+$/')]
     private string $version;
 
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $available;
 
-    /**
-     * @var string
-     * @Assert\Length(max="16384")
-     *
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
+    #[Assert\Length(max: 16384)]
     private string $info;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private \DateTime $created;
 
-    /**
-     * @var string|null
-     * @Assert\Regex("/^[\d\.]{5,10}$/")
-     *
-     * @ORM\Column(nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
+    #[Assert\Regex('/^[\d\.]{5,10}$/')]
     private ?string $kernelVersion = null;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="date")
-     */
+    #[ORM\Column(type: 'date')]
     private \DateTime $releaseDate;
 
-    /**
-     * @var string|null
-     * @Assert\Regex("/^[0-9a-f]{40}$/")
-     *
-     * @ORM\Column(length=40, nullable=true)
-     */
+    #[ORM\Column(length: 40, nullable: true)]
+    #[Assert\Regex('/^[0-9a-f]{40}$/')]
     private ?string $sha1Sum = null;
 
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true, length=191)
-     */
+    #[ORM\Column(length: 191, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $torrentUrl = null;
 
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $fileName = null;
 
-    /**
-     * @var integer|null
-     * @Assert\Range(min="1", max="4294967296")
-     *
-     * @ORM\Column(type="bigint", nullable=true)
-     */
+    #[ORM\Column(type: 'bigint', nullable: true)]
+    #[Assert\Range(min: 1, max: 4294967296)]
     private ?int $fileLength = null;
 
-    /**
-     * @var string|null
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $magnetUri = null;
 
-    /**
-     * @param string $version
-     */
     public function __construct(string $version)
     {
         $this->version = $version;
     }
 
-    /**
-     * @return string
-     */
     public function getVersion(): string
     {
         return $this->version;
     }
 
-    /**
-     * @return string|null
-     */
     public function getKernelVersion(): ?string
     {
         return $this->kernelVersion;
     }
 
-    /**
-     * @param string|null $kernelVersion
-     * @return Release
-     */
     public function setKernelVersion(?string $kernelVersion): Release
     {
         $this->kernelVersion = $kernelVersion;
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getReleaseDate(): \DateTime
     {
         return $this->releaseDate;
     }
 
-    /**
-     * @param \DateTime $releaseDate
-     * @return Release
-     */
     public function setReleaseDate(\DateTime $releaseDate): Release
     {
         $this->releaseDate = $releaseDate;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isAvailable(): bool
     {
         return $this->available;
     }
 
-    /**
-     * @param bool $available
-     * @return Release
-     */
     public function setAvailable(bool $available): Release
     {
         $this->available = $available;
         return $this;
     }
 
-    /**
-     * @param Release $release
-     * @return Release
-     */
     public function update(Release $release): Release
     {
         if ($this->getVersion() !== $release->getVersion()) {
@@ -197,126 +122,77 @@ class Release
             ->setMagnetUri($release->getMagnetUri());
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getCreated(): \DateTime
     {
         return $this->created;
     }
 
-    /**
-     * @param \DateTime $created
-     * @return Release
-     */
     public function setCreated(\DateTime $created): Release
     {
         $this->created = $created;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getInfo(): string
     {
         return $this->info;
     }
 
-    /**
-     * @param string $info
-     * @return Release
-     */
     public function setInfo(string $info): Release
     {
         $this->info = $info;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSha1Sum(): ?string
     {
         return $this->sha1Sum;
     }
 
-    /**
-     * @param string|null $sha1Sum
-     * @return Release
-     */
     public function setSha1Sum(?string $sha1Sum): Release
     {
         $this->sha1Sum = $sha1Sum;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getTorrentUrl(): ?string
     {
         return $this->torrentUrl;
     }
 
-    /**
-     * @param string|null $torrentUrl
-     * @return Release
-     */
     public function setTorrentUrl(?string $torrentUrl): Release
     {
         $this->torrentUrl = $torrentUrl;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFileName(): ?string
     {
         return $this->fileName;
     }
 
-    /**
-     * @param string|null $fileName
-     * @return Release
-     */
     public function setFileName(?string $fileName): Release
     {
         $this->fileName = $fileName;
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getFileLength(): ?int
     {
         return $this->fileLength;
     }
 
-    /**
-     * @param int|null $fileLength
-     * @return Release
-     */
     public function setFileLength(?int $fileLength): Release
     {
         $this->fileLength = $fileLength;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMagnetUri(): ?string
     {
         return $this->magnetUri;
     }
 
-    /**
-     * @param string|null $magnetUri
-     * @return Release
-     */
     public function setMagnetUri(?string $magnetUri): Release
     {
         $this->magnetUri = $magnetUri;

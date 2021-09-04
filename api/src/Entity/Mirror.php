@@ -2,85 +2,55 @@
 
 namespace App\Entity;
 
+use App\Repository\MirrorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(indexes={@ORM\Index(columns={"last_sync"})})
- * @ORM\Entity(repositoryClass="App\Repository\MirrorRepository")
- */
+#[ORM\Index(columns: ['last_sync'])]
+#[ORM\Entity(repositoryClass: MirrorRepository::class)]
 class Mirror
 {
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Length(min="10", max="255")
-     *
-     * @ORM\Column(length=191)
-     * @ORM\Id
-     */
+    #[ORM\Column(length: 191)]
+    #[ORM\Id]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 10, max: 255)]
     private string $url;
 
-    /**
-     * @Assert\Choice({"http", "https", "rsync"})
-     *
-     * @ORM\Column()
-     */
+    #[ORM\Column]
+    #[Assert\Choice(['http', 'https', 'rsync'])]
     private string $protocol;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Country",fetch="EAGER")
-     * @ORM\JoinColumn(referencedColumnName="code", nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EAGER')]
+    #[ORM\JoinColumn(referencedColumnName: 'code', nullable: true)]
     private ?Country $country = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private \DateTime $lastSync;
 
-    /**
-     * @Assert\Range(min="0",max="31536000")
-     *
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[Assert\Range(min: '0', max: '31536000')]
     private int $delay = 0;
 
-    /**
-     * @Assert\Range(min="0",max="10240")
-     *
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
+    #[Assert\Range(min: 0, max: 10240)]
     private float $durationAvg = 0;
 
-    /**
-     * @Assert\Range(min="0",max="102400")
-     *
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
+    #[Assert\Range(min: 0, max: 102400)]
     private float $score = 0;
 
-    /**
-     * @Assert\Range(min="0",max="1")
-     *
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
+    #[Assert\Range(min: 0, max: 1)]
     private float $completionPct = 0;
 
-    /**
-     * @Assert\Range(min="0",max="10240")
-     *
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
+    #[Assert\Range(min: 0, max: 10240)]
     private float $durationStddev = 0;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $ipv4 = false;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $ipv6 = false;
 
     public function __construct(string $url, string $protocol)

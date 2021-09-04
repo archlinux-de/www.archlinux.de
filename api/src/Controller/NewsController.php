@@ -21,10 +21,8 @@ class NewsController extends AbstractController
     ) {
     }
 
-    /**
-     * @Route("/api/news", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/news', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function newsAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
     {
         return $this->json(
@@ -36,19 +34,15 @@ class NewsController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/api/news/{id<\d+>}", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/news/{id<\d+>}', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function newsItemAction(NewsItem $newsItem): Response
     {
         return $this->json($newsItem);
     }
 
-    /**
-     * @Route("/news/feed", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/news/feed', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function feedAction(): Response
     {
         $response = $this->render(

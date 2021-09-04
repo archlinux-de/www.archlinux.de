@@ -17,10 +17,8 @@ class MirrorStatusController extends AbstractController
     {
     }
 
-    /**
-     * @Route("/api/mirrors", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/mirrors', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function mirrorsAction(QueryRequest $queryRequest, PaginationRequest $paginationRequest): Response
     {
         return $this->json(
@@ -32,10 +30,8 @@ class MirrorStatusController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/api/mirrors/{url<.+>}", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/mirrors/{url<.+>}', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function mirrorAction(Mirror $mirror): Response
     {
         return $this->json($mirror);
