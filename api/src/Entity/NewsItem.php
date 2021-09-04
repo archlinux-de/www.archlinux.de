@@ -29,7 +29,7 @@ class NewsItem
     #[Assert\Length(max: 65535)]
     private string $description;
 
-    #[ORM\Embedded(class: 'NewsAuthor')]
+    #[ORM\Embedded(class: NewsAuthor::class)]
     #[Assert\Valid]
     private NewsAuthor $author;
 
