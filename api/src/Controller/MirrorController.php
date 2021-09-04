@@ -24,16 +24,11 @@ class MirrorController extends AbstractController
     ) {
     }
 
-    /**
-     * @Route(
-     *     "/download/iso/{version}/{file}",
-     *      requirements={
-     *          "version"= "[\w\.\-]{1,191}",
-     *          "file"= "[\w\.\-\+/:]{0,255}"
-     *      },
-     *      methods={"GET"}
-     *     )
-     */
+    #[Route(
+        path: '/download/iso/{version}/{file}',
+        requirements: ['version' => '[\w\.\-]{1,191}', 'file' => '[\w\.\-\+/:]{0,255}'],
+        methods: ['GET'],
+    )]
     public function isoAction(
         string $version,
         string $file,
@@ -88,15 +83,11 @@ class MirrorController extends AbstractController
         return $mirrors[$randomMirrorIndex];
     }
 
-    /**
-     * @Route(
-     *     "/download/{repository}/os/{architecture}/{file}",
-     *      requirements={
-     *          "file"= "^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$"
-     *      },
-     *      methods={"GET"}
-     *     )
-     */
+    #[Route(
+        path: '/download/{repository}/os/{architecture}/{file}',
+        requirements: ['file' => '^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$'],
+        methods: ['GET'],
+    )]
     public function packageAction(
         string $repository,
         string $architecture,
@@ -118,9 +109,11 @@ class MirrorController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/download/{file}", requirements={"file"= "^[a-zA-Z0-9@\.\-\+_/:]{1,255}$"}, methods={"GET"})
-     */
+    #[Route(
+        path: '/download/{file}',
+        requirements: ['file' => '^[a-zA-Z0-9@\.\-\+_/:]{1,255}$'],
+        methods: ['GET'],
+    )]
     public function fallbackAction(string $file, Request $request): Response
     {
         return $this->redirectToMirror($file, null, $request);

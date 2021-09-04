@@ -5,13 +5,9 @@ namespace App\Entity\Packages\Relations;
 use App\Entity\Packages\Package;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class Dependency extends AbstractRelation
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="dependencies")
-     */
+    #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'dependencies')]
     protected Package $source;
 }

@@ -10,8 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LegacyController extends AbstractController
 {
-    /** @var string[] */
-    private array $internalPages = array(
+    private array $internalPages = [
         'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_packages_opensearch',
         'GetRecentNews' => 'app_news_feed',
@@ -21,10 +20,9 @@ class LegacyController extends AbstractController
         'Packages' => 'app_packages',
         'PackagesSuggest' => 'app_packages_suggest',
         'Start' => 'app_start'
-    );
+    ];
 
-    /** @var string[] */
-    private array $externalPages = array(
+    private array $externalPages = [
         'ArchitectureDifferences' => 'https://www.archlinux.org/packages/differences/',
         'MirrorProblems' => 'https://www.archlinux.org/mirrors/status/#outofsync',
         'MirrorStatusJSON' => 'https://www.archlinux.org/mirrors/status/json/',
@@ -32,15 +30,17 @@ class LegacyController extends AbstractController
         'ModuleStatistics' => 'https://pkgstats.archlinux.de/module',
         'PackageStatistics' => 'https://pkgstats.archlinux.de/package',
         'Statistics' => 'https://pkgstats.archlinux.de/'
-    );
+    ];
 
     public function __construct(private LoggerInterface $logger)
     {
     }
 
-    /**
-     * @Route("/", condition="request.query.has('page')", methods={"GET"})
-     */
+    #[Route(
+        path: '/',
+        methods: ['GET'],
+        condition: 'request.query.has("page")',
+    )]
     public function pageAction(Request $request): Response
     {
         $page = $request->get('page');

@@ -21,10 +21,8 @@ class ReleasesController extends AbstractController
     ) {
     }
 
-    /**
-     * @Route("/releases/feed", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/releases/feed', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function feedAction(): Response
     {
         $response = $this->render(
@@ -35,10 +33,8 @@ class ReleasesController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/api/releases", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/releases', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function releasesAction(
         QueryRequest $queryRequest,
         PaginationRequest $paginationRequest,
@@ -54,10 +50,8 @@ class ReleasesController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/api/releases/{version<^[0-9]+[\.\-\w]+$>}", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/releases/{version<^[0-9]+[\.\-\w]+$>}', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function apiReleaseAction(Release $release): Response
     {
         return $this->json($release);

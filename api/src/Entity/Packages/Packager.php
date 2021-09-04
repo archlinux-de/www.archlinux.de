@@ -5,24 +5,16 @@ namespace App\Entity\Packages;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 class Packager
 {
-    /**
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $name = null;
 
-    /**
-     * @Assert\Email()
-     * @Assert\Length(max="255")
-     *
-     * @ORM\Column(nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
+    #[Assert\Email]
+    #[Assert\Length(max: 255)]
     private ?string $email = null;
 
     public function __construct(string $name, string $email)

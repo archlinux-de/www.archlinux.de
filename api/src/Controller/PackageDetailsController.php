@@ -27,10 +27,8 @@ class PackageDetailsController extends AbstractController
     {
     }
 
-    /**
-     * @Route("/api/packages/{repository}/{architecture}/{name}/files", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/packages/{repository}/{architecture}/{name}/files', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function filesAction(string $repository, string $architecture, string $name): Response
     {
         try {
@@ -42,10 +40,8 @@ class PackageDetailsController extends AbstractController
         return $this->json($files);
     }
 
-    /**
-     * @Route("/api/packages/{repository}/{architecture}/{name}", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/packages/{repository}/{architecture}/{name}', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function packageAction(string $repository, string $architecture, string $name): Response
     {
         try {
@@ -75,10 +71,8 @@ class PackageDetailsController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/api/packages/{repository}/{architecture}/{name}/inverse-dependencies/{type}", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/packages/{repository}/{architecture}/{name}/inverse-dependencies/{type}', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function packageInverseDependencyAction(
         string $repository,
         string $architecture,
@@ -108,10 +102,8 @@ class PackageDetailsController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/api/packages/{repository}/{architecture}/{name}/dependencies/{type}", methods={"GET"})
-     * @Cache(maxage="300", smaxage="600")
-     */
+    #[Route(path: '/api/packages/{repository}/{architecture}/{name}/dependencies/{type}', methods: ['GET'])]
+    #[Cache(maxage: 300, smaxage: 600)]
     public function packageDependencyAction(
         string $repository,
         string $architecture,

@@ -2,28 +2,20 @@
 
 namespace App\Entity;
 
+use App\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CountryRepository")
- * @ORM\Table()
- */
+#[ORM\Entity(repositoryClass: CountryRepository::class)]
 class Country
 {
-    /**
-     * @Assert\Regex("/^[A-Z]{2}$/")
-     *
-     * @ORM\Id
-     * @ORM\Column(length=2)
-     */
+    #[ORM\Id]
+    #[ORM\Column(length: 2)]
+    #[Assert\Regex('/^[A-Z]{2}$/')]
     private string $code;
 
-    /**
-     * @Assert\Length(min="2", max="100")
-     *
-     * @ORM\Column()
-     */
+    #[ORM\Column]
+    #[Assert\Length(min: 2, max: 100)]
     private string $name;
 
     public function __construct(string $code)
@@ -50,11 +42,13 @@ class Country
     public function update(Country $country): Country
     {
         if ($this->getCode() !== $country->getCode()) {
-            throw new \InvalidArgumentException(sprintf(
-                'Code mismatch "%s" instead of "%s"',
-                $country->getCode(),
-                $this->getCode()
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Code mismatch "%s" instead of "%s"',
+                    $country->getCode(),
+                    $this->getCode()
+                )
+            );
         }
         return $this->setName($country->getName());
     }
