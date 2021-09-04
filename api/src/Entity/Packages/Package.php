@@ -50,19 +50,21 @@ class Package
 
     /**
      * @var string[]
+     *
+     * @TODO: Can be migrated with PHP 8.1
      * @Assert\All({
-     *      @Assert\Length(min="2", max="100")
+     *      @Assert\Length(min=2, max=100)
      * })
      */
     #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $groups = [];
 
     #[ORM\Column(type: 'bigint')]
-    #[Assert\Range(min: '0', max: '10737418240')]
+    #[Assert\Range(min: 0, max: 10737418240)]
     private int $compressedSize = 0;
 
     #[ORM\Column(type: 'bigint')]
-    #[Assert\Range(min: '0', max: '10737418240')]
+    #[Assert\Range(min: 0, max: 10737418240)]
     private int $installedSize = 0;
 
     #[ORM\Column(length: 64, nullable: true)]
@@ -75,8 +77,10 @@ class Package
 
     /**
      * @var string[]|null
+     *
+     * @TODO: Can be migrated with PHP 8.1
      * @Assert\All({
-     *      @Assert\Length(min="3", max="100")
+     *      @Assert\Length(min=3, max=100)
      * })
      */
     #[ORM\Column(type: 'simple_array', nullable: true)]
@@ -94,7 +98,7 @@ class Package
     private ?Packager $packager = null;
 
     #[ORM\Column(type: 'float', nullable: false, options: ['default' => 0])]
-    #[Assert\Range(min: '0', max: '100')]
+    #[Assert\Range(min: 0, max: 100)]
     private int|float $popularity = 0;
 
     /**
