@@ -14,7 +14,6 @@ class UpdatePackagePopularitiesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var array<string,float> */
     private array $packagePopularities = [];
 
     public function __construct(

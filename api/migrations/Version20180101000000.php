@@ -22,7 +22,6 @@ final class Version20180101000000 extends AbstractMigration
         $knownTables = $this->connection->getSchemaManager()->listTableNames();
 
         if ($knownTables == ['doctrine_migration_versions']) {
-            // phpcs:disable
             $this->addSql('CREATE TABLE country (code VARCHAR(2) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(code)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
             $this->addSql('CREATE TABLE mirror (url VARCHAR(191) NOT NULL, country_id VARCHAR(2) DEFAULT NULL, protocol VARCHAR(255) NOT NULL, last_sync DATETIME DEFAULT NULL, delay INT DEFAULT NULL, duration_avg DOUBLE PRECISION DEFAULT NULL, score DOUBLE PRECISION DEFAULT NULL, completion_pct DOUBLE PRECISION DEFAULT NULL, duration_stddev DOUBLE PRECISION DEFAULT NULL, isos TINYINT(1) DEFAULT NULL, ipv4 TINYINT(1) DEFAULT NULL, ipv6 TINYINT(1) DEFAULT NULL, active TINYINT(1) DEFAULT NULL, INDEX IDX_5BA71B4AF92F3E70 (country_id), INDEX IDX_5BA71B4ABA003126 (last_sync), PRIMARY KEY(url)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
             $this->addSql('CREATE TABLE news_item (id VARCHAR(191) NOT NULL, title VARCHAR(255) NOT NULL, link VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, last_modified DATETIME NOT NULL, author_name VARCHAR(255) NOT NULL, author_uri VARCHAR(255) DEFAULT NULL, INDEX IDX_CAC6D395270A2932 (last_modified), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
@@ -36,7 +35,6 @@ final class Version20180101000000 extends AbstractMigration
             $this->addSql('ALTER TABLE package ADD CONSTRAINT FK_DE686795A3E65B2F FOREIGN KEY (files_id) REFERENCES files (id)');
             $this->addSql('ALTER TABLE packages_relation ADD CONSTRAINT FK_B3C62CBC158E0B66 FOREIGN KEY (target_id) REFERENCES package (id) ON DELETE CASCADE');
             $this->addSql('ALTER TABLE packages_relation ADD CONSTRAINT FK_B3C62CBC953C1C61 FOREIGN KEY (source_id) REFERENCES package (id)');
-            // phpcs:enable
         } else {
             $this->warnIf(true, 'table doctrine_migration_versions not found in: ' . implode(', ', $knownTables));
         }

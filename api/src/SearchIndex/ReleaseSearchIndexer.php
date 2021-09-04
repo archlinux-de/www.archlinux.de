@@ -33,11 +33,10 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return ($this->environment == 'test' ? 'test-' : '') . 'release';
     }
 
-    /**
-     * @param Release $object
-     */
     public function createBulkIndexStatement(object $object): array
     {
+        assert($object instanceof Release);
+
         $paramsBody[] = ['index' => ['_index' => $this->getIndexName(), '_id' => $object->getVersion()]];
         $paramsBody[] = [
             'version' => $object->getVersion(),
@@ -50,17 +49,13 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return $paramsBody;
     }
 
-    /**
-     * @param Release $object
-     */
     public function createBulkDeleteStatement(object $object): array
     {
+        assert($object instanceof Release);
+
         return [['delete' => ['_index' => $this->getIndexName(), '_id' => $object->getVersion()]]];
     }
 
-    /**
-     * @param Release $object
-     */
     public function supportsIndexing(object $object): bool
     {
         return $object instanceof Release;

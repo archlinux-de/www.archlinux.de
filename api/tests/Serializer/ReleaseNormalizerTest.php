@@ -14,13 +14,13 @@ class ReleaseNormalizerTest extends KernelTestCase
     public function setUp(): void
     {
         self::bootKernel();
-        $this->serializer = self::$container->get('serializer');
+        $this->serializer = static::getContainer()->get('serializer');
     }
 
     public function testSupportsNormalization(): void
     {
         $this->assertTrue(
-            self::$container->get(ReleaseNormalizer::class)->supportsNormalization(
+            static::getContainer()->get(ReleaseNormalizer::class)->supportsNormalization(
                 new Release(''),
                 'json'
             )

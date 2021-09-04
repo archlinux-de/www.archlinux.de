@@ -15,13 +15,13 @@ class NewsItemNormalizerTest extends KernelTestCase
     public function setUp(): void
     {
         self::bootKernel();
-        $this->serializer = self::$container->get('serializer');
+        $this->serializer = static::getContainer()->get('serializer');
     }
 
     public function testSupportsNormalization(): void
     {
         $this->assertTrue(
-            self::$container->get(NewsItemNormalizer::class)->supportsNormalization(new NewsItem(1), 'json')
+            static::getContainer()->get(NewsItemNormalizer::class)->supportsNormalization(new NewsItem(1), 'json')
         );
     }
 

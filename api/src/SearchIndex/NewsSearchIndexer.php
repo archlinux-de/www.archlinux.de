@@ -32,11 +32,10 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
         return ($this->environment == 'test' ? 'test-' : '') . 'news_item';
     }
 
-    /**
-     * @param NewsItem $object
-     */
     public function createBulkIndexStatement(object $object): array
     {
+        assert($object instanceof NewsItem);
+
         $paramsBody[] = ['index' => ['_index' => $this->getIndexName(), '_id' => $object->getId()]];
         $paramsBody[] = [
             'title' => $object->getTitle(),
@@ -48,17 +47,13 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
         return $paramsBody;
     }
 
-    /**
-     * @param NewsItem $object
-     */
     public function createBulkDeleteStatement(object $object): array
     {
+        assert($object instanceof NewsItem);
+
         return [['delete' => ['_index' => $this->getIndexName(), '_id' => $object->getId()]]];
     }
 
-    /**
-     * @param NewsItem $object
-     */
     public function supportsIndexing(object $object): bool
     {
         return $object instanceof NewsItem;

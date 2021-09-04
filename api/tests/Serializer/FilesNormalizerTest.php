@@ -13,7 +13,7 @@ class FilesNormalizerTest extends KernelTestCase
     public function setUp(): void
     {
         self::bootKernel();
-        $this->serializer = self::$container->get('serializer');
+        $this->serializer = static::getContainer()->get('serializer');
     }
 
     /**

@@ -39,11 +39,10 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
         return ($this->environment == 'test' ? 'test-' : '') . 'mirror';
     }
 
-    /**
-     * @param Mirror $object
-     */
     public function createBulkIndexStatement(object $object): array
     {
+        assert($object instanceof Mirror);
+
         $paramsBody[] = ['index' => ['_index' => $this->getIndexName(), '_id' => $object->getUrl()]];
         $paramsBody[] = [
             'url' => $object->getUrl(),
@@ -59,17 +58,13 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
         return $paramsBody;
     }
 
-    /**
-     * @param Mirror $object
-     */
     public function createBulkDeleteStatement(object $object): array
     {
+        assert($object instanceof Mirror);
+
         return [['delete' => ['_index' => $this->getIndexName(), '_id' => $object->getUrl()]]];
     }
 
-    /**
-     * @param Mirror $object
-     */
     public function supportsIndexing(object $object): bool
     {
         return $object instanceof Mirror;

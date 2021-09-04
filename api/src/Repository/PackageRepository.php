@@ -215,32 +215,15 @@ class PackageRepository extends ServiceEntityRepository
             return [];
         }
 
-        switch ($type) {
-            case CheckDependency::class:
-                $dependencies = $package->getCheckDependencies()->toArray();
-                break;
-            case Conflict::class:
-                $dependencies = $package->getConflicts()->toArray();
-                break;
-            case Dependency::class:
-                $dependencies = $package->getDependencies()->toArray();
-                break;
-            case MakeDependency::class:
-                $dependencies = $package->getMakeDependencies()->toArray();
-                break;
-            case OptionalDependency::class:
-                $dependencies = $package->getOptionalDependencies()->toArray();
-                break;
-            case Provision::class:
-                $dependencies = $package->getProvisions()->toArray();
-                break;
-            case Replacement::class:
-                $dependencies = $package->getReplacements()->toArray();
-                break;
-            default:
-                $dependencies = [];
-        }
-
-        return $dependencies;
+        return match ($type) {
+            CheckDependency::class => $package->getCheckDependencies()->toArray(),
+            Conflict::class => $package->getConflicts()->toArray(),
+            Dependency::class => $package->getDependencies()->toArray(),
+            MakeDependency::class => $package->getMakeDependencies()->toArray(),
+            OptionalDependency::class => $package->getOptionalDependencies()->toArray(),
+            Provision::class => $package->getProvisions()->toArray(),
+            Replacement::class => $package->getReplacements()->toArray(),
+            default => [],
+        };
     }
 }

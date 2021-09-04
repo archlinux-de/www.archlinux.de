@@ -16,7 +16,6 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        /** @var \ArrayIterator<int, object> $objectIterator */
         $objectIterator = $object->getIterator();
         return [
             'offset' => $object->getQuery()->getFirstResult(),

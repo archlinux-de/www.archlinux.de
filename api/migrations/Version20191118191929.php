@@ -17,9 +17,7 @@ final class Version20191118191929 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        // phpcs:disable
         $this->addSql('ALTER TABLE releng_release CHANGE md5sum md5_sum VARCHAR(32) DEFAULT NULL, CHANGE sha1sum sha1_sum VARCHAR(40) DEFAULT NULL');
-        // phpcs:enable
     }
 
     public function down(Schema $schema): void
@@ -30,9 +28,7 @@ final class Version20191118191929 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        // phpcs:disable
         $this->addSql('ALTER TABLE releng_release CHANGE md5_sum md5sum VARCHAR(32) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE sha1_sum sha1sum VARCHAR(40) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
-        // phpcs:enable
     }
 
     public function isTransactional(): bool

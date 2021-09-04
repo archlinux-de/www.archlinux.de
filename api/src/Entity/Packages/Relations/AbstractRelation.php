@@ -24,7 +24,7 @@ abstract class AbstractRelation
 
     #[ORM\Column(nullable: true)]
     #[Assert\Regex('/^[a-zA-Z0-9@\.\-\+_:<=>~]{1,255}$/')]
-    private ?string $targetVersion = null;
+    private ?string $targetVersion;
 
     #[ORM\ManyToOne(targetEntity: Package::class)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]

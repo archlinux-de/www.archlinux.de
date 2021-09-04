@@ -30,7 +30,7 @@ class Repository
      * @var Collection<int, Package>
      */
     #[ORM\OneToMany(mappedBy: 'repository', targetEntity: Package::class, cascade: ['remove'])]
-    private Collection|ArrayCollection $packages;
+    private Collection $packages;
 
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $sha256sum = null;

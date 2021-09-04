@@ -43,6 +43,6 @@ class NewsItemFetcherTest extends TestCase
         $newsItemFetcher = new NewsItemFetcher('http://foo', 'bar', $httpClient, $serializer);
 
         $this->expectException(\Throwable::class);
-        [...$newsItemFetcher];
+        $this->assertIsArray([...$newsItemFetcher]);
     }
 }
