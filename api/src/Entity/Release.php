@@ -20,14 +20,14 @@ class Release
      * @ORM\Column(length=191)
      * @ORM\Id
      */
-    private $version;
+    private string $version;
 
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean")
      */
-    private $available;
+    private bool $available;
 
     /**
      * @var string
@@ -35,14 +35,14 @@ class Release
      *
      * @ORM\Column(type="text")
      */
-    private $info;
+    private string $info;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
      */
-    private $created;
+    private \DateTime $created;
 
     /**
      * @var string|null
@@ -50,14 +50,14 @@ class Release
      *
      * @ORM\Column(nullable=true)
      */
-    private $kernelVersion;
+    private ?string $kernelVersion = null;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="date")
      */
-    private $releaseDate;
+    private \DateTime $releaseDate;
 
     /**
      * @var string|null
@@ -65,7 +65,7 @@ class Release
      *
      * @ORM\Column(length=40, nullable=true)
      */
-    private $sha1Sum;
+    private ?string $sha1Sum = null;
 
     /**
      * @var string|null
@@ -73,7 +73,7 @@ class Release
      *
      * @ORM\Column(nullable=true, length=191)
      */
-    private $torrentUrl;
+    private ?string $torrentUrl = null;
 
     /**
      * @var string|null
@@ -81,7 +81,7 @@ class Release
      *
      * @ORM\Column(nullable=true)
      */
-    private $fileName;
+    private ?string $fileName = null;
 
     /**
      * @var integer|null
@@ -89,7 +89,7 @@ class Release
      *
      * @ORM\Column(type="bigint", nullable=true)
      */
-    private $fileLength;
+    private ?int $fileLength = null;
 
     /**
      * @var string|null
@@ -97,7 +97,7 @@ class Release
      *
      * @ORM\Column(nullable=true)
      */
-    private $magnetUri;
+    private ?string $magnetUri = null;
 
     /**
      * @param string $version

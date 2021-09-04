@@ -9,8 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class FilesTest extends TestCase
 {
-    /** @var string[] */
-    private $files = ['usr/bin', 'usr/bin/pacman'];
+    private array $files = ['usr/bin', 'usr/bin/pacman'];
 
     public function testGetPackage(): void
     {
@@ -30,9 +29,6 @@ class FilesTest extends TestCase
         $this->assertEquals($files, [...Files::createFromArray($files)->getIterator()]);
     }
 
-    /**
-     * @return array
-     */
     public function provideFilesArray(): array
     {
         return [

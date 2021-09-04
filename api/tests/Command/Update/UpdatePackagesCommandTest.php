@@ -123,10 +123,6 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
-    /**
-     * @param iterable $iterable
-     * @return \Generator
-     */
     private function createGenerator(iterable $iterable): \Generator
     {
         foreach ($iterable as $item) {

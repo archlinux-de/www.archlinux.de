@@ -39,8 +39,6 @@ class PackageDatabaseMirrorTest extends TestCase
     }
 
     /**
-     * @param int $oldLastUpdated
-     * @param int $newLastUpdated
      * @dataProvider provideLastUpdated
      */
     public function testHasUpdated(int $oldLastUpdated, int $newLastUpdated): void
@@ -83,9 +81,6 @@ class PackageDatabaseMirrorTest extends TestCase
         $this->assertEquals('', $cache->getItem(PackageDatabaseMirror::CACHE_KEY)->get());
     }
 
-    /**
-     * @return array
-     */
     public function provideLastUpdated(): array
     {
         return [

@@ -6,20 +6,10 @@ use App\Entity\Mirror;
 
 class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
-    /** @var string */
-    private $environment;
-
-    /**
-     * @param string $environment
-     */
-    public function __construct(string $environment)
+    public function __construct(private string $environment)
     {
-        $this->environment = $environment;
     }
 
-    /**
-     * @return array
-     */
     public function createIndexConfiguration(): array
     {
         return [
@@ -51,7 +41,6 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     /**
      * @param Mirror $object
-     * @return array>
      */
     public function createBulkIndexStatement(object $object): array
     {
@@ -72,7 +61,6 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     /**
      * @param Mirror $object
-     * @return array>
      */
     public function createBulkDeleteStatement(object $object): array
     {
@@ -81,7 +69,6 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     /**
      * @param Mirror $object
-     * @return bool
      */
     public function supportsIndexing(object $object): bool
     {

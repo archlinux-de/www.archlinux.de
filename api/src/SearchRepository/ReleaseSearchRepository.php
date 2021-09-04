@@ -9,37 +9,13 @@ use Elasticsearch\Client;
 
 class ReleaseSearchRepository
 {
-    /** @var Client */
-    private $client;
-
-    /** @var ReleaseRepository */
-    private $releaseRepository;
-
-    /** @var ReleaseSearchIndexer */
-    private $releaseSearchIndexer;
-
-    /**
-     * @param Client $client
-     * @param ReleaseRepository $releaseRepository
-     * @param ReleaseSearchIndexer $releaseSearchIndexer
-     */
     public function __construct(
-        Client $client,
-        ReleaseRepository $releaseRepository,
-        ReleaseSearchIndexer $releaseSearchIndexer
+        private Client $client,
+        private ReleaseRepository $releaseRepository,
+        private ReleaseSearchIndexer $releaseSearchIndexer
     ) {
-        $this->client = $client;
-        $this->releaseRepository = $releaseRepository;
-        $this->releaseSearchIndexer = $releaseSearchIndexer;
     }
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     * @param string $query
-     * @param bool $onlyAvailable
-     * @return array
-     */
     public function findAllByQuery(int $offset, int $limit, string $query, bool $onlyAvailable = false): array
     {
         $sort = [];
@@ -91,7 +67,6 @@ class ReleaseSearchRepository
     }
 
     /**
-     * @param array $results
      * @return Release[]
      */
     private function findBySearchResults(array $results): array

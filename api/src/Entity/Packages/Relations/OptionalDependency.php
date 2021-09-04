@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class OptionalDependency extends AbstractRelation
 {
     /**
-     * @var Package
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package", inversedBy="optionalDependencies")
      */
-    protected $source;
+    protected Package $source;
 }

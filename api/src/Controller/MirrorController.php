@@ -15,34 +15,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MirrorController extends AbstractController
 {
-    /** @var GeoIp */
-    private $geoIp;
 
-    /** @var MirrorSearchRepository */
-    private $mirrorSearchRepository;
-
-    /** @var string */
-    private $mirrorCountry;
-
-    /** @var string */
-    private $mirrorArchive;
-
-    /**
-     * @param GeoIp $geoIp
-     * @param string $mirrorCountry
-     * @param MirrorSearchRepository $mirrorSearchRepository
-     * @param string $mirrorArchive
-     */
     public function __construct(
-        GeoIp $geoIp,
-        string $mirrorCountry,
-        MirrorSearchRepository $mirrorSearchRepository,
-        string $mirrorArchive
+        private GeoIp $geoIp,
+        private string $mirrorCountry,
+        private MirrorSearchRepository $mirrorSearchRepository,
+        private string $mirrorArchive
     ) {
-        $this->geoIp = $geoIp;
-        $this->mirrorCountry = $mirrorCountry;
-        $this->mirrorSearchRepository = $mirrorSearchRepository;
-        $this->mirrorArchive = $mirrorArchive;
     }
 
     /**
@@ -54,11 +33,6 @@ class MirrorController extends AbstractController
      *      },
      *      methods={"GET"}
      *     )
-     * @param string $version
-     * @param string $file
-     * @param Request $request
-     * @param ReleaseRepository $releaseRepository
-     * @return Response
      */
     public function isoAction(
         string $version,
@@ -90,12 +64,6 @@ class MirrorController extends AbstractController
         };
     }
 
-    /**
-     * @param string $file
-     * @param \DateTime|null $lastsync
-     * @param Request $request
-     * @return Response
-     */
     private function redirectToMirror(string $file, ?\DateTime $lastsync, Request $request): Response
     {
         return $this->redirect(
@@ -103,11 +71,6 @@ class MirrorController extends AbstractController
         );
     }
 
-    /**
-     * @param \DateTime|null $lastSync
-     * @param string $clientIp
-     * @return Mirror
-     */
     private function getMirror(?\DateTime $lastSync, string $clientIp): Mirror
     {
         $countryCode = $this->geoIp->getCountryCode($clientIp);
@@ -133,12 +96,6 @@ class MirrorController extends AbstractController
      *      },
      *      methods={"GET"}
      *     )
-     * @param string $repository
-     * @param string $architecture
-     * @param string $file
-     * @param Request $request
-     * @param PackageRepository $packageRepository
-     * @return Response
      */
     public function packageAction(
         string $repository,
@@ -163,9 +120,6 @@ class MirrorController extends AbstractController
 
     /**
      * @Route("/download/{file}", requirements={"file"= "^[a-zA-Z0-9@\.\-\+_/:]{1,255}$"}, methods={"GET"})
-     * @param string $file
-     * @param Request $request
-     * @return Response
      */
     public function fallbackAction(string $file, Request $request): Response
     {

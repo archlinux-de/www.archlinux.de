@@ -10,38 +10,26 @@ class PaginationRequest
     public const MAX_LIMIT = 100;
 
     /**
-     * @var int
      * @Assert\Range(min=0, max=100000)
      */
-    private $offset;
+    private int $offset;
 
     /**
-     * @var int
      * @Assert\Range(min=1, max=PaginationRequest::MAX_LIMIT)
      */
-    private $limit;
+    private int $limit;
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     */
     public function __construct(int $offset, int $limit)
     {
         $this->offset = $offset;
         $this->limit = $limit == 0 ? self::MAX_LIMIT : $limit;
     }
 
-    /**
-     * @return int
-     */
     public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * @return int
-     */
     public function getLimit(): int
     {
         return $this->limit;

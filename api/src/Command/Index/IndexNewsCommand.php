@@ -16,29 +16,12 @@ class IndexNewsCommand extends Command
 {
     use LockableTrait;
 
-    /** @var Client */
-    private $client;
-
-    /** @var NewsItemRepository */
-    private $newsItemRepository;
-
-    /** @var NewsSearchIndexer */
-    private $newsSearchIndexer;
-
-    /**
-     * @param Client $client
-     * @param NewsItemRepository $newsItemRepository
-     * @param NewsSearchIndexer $newsSearchIndexer
-     */
     public function __construct(
-        Client $client,
-        NewsItemRepository $newsItemRepository,
-        NewsSearchIndexer $newsSearchIndexer
+        private Client $client,
+        private NewsItemRepository $newsItemRepository,
+        private NewsSearchIndexer $newsSearchIndexer
     ) {
         parent::__construct();
-        $this->client = $client;
-        $this->newsItemRepository = $newsItemRepository;
-        $this->newsSearchIndexer = $newsSearchIndexer;
     }
 
     protected function configure(): void
@@ -46,11 +29,6 @@ class IndexNewsCommand extends Command
         $this->setName('app:index:news');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('news.lock');

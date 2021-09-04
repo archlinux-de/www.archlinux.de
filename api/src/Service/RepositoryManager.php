@@ -10,39 +10,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RepositoryManager
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var array */
-    private $repositoryConfiguration;
-
-    /** @var RepositoryRepository */
-    private $repositoryRepository;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param array $repositoryConfiguration
-     * @param RepositoryRepository $repositoryRepository
-     * @param ValidatorInterface $validator
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        array $repositoryConfiguration,
-        RepositoryRepository $repositoryRepository,
-        ValidatorInterface $validator
+        private EntityManagerInterface $entityManager,
+        private array $repositoryConfiguration,
+        private RepositoryRepository $repositoryRepository,
+        private ValidatorInterface $validator
     ) {
-        $this->entityManager = $entityManager;
-        $this->repositoryConfiguration = $repositoryConfiguration;
-        $this->repositoryRepository = $repositoryRepository;
-        $this->validator = $validator;
     }
 
-    /**
-     * @return bool
-     */
     public function removeObsoleteRepositories(): bool
     {
         $repositoryWasRemoved = false;
@@ -65,9 +40,6 @@ class RepositoryManager
         return $repositoryWasRemoved;
     }
 
-    /**
-     * @return bool
-     */
     public function createNewRepositories(): bool
     {
         $repositoryWasCreated = false;

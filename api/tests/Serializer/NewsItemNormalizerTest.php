@@ -10,8 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class NewsItemNormalizerTest extends KernelTestCase
 {
-    /** @var Serializer */
-    private $serializer;
+    private Serializer $serializer;
 
     public function setUp(): void
     {

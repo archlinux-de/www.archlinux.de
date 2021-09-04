@@ -10,12 +10,9 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
 {
     /**
      * @param array $data
-     * @param string $type
-     * @param string|null $format
-     * @param array $context
      * @return Release[]
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
@@ -41,17 +38,11 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
         return $type == Release::class . '[]';
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

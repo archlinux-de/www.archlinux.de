@@ -22,59 +22,17 @@ class UpdatePackagesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var PackageDatabaseMirror */
-    private $packageDatabaseMirror;
-
-    /** @var RepositoryRepository */
-    private $repositoryRepository;
-
-    /** @var AbstractRelationRepository */
-    private $relationRepository;
-
-    /** @var PackageDatabaseReader */
-    private $packageDatabaseReader;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /** @var PackageDatabaseDownloader */
-    private $packageDatabaseDownloader;
-
-    /** @var PackageRepository */
-    private $packageRepository;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param PackageDatabaseMirror $packageDatabaseMirror
-     * @param RepositoryRepository $repositoryRepository
-     * @param AbstractRelationRepository $relationRepository
-     * @param PackageDatabaseReader $packageDatabaseReader
-     * @param ValidatorInterface $validator
-     * @param PackageDatabaseDownloader $packageDatabaseDownloader
-     * @param PackageRepository $packageRepository
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        PackageDatabaseMirror $packageDatabaseMirror,
-        RepositoryRepository $repositoryRepository,
-        AbstractRelationRepository $relationRepository,
-        PackageDatabaseReader $packageDatabaseReader,
-        ValidatorInterface $validator,
-        PackageDatabaseDownloader $packageDatabaseDownloader,
-        PackageRepository $packageRepository
+        private EntityManagerInterface $entityManager,
+        private PackageDatabaseMirror $packageDatabaseMirror,
+        private RepositoryRepository $repositoryRepository,
+        private AbstractRelationRepository $relationRepository,
+        private PackageDatabaseReader $packageDatabaseReader,
+        private ValidatorInterface $validator,
+        private PackageDatabaseDownloader $packageDatabaseDownloader,
+        private PackageRepository $packageRepository
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->packageDatabaseMirror = $packageDatabaseMirror;
-        $this->repositoryRepository = $repositoryRepository;
-        $this->relationRepository = $relationRepository;
-        $this->packageDatabaseReader = $packageDatabaseReader;
-        $this->validator = $validator;
-        $this->packageDatabaseDownloader = $packageDatabaseDownloader;
-        $this->packageRepository = $packageRepository;
     }
 
     protected function configure(): void
@@ -82,11 +40,6 @@ class UpdatePackagesCommand extends Command
         $this->setName('app:update:packages');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');

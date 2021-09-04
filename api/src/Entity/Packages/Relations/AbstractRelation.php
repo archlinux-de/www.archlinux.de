@@ -13,101 +13,68 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class AbstractRelation
 {
-    /**
-     * @var Package
-     */
-    protected $source;
+    protected Package $source;
 
     /**
-     * @var int
-     *
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
      *
      * @ORM\Column(type="string")
      */
-    private $targetName;
+    private string $targetName;
 
     /**
-     * @var string|null
      * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_:<=>~]{1,255}$/")
      *
      * @ORM\Column(type="string", nullable=true)
      */
-    private $targetVersion;
+    private ?string $targetVersion = null;
 
     /**
-     * @var Package|null
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Packages\Package")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $target;
+    private ?Package $target = null;
 
-    /**
-     * @param string $targetName
-     * @param string|null $targetVersion
-     */
     final public function __construct(string $targetName, ?string $targetVersion = null)
     {
         $this->targetName = $targetName;
         $this->targetVersion = $targetVersion;
     }
 
-    /**
-     * @return Package
-     */
     public function getSource(): Package
     {
         return $this->source;
     }
 
-    /**
-     * @param Package $package
-     * @return $this
-     */
-    public function setSource(Package $package): self
+    public function setSource(Package $package): static
     {
         $this->source = $package;
         return $this;
     }
 
-    /**
-     * @return Package|null
-     */
     public function getTarget(): ?Package
     {
         return $this->target;
     }
 
-    /**
-     * @param Package|null $target
-     * @return $this
-     */
-    public function setTarget(?Package $target): self
+    public function setTarget(?Package $target): static
     {
         $this->target = $target;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getTargetName(): string
     {
         return $this->targetName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getTargetVersion(): ?string
     {
         return $this->targetVersion;

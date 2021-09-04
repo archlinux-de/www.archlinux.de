@@ -11,45 +11,22 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var UrlGeneratorInterface */
-    private $router;
-
-    /** @var ObjectNormalizer */
-    private $normalizer;
-
-    /** @var \HTMLPurifier */
-    private $releasePurifier;
-
-    /**
-     * @param UrlGeneratorInterface $router
-     * @param ObjectNormalizer $normalizer
-     * @param \HTMLPurifier $releasePurifier
-     */
     public function __construct(
-        UrlGeneratorInterface $router,
-        ObjectNormalizer $normalizer,
-        \HTMLPurifier $releasePurifier
+        private UrlGeneratorInterface $router,
+        private ObjectNormalizer $normalizer,
+        private \HTMLPurifier $releasePurifier
     ) {
-        $this->router = $router;
-        $this->normalizer = $normalizer;
-        $this->releasePurifier = $releasePurifier;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof Release && $format == 'json';
     }
 
     /**
      * @param Release $object
-     * @param string $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         /** @var array $data */
         $data = $this->normalizer->normalize(
@@ -125,9 +102,6 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         return $release->getTorrentUrl() ? 'https://archlinux.org' . $release->getTorrentUrl() : null;
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

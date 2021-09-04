@@ -9,9 +9,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class AbstractRelationRepository extends ServiceEntityRepository
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, AbstractRelation::class);
@@ -25,10 +22,6 @@ class AbstractRelationRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param AbstractRelation $relation
-     * @return Package|null
-     */
     private function getBestPackageByRelation(AbstractRelation $relation): ?Package
     {
         $candidates = $this
@@ -63,10 +56,6 @@ class AbstractRelationRepository extends ServiceEntityRepository
         return $this->getProviderByRelation($relation);
     }
 
-    /**
-     * @param AbstractRelation $relation
-     * @return Package|null
-     */
     private function getProviderByRelation(AbstractRelation $relation): ?Package
     {
         $repositoryArchitecture = $relation->getSource()->getRepository()->getArchitecture();

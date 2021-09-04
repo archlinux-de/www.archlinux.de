@@ -6,21 +6,13 @@ class SearchIndexer implements SearchIndexerInterface
 {
     public const BULK_SIZE = 1000;
 
-    /** @var SearchIndexerInterface[] */
-    private $searchIndexers = [];
-
     /**
      * @param SearchIndexerInterface[] $searchIndexers
      */
-    public function __construct(array $searchIndexers)
+    public function __construct(private array $searchIndexers)
     {
-        $this->searchIndexers = $searchIndexers;
     }
 
-    /**
-     * @param object $object
-     * @return array
-     */
     public function createBulkIndexStatement(object $object): array
     {
         foreach ($this->searchIndexers as $searchIndexer) {
@@ -31,10 +23,6 @@ class SearchIndexer implements SearchIndexerInterface
         return [];
     }
 
-    /**
-     * @param object $object
-     * @return array
-     */
     public function createBulkDeleteStatement(object $object): array
     {
         foreach ($this->searchIndexers as $searchIndexer) {
@@ -45,10 +33,6 @@ class SearchIndexer implements SearchIndexerInterface
         return [];
     }
 
-    /**
-     * @param object $object
-     * @return bool
-     */
     public function supportsIndexing(object $object): bool
     {
         foreach ($this->searchIndexers as $searchIndexer) {

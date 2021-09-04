@@ -27,9 +27,6 @@ class LegacyControllerTest extends WebTestCase
         }
     }
 
-    /**
-     * @return array
-     */
     public function provideLegacyPages(): array
     {
         return [
@@ -75,9 +72,6 @@ class LegacyControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    /**
-     * @return array
-     */
     public function provideInvalidLegacyPages(): array
     {
         return [

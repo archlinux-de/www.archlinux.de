@@ -10,25 +10,15 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var CountryRepository */
-    private $countryRepository;
-
-    /**
-     * @param CountryRepository $countryRepository
-     */
-    public function __construct(CountryRepository $countryRepository)
+    public function __construct(private CountryRepository $countryRepository)
     {
-        $this->countryRepository = $countryRepository;
     }
 
     /**
      * @param array $data
-     * @param string $type
-     * @param string|null $format
-     * @param array $context
      * @return Mirror[]
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
@@ -67,17 +57,11 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
         return $type == Mirror::class . '[]';
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

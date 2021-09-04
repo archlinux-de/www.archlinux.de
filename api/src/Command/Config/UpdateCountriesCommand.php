@@ -17,35 +17,13 @@ class UpdateCountriesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var CountryFetcher */
-    private $countryFetcher;
-
-    /** @var CountryRepository */
-    private $countryRepository;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param CountryFetcher $countryFetcher
-     * @param CountryRepository $countryRepository
-     * @param ValidatorInterface $validator
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        CountryFetcher $countryFetcher,
-        CountryRepository $countryRepository,
-        ValidatorInterface $validator
+        private EntityManagerInterface $entityManager,
+        private CountryFetcher $countryFetcher,
+        private CountryRepository $countryRepository,
+        private ValidatorInterface $validator
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->countryFetcher = $countryFetcher;
-        $this->countryRepository = $countryRepository;
-        $this->validator = $validator;
     }
 
     protected function configure(): void
@@ -53,11 +31,6 @@ class UpdateCountriesCommand extends Command
         $this->setName('app:config:update-countries');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('countries.lock');

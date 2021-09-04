@@ -8,30 +8,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ReleaseFetcher implements \IteratorAggregate
 {
-    /** @var HttpClientInterface */
-    private $httpClient;
-
-    /** @var string */
-    private $releaseUrl;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /**
-     * @param HttpClientInterface $httpClient
-     * @param string $releaseUrl
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(HttpClientInterface $httpClient, string $releaseUrl, SerializerInterface $serializer)
-    {
-        $this->httpClient = $httpClient;
-        $this->releaseUrl = $releaseUrl;
-        $this->serializer = $serializer;
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private string $releaseUrl,
+        private SerializerInterface $serializer
+    ) {
     }
 
-    /**
-     * @return \Traversable
-     */
     public function getIterator(): \Traversable
     {
         $response = $this->httpClient->request('GET', $this->releaseUrl);

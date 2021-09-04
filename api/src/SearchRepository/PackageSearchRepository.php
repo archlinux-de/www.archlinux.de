@@ -9,38 +9,13 @@ use Elasticsearch\Client;
 
 class PackageSearchRepository
 {
-    /** @var Client */
-    private $client;
-
-    /** @var PackageRepository */
-    private $packageRepository;
-
-    /** @var PackageSearchIndexer */
-    private $packageSearchIndexer;
-
-    /**
-     * @param PackageRepository $packageRepository
-     * @param Client $client
-     * @param PackageSearchIndexer $packageSearchIndexer
-     */
     public function __construct(
-        PackageRepository $packageRepository,
-        Client $client,
-        PackageSearchIndexer $packageSearchIndexer
+        private PackageRepository $packageRepository,
+        private Client $client,
+        private PackageSearchIndexer $packageSearchIndexer
     ) {
-        $this->packageRepository = $packageRepository;
-        $this->client = $client;
-        $this->packageSearchIndexer = $packageSearchIndexer;
     }
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     * @param string $query
-     * @param string $architecture
-     * @param string|null $repository
-     * @return array
-     */
     public function findLatestByQueryAndArchitecture(
         int $offset,
         int $limit,
@@ -138,7 +113,6 @@ class PackageSearchRepository
     }
 
     /**
-     * @param array $results
      * @return Package[]
      */
     private function findBySearchResults(array $results): array
@@ -155,8 +129,6 @@ class PackageSearchRepository
     }
 
     /**
-     * @param string $term
-     * @param int $limit
      * @return Package[]
      */
     public function findByTerm(string $term, int $limit): array

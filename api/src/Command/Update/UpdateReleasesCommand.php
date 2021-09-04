@@ -17,32 +17,13 @@ class UpdateReleasesCommand extends Command
 {
     use LockableTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-    /** @var ReleaseFetcher */
-    private $releaseFetcher;
-    /** @var ReleaseRepository */
-    private $releaseRepository;
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param ReleaseFetcher $releaseFetcher
-     * @param ReleaseRepository $releaseRepository
-     * @param ValidatorInterface $validator
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ReleaseFetcher $releaseFetcher,
-        ReleaseRepository $releaseRepository,
-        ValidatorInterface $validator
+        private EntityManagerInterface $entityManager,
+        private ReleaseFetcher $releaseFetcher,
+        private ReleaseRepository $releaseRepository,
+        private ValidatorInterface $validator
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->releaseFetcher = $releaseFetcher;
-        $this->releaseRepository = $releaseRepository;
-        $this->validator = $validator;
     }
 
     protected function configure(): void
@@ -50,11 +31,6 @@ class UpdateReleasesCommand extends Command
         $this->setName('app:update:releases');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('releases.lock');

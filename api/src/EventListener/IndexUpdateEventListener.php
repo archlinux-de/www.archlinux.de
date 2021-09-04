@@ -9,41 +9,20 @@ use Elasticsearch\Client;
 
 class IndexUpdateEventListener
 {
-    /** @var Client */
-    private $client;
+    private array $bulkStatements = [];
 
-    /** @var SearchIndexer */
-    private $searchIndexer;
-
-    /** @var array */
-    private $bulkStatements = [];
-
-    /** @var string */
-    private $environment;
-
-    /**
-     * @param Client $client
-     * @param SearchIndexer $searchIndexer
-     * @param string $environment
-     */
-    public function __construct(Client $client, SearchIndexer $searchIndexer, string $environment)
-    {
-        $this->client = $client;
-        $this->searchIndexer = $searchIndexer;
-        $this->environment = $environment;
+    public function __construct(
+        private Client $client,
+        private SearchIndexer $searchIndexer,
+        private string $environment
+    ) {
     }
 
-    /**
-     * @param LifecycleEventArgs $eventArgs
-     */
     public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
         $this->postPersist($eventArgs);
     }
 
-    /**
-     * @param LifecycleEventArgs $eventArgs
-     */
     public function postPersist(LifecycleEventArgs $eventArgs): void
     {
         $entity = $eventArgs->getObject();
@@ -53,9 +32,6 @@ class IndexUpdateEventListener
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $eventArgs
-     */
     public function preRemove(LifecycleEventArgs $eventArgs): void
     {
         $entity = $eventArgs->getObject();

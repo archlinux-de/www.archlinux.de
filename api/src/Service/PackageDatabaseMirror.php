@@ -11,40 +11,20 @@ class PackageDatabaseMirror
     public const CACHE_KEY = 'PackageDatabaseMirror_lastupdate';
 
     /** @var string */
-    private $lastUpdateHash = '';
+    private string $lastUpdateHash = '';
 
-    /** @var HttpClientInterface */
-    private $httpClient;
-
-    /** @var CacheItemPoolInterface */
-    private $cache;
-
-    /** @var string */
-    private $mirrorUrl;
-
-    /**
-     * @param HttpClientInterface $httpClient
-     * @param CacheItemPoolInterface $cache
-     * @param string $mirrorUrl
-     */
-    public function __construct(HttpClientInterface $httpClient, CacheItemPoolInterface $cache, string $mirrorUrl)
-    {
-        $this->httpClient = $httpClient;
-        $this->cache = $cache;
-        $this->mirrorUrl = $mirrorUrl;
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private CacheItemPoolInterface $cache,
+        private string $mirrorUrl
+    ) {
     }
 
-    /**
-     * @return string
-     */
     public function getMirrorUrl(): string
     {
         return $this->mirrorUrl;
     }
 
-    /**
-     * @return bool
-     */
     public function hasUpdated(): bool
     {
         $lastLocalUpdateCache = $this->cache->getItem(self::CACHE_KEY);

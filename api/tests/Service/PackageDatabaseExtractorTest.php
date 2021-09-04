@@ -8,8 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class PackageDatabaseExtractorTest extends TestCase
 {
-    /** @var string */
-    private $archiveFile;
+    private string $archiveFile;
 
     public function testExtractPackageDescriptions(): void
     {

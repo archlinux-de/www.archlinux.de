@@ -27,11 +27,6 @@ class NewsItemRepositoryTest extends DatabaseTestCase
         $this->assertEquals($newItem->getId(), $newsItems[0]->getId());
     }
 
-    /**
-     * @param int $id
-     * @param \DateTime $lastModified
-     * @return NewsItem
-     */
     private function createNewsItem(int $id, \DateTime $lastModified): NewsItem
     {
         return (new NewsItem($id))

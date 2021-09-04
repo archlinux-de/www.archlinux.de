@@ -61,7 +61,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     }
 
     /**
-     * @param string $packageExtension
      * @dataProvider providePackageExtensions
      */
     public function testPackageAction(string $packageExtension): void
@@ -146,9 +145,6 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    /**
-     * @return array
-     */
     public function providePackageExtensions(): array
     {
         return [

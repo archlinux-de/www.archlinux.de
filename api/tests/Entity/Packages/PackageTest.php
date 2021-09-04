@@ -24,7 +24,6 @@ use PHPUnit\Framework\TestCase;
 class PackageTest extends TestCase
 {
     /**
-     * @param string $stringMethod
      * @dataProvider provideUpdateStringMethods
      */
     public function testUpdate(string $stringMethod): void
@@ -48,9 +47,6 @@ class PackageTest extends TestCase
         $this->assertEquals('foo', $package->$stringMethod());
     }
 
-    /**
-     * @return array
-     */
     public function provideUpdateStringMethods(): array
     {
         return [
@@ -88,7 +84,6 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @param string $timeMethod
      * @dataProvider provideTimeMethods
      */
     public function testUpdateTime(string $timeMethod): void
@@ -111,9 +106,6 @@ class PackageTest extends TestCase
         $this->assertEquals(new \DateTime('2018-01-30'), $package->$timeMethod());
     }
 
-    /**
-     * @return array
-     */
     public function provideTimeMethods(): array
     {
         return [
@@ -122,7 +114,6 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @param string $sizeMethod
      * @dataProvider provideSiteMethods
      */
     public function testUpdateSize(string $sizeMethod): void
@@ -146,9 +137,6 @@ class PackageTest extends TestCase
         $this->assertEquals(1234, $package->$sizeMethod());
     }
 
-    /**
-     * @return array
-     */
     public function provideSiteMethods(): array
     {
         return [
@@ -158,7 +146,6 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @param string $listMethod
      * @dataProvider provideListMethods
      */
     public function testUpdateLists(string $listMethod): void
@@ -183,9 +170,6 @@ class PackageTest extends TestCase
         $this->assertEquals($list, $package->$listMethod());
     }
 
-    /**
-     * @return array
-     */
     public function provideListMethods(): array
     {
         return [

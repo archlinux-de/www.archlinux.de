@@ -58,7 +58,6 @@ class SmokeTest extends DatabaseSearchTestCase
     }
 
     /**
-     * @param string $url
      * @dataProvider provideUrls
      */
     public function testRequestIsSuccessful(string $url): void
@@ -71,7 +70,6 @@ class SmokeTest extends DatabaseSearchTestCase
     }
 
     /**
-     * @param string $url
      * @dataProvider provideRedirectUrls
      */
     public function testRequestIsRedirect(string $url): void
@@ -92,9 +90,6 @@ class SmokeTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    /**
-     * @return array
-     */
     public function provideUrls(): array
     {
         return [
@@ -106,9 +101,6 @@ class SmokeTest extends DatabaseSearchTestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function provideRedirectUrls(): array
     {
         return [

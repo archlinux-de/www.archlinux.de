@@ -29,61 +29,53 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Package
 {
     /**
-     * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var Repository
      * @Assert\Valid()
      *
      * @ORM\ManyToOne(targetEntity="Repository", inversedBy="packages", fetch="EAGER")
      */
-    private $repository;
+    private Repository $repository;
 
     /**
-     * @var string
      * @Assert\Regex("/^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$/")
      *
      * @ORM\Column(name="fileName", type="string")
      */
-    private $fileName;
+    private string $fileName;
 
     /**
-     * @var string
      * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
      *
      * @ORM\Column(name="name", type="string")
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var string
      * @Assert\Regex("/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/")
      *
      * @ORM\Column(name="base", type="string")
      */
-    private $base;
+    private string $base;
 
     /**
-     * @var string
      * @Assert\Regex("/^[a-zA-Z0-9@\.\-\+_:~]{1,255}$/")
      *
      * @ORM\Column(name="version", type="string")
      */
-    private $version;
+    private string $version;
 
     /**
-     * @var string
      * @Assert\Length(max="255")
      *
      * @ORM\Column(name="description", type="string")
      */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @var string[]
@@ -93,39 +85,35 @@ class Package
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
-    private $groups = [];
+    private array $groups = [];
 
     /**
-     * @var integer
      * @Assert\Range(min="0", max="10737418240")
      *
      * @ORM\Column(name="compressedSize", type="bigint")
      */
-    private $compressedSize = 0;
+    private int $compressedSize = 0;
 
     /**
-     * @var integer
      * @Assert\Range(min="0", max="10737418240")
      *
      * @ORM\Column(name="installedSize", type="bigint")
      */
-    private $installedSize = 0;
+    private int $installedSize = 0;
 
     /**
-     * @var string|null
      * @Assert\Regex("/^[0-9a-f]{64}$/")
      *
      * @ORM\Column(name="sha256sum", type="string", length=64, nullable=true)
      */
-    private $sha256sum;
+    private ?string $sha256sum = null;
 
     /**
-     * @var string|null
      * @Assert\Url(protocols={"http", "https", "ftp"})
      *
      * @ORM\Column(name="url", type="string", nullable=true)
      */
-    private $url;
+    private ?string $url = null;
 
     /**
      * @var string[]|null
@@ -135,38 +123,33 @@ class Package
      *
      * @ORM\Column(type="simple_array", nullable=true)
      */
-    private $licenses;
+    private ?array $licenses = null;
 
     /**
-     * @var string
      * @Assert\Choice({"x86_64", "any"})
      *
      * @ORM\Column(name="architecture", type="string")
      */
-    private $architecture;
+    private string $architecture;
 
     /**
-     * @var \DateTime|null
-     *
      * @ORM\Column(name="buildDate", type="datetime", nullable=true)
      */
-    private $buildDate;
+    private ?\DateTime $buildDate = null;
 
     /**
-     * @var Packager|null
      * @Assert\Valid()
      *
      * @ORM\Embedded(class="App\Entity\Packages\Packager")
      */
-    private $packager;
+    private ?Packager $packager = null;
 
     /**
-     * @var float
      * @Assert\Range(min="0", max="100")
      *
      * @ORM\Column(name="popularity", type="float", nullable=false, options={"default"= 0})
      */
-    private $popularity = 0;
+    private int|float $popularity = 0;
 
     /**
      * @var Collection<int, Replacement>
@@ -179,7 +162,7 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $replacements;
+    private Collection|ArrayCollection $replacements;
 
     /**
      * @var Collection<int, Conflict>
@@ -193,7 +176,7 @@ class Package
      *     fetch="LAZY"
      * )
      */
-    private $conflicts;
+    private Collection|ArrayCollection $conflicts;
 
     /**
      * @var Collection<int, Provision>
@@ -207,7 +190,7 @@ class Package
      *     fetch="LAZY"
      * )
      */
-    private $provisions;
+    private Collection|ArrayCollection $provisions;
 
     /**
      * @var Collection<int, Dependency>
@@ -221,7 +204,7 @@ class Package
      *     fetch="LAZY"
      * )
      */
-    private $dependencies;
+    private Collection|ArrayCollection $dependencies;
 
     /**
      * @var Collection<int, OptionalDependency>
@@ -235,7 +218,7 @@ class Package
      *     fetch="LAZY"
      * )
      */
-    private $optionalDependencies;
+    private Collection|ArrayCollection $optionalDependencies;
 
     /**
      * @var Collection<int, MakeDependency>
@@ -248,7 +231,7 @@ class Package
      *     fetch="LAZY"
      * )
      */
-    private $makeDependencies;
+    private Collection|ArrayCollection $makeDependencies;
 
     /**
      * @var Collection<int, CheckDependency>
@@ -262,10 +245,9 @@ class Package
      *     fetch="LAZY"
      * )
      */
-    private $checkDependencies;
+    private Collection|ArrayCollection $checkDependencies;
 
     /**
-     * @var Files
      * @Assert\Valid()
      *
      * @ORM\OneToOne(
@@ -276,14 +258,8 @@ class Package
      *     orphanRemoval=true
      * )
      */
-    private $files;
+    private Files $files;
 
-    /**
-     * @param Repository $repository
-     * @param string $name
-     * @param string $version
-     * @param string $architecture
-     */
     public function __construct(Repository $repository, string $name, string $version, string $architecture)
     {
         $this->name = $name;
@@ -305,28 +281,17 @@ class Package
         $this->files = Files::createFromArray([]);
     }
 
-    /**
-     * @return float
-     */
     public function getPopularity(): float
     {
         return $this->popularity;
     }
 
-    /**
-     * @param float $popularity
-     * @return Package
-     */
     public function setPopularity(float $popularity): Package
     {
         $this->popularity = $popularity;
         return $this;
     }
 
-    /**
-     * @param Package $package
-     * @return Package
-     */
     public function update(Package $package): Package
     {
         $this->setVersion($package->getVersion());
@@ -383,198 +348,121 @@ class Package
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getVersion(): string
     {
         return $this->version;
     }
 
-    /**
-     * @param string $version
-     * @return Package
-     */
     public function setVersion(string $version): Package
     {
         $this->version = $version;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getArchitecture(): string
     {
         return $this->architecture;
     }
 
-    /**
-     * @param string $architecture
-     * @return Package
-     */
     public function setArchitecture(string $architecture): Package
     {
         $this->architecture = $architecture;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    /**
-     * @param string $fileName
-     * @return Package
-     */
     public function setFileName(string $fileName): Package
     {
         $this->fileName = $fileName;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @param string|null $url
-     * @return Package
-     */
     public function setUrl(?string $url): Package
     {
         $this->url = $url;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     * @return Package
-     */
     public function setDescription(string $description): Package
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getBase(): string
     {
         return $this->base;
     }
 
-    /**
-     * @param string $base
-     * @return Package
-     */
     public function setBase(string $base): Package
     {
         $this->base = $base;
         return $this;
     }
 
-    /**
-     * @return \DateTime|null
-     */
     public function getBuildDate(): ?\DateTime
     {
         return $this->buildDate;
     }
 
-    /**
-     * @param \DateTime|null $buildDate
-     * @return Package
-     */
     public function setBuildDate(?\DateTime $buildDate): Package
     {
         $this->buildDate = $buildDate;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getCompressedSize(): int
     {
         return $this->compressedSize;
     }
 
-    /**
-     * @param int $compressedSize
-     * @return Package
-     */
     public function setCompressedSize(int $compressedSize): Package
     {
         $this->compressedSize = $compressedSize;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getInstalledSize(): int
     {
         return $this->installedSize;
     }
 
-    /**
-     * @param int $installedSize
-     * @return Package
-     */
     public function setInstalledSize(int $installedSize): Package
     {
         $this->installedSize = $installedSize;
         return $this;
     }
 
-    /**
-     * @return Packager|null
-     */
     public function getPackager(): ?Packager
     {
         return $this->packager;
     }
 
-    /**
-     * @param Packager|null $packager
-     * @return Package
-     */
     public function setPackager(?Packager $packager): Package
     {
         $this->packager = $packager;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSha256sum(): ?string
     {
         return $this->sha256sum;
     }
 
-    /**
-     * @param string|null $sha256sum
-     * @return Package
-     */
     public function setSha256sum(?string $sha256sum): Package
     {
         $this->sha256sum = $sha256sum;
@@ -617,18 +505,11 @@ class Package
         return $this;
     }
 
-    /**
-     * @return Files
-     */
     public function getFiles(): Files
     {
         return $this->files;
     }
 
-    /**
-     * @param Files $files
-     * @return Package
-     */
     public function setFiles(Files $files): Package
     {
         $this->files = $files;
@@ -643,10 +524,6 @@ class Package
         return $this->dependencies;
     }
 
-    /**
-     * @param Dependency $dependency
-     * @return Package
-     */
     public function addDependency(Dependency $dependency): Package
     {
         $dependency->setSource($this);
@@ -662,10 +539,6 @@ class Package
         return $this->conflicts;
     }
 
-    /**
-     * @param Conflict $conflict
-     * @return Package
-     */
     public function addConflict(Conflict $conflict): Package
     {
         $conflict->setSource($this);
@@ -681,10 +554,6 @@ class Package
         return $this->replacements;
     }
 
-    /**
-     * @param Replacement $replacement
-     * @return Package
-     */
     public function addReplacement(Replacement $replacement): Package
     {
         $replacement->setSource($this);
@@ -700,10 +569,6 @@ class Package
         return $this->optionalDependencies;
     }
 
-    /**
-     * @param OptionalDependency $optionalDependency
-     * @return Package
-     */
     public function addOptionalDependency(OptionalDependency $optionalDependency): Package
     {
         $optionalDependency->setSource($this);
@@ -719,10 +584,6 @@ class Package
         return $this->provisions;
     }
 
-    /**
-     * @param Provision $provision
-     * @return Package
-     */
     public function addProvision(Provision $provision): Package
     {
         $provision->setSource($this);
@@ -738,10 +599,6 @@ class Package
         return $this->makeDependencies;
     }
 
-    /**
-     * @param MakeDependency $makeDependency
-     * @return Package
-     */
     public function addMakeDependency(MakeDependency $makeDependency): Package
     {
         $makeDependency->setSource($this);
@@ -757,10 +614,6 @@ class Package
         return $this->checkDependencies;
     }
 
-    /**
-     * @param CheckDependency $checkDependency
-     * @return Package
-     */
     public function addCheckDependency(CheckDependency $checkDependency): Package
     {
         $checkDependency->setSource($this);
@@ -768,25 +621,16 @@ class Package
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Repository
-     */
     public function getRepository(): Repository
     {
         return $this->repository;

@@ -9,8 +9,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class ReleaseNormalizerTest extends KernelTestCase
 {
-    /** @var Serializer */
-    private $serializer;
+    private Serializer $serializer;
 
     public function setUp(): void
     {

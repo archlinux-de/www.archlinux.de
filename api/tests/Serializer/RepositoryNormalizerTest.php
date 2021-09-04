@@ -10,8 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class RepositoryNormalizerTest extends KernelTestCase
 {
-    /** @var Serializer */
-    private $serializer;
+    private Serializer $serializer;
 
     public function setUp(): void
     {
@@ -30,7 +29,6 @@ class RepositoryNormalizerTest extends KernelTestCase
     }
 
     /**
-     * @param bool $testing
      * @dataProvider provideTesting
      */
     public function testSupportsNormalization(bool $testing): void
@@ -51,9 +49,6 @@ class RepositoryNormalizerTest extends KernelTestCase
         );
     }
 
-    /**
-     * @return array
-     */
     public function provideTesting(): array
     {
         return [

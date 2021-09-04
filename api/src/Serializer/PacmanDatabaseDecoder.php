@@ -7,12 +7,6 @@ use Symfony\Component\String\ByteString;
 
 class PacmanDatabaseDecoder implements DecoderInterface
 {
-    /**
-     * @param string $data
-     * @param string $format
-     * @param array $context
-     * @return array
-     */
     public function decode(string $data, string $format, array $context = []): array
     {
         $key = null;
@@ -50,10 +44,6 @@ class PacmanDatabaseDecoder implements DecoderInterface
         );
     }
 
-    /**
-     * @param string $format
-     * @return bool
-     */
     public function supportsDecoding(string $format): bool
     {
         return $format === 'pacman-database';

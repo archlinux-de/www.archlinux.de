@@ -10,24 +10,14 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var ObjectNormalizer */
-    private $normalizer;
-
-    /**
-     * @param ObjectNormalizer $normalizer
-     */
-    public function __construct(ObjectNormalizer $normalizer)
+    public function __construct(private ObjectNormalizer $normalizer)
     {
-        $this->normalizer = $normalizer;
     }
 
     /**
      * @param Mirror $object
-     * @param string|null $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         /** @var array $data */
         $data = $this->normalizer->normalize(
@@ -58,19 +48,11 @@ class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
         return $data;
     }
 
-    /**
-     * @param object $data
-     * @param string|null $format
-     * @return bool
-     */
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof Mirror && $format == 'json';
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

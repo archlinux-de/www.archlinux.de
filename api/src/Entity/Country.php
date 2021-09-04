@@ -12,60 +12,41 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Country
 {
     /**
-     * @var string
      * @Assert\Regex("/^[A-Z]{2}$/")
      *
      * @ORM\Id
      * @ORM\Column(length=2)
      */
-    private $code;
+    private string $code;
 
     /**
-     * @var string
      * @Assert\Length(min="2", max="100")
      *
      * @ORM\Column()
      */
-    private $name;
+    private string $name;
 
-    /**
-     * @param string $code
-     */
     public function __construct(string $code)
     {
         $this->code = $code;
     }
 
-    /**
-     * @return string
-     */
     public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return Country
-     */
     public function setName(string $name): Country
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @param Country $country
-     * @return Country
-     */
     public function update(Country $country): Country
     {
         if ($this->getCode() !== $country->getCode()) {

@@ -10,11 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LegacyController extends AbstractController
 {
-    /** @var LoggerInterface */
-    private $logger;
-
     /** @var string[] */
-    private $internalPages = array(
+    private array $internalPages = array(
         'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_packages_opensearch',
         'GetRecentNews' => 'app_news_feed',
@@ -27,7 +24,7 @@ class LegacyController extends AbstractController
     );
 
     /** @var string[] */
-    private $externalPages = array(
+    private array $externalPages = array(
         'ArchitectureDifferences' => 'https://www.archlinux.org/packages/differences/',
         'MirrorProblems' => 'https://www.archlinux.org/mirrors/status/#outofsync',
         'MirrorStatusJSON' => 'https://www.archlinux.org/mirrors/status/json/',
@@ -37,18 +34,12 @@ class LegacyController extends AbstractController
         'Statistics' => 'https://pkgstats.archlinux.de/'
     );
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     /**
      * @Route("/", condition="request.query.has('page')", methods={"GET"})
-     * @param Request $request
-     * @return Response
      */
     public function pageAction(Request $request): Response
     {

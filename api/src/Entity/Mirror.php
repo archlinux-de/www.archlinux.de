@@ -12,96 +12,77 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Mirror
 {
     /**
-     * @var string
      * @Assert\NotBlank()
      * @Assert\Length(min="10", max="255")
      *
      * @ORM\Column(length=191)
      * @ORM\Id
      */
-    private $url;
+    private string $url;
 
     /**
-     * @var string
      * @Assert\Choice({"http", "https", "rsync"})
      *
      * @ORM\Column()
      */
-    private $protocol;
+    private string $protocol;
 
     /**
-     * @var Country|null
-     *
      * @ORM\ManyToOne(targetEntity="Country",fetch="EAGER")
      * @ORM\JoinColumn(referencedColumnName="code", nullable=true)
      */
-    private $country;
+    private ?Country $country = null;
 
     /**
-     * @var \DateTime
-     *
      * @ORM\Column(type="datetime")
      */
-    private $lastSync;
+    private \DateTime $lastSync;
 
     /**
-     * @var integer
      * @Assert\Range(min="0",max="31536000")
      *
      * @ORM\Column(type="integer")
      */
-    private $delay = 0;
+    private int $delay = 0;
 
     /**
-     * @var float
      * @Assert\Range(min="0",max="10240")
      *
      * @ORM\Column(type="float")
      */
-    private $durationAvg = 0;
+    private float $durationAvg = 0;
 
     /**
-     * @var float
      * @Assert\Range(min="0",max="102400")
      *
      * @ORM\Column(type="float")
      */
-    private $score = 0;
+    private float $score = 0;
 
     /**
-     * @var float
      * @Assert\Range(min="0",max="1")
      *
      * @ORM\Column(type="float")
      */
-    private $completionPct = 0;
+    private float $completionPct = 0;
 
     /**
-     * @var float
      * @Assert\Range(min="0",max="10240")
      *
      * @ORM\Column(type="float")
      */
-    private $durationStddev = 0;
+    private float $durationStddev = 0;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(type="boolean")
      */
-    private $ipv4 = false;
+    private bool $ipv4 = false;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(type="boolean")
      */
-    private $ipv6 = false;
+    private bool $ipv6 = false;
 
-    /**
-     * @param string $url
-     * @param string $protocol
-     */
     public function __construct(string $url, string $protocol)
     {
         $this->url = $url;
@@ -109,178 +90,109 @@ class Mirror
         $this->lastSync = new \DateTime();
     }
 
-    /**
-     * @return string
-     */
     public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @return string
-     */
     public function getProtocol(): string
     {
         return $this->protocol;
     }
 
-    /**
-     * @param string $protocol
-     * @return Mirror
-     */
     public function setProtocol(string $protocol): Mirror
     {
         $this->protocol = $protocol;
         return $this;
     }
 
-    /**
-     * @return Country|null
-     */
     public function getCountry(): ?Country
     {
         return $this->country;
     }
 
-    /**
-     * @param Country|null $country
-     * @return Mirror
-     */
     public function setCountry(?Country $country): Mirror
     {
         $this->country = $country;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDurationAvg(): float
     {
         return $this->durationAvg;
     }
 
-    /**
-     * @param float $durationAvg
-     * @return Mirror
-     */
     public function setDurationAvg(float $durationAvg): Mirror
     {
         $this->durationAvg = $durationAvg;
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getDelay(): int
     {
         return $this->delay;
     }
 
-    /**
-     * @param int $delay
-     * @return Mirror
-     */
     public function setDelay(int $delay): Mirror
     {
         $this->delay = $delay;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getDurationStddev(): float
     {
         return $this->durationStddev;
     }
 
-    /**
-     * @param float $durationStddev
-     * @return Mirror
-     */
     public function setDurationStddev(float $durationStddev): Mirror
     {
         $this->durationStddev = $durationStddev;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getCompletionPct(): float
     {
         return $this->completionPct;
     }
 
-    /**
-     * @param float $completionPct
-     * @return Mirror
-     */
     public function setCompletionPct(float $completionPct): Mirror
     {
         $this->completionPct = $completionPct;
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getScore(): float
     {
         return $this->score;
     }
 
-    /**
-     * @param float $score
-     * @return Mirror
-     */
     public function setScore(float $score): Mirror
     {
         $this->score = $score;
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getLastSync(): \DateTime
     {
         return $this->lastSync;
     }
 
-    /**
-     * @param \DateTime $lastSync
-     * @return Mirror
-     */
     public function setLastSync(\DateTime $lastSync): Mirror
     {
         $this->lastSync = $lastSync;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function hasIpv4(): bool
     {
         return $this->ipv4;
     }
 
-    /**
-     * @return bool
-     */
     public function hasIpv6(): bool
     {
         return $this->ipv6;
     }
 
-    /**
-     * @param Mirror $mirror
-     * @return Mirror
-     */
     public function update(Mirror $mirror): Mirror
     {
         if (strcasecmp($this->getUrl(), $mirror->getUrl()) != 0) {
@@ -307,20 +219,12 @@ class Mirror
             ->setProtocol($mirror->getProtocol());
     }
 
-    /**
-     * @param bool $ipv6
-     * @return Mirror
-     */
     public function setIpv6(bool $ipv6): Mirror
     {
         $this->ipv6 = $ipv6;
         return $this;
     }
 
-    /**
-     * @param bool $ipv4
-     * @return Mirror
-     */
     public function setIpv4(bool $ipv4): Mirror
     {
         $this->ipv4 = $ipv4;

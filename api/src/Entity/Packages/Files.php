@@ -11,32 +11,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Files implements \IteratorAggregate
 {
     /**
-     * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      * @Assert\Length(max="4294967295")
      *
      * @ORM\Column(type="text", nullable=true)
      */
-    private $files;
+    private string $files;
 
     /**
-     * @var Package
-     *
      * @ORM\OneToOne(targetEntity="App\Entity\Packages\Package", mappedBy="files", fetch="LAZY")
      */
-    private $package;
+    private Package $package;
 
-    /**
-     * @param string $files
-     */
     private function __construct(string $files)
     {
         $this->files = $files;
@@ -44,7 +36,6 @@ class Files implements \IteratorAggregate
 
     /**
      * @param string[] $filesArray
-     * @return Files
      */
     public static function createFromArray(array $filesArray): self
     {
@@ -52,27 +43,17 @@ class Files implements \IteratorAggregate
         return new self(implode("\n", $filesArray));
     }
 
-    /**
-     * @return Package
-     */
     public function getPackage(): Package
     {
         return $this->package;
     }
 
-    /**
-     * @param Package $package
-     * @return Files
-     */
     public function setPackage(Package $package): Files
     {
         $this->package = $package;
         return $this;
     }
 
-    /**
-     * @return \Iterator
-     */
     public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->getFiles());

@@ -11,42 +11,22 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
-    /** @var ObjectNormalizer */
-    private $normalizer;
-
-    /** @var SluggerInterface */
-    private $slugger;
-
-    /** @var \HTMLPurifier */
-    private $newsPurifier;
-
-    /**
-     * @param ObjectNormalizer $normalizer
-     * @param SluggerInterface $slugger
-     * @param \HTMLPurifier $newsPurifier
-     */
-    public function __construct(ObjectNormalizer $normalizer, SluggerInterface $slugger, \HTMLPurifier $newsPurifier)
-    {
-        $this->normalizer = $normalizer;
-        $this->slugger = $slugger;
-        $this->newsPurifier = $newsPurifier;
+    public function __construct(
+        private ObjectNormalizer $normalizer,
+        private SluggerInterface $slugger,
+        private \HTMLPurifier $newsPurifier
+    ) {
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof NewsItem && $format == 'json';
     }
 
     /**
      * @param NewsItem $object
-     * @param string $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         /** @var array $data */
         $data = $this->normalizer->normalize(
@@ -73,9 +53,6 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
         return $data;
     }
 
-    /**
-     * @return bool
-     */
     public function hasCacheableSupportsMethod(): bool
     {
         return true;

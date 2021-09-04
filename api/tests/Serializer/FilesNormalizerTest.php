@@ -8,8 +8,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class FilesNormalizerTest extends KernelTestCase
 {
-    /** @var Serializer */
-    private $serializer;
+    private Serializer $serializer;
 
     public function setUp(): void
     {
@@ -31,9 +30,6 @@ class FilesNormalizerTest extends KernelTestCase
         $this->assertEquals($filesArray, $jsonArray);
     }
 
-    /**
-     * @return array
-     */
     public function provideFilesArray(): array
     {
         return [

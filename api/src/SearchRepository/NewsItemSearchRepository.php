@@ -9,36 +9,13 @@ use Elasticsearch\Client;
 
 class NewsItemSearchRepository
 {
-    /** @var Client */
-    private $client;
-
-    /** @var NewsItemRepository */
-    private $newsItemRepository;
-
-    /** @var NewsSearchIndexer */
-    private $newsSearchIndexer;
-
-    /**
-     * @param Client $client
-     * @param NewsItemRepository $newsItemRepository
-     * @param NewsSearchIndexer $newsSearchIndexer
-     */
     public function __construct(
-        Client $client,
-        NewsItemRepository $newsItemRepository,
-        NewsSearchIndexer $newsSearchIndexer
+        private Client $client,
+        private NewsItemRepository $newsItemRepository,
+        private NewsSearchIndexer $newsSearchIndexer
     ) {
-        $this->client = $client;
-        $this->newsItemRepository = $newsItemRepository;
-        $this->newsSearchIndexer = $newsSearchIndexer;
     }
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     * @param string $query
-     * @return array
-     */
     public function findLatestByQuery(int $offset, int $limit, string $query): array
     {
         $sort = [];
@@ -85,7 +62,6 @@ class NewsItemSearchRepository
     }
 
     /**
-     * @param array $results
      * @return NewsItem[]
      */
     private function findBySearchResults(array $results): array

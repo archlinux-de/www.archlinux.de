@@ -8,27 +8,12 @@ class PackageDatabaseDownloader
 {
     private const DB_EXT = '.files';
 
-    /** @var HttpClientInterface */
-    private $httpClient;
-
-    /** @var PackageDatabaseMirror */
-    private $packageDatabaseMirror;
-
-    /**
-     * @param HttpClientInterface $httpClient
-     * @param PackageDatabaseMirror $packageDatabaseMirror
-     */
-    public function __construct(HttpClientInterface $httpClient, PackageDatabaseMirror $packageDatabaseMirror)
-    {
-        $this->httpClient = $httpClient;
-        $this->packageDatabaseMirror = $packageDatabaseMirror;
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private PackageDatabaseMirror $packageDatabaseMirror
+    ) {
     }
 
-    /**
-     * @param string $repository
-     * @param string $architecture
-     * @return string
-     */
     public function download(string $repository, string $architecture): string
     {
         $url = $this->packageDatabaseMirror->getMirrorUrl()
