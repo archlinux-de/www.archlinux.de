@@ -39,7 +39,7 @@ class LegacyController extends AbstractController
     #[Route(
         path: '/',
         methods: ['GET'],
-        condition: 'request.query.has("page")',
+        condition: 'request.query.has("page")'
     )]
     public function pageAction(Request $request): Response
     {

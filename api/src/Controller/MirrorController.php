@@ -26,8 +26,11 @@ class MirrorController extends AbstractController
 
     #[Route(
         path: '/download/iso/{version}/{file}',
-        requirements: ['version' => '[\w\.\-]{1,191}', 'file' => '[\w\.\-\+/:]{0,255}'],
-        methods: ['GET'],
+        requirements: [
+            'version' => '[\w\.\-]{1,191}',
+            'file' => '[\w\.\-\+/:]{0,255}'
+        ],
+        methods: ['GET']
     )]
     public function isoAction(
         string $version,
@@ -86,7 +89,7 @@ class MirrorController extends AbstractController
     #[Route(
         path: '/download/{repository}/os/{architecture}/{file}',
         requirements: ['file' => '^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$'],
-        methods: ['GET'],
+        methods: ['GET']
     )]
     public function packageAction(
         string $repository,
@@ -112,7 +115,7 @@ class MirrorController extends AbstractController
     #[Route(
         path: '/download/{file}',
         requirements: ['file' => '^[a-zA-Z0-9@\.\-\+_/:]{1,255}$'],
-        methods: ['GET'],
+        methods: ['GET']
     )]
     public function fallbackAction(string $file, Request $request): Response
     {

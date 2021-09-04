@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['last_modified'])]
 class NewsItem
 {
-    #[ORM\Id, ORM\Column(type: 'integer')]
+    #[ORM\Id, ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Range(min: 1, max: 2147483648)]
     private int $id;

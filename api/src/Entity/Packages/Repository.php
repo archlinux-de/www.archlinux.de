@@ -12,17 +12,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['name', 'architecture'])]
 class Repository
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(name: 'name', type: 'string')]
+    #[ORM\Column]
     #[Assert\Length(max: 255)]
     private string $name;
 
-    #[ORM\Column(name: 'testing', type: 'boolean')]
+    #[ORM\Column(type: 'boolean')]
     private bool $testing = false;
 
-    #[ORM\Column(name: 'architecture', type: 'string')]
+    #[ORM\Column]
     #[Assert\Choice(['x86_64'])]
     private string $architecture;
 
@@ -32,7 +32,7 @@ class Repository
     #[ORM\OneToMany(mappedBy: 'repository', targetEntity: Package::class, cascade: ['remove'])]
     private Collection|ArrayCollection $packages;
 
-    #[ORM\Column(name: 'sha256sum', type: 'string', length: 64, nullable: true)]
+    #[ORM\Column(length: 64, nullable: true)]
     private ?string $sha256sum = null;
 
     public function __construct(string $name, string $architecture)
