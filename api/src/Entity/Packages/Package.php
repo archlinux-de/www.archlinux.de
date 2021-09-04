@@ -16,35 +16,35 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PackageRepository::class)]
-#[ORM\Index(columns: ['buildDate'])]
+#[ORM\Index(columns: ['build_date'])]
 #[ORM\Index(columns: ['name'])]
 #[ORM\UniqueConstraint(columns: ['name', 'repository_id'])]
 class Package
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue]
     private int $id;
 
     #[ORM\ManyToOne(targetEntity: Repository::class, fetch: 'EAGER', inversedBy: 'packages')]
     #[Assert\Valid]
     private Repository $repository;
 
-    #[ORM\Column(name: 'fileName', type: 'string')]
+    #[ORM\Column]
     #[Assert\Regex('/^[^-]+.*-[^-]+-[^-]+-[a-zA-Z0-9@\.\-\+_:]{1,255}$/')]
     private string $fileName;
 
-    #[ORM\Column(name: 'name', type: 'string')]
+    #[ORM\Column]
     #[Assert\Regex('/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/')]
     private string $name;
 
-    #[ORM\Column(name: 'base', type: 'string')]
+    #[ORM\Column]
     #[Assert\Regex('/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/')]
     private string $base;
 
-    #[ORM\Column(name: 'version', type: 'string')]
+    #[ORM\Column]
     #[Assert\Regex('/^[a-zA-Z0-9@\.\-\+_:~]{1,255}$/')]
     private string $version;
 
-    #[ORM\Column(name: 'description', type: 'string')]
+    #[ORM\Column]
     #[Assert\Length(max: 255)]
     private string $description = '';
 
@@ -57,19 +57,19 @@ class Package
     #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $groups = [];
 
-    #[ORM\Column(name: 'compressedSize', type: 'bigint')]
+    #[ORM\Column(type: 'bigint')]
     #[Assert\Range(min: '0', max: '10737418240')]
     private int $compressedSize = 0;
 
-    #[ORM\Column(name: 'installedSize', type: 'bigint')]
+    #[ORM\Column(type: 'bigint')]
     #[Assert\Range(min: '0', max: '10737418240')]
     private int $installedSize = 0;
 
-    #[ORM\Column(name: 'sha256sum', type: 'string', length: 64, nullable: true)]
+    #[ORM\Column(length: 64, nullable: true)]
     #[Assert\Regex('/^[0-9a-f]{64}$/')]
     private ?string $sha256sum = null;
 
-    #[ORM\Column(name: 'url', type: 'string', nullable: true)]
+    #[ORM\Column(nullable: true)]
     #[Assert\Url(protocols: ['http', 'https', 'ftp'])]
     private ?string $url = null;
 
@@ -82,18 +82,18 @@ class Package
     #[ORM\Column(type: 'simple_array', nullable: true)]
     private ?array $licenses = null;
 
-    #[ORM\Column(name: 'architecture', type: 'string')]
+    #[ORM\Column]
     #[Assert\Choice(['x86_64', 'any'])]
     private string $architecture;
 
-    #[ORM\Column(name: 'buildDate', type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $buildDate = null;
 
     #[ORM\Embedded(class: Packager::class)]
     #[Assert\Valid]
     private ?Packager $packager = null;
 
-    #[ORM\Column(name: 'popularity', type: 'float', nullable: false, options: ['default' => 0])]
+    #[ORM\Column(type: 'float', nullable: false, options: ['default' => 0])]
     #[Assert\Range(min: '0', max: '100')]
     private int|float $popularity = 0;
 

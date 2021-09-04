@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: FilesRepository::class)]
 class Files implements \IteratorAggregate
 {
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue]
     private int $id;
 
     #[ORM\Column(type: 'text', nullable: true)]

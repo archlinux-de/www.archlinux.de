@@ -15,14 +15,14 @@ abstract class AbstractRelation
 {
     protected Package $source;
 
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column]
     #[Assert\Regex('/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/')]
     private string $targetName;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(nullable: true)]
     #[Assert\Regex('/^[a-zA-Z0-9@\.\-\+_:<=>~]{1,255}$/')]
     private ?string $targetVersion = null;
 
