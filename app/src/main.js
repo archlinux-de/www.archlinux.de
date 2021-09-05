@@ -14,7 +14,8 @@ import {
   LayoutPlugin,
   PaginationPlugin,
   TablePlugin,
-  SpinnerPlugin
+  SpinnerPlugin,
+  CardPlugin
 } from 'bootstrap-vue'
 import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import createApiService from './services/ApiService'
@@ -33,6 +34,7 @@ Vue.use(PaginationPlugin)
 Vue.use(InputGroupPlugin)
 Vue.use(vueFilterPrettyBytes)
 Vue.use(SpinnerPlugin)
+Vue.use(CardPlugin)
 
 Vue.config.productionTip = false
 new Vue({

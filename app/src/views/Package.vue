@@ -1,9 +1,6 @@
 <template>
   <b-container role="main" tag="main">
     <h1 class="mb-4" v-if="pkg.name">{{ pkg.name }}</h1>
-
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
-
     <b-row v-if="pkg.name">
       <b-col cols="12" xl="6">
         <h2 class="mb-3">Paket-Details</h2>
@@ -70,7 +67,8 @@
           <b-tr>
             <b-th>Bugs</b-th>
             <b-td>
-              <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'" rel="noopener">Bug-Tracker</a>
+              <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'"
+                 rel="noopener">Bug-Tracker</a>
             </b-td>
           </b-tr>
           <b-tr>
@@ -131,6 +129,43 @@
           :repository="pkg.repository.name"
           :architecture="pkg.repository.architecture"
           :name="pkg.name"></package-files>
+      </b-col>
+    </b-row>
+
+    <b-row v-if="error">
+      <b-col>
+        <b-card border-variant="danger" header-bg-variant="danger" header-text-variant="white"
+                header="Fehler beim Laden des Paket">
+          <b-card-text>
+            Das Paket <strong>{{ $route.params.name }}</strong> aus <strong>[{{ $route.params.repository }}]</strong>
+            konnte leider nicht angezeigt werden.
+          </b-card-text>
+
+          <b-table-simple v-if="suggestions.length > 0" caption-top>
+            <caption>Gefundene Vorschlöge zu <strong>{{ $route.params.name }}</strong>:</caption>
+            <b-tr :key="id" v-for="(suggestion, id) in suggestions">
+              <b-td>
+                <router-link
+                  :to="{name: 'package', params: {repository: suggestion.repository.name, architecture: suggestion.repository.architecture, name: suggestion.name}}">
+                  {{ suggestion.name }}
+                </router-link>
+              </b-td>
+              <b-td> {{ suggestion.description }}</b-td>
+              <b-td class="d-none d-lg-table-cell">
+                <package-popularity :popularity="suggestion.popularity"></package-popularity>
+              </b-td>
+            </b-tr>
+          </b-table-simple>
+
+          <template #footer>
+            <div class="d-flex justify-content-between">
+              <small class="text-muted">{{ error }}</small>
+              <small>
+                <router-link :to="{name: 'packages', query: { search: $route.params.name }}">Nach {{ $route.params.name }} suchen</router-link>
+              </small>
+            </div>
+          </template>
+        </b-card>
       </b-col>
     </b-row>
   </b-container>
@@ -206,7 +241,8 @@ export default {
       }],
       pkg: {},
       canonical: '',
-      error: ''
+      error: '',
+      suggestions: []
     }
   },
   methods: {
@@ -224,7 +260,14 @@ export default {
             this.$router.replace(this.canonical)
           }
         })
-        .catch(error => { this.error = error })
+        .catch(error => {
+          this.error = error
+          this.apiService.fetchPackages({
+            query: this.$route.params.name,
+            limit: 5
+          })
+            .then(data => { this.suggestions = data.items })
+        })
     },
     createCanonical () {
       return this.$router.resolve({
