@@ -16,7 +16,10 @@
           mit
           <code>pacman -Syu</code> aktuell gehalten werden!</p>
         <ul class="list-unstyled ml-4">
-          <li data-test="current-release"><strong>Aktuelles Release:</strong>&nbsp;<router-link :to="{name: 'release', params: {version: release.version}}">{{ release.version }}</router-link></li>
+          <li data-test="current-release"><strong>Aktuelles Release:</strong>&nbsp;<router-link
+            :to="{name: 'release', params: {version: release.version}}">{{ release.version }}
+          </router-link>
+          </li>
           <li>
             <router-link :to="{name: 'release', params: {version: release.version}}">Release-Informationen</router-link>
           </li>
@@ -31,7 +34,9 @@
         <h2>BitTorrent Download</h2>
         <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
         <ul class="list-unstyled ml-4 link-list">
-          <li><a :href="release.magnetUri" target="_blank" rel="nofollow noopener">Magnet link für {{ release.version }}</a></li>
+          <li><a :href="release.magnetUri" target="_blank" rel="nofollow noopener">Magnet link für {{
+              release.version
+            }}</a></li>
           <li><a :href="release.torrentUrl" target="_blank" rel="nofollow noopener">
             Torrent für {{ release.version }}
           </a></li>
@@ -48,7 +53,8 @@
       </b-col>
 
       <b-col class="pl-lg-5" cols="12" lg="6">
-        <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl" data-test="download-release" rel="nofollow noopener">
+        <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl" data-test="download-release"
+           rel="nofollow noopener">
           <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
         </a>
 
@@ -65,6 +71,23 @@
         <a class="btn btn-outline-secondary btn-sm" href="/releases/feed">Feed</a>
         <router-link :to="{name: 'releases'}" class="btn btn-secondary btn-sm" role="button">Archiv</router-link>
       </b-col>
+
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Arch Linux",
+          "operatingSystem": "Arch Linux",
+          "fileSize": "{{ release.fileSize | prettyBytes(2, true) }}",
+          "datePublished": "{{ (new Date(release.releaseDate)).toJSON() }}",
+          "softwareVersion": "{{ release.version }}",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+          }
+        }
+      </script>
     </b-row>
   </b-container>
 </template>
@@ -76,7 +99,10 @@ export default {
     return {
       title: 'Download',
       link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'download' }).href }],
-      meta: [{ name: 'description', content: `Arch Linux herunterladen und installieren in der aktuellen Version ${this.release.version} mit Kernel ${this.release.kernelVersion}` }]
+      meta: [{
+        name: 'description',
+        content: `Arch Linux herunterladen und installieren in der aktuellen Version ${this.release.version} mit Kernel ${this.release.kernelVersion}`
+      }]
     }
   },
   inject: ['apiService'],
@@ -90,13 +116,20 @@ export default {
   methods: {
     fetchLatestRelease () {
       this.apiService.fetchReleases({ limit: 1, onlyAvailable: true })
-        .then(data => { this.release = data.items[0] })
-        .catch(error => { this.error = error })
+        .then(data => {
+          this.release = data.items[0]
+        })
+        .catch(error => {
+          this.error = error
+        })
     },
     fetchMirrors () {
       this.apiService.fetchMirrors({ limit: 10 })
-        .then(data => { this.mirrors = data.items })
-        .catch(() => { })
+        .then(data => {
+          this.mirrors = data.items
+        })
+        .catch(() => {
+        })
     }
   },
   mounted () {

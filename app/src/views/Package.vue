@@ -130,6 +130,33 @@
           :architecture="pkg.repository.architecture"
           :name="pkg.name"></package-files>
       </b-col>
+
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "{{ pkg.name }}",
+          "operatingSystem": "Arch Linux",
+          "fileSize": "{{ pkg.compressedSize | prettyBytes(2, true) }}",
+          "dateModified": "{{ (new Date(pkg.buildDate)).toJSON() }}",
+          "softwareVersion": "{{ pkg.version }}",
+          "description": "{{ pkg.description }}",
+          "url": "{{ pkg.url }}",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "worstRating": 0,
+            "bestRating": 100,
+            "ratingCount": 20480,
+            "ratingValue": "{{ pkg.popularity }}",
+            "ratingExplanation": "https://pkgstats.archlinux.de/packages/{{ pkg.name }}"
+          }
+        }
+      </script>
     </b-row>
 
     <b-row v-if="error">
@@ -161,7 +188,10 @@
             <div class="d-flex justify-content-between">
               <small class="text-muted">{{ error }}</small>
               <small>
-                <router-link :to="{name: 'packages', query: { search: $route.params.name }}">Nach {{ $route.params.name }} suchen</router-link>
+                <router-link :to="{name: 'packages', query: { search: $route.params.name }}">Nach {{
+                    $route.params.name
+                  }} suchen
+                </router-link>
               </small>
             </div>
           </template>
@@ -269,7 +299,9 @@ export default {
             query: this.$route.params.name,
             limit: 5
           })
-            .then(data => { this.suggestions = data.items })
+            .then(data => {
+              this.suggestions = data.items
+            })
         })
     },
     createCanonical () {

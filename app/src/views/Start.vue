@@ -98,6 +98,24 @@
         </ul>
       </b-col>
     </b-row>
+
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "name": "archlinux.de",
+        "alternateName": "Arch Linux Deutschland",
+        "url": "{{ createCanonical() }}",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ createSearchTemplateUrl() }}"
+          },
+          "query-input": "required name=search"
+        }
+      }
+    </script>
   </b-container>
 </template>
 
@@ -113,11 +131,25 @@ export default {
     NewsItemList,
     RecentPackages
   },
+  methods: {
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({ name: 'start' }).href
+    },
+    createSearchTemplateUrl () {
+      return window.location.origin + this.$router.resolve({
+        name: 'packages',
+        query: { search: '__search__' }
+      }).href.replace('__search__', '{search}')
+    }
+  },
   metaInfo () {
     return {
       titleTemplate: null,
-      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'start' }).href }],
-      meta: [{ name: 'description', content: 'Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux' }]
+      link: [{ rel: 'canonical', href: this.createCanonical() }],
+      meta: [{
+        name: 'description',
+        content: 'Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux'
+      }]
     }
   }
 }

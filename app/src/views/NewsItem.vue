@@ -14,6 +14,23 @@
       <div class="text-break mb-4" v-html="news.description"></div>
       <router-link :to="{name: 'news'}" class="btn btn-outline-secondary btn-sm" role="button">zum Archiv</router-link>
       <a class="btn btn-primary btn-sm" role="button" :href="news.link">Kommentare</a>
+
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "NewsArticle",
+          "headline": "{{ news.title }}",
+          "datePublished": "{{ (new Date(news.lastModified)).toJSON() }}",
+          "author": [
+            {
+              "@type": "Person",
+              "name": "{{ news.author.name }}",
+              "url": "{{ news.author.uri }}"
+            }
+          ],
+          "discussionUrl": "{{ news.link }}"
+        }
+      </script>
     </template>
   </b-container>
 </template>
@@ -50,8 +67,12 @@ export default {
   methods: {
     fetchNewsItem () {
       this.apiService.fetchNewsItem(this.$route.params.id)
-        .then(data => { this.news = data })
-        .catch(error => { this.error = error })
+        .then(data => {
+          this.news = data
+        })
+        .catch(error => {
+          this.error = error
+        })
     },
     createDescription () {
       return new DOMParser()
