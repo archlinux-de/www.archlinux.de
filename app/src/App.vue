@@ -100,7 +100,8 @@ export default {
       ],
       link: [
         { rel: 'icon', href: this.icon, sizes: 'any', type: 'image/svg+xml' },
-        { rel: 'manifest', href: '/manifest.webmanifest' }
+        { rel: 'manifest', href: '/manifest.webmanifest' },
+        { rel: 'search', type: 'application/opensearchdescription+xml', href: '/packages/opensearch' }
       ]
     }
   },
