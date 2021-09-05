@@ -27,7 +27,7 @@ export default {
         title: this.news.title,
         link: [{
           rel: 'canonical',
-          href: this.$router.resolve({
+          href: window.location.origin + this.$router.resolve({
             name: 'news-item',
             params: { id: this.news.id, slug: this.news.slug }
           }).href

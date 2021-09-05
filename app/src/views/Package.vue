@@ -189,7 +189,7 @@ export default {
 
     if (this.pkg.name) {
       metaInfoObject.title = this.pkg.name
-      metaInfoObject.link = [{ rel: 'canonical', href: this.canonical }]
+      metaInfoObject.link = [{ rel: 'canonical', href: window.location.origin + this.canonical }]
       metaInfoObject.meta.push({ vmid: 'description', name: 'description', content: this.pkg.description })
     }
 

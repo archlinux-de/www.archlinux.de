@@ -95,7 +95,7 @@ export default {
       title: 'Paket-Suche',
       link: [{
         rel: 'canonical',
-        href: this.$router.resolve({
+        href: window.location.origin + this.$router.resolve({
           name: 'packages',
           query: this.getQuery()
         }).href

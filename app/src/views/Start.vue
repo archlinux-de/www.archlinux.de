@@ -89,7 +89,8 @@
           <li><a href="https://www.archlinux.org/people/developers/" rel="noopener">Entwickler</a></li>
           <li><a href="https://www.archlinux.org/people/trusted-users/" rel="noopener">Trusted Users</a></li>
           <li><a href="https://www.archlinux.org/people/developer-fellows/" rel="noopener">Ehemalige Entwickler</a></li>
-          <li><a href="https://www.archlinux.org/people/trusted-user-fellows/" rel="noopener">Ehemalige Trusted Users</a>
+          <li><a href="https://www.archlinux.org/people/trusted-user-fellows/" rel="noopener">Ehemalige Trusted
+            Users</a>
           </li>
           <li>
             <router-link to="mirrors">Mirror-Status</router-link>
@@ -112,6 +113,11 @@ export default {
     NewsItemList,
     RecentPackages
   },
-  metaInfo: { titleTemplate: null }
+  metaInfo () {
+    return {
+      titleTemplate: null,
+      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'start' }).href }]
+    }
+  }
 }
 </script>

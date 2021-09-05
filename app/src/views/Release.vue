@@ -67,7 +67,16 @@ export default {
   name: 'Release',
   metaInfo () {
     if (this.release.version) {
-      return { title: this.release.version }
+      return {
+        title: this.release.version,
+        link: [{
+          rel: 'canonical',
+          href: window.location.origin + this.$router.resolve({
+            name: 'release',
+            version: this.version
+          }).href
+        }]
+      }
     } else {
       return {
         meta: [{ vmid: 'robots', name: 'robots', content: 'noindex,follow' }]

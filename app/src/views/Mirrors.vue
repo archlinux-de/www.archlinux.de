@@ -77,7 +77,7 @@ export default {
       title: 'Mirror-Status',
       link: [{
         rel: 'canonical',
-        href: this.$router.resolve({
+        href: window.location.origin + this.$router.resolve({
           name: 'mirrors',
           query: this.getQuery()
         }).href

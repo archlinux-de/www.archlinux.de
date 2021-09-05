@@ -69,7 +69,7 @@ export default {
       title: 'Arch Linux Releases',
       link: [{
         rel: 'canonical',
-        href: this.$router.resolve({
+        href: window.location.origin + this.$router.resolve({
           name: 'releases',
           query: this.getQuery()
         }).href

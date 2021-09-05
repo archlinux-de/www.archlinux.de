@@ -65,7 +65,7 @@ export default {
       title: 'Neuigkeiten',
       link: [{
         rel: 'canonical',
-        href: this.$router.resolve({
+        href: window.location.origin + this.$router.resolve({
           name: 'news',
           query: this.getQuery()
         }).href

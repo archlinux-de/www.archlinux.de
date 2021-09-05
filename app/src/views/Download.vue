@@ -72,7 +72,12 @@
 <script>
 export default {
   name: 'Download',
-  metaInfo: { title: 'Download' },
+  metaInfo () {
+    return {
+      title: 'Download',
+      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'download' }).href }]
+    }
+  },
   inject: ['apiService'],
   data () {
     return {
