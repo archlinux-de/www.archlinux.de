@@ -142,7 +142,7 @@
           </b-card-text>
 
           <b-table-simple v-if="suggestions.length > 0" caption-top>
-            <caption>Gefundene Vorschlöge zu <strong>{{ $route.params.name }}</strong>:</caption>
+            <caption>Gefundene Vorschläge zu <strong>{{ $route.params.name }}</strong>:</caption>
             <b-tr :key="id" v-for="(suggestion, id) in suggestions">
               <b-td>
                 <router-link
@@ -261,6 +261,9 @@ export default {
           }
         })
         .catch(error => {
+          this.pkg = {}
+          this.files = []
+          this.canonical = ''
           this.error = error
           this.apiService.fetchPackages({
             query: this.$route.params.name,
