@@ -176,7 +176,7 @@ update:
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile
 	cd app && yarn build
-	cd app && find dist -type f -atime +30 -delete
+	cd app && find dist -type f -atime +512 -delete # needs to be above the highest TTL
 	cd app && find dist -type d -empty -delete
 	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader --classmap-authoritative
 	cd api && composer dump-env prod
