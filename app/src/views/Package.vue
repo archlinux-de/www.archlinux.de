@@ -74,13 +74,13 @@
           <b-tr>
             <b-th>Paket</b-th>
             <b-td>
-              <a :href="pkg.packageUrl" target="_blank" rel="nofollow noopener">{{ pkg.fileName }}</a>
+              <a :href="pkg.packageUrl" download rel="nofollow noopener">{{ pkg.fileName }}</a>
             </b-td>
           </b-tr>
           <b-tr>
             <b-th>PGP-Signatur</b-th>
             <b-td>
-              <a :href="pkg.packageUrl+'.sig'" target="_blank" rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
+              <a :href="pkg.packageUrl+'.sig'" download rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
             </b-td>
           </b-tr>
           <b-tr>

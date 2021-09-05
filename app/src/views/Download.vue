@@ -34,10 +34,10 @@
         <h2>BitTorrent Download</h2>
         <p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
         <ul class="list-unstyled ml-4 link-list">
-          <li><a :href="release.magnetUri" target="_blank" rel="nofollow noopener">Magnet link für {{
+          <li><a :href="release.magnetUri" download rel="nofollow noopener">Magnet link für {{
               release.version
             }}</a></li>
-          <li><a :href="release.torrentUrl" target="_blank" rel="nofollow noopener">
+          <li><a :href="release.torrentUrl" download rel="nofollow noopener">
             Torrent für {{ release.version }}
           </a></li>
         </ul>
@@ -47,13 +47,13 @@
 
         <h3>Prüfsummen</h3>
         <ul class="list-unstyled ml-4">
-          <li><a :href="release.isoSigUrl" target="_blank" rel="nofollow noopener">PGP-Signatur</a></li>
+          <li><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></li>
           <li class="text-break" v-if="release.sha1Sum"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>
         </ul>
       </b-col>
 
       <b-col class="pl-lg-5" cols="12" lg="6">
-        <a class="btn btn-primary btn-lg mb-4" target="_blank" :href="release.isoUrl" data-test="download-release"
+        <a class="btn btn-primary btn-lg mb-4" download :href="release.isoUrl" data-test="download-release"
            rel="nofollow noopener">
           <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
         </a>
@@ -62,7 +62,7 @@
           <h3>Mirrors</h3>
           <ul class="list-unstyled ml-4 link-list" data-test="mirror-list">
             <li :key="mirror.url" v-for="mirror in mirrors">
-              <a :href="mirror.url + release.isoPath" target="_blank" rel="nofollow noopener">{{ mirror.host }}</a>
+              <a :href="mirror.url + release.isoPath" download rel="nofollow noopener">{{ mirror.host }}</a>
             </li>
           </ul>
         </template>
