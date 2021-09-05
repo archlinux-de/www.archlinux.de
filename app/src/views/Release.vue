@@ -13,13 +13,6 @@
               <b-th>Version</b-th>
               <b-td>{{ release.version }}</b-td>
             </b-tr>
-            <b-tr>
-              <b-th>Verfügbarkeit</b-th>
-              <b-td>
-                <span v-if="release.available" class="text-success">✓</span>
-                <span v-else class="text-danger">×</span>
-              </b-td>
-            </b-tr>
             <b-tr v-if="release.info">
               <b-th>Informationen</b-th>
               <b-td v-html="release.info"></b-td>
