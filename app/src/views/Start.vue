@@ -116,7 +116,8 @@ export default {
   metaInfo () {
     return {
       titleTemplate: null,
-      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'start' }).href }]
+      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'start' }).href }],
+      meta: [{ name: 'description', content: 'Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux' }]
     }
   }
 }

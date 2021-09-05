@@ -74,7 +74,10 @@ export default {
           query: this.getQuery()
         }).href
       }],
-      meta: [{ vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' }]
+      meta: [
+        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
+        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Installationsmedien für Arch Linux` : 'Übersicht und Download der Arch Linux Installationsmedien' }
+      ]
     }
   },
   inject: ['apiService'],

@@ -31,7 +31,8 @@ export default {
             name: 'news-item',
             params: { id: this.news.id, slug: this.news.slug }
           }).href
-        }]
+        }],
+        meta: [{ name: 'description', content: this.createDescription() }]
       }
     } else {
       return {
@@ -51,6 +52,13 @@ export default {
       this.apiService.fetchNewsItem(this.$route.params.id)
         .then(data => { this.news = data })
         .catch(error => { this.error = error })
+    },
+    createDescription () {
+      return new DOMParser()
+        .parseFromString(this.news.description, 'text/html')
+        .body
+        .textContent
+        .substr(0, 100)
     }
   },
   mounted () {

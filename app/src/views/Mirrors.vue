@@ -82,7 +82,10 @@ export default {
           query: this.getQuery()
         }).href
       }],
-      meta: [{ vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' }]
+      meta: [
+        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
+        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Mirror für Arch Linux` : 'Paket-Mirror Arch Linux' }
+      ]
     }
   },
   inject: ['apiService'],

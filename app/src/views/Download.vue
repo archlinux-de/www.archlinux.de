@@ -75,7 +75,8 @@ export default {
   metaInfo () {
     return {
       title: 'Download',
-      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'download' }).href }]
+      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'download' }).href }],
+      meta: [{ name: 'description', content: `Arch Linux herunterladen und installieren in der aktuellen Version ${this.release.version} mit Kernel ${this.release.kernelVersion}` }]
     }
   },
   inject: ['apiService'],

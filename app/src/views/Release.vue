@@ -75,7 +75,8 @@ export default {
             name: 'release',
             version: this.version
           }).href
-        }]
+        }],
+        meta: [{ name: 'description', content: `Informationen und Download von Arch Linux Version ${this.release.version} mit Kernel ${this.release.kernelVersion}` }]
       }
     } else {
       return {

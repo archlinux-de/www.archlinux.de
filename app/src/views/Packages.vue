@@ -100,7 +100,10 @@ export default {
           query: this.getQuery()
         }).href
       }],
-      meta: [{ vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' }]
+      meta: [
+        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
+        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Pakete für Arch Linux` : 'Übersicht und Suche von Arch Linux-Paketen' }
+      ]
     }
   },
   inject: ['apiService'],
