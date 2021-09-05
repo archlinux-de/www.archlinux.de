@@ -286,6 +286,8 @@ export default {
   beforeRouteUpdate (to, from, next) {
     next()
     this.fetchPackage()
+    this.error = ''
+    this.suggestions = ''
   }
 }
 </script>
