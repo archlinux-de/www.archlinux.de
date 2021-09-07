@@ -73,7 +73,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
                 'architecture' => $object->getRepository()->getArchitecture(),
                 'testing' => $object->getRepository()->isTesting()
             ],
-            'popularity' => $object->getPopularity(),
+            'popularity' => $object->getPopularity()?->getPopularity(),
             'files' => [...$object->getFiles()]
         ];
 

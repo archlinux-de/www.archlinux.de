@@ -97,9 +97,9 @@ class Package
     #[Assert\Valid]
     private ?Packager $packager = null;
 
-    #[ORM\Column(type: 'float', nullable: false, options: ['default' => 0])]
-    #[Assert\Range(min: 0, max: 100)]
-    private int|float $popularity = 0;
+    #[ORM\Embedded(class: Popularity::class)]
+    #[Assert\Valid]
+    private ?Popularity $popularity = null;
 
     /**
      * @var Collection<int, Replacement>
@@ -222,12 +222,12 @@ class Package
         $this->files = Files::createFromArray([]);
     }
 
-    public function getPopularity(): float
+    public function getPopularity(): ?Popularity
     {
         return $this->popularity;
     }
 
-    public function setPopularity(float $popularity): Package
+    public function setPopularity(?Popularity $popularity): Package
     {
         $this->popularity = $popularity;
         return $this;

@@ -19,10 +19,10 @@ export default {
   },
   props: {
     popularity: {
-      type: Number,
+      type: Object,
       required: true,
-      default: 0,
-      validator: value => value >= 0 && value <= 100
+      default: null,
+      validator: value => value.popularity >= 0 && value.popularity <= 100
     },
     stars: {
       type: Number,
@@ -33,22 +33,23 @@ export default {
   },
   computed: {
     popularityLabel: function () {
-      return (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 })).format(this.popularity) + '%'
+      return (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 })).format(this.popularity.popularity) +
+        `%, ${this.popularity.count} von ${this.popularity.samples}`
     },
     fullStars: function () {
-      if (this.popularity <= 0 || this.stars < 1) {
+      if (this.popularity.popularity <= 0 || this.stars < 1) {
         return 0
       }
-      if (this.popularity > 100) {
+      if (this.popularity.popularity > 100) {
         return this.stars
       }
-      return Math.floor(this.popularity / 100 * this.stars)
+      return Math.floor(this.popularity.popularity / 100 * this.stars)
     },
     halfStars: function () {
-      if (this.popularity > 100 || this.popularity <= 0 || this.stars < 1) {
+      if (this.popularity.popularity > 100 || this.popularity.popularity <= 0 || this.stars < 1) {
         return 0
       }
-      return (Math.ceil(this.popularity / 100 * this.stars) - Math.floor(this.popularity / 100 * this.stars)) >= 0.5 ? 1 : 0
+      return (Math.ceil(this.popularity.popularity / 100 * this.stars) - Math.floor(this.popularity.popularity / 100 * this.stars)) >= 0.5 ? 1 : 0
     },
     emptyStars: function () {
       return this.stars - this.fullStars - this.halfStars

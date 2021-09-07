@@ -2,6 +2,8 @@
 
 namespace App\Command\Update;
 
+use App\Entity\Packages\Popularity;
+use App\Exception\ValidationException;
 use App\Repository\PackageRepository;
 use App\Service\PackagePopularityFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -9,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdatePackagePopularitiesCommand extends Command
 {
@@ -19,7 +22,8 @@ class UpdatePackagePopularitiesCommand extends Command
     public function __construct(
         private EntityManagerInterface $entityManager,
         private PackagePopularityFetcher $packagePopularityFetcher,
-        private PackageRepository $packageRepository
+        private PackageRepository $packageRepository,
+        private ValidatorInterface $validator
     ) {
         parent::__construct();
     }
@@ -34,15 +38,20 @@ class UpdatePackagePopularitiesCommand extends Command
         $this->lock('packages.lock');
         ini_set('memory_limit', '4G');
 
+        /**
+         * @var string $name
+         * @var Popularity $popularity
+         */
         foreach ($this->packagePopularityFetcher as $name => $popularity) {
-            if ($popularity < 0 || $popularity > 100) {
-                throw new \RuntimeException(sprintf('Invalid popularity of %.2f%% for "%s"', $popularity, $name));
+            $errors = $this->validator->validate($popularity);
+            if ($errors->count() > 0) {
+                throw new ValidationException($errors);
             }
             $this->packagePopularities[$name] = $popularity;
         }
 
         foreach ($this->packageRepository->findStable() as $package) {
-            $package->setPopularity($this->packagePopularities[$package->getName()] ?? 0);
+            $package->setPopularity($this->packagePopularities[$package->getName()] ?? null);
         }
 
         $this->entityManager->flush();

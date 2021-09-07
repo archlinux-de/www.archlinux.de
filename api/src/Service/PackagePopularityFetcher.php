@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Packages\Popularity;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackagePopularityFetcher implements \IteratorAggregate
@@ -11,7 +12,7 @@ class PackagePopularityFetcher implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<string, float>
+     * @return \Traversable<string, Popularity>
      */
     public function getIterator(): \Traversable
     {
@@ -32,7 +33,13 @@ class PackagePopularityFetcher implements \IteratorAggregate
             $packagePopularityList = json_decode($content, true);
             $count = 0;
             foreach ($packagePopularityList['packagePopularities'] as $packagePopularity) {
-                yield $packagePopularity['name'] => $packagePopularity['popularity'];
+                yield $packagePopularity['name'] => new Popularity(
+                    $packagePopularity['popularity'],
+                    $packagePopularity['samples'],
+                    $packagePopularity['count'],
+                    $packagePopularity['startMonth'],
+                    $packagePopularity['endMonth']
+                );
                 $count++;
             }
             $offset += $count;
