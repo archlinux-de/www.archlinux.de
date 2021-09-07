@@ -131,7 +131,7 @@
           :name="pkg.name"></package-files>
       </b-col>
 
-      <script type="application/ld+json">
+      <script type="application/ld+json" v-if="!this.pkg.repository.testing && pkg.popularity.count > 0">
         {
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
@@ -151,8 +151,8 @@
             "@type": "AggregateRating",
             "worstRating": 0,
             "bestRating": 100,
-            "ratingCount": "{{ pkg.popularity.count || 0 }}",
-            "ratingValue": "{{ pkg.popularity.popularity || 0 }}",
+            "ratingCount": "{{ pkg.popularity.count }}",
+            "ratingValue": "{{ pkg.popularity.popularity }}",
             "ratingExplanation": "The package {{ pkg.name }} got {{ pkg.popularity.count }} out of {{ pkg.popularity.samples }} votes submitted to pkgstats.",
             "url": "https://pkgstats.archlinux.de/packages/{{ pkg.name }}"
           }
