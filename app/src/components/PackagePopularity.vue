@@ -34,7 +34,7 @@ export default {
   computed: {
     popularityLabel: function () {
       return (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 })).format(this.popularity.popularity) +
-        `%, ${this.popularity.count} von ${this.popularity.samples}`
+        '%' + (this.popularity.count ? `, ${this.popularity.count} von ${this.popularity.samples}` : '')
     },
     fullStars: function () {
       if (this.popularity.popularity <= 0 || this.stars < 1) {

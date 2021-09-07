@@ -151,8 +151,8 @@
             "@type": "AggregateRating",
             "worstRating": 0,
             "bestRating": 100,
-            "ratingCount": "{{ pkg.popularity.count }}",
-            "ratingValue": "{{ pkg.popularity.popularity }}",
+            "ratingCount": "{{ pkg.popularity.count || 0 }}",
+            "ratingValue": "{{ pkg.popularity.popularity || 0 }}",
             "ratingExplanation": "The package {{ pkg.name }} got {{ pkg.popularity.count }} out of {{ pkg.popularity.samples }} votes submitted to pkgstats.",
             "url": "https://pkgstats.archlinux.de/packages/{{ pkg.name }}"
           }
