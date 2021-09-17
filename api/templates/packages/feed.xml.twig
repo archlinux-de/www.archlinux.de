@@ -5,8 +5,8 @@
     <updated>{{ 'now' | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
     <link rel="alternate" href="{{ url('app_packages') }}"/>
     <link rel="self" href="{{ url('app_packages_feed') }}"/>
-    <icon>{{ absolute_url('img/archicon.svg') }}</icon>
-    <logo>{{ absolute_url('img/archlogo.svg') }}</logo>
+    <icon>{{ absolute_url('/img/archicon.svg') }}</icon>
+    <logo>{{ absolute_url('/img/archlogo.svg') }}</logo>
     {# @var packages \App\Entity\Packages\Package[] #}
     {% for package in packages %}
         <entry>
