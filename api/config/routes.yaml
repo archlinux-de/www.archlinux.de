@@ -22,6 +22,10 @@ app_news_item:
     path: /news/{id<[0-9]+>}-{slug<[\w\-\.]+>}
     methods: GET
 
+app_news_item_permalink:
+    path: /news/{id<[0-9]+>}
+    methods: GET
+
 app_mirrors:
     path: /mirrors
     methods: GET

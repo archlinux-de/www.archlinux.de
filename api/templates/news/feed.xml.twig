@@ -10,7 +10,7 @@
     {# @var items \App\Entity\NewsItem[] #}
     {% for item in items %}
         <entry>
-            <id>{{ item.id }}</id>
+            <id>{{ url('app_news_item_permalink', {'id': item.id}) }}</id>
             <title>{{ item.title }}</title>
             <updated>{{ item.lastModified | date(constant('DateTimeInterface::ATOM'), timezone='GMT') }}</updated>
             <link rel="alternate" href="{{ url('app_news_item', {'id': item.id, 'slug': item.title | slug}) }}"/>

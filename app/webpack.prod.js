@@ -40,7 +40,7 @@ module.exports = {
         new RegExp('^/impressum$'),
         new RegExp('^/mirrors$'),
         new RegExp('^/news$'),
-        new RegExp('^/news/[^/-]+-.+$'),
+        new RegExp('^/news/[^/-]+(-.+)?$'),
         new RegExp('^/packages/[^/]+/[^/]+/[^/]+$'),
         new RegExp('^/packages$'),
         new RegExp('^/privacy-policy$'),

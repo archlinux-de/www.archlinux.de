@@ -25,6 +25,7 @@ export default new Router({
     { path: '/mirrors', name: 'mirrors', component: Mirrors },
     { path: '/news', name: 'news', component: News },
     { path: '/news/:id-:slug', name: 'news-item', component: NewsItem },
+    { path: '/news/:id', name: 'news-item-permalink', component: NewsItem },
     { path: '/packages/:repository/:architecture/:name', name: 'package', component: Package },
     { path: '/packages', name: 'packages', component: Packages },
     { path: '/privacy-policy', name: 'privacy-policy', component: PrivacyPolicy },
