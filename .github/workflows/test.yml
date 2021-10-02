@@ -32,3 +32,14 @@ jobs:
         run: just install
       - name: Run ${{ matrix.type }}
         run: just ${{ matrix.type }}
+
+  deploy:
+    needs: test
+    #if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment
+        uses: distributhor/workflow-webhook@v2
+        env:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
