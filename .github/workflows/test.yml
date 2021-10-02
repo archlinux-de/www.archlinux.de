@@ -46,7 +46,7 @@ jobs:
 
   deploy:
     needs: test
-    if: github.ref == 'refs/heads/master' && github.event == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger deployment
