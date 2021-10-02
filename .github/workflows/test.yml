@@ -16,9 +16,12 @@ jobs:
         uses: extractions/setup-just@v1
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Pull Docker images
+      - name: Pulling Docker images
         run: just compose pull
-      - name: Cache Docker layers
+      - name: Pulling Cypress Docker image
+        if: matrix.type == 'test-e2e'
+        run: just compose -f docker/cypress-open.yml pull
+      - name: Maintain Docker cache
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
         with:
