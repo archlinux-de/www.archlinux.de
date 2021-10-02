@@ -35,7 +35,7 @@ jobs:
 
   deploy:
     needs: test
-    #if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && github.event == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger deployment
@@ -43,3 +43,4 @@ jobs:
         env:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+          silent: true
