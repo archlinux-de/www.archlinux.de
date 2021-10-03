@@ -12,6 +12,8 @@ jobs:
         uses: extractions/setup-just@v1
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MAINTENANCE_TOKEN }}
       - name: Update dependencies
         run: just update
       - name: Fix code style
