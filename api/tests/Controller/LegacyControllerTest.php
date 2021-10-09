@@ -3,7 +3,9 @@
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\String\ByteString;
 
 /**
  * @covers \App\Controller\LegacyController
@@ -19,9 +21,9 @@ class LegacyControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/', array_merge(['page' => $legacyPage], $parameters));
+        $client->request('GET', $this->createLegacyRequest($legacyPage, $parameters));
 
-        $this->assertTrue($client->getResponse()->isRedirection());
+        $this->assertTrue($client->getResponse()->isRedirection(), $client->getResponse());
         foreach ($parameters as $parameter) {
             $this->assertStringContainsString($parameter, (string)$client->getResponse()->headers->get('Location'));
         }
@@ -53,7 +55,7 @@ class LegacyControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/', ['page' => 'UnknownPage']);
+        $client->request('GET', $this->createLegacyRequest('UnknownPage'));
 
         $this->assertTrue($client->getResponse()->isNotFound());
     }
@@ -67,7 +69,7 @@ class LegacyControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/', array_merge(['page' => $legacyPage], $parameters));
+        $client->request('GET', $this->createLegacyRequest($legacyPage, $parameters));
 
         $this->assertTrue($client->getResponse()->isNotFound());
     }
@@ -87,8 +89,15 @@ class LegacyControllerTest extends WebTestCase
     public function testPostIsInvalid(): void
     {
         $client = static::createClient();
-        $client->request('POST', '/?page=foo');
+        $client->request('POST', $this->createLegacyRequest('foo'));
 
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
+    }
+
+    private function createLegacyRequest(string $legacyPage, array $parameters = []): string
+    {
+        return (new ByteString(
+            Request::create('/', 'GET', array_merge(['page' => $legacyPage], $parameters))->getUri()
+        ))->replace('&', ';');
     }
 }

@@ -39,14 +39,19 @@ class LegacyController extends AbstractController
     #[Route(
         path: '/',
         methods: ['GET'],
-        condition: 'request.query.has("page")'
+        condition: 'request.getQueryString() matches "/page(%3D|=).+/"'
     )]
     public function pageAction(Request $request): Response
     {
-        $page = $request->get('page');
+        $queryString = str_replace(';', '&', urldecode($request->getQueryString() ?? ''));
+
+        $queries = [];
+        parse_str($queryString, $queries);
+
+        $page = $queries['page'] ?? '';
 
         if (isset($this->internalPages[$page])) {
-            $parameters = array_diff_key($request->query->all(), ['page' => '']);
+            $parameters = array_diff_key($queries, ['page' => '']);
 
             if (
                 $this->internalPages[$page] == 'app_package'
