@@ -16,6 +16,7 @@ default:
 
 init: start
 	{{PHP-DB-RUN}} bin/console cache:warmup
+	{{PHP-DB-RUN}} bin/console doctrine:database:drop --force --if-exists
 	{{PHP-DB-RUN}} bin/console doctrine:database:create
 	{{PHP-DB-RUN}} bin/console doctrine:schema:create
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
