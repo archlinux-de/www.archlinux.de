@@ -27,6 +27,8 @@ jobs:
         with:
           key: docker-${{ hashFiles('docker/**') }}
           restore-keys: docker-
+      - name: Building Docker images
+        run: just compose build
       - name: Maintain Composer cache
         uses: actions/cache@v2
         with:
