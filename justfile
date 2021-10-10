@@ -56,7 +56,7 @@ import-db-dump file name='www_archlinux_de': start
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
 clean:
-	{{COMPOSE}} down -v
+	{{COMPOSE}} rm -vsf
 	git clean -fdqx -e .idea
 
 rebuild: clean
