@@ -19,7 +19,7 @@ final class Version20180101000000 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        $knownTables = $this->connection->getSchemaManager()->listTableNames();
+        $knownTables = $this->connection->createSchemaManager()->listTableNames();
 
         if ($knownTables == ['doctrine_migration_versions']) {
             $this->addSql('CREATE TABLE country (code VARCHAR(2) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(code)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
