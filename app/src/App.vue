@@ -32,8 +32,8 @@
 
 <style lang="scss">
   @import "./assets/css/archlinux-bootstrap";
-  @import "~bootstrap/scss/bootstrap.scss";
-  @import "~bootstrap-vue/src/index.scss";
+  @import "~bootstrap/scss/bootstrap";
+  @import "~bootstrap-vue/src/index";
 
   .navbar-border-brand {
     border-bottom: 0.313rem solid $primary;
