@@ -13,7 +13,7 @@
     "vue": "~2.6.14",
     "vue-filter-pretty-bytes": "~0.1.6",
     "vue-meta": "~2.4.0",
-    "vue-router": "~3.5.2"
+    "vue-router": "~3.5.3"
   },
   "devDependencies": {
     "@babel/core": "~7.15.8",
@@ -21,7 +21,7 @@
     "babel-loader": "~8.2.3",
     "compression-webpack-plugin": "~9.0.0",
     "copy-webpack-plugin": "~9.0.1",
-    "css-loader": "~6.4.0",
+    "css-loader": "~6.5.0",
     "css-minimizer-webpack-plugin": "~3.1.1",
     "eslint": "~8.1.0",
     "eslint-config-standard": "~16.0.3",
@@ -35,12 +35,12 @@
     "html-webpack-plugin": "^5.5.0",
     "jest": "~27.3.1",
     "mini-css-extract-plugin": "~2.4.3",
-    "postcss-html": "^1.1.0",
+    "postcss-html": "^1.1.1",
     "postcss-loader": "~6.2.0",
-    "sass": "~1.43.3",
+    "sass": "~1.43.4",
     "sass-loader": "~12.2.0",
     "style-loader": "~3.3.1",
-    "stylelint": "~14.0.0",
+    "stylelint": "~14.0.1",
     "stylelint-config-recommended-vue": "^1.0.0",
     "stylelint-config-standard-scss": "^2.0.0",
     "stylelint-no-unsupported-browser-features": "~5.0.2",
