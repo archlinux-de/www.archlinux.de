@@ -7,7 +7,7 @@
     "build": "webpack --mode production"
   },
   "dependencies": {
-    "autoprefixer": "^10.3.7",
+    "autoprefixer": "^10.4.0",
     "bootstrap-vue": "~2.21.2",
     "core-js": "~3.19.0",
     "vue": "~2.6.14",
@@ -16,8 +16,8 @@
     "vue-router": "~3.5.3"
   },
   "devDependencies": {
-    "@babel/core": "~7.15.8",
-    "@babel/preset-env": "~7.15.8",
+    "@babel/core": "~7.16.0",
+    "@babel/preset-env": "~7.16.0",
     "babel-loader": "~8.2.3",
     "compression-webpack-plugin": "~9.0.0",
     "copy-webpack-plugin": "~9.0.1",
@@ -30,12 +30,12 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
-    "eslint-plugin-vue": "~7.20.0",
+    "eslint-plugin-vue": "~8.0.3",
     "file-loader": "~6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "~27.3.1",
     "mini-css-extract-plugin": "~2.4.3",
-    "postcss-html": "^1.1.1",
+    "postcss-html": "^1.2.0",
     "postcss-loader": "~6.2.0",
     "sass": "~1.43.4",
     "sass-loader": "~12.3.0",
@@ -46,7 +46,7 @@
     "stylelint-no-unsupported-browser-features": "~5.0.2",
     "vue-loader": "~15",
     "vue-template-compiler": "~2.6.14",
-    "webpack": "~5.60.0",
+    "webpack": "~5.61.0",
     "webpack-cli": "~4.9.1",
     "webpack-dev-server": "~4.4.0",
     "webpack-merge": "^5.8.0",
