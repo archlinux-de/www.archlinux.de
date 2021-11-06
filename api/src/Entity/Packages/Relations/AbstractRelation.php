@@ -16,7 +16,7 @@ abstract class AbstractRelation
     protected Package $source;
 
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column]
     #[Assert\Regex('/^[a-zA-Z0-9@\+_][a-zA-Z0-9@\.\-\+_]{0,255}$/')]
@@ -66,5 +66,10 @@ abstract class AbstractRelation
     public function getTargetVersion(): ?string
     {
         return $this->targetVersion;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 }

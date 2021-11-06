@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Package
 {
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Repository::class, fetch: 'EAGER', inversedBy: 'packages')]
     #[Assert\Valid]
@@ -567,7 +567,7 @@ class Package
         return $this->name;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Files implements \IteratorAggregate
 {
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\Length(max: 4294967295)]
@@ -59,5 +59,10 @@ class Files implements \IteratorAggregate
         }
 
         return explode("\n", $this->files);
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 }

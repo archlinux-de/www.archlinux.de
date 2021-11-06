@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Repository
 {
     #[ORM\Id, ORM\Column, ORM\GeneratedValue]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column]
     #[Assert\Length(max: 255)]
@@ -53,7 +53,7 @@ class Repository
         return $this;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

@@ -18,6 +18,7 @@ class FilesTest extends TestCase
         $files = Files::createFromArray($this->files);
         $files->setPackage($packge);
         $this->assertSame($packge, $files->getPackage());
+        $this->assertNull($files->getId());
     }
 
     /**

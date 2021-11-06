@@ -12,5 +12,6 @@ class AbstractRelationTest extends TestCase
         $dependency = new Dependency('php', '>=7.2');
         $this->assertEquals('php', $dependency->getTargetName());
         $this->assertEquals('>=7.2', $dependency->getTargetVersion());
+        $this->assertNull($dependency->getId());
     }
 }
