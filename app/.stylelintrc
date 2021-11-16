@@ -12,6 +12,7 @@
       {
         "ignore": []
       }
-    ]
+    ],
+    "at-rule-no-unknown": null
   }
 }
