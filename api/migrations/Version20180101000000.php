@@ -14,11 +14,6 @@ final class Version20180101000000 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->abortIf(
-            $this->connection->getDatabasePlatform()->getName() !== 'mysql',
-            'Migration can only be executed safely on \'mysql\'.'
-        );
-
         $knownTables = $this->connection->createSchemaManager()->listTableNames();
 
         if ($knownTables == ['doctrine_migration_versions']) {
@@ -42,11 +37,6 @@ final class Version20180101000000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->abortIf(
-            $this->connection->getDatabasePlatform()->getName() !== 'mysql',
-            'Migration can only be executed safely on \'mysql\'.'
-        );
-
         $this->addSql('ALTER TABLE mirror DROP FOREIGN KEY FK_5BA71B4AF92F3E70');
         $this->addSql('ALTER TABLE package DROP FOREIGN KEY FK_DE68679550C9D4F7');
         $this->addSql('ALTER TABLE packages_relation DROP FOREIGN KEY FK_B3C62CBC158E0B66');

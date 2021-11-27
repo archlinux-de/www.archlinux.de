@@ -13,11 +13,6 @@ final class Version20181230070059 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->abortIf(
-            $this->connection->getDatabasePlatform()->getName() !== 'mysql',
-            'Migration can only be executed safely on \'mysql\'.'
-        );
-
         $this->addSql('ALTER TABLE news_item ADD slug VARCHAR(191) NOT NULL AFTER id');
     }
 
@@ -53,11 +48,6 @@ final class Version20181230070059 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->abortIf(
-            $this->connection->getDatabasePlatform()->getName() !== 'mysql',
-            'Migration can only be executed safely on \'mysql\'.'
-        );
-
         $this->addSql('ALTER TABLE news_item DROP slug');
     }
 
