@@ -1,3 +1,7 @@
 services:
     App\Debug\ApiProfilerSubscriber:
         tags: ['kernel.event_subscriber']
+
+    Elasticsearch\Client:
+        factory: [ '@Elasticsearch\ClientBuilder', build ]
+        public: true
