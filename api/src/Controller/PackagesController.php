@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Repository\PackageRepository;
+use App\Request\ArchitectureRequest;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
+use App\Request\RepositoryRequest;
+use App\Request\TermRequest;
 use App\SearchRepository\PackageSearchRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -48,13 +49,9 @@ class PackagesController extends AbstractController
 
     #[Route(path: '/packages/suggest', methods: ['GET'])]
     #[Cache(maxage: 300, smaxage: 600)]
-    public function suggestAction(Request $request): Response
+    public function suggestAction(TermRequest $termRequest): Response
     {
-        $term = $request->get('term');
-        if (strlen($term) < 1 || strlen($term) > 50) {
-            return $this->json([]);
-        }
-        $suggestions = $this->packageSearchRepository->findByTerm($term, 10);
+        $suggestions = $this->packageSearchRepository->findByTerm($termRequest->getTerm(), 10);
 
         return $this->json(array_map(fn(Package $package): string => $package->getName(), $suggestions));
     }
@@ -64,16 +61,16 @@ class PackagesController extends AbstractController
     public function packagesAction(
         QueryRequest $queryRequest,
         PaginationRequest $paginationRequest,
-        Request $request
+        ArchitectureRequest $architectureRequest,
+        RepositoryRequest $repositoryRequest
     ): Response {
         return $this->json(
             $this->packageSearchRepository->findLatestByQueryAndArchitecture(
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery(),
-                // @TODO: Add Parameter Validation
-                $request->get('architecture', Architecture::X86_64),
-                $request->get('repository')
+                $architectureRequest->getArchitecture(),
+                $repositoryRequest->getRepository()
             )
         );
     }

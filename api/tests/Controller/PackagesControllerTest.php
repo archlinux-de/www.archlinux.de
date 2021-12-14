@@ -65,16 +65,24 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         );
     }
 
-    public function testEmptySuggest(): void
+    /**
+     * @dataProvider provideInvalideSuggestTerms
+     */
+    public function testSuggestRejectsInvalidTerms(string $term): void
     {
         $client = $this->getClient();
 
-        $client->request('GET', '/packages/suggest', ['term' => '']);
+        $client->request('GET', '/packages/suggest', ['term' => $term]);
 
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertIsString($client->getResponse()->getContent());
-        $responseData = json_decode($client->getResponse()->getContent(), true);
-        $this->assertCount(0, $responseData);
+        $this->assertTrue($client->getResponse()->isClientError());
+    }
+
+    public function provideInvalideSuggestTerms(): array
+    {
+        return [
+            [''],
+            ['${...}'],
+        ];
     }
 
     public function testSuggest(): void

@@ -6,13 +6,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class QueryRequest
 {
-    /**
-     * @Assert\Length(max=191)
-     * @Assert\Regex(
-     *     pattern="/^[\w@:\.+\- ]+$/u",
-     *     normalizer="trim"
-     * )
-     */
+    #[Assert\Length(max: 191)]
+    #[Assert\Regex(
+        pattern: '/^[\w@:\.+\- ]+$/u',
+        normalizer: 'trim'
+    )]
     private string $query;
 
     public function __construct(string $query)
