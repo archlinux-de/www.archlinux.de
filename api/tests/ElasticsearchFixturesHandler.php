@@ -53,7 +53,7 @@ class ElasticsearchFixturesHandler
             throw new \RuntimeException(sprintf('Unsupported mode %s', $this->mode));
         }
 
-        $result['body'] = fopen('data:text/plain;base64,' . base64_encode($result['body']), 'rb');
+        $result['body'] = fopen('data:text/plain;base64,' . base64_encode($result['body'] ?? ''), 'rb');
 
         return new CompletedFutureArray($result);
     }
