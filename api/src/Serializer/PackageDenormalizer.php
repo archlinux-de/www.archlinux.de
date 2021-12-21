@@ -77,7 +77,9 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             // @FIXME https://bugs.archlinux.org/task/69483
             ->trim("\u{200e}")
             // @FIXME https://bugs.archlinux.org/task/71957
-            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1');
+            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1')
+            // @FIXME https://bugs.archlinux.org/task/73105
+            ->replaceMatches('#^https:/[^/]#', 'https://');
 
         return $urlString->toString();
     }
