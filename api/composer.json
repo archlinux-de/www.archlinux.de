@@ -21,7 +21,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2.1",
         "doctrine/orm": "^2.10.4",
         "elasticsearch/elasticsearch": "^7.16.0",
-        "exercise/htmlpurifier-bundle": "^3.1.0",
+        "ezyang/htmlpurifier": "^4.14.0",
         "league/iso3166": "^4.0.0",
         "maxmind-db/reader": "^1.11.0",
         "sensio/framework-extra-bundle": "^6.2.4",

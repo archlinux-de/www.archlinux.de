@@ -40,6 +40,14 @@ services:
     Elasticsearch\Client:
         factory: [ '@Elasticsearch\ClientBuilder', build ]
 
+    HTMLPurifier:
+        class: HTMLPurifier
+        bind:
+            $config:
+                HTML.Allowed: 'a[href],p,code,pre,ul,ol,li,br,strong,em,del,ins,blockquote,h3,h4,h5,h6'
+                HTML.Nofollow: true
+                HTML.TargetNoopener: true
+
     App\Service\PackageDatabaseMirror:
         $mirrorUrl: '%app.packages.mirror%'
 

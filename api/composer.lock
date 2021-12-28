@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f507a5a3d7d5cee7ab80e477ad51c1d9",
+    "content-hash": "e560f6e3a6f9c882cd3ae4b0e85239a3",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1505,68 +1505,6 @@
                 "source": "https://github.com/elastic/elasticsearch-php/tree/v7.16.0"
             },
             "time": "2021-12-09T20:04:01+00:00"
-        },
-        {
-            "name": "exercise/htmlpurifier-bundle",
-            "version": "v3.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Exercise/HTMLPurifierBundle.git",
-                "reference": "32f4709006e810efd8a72466a8e9d0672df4bc24"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Exercise/HTMLPurifierBundle/zipball/32f4709006e810efd8a72466a8e9d0672df4bc24",
-                "reference": "32f4709006e810efd8a72466a8e9d0672df4bc24",
-                "shasum": ""
-            },
-            "require": {
-                "ezyang/htmlpurifier": "~4.0",
-                "php": "^7.1.3 || ^8.0.0",
-                "symfony/config": "~3.4 || ~4.0 || ^5.0",
-                "symfony/dependency-injection": "~3.4.1 || ^4.0.1 || ^5.0",
-                "symfony/http-kernel": "~3.4.1 || ^4.0.1 || ^5.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.0",
-                "symfony/form": "~3.4.1 || ^4.0.1 || ^5.0",
-                "symfony/phpunit-bridge": "4.4.*",
-                "twig/twig": "^1.35.0 || ^2.4.4 || ^3.0"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Exercise\\HTMLPurifierBundle\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "contributors",
-                    "homepage": "https://github.com/Exercise/HTMLPurifierBundle/contributors"
-                }
-            ],
-            "description": "HTMLPurifier integration for your Symfony project",
-            "homepage": "https://github.com/Exercise/HTMLPurifierBundle",
-            "keywords": [
-                "Purifier",
-                "html",
-                "htmlpurifier",
-                "symfony"
-            ],
-            "support": {
-                "issues": "https://github.com/Exercise/HTMLPurifierBundle/issues",
-                "source": "https://github.com/Exercise/HTMLPurifierBundle/tree/v3.1.0"
-            },
-            "time": "2020-12-28T19:57:39+00:00"
         },
         {
             "name": "ezimuel/guzzlestreams",
