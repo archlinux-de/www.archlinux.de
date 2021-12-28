@@ -35,7 +35,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "master",
             "version": "2.4",
-            "ref": "032f52ed50a27762b78ca6a2aaf432958c473553"
+            "ref": "f98f1affe028f8153a459d15f220ada3826b5aa2"
         },
         "files": [
             "config/packages/doctrine.yaml",
@@ -461,12 +461,12 @@
         "version": "v5.0.2"
     },
     "symfony/routing": {
-        "version": "5.3",
+        "version": "6.0",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "5.3",
-            "ref": "44633353926a0382d7dfb0530922c5c0b30fae11"
+            "version": "6.0",
+            "ref": "ab9ad892b7bba7ac584f6dc2ccdb659d358c63c5"
         },
         "files": [
             "config/packages/routing.yaml",
