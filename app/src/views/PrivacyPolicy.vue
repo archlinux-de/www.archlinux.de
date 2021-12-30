@@ -1,8 +1,8 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
     <h1 class="mb-4">Datenschutz</h1>
-    <b-row>
-      <b-col lg="6">
+    <div class="row">
+      <div class="col-12 col-lg-6">
         <p>Diese Datenschutzerklärung gilt für den deutschsprachigen Auftritt von Arch Linux unter
         <router-link :to="{name: 'start'}">archlinux.de</router-link>. Hier erfährst Du welche personenbezogenen
         Daten bei der Interaktion mit <router-link :to="{name: 'start'}">archlinux.de</router-link> anfallen und
@@ -32,8 +32,8 @@
           Besuchen
           automatisch angemeldet zu werden. Auch dieses Cookie lässt sich expliziet durch einen Logout
           entfernen.</p>
-      </b-col>
-      <b-col class="pl-lg-5" lg="6">
+      </div>
+      <div class="col-12 col-lg-6 ps-lg-5">
         <h2>Benutzerkonten</h2>
         <p>Bei der Registrierung im <a href="https://forum.archlinux.de/">Forum</a> wird neben einem
           Benutzernamen
@@ -62,14 +62,13 @@
         <h2>Kontakt</h2>
         <p>Weitere Kontakt-Möglichkeiten findest Du im <router-link :to="{name: 'impressum'}">Impressum</router-link>.
         </p>
-      </b-col>
-    </b-row>
-  </b-container>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'PrivacyPolicy',
   metaInfo: {
     title: 'Datenschutz',
     meta: [{ vmid: 'robots', name: 'robots', content: 'noindex' }]

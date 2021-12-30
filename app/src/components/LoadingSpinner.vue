@@ -1,6 +1,8 @@
 <template>
   <div :class="{ 'loading-spinner--absolute': absolute }" class="loading-spinner">
-    <b-spinner variant="primary" label="Lade..."></b-spinner>
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 </template>
 
@@ -27,7 +29,6 @@
 
 <script>
 export default {
-  name: 'LoadingSpinner',
   props: {
     absolute: {
       type: Boolean,

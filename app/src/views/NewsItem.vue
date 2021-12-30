@@ -1,7 +1,7 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
 
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
+    <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
 
     <template v-if="news.id">
       <h1 class="mb-4">{{ news.title }}</h1>
@@ -12,8 +12,8 @@
         <span v-else>{{ news.author.name }}</span>
       </div>
       <div class="text-break mb-4" v-html="news.description"></div>
-      <router-link :to="{name: 'news'}" class="btn btn-outline-secondary btn-sm" role="button">zum Archiv</router-link>
-      <a class="btn btn-primary btn-sm" role="button" :href="news.link">Kommentare</a>
+      <router-link :to="{name: 'news'}" class="btn btn-outline-secondary btn-sm">zum Archiv</router-link>
+      <a class="btn btn-primary btn-sm" :href="news.link">Kommentare</a>
 
       <script type="application/ld+json">
         {
@@ -32,12 +32,11 @@
         }
       </script>
     </template>
-  </b-container>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'NewsItem',
   metaInfo () {
     if (this.news.id) {
       return {

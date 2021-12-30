@@ -1,22 +1,29 @@
 <template>
-  <span :title="popularityLabel">
-      <b-icon-star-fill :key="'fill' + id" variant="primary" v-for="id in fullStars"></b-icon-star-fill><!--
-    --><b-icon-star-half :key="'half' + id" variant="primary" v-for="id in halfStars"></b-icon-star-half><!--
-    --><b-icon-star :key="'empty' + id" variant="primary" v-for="id in emptyStars">></b-icon-star>
+  <span :title="popularityLabel" class="package-popularity">
+      <span v-html="starFill" :key="'fill' + id" class="text-primary" v-for="id in fullStars"></span><!--
+    --><span v-html="starHalf" :key="'half' + id" class="text-primary" v-for="id in halfStars"></span><!--
+    --><span v-html="star" :key="'empty' + id" class="text-primary" v-for="id in emptyStars"></span>
   </span>
 </template>
 
+<style lang="scss">
+.package-popularity {
+  .bi {
+    vertical-align: unset;
+    margin-top: 0.25em;
+  }
+}
+</style>
+
 <script>
-import { BIconStar, BIconStarFill, BIconStarHalf } from 'bootstrap-vue'
+/* eslint-disable import/no-webpack-loader-syntax */
+import starFill from '!!svg-inline-loader!bootstrap-icons/icons/star-fill.svg'
+import starHalf from '!!svg-inline-loader!bootstrap-icons/icons/star-half.svg'
+import star from '!!svg-inline-loader!bootstrap-icons/icons/star.svg'
+/* eslint-enable */
 
 export default {
-  name: 'PackagePopularity',
   inject: ['apiService'],
-  components: {
-    BIconStar,
-    BIconStarFill,
-    BIconStarHalf
-  },
   props: {
     popularity: {
       type: Object,
@@ -29,6 +36,13 @@ export default {
       required: false,
       default: 5,
       validator: value => value > 0
+    }
+  },
+  data () {
+    return {
+      starFill,
+      starHalf,
+      star
     }
   },
   computed: {

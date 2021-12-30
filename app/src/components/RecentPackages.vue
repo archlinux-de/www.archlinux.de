@@ -3,9 +3,9 @@
     <h3 class="card-title card-header">Aktuelle Pakete</h3>
 
     <div class="card-body p-1 p-lg-3">
-      <b-table-simple small fixed>
-        <b-tr :key="key" v-for="(pkg, key) in packages" data-test="recent-package">
-          <b-td class="pkgname w-75" data-test="recent-package-name">
+      <table class="table table-sm table-borderless">
+        <tr :key="key" v-for="(pkg, key) in packages" data-test="recent-package">
+          <td class="w-75" data-test="recent-package-name">
             <router-link :to="{
               name: 'package',
                params:{
@@ -16,10 +16,10 @@
             }">
               {{ pkg.name }}
             </router-link>
-          </b-td>
-          <b-td :title="pkg.version" class="text-right text-truncate" data-test="recent-package-version">{{ pkg.version }}</b-td>
-        </b-tr>
-      </b-table-simple>
+          </td>
+          <td :title="pkg.version" class="text-end text-truncate" data-test="recent-package-version">{{ pkg.version }}</td>
+        </tr>
+      </table>
     </div>
 
     <div class="card-footer text-muted d-inline-flex justify-content-between">
@@ -31,7 +31,6 @@
 
 <script>
 export default {
-  name: 'RecentPackages',
   inject: ['apiService'],
   props: {
     limit: {

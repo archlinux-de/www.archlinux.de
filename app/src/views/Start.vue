@@ -1,8 +1,8 @@
 <template>
-  <b-container role="main" tag="main">
-    <b-row>
-      <b-col cols="12" xl="8">
-        <b-jumbotron class="p-2 p-xl-3">
+  <main class="container">
+    <div class="row">
+      <div class="col-12 col-xl-8">
+        <div class="mb-4">
           <h1>Willkommen bei Arch Linux</h1>
           <p>
             <strong>Arch Linux</strong> ist eine <em>flexible</em> und <em>leichtgewichtige</em>
@@ -23,16 +23,16 @@
             es
             werden wollen...
           </p>
-          <div class="text-right">
-            <b-button href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux" size="sm" variant="outline-primary">
+          <div class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">
               mehr über Arch Linux
-            </b-button>
+            </a>
           </div>
-        </b-jumbotron>
+        </div>
         <news-item-list :limit="6"></news-item-list>
-      </b-col>
+      </div>
 
-      <b-col cols="12" xl="4">
+      <div class="col-12 col-xl-4">
 
         <div class="card mb-4">
           <div class="card-body">
@@ -43,7 +43,7 @@
         <recent-packages :limit="20"></recent-packages>
 
         <h4 class="mt-5">Dokumentation</h4>
-        <ul class="list-unstyled pl-4 link-list">
+        <ul class="list-unstyled ps-4 link-list">
           <li><a href="https://wiki.archlinux.de/">Wiki</a></li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Arch Install Scripts</a></li>
           <li><a href="https://wiki.archlinux.de/title/Anleitung_f%C3%BCr_Einsteiger">
@@ -51,7 +51,7 @@
           </a></li>
         </ul>
         <h4 class="mt-4">Gemeinschaft</h4>
-        <ul class="list-unstyled pl-4 link-list">
+        <ul class="list-unstyled ps-4 link-list">
           <li><a href="https://planet.archlinux.de/">Planet archlinux.de</a></li>
           <li><a href="https://www.archlinux.org/" rel="noopener">Archlinux.org</a></li>
           <li><a href="https://wiki.archlinux.org/index.php/International_Communities" rel="noopener">
@@ -59,11 +59,11 @@
           </a></li>
         </ul>
         <h4 class="mt-4">Unterstützung</h4>
-        <ul class="list-unstyled pl-4 link-list">
+        <ul class="list-unstyled ps-4 link-list">
           <li><a href="https://www.archlinux.org/donate/" rel="noopener">Spenden (international)</a></li>
         </ul>
         <h4 class="mt-4">Entwicklung</h4>
-        <ul class="list-unstyled pl-4 link-list">
+        <ul class="list-unstyled ps-4 link-list">
           <li>
             <router-link to="packages">Pakete</router-link>
           </li>
@@ -76,7 +76,7 @@
           <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki" rel="noopener">Entwickler-Wiki</a></li>
         </ul>
         <h4 class="mt-4">Informationen</h4>
-        <ul class="list-unstyled pl-4 link-list">
+        <ul class="list-unstyled ps-4 link-list">
           <li><a href="https://wiki.archlinux.de/title/%C3%9Cber_Arch_Linux">über Arch Linux</a></li>
           <li>
             <router-link to="download">Arch herunterladen</router-link>
@@ -96,8 +96,8 @@
             <router-link to="mirrors">Mirror-Status</router-link>
           </li>
         </ul>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
 
     <script type="application/ld+json">
       {
@@ -116,7 +116,7 @@
         }
       }
     </script>
-  </b-container>
+  </main>
 </template>
 
 <script>
@@ -125,7 +125,6 @@ import NewsItemList from '../components/NewsItemList'
 import RecentPackages from '../components/RecentPackages'
 
 export default {
-  name: 'Start',
   components: {
     PackageSearch,
     NewsItemList,

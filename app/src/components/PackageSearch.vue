@@ -1,22 +1,24 @@
 <template>
   <form :action="this.$router.resolve({name: 'packages'}).href" method="get">
     <div class="input-group">
-      <b-form-input
+      <input
+        class="form-control"
+        type="text"
         name="search"
-        debounce="250"
         id="searchfield"
         list="searchfield-list"
         v-model="term"
-        autocomplete="off"></b-form-input>
-      <b-form-datalist :options="options" id="searchfield-list"></b-form-datalist>
-      <span class="input-group-btn"><b-button type="submit" variant="primary">Suchen</b-button></span>
+        autocomplete="off">
+      <datalist id="searchfield-list">
+        <option :key="key" :value="option" v-for="(option, key) in options"></option>
+      </datalist>
+      <span class="input-group-btn"><button class="btn btn-primary" type="submit">Suchen</button></span>
     </div>
   </form>
 </template>
 
 <script>
 export default {
-  name: 'PackageSearch',
   inject: ['apiService'],
   data () {
     return {

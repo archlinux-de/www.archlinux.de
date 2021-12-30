@@ -1,49 +1,62 @@
 <template>
   <div id="page">
-    <b-navbar class="navbar-border-brand nav-no-outline mb-4" toggleable="sm" type="dark" variant="dark">
-      <b-navbar-brand :to="{name: 'start'}">
-        <img alt="Arch Linux" height="40" width="190" :src="logo"/>
-      </b-navbar-brand>
+    <nav class="navbar navbar-expand-md navbar-dark navbar-border-brand bg-dark nav-no-outline mb-4">
+      <div class="container-fluid">
+        <router-link :to="{name: 'start'}" class="navbar-brand">
+          <img alt="Arch Linux" height="40" width="190" :src="logo" class="d-inline-block align-text-top"/>
+        </router-link>
 
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#archlinux-navbar"
+                aria-controls="archlinux-navbar" aria-expanded="false" aria-label="Navigation umschalten">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav class="ml-auto mr-4">
-          <b-nav-item :to="{name: 'start'}" class="d-none d-md-block ml-3 font-weight-bold" exact>Start</b-nav-item>
-          <b-nav-item :to="{name: 'packages'}" class="ml-3 font-weight-bold">Pakete</b-nav-item>
-          <b-nav-item href="https://forum.archlinux.de/" class="ml-3 font-weight-bold">Forum</b-nav-item>
-          <b-nav-item href="https://wiki.archlinux.de/" class="ml-3 font-weight-bold">Wiki</b-nav-item>
-          <b-nav-item href="https://aur.archlinux.org/" class="d-none d-md-block ml-3 font-weight-bold" rel="noopener">AUR</b-nav-item>
-          <b-nav-item :to="{name: 'download'}" class="ml-3 font-weight-bold">Download</b-nav-item>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
+        <div class="collapse navbar-collapse" id="archlinux-navbar">
+          <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item">
+              <router-link :to="{name: 'start'}" exact class="nav-link ms-3 fw-bold">Start</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :to="{name: 'packages'}" class="nav-link ms-3 fw-bold">Pakete</router-link>
+            </li>
+            <li class="nav-item">
+              <a href="https://forum.archlinux.de/" class="nav-link ms-3 fw-bold">Forum</a>
+            </li>
+            <li class="nav-item">
+              <a href="https://wiki.archlinux.de/" class="nav-link ms-3 fw-bold">Wiki</a>
+            </li>
+            <li class="nav-item">
+              <a href="https://aur.archlinux.org/" class="nav-link ms-3 fw-bold" rel="noopener">AUR</a>
+            </li>
+            <li class="nav-item">
+              <router-link :to="{name: 'download'}" class="nav-link ms-3 fw-bold">Download</router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
     <router-view id="content"/>
 
     <footer id="footer">
-      <b-nav align="right" class="nav-no-outline">
-        <b-nav-item :to="{name: 'privacy-policy'}">Datenschutz</b-nav-item>
-        <b-nav-item :to="{name: 'impressum'}">Impressum</b-nav-item>
-      </b-nav>
+      <nav class="nav nav-no-outline justify-content-end mt-4">
+        <router-link class="nav-link" :to="{name: 'privacy-policy'}">Datenschutz</router-link>
+        <router-link class="nav-link" :to="{name: 'impressum'}">Impressum</router-link>
+      </nav>
     </footer>
   </div>
 </template>
 
 <style lang="scss">
   @import "./assets/css/archlinux-bootstrap";
-  @import "~bootstrap/scss/bootstrap";
-  @import "~bootstrap-vue/src/index";
+  @import "./assets/css/import-bootstrap";
 
   .navbar-border-brand {
     border-bottom: 0.313rem solid $primary;
   }
 
-  .nav-no-outline {
-    a:focus,
-    button:focus {
-      outline: 0;
-    }
+  .nav-no-outline a:focus {
+    outline: 0;
   }
 
   #page {
@@ -67,29 +80,24 @@
     .link-list li {
       margin-bottom: $spacer;
     }
+  }
 
-    .pagination button.page-link {
-      padding: 0.5rem 0.9rem;
-    }
+  .table-fixed {
+    table-layout: fixed;
+  }
+
+  .bi {
+    width: 1em;
+    height: 1em;
   }
 </style>
 
 <script>
-import { BCollapse, BNav, BNavbar, BNavbarBrand, BNavbarNav, BNavbarToggle, BNavItem } from 'bootstrap-vue'
+import 'bootstrap/js/src/collapse'
 import LogoImage from './assets/images/archlogo.svg'
 import IconImage from './assets/images/archicon.svg'
 
 export default {
-  name: 'App',
-  components: {
-    BNavbar,
-    BNavbarBrand,
-    BNavbarToggle,
-    BCollapse,
-    BNavbarNav,
-    BNavItem,
-    BNav
-  },
   metaInfo () {
     return {
       title: 'archlinux.de',

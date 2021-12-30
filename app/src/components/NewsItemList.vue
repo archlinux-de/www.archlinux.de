@@ -3,7 +3,7 @@
     <loading-spinner absolute v-if="newsItems.length === 0"></loading-spinner>
     <div :key="newsItem.id" class="mb-5" v-for="newsItem in newsItems" data-test="news-item">
       <div
-        class="d-lg-flex justify-content-between align-items-baseline border border-top-0 border-left-0 border-right-0 mb-2">
+        class="d-lg-flex justify-content-between align-items-baseline border border-top-0 border-start-0 border-end-0 mb-2">
         <h2 class="text-break">
           <router-link :to="{name: 'news-item', params: {id: newsItem.id, slug: newsItem.slug}}">
             {{ newsItem.title }}
@@ -31,7 +31,6 @@
 import LoadingSpinner from './LoadingSpinner'
 
 export default {
-  name: 'NewsItemList',
   inject: ['apiService'],
   components: {
     LoadingSpinner

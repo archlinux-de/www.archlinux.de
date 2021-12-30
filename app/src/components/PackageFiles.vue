@@ -1,10 +1,10 @@
 <template>
   <div>
-    <b-button variant="outline-secondary" size="sm" class="ml-4"
+    <button class="btn btn-outline-primary btn-sm ms-4"
               v-if="files.length === 0" v-on:click.once="fetchFiles">
       Dateien anzeigen
-    </b-button>
-    <ul class="list-unstyled ml-4 overflow-auto">
+    </button>
+    <ul class="list-unstyled ms-4 overflow-auto">
       <li :key="key" v-for="(file, key) in files" :class="file.match(/\/$/) ? 'text-muted' : ''">{{ file }}</li>
     </ul>
   </div>
@@ -12,7 +12,6 @@
 
 <script>
 export default {
-  name: 'PackageFiles',
   inject: ['apiService'],
   props: {
     repository: {

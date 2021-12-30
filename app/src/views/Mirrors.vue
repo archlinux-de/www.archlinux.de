@@ -1,77 +1,66 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
     <h1 class="mb-4">Mirror-Status</h1>
 
-    <b-form-group>
-      <b-form-input
-        debounce="250"
+    <div class="input-group mb-3">
+      <input
+        class="form-control"
         placeholder="Mirror suchen"
         type="search"
         autocomplete="off"
-        v-model="query"></b-form-input>
-    </b-form-group>
+        v-model="query">
+    </div>
 
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <b-table striped responsive bordered small
-             v-show="total > 0"
-             :items="fetchMirrors"
-             :fields="fields"
-             :filter="query"
-             :per-page="perPage"
-             :current-page="currentPage">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="total > 0">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th class="d-none d-md-table-cell">Land</th>
+          <th class="d-none d-lg-table-cell text-nowrap">∅ Antwortzeit</th>
+          <th class="d-none d-lg-table-cell text-nowrap">∅ Verzögerung</th>
+          <th class="d-none d-sm-table-cell">Datum</th>
+          <th class="d-none d-xl-table-cell text-center">IPv4</th>
+          <th class="d-none d-md-table-cell text-center">IPv6</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr :key="key" v-for="(item, key) in items">
+          <td><a :href="item.url" rel="nofollow noopener" target="_blank">{{ item.host }}</a></td>
+          <td class="d-none d-md-table-cell">{{ item.country ? item.country.name : '' }}</td>
+          <td class="d-none d-lg-table-cell">{{ renderDuration(item.durationAvg) }}</td>
+          <td class="d-none d-lg-table-cell">{{ renderDuration(item.delay) }}</td>
+          <td class="d-none d-sm-table-cell">{{ (new Date(item.lastSync)).toLocaleDateString('de-DE') }}</td>
+          <td class="d-none d-xl-table-cell text-center">
+            <span v-if="item.ipv4" class="text-success">✓</span>
+            <span v-else class="text-danger">×</span>
+          </td>
+          <td class="d-none d-md-table-cell text-center">
+            <span v-if="item.ipv6" class="text-success">✓</span>
+            <span v-else class="text-danger">×</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-      <template v-slot:cell(url)="data">
-        <a :href="data.value" rel="nofollow noopener" target="_blank">{{ data.item.host }}</a>
-      </template>
+    <div class="alert alert-warning" v-if="total === 0">Keine Mirrors gefunden</div>
 
-      <template v-slot:cell(durationAvg)="data">
-        {{ renderDuration(data.value) }}
-      </template>
+    <div class="row" v-show="total > limit">
+      <div class="col-12 col-sm-6 mb-3 text-end text-sm-start">
+        {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Mirrors
+      </div>
+      <div class="col-12 col-sm-6 text-end">
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+      </div>
+    </div>
 
-      <template v-slot:cell(delay)="data">
-        {{ renderDuration(data.value) }}
-      </template>
-
-      <template v-slot:cell(lastSync)="data">
-        {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
-      </template>
-
-      <template v-slot:cell(ipv4)="data">
-        <span v-if="data.value" class="text-success">✓</span>
-        <span v-else class="text-danger">×</span>
-      </template>
-
-      <template v-slot:cell(ipv6)="data">
-        <span v-if="data.value" class="text-success">✓</span>
-        <span v-else class="text-danger">×</span>
-      </template>
-    </b-table>
-
-    <b-alert :show="total === 0" variant="warning">Keine Mirror gefunden</b-alert>
-
-    <b-row v-show="total > perPage">
-      <b-col cols="12" sm="6" class="mb-3 text-right text-sm-left">
-        {{ offset + 1 }} bis {{ offset + count }} von {{ total }}
-      </b-col>
-      <b-col cols="12" sm="6">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="total"
-          :per-page="perPage"
-          :first-number="true"
-          :last-number="true"
-          align="right"
-        ></b-pagination>
-      </b-col>
-    </b-row>
-
-  </b-container>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'Mirrors',
   metaInfo () {
     return {
       title: 'Mirror-Status',
@@ -91,70 +80,52 @@ export default {
   inject: ['apiService'],
   data () {
     return {
-      fields: [{
-        key: 'url',
-        label: 'URL'
-      }, {
-        key: 'country.name',
-        label: 'Land',
-        class: 'd-none d-md-table-cell'
-      }, {
-        key: 'durationAvg',
-        label: '∅ Antwortzeit',
-        class: 'd-none d-lg-table-cell',
-        thClass: 'text-nowrap'
-      }, {
-        key: 'delay',
-        label: '∅ Verzögerung',
-        class: 'd-none d-lg-table-cell',
-        thClass: 'text-nowrap'
-      }, {
-        key: 'lastSync',
-        label: 'Datum',
-        class: 'd-none d-sm-table-cell'
-      }, {
-        key: 'ipv4',
-        label: 'IPv4',
-        class: 'd-none d-xl-table-cell text-center'
-      }, {
-        key: 'ipv6',
-        label: 'IPv6',
-        class: 'd-none d-md-table-cell text-center'
-      }],
       query: this.$route.query.search ?? '',
-      perPage: 25,
-      currentPage: 1,
+      items: [],
       total: null,
       count: null,
-      offset: null,
-      error: ''
+      offset: 0,
+      error: null,
+      limit: 25
     }
   },
   watch: {
     query () {
       this.$router.replace({ query: this.getQuery() })
+      this.fetchMirrors()
+    },
+    offset () {
+      this.fetchMirrors()
+    }
+  },
+  computed: {
+    hasNext: function () {
+      return this.total && this.total <= this.offset + this.limit
+    },
+    hasPrevious: function () {
+      return this.offset <= 0
     }
   },
   methods: {
-    fetchMirrors (context) {
+    fetchMirrors () {
       return this.apiService.fetchMirrors({
-        query: context.filter,
-        limit: context.perPage,
-        offset: (context.currentPage - 1) * context.perPage
+        query: this.query,
+        limit: this.limit,
+        offset: this.offset
       })
         .then(data => {
+          this.items = data.items
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
-          this.error = ''
-          return data.items
+          this.error = null
         })
         .catch(error => {
-          this.total = 0
-          this.count = 0
+          this.items = []
+          this.total = null
+          this.count = null
           this.offset = 0
           this.error = error
-          return []
         })
     },
     renderDuration (data) {
@@ -188,7 +159,22 @@ export default {
         query.search = this.$data.query
       }
       return query
+    },
+    next () {
+      if (this.hasNext) {
+        return
+      }
+      this.offset += this.limit
+    },
+    previous () {
+      if (this.hasPrevious) {
+        return
+      }
+      this.offset -= this.limit
     }
+  },
+  mounted () {
+    this.fetchMirrors()
   }
 }
 </script>

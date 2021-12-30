@@ -1,7 +1,7 @@
 <template>
-  <b-col cols="12" md="6" lg="4" v-if="relations.length > 0">
+  <div class="col-12 col-md-6 col-lg-4" v-if="relations.length > 0">
     <h3>{{ title }}</h3>
-    <ul class="list-unstyled pl-4 link-list">
+    <ul class="list-unstyled ps-4 link-list">
       <li :key="key" v-for="(relation, key) in relations">
         <router-link
           :to="{name: 'package', params: {
@@ -12,12 +12,11 @@
         </router-link>
       </li>
     </ul>
-  </b-col>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'InversePackageRelations',
   inject: ['apiService'],
   props: {
     repository: {

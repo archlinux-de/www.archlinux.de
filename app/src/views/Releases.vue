@@ -1,69 +1,62 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
     <h1 class="mb-4">Arch Linux Releases</h1>
 
-    <b-form-group>
-      <b-form-input
-        debounce="250"
+    <div class="input-group mb-3">
+      <input
+        class="form-control"
         placeholder="Releases suchen"
         type="search"
         autocomplete="off"
-        v-model="query"></b-form-input>
-    </b-form-group>
+        v-model="query">
+    </div>
 
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <b-table striped responsive bordered small
-             v-show="total > 0"
-             :items="fetchReleases"
-             :fields="fields"
-             :filter="query"
-             :per-page="perPage"
-             :current-page="currentPage">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="total > 0">
+      <thead>
+      <tr>
+        <th>Version</th>
+        <th>Datum</th>
+        <th class="d-none d-xl-table-cell text-nowrap">Kernel-Version</th>
+        <th class="d-none d-md-table-cell">Größe</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr :key="key" v-for="(item, key) in items">
+        <td><router-link :to="{name: 'release', params: {version: item.version}}">{{ item.version }}</router-link></td>
+        <td>{{ (new Date(item.releaseDate)).toLocaleDateString('de-DE') }}</td>
+        <td>{{ item.kernelVersion }}</td>
+        <td>
+          <span v-if="item.fileSize">{{ item.fileSize | prettyBytes(0, true) }}</span>
+          <span v-else>-</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
-      <template v-slot:cell(version)="data">
-        <router-link :to="{name: 'release', params: {version: data.value}}">{{ data.value }}</router-link>
-      </template>
+    <div class="alert alert-warning" v-if="total === 0">Keine Releases gefunden</div>
 
-      <template v-slot:cell(releaseDate)="data">
-        {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
-      </template>
-
-      <template v-slot:cell(fileSize)="data">
-        <span v-if="data.value">{{ data.value | prettyBytes(0, true) }}</span>
-        <span v-else>-</span>
-      </template>
-    </b-table>
-
-    <b-alert :show="total === 0" variant="warning">Keine Releases gefunden</b-alert>
-
-    <b-row v-show="total > perPage">
-      <b-col cols="12" sm="6" class="mb-3 text-right text-sm-left">
-        {{ offset + 1 }} bis {{ offset + count }} von {{ total }}
-      </b-col>
-      <b-col cols="12" sm="6">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="total"
-          :per-page="perPage"
-          :first-number="true"
-          :last-number="true"
-          align="right"
-        ></b-pagination>
-      </b-col>
-    </b-row>
+    <div class="row" v-show="total > limit">
+      <div class="col-12 col-sm-6 mb-3 text-end text-sm-start">
+        {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Releases
+      </div>
+      <div class="col-12 col-sm-6 text-end">
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+      </div>
+    </div>
 
     <div class="mt-4">
       <a class="btn btn-outline-secondary btn-sm" href="/releases/feed">Feed</a>
-      <b-button type="secondary" size="sm" :to="{name: 'download'}">Aktueller Download</b-button>
+      <router-link class="btn btn-secondary btn-sm" :to="{name: 'download'}">Aktueller Download</router-link>
     </div>
 
-  </b-container>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'Releases',
   metaInfo () {
     return {
       title: 'Arch Linux Releases',
@@ -83,56 +76,52 @@ export default {
   inject: ['apiService'],
   data () {
     return {
-      fields: [{
-        key: 'version',
-        label: 'Version'
-      }, {
-        key: 'releaseDate',
-        label: 'Datum'
-      }, {
-        key: 'kernelVersion',
-        label: 'Kernel-Version',
-        class: 'd-none d-xl-table-cell',
-        thClass: 'text-nowrap'
-      }, {
-        key: 'fileSize',
-        label: 'Größe',
-        class: 'd-none d-md-table-cell'
-      }],
       query: this.$route.query.search ?? '',
-      perPage: 25,
-      currentPage: 1,
+      items: [],
       total: null,
       count: null,
-      offset: null,
-      error: ''
+      offset: 0,
+      error: null,
+      limit: 25
     }
   },
   watch: {
     query () {
       this.$router.replace({ query: this.getQuery() })
+      this.fetchReleases()
+    },
+    offset () {
+      this.fetchReleases()
+    }
+  },
+  computed: {
+    hasNext: function () {
+      return this.total && this.total <= this.offset + this.limit
+    },
+    hasPrevious: function () {
+      return this.offset <= 0
     }
   },
   methods: {
-    fetchReleases (context) {
+    fetchReleases () {
       return this.apiService.fetchReleases({
-        query: context.filter,
-        limit: context.perPage,
-        offset: (context.currentPage - 1) * context.perPage
+        query: this.query,
+        limit: this.limit,
+        offset: this.offset
       })
         .then(data => {
+          this.items = data.items
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
-          this.error = ''
-          return data.items
+          this.error = null
         })
         .catch(error => {
-          this.total = 0
-          this.count = 0
+          this.items = []
+          this.total = null
+          this.count = null
           this.offset = 0
           this.error = error
-          return []
         })
     },
     getQuery () {
@@ -141,7 +130,22 @@ export default {
         query.search = this.$data.query
       }
       return query
+    },
+    next () {
+      if (this.hasNext) {
+        return
+      }
+      this.offset += this.limit
+    },
+    previous () {
+      if (this.hasPrevious) {
+        return
+      }
+      this.offset -= this.limit
     }
+  },
+  mounted () {
+    this.fetchReleases()
   }
 }
 </script>

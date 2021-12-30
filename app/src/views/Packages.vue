@@ -1,77 +1,74 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
     <h1 class="mb-4">Paket-Suche</h1>
 
-    <b-input-group class="mb-2">
-      <b-form-input
-        debounce="250"
-        trim
+    <div class="input-group mb-3">
+      <input
+        class="form-control w-75"
         placeholder="Pakete suchen"
         type="search"
         autocomplete="off"
-        v-model="currentQuery"
-        data-test="packages-search"></b-form-input>
+        v-model="query"
+        data-test="packages-search">
 
-      <b-input-group-append>
-        <b-form-select v-model="currentRepository" :options="repositories"></b-form-select>
-        <b-form-select v-if="currentArchitecture" v-model="currentArchitecture" :options="architectures"
-                       class="d-none d-sm-block"></b-form-select>
-      </b-input-group-append>
-    </b-input-group>
+      <select class="form-select" v-model="repository">
+        <option :key="key" :value="item" :selected="repository === item" v-for="(item, key) in repositories">{{ item }}</option>
+      </select>
+      <select class="form-select d-none d-sm-block" v-if="architecture" v-model="architecture">
+        <option :key="key" :value="item" :selected="architecture === item" v-for="(item, key) in architectures">{{ item }}</option>
+      </select>
+    </div>
 
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <b-table ref="table" striped responsive bordered small fixed
-             v-show="total > 0"
-             :items="fetchPackages"
-             :fields="fields"
-             :filter="currentQuery"
-             :per-page="perPage"
-             :current-page="currentPage"
-             data-test="packages">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered table-fixed" v-show="total > 0" data-test="packages">
+      <thead>
+        <tr>
+          <th class="d-none d-lg-table-cell">Repositorium</th>
+          <th class="d-none d-xl-table-cell">Architektur</th>
+          <th>Name</th>
+          <th>Version</th>
+          <th class="d-none d-sm-table-cell w-50 w-lg-25">Beschreibung</th>
+          <th class="d-none d-lg-table-cell">Datum</th>
+          <th class="d-none d-xl-table-cell">Beliebtheit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr :key="key" v-for="(item, key) in items">
+          <td class="d-none d-lg-table-cell">
+            <router-link class="d-none d-lg-table-cell"
+                         :to="{name: 'packages', query: {repository: item.repository.name, architecture: item.repository.architecture}}">
+              {{ item.repository.name }}
+            </router-link>
+          </td>
+          <td class="d-none d-xl-table-cell">{{ item.architecture }}</td>
+          <td class="text-break">
+            <router-link
+              :to="{name: 'package', params: {repository: item.repository.name, architecture: item.repository.architecture, name: item.name}}">
+              {{ item.name }}
+            </router-link>
+          </td>
+          <td class="text-break">{{ item.version }}</td>
+          <td class="d-none d-sm-table-cell text-break">{{ item.description }}</td>
+          <td class="d-none d-lg-table-cell">{{ (new Date(item.buildDate)).toLocaleDateString('de-DE') }}</td>
+          <td class="d-none d-xl-table-cell"><package-popularity :popularity="item.popularity"></package-popularity></td>
+        </tr>
+      </tbody>
+    </table>
 
-      <template v-slot:cell(repository)="data">
-        <router-link class="d-none d-lg-table-cell"
-                     :to="{name: 'packages', query: {repository: data.value.name, architecture: data.value.architecture}}">
-          {{ data.value.name }}
-        </router-link>
-      </template>
+    <div class="alert alert-warning" v-if="total === 0">Keine Pakete gefunden</div>
 
-      <template v-slot:cell(name)="data">
-        <router-link
-          :to="{name: 'package', params: {repository: data.item.repository.name, architecture: data.item.repository.architecture, name: data.value}}">
-          {{ data.value }}
-        </router-link>
-      </template>
-
-      <template v-slot:cell(buildDate)="data">
-        {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
-      </template>
-
-      <template v-slot:cell(popularity)="data">
-        <package-popularity :popularity="data.value"></package-popularity>
-      </template>
-    </b-table>
-
-    <b-alert :show="total === 0" variant="warning">Keine Pakete gefunden</b-alert>
-
-    <b-row v-show="total > perPage">
-      <b-col cols="12" sm="6" class="mb-3 text-right text-sm-left">
+    <div class="row" v-show="total > limit">
+      <div class="col-12 col-sm-6 mb-3 text-end text-sm-start">
         {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Paketen
-      </b-col>
-      <b-col cols="12" sm="6">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="total"
-          :per-page="perPage"
-          :first-number="true"
-          :last-number="true"
-          align="right"
-        ></b-pagination>
-      </b-col>
-    </b-row>
+      </div>
+      <div class="col-12 col-sm-6 text-end">
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+      </div>
+    </div>
 
-  </b-container>
+  </main>
 </template>
 
 <style>
@@ -86,7 +83,6 @@
 import PackagePopularity from '../components/PackagePopularity'
 
 export default {
-  name: 'Packages',
   components: {
     PackagePopularity
   },
@@ -109,113 +105,96 @@ export default {
   inject: ['apiService'],
   data () {
     return {
-      fields: [{
-        key: 'repository',
-        label: 'Repositorium',
-        class: 'd-none d-lg-table-cell'
-      }, {
-        key: 'architecture',
-        label: 'Architektur',
-        class: 'd-none d-xl-table-cell'
-      }, {
-        key: 'name',
-        label: 'Name',
-        tdClass: 'text-break'
-      }, {
-        key: 'version',
-        label: 'Version',
-        tdClass: 'text-break'
-      }, {
-        key: 'description',
-        label: 'Beschreibung',
-        class: 'd-none d-sm-table-cell',
-        thClass: 'w-50 w-lg-25',
-        tdClass: 'text-break'
-      }, {
-        key: 'buildDate',
-        label: 'Datum',
-        class: 'd-none d-lg-table-cell'
-      }, {
-        key: 'popularity',
-        label: 'Beliebtheit',
-        class: 'd-none d-xl-table-cell'
-      }],
-      currentQuery: this.$route.query.search ?? '',
-      currentArchitecture: this.$route.query.architecture ?? '',
-      currentRepository: this.$route.query.repository ?? '',
-      perPage: 25,
-      currentPage: 1,
+      query: this.$route.query.search ?? '',
+      architecture: this.$route.query.architecture ?? '',
+      repository: this.$route.query.repository ?? '',
+      items: [],
       total: null,
       count: null,
-      offset: null,
+      offset: 0,
       architectures: [],
       repositories: [],
-      error: ''
+      error: null,
+      limit: 25
     }
   },
   watch: {
-    currentQuery () {
-      if (this.currentQuery.length > 255) {
-        this.currentQuery = this.currentQuery.substring(0, 255)
+    query () {
+      if (this.query.length > 255) {
+        this.query = this.query.substring(0, 255)
       }
 
-      this.currentQuery = this.currentQuery.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
+      this.query = this.query.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
 
       this.updateRoute()
+      this.fetchPackages()
     },
-    currentRepository () {
+    repository () {
       this.updateRoute()
+      this.fetchPackages()
     },
-    currentArchitecture () {
+    architecture () {
       this.updateRoute()
+      this.fetchPackages()
+    },
+    offset () {
+      this.fetchPackages()
     }
   },
   beforeRouteUpdate (to, from, next) {
     next()
     if (from.query.architecture !== to.query.architecture || from.query.repository !== to.query.repository) {
-      this.$data.currentArchitecture = to.query.architecture
-      this.$data.currentRepository = to.query.repository
-      this.$refs.table.refresh()
+      this.$data.architecture = to.query.architecture
+      this.$data.repository = to.query.repository
+      this.fetchPackages()
+    }
+  },
+  computed: {
+    hasNext: function () {
+      return this.total && this.total <= this.offset + this.limit
+    },
+    hasPrevious: function () {
+      return this.offset <= 0
     }
   },
   methods: {
-    fetchPackages (context) {
+    fetchPackages () {
       return this.apiService.fetchPackages({
-        query: context.filter,
-        limit: context.perPage,
-        offset: (context.currentPage - 1) * context.perPage,
-        architecture: this.currentArchitecture,
-        repository: this.currentRepository
+        query: this.query,
+        limit: this.limit,
+        offset: this.offset,
+        architecture: this.architecture,
+        repository: this.repository
       })
         .then(data => {
+          this.items = data.items
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
           this.repositories = ['', ...data.repositories]
           this.architectures = ['', ...data.architectures]
-          this.error = ''
-          return data.items
+          this.error = null
         })
         .catch(error => {
-          this.total = 0
-          this.count = 0
+          this.items = []
+          this.total = null
+          this.count = null
           this.offset = 0
           this.repositories = []
           this.architectures = []
           this.error = error
-          return []
         })
     },
     getQuery () {
       const query = {}
-      if (this.$data.currentArchitecture) {
-        query.architecture = this.$data.currentArchitecture
+      if (this.$data.architecture) {
+        query.architecture = this.$data.architecture
       }
-      if (this.$data.currentRepository) {
-        query.repository = this.$data.currentRepository
+      if (this.$data.repository) {
+        query.repository = this.$data.repository
       }
-      if (this.$data.currentQuery) {
-        query.search = this.$data.currentQuery
+      if (this.$data.query) {
+        query.search = this.$data.query
       }
       return query
     },
@@ -227,7 +206,22 @@ export default {
         fromQuery.search !== toQuery.search) {
         this.$router.replace({ query: toQuery })
       }
+    },
+    next () {
+      if (this.hasNext) {
+        return
+      }
+      this.offset += this.limit
+    },
+    previous () {
+      if (this.hasPrevious) {
+        return
+      }
+      this.offset -= this.limit
     }
+  },
+  mounted () {
+    this.fetchPackages()
   }
 }
 </script>

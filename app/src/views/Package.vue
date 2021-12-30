@@ -1,108 +1,108 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
     <h1 class="mb-4" v-if="pkg.name">{{ pkg.name }}</h1>
-    <b-row v-if="pkg.name">
-      <b-col cols="12" xl="6">
+    <div class="row" v-if="pkg.name">
+      <div class="col-12 col-xl-6">
         <h2 class="mb-3">Paket-Details</h2>
-        <b-table-simple small fixed>
-          <b-tr>
-            <b-th>Name</b-th>
-            <b-td>{{ pkg.name }}</b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Version</b-th>
-            <b-td>{{ pkg.version }}</b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Beschreibung</b-th>
-            <b-td class="text-break">{{ pkg.description }}</b-td>
-          </b-tr>
-          <b-tr v-if="pkg.url">
-            <b-th>URL</b-th>
-            <b-td class="text-break">
+        <table class="table table-sm table-borderless">
+          <tr>
+            <th>Name</th>
+            <td>{{ pkg.name }}</td>
+          </tr>
+          <tr>
+            <th>Version</th>
+            <td>{{ pkg.version }}</td>
+          </tr>
+          <tr>
+            <th>Beschreibung</th>
+            <td class="text-break">{{ pkg.description }}</td>
+          </tr>
+          <tr v-if="pkg.url">
+            <th>URL</th>
+            <td class="text-break">
               <a rel="nofollow noopener" :href="pkg.url">{{ pkg.url }}</a>
-            </b-td>
-          </b-tr>
-          <b-tr v-if="pkg.licenses && pkg.licenses.length > 0">
-            <b-th>Lizenzen</b-th>
-            <b-td>{{ pkg.licenses.join(', ') }}</b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Repositorium</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr v-if="pkg.licenses && pkg.licenses.length > 0">
+            <th>Lizenzen</th>
+            <td>{{ pkg.licenses.join(', ') }}</td>
+          </tr>
+          <tr>
+            <th>Repositorium</th>
+            <td>
               <router-link
                 :to="{name: 'packages', query: {architecture: pkg.repository.architecture, repository: pkg.repository.name}}">
                 {{ pkg.repository.name }}
               </router-link>
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Architektur</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr>
+            <th>Architektur</th>
+            <td>
               {{ pkg.architecture }}
-            </b-td>
-          </b-tr>
-          <b-tr v-if="pkg.groups && pkg.groups.length > 0">
-            <b-th>Gruppen</b-th>
-            <b-td>{{ pkg.groups.join(', ') }}</b-td>
-          </b-tr>
-          <b-tr v-if="pkg.packager">
-            <b-th>Packer</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr v-if="pkg.groups && pkg.groups.length > 0">
+            <th>Gruppen</th>
+            <td>{{ pkg.groups.join(', ') }}</td>
+          </tr>
+          <tr v-if="pkg.packager">
+            <th>Packer</th>
+            <td>
               <template v-if="pkg.packager.email">
                 <a rel="nofollow noopener" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
               </template>
               <template v-else>{{ pkg.packager.name }}</template>
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Erstellt am</b-th>
-            <b-td>{{ (new Date(pkg.buildDate)).toLocaleDateString('de-DE') }}</b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Quelltext</b-th>
-            <b-td><a :href="pkg.sourceUrl">Quelldateien</a>, <a :href="pkg.sourceChangelogUrl">Änderungshistorie</a>
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Bugs</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr>
+            <th>Erstellt am</th>
+            <td>{{ (new Date(pkg.buildDate)).toLocaleDateString('de-DE') }}</td>
+          </tr>
+          <tr>
+            <th>Quelltext</th>
+            <td><a :href="pkg.sourceUrl">Quelldateien</a>, <a :href="pkg.sourceChangelogUrl">Änderungshistorie</a>
+            </td>
+          </tr>
+          <tr>
+            <th>Bugs</th>
+            <td>
               <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'"
                  rel="noopener">Bug-Tracker</a>
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Paket</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr>
+            <th>Paket</th>
+            <td>
               <a :href="pkg.packageUrl" download rel="nofollow noopener">{{ pkg.fileName }}</a>
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>PGP-Signatur</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr>
+            <th>PGP-Signatur</th>
+            <td>
               <a :href="pkg.packageUrl+'.sig'" download rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
-            </b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Paket-Größe</b-th>
-            <b-td>{{ pkg.compressedSize | prettyBytes(2, true) }}</b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Installations-Größe</b-th>
-            <b-td>{{ pkg.installedSize | prettyBytes(2, true) }}</b-td>
-          </b-tr>
-          <b-tr>
-            <b-th>Beliebtheit</b-th>
-            <b-td>
+            </td>
+          </tr>
+          <tr>
+            <th>Paket-Größe</th>
+            <td>{{ pkg.compressedSize | prettyBytes(2, true) }}</td>
+          </tr>
+          <tr>
+            <th>Installations-Größe</th>
+            <td>{{ pkg.installedSize | prettyBytes(2, true) }}</td>
+          </tr>
+          <tr>
+            <th>Beliebtheit</th>
+            <td>
               <package-popularity :popularity="pkg.popularity"></package-popularity>
-            </b-td>
-          </b-tr>
-        </b-table-simple>
-      </b-col>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-      <b-col cols="12" xl="6">
+      <div class="col-12 col-xl-6">
         <h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
-        <b-row>
+        <div class="row">
           <package-relations
             v-for="relation in relations"
             :key="'package-relations-' + relation.type"
@@ -120,16 +120,16 @@
             :name="pkg.name"
             :type="inverseRelation.type"
             :title="inverseRelation.title"></inverse-package-relations>
-        </b-row>
-      </b-col>
+        </div>
+      </div>
 
-      <b-col cols="12">
+      <div class="col-12">
         <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
         <package-files
           :repository="pkg.repository.name"
           :architecture="pkg.repository.architecture"
           :name="pkg.name"></package-files>
-      </b-col>
+      </div>
 
       <script type="application/ld+json" v-if="!this.pkg.repository.testing && pkg.popularity.count > 0">
         {
@@ -158,34 +158,36 @@
           }
         }
       </script>
-    </b-row>
+    </div>
 
-    <b-row v-if="error">
-      <b-col>
-        <b-card border-variant="danger" header-bg-variant="danger" header-text-variant="white"
-                header="Fehler beim Laden des Paket">
-          <b-card-text>
-            Das Paket <strong>{{ $route.params.name }}</strong> aus <strong>[{{ $route.params.repository }}]</strong>
-            konnte leider nicht angezeigt werden.
-          </b-card-text>
+    <div class="row" v-if="error">
+      <div class="col">
+        <div class="card border-danger">
+          <div class="card-header bg-danger text-white">Fehler beim Laden des Paket</div>
+          <div class="card-body">
+            <div class="card-text">
+              Das Paket <strong>{{ $route.params.name }}</strong> aus <strong>[{{ $route.params.repository }}]</strong>
+              konnte leider nicht angezeigt werden.
+            </div>
 
-          <b-table-simple v-if="suggestions.length > 0" caption-top>
-            <caption>Gefundene Vorschläge zu <strong>{{ $route.params.name }}</strong>:</caption>
-            <b-tr :key="id" v-for="(suggestion, id) in suggestions">
-              <b-td>
-                <router-link
-                  :to="{name: 'package', params: {repository: suggestion.repository.name, architecture: suggestion.repository.architecture, name: suggestion.name}}">
-                  {{ suggestion.name }}
-                </router-link>
-              </b-td>
-              <b-td> {{ suggestion.description }}</b-td>
-              <b-td class="d-none d-lg-table-cell">
-                <package-popularity :popularity="suggestion.popularity"></package-popularity>
-              </b-td>
-            </b-tr>
-          </b-table-simple>
+            <table class="table table-borderless caption-top" v-if="suggestions.length > 0">
+              <caption>Gefundene Vorschläge zu <strong>{{ $route.params.name }}</strong>:</caption>
+              <tr :key="id" v-for="(suggestion, id) in suggestions">
+                <td>
+                  <router-link
+                    :to="{name: 'package', params: {repository: suggestion.repository.name, architecture: suggestion.repository.architecture, name: suggestion.name}}">
+                    {{ suggestion.name }}
+                  </router-link>
+                </td>
+                <td> {{ suggestion.description }}</td>
+                <td class="d-none d-lg-table-cell">
+                  <package-popularity :popularity="suggestion.popularity"></package-popularity>
+                </td>
+              </tr>
+            </table>
+          </div>
 
-          <template #footer>
+          <div class="card-footer">
             <div class="d-flex justify-content-between">
               <small class="text-muted">{{ error }}</small>
               <small>
@@ -195,11 +197,11 @@
                 </router-link>
               </small>
             </div>
-          </template>
-        </b-card>
-      </b-col>
-    </b-row>
-  </b-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
@@ -209,7 +211,6 @@ import PackageFiles from '../components/PackageFiles'
 import PackagePopularity from '../components/PackagePopularity'
 
 export default {
-  name: 'Package',
   metaInfo () {
     const metaInfoObject = {}
     metaInfoObject.meta = []

@@ -1,65 +1,56 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
     <h1 class="mb-4">Neuigkeiten</h1>
 
-    <b-form-group>
-      <b-form-input
-        debounce="250"
+    <div class="input-group mb-3">
+      <input
+        class="form-control"
         placeholder="Neuigkeiten suchen"
         type="search"
         autocomplete="off"
-        v-model="query"></b-form-input>
-    </b-form-group>
+        v-model="query">
+    </div>
 
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <b-table striped responsive bordered small
-             v-show="total > 0"
-             :items="fetchNews"
-             :fields="fields"
-             :filter="query"
-             :per-page="perPage"
-             :current-page="currentPage">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered table-fixed" v-show="total > 0">
+      <thead>
+        <tr>
+          <th class="d-none d-md-table-cell">Veröffentlichung</th>
+          <th class="w-75">Titel</th>
+          <th class="d-none d-xl-table-cell">Autor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr :key="key" v-for="(item, key) in items">
+          <td class="d-none d-md-table-cell">{{ (new Date(item.lastModified)).toLocaleDateString('de-DE') }}</td>
+          <td>
+            <router-link :to="{name: 'news-item', params: {id: item.id, slug: item.slug}}">
+              {{ item.title }}
+            </router-link>
+          </td>
+          <td class="d-none d-xl-table-cell"><a :href="item.author.uri">{{ item.author.name }}</a></td>
+        </tr>
+      </tbody>
+    </table>
 
-      <template v-slot:cell(lastModified)="data">
-        {{ (new Date(data.value)).toLocaleDateString('de-DE') }}
-      </template>
+    <div class="alert alert-warning" v-if="total === 0">Keine Neuigkeiten gefunden</div>
 
-      <template v-slot:cell(title)="data">
-        <router-link :to="{name: 'news-item', params: {id: data.item.id, slug: data.item.slug}}">
-          {{ data.value }}
-        </router-link>
-      </template>
-
-      <template v-slot:cell(author)="data">
-        <a :href="data.value.uri">{{ data.value.name }}</a>
-      </template>
-    </b-table>
-
-    <b-alert :show="total === 0" variant="warning">Keine Neuigkeiten gefunden</b-alert>
-
-    <b-row v-show="total > perPage">
-      <b-col cols="12" sm="6" class="mb-3 text-right text-sm-left">
+    <div class="row" v-show="total > limit">
+      <div class="col-12 col-sm-6 mb-3 text-end text-sm-start">
         {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Neuigkeiten
-      </b-col>
-      <b-col cols="12" sm="6">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="total"
-          :per-page="perPage"
-          :first-number="true"
-          :last-number="true"
-          align="right"
-        ></b-pagination>
-      </b-col>
-    </b-row>
+      </div>
+      <div class="col-12 col-sm-6 text-end">
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+      </div>
+    </div>
 
-  </b-container>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'News',
   metaInfo () {
     return {
       title: 'Neuigkeiten',
@@ -79,52 +70,52 @@ export default {
   inject: ['apiService'],
   data () {
     return {
-      fields: [{
-        key: 'lastModified',
-        label: 'Veröffentlichung',
-        class: 'd-none d-md-table-cell'
-      }, {
-        key: 'title',
-        label: 'Titel'
-      }, {
-        key: 'author',
-        label: 'Autor',
-        class: 'd-none d-xl-table-cell'
-      }],
       query: this.$route.query.search ?? '',
-      perPage: 25,
-      currentPage: 1,
+      items: [],
       total: null,
       count: null,
-      offset: null,
-      error: ''
+      offset: 0,
+      error: null,
+      limit: 25
     }
   },
   watch: {
     query () {
       this.$router.replace({ query: this.getQuery() })
+      this.fetchNews()
+    },
+    offset () {
+      this.fetchNews()
+    }
+  },
+  computed: {
+    hasNext: function () {
+      return this.total && this.total <= this.offset + this.limit
+    },
+    hasPrevious: function () {
+      return this.offset <= 0
     }
   },
   methods: {
-    fetchNews (context) {
+    fetchNews () {
       return this.apiService.fetchNewsItems({
-        query: context.filter,
-        limit: context.perPage,
-        offset: (context.currentPage - 1) * context.perPage
+        query: this.query,
+        limit: this.limit,
+        offset: this.offset
       })
         .then(data => {
+          this.items = data.items
           this.total = data.total
           this.count = data.count
           this.offset = data.offset
-          this.error = ''
-          return data.items
+          this.error = null
         })
         .catch(error => {
-          this.total = 0
-          this.count = 0
+          this.items = []
+          this.total = null
+          this.count = null
           this.offset = 0
           this.error = error
-          return []
         })
     },
     getQuery () {
@@ -133,7 +124,22 @@ export default {
         query.search = this.$data.query
       }
       return query
+    },
+    next () {
+      if (this.hasNext) {
+        return
+      }
+      this.offset += this.limit
+    },
+    previous () {
+      if (this.hasPrevious) {
+        return
+      }
+      this.offset -= this.limit
     }
+  },
+  mounted () {
+    this.fetchNews()
   }
 }
 </script>

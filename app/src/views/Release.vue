@@ -1,70 +1,69 @@
 <template>
-  <b-container role="main" tag="main">
+  <main class="container">
 
-    <b-alert :show="error != ''" variant="danger">{{ error }}</b-alert>
+    <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
 
     <template v-if="release.version">
       <h1 class="mb-4">Arch Linux {{ release.version }}</h1>
-      <b-row>
-        <b-col cols="12" xl="6">
+      <div class="row">
+        <div class="col-12 col-xl-6">
           <h2 class="mb-3">Release Informationen</h2>
-          <b-table-simple fixed small class="mb-4">
-            <b-tr>
-              <b-th>Version</b-th>
-              <b-td>{{ release.version }}</b-td>
-            </b-tr>
-            <b-tr v-if="release.info">
-              <b-th>Informationen</b-th>
-              <b-td v-html="release.info"></b-td>
-            </b-tr>
-            <b-tr v-if="release.kernelVersion">
-              <b-th>Kernel-Version</b-th>
-              <b-td>{{ release.kernelVersion }}</b-td>
-            </b-tr>
-            <b-tr>
-              <b-th>Veröffentlichung</b-th>
-              <b-td>{{ (new Date(release.releaseDate)).toLocaleDateString('de-DE') }}</b-td>
-            </b-tr>
-            <b-tr v-if="release.fileSize">
-              <b-th>ISO Größe</b-th>
-              <b-td>{{ release.fileSize | prettyBytes(2, true) }}</b-td>
-            </b-tr>
-            <b-tr v-if="release.sha1Sum">
-              <b-th>SHA1</b-th>
-              <b-td class="text-break">{{ release.sha1Sum }}</b-td>
-            </b-tr>
-            <b-tr v-if="release.isoSigUrl">
-              <b-th>PGP</b-th>
-              <b-td><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a>
-              </b-td>
-            </b-tr>
-          </b-table-simple>
-        </b-col>
+          <table class="table table-sm table-borderless mb-4">
+            <tr>
+              <th>Version</th>
+              <td>{{ release.version }}</td>
+            </tr>
+            <tr v-if="release.info">
+              <th>Informationen</th>
+              <td v-html="release.info"></td>
+            </tr>
+            <tr v-if="release.kernelVersion">
+              <th>Kernel-Version</th>
+              <td>{{ release.kernelVersion }}</td>
+            </tr>
+            <tr>
+              <th>Veröffentlichung</th>
+              <td>{{ (new Date(release.releaseDate)).toLocaleDateString('de-DE') }}</td>
+            </tr>
+            <tr v-if="release.fileSize">
+              <th>ISO Größe</th>
+              <td>{{ release.fileSize | prettyBytes(2, true) }}</td>
+            </tr>
+            <tr v-if="release.sha1Sum">
+              <th>SHA1</th>
+              <td class="text-break">{{ release.sha1Sum }}</td>
+            </tr>
+            <tr v-if="release.isoSigUrl">
+              <th>PGP</th>
+              <td><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a>
+              </td>
+            </tr>
+          </table>
+        </div>
 
-        <b-col cols="12" xl="6">
+        <div class="col-12 col-xl-6">
           <a class="btn btn-primary btn-lg mb-4" download :href="release.isoUrl" rel="nofollow noopener">
             <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
           </a>
-          <ul class="list-unstyled ml-4 link-list">
+          <ul class="list-unstyled ms-4 link-list">
             <li v-if="release.magnetUri"><a :href="release.magnetUri" download rel="nofollow noopener">Magnet link für {{ release.version }}</a></li>
             <li v-if="release.torrentUrl"><a :href="release.torrentUrl" download rel="nofollow noopener">Torrent für {{ release.version }}</a></li>
             <li v-if="release.directoryUrl"><a :href="release.directoryUrl" target="_blank" rel="nofollow noopener">Verzeichnis für {{ release.version }}</a></li>
           </ul>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
 
-      <b-row>
-        <b-col>
-          <b-button :to="{name: 'releases'}" size="sm" variant="outline-secondary" exact>zum Release-Archiv</b-button>
-        </b-col>
-      </b-row>
+      <div class="row">
+        <div class="col">
+          <router-link class="btn btn-sm btn-outline-secondary" :to="{name: 'releases'}" exact>zum Release-Archiv</router-link>
+        </div>
+      </div>
     </template>
-  </b-container>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'Release',
   metaInfo () {
     if (this.release.version) {
       return {
