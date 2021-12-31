@@ -63,7 +63,6 @@ rebuild: clean
 	{{COMPOSE}} build --pull
 	just install
 	just init
-	just stop
 
 install:
 	{{PHP-RUN}} composer --no-interaction install
