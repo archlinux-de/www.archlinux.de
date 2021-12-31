@@ -4,7 +4,7 @@ namespace App\EventListener;
 
 use App\SearchIndex\SearchIndexer;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 
 class IndexUpdateEventListener
 {

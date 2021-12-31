@@ -36,13 +36,13 @@ init: start
 start:
 	{{COMPOSE}} up -d
 	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
-	{{COMPOSE-RUN}} wait -c elasticsearch:9200 -t 60
+	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 60
 	@echo URL: http://localhost:${PORT}
 
 start-db:
-	{{COMPOSE}} up -d mariadb elasticsearch
+	{{COMPOSE}} up -d mariadb opensearch
 	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
-	{{COMPOSE-RUN}} wait -c elasticsearch:9200 -t 60
+	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 60
 
 stop:
 	{{COMPOSE}} stop
@@ -145,9 +145,9 @@ test-db: start-db
 test-db-migrations: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test'
 
-update-elasticsearch-fixtures: start-db
-	rm -f api/tests/ElasticsearchFixtures/*.json
-	{{COMPOSE-RUN}} -e ELASTICSEARCH_MOCK_MODE=write api vendor/bin/phpunit
+update-opensearch-fixtures: start-db
+	rm -f api/tests/OpenSearchFixtures/*.json
+	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api vendor/bin/phpunit
 
 test-coverage:
 	{{NODE-RUN}} node_modules/.bin/jest --coverage --coverageDirectory var/coverage/jest

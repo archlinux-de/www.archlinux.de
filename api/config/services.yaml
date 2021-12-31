@@ -33,12 +33,12 @@ services:
 
     League\ISO3166\ISO3166:
 
-    Elasticsearch\ClientBuilder:
+    OpenSearch\ClientBuilder:
         calls:
-            - [ setHosts, [ [ '%env(resolve:ELASTICSEARCH_URL)%' ] ] ]
+            - [ setHosts, [ [ '%env(resolve:OPENSEARCH_URL)%' ] ] ]
 
-    Elasticsearch\Client:
-        factory: [ '@Elasticsearch\ClientBuilder', build ]
+    OpenSearch\Client:
+        factory: [ '@OpenSearch\ClientBuilder', build ]
 
     HTMLPurifier:
         class: HTMLPurifier

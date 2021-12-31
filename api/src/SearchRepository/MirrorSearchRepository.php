@@ -5,7 +5,7 @@ namespace App\SearchRepository;
 use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\SearchIndex\MirrorSearchIndexer;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 
 class MirrorSearchRepository
 {

@@ -6,7 +6,7 @@ use App\Entity\Release;
 use App\Repository\ReleaseRepository;
 use App\SearchIndex\ReleaseSearchIndexer;
 use App\SearchIndex\SearchIndexer;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;

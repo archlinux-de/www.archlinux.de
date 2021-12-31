@@ -6,7 +6,7 @@ use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\SearchIndex\MirrorSearchIndexer;
 use App\SearchIndex\SearchIndexer;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;

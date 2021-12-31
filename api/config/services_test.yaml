@@ -1,13 +1,13 @@
 services:
-    App\Tests\ElasticsearchFixturesHandler:
+    App\Tests\OpenSearchFixturesHandler:
         arguments:
-            $mode: '%env(resolve:ELASTICSEARCH_MOCK_MODE)%'
+            $mode: '%env(resolve:OPENSEARCH_MOCK_MODE)%'
 
-    Elasticsearch\ClientBuilder:
+    OpenSearch\ClientBuilder:
         calls:
-            - [setHandler, ['@App\Tests\ElasticsearchFixturesHandler']]
-            - [setHosts, [['%env(resolve:ELASTICSEARCH_URL)%']]]
+            - [setHandler, ['@App\Tests\OpenSearchFixturesHandler']]
+            - [setHosts, [['%env(resolve:OPENSEARCH_URL)%']]]
 
-    Elasticsearch\Client:
-        factory: ['@Elasticsearch\ClientBuilder', build]
+    OpenSearch\Client:
+        factory: ['@OpenSearch\ClientBuilder', build]
         public: true
