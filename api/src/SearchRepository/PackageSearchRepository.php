@@ -5,7 +5,7 @@ namespace App\SearchRepository;
 use App\Entity\Packages\Package;
 use App\Repository\PackageRepository;
 use App\SearchIndex\PackageSearchIndexer;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 
 class PackageSearchRepository
 {

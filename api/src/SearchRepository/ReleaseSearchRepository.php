@@ -5,7 +5,7 @@ namespace App\SearchRepository;
 use App\Entity\Release;
 use App\Repository\ReleaseRepository;
 use App\SearchIndex\ReleaseSearchIndexer;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 
 class ReleaseSearchRepository
 {

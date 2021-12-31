@@ -5,7 +5,7 @@ namespace App\SearchRepository;
 use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
 use App\SearchIndex\NewsSearchIndexer;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 
 class NewsItemSearchRepository
 {

@@ -7,7 +7,7 @@ use App\SearchIndex\NewsSearchIndexer;
 use App\SearchIndex\PackageSearchIndexer;
 use App\SearchIndex\ReleaseSearchIndexer;
 use App\SearchIndex\SearchIndexConfigurationInterface;
-use Elasticsearch\Client;
+use OpenSearch\Client;
 use SymfonyDatabaseTest\DatabaseTestCase;
 
 abstract class DatabaseSearchTestCase extends DatabaseTestCase
@@ -43,15 +43,15 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
 
     private function createSearchIndex(SearchIndexConfigurationInterface $searchIndexer): void
     {
-        $elasticsearchClient = $this->getElasticsearchClient();
+        $openSearchClient = $this->getOpenSearchClient();
 
-        if ($elasticsearchClient->indices()->exists(['index' => $searchIndexer->getIndexName()])) {
-            $elasticsearchClient->indices()->delete(['index' => $searchIndexer->getIndexName()]);
+        if ($openSearchClient->indices()->exists(['index' => $searchIndexer->getIndexName()])) {
+            $openSearchClient->indices()->delete(['index' => $searchIndexer->getIndexName()]);
         }
-        $elasticsearchClient->indices()->create($searchIndexer->createIndexConfiguration());
+        $openSearchClient->indices()->create($searchIndexer->createIndexConfiguration());
     }
 
-    private function getElasticsearchClient(): Client
+    private function getOpenSearchClient(): Client
     {
         $container = static::getClient()->getContainer();
         static::assertNotNull($container);
@@ -64,7 +64,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
     public function tearDown(): void
     {
         foreach ($this->searchIndexers as $searchIndexer) {
-            $this->getElasticsearchClient()->indices()->delete(['index' => $searchIndexer->getIndexName()]);
+            $this->getOpenSearchClient()->indices()->delete(['index' => $searchIndexer->getIndexName()]);
         }
 
         parent::tearDown();
