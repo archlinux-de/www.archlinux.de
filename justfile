@@ -179,7 +179,7 @@ update:
 	just _update-cypress-image
 
 deploy:
-	cd app && yarn install --non-interactive --frozen-lockfile
+	cd app && yarn install --non-interactive --frozen-lockfile --production
 	cd app && yarn build
 	cd app && find dist -type f -atime +512 -delete # needs to be above the highest TTL
 	cd app && find dist -type d -empty -delete
