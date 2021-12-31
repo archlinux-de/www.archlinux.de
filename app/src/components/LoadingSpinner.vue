@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'loading-spinner--absolute': absolute }" class="loading-spinner">
     <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+      <span class="visually-hidden">Lade...</span>
     </div>
   </div>
 </template>
