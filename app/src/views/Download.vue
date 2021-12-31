@@ -1,5 +1,10 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Download - archlinux.de</title>
+      <link rel="canonical" :href="createCanonical()">
+      <meta name="description" :content="'Arch Linux herunterladen und installieren in der aktuellen Version ' + release.version + ' mit Kernel ' + release.kernelVersion">
+    </Head>
     <h1 class="mb-4">Arch Linux Downloads</h1>
 
     <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
@@ -24,7 +29,7 @@
             <router-link :to="{name: 'release', params: {version: release.version}}">Release-Informationen</router-link>
           </li>
           <li><strong>Enthaltener Kernel:</strong>&nbsp;{{ release.kernelVersion }}</li>
-          <li><strong>ISO Größe:</strong>&nbsp;{{ release.fileSize | prettyBytes(2, true) }}</li>
+          <li><strong>ISO Größe:</strong>&nbsp;{{ prettyBytes(release.fileSize, { locale: 'de', maximumFractionDigits: 2 }) }}</li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
         </ul>
 
@@ -72,13 +77,13 @@
         <router-link :to="{name: 'releases'}" class="btn btn-secondary btn-sm">Archiv</router-link>
       </div>
 
-      <script type="application/ld+json">
+      <component :is="'script'" type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           "name": "Arch Linux",
           "operatingSystem": "Arch Linux",
-          "fileSize": "{{ release.fileSize | prettyBytes(2, true) }}",
+          "fileSize": "{{ prettyBytes(release.fileSize, { maximumFractionDigits: 0 }) }}",
           "datePublished": "{{ (new Date(release.releaseDate)).toJSON() }}",
           "softwareVersion": "{{ release.version }}",
           "offers": {
@@ -87,22 +92,18 @@
             "priceCurrency": "EUR"
           }
         }
-      </script>
+      </component>
     </div>
   </main>
 </template>
 
 <script>
+import prettyBytes from 'pretty-bytes'
+import { Head } from '@vueuse/head'
+
 export default {
-  metaInfo () {
-    return {
-      title: 'Download',
-      link: [{ rel: 'canonical', href: window.location.origin + this.$router.resolve({ name: 'download' }).href }],
-      meta: [{
-        name: 'description',
-        content: `Arch Linux herunterladen und installieren in der aktuellen Version ${this.release.version} mit Kernel ${this.release.kernelVersion}`
-      }]
-    }
+  components: {
+    Head
   },
   inject: ['apiService'],
   data () {
@@ -129,6 +130,10 @@ export default {
         })
         .catch(() => {
         })
+    },
+    prettyBytes,
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({ name: 'download' }).href
     }
   },
   mounted () {

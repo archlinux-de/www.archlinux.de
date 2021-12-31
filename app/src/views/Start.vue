@@ -1,5 +1,9 @@
 <template>
   <main class="container">
+    <Head>
+      <link rel="canonical" :href="createCanonical()">
+      <meta name="description" content="Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux">
+    </Head>
     <div class="row">
       <div class="col-12 col-xl-8">
         <div class="mb-4">
@@ -99,7 +103,7 @@
       </div>
     </div>
 
-    <script type="application/ld+json">
+    <component :is="'script'" type="application/ld+json">
       {
         "@context": "http://schema.org",
         "@type": "WebSite",
@@ -115,17 +119,19 @@
           "query-input": "required name=search"
         }
       }
-    </script>
+    </component>
   </main>
 </template>
 
 <script>
+import { Head } from '@vueuse/head'
 import PackageSearch from '../components/PackageSearch'
 import NewsItemList from '../components/NewsItemList'
 import RecentPackages from '../components/RecentPackages'
 
 export default {
   components: {
+    Head,
     PackageSearch,
     NewsItemList,
     RecentPackages
@@ -139,16 +145,6 @@ export default {
         name: 'packages',
         query: { search: '__search__' }
       }).href.replace('__search__', '{search}')
-    }
-  },
-  metaInfo () {
-    return {
-      titleTemplate: null,
-      link: [{ rel: 'canonical', href: this.createCanonical() }],
-      meta: [{
-        name: 'description',
-        content: 'Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux'
-      }]
     }
   }
 }

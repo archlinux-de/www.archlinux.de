@@ -1,5 +1,12 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Arch Linux Releases - archlinux.de</title>
+      <link rel="canonical" :href="createCanonical()">
+      <meta name="description" v-if="getQuery().search" :content="getQuery().search + '-Installationsmedien für Arch Linux'">
+      <meta name="description" v-else content="Übersicht und Download der Arch Linux Installationsmedien">
+      <meta name="robots" content="noindex,follow" v-if="count < 1">
+    </Head>
     <h1 class="mb-4">Arch Linux Releases</h1>
 
     <div class="input-group mb-3">
@@ -28,7 +35,7 @@
         <td>{{ (new Date(item.releaseDate)).toLocaleDateString('de-DE') }}</td>
         <td>{{ item.kernelVersion }}</td>
         <td>
-          <span v-if="item.fileSize">{{ item.fileSize | prettyBytes(0, true) }}</span>
+          <span v-if="item.fileSize">{{ prettyBytes(item.fileSize, { maximumFractionDigits: 0 }) }}</span>
           <span v-else>-</span>
         </td>
       </tr>
@@ -56,22 +63,12 @@
 </template>
 
 <script>
+import prettyBytes from 'pretty-bytes'
+import { Head } from '@vueuse/head'
+
 export default {
-  metaInfo () {
-    return {
-      title: 'Arch Linux Releases',
-      link: [{
-        rel: 'canonical',
-        href: window.location.origin + this.$router.resolve({
-          name: 'releases',
-          query: this.getQuery()
-        }).href
-      }],
-      meta: [
-        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
-        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Installationsmedien für Arch Linux` : 'Übersicht und Download der Arch Linux Installationsmedien' }
-      ]
-    }
+  components: {
+    Head
   },
   inject: ['apiService'],
   data () {
@@ -142,6 +139,13 @@ export default {
         return
       }
       this.offset -= this.limit
+    },
+    prettyBytes,
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({
+        name: 'releases',
+        query: this.getQuery()
+      }).href
     }
   },
   mounted () {

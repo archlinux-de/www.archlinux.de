@@ -1,5 +1,12 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Neuigkeiten - archlinux.de</title>
+      <link rel="canonical" :href="createCanonical()">
+      <meta name="description" v-if="getQuery().search" :content="getQuery().search + '-Neuigkeiten für Arch Linux'">
+      <meta name="description" v-else content="Neuigkeiten und Mitteilungen zu Arch Linux">
+      <meta name="robots" content="noindex,follow" v-if="count < 1">
+    </Head>
     <h1 class="mb-4">Neuigkeiten</h1>
 
     <div class="input-group mb-3">
@@ -50,22 +57,11 @@
 </template>
 
 <script>
+import { Head } from '@vueuse/head'
+
 export default {
-  metaInfo () {
-    return {
-      title: 'Neuigkeiten',
-      link: [{
-        rel: 'canonical',
-        href: window.location.origin + this.$router.resolve({
-          name: 'news',
-          query: this.getQuery()
-        }).href
-      }],
-      meta: [
-        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
-        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Neuigkeiten für Arch Linux` : 'Neuigkeiten und Mitteilungen zu Arch Linux' }
-      ]
-    }
+  components: {
+    Head
   },
   inject: ['apiService'],
   data () {
@@ -136,6 +132,12 @@ export default {
         return
       }
       this.offset -= this.limit
+    },
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({
+        name: 'news',
+        query: this.getQuery()
+      }).href
     }
   },
   mounted () {

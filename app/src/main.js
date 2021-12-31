@@ -1,18 +1,15 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
+import { createHead } from '@vueuse/head'
 import App from './App'
 import router from './router'
-import VueMeta from 'vue-meta'
-import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import createApiService from './services/ApiService'
 
-Vue.use(VueMeta)
-Vue.use(vueFilterPrettyBytes)
+const head = createHead()
+const app = createApp(App)
 
-Vue.config.productionTip = false
-new Vue({
-  router,
-  render: h => h(App),
-  provide: {
-    apiService: createApiService(fetch)
-  }
-}).$mount('#app')
+app.use(router)
+app.use(head)
+
+app.provide('apiService', createApiService(fetch))
+
+app.mount('#app')

@@ -4,6 +4,11 @@
     <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
 
     <template v-if="news.id">
+      <Head>
+        <title>{{ news.title }} - archlinux.de</title>
+        <link rel="canonical" :href="createCanonical()">
+        <meta name="description" :content="createDescription()">
+      </Head>
       <h1 class="mb-4">{{ news.title }}</h1>
       <div class="mb-3 text-muted">
         {{ (new Date(news.lastModified)).toLocaleDateString('de-DE') }}
@@ -15,7 +20,7 @@
       <router-link :to="{name: 'news'}" class="btn btn-outline-secondary btn-sm">zum Archiv</router-link>
       <a class="btn btn-primary btn-sm" :href="news.link">Kommentare</a>
 
-      <script type="application/ld+json">
+      <component :is="'script'" type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "NewsArticle",
@@ -30,31 +35,22 @@
           ],
           "discussionUrl": "{{ news.link }}"
         }
-      </script>
+      </component>
+    </template>
+    <template v-else>
+      <Head>
+        <meta name="robots" content="noindex,follow">
+      </Head>
     </template>
   </main>
 </template>
 
 <script>
+import { Head } from '@vueuse/head'
+
 export default {
-  metaInfo () {
-    if (this.news.id) {
-      return {
-        title: this.news.title,
-        link: [{
-          rel: 'canonical',
-          href: window.location.origin + this.$router.resolve({
-            name: 'news-item',
-            params: { id: this.news.id, slug: this.news.slug }
-          }).href
-        }],
-        meta: [{ name: 'description', content: this.createDescription() }]
-      }
-    } else {
-      return {
-        meta: [{ vmid: 'robots', name: 'robots', content: 'noindex,follow' }]
-      }
-    }
+  components: {
+    Head
   },
   inject: ['apiService'],
   data () {
@@ -79,6 +75,12 @@ export default {
         .body
         .textContent
         .substr(0, 100)
+    },
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({
+        name: 'news-item',
+        params: { id: this.news.id, slug: this.news.slug }
+      }).href
     }
   },
   mounted () {

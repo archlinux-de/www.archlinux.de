@@ -1,5 +1,11 @@
 <template>
   <main class="container">
+    <Head>
+      <title v-if="release.version">{{ release.version }} - archlinux.de</title>
+      <link v-if="release.version" rel="canonical" :href="createCanonical()">
+      <meta v-if="release.version" name="description" :content="`Informationen und Download von Arch Linux Version ${release.version} mit Kernel ${release.kernelVersion}`">
+      <meta v-if="!release.version" name="robots" content="noindex,follow">
+    </Head>
 
     <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
 
@@ -27,7 +33,7 @@
             </tr>
             <tr v-if="release.fileSize">
               <th>ISO Größe</th>
-              <td>{{ release.fileSize | prettyBytes(2, true) }}</td>
+              <td>{{ prettyBytes(release.fileSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
             </tr>
             <tr v-if="release.sha1Sum">
               <th>SHA1</th>
@@ -63,25 +69,12 @@
 </template>
 
 <script>
+import { Head } from '@vueuse/head'
+import prettyBytes from 'pretty-bytes'
+
 export default {
-  metaInfo () {
-    if (this.release.version) {
-      return {
-        title: this.release.version,
-        link: [{
-          rel: 'canonical',
-          href: window.location.origin + this.$router.resolve({
-            name: 'release',
-            version: this.version
-          }).href
-        }],
-        meta: [{ name: 'description', content: `Informationen und Download von Arch Linux Version ${this.release.version} mit Kernel ${this.release.kernelVersion}` }]
-      }
-    } else {
-      return {
-        meta: [{ vmid: 'robots', name: 'robots', content: 'noindex,follow' }]
-      }
-    }
+  components: {
+    Head
   },
   inject: ['apiService'],
   data () {
@@ -95,6 +88,15 @@ export default {
       this.apiService.fetchRelease(this.$route.params.version)
         .then(data => { this.release = data })
         .catch(error => { this.error = error })
+    },
+    prettyBytes,
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({
+        name: 'release',
+        params: {
+          version: this.release.version
+        }
+      }).href
     }
   },
   mounted () {

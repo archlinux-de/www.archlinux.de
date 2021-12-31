@@ -27,11 +27,11 @@
   </main>
 </template>
 
-<script>
-export default {
-  metaInfo: {
-    title: 'Impressum',
-    meta: [{ vmid: 'robots', name: 'robots', content: 'noindex' }]
-  }
-}
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Impressum - archlinux.de',
+  meta: [{ name: 'robots', content: 'noindex' }]
+})
 </script>

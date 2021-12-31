@@ -67,11 +67,11 @@
   </main>
 </template>
 
-<script>
-export default {
-  metaInfo: {
-    title: 'Datenschutz',
-    meta: [{ vmid: 'robots', name: 'robots', content: 'noindex' }]
-  }
-}
+<script setup>
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Datenschutz - archlinux.de',
+  meta: [{ name: 'robots', content: 'noindex' }]
+})
 </script>

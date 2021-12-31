@@ -1,6 +1,4 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-
+import { createRouter, createWebHistory } from 'vue-router'
 import Download from './views/Download'
 import Impressum from './views/Impressum'
 import Mirrors from './views/Mirrors'
@@ -14,10 +12,8 @@ import Releases from './views/Releases'
 import Start from './views/Start'
 import NotFound from './views/NotFound'
 
-Vue.use(Router)
-
-export default new Router({
-  mode: 'history',
+export default createRouter({
+  history: createWebHistory(),
   linkActiveClass: 'active',
   routes: [
     { path: '/download', name: 'download', component: Download },
@@ -32,7 +28,7 @@ export default new Router({
     { path: '/releases/:version', name: 'release', component: Release },
     { path: '/releases', name: 'releases', component: Releases },
     { path: '/', name: 'start', component: Start },
-    { path: '*', component: NotFound }
+    { path: '/:pathMatch(.*)*', component: NotFound }
   ],
   scrollBehavior (to, from, savedPosition) {
     return savedPosition ?? { x: 0, y: 0 }

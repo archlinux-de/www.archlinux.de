@@ -1,5 +1,12 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Mirror-Status - archlinux.de</title>
+      <link rel="canonical" :href="createCanonical()">
+      <meta name="description" v-if="getQuery().search" :content="getQuery().search + '-Mirror für Arch Linux'">
+      <meta name="description" v-else content="Paket-Mirror Arch Linux">
+      <meta name="robots" content="noindex,follow" v-if="count < 1">
+    </Head>
     <h1 class="mb-4">Mirror-Status</h1>
 
     <div class="input-group mb-3">
@@ -60,22 +67,11 @@
 </template>
 
 <script>
+import { Head } from '@vueuse/head'
+
 export default {
-  metaInfo () {
-    return {
-      title: 'Mirror-Status',
-      link: [{
-        rel: 'canonical',
-        href: window.location.origin + this.$router.resolve({
-          name: 'mirrors',
-          query: this.getQuery()
-        }).href
-      }],
-      meta: [
-        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
-        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Mirror für Arch Linux` : 'Paket-Mirror Arch Linux' }
-      ]
-    }
+  components: {
+    Head
   },
   inject: ['apiService'],
   data () {
@@ -171,6 +167,12 @@ export default {
         return
       }
       this.offset -= this.limit
+    },
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({
+        name: 'mirrors',
+        query: this.getQuery()
+      }).href
     }
   },
   mounted () {

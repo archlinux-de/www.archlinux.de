@@ -1,5 +1,12 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Paket-Suche - archlinux.de</title>
+      <link rel="canonical" :href="createCanonical()">
+      <meta name="description" v-if="getQuery().search" :content="getQuery().search + '-Pakete für Arch Linux'">
+      <meta name="description" v-else content="Übersicht und Suche von Arch Linux-Paketen">
+      <meta name="robots" content="noindex,follow" v-if="count < 1">
+    </Head>
     <h1 class="mb-4">Paket-Suche</h1>
 
     <div class="input-group mb-3">
@@ -80,27 +87,13 @@
 </style>
 
 <script>
+import { Head } from '@vueuse/head'
 import PackagePopularity from '../components/PackagePopularity'
 
 export default {
   components: {
+    Head,
     PackagePopularity
-  },
-  metaInfo () {
-    return {
-      title: 'Paket-Suche',
-      link: [{
-        rel: 'canonical',
-        href: window.location.origin + this.$router.resolve({
-          name: 'packages',
-          query: this.getQuery()
-        }).href
-      }],
-      meta: [
-        { vmid: 'robots', name: 'robots', content: this.count < 1 ? 'noindex,follow' : 'index,follow' },
-        { name: 'description', content: this.getQuery().search ? `${this.getQuery().search}-Pakete für Arch Linux` : 'Übersicht und Suche von Arch Linux-Paketen' }
-      ]
-    }
   },
   inject: ['apiService'],
   data () {
@@ -218,6 +211,12 @@ export default {
         return
       }
       this.offset -= this.limit
+    },
+    createCanonical () {
+      return window.location.origin + this.$router.resolve({
+        name: 'packages',
+        query: this.getQuery()
+      }).href
     }
   },
   mounted () {

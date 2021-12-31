@@ -1,5 +1,12 @@
 <template>
   <main class="container">
+    <Head>
+      <title v-if="pkg.name">{{ pkg.name }} - archlinux.de</title>
+      <link v-if="pkg.name" rel="canonical" :href="createCanonical(true)">
+      <meta v-if="pkg.description" name="description" :content="pkg.description">
+      <meta name="robots" content="noindex" v-if="!pkg.name || pkg.repository.testing">
+    </Head>
+
     <h1 class="mb-4" v-if="pkg.name">{{ pkg.name }}</h1>
     <div class="row" v-if="pkg.name">
       <div class="col-12 col-xl-6">
@@ -85,11 +92,11 @@
           </tr>
           <tr>
             <th>Paket-Größe</th>
-            <td>{{ pkg.compressedSize | prettyBytes(2, true) }}</td>
+            <td>{{ prettyBytes(pkg.compressedSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
           </tr>
           <tr>
             <th>Installations-Größe</th>
-            <td>{{ pkg.installedSize | prettyBytes(2, true) }}</td>
+            <td>{{ prettyBytes(pkg.installedSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
           </tr>
           <tr>
             <th>Beliebtheit</th>
@@ -131,13 +138,13 @@
           :name="pkg.name"></package-files>
       </div>
 
-      <script type="application/ld+json" v-if="!this.pkg.repository.testing && pkg.popularity.count > 0">
+      <component :is="'script'" type="application/ld+json" v-if="!this.pkg.repository.testing && pkg.popularity.count > 0">
         {
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           "name": "{{ pkg.name }}",
           "operatingSystem": "Arch Linux",
-          "fileSize": "{{ pkg.compressedSize | prettyBytes(2, true) }}",
+          "fileSize": "{{ prettyBytes(pkg.compressedSize, { maximumFractionDigits: 0 }) }}",
           "dateModified": "{{ (new Date(pkg.buildDate)).toJSON() }}",
           "softwareVersion": "{{ pkg.version }}",
           "description": "{{ pkg.description }}",
@@ -157,7 +164,7 @@
             "url": "https://pkgstats.archlinux.de/packages/{{ pkg.name }}"
           }
         }
-      </script>
+      </component>
     </div>
 
     <div class="row" v-if="error">
@@ -205,29 +212,16 @@
 </template>
 
 <script>
+import { Head } from '@vueuse/head'
+import prettyBytes from 'pretty-bytes'
 import PackageRelations from '../components/PackageRelations'
 import InversePackageRelations from '../components/InversePackageRelations'
 import PackageFiles from '../components/PackageFiles'
 import PackagePopularity from '../components/PackagePopularity'
 
 export default {
-  metaInfo () {
-    const metaInfoObject = {}
-    metaInfoObject.meta = []
-
-    if (!this.pkg.name || this.pkg.repository.testing) {
-      metaInfoObject.meta.push({ vmid: 'robots', name: 'robots', content: 'noindex' })
-    }
-
-    if (this.pkg.name) {
-      metaInfoObject.title = this.pkg.name
-      metaInfoObject.link = [{ rel: 'canonical', href: window.location.origin + this.canonical }]
-      metaInfoObject.meta.push({ vmid: 'description', name: 'description', content: this.pkg.description })
-    }
-
-    return metaInfoObject
-  },
   components: {
+    Head,
     PackagePopularity,
     PackageRelations,
     InversePackageRelations,
@@ -279,6 +273,11 @@ export default {
   },
   methods: {
     fetchPackage () {
+      // @TODO: Avoid calling fetchPackage() when navigation off this page
+      if (!this.$route.params.repository || !this.$route.params.architecture || !this.$route.params.name) {
+        return
+      }
+
       this.apiService.fetchPackage(
         this.$route.params.repository,
         this.$route.params.architecture,
@@ -306,8 +305,8 @@ export default {
             })
         })
     },
-    createCanonical () {
-      return this.$router.resolve({
+    createCanonical (absolute = false) {
+      return (absolute ? window.location.origin : '') + this.$router.resolve({
         name: 'package',
         params: {
           repository: this.pkg.repository.name,
@@ -315,16 +314,15 @@ export default {
           name: this.pkg.name
         }
       }).href
-    }
+    },
+    prettyBytes
   },
-  mounted () {
-    this.fetchPackage()
-  },
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.fetchPackage()
-    this.error = ''
-    this.suggestions = ''
+  created () {
+    this.$watch(
+      () => this.$route.params,
+      () => { this.fetchPackage() },
+      { immediate: true }
+    )
   }
 }
 </script>

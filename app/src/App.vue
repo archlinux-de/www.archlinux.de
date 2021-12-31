@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-md navbar-dark navbar-border-brand bg-dark nav-no-outline mb-4">
       <div class="container-fluid">
         <router-link :to="{name: 'start'}" class="navbar-brand">
-          <img alt="Arch Linux" height="40" width="190" :src="logo" class="d-inline-block align-text-top"/>
+          <img alt="Arch Linux" height="40" width="190" :src="LogoImage" class="d-inline-block align-text-top"/>
         </router-link>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#archlinux-navbar"
@@ -48,83 +48,75 @@
 </template>
 
 <style lang="scss">
-  @import "./assets/css/archlinux-bootstrap";
-  @import "./assets/css/import-bootstrap";
+@import "./assets/css/archlinux-bootstrap";
+@import "./assets/css/import-bootstrap";
 
-  .navbar-border-brand {
-    border-bottom: 0.313rem solid $primary;
-  }
+.navbar-border-brand {
+  border-bottom: 0.313rem solid $primary;
+}
 
-  .nav-no-outline a:focus {
-    outline: 0;
-  }
+.nav-no-outline a:focus {
+  outline: 0;
+}
 
-  #page {
-    position: relative;
-    min-height: 100vh;
-  }
+#page {
+  position: relative;
+  min-height: 100vh;
+}
 
-  #content {
-    padding-bottom: 2.3rem;
-  }
+#content {
+  padding-bottom: 2.3rem;
+}
 
-  #footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 2.3rem;
-  }
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2.3rem;
+}
 
-  // increase tap size for mobile
-  @include media-breakpoint-down(md) {
-    .link-list li {
-      margin-bottom: $spacer;
-    }
+// increase tap size for mobile
+@include media-breakpoint-down(md) {
+  .link-list li {
+    margin-bottom: $spacer;
   }
+}
 
-  .table-fixed {
-    table-layout: fixed;
-  }
+.table-fixed {
+  table-layout: fixed;
+}
 
-  .bi {
-    width: 1em;
-    height: 1em;
-  }
+.bi {
+  width: 1em;
+  height: 1em;
+}
 </style>
 
-<script>
+<script setup>
 import 'bootstrap/js/src/collapse'
 import LogoImage from './assets/images/archlogo.svg'
 import IconImage from './assets/images/archicon.svg'
+import { onMounted } from 'vue'
+import { useHead } from '@vueuse/head'
 
-export default {
-  metaInfo () {
-    return {
-      title: 'archlinux.de',
-      titleTemplate: '%s - archlinux.de',
-      meta: [
-        { vmid: 'robots', name: 'robots', content: 'index,follow' },
-        { name: 'theme-color', content: '#333' }
-      ],
-      link: [
-        { rel: 'icon', href: this.icon, sizes: 'any', type: 'image/svg+xml' },
-        { rel: 'manifest', href: '/manifest.webmanifest' },
-        { rel: 'search', type: 'application/opensearchdescription+xml', href: '/packages/opensearch' }
-      ]
-    }
-  },
-  data () {
-    return {
-      logo: LogoImage,
-      icon: IconImage
-    }
-  },
-  mounted () {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-      })
-    }
+useHead({
+  title: 'archlinux.de',
+  meta: [
+    { name: 'robots', content: 'index,follow' },
+    { name: 'theme-color', content: '#333' }
+  ],
+  link: [
+    { rel: 'icon', href: IconImage, sizes: 'any', type: 'image/svg+xml' },
+    { rel: 'manifest', href: '/manifest.webmanifest' },
+    { rel: 'search', type: 'application/opensearchdescription+xml', href: '/packages/opensearch' }
+  ]
+})
+
+onMounted(() => {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+    })
   }
-}
+})
 </script>
