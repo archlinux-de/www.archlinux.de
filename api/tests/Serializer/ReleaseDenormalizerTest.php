@@ -27,7 +27,7 @@ class ReleaseDenormalizerTest extends TestCase
                         'available' => true,
                         'info' => '',
                         'iso_url' => '',
-                        'created' => '',
+                        'created' => (new \DateTime('2018-01-01'))->format(\DATE_RFC3339),
                         'kernel_version' => '',
                         'release_date' => '',
                         'torrent_url' => '',

@@ -18,7 +18,9 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
             ...(function () use ($data) {
                 foreach ($data['releases'] as $releaseData) {
                     $release = (new Release($releaseData['version']))
-                        ->setAvailable($releaseData['available'])
+                        ->setAvailable(
+                            $this->guessAvailability($releaseData['available'], new \DateTime($releaseData['created']))
+                        )
                         ->setInfo($releaseData['info'])
                         ->setCreated(new \DateTime($releaseData['created']))
                         ->setKernelVersion($releaseData['kernel_version'])
@@ -36,6 +38,12 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
                 }
             })()
         ];
+    }
+
+    private function guessAvailability(bool $available, \DateTime $created): bool
+    {
+        // Give mirrors 3 hours to sync a newly released ISO image
+        return $available && (new \DateTime())->getTimestamp() - $created->getTimestamp() >= 3 * 60 * 60;
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
