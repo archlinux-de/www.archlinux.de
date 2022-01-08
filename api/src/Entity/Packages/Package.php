@@ -50,13 +50,11 @@ class Package
 
     /**
      * @var string[]
-     *
-     * @TODO: Can be migrated with PHP 8.1
-     * @Assert\All({
-     *      @Assert\Length(min=2, max=100)
-     * })
      */
     #[ORM\Column(type: 'simple_array', nullable: true)]
+    #[Assert\All(
+        new Assert\Length(min: 2, max: 100)
+    )]
     private array $groups = [];
 
     #[ORM\Column(type: 'bigint')]
@@ -77,13 +75,11 @@ class Package
 
     /**
      * @var string[]|null
-     *
-     * @TODO: Can be migrated with PHP 8.1
-     * @Assert\All({
-     *      @Assert\Length(min=3, max=100)
-     * })
      */
     #[ORM\Column(type: 'simple_array', nullable: true)]
+    #[Assert\All(
+        new Assert\Length(min: 3, max: 100)
+    )]
     private ?array $licenses = null;
 
     #[ORM\Column]
