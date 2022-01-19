@@ -27,7 +27,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             $data['ARCH']
         ))
             ->setFileName($data['FILENAME'])
-            ->setUrl($this->normalizeUrl($data['URL'] ?? null))
+            ->setUrl($this->normalizeUrl($data['URL'] ?? null, $data['NAME']))
             ->setDescription($data['DESC'])
             ->setBase($data['BASE'] ?? $data['NAME'])
             ->setBuildDate((new \DateTime())->setTimestamp($data['BUILDDATE']))
@@ -64,7 +64,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
         return $package;
     }
 
-    private function normalizeUrl(?string $url): ?string
+    private function normalizeUrl(?string $url, string $name): ?string
     {
         if ($url == null) {
             return null;
@@ -79,7 +79,9 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             // @FIXME https://bugs.archlinux.org/task/71957
             ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1')
             // @FIXME https://bugs.archlinux.org/task/73105
-            ->replaceMatches('#^https:/[^/]#', 'https://');
+            ->replaceMatches('#^https:/[^/]#', 'https://')
+            // @FIXME
+            ->replace('${pkgname}', $name);
 
         return $urlString->toString();
     }
