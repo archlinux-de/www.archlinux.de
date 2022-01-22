@@ -79,11 +79,7 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
             ->replace(' ', '%20')
             // @FIXME https://bugs.archlinux.org/task/69483
             ->trim("\u{200e}")
-            // @FIXME https://bugs.archlinux.org/task/71957
-            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1')
-            // @FIXME https://bugs.archlinux.org/task/73105
-            ->replaceMatches('#^https:/[^/]#', 'https://')
-            // @FIXME
+            // @FIXME https://bugs.archlinux.org/task/73461
             ->replace('${pkgname}', $name);
 
         return $urlString->toString();
