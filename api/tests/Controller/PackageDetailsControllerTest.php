@@ -96,6 +96,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $this->assertIsString($client->getResponse()->getContent());
         $this->assertJson($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
         $this->assertCount(1, $responseData);
         $this->assertEquals('pacman-gui', $responseData[0]['name']);
     }

@@ -70,6 +70,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $this->assertIsString($client->getResponse()->getContent());
         $this->assertJson($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
         $this->assertEquals(1, $responseData['count']);
         $this->assertEquals(1, $responseData['total']);
         $this->assertCount(1, $responseData['items']);

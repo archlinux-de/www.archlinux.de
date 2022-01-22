@@ -31,6 +31,10 @@ class PackagePopularityFetcher implements \IteratorAggregate
             );
             $content = $response->getContent();
             $packagePopularityList = json_decode($content, true);
+            if (!is_array($packagePopularityList)) {
+                throw new \RuntimeException('Invalid packagePopularityList');
+            }
+
             $count = 0;
             foreach ($packagePopularityList['packagePopularities'] as $packagePopularity) {
                 yield $packagePopularity['name'] => new Popularity(

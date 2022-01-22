@@ -20,6 +20,9 @@ class PackageDenormalizer implements ContextAwareDenormalizerInterface
 {
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Package
     {
+        assert(is_array($data));
+        assert($context['repository'] instanceof Repository);
+
         $package = (new Package(
             $context['repository'],
             $data['NAME'],

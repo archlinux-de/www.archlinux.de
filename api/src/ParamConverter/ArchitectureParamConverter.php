@@ -19,7 +19,12 @@ class ArchitectureParamConverter implements ParamConverterInterface
 
     public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $architectureRequest = new ArchitectureRequest($request->get('architecture', Architecture::X86_64));
+        $architecture = $request->get('architecture', Architecture::X86_64);
+        if (!is_string($architecture)) {
+            throw new BadRequestHttpException('Invalid request');
+        }
+
+        $architectureRequest = new ArchitectureRequest($architecture);
 
         $errors = $this->validator->validate($architectureRequest);
         if ($errors->count() > 0) {

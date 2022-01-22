@@ -40,10 +40,12 @@ class OpenSearchFixturesHandler
                 );
             }
             $result = json_decode((string)file_get_contents($filename), true);
+            assert(is_array($result));
         } elseif ($this->mode == 'write') {
             /** @var CompletedFutureArray $response */
             $response = ($this->defaultHandler)($request);
             $result = $response->wait();
+            assert(is_array($result));
 
             if (is_resource($result['body'])) {
                 $result['body'] = stream_get_contents($result['body']);

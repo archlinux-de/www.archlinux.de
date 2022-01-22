@@ -28,6 +28,7 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
         $this->assertIsString($response->getContent());
         $this->assertJson($response->getContent());
         $jsonArray = json_decode($response->getContent(), true);
+        $this->assertIsArray($jsonArray);
         $this->assertEquals(1, $jsonArray['count']);
         $this->assertEquals(1, $jsonArray['total']);
         $this->assertCount(1, $jsonArray['items']);

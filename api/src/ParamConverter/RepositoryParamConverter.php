@@ -18,7 +18,12 @@ class RepositoryParamConverter implements ParamConverterInterface
 
     public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $repositoryRequest = new RepositoryRequest($request->get('repository', ''));
+        $repository = $request->get('repository', '');
+        if (!is_string($repository)) {
+            throw new BadRequestHttpException('Invalid request');
+        }
+
+        $repositoryRequest = new RepositoryRequest($repository);
 
         $errors = $this->validator->validate($repositoryRequest);
         if ($errors->count() > 0) {

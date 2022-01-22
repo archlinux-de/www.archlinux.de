@@ -18,7 +18,12 @@ class TermParamConverter implements ParamConverterInterface
 
     public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $termRequest = new TermRequest($request->get('term', ''));
+        $term = $request->get('term', '');
+        if (!is_string($term)) {
+            throw new BadRequestHttpException('Invalid request');
+        }
+
+        $termRequest = new TermRequest($term);
 
         $errors = $this->validator->validate($termRequest);
         if ($errors->count() > 0) {

@@ -244,41 +244,4 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertEquals($glibcNg64->getId(), $databaseGlibc->getId());
     }
-
-    public function testFindWithTargets(): void
-    {
-        $entityManager = $this->getEntityManager();
-
-        $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = new Package(
-            $coreRepository,
-            'pacman',
-            '5.0.2-2',
-            Architecture::X86_64
-        );
-        $glibc = new Package(
-            $coreRepository,
-            'glibc',
-            '2.26-10',
-            Architecture::X86_64
-        );
-        $pacman->addDependency(new Dependency('glibc'));
-        $entityManager->persist($coreRepository);
-        $entityManager->persist($pacman);
-        $entityManager->persist($glibc);
-        $entityManager->flush();
-
-        /** @var AbstractRelationRepository $abstractRelationRepository */
-        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
-        $abstractRelationRepository->updateTargets();
-
-        $entityManager->flush();
-        $entityManager->clear();
-
-        $dependencies = $abstractRelationRepository->findWithTargets();
-
-        $this->assertCount(1, $dependencies);
-        $this->assertNotNull($dependencies[0]->getTarget());
-        $this->assertEquals($glibc->getId(), $dependencies[0]->getTarget()->getId());
-    }
 }

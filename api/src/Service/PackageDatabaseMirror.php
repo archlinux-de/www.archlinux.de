@@ -37,7 +37,8 @@ class PackageDatabaseMirror
                 )->getContent()
             );
             $this->lastUpdateHash = $contentHash;
-            return $this->lastUpdateHash !== (string)$lastLocalUpdateCache->get();
+            $cachedLastUpdateHash = $lastLocalUpdateCache->get();
+            return !is_string($cachedLastUpdateHash) || $this->lastUpdateHash !== $cachedLastUpdateHash;
         }
 
         return true;

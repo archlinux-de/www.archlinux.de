@@ -78,16 +78,4 @@ class AbstractRelationRepository extends ServiceEntityRepository
 
         return null;
     }
-
-    /**
-     * @return AbstractRelation[]
-     */
-    public function findWithTargets(): array
-    {
-        return $this
-            ->createQueryBuilder('relation')
-            ->where('relation.target IS NOT NULL')
-            ->getQuery()
-            ->getResult();
-    }
 }

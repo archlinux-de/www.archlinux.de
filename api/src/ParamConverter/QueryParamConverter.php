@@ -18,7 +18,12 @@ class QueryParamConverter implements ParamConverterInterface
 
     public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $queryRequest = new QueryRequest($request->get('query', ''));
+        $query = $request->get('query', '');
+        if (!is_string($query)) {
+            throw new BadRequestHttpException('Invalid request');
+        }
+
+        $queryRequest = new QueryRequest($query);
 
         $errors = $this->validator->validate($queryRequest);
         if ($errors->count() > 0) {

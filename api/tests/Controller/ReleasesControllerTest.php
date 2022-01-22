@@ -65,6 +65,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
         $this->assertIsString($client->getResponse()->getContent());
         $this->assertJson($client->getResponse()->getContent());
         $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
         $this->assertCount(1, $responseData['items']);
         $this->assertEquals('2018.01.01', $responseData['items'][0]['version']);
     }
