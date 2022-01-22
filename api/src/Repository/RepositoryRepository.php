@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\NonUniqueResultException;
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,9 +13,6 @@ class RepositoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Repository::class);
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     public function findByNameAndArchitecture(string $repoName, string $archName): ?Repository
     {
         return $this->createQueryBuilder('repository')

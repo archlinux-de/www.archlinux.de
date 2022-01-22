@@ -25,6 +25,7 @@ class Package
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Repository::class, fetch: 'EAGER', inversedBy: 'packages')]
+    #[ORM\JoinColumn(nullable: false)]
     #[Assert\Valid]
     private Repository $repository;
 
@@ -55,7 +56,7 @@ class Package
     #[Assert\All(
         new Assert\Length(min: 2, max: 100)
     )]
-    private array $groups = [];
+    private ?array $groups = [];
 
     #[ORM\Column(type: 'bigint')]
     #[Assert\Range(min: 0, max: 10737418240)]
@@ -188,12 +189,12 @@ class Package
     private Collection $checkDependencies;
 
     #[ORM\OneToOne(
-        inversedBy: 'package',
         targetEntity: Files::class,
         cascade: ['remove', 'persist'],
         fetch: 'LAZY',
         orphanRemoval: true
     )]
+    #[ORM\JoinColumn(nullable: false)]
     #[Assert\Valid]
     private Files $files;
 
@@ -429,7 +430,7 @@ class Package
      */
     public function getGroups(): array
     {
-        return $this->groups;
+        return $this->groups ?? [];
     }
 
     /**
@@ -438,7 +439,7 @@ class Package
      */
     public function setGroups(array $groups): Package
     {
-        $this->groups = $groups;
+        $this->groups = empty($groups) ? null : $groups;
         return $this;
     }
 

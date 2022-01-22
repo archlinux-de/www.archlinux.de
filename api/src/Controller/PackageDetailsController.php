@@ -10,7 +10,6 @@ use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
 use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
-use App\Repository\FilesRepository;
 use App\Repository\PackageRepository;
 use Doctrine\ORM\NoResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -22,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PackageDetailsController extends AbstractController
 {
-    public function __construct(private PackageRepository $packageRepository, private FilesRepository $filesRepository)
+    public function __construct(private PackageRepository $packageRepository)
     {
     }
 
@@ -31,7 +30,7 @@ class PackageDetailsController extends AbstractController
     public function filesAction(string $repository, string $architecture, string $name): Response
     {
         try {
-            $files = $this->filesRepository->getByPackageName($repository, $architecture, $name);
+            $files = $this->packageRepository->getByName($repository, $architecture, $name)->getFiles();
         } catch (NoResultException $e) {
             throw $this->createNotFoundException('Package not found', $e);
         }
