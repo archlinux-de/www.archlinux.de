@@ -9,5 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Provision extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'provisions')]
+    #[ORM\JoinColumn(nullable: false)]
     protected Package $source;
 }

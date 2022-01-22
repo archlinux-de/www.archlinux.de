@@ -9,5 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Dependency extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'dependencies')]
+    #[ORM\JoinColumn(nullable: false)]
     protected Package $source;
 }

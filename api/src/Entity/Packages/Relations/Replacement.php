@@ -9,5 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Replacement extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'replacements')]
+    #[ORM\JoinColumn(nullable: false)]
     protected Package $source;
 }

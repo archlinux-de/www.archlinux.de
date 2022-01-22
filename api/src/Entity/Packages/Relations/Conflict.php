@@ -9,5 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Conflict extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'conflicts')]
+    #[ORM\JoinColumn(nullable: false)]
     protected Package $source;
 }
