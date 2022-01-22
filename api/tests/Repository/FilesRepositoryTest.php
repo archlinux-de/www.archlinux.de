@@ -7,6 +7,7 @@ use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Repository\FilesRepository;
+use App\Repository\PackageRepository;
 use SymfonyDatabaseTest\DatabaseTestCase;
 
 class FilesRepositoryTest extends DatabaseTestCase
@@ -29,8 +30,8 @@ class FilesRepositoryTest extends DatabaseTestCase
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var FilesRepository $filesRepository */
         $filesRepository = $entityManager->getRepository(Files::class);
+        $this->assertInstanceOf(FilesRepository::class, $filesRepository);
         $files = $filesRepository->getByPackageName('core', Architecture::X86_64, 'pacman');
         $this->assertEquals($filesArray, [...$files]);
     }
@@ -53,10 +54,12 @@ class FilesRepositoryTest extends DatabaseTestCase
         $entityManager->clear();
 
         $packageRepository = $entityManager->getRepository(Package::class);
-        $pacman = $packageRepository->find($pacman->getId());
-        $this->assertNotNull($pacman);
-        $pacman->setFiles(Files::createFromArray(['ust/lib']));
-        $entityManager->persist($pacman);
+        $this->assertInstanceOf(PackageRepository::class, $packageRepository);
+        $persistedPacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Package::class, $persistedPacman);
+        $this->assertNotNull($persistedPacman);
+        $persistedPacman->setFiles(Files::createFromArray(['ust/lib']));
+        $entityManager->persist($persistedPacman);
         $entityManager->flush();
         $entityManager->clear();
 
