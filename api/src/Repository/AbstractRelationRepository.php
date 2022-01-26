@@ -33,6 +33,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
+        assert(is_array($candidates));
         if (count($candidates) > 0) {
             $relationRepository = $relation->getSource()->getRepository();
             /** @var Package $candidate */
