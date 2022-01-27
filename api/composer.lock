@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4251586bdabc798bc982be762b2af52",
+    "content-hash": "8f6ab6e84ac120eea31afddf2660ada9",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -6220,16 +6220,16 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "1.2.2",
+            "version": "1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "5fa8fefdf7d3b41ada096c0271250e2faf1d6adc"
+                "reference": "46256c90118589b9d823cb8352c0abcd325ec8ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/5fa8fefdf7d3b41ada096c0271250e2faf1d6adc",
-                "reference": "5fa8fefdf7d3b41ada096c0271250e2faf1d6adc",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/46256c90118589b9d823cb8352c0abcd325ec8ff",
+                "reference": "46256c90118589b9d823cb8352c0abcd325ec8ff",
                 "shasum": ""
             },
             "require": {
@@ -6285,9 +6285,9 @@
             "description": "Doctrine extensions for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
-                "source": "https://github.com/phpstan/phpstan-doctrine/tree/1.2.2"
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/1.2.7"
             },
-            "time": "2022-01-21T21:06:44+00:00"
+            "time": "2022-01-25T13:05:19+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -6736,16 +6736,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.12",
+            "version": "9.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "93d4bf4c37aec6384bb9e5d390d9049a463a7256"
+                "reference": "597cb647654ede35e43b137926dfdfef0fb11743"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/93d4bf4c37aec6384bb9e5d390d9049a463a7256",
-                "reference": "93d4bf4c37aec6384bb9e5d390d9049a463a7256",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/597cb647654ede35e43b137926dfdfef0fb11743",
+                "reference": "597cb647654ede35e43b137926dfdfef0fb11743",
                 "shasum": ""
             },
             "require": {
@@ -6823,7 +6823,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.12"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.13"
             },
             "funding": [
                 {
@@ -6835,7 +6835,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-21T05:54:47+00:00"
+            "time": "2022-01-24T07:33:35+00:00"
         },
         {
             "name": "pierres/doctrine-migrations-test",
