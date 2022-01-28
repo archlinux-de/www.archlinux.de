@@ -35,14 +35,14 @@ init: start
 
 start:
 	{{COMPOSE}} up -d
-	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
-	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 60
+	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=20 ping
+	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 120
 	@echo URL: http://localhost:${PORT}
 
 start-db:
 	{{COMPOSE}} up -d mariadb opensearch
-	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=10 ping
-	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 60
+	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=20 ping
+	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 120
 
 stop:
 	{{COMPOSE}} stop
