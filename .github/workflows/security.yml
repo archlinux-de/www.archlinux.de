@@ -2,7 +2,7 @@ name: security
 
 on:
   schedule:
-    - cron: '0 5 */1 * *'
+    - cron: '0 5 */7 * *'
 
 jobs:
   security:
