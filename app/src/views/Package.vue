@@ -147,7 +147,7 @@
           "fileSize": "{{ prettyBytes(pkg.compressedSize, { maximumFractionDigits: 0 }) }}",
           "dateModified": "{{ (new Date(pkg.buildDate)).toJSON() }}",
           "softwareVersion": "{{ pkg.version }}",
-          "description": "{{ pkg.description }}",
+          "description": "{{ JSON.stringify(pkg.description) }}",
           "url": "{{ pkg.url }}",
           "offers": {
             "@type": "Offer",

@@ -24,7 +24,7 @@
         {
           "@context": "https://schema.org",
           "@type": "NewsArticle",
-          "headline": "{{ news.title }}",
+          "headline": "{{ JSON.stringify(news.title) }}",
           "datePublished": "{{ (new Date(news.lastModified)).toJSON() }}",
           "author": [
             {
