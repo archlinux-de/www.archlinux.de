@@ -28,7 +28,7 @@
         "symfony/console": "^6.0.3",
         "symfony/dotenv": "^6.0.3",
         "symfony/expression-language": "^6.0.3",
-        "symfony/flex": "^2.1.5",
+        "symfony/flex": "^2.1.6",
         "symfony/framework-bundle": "^6.0.4",
         "symfony/http-client": "^6.0.3",
         "symfony/lock": "^6.0.3",
