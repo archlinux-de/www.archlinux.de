@@ -14,6 +14,7 @@ class CountryFetcher implements \IteratorAggregate
     public function getIterator(): \Traversable
     {
         foreach ($this->iso3166 as $iso3166Country) {
+            assert(is_array($iso3166Country));
             yield (new Country($iso3166Country['alpha2']))->setName($iso3166Country['name']);
         }
     }
