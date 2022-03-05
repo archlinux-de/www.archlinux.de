@@ -27,14 +27,13 @@
   }
 </style>
 
-<script>
-export default {
-  props: {
-    absolute: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
+<script setup>
+import { defineProps } from 'vue'
+defineProps({
+  absolute: {
+    type: Boolean,
+    required: false,
+    default: false
   }
-}
+})
 </script>

@@ -15,59 +15,51 @@
 }
 </style>
 
-<script>
+<script setup>
+import { defineProps, computed } from 'vue'
 /* eslint-disable import/no-webpack-loader-syntax */
 import starFill from '!!svg-inline-loader!bootstrap-icons/icons/star-fill.svg'
 import starHalf from '!!svg-inline-loader!bootstrap-icons/icons/star-half.svg'
 import star from '!!svg-inline-loader!bootstrap-icons/icons/star.svg'
 /* eslint-enable */
 
-export default {
-  inject: ['apiService'],
-  props: {
-    popularity: {
-      type: Object,
-      required: true,
-      default: null,
-      validator: value => value.popularity >= 0 && value.popularity <= 100
-    },
-    stars: {
-      type: Number,
-      required: false,
-      default: 5,
-      validator: value => value > 0
-    }
+const props = defineProps({
+  popularity: {
+    type: Object,
+    required: true,
+    default: null,
+    validator: value => value.popularity >= 0 && value.popularity <= 100
   },
-  data () {
-    return {
-      starFill,
-      starHalf,
-      star
-    }
-  },
-  computed: {
-    popularityLabel: function () {
-      return (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 })).format(this.popularity.popularity) +
-        '%' + (this.popularity.count ? `, ${this.popularity.count} von ${this.popularity.samples}` : '')
-    },
-    fullStars: function () {
-      if (this.popularity.popularity <= 0 || this.stars < 1) {
-        return 0
-      }
-      if (this.popularity.popularity > 100) {
-        return this.stars
-      }
-      return Math.floor(this.popularity.popularity / 100 * this.stars)
-    },
-    halfStars: function () {
-      if (this.popularity.popularity > 100 || this.popularity.popularity <= 0 || this.stars < 1) {
-        return 0
-      }
-      return (Math.ceil(this.popularity.popularity / 100 * this.stars) - Math.floor(this.popularity.popularity / 100 * this.stars)) >= 0.5 ? 1 : 0
-    },
-    emptyStars: function () {
-      return this.stars - this.fullStars - this.halfStars
-    }
+  stars: {
+    type: Number,
+    required: false,
+    default: 5,
+    validator: value => value > 0
   }
-}
+})
+
+const popularityLabel = computed(() =>
+  (new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2 }))
+    .format(props.popularity.popularity) + '%' +
+  (props.popularity.count ? `, ${props.popularity.count} von ${props.popularity.samples}` : '')
+)
+
+const fullStars = computed(() => {
+  if (props.popularity.popularity <= 0 || props.stars < 1) {
+    return 0
+  }
+  if (props.popularity.popularity > 100) {
+    return props.stars
+  }
+  return Math.floor(props.popularity.popularity / 100 * props.stars)
+})
+
+const halfStars = computed(() => {
+  if (props.popularity.popularity > 100 || props.popularity.popularity <= 0 || props.stars < 1) {
+    return 0
+  }
+  return (Math.ceil(props.popularity.popularity / 100 * props.stars) - Math.floor(props.popularity.popularity / 100 * props.stars)) >= 0.5 ? 1 : 0
+})
+
+const emptyStars = computed(() => props.stars - fullStars.value - halfStars.value)
 </script>

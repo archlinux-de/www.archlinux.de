@@ -10,47 +10,38 @@
   </div>
 </template>
 
-<script>
-export default {
-  inject: ['apiService'],
-  props: {
-    repository: {
-      type: String,
-      required: true
-    },
-    architecture: {
-      type: String,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    }
+<script setup>
+import { inject, defineProps, ref, watch } from 'vue'
+
+const props = defineProps({
+  repository: {
+    type: String,
+    required: true
   },
-  data () {
-    return {
-      files: []
-    }
+  architecture: {
+    type: String,
+    required: true
   },
-  methods: {
-    fetchFiles () {
-      this.apiService.fetchPackageFiles(
-        this.repository,
-        this.architecture,
-        this.name)
-        .then(data => {
-          this.files = data.length ? data : ['Das Paket enthält keine Dateien']
-        })
-        .catch(() => {})
-    }
-  },
-  watch: {
-    $props: {
-      handler () {
-        this.files = []
-      },
-      deep: true
-    }
+  name: {
+    type: String,
+    required: true
   }
+})
+
+const apiService = inject('apiService')
+
+const files = ref([])
+
+const fetchFiles = () => {
+  apiService.fetchPackageFiles(
+    props.repository,
+    props.architecture,
+    props.name)
+    .then(data => {
+      files.value = data.length ? data : ['Das Paket enthält keine Dateien']
+    })
+    .catch(() => {})
 }
+
+watch(props, () => { files.value = [] }, { deep: true })
 </script>

@@ -16,53 +16,42 @@
   </div>
 </template>
 
-<script>
-export default {
-  inject: ['apiService'],
-  props: {
-    repository: {
-      type: String,
-      required: true
-    },
-    architecture: {
-      type: String,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    type: {
-      type: String,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    }
+<script setup>
+import { inject, defineProps, ref, onMounted, watch } from 'vue'
+
+const props = defineProps({
+  repository: {
+    type: String,
+    required: true
   },
-  data () {
-    return {
-      relations: []
-    }
+  architecture: {
+    type: String,
+    required: true
   },
-  methods: {
-    fetchRelations () {
-      this.apiService.fetchPackageDependencies(this.repository, this.architecture, this.name, this.type)
-        .then(data => { this.relations = data })
-        .catch(() => {})
-    }
+  name: {
+    type: String,
+    required: true
   },
-  mounted () {
-    this.fetchRelations()
+  type: {
+    type: String,
+    required: true
   },
-  watch: {
-    $props: {
-      handler () {
-        this.fetchRelations()
-      },
-      deep: true
-    }
+  title: {
+    type: String,
+    required: true
   }
+})
+
+const apiService = inject('apiService')
+
+const relations = ref([])
+
+const fetchRelations = () => {
+  apiService.fetchPackageDependencies(props.repository, props.architecture, props.name, props.type)
+    .then(data => { relations.value = data })
+    .catch(() => {})
 }
+
+onMounted(() => fetchRelations())
+watch(props, () => fetchRelations(), { deep: true })
 </script>

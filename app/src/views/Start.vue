@@ -123,29 +123,19 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 import PackageSearch from '../components/PackageSearch'
 import NewsItemList from '../components/NewsItemList'
 import RecentPackages from '../components/RecentPackages'
 
-export default {
-  components: {
-    Head,
-    PackageSearch,
-    NewsItemList,
-    RecentPackages
-  },
-  methods: {
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({ name: 'start' }).href
-    },
-    createSearchTemplateUrl () {
-      return window.location.origin + this.$router.resolve({
-        name: 'packages',
-        query: { search: '__search__' }
-      }).href.replace('__search__', '{search}')
-    }
-  }
-}
+const router = useRouter()
+
+const createCanonical = () => window.location.origin + router.resolve({ name: 'start' }).href
+
+const createSearchTemplateUrl = () => window.location.origin + router.resolve({
+  name: 'packages',
+  query: { search: '__search__' }
+}).href.replace('__search__', '{search}')
 </script>

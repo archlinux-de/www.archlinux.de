@@ -29,37 +29,32 @@
   </div>
 </template>
 
-<script>
-export default {
-  inject: ['apiService'],
-  props: {
-    limit: {
-      type: Number,
-      required: false,
-      default: 10
-    }
-  },
-  data () {
-    return {
-      packages: this.createInitialPackageList()
-    }
-  },
-  methods: {
-    fetchPackages () {
-      this.apiService.fetchPackages({ limit: this.limit })
-        .then(data => { this.packages = data.items })
-        .catch(() => {})
-    },
-    createInitialPackageList () {
-      return Array.from({ length: this.limit }, () => ({
-        name: String.fromCharCode(8239),
-        version: '',
-        repository: { name: ' ', architecture: ' ' }
-      }))
-    }
-  },
-  mounted () {
-    this.fetchPackages()
+<script setup>
+import { inject, ref, onMounted, defineProps } from 'vue'
+
+const apiService = inject('apiService')
+
+const props = defineProps({
+  limit: {
+    type: Number,
+    required: false,
+    default: 10
   }
+})
+
+const createInitialPackageList = () => Array.from({ length: props.limit }, () => ({
+  name: String.fromCharCode(8239),
+  version: '',
+  repository: { name: ' ', architecture: ' ' }
+}))
+
+const packages = ref(createInitialPackageList())
+
+const fetchPackages = () => {
+  apiService.fetchPackages({ limit: props.limit })
+    .then(data => { packages.value = data.items })
+    .catch(() => {})
 }
+
+onMounted(() => fetchPackages())
 </script>

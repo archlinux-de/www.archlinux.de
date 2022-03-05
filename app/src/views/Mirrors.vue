@@ -66,117 +66,103 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, onMounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 
-export default {
-  components: {
-    Head
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      query: this.$route.query.search ?? '',
-      items: [],
-      total: null,
-      count: null,
-      offset: 0,
-      error: null,
-      limit: 25
-    }
-  },
-  watch: {
-    query () {
-      this.$router.replace({ query: this.getQuery() })
-      this.fetchMirrors()
-    },
-    offset () {
-      this.fetchMirrors()
-    }
-  },
-  computed: {
-    hasNext: function () {
-      return this.total && this.total <= this.offset + this.limit
-    },
-    hasPrevious: function () {
-      return this.offset <= 0
-    }
-  },
-  methods: {
-    fetchMirrors () {
-      return this.apiService.fetchMirrors({
-        query: this.query,
-        limit: this.limit,
-        offset: this.offset
-      })
-        .then(data => {
-          this.items = data.items
-          this.total = data.total
-          this.count = data.count
-          this.offset = data.offset
-          this.error = null
-        })
-        .catch(error => {
-          this.items = []
-          this.total = null
-          this.count = null
-          this.offset = 0
-          this.error = error
-        })
-    },
-    renderDuration (data) {
-      if (data) {
-        if (data < 0) {
-          data = 0
-        }
+const router = useRouter()
 
-        let unit = 's'
-        const secondsPerMinute = 60
-        const secondsPerHour = secondsPerMinute * 60
-        const secondsPerDay = secondsPerHour * 24
-        if (data >= secondsPerDay) {
-          unit = 'd'
-          data = data / secondsPerDay
-        } else if (data >= secondsPerHour) {
-          unit = 'h'
-          data = data / secondsPerHour
-        } else if (data >= secondsPerMinute) {
-          unit = 'min'
-          data = data / secondsPerMinute
-        }
+const apiService = inject('apiService')
 
-        return new Intl.NumberFormat('de-DE').format(data) + ' ' + unit
-      }
-      return data
-    },
-    getQuery () {
-      const query = {}
-      if (this.$data.query) {
-        query.search = this.$data.query
-      }
-      return query
-    },
-    next () {
-      if (this.hasNext) {
-        return
-      }
-      this.offset += this.limit
-    },
-    previous () {
-      if (this.hasPrevious) {
-        return
-      }
-      this.offset -= this.limit
-    },
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({
-        name: 'mirrors',
-        query: this.getQuery()
-      }).href
+const query = ref(useRoute().query.search ?? '')
+const items = ref([])
+const total = ref(null)
+const count = ref(null)
+const offset = ref(0)
+const error = ref(null)
+const limit = ref(25)
+
+const hasNext = computed(() => total.value && total.value <= offset.value + limit.value)
+const hasPrevious = computed(() => offset.value <= 0)
+
+const fetchMirrors = () => apiService.fetchMirrors({
+  query: query.value,
+  limit: limit.value,
+  offset: offset.value
+})
+  .then(data => {
+    items.value = data.items
+    total.value = data.total
+    count.value = data.count
+    offset.value = data.offset
+    error.value = null
+  })
+  .catch(err => {
+    items.value = []
+    total.value = null
+    count.value = null
+    offset.value = 0
+    error.value = err
+  })
+
+const renderDuration = (data) => {
+  if (data) {
+    if (data < 0) {
+      data = 0
     }
-  },
-  mounted () {
-    this.fetchMirrors()
+
+    let unit = 's'
+    const secondsPerMinute = 60
+    const secondsPerHour = secondsPerMinute * 60
+    const secondsPerDay = secondsPerHour * 24
+    if (data >= secondsPerDay) {
+      unit = 'd'
+      data = data / secondsPerDay
+    } else if (data >= secondsPerHour) {
+      unit = 'h'
+      data = data / secondsPerHour
+    } else if (data >= secondsPerMinute) {
+      unit = 'min'
+      data = data / secondsPerMinute
+    }
+
+    return new Intl.NumberFormat('de-DE').format(data) + ' ' + unit
   }
+  return data
 }
+
+const getQuery = () => {
+  const q = {}
+  if (query.value) {
+    q.search = query.value
+  }
+  return q
+}
+
+const next = () => {
+  if (hasNext.value) {
+    return
+  }
+  offset.value += limit.value
+}
+
+const previous = () => {
+  if (hasPrevious.value) {
+    return
+  }
+  offset.value -= limit.value
+}
+
+const createCanonical = () => window.location.origin + router.resolve({
+  name: 'mirrors',
+  query: getQuery()
+}).href
+
+watch(query, () => {
+  router.replace({ query: getQuery() })
+  fetchMirrors()
+})
+watch(offset, () => { fetchMirrors() })
+onMounted(() => { fetchMirrors() })
 </script>

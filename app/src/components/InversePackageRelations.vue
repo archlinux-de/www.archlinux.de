@@ -15,53 +15,42 @@
   </div>
 </template>
 
-<script>
-export default {
-  inject: ['apiService'],
-  props: {
-    repository: {
-      type: String,
-      required: true
-    },
-    architecture: {
-      type: String,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    type: {
-      type: String,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    }
+<script setup>
+import { inject, defineProps, ref, onMounted, watch } from 'vue'
+
+const props = defineProps({
+  repository: {
+    type: String,
+    required: true
   },
-  data () {
-    return {
-      relations: []
-    }
+  architecture: {
+    type: String,
+    required: true
   },
-  methods: {
-    fetchInverseRelations () {
-      this.apiService.fetchPackageInverseDependencies(this.repository, this.architecture, this.name, this.type)
-        .then(data => { this.relations = data })
-        .catch(() => {})
-    }
+  name: {
+    type: String,
+    required: true
   },
-  mounted () {
-    this.fetchInverseRelations()
+  type: {
+    type: String,
+    required: true
   },
-  watch: {
-    $props: {
-      handler () {
-        this.fetchInverseRelations()
-      },
-      deep: true
-    }
+  title: {
+    type: String,
+    required: true
   }
+})
+
+const apiService = inject('apiService')
+
+const relations = ref([])
+
+const fetchInverseRelations = () => {
+  apiService.fetchPackageInverseDependencies(props.repository, props.architecture, props.name, props.type)
+    .then(data => { relations.value = data })
+    .catch(() => {})
 }
+
+onMounted(() => fetchInverseRelations())
+watch(props, () => fetchInverseRelations(), { deep: true })
 </script>

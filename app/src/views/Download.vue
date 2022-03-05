@@ -97,48 +97,41 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import prettyBytes from 'pretty-bytes'
 import { Head } from '@vueuse/head'
 
-export default {
-  components: {
-    Head
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      release: {},
-      mirrors: [],
-      error: ''
-    }
-  },
-  methods: {
-    fetchLatestRelease () {
-      this.apiService.fetchReleases({ limit: 1, onlyAvailable: true })
-        .then(data => {
-          this.release = data.items[0]
-        })
-        .catch(error => {
-          this.error = error
-        })
-    },
-    fetchMirrors () {
-      this.apiService.fetchMirrors({ limit: 10 })
-        .then(data => {
-          this.mirrors = data.items
-        })
-        .catch(() => {
-        })
-    },
-    prettyBytes,
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({ name: 'download' }).href
-    }
-  },
-  mounted () {
-    this.fetchLatestRelease()
-    this.fetchMirrors()
-  }
+const apiService = inject('apiService')
+
+const release = ref({})
+const mirrors = ref([])
+const error = ref('')
+
+const fetchLatestRelease = () => {
+  apiService.fetchReleases({ limit: 1, onlyAvailable: true })
+    .then(data => {
+      release.value = data.items[0]
+    })
+    .catch(error => {
+      error.value = error
+    })
 }
+
+const fetchMirrors = () => {
+  apiService.fetchMirrors({ limit: 10 })
+    .then(data => {
+      mirrors.value = data.items
+    })
+    .catch(() => {
+    })
+}
+
+const createCanonical = () => window.location.origin + useRouter().resolve({ name: 'download' }).href
+
+onMounted(() => {
+  fetchLatestRelease()
+  fetchMirrors()
+})
 </script>

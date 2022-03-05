@@ -86,141 +86,132 @@
   }
 </style>
 
-<script>
+<script setup>
+import { inject, ref, watch, onMounted, computed } from 'vue'
+import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router'
 import { Head } from '@vueuse/head'
 import PackagePopularity from '../components/PackagePopularity'
 
-export default {
-  components: {
-    Head,
-    PackagePopularity
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      query: this.$route.query.search ?? '',
-      architecture: this.$route.query.architecture ?? '',
-      repository: this.$route.query.repository ?? '',
-      items: [],
-      total: null,
-      count: null,
-      offset: 0,
-      architectures: [],
-      repositories: [],
-      error: null,
-      limit: 25
-    }
-  },
-  watch: {
-    query () {
-      if (this.query.length > 255) {
-        this.query = this.query.substring(0, 255)
-      }
+const route = useRoute()
+const router = useRouter()
+const apiService = inject('apiService')
 
-      this.query = this.query.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
+const query = ref(route.query.search ?? '')
+const architecture = ref(route.query.architecture ?? '')
+const repository = ref(route.query.repository ?? '')
+const items = ref([])
+const total = ref(null)
+const count = ref(null)
+const offset = ref(0)
+const architectures = ref([])
+const repositories = ref([])
+const error = ref(null)
+const limit = ref(25)
 
-      this.updateRoute()
-      this.fetchPackages()
-    },
-    repository () {
-      this.updateRoute()
-      this.fetchPackages()
-    },
-    architecture () {
-      this.updateRoute()
-      this.fetchPackages()
-    },
-    offset () {
-      this.fetchPackages()
-    }
-  },
-  beforeRouteUpdate (to, from, next) {
-    next()
-    if (from.query.architecture !== to.query.architecture || from.query.repository !== to.query.repository) {
-      this.$data.architecture = to.query.architecture
-      this.$data.repository = to.query.repository
-      this.fetchPackages()
-    }
-  },
-  computed: {
-    hasNext: function () {
-      return this.total && this.total <= this.offset + this.limit
-    },
-    hasPrevious: function () {
-      return this.offset <= 0
-    }
-  },
-  methods: {
-    fetchPackages () {
-      return this.apiService.fetchPackages({
-        query: this.query,
-        limit: this.limit,
-        offset: this.offset,
-        architecture: this.architecture,
-        repository: this.repository
-      })
-        .then(data => {
-          this.items = data.items
-          this.total = data.total
-          this.count = data.count
-          this.offset = data.offset
-          this.repositories = ['', ...data.repositories]
-          this.architectures = ['', ...data.architectures]
-          this.error = null
-        })
-        .catch(error => {
-          this.items = []
-          this.total = null
-          this.count = null
-          this.offset = 0
-          this.repositories = []
-          this.architectures = []
-          this.error = error
-        })
-    },
-    getQuery () {
-      const query = {}
-      if (this.$data.architecture) {
-        query.architecture = this.$data.architecture
-      }
-      if (this.$data.repository) {
-        query.repository = this.$data.repository
-      }
-      if (this.$data.query) {
-        query.search = this.$data.query
-      }
-      return query
-    },
-    updateRoute () {
-      const fromQuery = this.$route.query
-      const toQuery = this.getQuery()
-      if (fromQuery.architecture !== toQuery.architecture ||
-        fromQuery.repository !== toQuery.repository ||
-        fromQuery.search !== toQuery.search) {
-        this.$router.replace({ query: toQuery })
-      }
-    },
-    next () {
-      if (this.hasNext) {
-        return
-      }
-      this.offset += this.limit
-    },
-    previous () {
-      if (this.hasPrevious) {
-        return
-      }
-      this.offset -= this.limit
-    },
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({
-        name: 'packages',
-        query: this.getQuery()
-      }).href
-    }
-  },
-  mounted () {
-    this.fetchPackages()
+onBeforeRouteUpdate((to, from, next) => {
+  next()
+  if (from.query.architecture !== to.query.architecture || from.query.repository !== to.query.repository) {
+    this.$data.architecture = to.query.architecture
+    this.$data.repository = to.query.repository
+    fetchPackages()
+  }
+})
+
+const hasNext = computed(() => total.value && total.value <= offset.value + limit.value)
+const hasPrevious = computed(() => offset.value <= 0)
+
+const fetchPackages = () => apiService.fetchPackages({
+  query: query.value,
+  limit: limit.value,
+  offset: offset.value,
+  architecture: architecture.value,
+  repository: repository.value
+})
+  .then(data => {
+    items.value = data.items
+    total.value = data.total
+    count.value = data.count
+    offset.value = data.offset
+    repositories.value = ['', ...data.repositories]
+    architectures.value = ['', ...data.architectures]
+    error.value = null
+  })
+  .catch(err => {
+    items.value = []
+    total.value = null
+    count.value = null
+    offset.value = 0
+    repositories.value = []
+    architectures.value = []
+    error.value = err
+  })
+
+const getQuery = () => {
+  const q = {}
+  if (architecture.value) {
+    q.architecture = architecture.value
+  }
+  if (repository.value) {
+    q.repository = repository.value
+  }
+  if (query.value) {
+    q.search = query.value
+  }
+  return q
+}
+
+const updateRoute = () => {
+  const fromQuery = route.query
+  const toQuery = getQuery()
+  if (fromQuery.architecture !== toQuery.architecture ||
+    fromQuery.repository !== toQuery.repository ||
+    fromQuery.search !== toQuery.search) {
+    router.replace({ query: toQuery })
   }
 }
+
+const next = () => {
+  if (hasNext.value) {
+    return
+  }
+  offset.value += limit.value
+}
+
+const previous = () => {
+  if (hasPrevious.value) {
+    return
+  }
+  offset.value -= limit.value
+}
+
+const createCanonical = () => window.location.origin + router.resolve({
+  name: 'packages',
+  query: getQuery()
+}).href
+
+watch(query, () => {
+  if (query.value.length > 255) {
+    query.value = query.value.substring(0, 255)
+  }
+
+  query.value = query.value.replace(/(^[^a-zA-Z0-9]|[^a-zA-Z0-9@:.+_\- ]+)/, '')
+
+  updateRoute()
+  fetchPackages()
+})
+watch(repository, () => {
+  updateRoute()
+  fetchPackages()
+})
+watch(architecture, () => {
+  updateRoute()
+  fetchPackages()
+})
+watch(offset, () => {
+  fetchPackages()
+})
+
+onMounted(() => {
+  fetchPackages()
+})
 </script>

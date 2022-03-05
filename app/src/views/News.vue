@@ -56,92 +56,79 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, onMounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 
-export default {
-  components: {
-    Head
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      query: this.$route.query.search ?? '',
-      items: [],
-      total: null,
-      count: null,
-      offset: 0,
-      error: null,
-      limit: 25
-    }
-  },
-  watch: {
-    query () {
-      this.$router.replace({ query: this.getQuery() })
-      this.fetchNews()
-    },
-    offset () {
-      this.fetchNews()
-    }
-  },
-  computed: {
-    hasNext: function () {
-      return this.total && this.total <= this.offset + this.limit
-    },
-    hasPrevious: function () {
-      return this.offset <= 0
-    }
-  },
-  methods: {
-    fetchNews () {
-      return this.apiService.fetchNewsItems({
-        query: this.query,
-        limit: this.limit,
-        offset: this.offset
-      })
-        .then(data => {
-          this.items = data.items
-          this.total = data.total
-          this.count = data.count
-          this.offset = data.offset
-          this.error = null
-        })
-        .catch(error => {
-          this.items = []
-          this.total = null
-          this.count = null
-          this.offset = 0
-          this.error = error
-        })
-    },
-    getQuery () {
-      const query = {}
-      if (this.$data.query) {
-        query.search = this.$data.query
-      }
-      return query
-    },
-    next () {
-      if (this.hasNext) {
-        return
-      }
-      this.offset += this.limit
-    },
-    previous () {
-      if (this.hasPrevious) {
-        return
-      }
-      this.offset -= this.limit
-    },
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({
-        name: 'news',
-        query: this.getQuery()
-      }).href
-    }
-  },
-  mounted () {
-    this.fetchNews()
+const router = useRouter()
+
+const apiService = inject('apiService')
+
+const query = ref(useRoute().query.search ?? '')
+const items = ref([])
+const total = ref(null)
+const count = ref(null)
+const offset = ref(0)
+const error = ref(null)
+const limit = ref(25)
+
+const hasNext = computed(() => total.value && total.value <= offset.value + limit.value)
+const hasPrevious = computed(() => offset.value <= 0)
+
+const fetchNews = () => apiService.fetchNewsItems({
+  query: query.value,
+  limit: limit.value,
+  offset: offset.value
+})
+  .then(data => {
+    items.value = data.items
+    total.value = data.total
+    count.value = data.count
+    offset.value = data.offset
+    error.value = null
+  })
+  .catch(err => {
+    items.value = []
+    total.value = null
+    count.value = null
+    offset.value = 0
+    error.value = err
+  })
+
+const getQuery = () => {
+  const q = {}
+  if (query.value) {
+    q.search = query.value
   }
+  return q
 }
+
+const next = () => {
+  if (hasNext.value) {
+    return
+  }
+  offset.value += limit.value
+}
+
+const previous = () => {
+  if (hasPrevious.value) {
+    return
+  }
+  offset.value -= limit.value
+}
+
+const createCanonical = () => window.location.origin + router.resolve({
+  name: 'news',
+  query: getQuery()
+}).href
+
+watch(query, () => {
+  router.replace({ query: getQuery() })
+  fetchNews()
+})
+
+watch(offset, () => { fetchNews() })
+
+onMounted(() => { fetchNews() })
 </script>

@@ -68,39 +68,31 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 import prettyBytes from 'pretty-bytes'
 
-export default {
-  components: {
-    Head
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      release: {},
-      error: ''
-    }
-  },
-  methods: {
-    fetchRelease () {
-      this.apiService.fetchRelease(this.$route.params.version)
-        .then(data => { this.release = data })
-        .catch(error => { this.error = error })
-    },
-    prettyBytes,
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({
-        name: 'release',
-        params: {
-          version: this.release.version
-        }
-      }).href
-    }
-  },
-  mounted () {
-    this.fetchRelease()
-  }
+const route = useRoute()
+const router = useRouter()
+const apiService = inject('apiService')
+
+const release = ref({})
+const error = ref('')
+
+const fetchRelease = () => {
+  apiService.fetchRelease(route.params.version)
+    .then(data => { release.value = data })
+    .catch(error => { error.value = error })
 }
+
+const createCanonical = () => window.location.origin + router.resolve({
+  name: 'release',
+  params: {
+    version: release.value.version
+  }
+}).href
+
+onMounted(() => { fetchRelease() })
 </script>

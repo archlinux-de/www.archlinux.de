@@ -27,35 +27,27 @@
   }
 </style>
 
-<script>
+<script setup>
+import { inject, defineProps, ref, onMounted } from 'vue'
 import LoadingSpinner from './LoadingSpinner'
 
-export default {
-  inject: ['apiService'],
-  components: {
-    LoadingSpinner
-  },
-  props: {
-    limit: {
-      type: Number,
-      required: false,
-      default: 10
-    }
-  },
-  data () {
-    return {
-      newsItems: []
-    }
-  },
-  methods: {
-    fetchNewsItems () {
-      this.apiService.fetchNewsItems({ limit: this.limit })
-        .then(data => { this.newsItems = data.items })
-        .catch(() => {})
-    }
-  },
-  mounted () {
-    this.fetchNewsItems()
+const props = defineProps({
+  limit: {
+    type: Number,
+    required: false,
+    default: 10
   }
+})
+
+const apiService = inject('apiService')
+
+const newsItems = ref([])
+
+const fetchNewsItems = () => {
+  apiService.fetchNewsItems({ limit: props.limit })
+    .then(data => { newsItems.value = data.items })
+    .catch(() => {})
 }
+
+onMounted(() => fetchNewsItems())
 </script>

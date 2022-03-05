@@ -211,7 +211,9 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 import prettyBytes from 'pretty-bytes'
 import PackageRelations from '../components/PackageRelations'
@@ -219,110 +221,99 @@ import InversePackageRelations from '../components/InversePackageRelations'
 import PackageFiles from '../components/PackageFiles'
 import PackagePopularity from '../components/PackagePopularity'
 
-export default {
-  components: {
-    Head,
-    PackagePopularity,
-    PackageRelations,
-    InversePackageRelations,
-    PackageFiles
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      relations: [{
-        title: 'benötigt',
-        type: 'dependency'
-      }, {
-        title: 'optional',
-        type: 'optional-dependency'
-      }, {
-        title: 'stellt bereit',
-        type: 'provision'
-      }, {
-        title: 'ersetzt',
-        type: 'replacement'
-      }, {
-        title: 'kollidiert mit',
-        type: 'conflict'
-      }, {
-        title: 'zum bauen',
-        type: 'make-dependency'
-      }, {
-        title: 'zum testen',
-        type: 'check-dependency'
-      }],
-      inverseRelations: [{
-        title: 'benötigt von',
-        type: 'dependency'
-      }, {
-        title: 'optional für',
-        type: 'optional-dependency'
-      }, {
-        title: 'bauen für',
-        type: 'make-dependency'
-      }, {
-        title: 'testen für',
-        type: 'check-dependency'
-      }],
-      pkg: {},
-      canonical: '',
-      error: '',
-      suggestions: []
-    }
-  },
-  methods: {
-    fetchPackage () {
-      // @TODO: Avoid calling fetchPackage() when navigation off this page
-      if (!this.$route.params.repository || !this.$route.params.architecture || !this.$route.params.name) {
-        return
-      }
+const route = useRoute()
+const router = useRouter()
+const apiService = inject('apiService')
 
-      this.apiService.fetchPackage(
-        this.$route.params.repository,
-        this.$route.params.architecture,
-        this.$route.params.name)
-        .then(data => {
-          this.pkg = data
-          this.files = []
-          this.canonical = this.createCanonical()
+const relations = ref([{
+  title: 'benötigt',
+  type: 'dependency'
+}, {
+  title: 'optional',
+  type: 'optional-dependency'
+}, {
+  title: 'stellt bereit',
+  type: 'provision'
+}, {
+  title: 'ersetzt',
+  type: 'replacement'
+}, {
+  title: 'kollidiert mit',
+  type: 'conflict'
+}, {
+  title: 'zum bauen',
+  type: 'make-dependency'
+}, {
+  title: 'zum testen',
+  type: 'check-dependency'
+}])
 
-          if (this.$route.fullPath !== this.canonical) {
-            this.$router.replace(this.canonical)
-          }
-        })
-        .catch(error => {
-          this.pkg = {}
-          this.files = []
-          this.canonical = ''
-          this.error = error
-          this.apiService.fetchPackages({
-            query: this.$route.params.name,
-            limit: 5
-          })
-            .then(data => {
-              this.suggestions = data.items
-            })
-        })
-    },
-    createCanonical (absolute = false) {
-      return (absolute ? window.location.origin : '') + this.$router.resolve({
-        name: 'package',
-        params: {
-          repository: this.pkg.repository.name,
-          architecture: this.pkg.repository.architecture,
-          name: this.pkg.name
-        }
-      }).href
-    },
-    prettyBytes
-  },
-  created () {
-    this.$watch(
-      () => this.$route.params,
-      () => { this.fetchPackage() },
-      { immediate: true }
-    )
+const inverseRelations = ref([{
+  title: 'benötigt von',
+  type: 'dependency'
+}, {
+  title: 'optional für',
+  type: 'optional-dependency'
+}, {
+  title: 'bauen für',
+  type: 'make-dependency'
+}, {
+  title: 'testen für',
+  type: 'check-dependency'
+}])
+
+const pkg = ref({})
+const canonical = ref('')
+const error = ref('')
+const suggestions = ref([])
+const files = ref([])
+
+const fetchPackage = () => {
+  // @TODO: Avoid calling fetchPackage() when navigation off this page
+  if (!route.params.repository || !route.params.architecture || !route.params.name) {
+    return
   }
+
+  apiService.fetchPackage(
+    route.params.repository,
+    route.params.architecture,
+    route.params.name)
+    .then(data => {
+      pkg.value = data
+      files.value = []
+      canonical.value = createCanonical()
+
+      if (route.fullPath !== canonical.value) {
+        router.replace(canonical.value)
+      }
+    })
+    .catch(err => {
+      pkg.value = {}
+      files.value = []
+      canonical.value = ''
+      error.value = err
+      apiService.fetchPackages({
+        query: route.params.name,
+        limit: 5
+      })
+        .then(data => {
+          suggestions.value = data.items
+        })
+    })
 }
+
+const createCanonical = (absolute = false) => (absolute ? window.location.origin : '') + router.resolve({
+  name: 'package',
+  params: {
+    repository: pkg.value.repository.name,
+    architecture: pkg.value.repository.architecture,
+    name: pkg.value.name
+  }
+}).href
+
+watch(
+  () => route.params,
+  () => { fetchPackage() },
+  { immediate: true }
+)
 </script>

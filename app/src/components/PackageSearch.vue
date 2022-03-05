@@ -17,28 +17,23 @@
   </form>
 </template>
 
-<script>
-export default {
-  inject: ['apiService'],
-  data () {
-    return {
-      term: '',
-      options: []
-    }
-  },
-  methods: {
-    fetchData () {
-      if (this.term.length > 0) {
-        this.apiService.fetchPackageSuggestions(this.term)
-          .then(data => { this.options = data })
-          .catch(() => {})
-      } else {
-        this.options = []
-      }
-    }
-  },
-  watch: {
-    term () { this.fetchData() }
+<script setup>
+import { inject, ref, watch } from 'vue'
+
+const apiService = inject('apiService')
+
+const term = ref('')
+const options = ref([])
+
+const fetchData = () => {
+  if (term.value.length > 0) {
+    apiService.fetchPackageSuggestions(term.value)
+      .then(data => { options.value = data })
+      .catch(() => {})
+  } else {
+    options.value = []
   }
 }
+
+watch(term, () => fetchData())
 </script>

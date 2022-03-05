@@ -45,46 +45,36 @@
   </main>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 
-export default {
-  components: {
-    Head
-  },
-  inject: ['apiService'],
-  data () {
-    return {
-      news: {},
-      error: ''
-    }
-  },
-  methods: {
-    fetchNewsItem () {
-      this.apiService.fetchNewsItem(this.$route.params.id)
-        .then(data => {
-          this.news = data
-        })
-        .catch(error => {
-          this.error = error
-        })
-    },
-    createDescription () {
-      return new DOMParser()
-        .parseFromString(this.news.description, 'text/html')
-        .body
-        .textContent
-        .substr(0, 100)
-    },
-    createCanonical () {
-      return window.location.origin + this.$router.resolve({
-        name: 'news-item',
-        params: { id: this.news.id, slug: this.news.slug }
-      }).href
-    }
-  },
-  mounted () {
-    this.fetchNewsItem()
-  }
+const apiService = inject('apiService')
+
+const news = ref({})
+const error = ref('')
+
+const fetchNewsItem = () => {
+  apiService.fetchNewsItem(useRoute().params.id)
+    .then(data => {
+      news.value = data
+    })
+    .catch(err => {
+      error.value = err
+    })
 }
+
+const createDescription = () => new DOMParser()
+  .parseFromString(news.value.description, 'text/html')
+  .body
+  .textContent
+  .substr(0, 100)
+
+const createCanonical = () => window.location.origin + useRouter().resolve({
+  name: 'news-item',
+  params: { id: news.value.id, slug: news.value.slug }
+}).href
+
+onMounted(() => { fetchNewsItem() })
 </script>
