@@ -3,13 +3,13 @@ set dotenv-load := true
 export UID := `id -u`
 export GID := `id -g`
 
-COMPOSE := 'docker-compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p ' + env_var('PROJECT_NAME')
+COMPOSE := 'docker compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p ' + env_var('PROJECT_NAME')
 COMPOSE-RUN := COMPOSE + ' run --rm'
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
 NODE-RUN := COMPOSE-RUN + ' --no-deps app'
 MARIADB-RUN := COMPOSE-RUN + ' --no-deps mariadb'
-SYMFONY-RUN := 'docker-compose -f docker/symfony.yml ' + ' -p ' + env_var('PROJECT_NAME') + ' run --rm symfony'
+SYMFONY-RUN := 'docker compose -f docker/symfony.yml ' + ' -p ' + env_var('PROJECT_NAME') + ' run --rm symfony'
 
 default:
 	just --list
@@ -45,7 +45,7 @@ start-db:
 	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
 
 stop:
-	{{COMPOSE}} rm -vsf
+	{{COMPOSE}} stop
 
 # Load a (gzipped) database backup for local testing
 import-db-dump file name='www_archlinux_de': start
@@ -55,7 +55,8 @@ import-db-dump file name='www_archlinux_de': start
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
-clean: stop
+clean:
+	{{COMPOSE}} rm -vsf
 	git clean -fdqx -e .idea
 
 rebuild: clean

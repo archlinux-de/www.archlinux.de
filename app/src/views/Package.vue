@@ -312,7 +312,7 @@ const createCanonical = (absolute = false) => (absolute ? window.location.origin
 }).href
 
 watch(
-  route.params,
+  () => route.params,
   () => { fetchPackage() },
   { immediate: true }
 )
