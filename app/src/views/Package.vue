@@ -138,7 +138,7 @@
           :name="pkg.name"></package-files>
       </div>
 
-      <component :is="'script'" type="application/ld+json" v-if="!this.pkg.repository.testing && pkg.popularity.count > 0">
+      <component :is="'script'" type="application/ld+json" v-if="!pkg.repository.testing && pkg.popularity.count > 0">
         {
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
@@ -225,7 +225,7 @@ const route = useRoute()
 const router = useRouter()
 const apiService = inject('apiService')
 
-const relations = ref([{
+const relations = [{
   title: 'benötigt',
   type: 'dependency'
 }, {
@@ -246,9 +246,9 @@ const relations = ref([{
 }, {
   title: 'zum testen',
   type: 'check-dependency'
-}])
+}]
 
-const inverseRelations = ref([{
+const inverseRelations = [{
   title: 'benötigt von',
   type: 'dependency'
 }, {
@@ -260,7 +260,7 @@ const inverseRelations = ref([{
 }, {
   title: 'testen für',
   type: 'check-dependency'
-}])
+}]
 
 const pkg = ref({})
 const canonical = ref('')
@@ -312,7 +312,7 @@ const createCanonical = (absolute = false) => (absolute ? window.location.origin
 }).href
 
 watch(
-  () => route.params,
+  route.params,
   () => { fetchPackage() },
   { immediate: true }
 )

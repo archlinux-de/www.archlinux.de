@@ -111,8 +111,8 @@ const limit = ref(25)
 onBeforeRouteUpdate((to, from, next) => {
   next()
   if (from.query.architecture !== to.query.architecture || from.query.repository !== to.query.repository) {
-    this.$data.architecture = to.query.architecture
-    this.$data.repository = to.query.repository
+    architecture.value = to.query.architecture
+    repository.value = to.query.repository
     fetchPackages()
   }
 })

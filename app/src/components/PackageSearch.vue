@@ -1,5 +1,5 @@
 <template>
-  <form :action="this.$router.resolve({name: 'packages'}).href" method="get">
+  <form :action="$router.resolve({name: 'packages'}).href" method="get">
     <div class="input-group">
       <input
         class="form-control"
