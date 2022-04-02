@@ -39,6 +39,14 @@
               <th>SHA1</th>
               <td class="text-break">{{ release.sha1Sum }}</td>
             </tr>
+            <tr v-if="release.sha256Sum">
+              <th>SHA256</th>
+              <td class="text-break">{{ release.sha256Sum }}</td>
+            </tr>
+            <tr v-if="release.b2Sum">
+              <th>B2</th>
+              <td class="text-break">{{ release.b2Sum }}</td>
+            </tr>
             <tr v-if="release.isoSigUrl">
               <th>PGP</th>
               <td><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a>

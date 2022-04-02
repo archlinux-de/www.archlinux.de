@@ -39,6 +39,14 @@ class Release
     #[Assert\Regex('/^[0-9a-f]{40}$/')]
     private ?string $sha1Sum = null;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    #[Assert\Regex('/^[0-9a-f]{64}$/')]
+    private ?string $sha256Sum = null;
+
+    #[ORM\Column(length: 128, nullable: true)]
+    #[Assert\Regex('/^[0-9a-f]{128}$/')]
+    private ?string $b2Sum = null;
+
     #[ORM\Column(length: 191, nullable: true)]
     #[Assert\Length(max: 255)]
     private ?string $torrentUrl = null;
@@ -60,44 +68,6 @@ class Release
         $this->version = $version;
     }
 
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    public function getKernelVersion(): ?string
-    {
-        return $this->kernelVersion;
-    }
-
-    public function setKernelVersion(?string $kernelVersion): Release
-    {
-        $this->kernelVersion = $kernelVersion;
-        return $this;
-    }
-
-    public function getReleaseDate(): \DateTime
-    {
-        return $this->releaseDate;
-    }
-
-    public function setReleaseDate(\DateTime $releaseDate): Release
-    {
-        $this->releaseDate = $releaseDate;
-        return $this;
-    }
-
-    public function isAvailable(): bool
-    {
-        return $this->available;
-    }
-
-    public function setAvailable(bool $available): Release
-    {
-        $this->available = $available;
-        return $this;
-    }
-
     public function update(Release $release): Release
     {
         if ($this->getVersion() !== $release->getVersion()) {
@@ -116,10 +86,28 @@ class Release
             ->setKernelVersion($release->getKernelVersion())
             ->setReleaseDate($release->getReleaseDate())
             ->setSha1Sum($release->getSha1Sum())
+            ->setSha256Sum($release->getSha256Sum())
+            ->setB2Sum($release->getB2Sum())
             ->setTorrentUrl($release->torrentUrl)
             ->setFileName($release->getFileName())
             ->setFileLength($release->getFileLength())
             ->setMagnetUri($release->getMagnetUri());
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->available;
+    }
+
+    public function setAvailable(bool $available): Release
+    {
+        $this->available = $available;
+        return $this;
     }
 
     public function getCreated(): \DateTime
@@ -144,6 +132,28 @@ class Release
         return $this;
     }
 
+    public function getKernelVersion(): ?string
+    {
+        return $this->kernelVersion;
+    }
+
+    public function setKernelVersion(?string $kernelVersion): Release
+    {
+        $this->kernelVersion = $kernelVersion;
+        return $this;
+    }
+
+    public function getReleaseDate(): \DateTime
+    {
+        return $this->releaseDate;
+    }
+
+    public function setReleaseDate(\DateTime $releaseDate): Release
+    {
+        $this->releaseDate = $releaseDate;
+        return $this;
+    }
+
     public function getSha1Sum(): ?string
     {
         return $this->sha1Sum;
@@ -155,14 +165,25 @@ class Release
         return $this;
     }
 
-    public function getTorrentUrl(): ?string
+    public function getSha256Sum(): ?string
     {
-        return $this->torrentUrl;
+        return $this->sha256Sum;
     }
 
-    public function setTorrentUrl(?string $torrentUrl): Release
+    public function setSha256Sum(?string $sha256Sum): Release
     {
-        $this->torrentUrl = $torrentUrl;
+        $this->sha256Sum = $sha256Sum;
+        return $this;
+    }
+
+    public function getB2Sum(): ?string
+    {
+        return $this->b2Sum;
+    }
+
+    public function setB2Sum(?string $b2Sum): Release
+    {
+        $this->b2Sum = $b2Sum;
         return $this;
     }
 
@@ -196,6 +217,17 @@ class Release
     public function setMagnetUri(?string $magnetUri): Release
     {
         $this->magnetUri = $magnetUri;
+        return $this;
+    }
+
+    public function getTorrentUrl(): ?string
+    {
+        return $this->torrentUrl;
+    }
+
+    public function setTorrentUrl(?string $torrentUrl): Release
+    {
+        $this->torrentUrl = $torrentUrl;
         return $this;
     }
 }

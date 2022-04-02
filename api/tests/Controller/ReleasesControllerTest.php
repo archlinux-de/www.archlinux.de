@@ -103,6 +103,8 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
                 'info' => 'info',
                 'isoUrl' => 'http://localhost/download/iso/2018.01.01/release.iso',
                 'sha1Sum' => 'abcdef',
+                'sha256Sum' => null,
+                'b2Sum' => null,
                 'torrentUrl' => 'https://archlinux.org/torrent',
                 'fileSize' => 1,
                 'magnetUri' => 'magnet://localhost/torrent',

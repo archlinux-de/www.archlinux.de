@@ -33,6 +33,8 @@ class ReleaseDenormalizerTest extends TestCase
                         'torrent_url' => '',
                         'version' => '2018.01.01',
                         'sha1_sum' => '',
+                        'sha256_sum' => null,
+                        'b2_sum' => null,
                         'torrent' => [
                             'comment' => '',
                             'info_hash' => '',

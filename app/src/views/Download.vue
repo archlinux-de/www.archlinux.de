@@ -51,10 +51,24 @@
         <p>Nach dem Download sollten die Dateien stets überprüft werden.</p>
 
         <h3>Prüfsummen</h3>
-        <ul class="list-unstyled ms-4">
-          <li><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></li>
-          <li class="text-break" v-if="release.sha1Sum"><strong>SHA1:</strong> {{ release.sha1Sum }}</li>
-        </ul>
+          <table class="table table-sm table-borderless mb-4">
+            <tr v-if="release.isoSigUrl">
+              <th>PGP</th>
+              <td class="ps-2"><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></td>
+            </tr>
+            <tr v-if="release.sha1Sum">
+              <th>SHA1</th>
+              <td class="ps-2 text-break">{{ release.sha1Sum }}</td>
+            </tr>
+            <tr v-if="release.sha256Sum">
+              <th>SHA256</th>
+              <td class="ps-2 text-break">{{ release.sha256Sum }}</td>
+            </tr>
+            <tr v-if="release.b2Sum">
+              <th>B2</th>
+              <td class="ps-2 text-break">{{ release.b2Sum }}</td>
+            </tr>
+          </table>
       </div>
 
       <div class="col-12 col-lg-6 ps-lg-5">

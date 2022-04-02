@@ -25,7 +25,9 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
                         ->setCreated(new \DateTime($releaseData['created']))
                         ->setKernelVersion($releaseData['kernel_version'])
                         ->setReleaseDate(new \DateTime($releaseData['release_date']))
-                        ->setSha1Sum($releaseData['sha1_sum']);
+                        ->setSha1Sum($releaseData['sha1_sum'])
+                        ->setSha256Sum($releaseData['sha256_sum'])
+                        ->setB2Sum($releaseData['b2_sum']);
                     if ($releaseData['torrent']) {
                         $release
                             ->setTorrentUrl($releaseData['torrent_url'])

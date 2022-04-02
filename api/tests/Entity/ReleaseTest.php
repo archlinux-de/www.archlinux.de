@@ -19,6 +19,8 @@ class ReleaseTest extends TestCase
         $this->assertSame($release, $release->setAvailable(true));
         $this->assertSame($release, $release->setKernelVersion('3.11'));
         $this->assertSame($release, $release->setSha1Sum('sha1'));
+        $this->assertSame($release, $release->setSha256Sum('sha256'));
+        $this->assertSame($release, $release->setB2Sum('b2'));
         $this->assertSame($release, $release->setTorrentUrl('/foo.torrent'));
 
         $this->assertEquals('2018.01.01', $release->getVersion());
@@ -28,6 +30,8 @@ class ReleaseTest extends TestCase
         $this->assertTrue($release->isAvailable());
         $this->assertEquals('3.11', $release->getKernelVersion());
         $this->assertEquals('sha1', $release->getSha1Sum());
+        $this->assertEquals('sha256', $release->getSha256Sum());
+        $this->assertEquals('b2', $release->getB2Sum());
         $this->assertEquals('info', $release->getInfo());
 
         $this->assertSame('/foo.torrent', $release->getTorrentUrl());
@@ -37,6 +41,8 @@ class ReleaseTest extends TestCase
     {
         $release = (new Release('2019.01.01'))
             ->setSha1Sum('abc')
+            ->setSha256Sum('def')
+            ->setB2Sum('ghi')
             ->setReleaseDate(new \DateTime('2018-01-01'))
             ->setKernelVersion('2.4.1')
             ->setInfo('bar')
@@ -45,6 +51,8 @@ class ReleaseTest extends TestCase
 
         $release->update((new Release('2019.01.01'))
             ->setSha1Sum('1234')
+            ->setSha256Sum('567')
+            ->setB2Sum('890')
             ->setReleaseDate(new \DateTime('2019-01-01'))
             ->setKernelVersion('1.2')
             ->setInfo('info')
@@ -52,6 +60,8 @@ class ReleaseTest extends TestCase
             ->setAvailable(false));
 
         $this->assertEquals('1234', $release->getSha1Sum());
+        $this->assertEquals('567', $release->getSha256Sum());
+        $this->assertEquals('890', $release->getB2Sum());
         $this->assertEquals(new \DateTime('2019-01-01'), $release->getReleaseDate());
         $this->assertEquals('1.2', $release->getKernelVersion());
         $this->assertEquals('info', $release->getInfo());

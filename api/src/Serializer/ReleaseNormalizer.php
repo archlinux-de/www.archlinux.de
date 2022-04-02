@@ -42,7 +42,9 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
                         'info',
                         'kernelVersion',
                         'releaseDate',
-                        'sha1Sum'
+                        'sha1Sum',
+                        'sha256Sum',
+                        'b2Sum'
                     ]
                 ]
             )
