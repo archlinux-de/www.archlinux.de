@@ -49,7 +49,7 @@
             </tr>
             <tr v-if="release.isoSigUrl">
               <th>PGP</th>
-              <td><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a>
+              <td><a class="p-0" :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a>
               </td>
             </tr>
           </table>

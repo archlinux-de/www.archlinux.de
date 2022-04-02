@@ -6,7 +6,7 @@
       <table class="table table-sm table-borderless">
         <tr :key="key" v-for="(pkg, key) in packages" data-test="recent-package">
           <td class="w-75" data-test="recent-package-name">
-            <router-link :to="{
+            <router-link class="p-0" :to="{
               name: 'package',
                params:{
                 repository: pkg.repository.name,

@@ -54,7 +54,7 @@
           <table class="table table-sm table-borderless mb-4">
             <tr v-if="release.isoSigUrl">
               <th>PGP</th>
-              <td class="ps-2"><a :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></td>
+              <td class="ps-2"><a class="p-0" :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></td>
             </tr>
             <tr v-if="release.sha1Sum">
               <th>SHA1</th>

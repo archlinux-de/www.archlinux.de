@@ -27,7 +27,7 @@
           <tr v-if="pkg.url">
             <th>URL</th>
             <td class="text-break">
-              <a rel="nofollow noopener" :href="pkg.url">{{ pkg.url }}</a>
+              <a class="p-0" rel="nofollow noopener" :href="pkg.url">{{ pkg.url }}</a>
             </td>
           </tr>
           <tr v-if="pkg.licenses && pkg.licenses.length > 0">
@@ -37,7 +37,7 @@
           <tr>
             <th>Repositorium</th>
             <td>
-              <router-link
+              <router-link class="p-0"
                 :to="{name: 'packages', query: {architecture: pkg.repository.architecture, repository: pkg.repository.name}}">
                 {{ pkg.repository.name }}
               </router-link>
@@ -57,7 +57,7 @@
             <th>Packer</th>
             <td>
               <template v-if="pkg.packager.email">
-                <a rel="nofollow noopener" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
+                <a class="p-0" rel="nofollow noopener" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
               </template>
               <template v-else>{{ pkg.packager.name }}</template>
             </td>
@@ -68,26 +68,26 @@
           </tr>
           <tr>
             <th>Quelltext</th>
-            <td><a :href="pkg.sourceUrl">Quelldateien</a>, <a :href="pkg.sourceChangelogUrl">Änderungshistorie</a>
+            <td><a class="p-0" :href="pkg.sourceUrl">Quelldateien</a>, <a class="p-0" :href="pkg.sourceChangelogUrl">Änderungshistorie</a>
             </td>
           </tr>
           <tr>
             <th>Bugs</th>
             <td>
-              <a :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'"
+              <a class="p-0" :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'"
                  rel="noopener">Bug-Tracker</a>
             </td>
           </tr>
           <tr>
             <th>Paket</th>
             <td>
-              <a :href="pkg.packageUrl" download rel="nofollow noopener">{{ pkg.fileName }}</a>
+              <a class="p-0" :href="pkg.packageUrl" download rel="nofollow noopener">{{ pkg.fileName }}</a>
             </td>
           </tr>
           <tr>
             <th>PGP-Signatur</th>
             <td>
-              <a :href="pkg.packageUrl+'.sig'" download rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
+              <a class="p-0" :href="pkg.packageUrl+'.sig'" download rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
             </td>
           </tr>
           <tr>
@@ -101,7 +101,7 @@
           <tr>
             <th>Beliebtheit</th>
             <td>
-              <package-popularity :popularity="pkg.popularity"></package-popularity>
+              <package-popularity class="p-0" :popularity="pkg.popularity"></package-popularity>
             </td>
           </tr>
         </table>
