@@ -17,7 +17,7 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
-        "doctrine/doctrine-bundle": "^2.6.1",
+        "doctrine/doctrine-bundle": "^2.6.2",
         "doctrine/doctrine-migrations-bundle": "^3.2.2",
         "doctrine/orm": "^2.11.2",
         "ezyang/htmlpurifier": "^4.14.0",
