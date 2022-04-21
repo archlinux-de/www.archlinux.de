@@ -64,9 +64,9 @@ const createApiService = fetch => {
      */
     fetchPackage (repository, architecture, name) {
       return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}', {
-        repository: repository,
-        architecture: architecture,
-        name: name
+        repository,
+        architecture,
+        name
       }))
     },
 
@@ -78,9 +78,9 @@ const createApiService = fetch => {
      */
     fetchPackageFiles (repository, architecture, name) {
       return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}/files', {
-        repository: repository,
-        architecture: architecture,
-        name: name
+        repository,
+        architecture,
+        name
       }))
     },
 
@@ -93,10 +93,10 @@ const createApiService = fetch => {
      */
     fetchPackageInverseDependencies (repository, architecture, name, type) {
       return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}/inverse-dependencies/{type}', {
-        repository: repository,
-        architecture: architecture,
-        name: name,
-        type: type
+        repository,
+        architecture,
+        name,
+        type
       }))
     },
 
@@ -109,10 +109,10 @@ const createApiService = fetch => {
      */
     fetchPackageDependencies (repository, architecture, name, type) {
       return fetchJson(createParameterUrl('/api/packages/{repository}/{architecture}/{name}/dependencies/{type}', {
-        repository: repository,
-        architecture: architecture,
-        name: name,
-        type: type
+        repository,
+        architecture,
+        name,
+        type
       }))
     },
 
@@ -121,7 +121,7 @@ const createApiService = fetch => {
      * @returns {Promise<any>}
      */
     fetchPackageSuggestions (term) {
-      return fetchJson(createUrl('/packages/suggest', { term: term }))
+      return fetchJson(createUrl('/packages/suggest', { term }))
     },
 
     /**
@@ -137,7 +137,7 @@ const createApiService = fetch => {
      * @returns {Promise<any>}
      */
     fetchNewsItem (id) {
-      return fetchJson(createParameterUrl('/api/news/{id}', { id: id }))
+      return fetchJson(createParameterUrl('/api/news/{id}', { id }))
     },
 
     /**
@@ -153,7 +153,7 @@ const createApiService = fetch => {
      * @returns {Promise<any>}
      */
     fetchMirror (url) {
-      return fetchJson(createParameterUrl('/api/mirrors/{url}', { url: url }))
+      return fetchJson(createParameterUrl('/api/mirrors/{url}', { url }))
     },
 
     /**
@@ -169,7 +169,7 @@ const createApiService = fetch => {
      * @returns {Promise<any>}
      */
     fetchRelease (version) {
-      return fetchJson(createParameterUrl('/api/releases/{version}', { version: version }))
+      return fetchJson(createParameterUrl('/api/releases/{version}', { version }))
     }
   }
 }
