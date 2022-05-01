@@ -61,8 +61,5 @@
   },
   "engines": {
     "node": ">=17"
-  },
-  "resolutions": {
-    "async": "^3.2.3"
   }
 }
