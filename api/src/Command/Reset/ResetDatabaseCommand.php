@@ -102,7 +102,7 @@ class ResetDatabaseCommand extends Command
     }
 
     /**
-     * @param string[] $classNames
+     * @param class-string[] $classNames
      */
     private function resetDatabase(array $classNames): void
     {
