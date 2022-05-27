@@ -5,7 +5,6 @@ namespace App\Tests\Command\Update;
 use App\Command\Update\UpdatePackagesCommand;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
-use App\Exception\ValidationException;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
@@ -19,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -200,7 +200,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
 
         $command = $application->find('app:update:packages');
         $commandTester = new CommandTester($command);
-        $this->expectException(ValidationException::class);
+        $this->expectException(ValidationFailedException::class);
         $commandTester->execute(['command' => $command->getName()]);
     }
 }

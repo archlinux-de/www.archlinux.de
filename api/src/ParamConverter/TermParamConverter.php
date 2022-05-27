@@ -2,12 +2,12 @@
 
 namespace App\ParamConverter;
 
-use App\Exception\ValidationException;
 use App\Request\TermRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TermParamConverter implements ParamConverterInterface
@@ -27,7 +27,7 @@ class TermParamConverter implements ParamConverterInterface
 
         $errors = $this->validator->validate($termRequest);
         if ($errors->count() > 0) {
-            throw new BadRequestHttpException('Invalid request', new ValidationException($errors));
+            throw new BadRequestHttpException('Invalid request', new ValidationFailedException($termRequest, $errors));
         }
 
         $request->attributes->set(

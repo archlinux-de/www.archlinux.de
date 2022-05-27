@@ -3,12 +3,12 @@
 namespace App\ParamConverter;
 
 use App\Entity\Packages\Architecture;
-use App\Exception\ValidationException;
 use App\Request\ArchitectureRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ArchitectureParamConverter implements ParamConverterInterface
@@ -28,7 +28,10 @@ class ArchitectureParamConverter implements ParamConverterInterface
 
         $errors = $this->validator->validate($architectureRequest);
         if ($errors->count() > 0) {
-            throw new BadRequestHttpException('Invalid request', new ValidationException($errors));
+            throw new BadRequestHttpException(
+                'Invalid request',
+                new ValidationFailedException($architectureRequest, $errors)
+            );
         }
 
         $request->attributes->set(

@@ -3,9 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Packages\Repository;
-use App\Exception\ValidationException;
 use App\Repository\RepositoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RepositoryManager
@@ -53,7 +53,7 @@ class RepositoryManager
 
                     $errors = $this->validator->validate($repository);
                     if ($errors->count() > 0) {
-                        throw new ValidationException($errors);
+                        throw new ValidationFailedException($repository, $errors);
                     }
 
                     $this->entityManager->persist($repository);

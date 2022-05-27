@@ -3,7 +3,6 @@
 namespace App\Command\Config;
 
 use App\Entity\Country;
-use App\Exception\ValidationException;
 use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateCountriesCommand extends Command
@@ -40,7 +40,7 @@ class UpdateCountriesCommand extends Command
         foreach ($this->countryFetcher as $country) {
             $errors = $this->validator->validate($country);
             if ($errors->count() > 0) {
-                throw new ValidationException($errors);
+                throw new ValidationFailedException($country, $errors);
             }
 
             /** @var Country|null $persistedCountry */

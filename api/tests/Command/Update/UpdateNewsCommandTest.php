@@ -5,7 +5,6 @@ namespace App\Tests\Command\Update;
 use App\Command\Update\UpdateNewsCommand;
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use App\Exception\ValidationException;
 use App\Repository\NewsItemRepository;
 use App\Service\NewsItemFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -123,7 +123,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);
 
-        $this->expectException(ValidationException::class);
+        $this->expectException(ValidationFailedException::class);
         $commandTester->execute(['command' => $command->getName()]);
     }
 

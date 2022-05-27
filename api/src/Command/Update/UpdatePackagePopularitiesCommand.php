@@ -3,7 +3,6 @@
 namespace App\Command\Update;
 
 use App\Entity\Packages\Popularity;
-use App\Exception\ValidationException;
 use App\Repository\PackageRepository;
 use App\Service\PackagePopularityFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdatePackagePopularitiesCommand extends Command
@@ -45,7 +45,7 @@ class UpdatePackagePopularitiesCommand extends Command
         foreach ($this->packagePopularityFetcher as $name => $popularity) {
             $errors = $this->validator->validate($popularity);
             if ($errors->count() > 0) {
-                throw new ValidationException($errors);
+                throw new ValidationFailedException($popularity, $errors);
             }
             $this->packagePopularities[$name] = $popularity;
         }

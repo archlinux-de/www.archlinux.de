@@ -4,7 +4,6 @@ namespace App\Tests\Command\Update;
 
 use App\Command\Update\UpdateReleasesCommand;
 use App\Entity\Release;
-use App\Exception\ValidationException;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -83,7 +83,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);
-        $this->expectException(ValidationException::class);
+        $this->expectException(ValidationFailedException::class);
         $commandTester->execute(['command' => $command->getName()]);
     }
 

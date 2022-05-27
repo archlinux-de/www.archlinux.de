@@ -3,7 +3,6 @@
 namespace App\Command\Update;
 
 use App\Entity\NewsItem;
-use App\Exception\ValidationException;
 use App\Repository\NewsItemRepository;
 use App\Service\NewsItemFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateNewsCommand extends Command
@@ -40,7 +40,7 @@ class UpdateNewsCommand extends Command
         foreach ($this->newsItemFetcher as $newsItem) {
             $errors = $this->validator->validate($newsItem);
             if ($errors->count() > 0) {
-                throw new ValidationException($errors);
+                throw new ValidationFailedException($newsItem, $errors);
             }
 
             /** @var NewsItem|null $persistedNewsItem */

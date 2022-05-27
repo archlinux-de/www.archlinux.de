@@ -3,7 +3,6 @@
 namespace App\Command\Update;
 
 use App\Entity\Release;
-use App\Exception\ValidationException;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateReleasesCommand extends Command
@@ -40,7 +40,7 @@ class UpdateReleasesCommand extends Command
         foreach ($this->releaseFetcher as $release) {
             $errors = $this->validator->validate($release);
             if ($errors->count() > 0) {
-                throw new ValidationException($errors);
+                throw new ValidationFailedException($release, $errors);
             }
 
             /** @var Release|null $persistedRelease */

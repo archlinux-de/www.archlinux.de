@@ -4,7 +4,6 @@ namespace App\Command\Update;
 
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
-use App\Exception\ValidationException;
 use App\Repository\AbstractRelationRepository;
 use App\Repository\PackageRepository;
 use App\Repository\RepositoryRepository;
@@ -16,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdatePackagesCommand extends Command
@@ -67,7 +67,7 @@ class UpdatePackagesCommand extends Command
                     ) {
                         $errors = $this->validator->validate($package);
                         if ($errors->count() > 0) {
-                            throw new ValidationException($errors);
+                            throw new ValidationFailedException($package, $errors);
                         }
 
                         $allPackageNames[] = $package->getName();
