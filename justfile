@@ -114,7 +114,7 @@ test-php:
 	{{PHP-RUN}} composer validate
 	{{PHP-RUN}} vendor/bin/phpcs
 	{{PHP-RUN}} bin/console lint:container
-	{{PHP-RUN}} bin/console lint:yaml config
+	{{PHP-RUN}} bin/console lint:yaml --parse-tags config
 	{{PHP-RUN}} bin/console lint:twig templates
 	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan analyse
 	{{PHP-RUN}} vendor/bin/phpunit

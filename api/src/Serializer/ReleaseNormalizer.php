@@ -3,7 +3,7 @@
 namespace App\Serializer;
 
 use App\Entity\Release;
-use HTMLPurifier;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -15,7 +15,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     public function __construct(
         private UrlGeneratorInterface $router,
         private ObjectNormalizer $normalizer,
-        private HTMLPurifier $purifier
+        private HtmlSanitizerInterface $htmlSanitizer
     ) {
     }
 
@@ -57,7 +57,7 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         $data['isoUrl'] = $this->createIsoUrl($object);
         $data['isoSigUrl'] = $this->createIsoSigUrl($object);
         $data['fileName'] = $object->getFileName();
-        $data['info'] = $this->purifier->purify($data['info']);
+        $data['info'] = $this->htmlSanitizer->sanitize($data['info']);
         $data['directoryUrl'] = $this->createDirectoryUrl($object);
 
         return $data;

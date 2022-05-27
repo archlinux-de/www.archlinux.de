@@ -3,7 +3,7 @@
 namespace App\Serializer;
 
 use App\Entity\NewsItem;
-use HTMLPurifier;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -15,7 +15,7 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
     public function __construct(
         private ObjectNormalizer $normalizer,
         private SluggerInterface $slugger,
-        private HTMLPurifier $purifier
+        private HtmlSanitizerInterface $htmlSanitizer
     ) {
     }
 
@@ -48,7 +48,7 @@ class NewsItemNormalizer implements NormalizerInterface, CacheableSupportsMethod
             )
         );
 
-        $data['description'] = $this->purifier->purify($data['description']);
+        $data['description'] = $this->htmlSanitizer->sanitize($data['description']);
         $data['slug'] = $this->slugger->slug($object->getTitle());
 
         return $data;

@@ -39,13 +39,31 @@ services:
     OpenSearch\Client:
         factory: [ '@OpenSearch\ClientBuilder', build ]
 
-    HTMLPurifier:
-        class: HTMLPurifier
+    Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig:
+        calls:
+            - allowElement: !returns_clone ['a', ['href']]
+            - allowElement: !returns_clone ['p']
+            - allowElement: !returns_clone ['code']
+            - allowElement: !returns_clone ['pre']
+            - allowElement: !returns_clone ['ul']
+            - allowElement: !returns_clone ['ol']
+            - allowElement: !returns_clone ['li']
+            - allowElement: !returns_clone ['br']
+            - allowElement: !returns_clone ['strong']
+            - allowElement: !returns_clone ['em']
+            - allowElement: !returns_clone ['del']
+            - allowElement: !returns_clone ['ins']
+            - allowElement: !returns_clone ['blockquote']
+            - allowElement: !returns_clone ['h3']
+            - allowElement: !returns_clone ['h4']
+            - allowElement: !returns_clone ['h5']
+            - allowElement: !returns_clone ['h6']
+            - forceAttribute: !returns_clone ['a', 'rel', 'noopener noreferrer nofollow']
+
+    Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface:
+        class: Symfony\Component\HtmlSanitizer\HtmlSanitizer
         bind:
-            $config:
-                HTML.Allowed: 'a[href],p,code,pre,ul,ol,li,br,strong,em,del,ins,blockquote,h3,h4,h5,h6'
-                HTML.Nofollow: true
-                HTML.TargetNoopener: true
+            $config: '@Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig'
 
     App\Service\PackageDatabaseMirror:
         $mirrorUrl: '%app.packages.mirror%'

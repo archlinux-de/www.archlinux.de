@@ -20,7 +20,7 @@
                     <uri>{{ item.author.uri }}</uri>
                 {% endif %}
             </author>
-            <content type="html">{{ item.description | purify | escape }}</content>
+            <content type="html">{{ item.description | sanitize | escape }}</content>
         </entry>
     {% endfor %}
 </feed>
