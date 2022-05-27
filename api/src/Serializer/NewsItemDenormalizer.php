@@ -81,7 +81,7 @@ class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMe
         return [];
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return $type == NewsItem::class . '[]';
     }

@@ -13,10 +13,10 @@ use App\Entity\Packages\Relations\OptionalDependency;
 use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
-use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\String\ByteString;
 
-class PackageDenormalizer implements ContextAwareDenormalizerInterface
+class PackageDenormalizer implements DenormalizerInterface
 {
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Package
     {

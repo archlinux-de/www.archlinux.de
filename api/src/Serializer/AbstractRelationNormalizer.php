@@ -36,7 +36,7 @@ class AbstractRelationNormalizer implements NormalizerInterface, CacheableSuppor
         return $data;
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof AbstractRelation && $format == 'json';
     }

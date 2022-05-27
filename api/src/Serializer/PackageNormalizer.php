@@ -18,7 +18,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     ) {
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof Package && $format == 'json';
     }

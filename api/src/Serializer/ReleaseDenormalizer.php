@@ -48,7 +48,7 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
         return $available && (new \DateTime())->getTimestamp() - $created->getTimestamp() >= 3 * 60 * 60;
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return $type == Release::class . '[]';
     }

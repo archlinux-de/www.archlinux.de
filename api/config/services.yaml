@@ -20,7 +20,6 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Tests/'
             - '../src/Request/'
             - '../src/Exception/'
 

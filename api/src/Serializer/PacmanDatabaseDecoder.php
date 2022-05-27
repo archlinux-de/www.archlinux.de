@@ -44,7 +44,7 @@ class PacmanDatabaseDecoder implements DecoderInterface
         );
     }
 
-    public function supportsDecoding(string $format): bool
+    public function supportsDecoding(string $format, array $context = []): bool
     {
         return $format === 'pacman-database';
     }
