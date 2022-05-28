@@ -24,15 +24,8 @@ framework:
                 'User-Agent': 'www.archlinux.de'
     default_locale: de
 
-when@dev:
-    framework:
-        cache:
-            app: cache.adapter.array
-
 when@test:
     framework:
         test: true
 #        session:
 #            storage_factory_id: session.storage.factory.mock_file
-        cache:
-            app: cache.adapter.array
