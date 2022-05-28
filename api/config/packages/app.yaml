@@ -20,3 +20,13 @@ parameters:
     app.news.flarum_url: 'https://forum.archlinux.de'
     app.news.flarum_tag: 'neuigkeiten'
     app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
+
+when@dev:
+    parameters:
+        app.packages.repositories:
+            core: ['x86_64']
+
+when@test:
+    parameters:
+        app.packages.repositories:
+            core: ['x86_64']
