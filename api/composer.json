@@ -22,7 +22,7 @@
         "doctrine/orm": "^2.12.3",
         "league/iso3166": "^4.0.0",
         "maxmind-db/reader": "^1.11.0",
-        "opensearch-project/opensearch-php": "^2.0.0",
+        "opensearch-project/opensearch-php": "^2.0.1",
         "sensio/framework-extra-bundle": "^6.2.6",
         "symfony/console": "^6.1.2",
         "symfony/dotenv": "^6.1.0",

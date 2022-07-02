@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37973978cfa8c638f08e6c3d88ef47a2",
+    "content-hash": "8b09e6fe19c86724fb820be1ebb8b731",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2099,16 +2099,16 @@
         },
         {
             "name": "opensearch-project/opensearch-php",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensearch-project/opensearch-php.git",
-                "reference": "565c17e0ac1e062f4a6edfeb9745e9deb93ffbeb"
+                "reference": "839c78e142c844b812e971d53f4149b29b2c4f35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/565c17e0ac1e062f4a6edfeb9745e9deb93ffbeb",
-                "reference": "565c17e0ac1e062f4a6edfeb9745e9deb93ffbeb",
+                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/839c78e142c844b812e971d53f4149b29b2c4f35",
+                "reference": "839c78e142c844b812e971d53f4149b29b2c4f35",
                 "shasum": ""
             },
             "require": {
@@ -2119,14 +2119,17 @@
                 "psr/log": "^1|^2"
             },
             "require-dev": {
+                "aws/aws-sdk-php": "^3.0",
                 "ext-zip": "*",
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "mockery/mockery": "^1.2",
-                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan": "^1.7.15",
+                "phpstan/phpstan-mockery": "^1.1.0",
                 "phpunit/phpunit": "^9.3",
                 "symfony/finder": "~4.0"
             },
             "suggest": {
+                "aws/aws-sdk-php": "Required (^3.0.0) in order to use the SigV4 handler",
                 "monolog/monolog": "Allows for client-level logging and tracing"
             },
             "type": "library",
@@ -2157,9 +2160,9 @@
             ],
             "support": {
                 "issues": "https://github.com/opensearch-project/opensearch-php/issues",
-                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.0"
+                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.1"
             },
-            "time": "2022-05-26T19:17:49+00:00"
+            "time": "2022-06-30T23:50:41+00:00"
         },
         {
             "name": "psr/cache",
