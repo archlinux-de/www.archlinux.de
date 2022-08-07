@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { inject, defineProps, ref, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 
 const props = defineProps({
   repository: {

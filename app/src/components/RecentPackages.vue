@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted, defineProps } from 'vue'
+import { inject, ref, onMounted } from 'vue'
 
 const apiService = inject('apiService')
 

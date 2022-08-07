@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { inject, defineProps, ref, onMounted, watch } from 'vue'
+import { inject, ref, onMounted, watch } from 'vue'
 
 const props = defineProps({
   repository: {

@@ -16,7 +16,7 @@
 </style>
 
 <script setup>
-import { defineProps, computed } from 'vue'
+import { computed } from 'vue'
 /* eslint-disable import/no-webpack-loader-syntax */
 import starFill from '!!svg-inline-loader!bootstrap-icons/icons/star-fill.svg'
 import starHalf from '!!svg-inline-loader!bootstrap-icons/icons/star-half.svg'

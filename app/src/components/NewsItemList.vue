@@ -28,7 +28,7 @@
 </style>
 
 <script setup>
-import { inject, defineProps, ref, onMounted } from 'vue'
+import { inject, ref, onMounted } from 'vue'
 import LoadingSpinner from './LoadingSpinner'
 
 const props = defineProps({
