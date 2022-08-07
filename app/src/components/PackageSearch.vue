@@ -18,22 +18,9 @@
 </template>
 
 <script setup>
-import { inject, ref, watch } from 'vue'
-
-const apiService = inject('apiService')
+import { ref } from 'vue'
+import { useFetchPackageSuggestions } from '~/composables/useFetchPackageSuggestions'
 
 const term = ref('')
-const options = ref([])
-
-const fetchData = () => {
-  if (term.value.length > 0) {
-    apiService.fetchPackageSuggestions(term.value)
-      .then(data => { options.value = data })
-      .catch(() => {})
-  } else {
-    options.value = []
-  }
-}
-
-watch(term, () => fetchData())
+const { data: options } = useFetchPackageSuggestions(term)
 </script>

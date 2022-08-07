@@ -2,12 +2,12 @@
   <main class="container">
     <Head>
       <title v-if="release.version">{{ release.version }} - archlinux.de</title>
-      <link v-if="release.version" rel="canonical" :href="createCanonical()">
+      <link v-if="release.version" rel="canonical" :href="canonical">
       <meta v-if="release.version" name="description" :content="`Informationen und Download von Arch Linux Version ${release.version} mit Kernel ${release.kernelVersion}`">
       <meta v-if="!release.version" name="robots" content="noindex,follow">
     </Head>
 
-    <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
     <template v-if="release.version">
       <h1 class="mb-4">Arch Linux {{ release.version }}</h1>
@@ -56,7 +56,7 @@
         </div>
 
         <div class="col-12 col-xl-6">
-          <a class="btn btn-primary btn-lg mb-4" download :href="release.isoUrl" rel="nofollow noopener">
+          <a class="btn btn-primary btn-lg mb-4" download :href="release.isoUrl" rel="nofollow noopener" data-test="release-download">
             <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
           </a>
           <ul class="list-unstyled ms-4 link-list">
@@ -77,30 +77,17 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
+import { useRouteParams } from '@vueuse/router'
+import { useFetchRelease } from '~/composables/useFetchRelease'
 import prettyBytes from 'pretty-bytes'
 
-const route = useRoute()
 const router = useRouter()
-const apiService = inject('apiService')
+const version = useRouteParams('version')
 
-const release = ref({})
-const error = ref('')
+const { data: release, error } = useFetchRelease(version)
 
-const fetchRelease = () => {
-  apiService.fetchRelease(route.params.version)
-    .then(data => { release.value = data })
-    .catch(error => { error.value = error })
-}
-
-const createCanonical = () => window.location.origin + router.resolve({
-  name: 'release',
-  params: {
-    version: release.value.version
-  }
-}).href
-
-onMounted(() => { fetchRelease() })
+const canonical = computed(() => window.location.origin + router.resolve({ name: 'release', params: { version: release.value.version } }).href)
 </script>

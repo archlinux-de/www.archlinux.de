@@ -1,10 +1,10 @@
 <template>
-  <div class="card" v-if="packages.length > 0">
+  <div class="card">
     <h3 class="card-title card-header">Aktuelle Pakete</h3>
 
     <div class="card-body p-1 p-lg-3">
-      <table class="table table-sm table-borderless">
-        <tr :key="key" v-for="(pkg, key) in packages" data-test="recent-package">
+      <table class="table table-sm table-borderless" :style="`min-height:${23 * limit}px`">
+        <tr :key="key" v-for="(pkg, key) in data.items" data-test="recent-package">
           <td class="w-75" data-test="recent-package-name">
             <router-link class="p-0" :to="{
               name: 'package',
@@ -30,9 +30,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted } from 'vue'
-
-const apiService = inject('apiService')
+import { useFetchPackages } from '~/composables/useFetchPackages'
 
 const props = defineProps({
   limit: {
@@ -42,19 +40,5 @@ const props = defineProps({
   }
 })
 
-const createInitialPackageList = () => Array.from({ length: props.limit }, () => ({
-  name: String.fromCharCode(8239),
-  version: '',
-  repository: { name: ' ', architecture: ' ' }
-}))
-
-const packages = ref(createInitialPackageList())
-
-const fetchPackages = () => {
-  apiService.fetchPackages({ limit: props.limit })
-    .then(data => { packages.value = data.items })
-    .catch(() => {})
-}
-
-onMounted(() => fetchPackages())
+const { data } = useFetchPackages({ limit: props.limit })
 </script>

@@ -11,7 +11,8 @@
 </template>
 
 <script setup>
-import { inject, ref, watch } from 'vue'
+import { ref } from 'vue'
+import { useFetchPackageFiles } from '~/composables/useFetchPackageFiles'
 
 const props = defineProps({
   repository: {
@@ -28,20 +29,10 @@ const props = defineProps({
   }
 })
 
-const apiService = inject('apiService')
-
 const files = ref([])
 
-const fetchFiles = () => {
-  apiService.fetchPackageFiles(
-    props.repository,
-    props.architecture,
-    props.name)
-    .then(data => {
-      files.value = data.length ? data : ['Das Paket enthält keine Dateien']
-    })
-    .catch(() => {})
+const fetchFiles = async () => {
+  const { data } = await useFetchPackageFiles(props.repository, props.architecture, props.name)
+  files.value = data.value
 }
-
-watch(props, () => { files.value = [] }, { deep: true })
 </script>

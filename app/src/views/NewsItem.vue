@@ -1,13 +1,13 @@
 <template>
   <main class="container">
 
-    <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
     <template v-if="news.id">
       <Head>
         <title>{{ news.title }} - archlinux.de</title>
-        <link rel="canonical" :href="createCanonical()">
-        <meta name="description" :content="createDescription()">
+        <link rel="canonical" :href="canonical">
+        <meta name="description" :content="description">
       </Head>
       <h1 class="mb-4">{{ news.title }}</h1>
       <div class="mb-3 text-muted">
@@ -46,35 +46,22 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
+import { useRouteParams } from '@vueuse/router'
+import { useFetchNewsItem } from '~/composables/useFetchNewsItem'
 
-const apiService = inject('apiService')
+const router = useRouter()
+const id = useRouteParams('id')
 
-const news = ref({})
-const error = ref('')
+const { data: news, error } = useFetchNewsItem(id)
 
-const fetchNewsItem = () => {
-  apiService.fetchNewsItem(useRoute().params.id)
-    .then(data => {
-      news.value = data
-    })
-    .catch(err => {
-      error.value = err
-    })
-}
-
-const createDescription = () => new DOMParser()
+const description = computed(() => new DOMParser()
   .parseFromString(news.value.description, 'text/html')
   .body
   .textContent
-  .substr(0, 100)
+  .substr(0, 100))
 
-const createCanonical = () => window.location.origin + useRouter().resolve({
-  name: 'news-item',
-  params: { id: news.value.id, slug: news.value.slug }
-}).href
-
-onMounted(() => { fetchNewsItem() })
+const canonical = computed(() => window.location.origin + router.resolve({ name: 'news-item', params: { id: news.value.id, slug: news.value.slug } }).href)
 </script>

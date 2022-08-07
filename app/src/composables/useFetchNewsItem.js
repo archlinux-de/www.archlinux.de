@@ -1,0 +1,17 @@
+import { useApiFetch, useApiParameterUrl } from '~/composables/useApiFetch'
+
+const initialData = {}
+
+/**
+ * @param {int} id
+ * @returns {Promise<any>}
+ */
+export const useFetchNewsItem = (id) => useApiFetch(
+  useApiParameterUrl('/api/news/{id}', {
+    id
+  }),
+  {
+    initialData,
+    refetch: true
+  }
+).get().json()

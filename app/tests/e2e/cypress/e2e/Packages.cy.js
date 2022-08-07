@@ -1,5 +1,6 @@
 describe('Packages page', () => {
   beforeEach(() => {
+    // cy.intercept({ method: 'GET', pathname: /^\/api\/packages$/ }).as('api-packages')
     cy.visit('/packages')
   })
 
@@ -57,14 +58,13 @@ describe('Packages page', () => {
     cy.get('[data-test=package-repository-link]').first().click()
 
     cy.location().should((loc) => {
-      expect(loc.search).to.eq('?architecture=x86_64&repository=core&search=pacman')
+      expect(loc.search).to.eq('?repository=core&architecture=x86_64')
     })
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500)
-    cy.get('[data-test=package-link]').should('have.length.lt', 10)
+    cy.get('[data-test=packages-search]').should('have.value', '')
+    cy.get('[data-test=package-link]').should('have.length.gt', 10)
     cy.get('[data-test=packages-filter-repository] option:selected').should('have.text', 'core')
     cy.get('[data-test=packages-filter-architecture] option:selected').should('have.text', 'x86_64')
-    cy.get('[data-test=package-link]').contains('pacman')
-    cy.get('[data-test=package-link]').should('not.contain', 'namcap')
   })
 })

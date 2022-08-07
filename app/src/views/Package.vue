@@ -2,7 +2,7 @@
   <main class="container">
     <Head>
       <title v-if="pkg.name">{{ pkg.name }} - archlinux.de</title>
-      <link v-if="pkg.name" rel="canonical" :href="createCanonical(true)">
+      <link v-if="pkg.name" rel="canonical" :href="canonical">
       <meta v-if="pkg.description" name="description" :content="pkg.description">
       <meta name="robots" content="noindex" v-if="!pkg.name || pkg.repository.testing">
     </Head>
@@ -173,33 +173,18 @@
           <div class="card-header bg-danger text-white">Fehler beim Laden des Paket</div>
           <div class="card-body">
             <div class="card-text">
-              Das Paket <strong>{{ $route.params.name }}</strong> aus <strong>[{{ $route.params.repository }}]</strong>
+              Das Paket <strong>{{ name }}</strong> aus <strong>[{{ repository }}]</strong>
               konnte leider nicht angezeigt werden.
             </div>
-
-            <table class="table table-borderless caption-top" v-if="suggestions.length > 0">
-              <caption>Gefundene Vorschläge zu <strong>{{ $route.params.name }}</strong>:</caption>
-              <tr :key="id" v-for="(suggestion, id) in suggestions">
-                <td>
-                  <router-link
-                    :to="{name: 'package', params: {repository: suggestion.repository.name, architecture: suggestion.repository.architecture, name: suggestion.name}}">
-                    {{ suggestion.name }}
-                  </router-link>
-                </td>
-                <td> {{ suggestion.description }}</td>
-                <td class="d-none d-lg-table-cell">
-                  <package-popularity :popularity="suggestion.popularity"></package-popularity>
-                </td>
-              </tr>
-            </table>
+            <package-suggestions :name="name" :limit="5"></package-suggestions>
           </div>
 
           <div class="card-footer">
             <div class="d-flex justify-content-between">
               <small class="text-muted">{{ error }}</small>
               <small>
-                <router-link :to="{name: 'packages', query: { search: $route.params.name }}">Nach {{
-                    $route.params.name
+                <router-link :to="{name: 'packages', query: { search: name }}">Nach {{
+                    name
                   }} suchen
                 </router-link>
               </small>
@@ -212,18 +197,19 @@
 </template>
 
 <script setup>
-import { inject, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
 import prettyBytes from 'pretty-bytes'
-import PackageRelations from '../components/PackageRelations'
-import InversePackageRelations from '../components/InversePackageRelations'
-import PackageFiles from '../components/PackageFiles'
-import PackagePopularity from '../components/PackagePopularity'
+import PackageRelations from '~/components/PackageRelations'
+import InversePackageRelations from '~/components/InversePackageRelations'
+import PackageFiles from '~/components/PackageFiles'
+import PackagePopularity from '~/components/PackagePopularity'
+import PackageSuggestions from '~/components/PackageSuggestions'
+import { useFetchPackage } from '~/composables/useFetchPackage'
+import { useRouteParams } from '@vueuse/router'
 
-const route = useRoute()
 const router = useRouter()
-const apiService = inject('apiService')
 
 const relations = [{
   title: 'benötigt',
@@ -262,58 +248,11 @@ const inverseRelations = [{
   type: 'check-dependency'
 }]
 
-const pkg = ref({})
-const canonical = ref('')
-const error = ref('')
-const suggestions = ref([])
-const files = ref([])
+const repository = useRouteParams('repository')
+const architecture = useRouteParams('architecture')
+const name = useRouteParams('name')
 
-const fetchPackage = () => {
-  // @TODO: Avoid calling fetchPackage() when navigation off this page
-  if (!route.params.repository || !route.params.architecture || !route.params.name) {
-    return
-  }
+const { data: pkg, error } = useFetchPackage(repository, architecture, name)
 
-  apiService.fetchPackage(
-    route.params.repository,
-    route.params.architecture,
-    route.params.name)
-    .then(data => {
-      pkg.value = data
-      files.value = []
-      canonical.value = createCanonical()
-
-      if (route.fullPath !== canonical.value) {
-        router.replace(canonical.value)
-      }
-    })
-    .catch(err => {
-      pkg.value = {}
-      files.value = []
-      canonical.value = ''
-      error.value = err
-      apiService.fetchPackages({
-        query: route.params.name,
-        limit: 5
-      })
-        .then(data => {
-          suggestions.value = data.items
-        })
-    })
-}
-
-const createCanonical = (absolute = false) => (absolute ? window.location.origin : '') + router.resolve({
-  name: 'package',
-  params: {
-    repository: pkg.value.repository.name,
-    architecture: pkg.value.repository.architecture,
-    name: pkg.value.name
-  }
-}).href
-
-watch(
-  () => route.params,
-  () => { fetchPackage() },
-  { immediate: true }
-)
+const canonical = computed(() => window.location.origin + router.resolve({ name: 'package', params: { repository: pkg.value.repository.name, architecture: pkg.value.repository.architecture, name: pkg.value.name } }).href)
 </script>

@@ -2,12 +2,12 @@
   <main class="container">
     <Head>
       <title>Download - archlinux.de</title>
-      <link rel="canonical" :href="createCanonical()">
+      <link rel="canonical" :href="canonical">
       <meta name="description" :content="'Arch Linux herunterladen und installieren in der aktuellen Version ' + release.version + ' mit Kernel ' + release.kernelVersion">
     </Head>
     <h1 class="mb-4">Arch Linux Downloads</h1>
 
-    <div class="alert alert-danger" v-show="error != ''">{{ error }}</div>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
     <div class="row" v-if="release.version">
       <div class="col-12 col-lg-6">
@@ -77,10 +77,10 @@
           <span class="font-weight-bold">Download</span> Arch Linux {{ release.version }}
         </a>
 
-        <template v-if="mirrors.length > 0">
+        <template v-if="mirrors.items.length > 0">
           <h3>Mirrors</h3>
           <ul class="list-unstyled ms-4 link-list" data-test="mirror-list">
-            <li :key="mirror.url" v-for="mirror in mirrors">
+            <li :key="mirror.url" v-for="mirror in mirrors.items">
               <a :href="mirror.url + release.isoPath" download rel="nofollow noopener">{{ mirror.host }}</a>
             </li>
           </ul>
@@ -112,40 +112,19 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import prettyBytes from 'pretty-bytes'
 import { Head } from '@vueuse/head'
+import { useFetchReleases } from '~/composables/useFetchReleases'
+import { useFetchMirrors } from '~/composables/useFetchMirrors'
+import { useRouter } from 'vue-router'
 
-const apiService = inject('apiService')
+const router = useRouter()
 
-const release = ref({})
-const mirrors = ref([])
-const error = ref('')
+const { data: releases, error } = useFetchReleases({ limit: 1, onlyAvailable: true })
+const release = computed(() => releases.value.items.length > 0 ? releases.value.items[0] : {})
 
-const fetchLatestRelease = () => {
-  apiService.fetchReleases({ limit: 1, onlyAvailable: true })
-    .then(data => {
-      release.value = data.items[0]
-    })
-    .catch(error => {
-      error.value = error
-    })
-}
+const { data: mirrors } = useFetchMirrors({ limit: 10 })
 
-const fetchMirrors = () => {
-  apiService.fetchMirrors({ limit: 10 })
-    .then(data => {
-      mirrors.value = data.items
-    })
-    .catch(() => {
-    })
-}
-
-const createCanonical = () => window.location.origin + useRouter().resolve({ name: 'download' }).href
-
-onMounted(() => {
-  fetchLatestRelease()
-  fetchMirrors()
-})
+const canonical = computed(() => window.location.origin + router.resolve({ name: 'download' }).href)
 </script>

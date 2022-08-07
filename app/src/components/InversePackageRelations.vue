@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted, watch } from 'vue'
+import { useFetchPackageInverseDependencies } from '~/composables/useFetchPackageInverseDependencies'
 
 const props = defineProps({
   repository: {
@@ -41,16 +41,5 @@ const props = defineProps({
   }
 })
 
-const apiService = inject('apiService')
-
-const relations = ref([])
-
-const fetchInverseRelations = () => {
-  apiService.fetchPackageInverseDependencies(props.repository, props.architecture, props.name, props.type)
-    .then(data => { relations.value = data })
-    .catch(() => {})
-}
-
-onMounted(() => fetchInverseRelations())
-watch(props, () => fetchInverseRelations(), { deep: true })
+const { data: relations } = useFetchPackageInverseDependencies(props.repository, props.architecture, props.name, props.type)
 </script>

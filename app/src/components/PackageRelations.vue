@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onMounted, watch } from 'vue'
+import { useFetchPackageDependencies } from '~/composables/useFetchPackageDependencies'
 
 const props = defineProps({
   repository: {
@@ -42,16 +42,5 @@ const props = defineProps({
   }
 })
 
-const apiService = inject('apiService')
-
-const relations = ref([])
-
-const fetchRelations = () => {
-  apiService.fetchPackageDependencies(props.repository, props.architecture, props.name, props.type)
-    .then(data => { relations.value = data })
-    .catch(() => {})
-}
-
-onMounted(() => fetchRelations())
-watch(props, () => fetchRelations(), { deep: true })
+const { data: relations } = useFetchPackageDependencies(props.repository, props.architecture, props.name, props.type)
 </script>

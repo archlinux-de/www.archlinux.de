@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <link rel="canonical" :href="createCanonical()">
+      <link rel="canonical" :href="canonical">
       <meta name="description" content="Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux">
     </Head>
     <div class="row">
@@ -109,12 +109,12 @@
         "@type": "WebSite",
         "name": "archlinux.de",
         "alternateName": "Arch Linux Deutschland",
-        "url": "{{ createCanonical() }}",
+        "url": "{{ canonical }}",
         "potentialAction": {
           "@type": "SearchAction",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "{{ createSearchTemplateUrl() }}"
+            "urlTemplate": "{{ searchTemplateUrl }}"
           },
           "query-input": "required name=search"
         }
@@ -124,18 +124,19 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Head } from '@vueuse/head'
-import PackageSearch from '../components/PackageSearch'
-import NewsItemList from '../components/NewsItemList'
-import RecentPackages from '../components/RecentPackages'
+import PackageSearch from '~/components/PackageSearch'
+import NewsItemList from '~/components/NewsItemList'
+import RecentPackages from '~/components/RecentPackages'
 
 const router = useRouter()
 
-const createCanonical = () => window.location.origin + router.resolve({ name: 'start' }).href
+const canonical = computed(() => window.location.origin + router.resolve({ name: 'start' }).href)
 
-const createSearchTemplateUrl = () => window.location.origin + router.resolve({
+const searchTemplateUrl = computed(() => window.location.origin + router.resolve({
   name: 'packages',
   query: { search: '__search__' }
-}).href.replace('__search__', '{search}')
+}).href.replace('__search__', '{search}'))
 </script>

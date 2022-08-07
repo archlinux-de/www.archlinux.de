@@ -94,11 +94,11 @@
 
 <script setup>
 import Collapse from 'bootstrap/js/src/collapse'
-import LogoImage from './assets/images/archlogo.svg'
-import IconImage from './assets/images/archicon.svg'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from '@vueuse/head'
+import LogoImage from '~/assets/images/archlogo.svg'
+import IconImage from '~/assets/images/archicon.svg'
 
 useRouter().beforeEach(() => {
   const navbar = Collapse.getInstance('#archlinux-navbar')
