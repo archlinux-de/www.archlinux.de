@@ -15,12 +15,13 @@
         placeholder="Releases suchen"
         type="search"
         autocomplete="off"
-        v-model="query">
+        v-model="query"
+        data-test="releases-search">
     </div>
 
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="total > 0">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="total > 0" data-test="releases">
       <thead>
       <tr>
         <th>Version</th>
@@ -31,7 +32,7 @@
       </thead>
       <tbody>
       <tr :key="key" v-for="(item, key) in items">
-        <td><router-link :to="{name: 'release', params: {version: item.version}}">{{ item.version }}</router-link></td>
+        <td><router-link :to="{name: 'release', params: {version: item.version}}" data-test="release-link">{{ item.version }}</router-link></td>
         <td>{{ (new Date(item.releaseDate)).toLocaleDateString('de-DE') }}</td>
         <td>{{ item.kernelVersion }}</td>
         <td>
@@ -49,8 +50,8 @@
         {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Releases
       </div>
       <div class="col-12 col-sm-6 text-end">
-        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
-        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious" data-test="previous">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext" data-test="next">älter</button>
       </div>
     </div>
 

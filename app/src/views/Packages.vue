@@ -18,10 +18,10 @@
         v-model="query"
         data-test="packages-search">
 
-      <select class="form-select" v-model="repository">
+      <select class="form-select" v-model="repository" data-test="packages-filter-repository">
         <option :key="key" :value="item" :selected="repository === item" v-for="(item, key) in repositories">{{ item }}</option>
       </select>
-      <select class="form-select d-none d-sm-block" v-if="architecture" v-model="architecture">
+      <select class="form-select d-none d-sm-block" v-if="architecture" v-model="architecture" data-test="packages-filter-architecture">
         <option :key="key" :value="item" :selected="architecture === item" v-for="(item, key) in architectures">{{ item }}</option>
       </select>
     </div>
@@ -44,14 +44,16 @@
         <tr :key="key" v-for="(item, key) in items">
           <td class="d-none d-lg-table-cell">
             <router-link class="d-none d-lg-table-cell"
-                         :to="{name: 'packages', query: {repository: item.repository.name, architecture: item.repository.architecture}}">
+              :to="{name: 'packages', query: {repository: item.repository.name, architecture: item.repository.architecture}}"
+              data-test="package-repository-link">
               {{ item.repository.name }}
             </router-link>
           </td>
           <td class="d-none d-xl-table-cell">{{ item.architecture }}</td>
           <td class="text-break">
             <router-link
-              :to="{name: 'package', params: {repository: item.repository.name, architecture: item.repository.architecture, name: item.name}}">
+              :to="{name: 'package', params: {repository: item.repository.name, architecture: item.repository.architecture, name: item.name}}"
+              data-test="package-link">
               {{ item.name }}
             </router-link>
           </td>
@@ -70,8 +72,8 @@
         {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Paketen
       </div>
       <div class="col-12 col-sm-6 text-end">
-        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
-        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious" data-test="previous">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext" data-test="next">älter</button>
       </div>
     </div>
 

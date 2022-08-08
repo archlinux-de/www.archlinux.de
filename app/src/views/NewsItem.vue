@@ -11,14 +11,14 @@
       </Head>
       <h1 class="mb-4">{{ news.title }}</h1>
       <div class="mb-3 text-muted">
-        {{ (new Date(news.lastModified)).toLocaleDateString('de-DE') }}
+        <span data-test="news-date">{{ (new Date(news.lastModified)).toLocaleDateString('de-DE') }}</span>
         &ndash;
-        <a v-if="news.author.uri" class="text-muted" :href="news.author.uri">{{ news.author.name }}</a>
-        <span v-else>{{ news.author.name }}</span>
+        <a v-if="news.author.uri" class="text-muted" :href="news.author.uri" data-test="news-author">{{ news.author.name }}</a>
+        <span v-else data-test="news-author">{{ news.author.name }}</span>
       </div>
-      <div class="text-break mb-4" v-html="news.description"></div>
+      <div class="text-break mb-4" v-html="news.description" data-test="news-content"></div>
       <router-link :to="{name: 'news'}" class="btn btn-outline-secondary btn-sm">zum Archiv</router-link>
-      <a class="btn btn-primary btn-sm" :href="news.link">Kommentare</a>
+      <a class="btn btn-primary btn-sm" :href="news.link" data-test="news-comments-link">Kommentare</a>
 
       <component :is="'script'" type="application/ld+json">
         {

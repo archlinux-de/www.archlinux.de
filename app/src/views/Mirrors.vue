@@ -15,12 +15,13 @@
         placeholder="Mirror suchen"
         type="search"
         autocomplete="off"
-        v-model="query">
+        v-model="query"
+        data-test="mirrors-search">
     </div>
 
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="total > 0">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="total > 0" data-test="mirrors">
       <thead>
         <tr>
           <th>URL</th>
@@ -34,7 +35,7 @@
       </thead>
       <tbody>
         <tr :key="key" v-for="(item, key) in items">
-          <td><a :href="item.url" rel="nofollow noopener" target="_blank">{{ item.host }}</a></td>
+          <td><a :href="item.url" rel="nofollow noopener" target="_blank" data-test="mirror-link">{{ item.host }}</a></td>
           <td class="d-none d-md-table-cell">{{ item.country ? item.country.name : '' }}</td>
           <td class="d-none d-lg-table-cell">{{ renderDuration(item.durationAvg) }}</td>
           <td class="d-none d-lg-table-cell">{{ renderDuration(item.delay) }}</td>
@@ -58,8 +59,8 @@
         {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Mirrors
       </div>
       <div class="col-12 col-sm-6 text-end">
-        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
-        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious" data-test="previous">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext" data-test="next">älter</button>
       </div>
     </div>
 

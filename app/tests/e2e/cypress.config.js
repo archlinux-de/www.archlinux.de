@@ -1,6 +1,7 @@
 module.exports = {
   fixturesFolder: false,
   screenshotOnRunFailure: false,
+  trashAssetsBeforeRuns: false,
   video: false,
   numTestsKeptInMemory: 0,
   retries: {
@@ -8,8 +9,7 @@ module.exports = {
     openMode: 0
   },
   e2e: {
-    setupNodeEvents (on, config) {},
-    supportFile: false
+    setupNodeEvents (on, config) {}
   },
   component: {
     setupNodeEvents (on, config) {},

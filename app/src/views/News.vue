@@ -15,12 +15,13 @@
         placeholder="Neuigkeiten suchen"
         type="search"
         autocomplete="off"
-        v-model="query">
+        v-model="query"
+        data-test="news-search">
     </div>
 
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <table class="table table-striped table-responsive table-sm table-borderless table-bordered table-fixed" v-show="total > 0">
+    <table class="table table-striped table-responsive table-sm table-borderless table-bordered table-fixed" v-show="total > 0" data-test="news">
       <thead>
         <tr>
           <th class="d-none d-md-table-cell">Veröffentlichung</th>
@@ -32,7 +33,7 @@
         <tr :key="key" v-for="(item, key) in items">
           <td class="d-none d-md-table-cell">{{ (new Date(item.lastModified)).toLocaleDateString('de-DE') }}</td>
           <td>
-            <router-link :to="{name: 'news-item', params: {id: item.id, slug: item.slug}}">
+            <router-link :to="{name: 'news-item', params: {id: item.id, slug: item.slug}}" data-test="news-item-link">
               {{ item.title }}
             </router-link>
           </td>
@@ -48,8 +49,8 @@
         {{ offset + 1 }} bis {{ offset + count }} von {{ total }} Neuigkeiten
       </div>
       <div class="col-12 col-sm-6 text-end">
-        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious">neuer</button>
-        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext">älter</button>
+        <button class="btn btn-sm btn-outline-primary" @click="previous" :disabled="hasPrevious" data-test="previous">neuer</button>
+        <button class="btn btn-sm btn-outline-primary" @click="next" :disabled="hasNext" data-test="next">älter</button>
       </div>
     </div>
 
