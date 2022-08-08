@@ -62,8 +62,6 @@ services:
     environment:
       - "discovery.type=single-node"
       - "plugins.security.disabled=true"
-    tmpfs:
-      - /tmp
 
   wait:
     image: dokku/wait
