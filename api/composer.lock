@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7807b24fb6ba3f4ce560cc8a4f3b507",
+    "content-hash": "a02e9a5f6518ba895e92c480a3232ea6",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2095,16 +2095,16 @@
         },
         {
             "name": "opensearch-project/opensearch-php",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensearch-project/opensearch-php.git",
-                "reference": "839c78e142c844b812e971d53f4149b29b2c4f35"
+                "reference": "845edd60fdefd854c89a49c1bc9272712eb9a1d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/839c78e142c844b812e971d53f4149b29b2c4f35",
-                "reference": "839c78e142c844b812e971d53f4149b29b2c4f35",
+                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/845edd60fdefd854c89a49c1bc9272712eb9a1d0",
+                "reference": "845edd60fdefd854c89a49c1bc9272712eb9a1d0",
                 "shasum": ""
             },
             "require": {
@@ -2112,7 +2112,7 @@
                 "ext-json": ">=1.3.7",
                 "ezimuel/ringphp": "^1.1.2",
                 "php": "^7.3 || ^8.0",
-                "psr/log": "^1|^2"
+                "psr/log": "^1|^2|^3"
             },
             "require-dev": {
                 "aws/aws-sdk-php": "^3.0",
@@ -2156,9 +2156,9 @@
             ],
             "support": {
                 "issues": "https://github.com/opensearch-project/opensearch-php/issues",
-                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.1"
+                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.2"
             },
-            "time": "2022-06-30T23:50:41+00:00"
+            "time": "2022-08-10T14:18:07+00:00"
         },
         {
             "name": "psr/cache",
@@ -2367,16 +2367,16 @@
         },
         {
             "name": "psr/log",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376"
+                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/ef29f6d262798707a9edd554e2b82517ef3a9376",
-                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001",
                 "shasum": ""
             },
             "require": {
@@ -2385,7 +2385,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "3.x-dev"
                 }
             },
             "autoload": {
@@ -2411,9 +2411,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/2.0.0"
+                "source": "https://github.com/php-fig/log/tree/3.0.0"
             },
-            "time": "2021-07-14T16:41:46+00:00"
+            "time": "2021-07-14T16:46:02+00:00"
         },
         {
             "name": "react/promise",
