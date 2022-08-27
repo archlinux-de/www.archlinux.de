@@ -59,11 +59,11 @@ class Package
     private ?array $groups = [];
 
     #[ORM\Column(type: 'bigint')]
-    #[Assert\Range(min: 0, max: 10737418240)]
+    #[Assert\Range(min: 0, max: 107374182400)]
     private int $compressedSize = 0;
 
     #[ORM\Column(type: 'bigint')]
-    #[Assert\Range(min: 0, max: 10737418240)]
+    #[Assert\Range(min: 0, max: 107374182400)]
     private int $installedSize = 0;
 
     #[ORM\Column(length: 64, nullable: true)]
