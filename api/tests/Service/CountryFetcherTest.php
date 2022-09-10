@@ -14,7 +14,15 @@ class CountryFetcherTest extends TestCase
         $countryFetcher = new CountryFetcher(
             new ISO3166(
                 [
-                    ['alpha2' => 'DE', 'name' => 'Germany']
+                    [
+                        'name' => 'Germany',
+                        'alpha2' => 'DE',
+                        'alpha3' => 'DEU',
+                        'numeric' => '276',
+                        'currency' => [
+                            'EUR',
+                        ],
+                    ]
                 ]
             )
         );
