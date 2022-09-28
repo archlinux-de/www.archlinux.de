@@ -7,10 +7,10 @@
     "serve": "webpack serve --mode development --host 0.0.0.0 --port 8080 --allowed-hosts all --hot"
   },
   "dependencies": {
-    "@babel/core": "^7.19.1",
-    "@babel/preset-env": "^7.19.1",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.3",
     "@fullhuman/postcss-purgecss": "^5.0.0",
-    "@vue/compiler-sfc": "^3.2.39",
+    "@vue/compiler-sfc": "^3.2.40",
     "@vueuse/core": "^9.3.0",
     "@vueuse/head": "^0.7.12",
     "@vueuse/router": "^9.3.0",
@@ -34,7 +34,7 @@
     "sass-loader": "^13.0.2",
     "style-loader": "^3.3.1",
     "svg-inline-loader": "^0.8.2",
-    "vue": "^3.2.39",
+    "vue": "^3.2.40",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.1.5",
     "webpack": "^5.74.0",
