@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8be2cbc13a62d37d57271e6e6079cf59",
+    "content-hash": "2eed7ba6eb28172ca817a60b571f8ab7",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2098,16 +2098,16 @@
         },
         {
             "name": "opensearch-project/opensearch-php",
-            "version": "2.0.2",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensearch-project/opensearch-php.git",
-                "reference": "845edd60fdefd854c89a49c1bc9272712eb9a1d0"
+                "reference": "27e04b10689dfffeb644b33af9531fc7fe8a5ffb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/845edd60fdefd854c89a49c1bc9272712eb9a1d0",
-                "reference": "845edd60fdefd854c89a49c1bc9272712eb9a1d0",
+                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/27e04b10689dfffeb644b33af9531fc7fe8a5ffb",
+                "reference": "27e04b10689dfffeb644b33af9531fc7fe8a5ffb",
                 "shasum": ""
             },
             "require": {
@@ -2125,7 +2125,7 @@
                 "phpstan/phpstan": "^1.7.15",
                 "phpstan/phpstan-mockery": "^1.1.0",
                 "phpunit/phpunit": "^9.3",
-                "symfony/finder": "~4.0"
+                "symfony/finder": "~4.0 || ~5.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Required (^3.0.0) in order to use the SigV4 handler",
@@ -2159,9 +2159,9 @@
             ],
             "support": {
                 "issues": "https://github.com/opensearch-project/opensearch-php/issues",
-                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.2"
+                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.3"
             },
-            "time": "2022-08-10T14:18:07+00:00"
+            "time": "2022-10-01T07:54:51+00:00"
         },
         {
             "name": "psr/cache",
