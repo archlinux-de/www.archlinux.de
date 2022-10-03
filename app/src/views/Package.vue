@@ -112,7 +112,7 @@
         <div class="row">
           <package-relations
             v-for="relation in relations"
-            :key="'package-relations-' + relation.type"
+            :key="'package-relations-' + relation.type + '-' + canonical"
             :repository="pkg.repository.name"
             :architecture="pkg.repository.architecture"
             :name="pkg.name"
@@ -121,7 +121,7 @@
 
           <inverse-package-relations
             v-for="inverseRelation in inverseRelations"
-            :key="'inverse-package-relations-' + inverseRelation.type"
+            :key="'inverse-package-relations-' + inverseRelation.type + '-' + canonical"
             :repository="pkg.repository.name"
             :architecture="pkg.repository.architecture"
             :name="pkg.name"
@@ -133,6 +133,7 @@
       <div class="col-12">
         <h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
         <package-files
+          :key="'package-files-' + canonical"
           :repository="pkg.repository.name"
           :architecture="pkg.repository.architecture"
           :name="pkg.name"></package-files>
