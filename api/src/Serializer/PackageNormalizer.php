@@ -14,7 +14,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     public function __construct(
         private UrlGeneratorInterface $router,
         private ObjectNormalizer $normalizer,
-        private string $cgitUrl
+        private string $githubUrl
     ) {
     }
 
@@ -67,7 +67,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $cgitLink = $this->cgitUrl . (
+        $githubLink = $this->githubUrl . 'svntogit-' . (
             in_array(
                 $object->getRepository()->getName(),
                 [
@@ -78,10 +78,10 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
                 ]
             ) ? 'community' : 'packages'
             )
-            . '.git/';
+            . '/';
 
-        $data['sourceUrl'] = $cgitLink . 'tree/trunk?h=packages/' . $object->getBase();
-        $data['sourceChangelogUrl'] = $cgitLink . 'log/trunk?h=packages/' . $object->getBase();
+        $data['sourceUrl'] = $githubLink . 'tree/packages/' . $object->getBase() . '/trunk';
+        $data['sourceChangelogUrl'] = $githubLink . 'commits/packages/' . $object->getBase() . '/trunk';
 
         return $data;
     }

@@ -68,7 +68,7 @@
           </tr>
           <tr>
             <th>Quelltext</th>
-            <td><a class="p-0" :href="pkg.sourceUrl">Quelldateien</a>, <a class="p-0" :href="pkg.sourceChangelogUrl">Änderungshistorie</a>
+            <td><a class="p-0" :href="pkg.sourceUrl" rel="nofollow noopener" target="_blank">Quelldateien</a>, <a class="p-0" :href="pkg.sourceChangelogUrl" rel="nofollow noopener" target="_blank">Änderungshistorie</a>
             </td>
           </tr>
           <tr>

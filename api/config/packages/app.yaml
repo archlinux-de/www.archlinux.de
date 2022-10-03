@@ -1,7 +1,7 @@
 parameters:
     env(PACKAGES_MIRROR): 'https://mirror.leaseweb.net/archlinux/'
     app.packages.mirror: '%env(PACKAGES_MIRROR)%'
-    app.packages.cgit: 'https://projects.archlinux.de/svntogit/'
+    app.packages.github_url: 'https://github.com/archlinux/'
     app.packages.repositories:
         core: ['x86_64']
         extra: ['x86_64']

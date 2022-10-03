@@ -57,9 +57,9 @@ class PackageDetailsControllerTest extends DatabaseTestCase
                     'testing' => false
                 ],
                 'packageUrl' => 'http://localhost/download/core/os/x86_64/pacman-5.0.2-2-x86_64.pkg.tar.xz',
-                'sourceUrl' => 'https://projects.archlinux.de/svntogit/packages.git/tree/trunk?h=packages/pacman',
+                'sourceUrl' => 'https://github.com/archlinux/svntogit-packages/tree/packages/pacman/trunk',
                 'sourceChangelogUrl' =>
-                    'https://projects.archlinux.de/svntogit/packages.git/log/trunk?h=packages/pacman',
+                    'https://github.com/archlinux/svntogit-packages/commits/packages/pacman/trunk',
                 'popularity' => 0
             ],
             json_decode($client->getResponse()->getContent(), true)

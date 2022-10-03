@@ -74,9 +74,9 @@ class PackageNormalizerTest extends KernelTestCase
                 'sha256sum' => 'abcdef',
                 'licenses' => ['GPL'],
                 'packageUrl' => 'http://localhost/download/core/os/x86_64/pacman-6.0-1-x86_64.pkg.tar.xz',
-                'sourceUrl' => 'https://projects.archlinux.de/svntogit/packages.git/tree/trunk?h=packages/pacman',
+                'sourceUrl' => 'https://github.com/archlinux/svntogit-packages/tree/packages/pacman/trunk',
                 'sourceChangelogUrl' =>
-                    'https://projects.archlinux.de/svntogit/packages.git/log/trunk?h=packages/pacman',
+                    'https://github.com/archlinux/svntogit-packages/commits/packages/pacman/trunk',
                 'popularity' => 0
             ],
             $jsonArray
