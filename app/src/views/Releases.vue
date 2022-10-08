@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title>Arch Linux Releases - archlinux.de</title>
+      <title>Arch Linux Releases</title>
       <link rel="canonical" :href="canonical">
       <meta name="description" v-if="request.query" :content="request.query + '-Installationsmedien für Arch Linux'">
       <meta name="description" v-else content="Übersicht und Download der Arch Linux Installationsmedien">

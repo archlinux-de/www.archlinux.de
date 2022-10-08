@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title>Paket-Suche - archlinux.de</title>
+      <title>Paket-Suche</title>
       <link rel="canonical" :href="canonical">
       <meta name="description" v-if="request.query" :content="request.query + '-Pakete für Arch Linux'">
       <meta name="description" v-else content="Übersicht und Suche von Arch Linux-Paketen">

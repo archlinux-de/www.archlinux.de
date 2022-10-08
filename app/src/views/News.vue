@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title>Neuigkeiten - archlinux.de</title>
+      <title>Neuigkeiten</title>
       <link rel="canonical" :href="canonical">
       <meta name="description" v-if="request.query" :content="request.query + '-Neuigkeiten für Arch Linux'">
       <meta name="description" v-else content="Neuigkeiten und Mitteilungen zu Arch Linux">

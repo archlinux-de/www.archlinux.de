@@ -1,6 +1,7 @@
 <template>
   <main class="container">
     <Head>
+      <title>Start</title>
       <link rel="canonical" :href="canonical">
       <meta name="description" content="Deutschsprachige Foren, Neugikeiten, Pakete und ISO-Downloads zu Arch Linux">
     </Head>

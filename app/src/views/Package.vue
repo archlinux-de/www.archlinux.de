@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title v-if="pkg.name">{{ pkg.name }} - archlinux.de</title>
+      <title v-if="pkg.name">{{ pkg.name }}</title>
       <link v-if="pkg.name" rel="canonical" :href="canonical">
       <meta v-if="pkg.description" name="description" :content="pkg.description">
       <meta name="robots" content="noindex" v-if="!pkg.name || pkg.repository.testing">

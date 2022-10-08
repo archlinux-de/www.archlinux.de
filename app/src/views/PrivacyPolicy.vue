@@ -1,5 +1,9 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Datenschutz</title>
+      <meta name="robots" content="noindex">
+    </Head>
     <h1 class="mb-4">Datenschutz</h1>
     <div class="row">
       <div class="col-12 col-lg-6">
@@ -68,10 +72,5 @@
 </template>
 
 <script setup>
-import { useHead } from '@vueuse/head'
-
-useHead({
-  title: 'Datenschutz - archlinux.de',
-  meta: [{ name: 'robots', content: 'noindex' }]
-})
+import { Head } from '@vueuse/head'
 </script>

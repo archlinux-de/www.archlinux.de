@@ -5,7 +5,7 @@
 
     <template v-if="news.id">
       <Head>
-        <title>{{ news.title }} - archlinux.de</title>
+        <title>{{ news.title }}</title>
         <link rel="canonical" :href="canonical">
         <meta name="description" :content="description">
       </Head>
@@ -39,6 +39,7 @@
     </template>
     <template v-else>
       <Head>
+        <title></title>
         <meta name="robots" content="noindex,follow">
       </Head>
     </template>

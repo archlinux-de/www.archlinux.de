@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title>Download - archlinux.de</title>
+      <title>Download</title>
       <link rel="canonical" :href="canonical">
       <meta name="description" :content="'Arch Linux herunterladen und installieren in der aktuellen Version ' + release.version + ' mit Kernel ' + release.kernelVersion">
     </Head>

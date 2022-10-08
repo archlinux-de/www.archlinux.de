@@ -1,5 +1,13 @@
 <template>
   <div id="page">
+    <Head>
+      <title></title>
+      <meta name="robots" content="index,follow">
+      <meta name="theme-color" content="#333">
+      <link rel="icon" :href="IconImage" sizes="any" type="image/svg+xml">
+      <link rel="manifest" href="/manifest.webmanifest">
+      <link rel="search" type="application/opensearchdescription+xml" href="/packages/opensearch">
+    </Head>
     <nav class="navbar navbar-expand-md navbar-dark navbar-border-brand bg-dark nav-no-outline mb-4">
       <div class="container-fluid">
         <router-link :to="{name: 'start'}" class="navbar-brand">
@@ -96,7 +104,7 @@
 import Collapse from 'bootstrap/js/src/collapse'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useHead } from '@vueuse/head'
+import { useHead, Head } from '@vueuse/head'
 import LogoImage from '~/assets/images/archlogo.svg'
 import IconImage from '~/assets/images/archicon.svg'
 
@@ -107,18 +115,7 @@ useRouter().beforeEach(() => {
   }
 })
 
-useHead({
-  title: 'archlinux.de',
-  meta: [
-    { name: 'robots', content: 'index,follow' },
-    { name: 'theme-color', content: '#333' }
-  ],
-  link: [
-    { rel: 'icon', href: IconImage, sizes: 'any', type: 'image/svg+xml' },
-    { rel: 'manifest', href: '/manifest.webmanifest' },
-    { rel: 'search', type: 'application/opensearchdescription+xml', href: '/packages/opensearch' }
-  ]
-})
+useHead({ titleTemplate: '%s - archlinux.de' })
 
 onMounted(() => {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {

@@ -1,5 +1,9 @@
 <template>
   <main class="container">
+    <Head>
+      <title>Impressum</title>
+      <meta name="robots" content="noindex">
+    </Head>
     <h1 class="mb-4">Impressum</h1>
     <table class="table table-sm table-borderless">
       <tbody>
@@ -28,10 +32,5 @@
 </template>
 
 <script setup>
-import { useHead } from '@vueuse/head'
-
-useHead({
-  title: 'Impressum - archlinux.de',
-  meta: [{ name: 'robots', content: 'noindex' }]
-})
+import { Head } from '@vueuse/head'
 </script>

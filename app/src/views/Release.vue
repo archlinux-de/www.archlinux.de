@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title v-if="release.version">{{ release.version }} - archlinux.de</title>
+      <title v-if="release.version">{{ release.version }}</title>
       <link v-if="release.version" rel="canonical" :href="canonical">
       <meta v-if="release.version" name="description" :content="`Informationen und Download von Arch Linux Version ${release.version} mit Kernel ${release.kernelVersion}`">
       <meta v-if="!release.version" name="robots" content="noindex,follow">

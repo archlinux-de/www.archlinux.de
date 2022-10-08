@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <Head>
-      <title>Mirror-Status - archlinux.de</title>
+      <title>Mirror-Status</title>
       <link rel="canonical" :href="canonical">
       <meta name="description" v-if="request.query" :content="request.query + '-Mirror für Arch Linux'">
       <meta name="description" v-else content="Paket-Mirror Arch Linux">
