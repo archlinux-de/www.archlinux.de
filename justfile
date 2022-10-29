@@ -130,7 +130,7 @@ test-e2e:
 		git clean -xdf app/dist
 		just init
 		just yarn build
-		CYPRESS_baseUrl=http://nginx:81 just cypress-run
+		CYPRESS_baseUrl=http://caddy:81 just cypress-run
 	else
 		just cypress-run
 	fi

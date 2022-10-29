@@ -1,0 +1,33 @@
+{
+	auto_https off
+	admin off
+	servers {
+		protocols h1
+	}
+}
+
+(api) {
+	@backend path /api/* /download/* /news/feed /packages/feed /releases/feed /packages/opensearch /packages/suggest /sitemap.xml /_error* /_debug*
+	handle @backend {
+		root * /app/api/public
+		php_fastcgi api:9000
+	}
+}
+
+http://:80 {
+	import api
+	handle /* {
+		reverse_proxy app:8080
+	}
+}
+
+http://:81 {
+	import api
+	handle /* {
+		try_files {path} {path}/ /index.html
+		root * /app/app/dist
+		file_server {
+			hide .*
+		}
+	}
+}

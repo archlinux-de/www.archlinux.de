@@ -31,19 +31,16 @@ services:
     tmpfs:
       - /tmp
 
-  nginx:
-    image: nginx:stable-alpine
+  caddy:
+    image: caddy:2-alpine
     ports:
       - "${PORT}:80"
       - "${TEST_PORT}:81"
     volumes:
       - ../app/dist:/app/app/dist:ro
       - ../api/public:/app/api/public:ro
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/include:/etc/nginx/include:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
     userns_mode: host
-    tmpfs:
-      - /tmp
     depends_on:
       - api
       - app

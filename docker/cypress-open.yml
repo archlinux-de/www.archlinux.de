@@ -4,7 +4,7 @@ services:
   cypress:
     image: cypress/included:10.11.0
     depends_on:
-      - nginx
+      - caddy
     environment:
       - CYPRESS_baseUrl=${CYPRESS_baseUrl:-http://localhost:${PORT}}
       - CYPRESS_numTestsKeptInMemory=100
