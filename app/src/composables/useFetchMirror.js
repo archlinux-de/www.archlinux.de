@@ -12,6 +12,10 @@ export const useFetchMirror = url => useApiFetch(
   }),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

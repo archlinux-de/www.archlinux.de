@@ -16,6 +16,10 @@ export const useFetchNewsItems = (options) => useApiFetch(
   useApiUrl('/api/news', options),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

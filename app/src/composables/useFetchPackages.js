@@ -18,6 +18,10 @@ export const useFetchPackages = (options) => useApiFetch(
   useApiUrl('/api/packages', options),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

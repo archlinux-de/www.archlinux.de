@@ -18,6 +18,10 @@ export const useFetchPackageDependencies = (repository, architecture, name, type
   }),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

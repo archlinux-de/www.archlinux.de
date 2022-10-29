@@ -16,6 +16,10 @@ export const useFetchReleases = (options) => useApiFetch(
   useApiUrl('/api/releases', options),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

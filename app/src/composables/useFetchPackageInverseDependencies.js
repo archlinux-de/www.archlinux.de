@@ -18,6 +18,10 @@ export const useFetchPackageInverseDependencies = (repository, architecture, nam
   }),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

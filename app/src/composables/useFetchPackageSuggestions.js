@@ -32,6 +32,10 @@ export const useFetchPackageSuggestions = (term) => {
         return {
           options
         }
+      },
+      onFetchError: (ctx) => {
+        ctx.data = initialData
+        return ctx
       }
     }
   ).get().json()

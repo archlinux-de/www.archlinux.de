@@ -16,6 +16,10 @@ export const useFetchPackage = (repository, architecture, name) => useApiFetch(
   }),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()

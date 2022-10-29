@@ -12,6 +12,10 @@ export const useFetchNewsItem = (id) => useApiFetch(
   }),
   {
     initialData,
-    refetch: true
+    refetch: true,
+    onFetchError: (ctx) => {
+      ctx.data = initialData
+      return ctx
+    }
   }
 ).get().json()
