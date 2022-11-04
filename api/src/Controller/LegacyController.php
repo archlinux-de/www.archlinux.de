@@ -49,6 +49,7 @@ class LegacyController extends AbstractController
         parse_str($queryString, $queries);
 
         $page = $queries['page'] ?? '';
+        assert(is_string($page));
 
         if (isset($this->internalPages[$page])) {
             $parameters = array_diff_key($queries, ['page' => '']);
