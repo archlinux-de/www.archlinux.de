@@ -69,12 +69,27 @@ class AbstractRelationRepository extends ServiceEntityRepository
             ->getResult();
         $compatibleCandidates = [];
         foreach ($candidates as $candidate) {
-            if ($candidate->getSource()->getRepository()->getArchitecture() == $repositoryArchitecture) {
-                $compatibleCandidates[] = $candidate->getSource();
+            $canidateSource = $candidate->getSource();
+
+            if ($canidateSource->getRepository()->getArchitecture() !== $repositoryArchitecture) {
+                continue;
+            }
+
+            if ($relation->getTargetVersion()) {
+                foreach ($canidateSource->getProvisions() as $compatibleCandidateProvision) {
+                    if ($relation->getTargetVersion() === $compatibleCandidateProvision->getTargetVersion()) {
+                        if (!isset($compatibleCandidates[$canidateSource->getId()])) {
+                            $compatibleCandidates[$canidateSource->getId()] = $canidateSource;
+                        }
+                    }
+                }
+            } else {
+                $compatibleCandidates[$canidateSource->getId()] = $canidateSource;
             }
         }
+
         if (count($compatibleCandidates) == 1) {
-            return $compatibleCandidates[0];
+            return array_values($compatibleCandidates)[0];
         }
 
         return null;

@@ -37,20 +37,19 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibc);
         $entityManager->flush();
 
-        /** @var AbstractRelationRepository $abstractRelationRepository */
         $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
         $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
-        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Package::class, $databasePacman);
         $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
-        /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
+        $this->assertInstanceOf(Package::class, $databaseGlibc);
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
     }
 
@@ -78,20 +77,19 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibc);
         $entityManager->flush();
 
-        /** @var AbstractRelationRepository $abstractRelationRepository */
         $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
         $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
-        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Package::class, $databasePacman);
         $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
-        /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
+        $this->assertInstanceOf(Package::class, $databaseGlibc);
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
     }
 
@@ -129,20 +127,19 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($testingGlibc);
         $entityManager->flush();
 
-        /** @var AbstractRelationRepository $abstractRelationRepository */
         $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
         $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
-        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Package::class, $databasePacman);
         $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
-        /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
+        $this->assertInstanceOf(Package::class, $databaseGlibc);
         $this->assertEquals($glibc->getId(), $databaseGlibc->getId());
     }
 
@@ -178,17 +175,16 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibcNg);
         $entityManager->flush();
 
-        /** @var AbstractRelationRepository $abstractRelationRepository */
         $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
         $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
-        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Package::class, $databasePacman);
         $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
         $this->assertNull($databaseGlibc);
@@ -228,20 +224,77 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager->persist($glibcNg64);
         $entityManager->flush();
 
-        /** @var AbstractRelationRepository $abstractRelationRepository */
         $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
         $abstractRelationRepository->updateTargets();
 
         $entityManager->flush();
         $entityManager->clear();
 
-        /** @var PackageRepository $packageRepository */
         $packageRepository = $entityManager->getRepository(Package::class);
-        /** @var Package $databasePacman */
         $databasePacman = $packageRepository->find($pacman->getId());
+        $this->assertInstanceOf(Package::class, $databasePacman);
         $this->assertInstanceOf(Dependency::class, $databasePacman->getDependencies()->first());
-        /** @var Package $databaseGlibc */
         $databaseGlibc = $databasePacman->getDependencies()->first()->getTarget();
+        $this->assertInstanceOf(Package::class, $databaseGlibc);
         $this->assertEquals($glibcNg64->getId(), $databaseGlibc->getId());
+    }
+
+    public function testLibraryProvisionsWithVersions(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $systemd = new Package(
+            $coreRepository,
+            'systemd',
+            '251.7-4',
+            Architecture::X86_64
+        );
+        $openssl = new Package(
+            $coreRepository,
+            'openssl',
+            '3.0.7-2',
+            Architecture::X86_64
+        );
+        $openssl1 = new Package(
+            $coreRepository,
+            'openssl-1.1',
+            '1.1.1.s-2',
+            Architecture::X86_64
+        );
+        $openssl
+            ->addProvision(new Provision('libcrypto.so', '=3'))
+            ->addProvision(new Provision('libssl.so', '=3'));
+        $openssl1
+            ->addProvision(new Provision('libcrypto.so', '=1.1'))
+            ->addProvision(new Provision('libssl.so', '=1.1'));
+        $systemd
+            ->addDependency(new Dependency('openssl'))
+            ->addDependency(new Dependency('libcrypto.so', '=3'))
+            ->addDependency(new Dependency('libssl.so', '=3'));
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($systemd);
+        $entityManager->persist($openssl);
+        $entityManager->persist($openssl1);
+        $entityManager->flush();
+
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
+        $abstractRelationRepository->updateTargets();
+
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $packageRepository = $entityManager->getRepository(Package::class);
+
+        $databaseSystemd = $packageRepository->find($systemd->getId());
+        $this->assertInstanceOf(Package::class, $databaseSystemd);
+        $this->assertInstanceOf(Dependency::class, $databaseSystemd->getDependencies()->first());
+
+        foreach ($databaseSystemd->getDependencies() as $dependency) {
+            $this->assertInstanceOf(Package::class, $dependency->getTarget());
+            $this->assertEquals($openssl->getId(), $dependency->getTarget()->getId());
+        }
     }
 }
