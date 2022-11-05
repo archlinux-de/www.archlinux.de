@@ -17,11 +17,9 @@
 
 <script setup>
 import { computed } from 'vue'
-/* eslint-disable import/no-webpack-loader-syntax */
-import starFill from '!!svg-inline-loader!bootstrap-icons/icons/star-fill.svg'
-import starHalf from '!!svg-inline-loader!bootstrap-icons/icons/star-half.svg'
-import star from '!!svg-inline-loader!bootstrap-icons/icons/star.svg'
-/* eslint-enable */
+import starFill from 'bootstrap-icons/icons/star-fill.svg?raw'
+import starHalf from 'bootstrap-icons/icons/star-half.svg?raw'
+import star from 'bootstrap-icons/icons/star.svg?raw'
 
 const props = defineProps({
   popularity: {
