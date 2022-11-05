@@ -7,6 +7,9 @@ use App\Entity\Packages\Relations\AbstractRelation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<AbstractRelation>
+ */
 class AbstractRelationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,7 +19,6 @@ class AbstractRelationRepository extends ServiceEntityRepository
 
     public function updateTargets(): void
     {
-        /** @var AbstractRelation $relation */
         foreach ($this->findAll() as $relation) {
             $relation->setTarget($this->getBestPackageByRelation($relation));
         }
@@ -24,6 +26,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
 
     private function getBestPackageByRelation(AbstractRelation $relation): ?Package
     {
+        /** @var Package[] $candidates */
         $candidates = $this
             ->getEntityManager()
             ->getRepository(Package::class)
@@ -33,28 +36,50 @@ class AbstractRelationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
-        assert(is_array($candidates));
         if (count($candidates) > 0) {
             $relationRepository = $relation->getSource()->getRepository();
-            /** @var Package $candidate */
+
             foreach ($candidates as $candidate) {
                 if ($candidate->getRepository()->getId() == $relationRepository->getId()) {
-                    return $candidate;
+                    if ($this->isVersionCompatible($candidate->getVersion(), $relation->getTargetVersion())) {
+                        return $candidate;
+                    }
                 }
             }
-            /** @var Package $candidate */
+
             foreach ($candidates as $candidate) {
                 $candidateRepository = $candidate->getRepository();
                 if (
                     !$candidateRepository->isTesting()
                     && $candidateRepository->getArchitecture() == $relationRepository->getArchitecture()
                 ) {
-                    return $candidate;
+                    if ($this->isVersionCompatible($candidate->getVersion(), $relation->getTargetVersion())) {
+                        return $candidate;
+                    }
                 }
             }
         }
 
         return $this->getProviderByRelation($relation);
+    }
+
+    private function isVersionCompatible(?string $providedVersion, ?string $requestedVersion): bool
+    {
+        if (!$requestedVersion) {
+            return true;
+        }
+
+        if (!$providedVersion) {
+            return false;
+        }
+
+        $providedVersion = (string)preg_replace('/^=(.*)$/', '$1', $providedVersion);
+
+        if (preg_match('/^([<>=]+)(.+)$/', $requestedVersion, $matches)) {
+            return version_compare($providedVersion, $matches[2], $matches[1]);
+        }
+
+        return false;
     }
 
     private function getProviderByRelation(AbstractRelation $relation): ?Package
@@ -68,23 +93,29 @@ class AbstractRelationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
         $compatibleCandidates = [];
-        foreach ($candidates as $candidate) {
-            $canidateSource = $candidate->getSource();
 
-            if ($canidateSource->getRepository()->getArchitecture() !== $repositoryArchitecture) {
+        foreach ($candidates as $candidate) {
+            $candidateSource = $candidate->getSource();
+
+            if ($candidateSource->getRepository()->getArchitecture() !== $repositoryArchitecture) {
                 continue;
             }
 
             if ($relation->getTargetVersion()) {
-                foreach ($canidateSource->getProvisions() as $compatibleCandidateProvision) {
-                    if ($relation->getTargetVersion() === $compatibleCandidateProvision->getTargetVersion()) {
-                        if (!isset($compatibleCandidates[$canidateSource->getId()])) {
-                            $compatibleCandidates[$canidateSource->getId()] = $canidateSource;
+                foreach ($candidateSource->getProvisions() as $compatibleCandidateProvision) {
+                    if (
+                        $this->isVersionCompatible(
+                            $compatibleCandidateProvision->getTargetVersion(),
+                            $relation->getTargetVersion()
+                        )
+                    ) {
+                        if (!isset($compatibleCandidates[$candidateSource->getId()])) {
+                            $compatibleCandidates[$candidateSource->getId()] = $candidateSource;
                         }
                     }
                 }
             } else {
-                $compatibleCandidates[$canidateSource->getId()] = $canidateSource;
+                $compatibleCandidates[$candidateSource->getId()] = $candidateSource;
             }
         }
 

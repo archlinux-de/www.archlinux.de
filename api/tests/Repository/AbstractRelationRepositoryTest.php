@@ -9,7 +9,6 @@ use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Repository;
 use App\Repository\AbstractRelationRepository;
-use App\Repository\PackageRepository;
 use SymfonyDatabaseTest\DatabaseTestCase;
 
 class AbstractRelationRepositoryTest extends DatabaseTestCase
@@ -290,11 +289,142 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         $databaseSystemd = $packageRepository->find($systemd->getId());
         $this->assertInstanceOf(Package::class, $databaseSystemd);
-        $this->assertInstanceOf(Dependency::class, $databaseSystemd->getDependencies()->first());
 
         foreach ($databaseSystemd->getDependencies() as $dependency) {
             $this->assertInstanceOf(Package::class, $dependency->getTarget());
             $this->assertEquals($openssl->getId(), $dependency->getTarget()->getId());
+        }
+    }
+
+    public function testProvisionsWithVersionsOperator(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $systemd = new Package(
+            $coreRepository,
+            'systemd',
+            '251.7-4',
+            Architecture::X86_64
+        );
+        $openssl = new Package(
+            $coreRepository,
+            'openssl',
+            '3.0.7-2',
+            Architecture::X86_64
+        );
+        $openssl
+            ->addProvision(new Provision('libcrypto.so', '=3'))
+            ->addProvision(new Provision('libssl.so', '=3'));
+        $systemd
+            ->addDependency(new Dependency('openssl'))
+            ->addDependency(new Dependency('libcrypto.so', '>=3'))
+            ->addDependency(new Dependency('libssl.so', '>=3'));
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($systemd);
+        $entityManager->persist($openssl);
+        $entityManager->flush();
+
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
+        $abstractRelationRepository->updateTargets();
+
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $packageRepository = $entityManager->getRepository(Package::class);
+
+        $databaseSystemd = $packageRepository->find($systemd->getId());
+        $this->assertInstanceOf(Package::class, $databaseSystemd);
+
+        foreach ($databaseSystemd->getDependencies() as $dependency) {
+            $this->assertInstanceOf(Package::class, $dependency->getTarget());
+            $this->assertEquals($openssl->getId(), $dependency->getTarget()->getId());
+        }
+    }
+
+    public function testDependencyWithVersionsOperator(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $systemd = new Package(
+            $coreRepository,
+            'systemd',
+            '251.7-4',
+            Architecture::X86_64
+        );
+        $openssl = new Package(
+            $coreRepository,
+            'openssl',
+            '3.0.7-2',
+            Architecture::X86_64
+        );
+        $systemd
+            ->addDependency(new Dependency('openssl', '>=3'));
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($systemd);
+        $entityManager->persist($openssl);
+        $entityManager->flush();
+
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
+        $abstractRelationRepository->updateTargets();
+
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $packageRepository = $entityManager->getRepository(Package::class);
+
+        $databaseSystemd = $packageRepository->find($systemd->getId());
+        $this->assertInstanceOf(Package::class, $databaseSystemd);
+
+        foreach ($databaseSystemd->getDependencies() as $dependency) {
+            $this->assertInstanceOf(Package::class, $dependency->getTarget());
+            $this->assertEquals($openssl->getId(), $dependency->getTarget()->getId());
+        }
+    }
+
+    public function testDependencyWithNonmatchingVersionsOperator(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $systemd = new Package(
+            $coreRepository,
+            'systemd',
+            '251.7-4',
+            Architecture::X86_64
+        );
+        $openssl = new Package(
+            $coreRepository,
+            'openssl',
+            '3.0.7-2',
+            Architecture::X86_64
+        );
+        $systemd
+            ->addDependency(new Dependency('openssl', '<3'));
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($systemd);
+        $entityManager->persist($openssl);
+        $entityManager->flush();
+
+        $abstractRelationRepository = $entityManager->getRepository(AbstractRelation::class);
+        $this->assertInstanceOf(AbstractRelationRepository::class, $abstractRelationRepository);
+        $abstractRelationRepository->updateTargets();
+
+        $entityManager->flush();
+        $entityManager->clear();
+
+        $packageRepository = $entityManager->getRepository(Package::class);
+
+        $databaseSystemd = $packageRepository->find($systemd->getId());
+        $this->assertInstanceOf(Package::class, $databaseSystemd);
+
+        foreach ($databaseSystemd->getDependencies() as $dependency) {
+            $this->assertEquals('openssl', $dependency->getTargetName());
+            $this->assertEquals('<3', $dependency->getTargetVersion());
+            $this->assertNull($dependency->getTarget());
         }
     }
 }
