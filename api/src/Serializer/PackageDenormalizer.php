@@ -74,14 +74,6 @@ class PackageDenormalizer implements DenormalizerInterface
         }
         $urlString = new ByteString($url);
 
-        $urlString = $urlString
-            // @FIXME https://bugs.archlinux.org/task/69484
-            ->replace(' ', '%20')
-            // @FIXME https://bugs.archlinux.org/task/69483
-            ->trim("\u{200e}")
-            // @FIXME https://bugs.archlinux.org/task/73461
-            ->replace('${pkgname}', $name);
-
         return $urlString->toString();
     }
 
