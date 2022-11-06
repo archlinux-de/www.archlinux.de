@@ -256,6 +256,12 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
             '3.0.7-2',
             Architecture::X86_64
         );
+        $lib32Openssl = new Package(
+            $coreRepository,
+            'lib32-openssl',
+            '1:3.0.7-1',
+            Architecture::X86_64
+        );
         $openssl1 = new Package(
             $coreRepository,
             'openssl-1.1',
@@ -263,15 +269,18 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
             Architecture::X86_64
         );
         $openssl
-            ->addProvision(new Provision('libcrypto.so', '=3'))
-            ->addProvision(new Provision('libssl.so', '=3'));
+            ->addProvision(new Provision('libcrypto.so', '=3-64'))
+            ->addProvision(new Provision('libssl.so', '=3-64'));
+        $lib32Openssl
+            ->addProvision(new Provision('libcrypto.so', '=3-32'))
+            ->addProvision(new Provision('libssl.so', '=3-32'));
         $openssl1
-            ->addProvision(new Provision('libcrypto.so', '=1.1'))
-            ->addProvision(new Provision('libssl.so', '=1.1'));
+            ->addProvision(new Provision('libcrypto.so', '=1.1-64'))
+            ->addProvision(new Provision('libssl.so', '=1.1-64'));
         $systemd
             ->addDependency(new Dependency('openssl'))
-            ->addDependency(new Dependency('libcrypto.so', '=3'))
-            ->addDependency(new Dependency('libssl.so', '=3'));
+            ->addDependency(new Dependency('libcrypto.so', '=3-64'))
+            ->addDependency(new Dependency('libssl.so', '=3-64'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($systemd);
         $entityManager->persist($openssl);
@@ -314,12 +323,12 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
             Architecture::X86_64
         );
         $openssl
-            ->addProvision(new Provision('libcrypto.so', '=3'))
-            ->addProvision(new Provision('libssl.so', '=3'));
+            ->addProvision(new Provision('libcrypto.so', '=3-64'))
+            ->addProvision(new Provision('libssl.so', '=3-64'));
         $systemd
             ->addDependency(new Dependency('openssl'))
-            ->addDependency(new Dependency('libcrypto.so', '>=3'))
-            ->addDependency(new Dependency('libssl.so', '>=3'));
+            ->addDependency(new Dependency('libcrypto.so', '>=3-64'))
+            ->addDependency(new Dependency('libssl.so', '>=3-64'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($systemd);
         $entityManager->persist($openssl);

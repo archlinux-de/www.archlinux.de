@@ -5,6 +5,7 @@ namespace App\Tests\Serializer;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
 use App\Entity\Packages\Relations\Dependency;
+use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Repository;
 use App\Serializer\PackageDenormalizer;
 use PHPUnit\Framework\TestCase;
@@ -67,16 +68,21 @@ class PackageDenormalizerTest extends TestCase
 
         $dependencies = $package->getDependencies();
         $this->assertCount(2, $dependencies);
-        /** @var Dependency $dependency1 */
+
         $dependency1 = $dependencies->first();
         $this->assertInstanceOf(Dependency::class, $dependency1);
         $this->assertEquals('bash', $dependency1->getTargetName());
         $this->assertNull($dependency1->getTargetVersion());
-        /** @var Dependency $dependency2 */
+
         $dependency2 = $dependencies->last();
         $this->assertInstanceOf(Dependency::class, $dependency2);
         $this->assertEquals('glibc', $dependency2->getTargetName());
         $this->assertEquals('>=1.0', $dependency2->getTargetVersion());
+
+        $this->assertCount(1, $package->getProvisions());
+        $this->assertInstanceOf(Provision::class, $package->getProvisions()->first());
+        $this->assertEquals('libalpm.so', $package->getProvisions()->first()->getTargetName());
+        $this->assertEquals('=12-64', $package->getProvisions()->first()->getTargetVersion());
     }
 
     public function testEmptyUrl(): void
