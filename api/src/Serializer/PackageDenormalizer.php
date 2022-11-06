@@ -14,7 +14,6 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\String\ByteString;
 
 class PackageDenormalizer implements DenormalizerInterface
 {
@@ -30,7 +29,7 @@ class PackageDenormalizer implements DenormalizerInterface
             $data['ARCH']
         ))
             ->setFileName($data['FILENAME'])
-            ->setUrl($this->normalizeUrl($data['URL'] ?? null, $data['NAME']))
+            ->setUrl($this->normalizeUrl($data['URL'] ?? null))
             ->setDescription($data['DESC'])
             ->setBase($data['BASE'] ?? $data['NAME'])
             ->setBuildDate((new \DateTime())->setTimestamp($data['BUILDDATE']))
@@ -67,21 +66,28 @@ class PackageDenormalizer implements DenormalizerInterface
         return $package;
     }
 
-    private function normalizeUrl(?string $url, string $name): ?string
+    private function normalizeUrl(?string $url): ?string
     {
-        if ($url == null) {
+        if (!$url) {
             return null;
         }
-        $urlString = new ByteString($url);
 
-        return $urlString->toString();
+        return $url;
     }
 
-    private function createPackagerFromString(string $packagerDefinition): Packager
+    private function createPackagerFromString(?string $packagerDefinition): ?Packager
     {
+        if (!$packagerDefinition) {
+            return null;
+        }
+
         preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
         $name = trim($matches[1] ?? $packagerDefinition);
-        $email = trim($matches[2] ?? '');
+        $email = $matches[2] ? trim($matches[2]) : null;
+
+        if (!$name && !$email) {
+            return null;
+        }
 
         return new Packager($name, $email);
     }
@@ -94,7 +100,7 @@ class PackageDenormalizer implements DenormalizerInterface
 
     private function createTargetFromString(string $targetDefinition): array
     {
-        if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:\-]+)/', $targetDefinition, $matches) > 0) {
+        if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:\-]+)(?::.+)?$/', $targetDefinition, $matches) > 0) {
             $targetName = $matches[1];
             $targetVersion = $matches[2];
         } elseif (preg_match('/^([\w\-+@.]+)/', $targetDefinition, $matches) > 0) {
