@@ -10,13 +10,10 @@ class OpenSearchFixturesHandler
     /** @var callable */
     private $defaultHandler;
 
-    private string $mode;
-
     private string $fixturesDirectory = __DIR__ . '/OpenSearchFixtures';
 
-    public function __construct(string $mode)
+    public function __construct(private readonly string $mode)
     {
-        $this->mode = $mode;
         $this->defaultHandler = ClientBuilder::defaultHandler();
     }
 
@@ -42,14 +39,29 @@ class OpenSearchFixturesHandler
             $result = json_decode((string)file_get_contents($filename), true);
             assert(is_array($result));
         } elseif ($this->mode == 'write') {
-            /** @var CompletedFutureArray $response */
             $response = ($this->defaultHandler)($request);
+            assert($response instanceof CompletedFutureArray);
             $result = $response->wait();
             assert(is_array($result));
+            $result['transfer_stats'] = [
+                'total_time' => 1
+            ];
 
             if (is_resource($result['body'])) {
                 $result['body'] = stream_get_contents($result['body']);
+
+                if ($result['body']) {
+                    $tmpBody = json_decode($result['body'], true);
+                    assert(is_array($tmpBody));
+                    if (isset($tmpBody['took'])) {
+                        $tmpBody['took'] = 1;
+                        $result['body'] = json_encode($tmpBody, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                        assert(is_string($result['body']));
+                        $result['headers']['content-length'] = strlen($result['body']);
+                    }
+                }
             }
+
             file_put_contents($filename, json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         } else {
             throw new \RuntimeException(sprintf('Unsupported mode %s', $this->mode));
