@@ -2,8 +2,9 @@ set dotenv-load := true
 
 export UID := `id -u`
 export GID := `id -g`
+export COMPOSE_PROFILES := if env_var_or_default("CI", "0") == "true" { "test" } else { "dev" }
 
-COMPOSE := 'docker compose -f docker/app.yml ' + `[ "${CI-}" != "true" ] && echo '-f docker/dev.yml' || echo ''` + ' -p ' + env_var('PROJECT_NAME')
+COMPOSE := 'docker compose -f docker/app.yml -p ' + env_var('PROJECT_NAME')
 COMPOSE-RUN := COMPOSE + ' run --rm'
 PHP-DB-RUN := COMPOSE-RUN + ' api'
 PHP-RUN := COMPOSE-RUN + ' --no-deps api'
