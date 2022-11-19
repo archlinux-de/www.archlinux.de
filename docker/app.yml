@@ -57,6 +57,20 @@ services:
       - /tmp
       - /var/lib/mysql
 
+  phpmyadmin:
+    profiles: ["dev"]
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    ports:
+      - "${PHPMYADMIN_PORT}:80"
+    tmpfs:
+      - /tmp
+    depends_on:
+      - mariadb
+
   opensearch:
     image: opensearchproject/opensearch:2
     environment:
