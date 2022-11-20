@@ -40,11 +40,11 @@ services:
       - /tmp
 
   nginx:
-    # TODO: Limit processes
-    image: nginx:stable-alpine
+    build:
+      context: nginx
     ports:
-      - "${PORT}:80"
-      - "${TEST_PORT}:81"
+      - "${PORT}:8080"
+      - "${TEST_PORT}:8081"
     volumes:
       - ../app/dist:/app/app/dist:ro
       - ../api/public:/app/api/public:ro

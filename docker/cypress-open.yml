@@ -8,7 +8,7 @@ services:
     depends_on:
       - nginx
     environment:
-      - CYPRESS_baseUrl=${CYPRESS_baseUrl:-http://nginx}
+      - CYPRESS_baseUrl=${CYPRESS_baseUrl:-http://nginx:8080}
       - CYPRESS_numTestsKeptInMemory=100
       - DISPLAY
     cap_drop:
