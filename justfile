@@ -60,7 +60,7 @@ clean:
 	git clean -fdqx -e .idea
 
 rebuild: clean
-	{{COMPOSE}} build --pull
+	{{COMPOSE}} -f docker/cypress-run.yml -f docker/cypress-open.yml build --pull
 	just install
 	just init
 
@@ -100,12 +100,15 @@ yarn *args='-h':
 jest *args:
 	{{NODE-RUN}} node_modules/.bin/jest {{args}}
 
-cypress-run *args:
-	{{COMPOSE}} -f docker/cypress-run.yml run     --rm --no-deps cypress run  --project tests/e2e --browser chrome --headless {{args}}
+cypress *args:
+	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps --entrypoint cypress cypress-run {{args}}
 
-cypress-open:
-	xhost +local:root
-	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm --no-deps cypress open --project tests/e2e
+cypress-run *args:
+	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress-run --headless --browser chrome --project tests/e2e {{args}}
+
+cypress-open *args:
+	Xephyr :${PORT} -screen 1920x1080 -resizeable -title Cypress -terminate -no-host-grab -extension MIT-SHM -extension XTEST -nolisten tcp &
+	DISPLAY=:${PORT} DISPLAY_SOCKET=/tmp/.X11-unix/X${PORT%%:*} {{COMPOSE}} -f docker/cypress-open.yml run --rm --no-deps cypress-open --project tests/e2e --e2e {{args}}
 
 test-php:
 	{{PHP-RUN}} composer validate
@@ -161,17 +164,10 @@ fix-code-style:
 	{{NODE-RUN}} node_modules/.bin/eslint '*.js' src tests --ext js --ext vue --fix
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
-_update-cypress-image:
-	#!/usr/bin/env bash
-	set -e
-	CYPRESS_VERSION=$(curl -sSf 'https://hub.docker.com/v2/repositories/cypress/included/tags/?page_size=1' | jq -r '."results"[]["name"]')
-	sed -E "s#(cypress/included:).+#\1${CYPRESS_VERSION}#g" -i docker/cypress-*.yml
-
 update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
-	just _update-cypress-image
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile --production

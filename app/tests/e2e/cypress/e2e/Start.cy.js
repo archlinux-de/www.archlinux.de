@@ -22,7 +22,8 @@ describe('Start page', () => {
     cy.get('[data-test=recent-package] [data-test=recent-package-version]').should('be.visible').should('not.be.empty')
   })
 
-  it('shows package search suggestions', () => {
+  // crashes on headless electron
+  ;(!Cypress.isBrowser('electron') ? it : it.skip)('shows package search suggestions', () => {
     cy.get('#searchfield').should('be.visible').type('lin')
     cy.get('#searchfield-list option').should('have.length', 10)
   })
