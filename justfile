@@ -101,11 +101,11 @@ jest *args:
 	{{NODE-RUN}} node_modules/.bin/jest {{args}}
 
 cypress-run *args:
-	{{COMPOSE}} -f docker/cypress-run.yml run     --rm --no-deps cypress run  --project tests/e2e --browser chrome --headless {{args}}
+	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress-run --headless --browser chromium --project tests/e2e {{args}}
 
-cypress-open:
-	xhost +local:root
-	{{COMPOSE}} -f docker/cypress-open.yml run -d --rm --no-deps cypress open --project tests/e2e
+cypress-open *args:
+	Xephyr :${PORT} -screen 1920x1080 -resizeable -title Cypress -terminate -no-host-grab -extension MIT-SHM -extension XTEST -nolisten tcp &
+	DISPLAY=:${PORT} DISPLAY_SOCKET=/tmp/.X11-unix/X${PORT%%:*} {{COMPOSE}} -f docker/cypress-open.yml run --rm --no-deps cypress-open --project tests/e2e --e2e {{args}}
 
 test-php:
 	{{PHP-RUN}} composer validate
