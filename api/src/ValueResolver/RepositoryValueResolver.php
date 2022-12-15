@@ -1,23 +1,27 @@
 <?php
 
-namespace App\ParamConverter;
+namespace App\ValueResolver;
 
-use App\Request\RepositoryRequest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Request\RepositoryRequest;
 
-class RepositoryParamConverter implements ParamConverterInterface
+class RepositoryValueResolver implements ValueResolverInterface
 {
-    public function __construct(private ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
     }
 
-    public function apply(Request $request, ParamConverter $configuration): bool
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (!$argument->getType() || !is_a($argument->getType(), RepositoryRequest::class, true)) {
+            return [];
+        }
+
         $repository = $request->get('repository', '');
         if (!is_string($repository)) {
             throw new BadRequestHttpException('Invalid request');
@@ -33,16 +37,6 @@ class RepositoryParamConverter implements ParamConverterInterface
             );
         }
 
-        $request->attributes->set(
-            $configuration->getName(),
-            $repositoryRequest
-        );
-
-        return true;
-    }
-
-    public function supports(ParamConverter $configuration): bool
-    {
-        return $configuration->getClass() == RepositoryRequest::class;
+        return [$repositoryRequest];
     }
 }

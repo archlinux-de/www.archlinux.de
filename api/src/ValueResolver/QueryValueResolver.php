@@ -1,23 +1,27 @@
 <?php
 
-namespace App\ParamConverter;
+namespace App\ValueResolver;
 
-use App\Request\QueryRequest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Request\QueryRequest;
 
-class QueryParamConverter implements ParamConverterInterface
+class QueryValueResolver implements ValueResolverInterface
 {
-    public function __construct(private ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
     }
 
-    public function apply(Request $request, ParamConverter $configuration): bool
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (!$argument->getType() || !is_a($argument->getType(), QueryRequest::class, true)) {
+            return [];
+        }
+
         $query = $request->get('query', '');
         if (!is_string($query)) {
             throw new BadRequestHttpException('Invalid request');
@@ -30,16 +34,6 @@ class QueryParamConverter implements ParamConverterInterface
             throw new BadRequestHttpException('Invalid request', new ValidationFailedException($queryRequest, $errors));
         }
 
-        $request->attributes->set(
-            $configuration->getName(),
-            $queryRequest
-        );
-
-        return true;
-    }
-
-    public function supports(ParamConverter $configuration): bool
-    {
-        return $configuration->getClass() == QueryRequest::class;
+        return [$queryRequest];
     }
 }

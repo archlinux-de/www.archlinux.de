@@ -6,7 +6,7 @@ use App\Entity\Mirror;
 use App\Request\PaginationRequest;
 use App\Request\QueryRequest;
 use App\SearchRepository\MirrorSearchRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

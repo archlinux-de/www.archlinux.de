@@ -10,7 +10,7 @@ use App\Request\QueryRequest;
 use App\Request\RepositoryRequest;
 use App\Request\TermRequest;
 use App\SearchRepository\PackageSearchRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

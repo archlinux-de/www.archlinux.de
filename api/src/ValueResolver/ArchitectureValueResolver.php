@@ -1,24 +1,28 @@
 <?php
 
-namespace App\ParamConverter;
+namespace App\ValueResolver;
 
-use App\Entity\Packages\Architecture;
-use App\Request\ArchitectureRequest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Entity\Packages\Architecture;
+use App\Request\ArchitectureRequest;
 
-class ArchitectureParamConverter implements ParamConverterInterface
+class ArchitectureValueResolver implements ValueResolverInterface
 {
-    public function __construct(private ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
     }
 
-    public function apply(Request $request, ParamConverter $configuration): bool
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (!$argument->getType() || !is_a($argument->getType(), ArchitectureRequest::class, true)) {
+            return [];
+        }
+
         $architecture = $request->get('architecture', Architecture::X86_64);
         if (!is_string($architecture)) {
             throw new BadRequestHttpException('Invalid request');
@@ -34,16 +38,6 @@ class ArchitectureParamConverter implements ParamConverterInterface
             );
         }
 
-        $request->attributes->set(
-            $configuration->getName(),
-            $architectureRequest
-        );
-
-        return true;
-    }
-
-    public function supports(ParamConverter $configuration): bool
-    {
-        return $configuration->getClass() == ArchitectureRequest::class;
+        return [$architectureRequest];
     }
 }

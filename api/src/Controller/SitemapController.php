@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Repository\NewsItemRepository;
 use App\Repository\PackageRepository;
 use App\Repository\ReleaseRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
