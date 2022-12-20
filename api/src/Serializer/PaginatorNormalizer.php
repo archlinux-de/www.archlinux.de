@@ -17,6 +17,8 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         $objectIterator = $object->getIterator();
+        assert($objectIterator instanceof \Countable);
+
         return [
             'offset' => $object->getQuery()->getFirstResult(),
             'limit' => $object->getQuery()->getMaxResults(),
