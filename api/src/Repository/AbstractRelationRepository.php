@@ -19,6 +19,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
 
     public function updateTargets(): void
     {
+        /** @var AbstractRelation $relation */
         foreach ($this->findAll() as $relation) {
             $relation->setTarget($this->getBestPackageByRelation($relation));
         }
