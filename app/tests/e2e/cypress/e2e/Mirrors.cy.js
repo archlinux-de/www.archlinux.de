@@ -9,11 +9,11 @@ describe('Mirrors page', () => {
   })
 
   it('filter mirrors', () => {
-    cy.get('[data-test=mirrors-search]').type('Cologne')
+    cy.get('[data-test=mirrors-search]').type('pkgbuild')
     cy.location().should((loc) => {
-      expect(loc.search).to.eq('?search=Cologne')
+      expect(loc.search).to.eq('?search=pkgbuild')
     })
-    cy.get('[data-test=mirror-link]').contains('cologne')
+    cy.get('[data-test=mirror-link]').contains('pkgbuild')
     cy.get('[data-test=mirror-link]').should('have.length.lt', 20)
   })
 
