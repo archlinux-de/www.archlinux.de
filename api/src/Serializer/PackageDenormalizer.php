@@ -14,6 +14,7 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\String\ByteString;
 
 class PackageDenormalizer implements DenormalizerInterface
 {
@@ -72,7 +73,11 @@ class PackageDenormalizer implements DenormalizerInterface
             return null;
         }
 
-        return $url;
+        $urlString = new ByteString($url);
+        $urlString = $urlString
+            ->replaceMatches('#^git://github.com/(.+).git$#', 'https://github.com/$1');
+
+        return $urlString->toString();
     }
 
     private function createPackagerFromString(?string $packagerDefinition): ?Packager
