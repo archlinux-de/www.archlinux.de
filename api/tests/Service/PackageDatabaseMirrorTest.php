@@ -3,6 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Service\PackageDatabaseMirror;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
@@ -38,9 +39,7 @@ class PackageDatabaseMirrorTest extends TestCase
         $this->assertTrue($packageDatabaseMirror->hasUpdated());
     }
 
-    /**
-     * @dataProvider provideLastUpdated
-     */
+    #[DataProvider('provideLastUpdated')]
     public function testHasUpdated(int $oldLastUpdated, int $newLastUpdated): void
     {
         $httpClient = new MockHttpClient(new MockResponse((string)$newLastUpdated));
@@ -81,7 +80,7 @@ class PackageDatabaseMirrorTest extends TestCase
         $this->assertEquals('', $cache->getItem(PackageDatabaseMirror::CACHE_KEY)->get());
     }
 
-    public function provideLastUpdated(): array
+    public static function provideLastUpdated(): array
     {
         return [
             [0, 1],

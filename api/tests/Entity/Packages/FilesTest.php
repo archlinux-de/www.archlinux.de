@@ -3,32 +3,30 @@
 namespace App\Tests\Entity\Packages;
 
 use App\Entity\Packages\Files;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FilesTest extends TestCase
 {
-    private array $files = ['usr/bin', 'usr/bin/pacman'];
+    private static array $files = ['usr/bin', 'usr/bin/pacman'];
 
     public function testGetPackage(): void
     {
-        $files = Files::createFromArray($this->files);
+        $files = Files::createFromArray(self::$files);
         $this->assertNull($files->getId());
     }
 
-    /**
-     * @param string[] $files
-     * @dataProvider provideFilesArray
-     */
+    #[DataProvider('provideFilesArray')]
     public function testGetIterator(array $files): void
     {
         $this->assertEquals($files, [...Files::createFromArray($files)->getIterator()]);
     }
 
-    public function provideFilesArray(): array
+    public static function provideFilesArray(): array
     {
         return [
             [[]],
-            [$this->files]
+            [self::$files]
         ];
     }
 }

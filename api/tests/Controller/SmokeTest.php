@@ -10,6 +10,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @coversNothing
@@ -57,9 +58,7 @@ class SmokeTest extends DatabaseSearchTestCase
         $entityManager->clear();
     }
 
-    /**
-     * @dataProvider provideUrls
-     */
+    #[DataProvider('provideUrls')]
     public function testRequestIsSuccessful(string $url): void
     {
         $client = $this->getClient();
@@ -69,9 +68,7 @@ class SmokeTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
-    /**
-     * @dataProvider provideRedirectUrls
-     */
+    #[DataProvider('provideRedirectUrls')]
     public function testRequestIsRedirect(string $url): void
     {
         $client = $this->getClient();
@@ -90,7 +87,7 @@ class SmokeTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function provideUrls(): array
+    public static function provideUrls(): array
     {
         return [
             ['/packages/opensearch'],
@@ -101,7 +98,7 @@ class SmokeTest extends DatabaseSearchTestCase
         ];
     }
 
-    public function provideRedirectUrls(): array
+    public static function provideRedirectUrls(): array
     {
         return [
             ['/download/foo'],

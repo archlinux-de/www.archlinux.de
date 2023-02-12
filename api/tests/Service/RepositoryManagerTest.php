@@ -6,6 +6,7 @@ use App\Entity\Packages\Repository;
 use App\Repository\RepositoryRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -79,11 +80,7 @@ class RepositoryManagerTest extends TestCase
         $this->assertFalse($repositoryManager->removeObsoleteRepositories());
     }
 
-    /**
-     * @param string $repositoryName
-     * @param bool $isTesting
-     * @dataProvider  provideRepositories
-     */
+    #[DataProvider('provideRepositories')]
     public function testCreateNewRepositories(string $repositoryName, bool $isTesting): void
     {
         /** @var EntityManagerInterface|MockObject $entityManager */
@@ -192,7 +189,7 @@ class RepositoryManagerTest extends TestCase
         $repositoryManager->createNewRepositories();
     }
 
-    public function provideRepositories(): array
+    public static function provideRepositories(): array
     {
         return [
             ['core', false],

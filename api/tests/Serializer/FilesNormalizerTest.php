@@ -3,6 +3,7 @@
 namespace App\Tests\Serializer;
 
 use App\Entity\Packages\Files;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Serializer;
 
@@ -16,10 +17,7 @@ class FilesNormalizerTest extends KernelTestCase
         $this->serializer = static::getContainer()->get('serializer');
     }
 
-    /**
-     * @param string[] $filesArray
-     * @dataProvider provideFilesArray
-     */
+    #[DataProvider('provideFilesArray')]
     public function testNormalize(array $filesArray): void
     {
         $files = Files::createFromArray($filesArray);
@@ -30,7 +28,7 @@ class FilesNormalizerTest extends KernelTestCase
         $this->assertEquals($filesArray, $jsonArray);
     }
 
-    public function provideFilesArray(): array
+    public static function provideFilesArray(): array
     {
         return [
             [[]],

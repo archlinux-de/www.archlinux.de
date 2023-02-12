@@ -15,6 +15,7 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -23,9 +24,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PackageTest extends TestCase
 {
-    /**
-     * @dataProvider provideUpdateStringMethods
-     */
+    #[DataProvider('provideUpdateStringMethods')]
     public function testUpdate(string $stringMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
@@ -47,7 +46,7 @@ class PackageTest extends TestCase
         $this->assertEquals('foo', $package->$stringMethod());
     }
 
-    public function provideUpdateStringMethods(): array
+    public static function provideUpdateStringMethods(): array
     {
         return [
             ['getBase'],
@@ -83,9 +82,7 @@ class PackageTest extends TestCase
         $this->assertEquals('foo@localhost', $package->getPackager()->getEmail());
     }
 
-    /**
-     * @dataProvider provideTimeMethods
-     */
+    #[DataProvider('provideTimeMethods')]
     public function testUpdateTime(string $timeMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
@@ -106,16 +103,14 @@ class PackageTest extends TestCase
         $this->assertEquals(new \DateTime('2018-01-30'), $package->$timeMethod());
     }
 
-    public function provideTimeMethods(): array
+    public static function provideTimeMethods(): array
     {
         return [
             ['getBuildDate']
         ];
     }
 
-    /**
-     * @dataProvider provideSiteMethods
-     */
+    #[DataProvider('provideSiteMethods')]
     public function testUpdateSize(string $sizeMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
@@ -137,7 +132,7 @@ class PackageTest extends TestCase
         $this->assertEquals(1234, $package->$sizeMethod());
     }
 
-    public function provideSiteMethods(): array
+    public static function provideSiteMethods(): array
     {
         return [
             ['getInstalledSize'],
@@ -145,9 +140,7 @@ class PackageTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideListMethods
-     */
+    #[DataProvider('provideListMethods')]
     public function testUpdateLists(string $listMethod): void
     {
         $repository = new Repository('core', Architecture::X86_64);
@@ -170,7 +163,7 @@ class PackageTest extends TestCase
         $this->assertEquals($list, $package->$listMethod());
     }
 
-    public function provideListMethods(): array
+    public static function provideListMethods(): array
     {
         return [
             ['getLicenses'],

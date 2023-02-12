@@ -3,6 +3,7 @@
 namespace App\Tests\Serializer;
 
 use App\Serializer\PacmanDatabaseDecoder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PacmanDatabaseDecoderTest extends TestCase
@@ -14,9 +15,7 @@ class PacmanDatabaseDecoderTest extends TestCase
         $this->assertTrue($pacmanDatabaseDecoder->supportsDecoding('pacman-database'));
     }
 
-    /**
-     * @dataProvider provideInput
-     */
+    #[DataProvider('provideInput')]
     public function testDecode(string $input, array $expected): void
     {
         $pacmanDatabaseDecoder = new PacmanDatabaseDecoder();
@@ -24,7 +23,7 @@ class PacmanDatabaseDecoderTest extends TestCase
         $this->assertSame($expected, $pacmanDatabaseDecoder->decode($input, 'pacman-database'));
     }
 
-    public function provideInput(): array
+    public static function provideInput(): array
     {
         return [
             ['', []],

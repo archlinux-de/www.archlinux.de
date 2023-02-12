@@ -5,6 +5,7 @@ namespace App\Tests\Serializer;
 use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Repository;
 use App\Serializer\RepositoryNormalizer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Serializer;
 
@@ -28,9 +29,7 @@ class RepositoryNormalizerTest extends KernelTestCase
         );
     }
 
-    /**
-     * @dataProvider provideTesting
-     */
+    #[DataProvider('provideTesting')]
     public function testSupportsNormalization(bool $testing): void
     {
         $repository = new Repository('core', Architecture::X86_64);
@@ -49,7 +48,7 @@ class RepositoryNormalizerTest extends KernelTestCase
         );
     }
 
-    public function provideTesting(): array
+    public static function provideTesting(): array
     {
         return [
             [true],

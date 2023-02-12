@@ -7,6 +7,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
 use App\Entity\Packages\Repository;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @covers \App\Controller\PackagesController
@@ -65,9 +66,7 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         );
     }
 
-    /**
-     * @dataProvider provideInvalideSuggestTerms
-     */
+    #[DataProvider('provideInvalideSuggestTerms')]
     public function testSuggestRejectsInvalidTerms(string $term): void
     {
         $client = $this->getClient();
@@ -77,7 +76,7 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isClientError());
     }
 
-    public function provideInvalideSuggestTerms(): array
+    public static function provideInvalideSuggestTerms(): array
     {
         return [
             [''],

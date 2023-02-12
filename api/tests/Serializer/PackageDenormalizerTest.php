@@ -10,6 +10,7 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Repository;
 use App\Serializer\PackageDenormalizer;
 use Doctrine\Common\Collections\Collection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PackageDenormalizerTest extends TestCase
@@ -128,9 +129,7 @@ class PackageDenormalizerTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider provideDependencies
-     */
+    #[DataProvider('provideDependencies')]
     public function testDependencies(string $type, array|string|null $values, array $expected): void
     {
         $repository = new Repository('core', 'x86_64');
@@ -188,7 +187,7 @@ class PackageDenormalizerTest extends TestCase
         }
     }
 
-    public function provideDependencies(): iterable
+    public static function provideDependencies(): iterable
     {
         $types = ['DEPENDS', 'CONFLICTS', 'REPLACES', 'OPTDEPENDS', 'PROVIDES', 'MAKEDEPENDS', 'CHECKDEPENDS'];
         foreach ($types as $type) {
@@ -203,9 +202,7 @@ class PackageDenormalizerTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider providePackagers
-     */
+    #[DataProvider('providePackagers')]
     public function testPackager(?string $packagerString, ?string $expectedName, ?string $expectedEmail): void
     {
         $repository = new Repository('core', 'x86_64');
@@ -240,7 +237,7 @@ class PackageDenormalizerTest extends TestCase
         }
     }
 
-    public function providePackagers(): iterable
+    public static function providePackagers(): iterable
     {
         yield [null, null, null];
         yield ['', null, null];

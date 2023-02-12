@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +13,7 @@ use Symfony\Component\String\ByteString;
  */
 class LegacyControllerTest extends WebTestCase
 {
-    /**
-     * @param string $legacyPage
-     * @param string[] $parameters
-     * @dataProvider provideLegacyPages
-     */
+    #[DataProvider('provideLegacyPages')]
     public function testLegacyPagesAreRedirected(string $legacyPage, array $parameters = []): void
     {
         $client = static::createClient();
@@ -29,7 +26,7 @@ class LegacyControllerTest extends WebTestCase
         }
     }
 
-    public function provideLegacyPages(): array
+    public static function provideLegacyPages(): array
     {
         return [
             ['GetFileFromMirror', ['file' => 'foo']],
@@ -60,11 +57,7 @@ class LegacyControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    /**
-     * @param string $legacyPage
-     * @param string[] $parameters
-     * @dataProvider provideInvalidLegacyPages
-     */
+    #[DataProvider('provideInvalidLegacyPages')]
     public function testInvalidParametersWillReturnNotFoundStatus(string $legacyPage, array $parameters = []): void
     {
         $client = static::createClient();
@@ -74,7 +67,7 @@ class LegacyControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function provideInvalidLegacyPages(): array
+    public static function provideInvalidLegacyPages(): array
     {
         return [
             ['PackageDetails', ['package' => '123']],

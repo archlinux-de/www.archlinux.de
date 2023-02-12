@@ -9,6 +9,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @covers \App\Controller\MirrorController
@@ -60,9 +61,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    /**
-     * @dataProvider providePackageExtensions
-     */
+    #[DataProvider('providePackageExtensions')]
     public function testPackageAction(string $packageExtension): void
     {
         $entityManager = $this->getEntityManager();
@@ -145,7 +144,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
-    public function providePackageExtensions(): array
+    public static function providePackageExtensions(): array
     {
         return [
             ['gz'],
