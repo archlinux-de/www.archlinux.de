@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dab9220ae1ad577e72db3f07ac97e662",
+    "content-hash": "29e3946be0e6dcd19455153d0d5f334a",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -1889,16 +1889,16 @@
         },
         {
             "name": "opensearch-project/opensearch-php",
-            "version": "2.0.3",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensearch-project/opensearch-php.git",
-                "reference": "27e04b10689dfffeb644b33af9531fc7fe8a5ffb"
+                "reference": "9b7fd92a163c69b51aaa77a9eab2fdb5d3340355"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/27e04b10689dfffeb644b33af9531fc7fe8a5ffb",
-                "reference": "27e04b10689dfffeb644b33af9531fc7fe8a5ffb",
+                "url": "https://api.github.com/repos/opensearch-project/opensearch-php/zipball/9b7fd92a163c69b51aaa77a9eab2fdb5d3340355",
+                "reference": "9b7fd92a163c69b51aaa77a9eab2fdb5d3340355",
                 "shasum": ""
             },
             "require": {
@@ -1950,9 +1950,9 @@
             ],
             "support": {
                 "issues": "https://github.com/opensearch-project/opensearch-php/issues",
-                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.0.3"
+                "source": "https://github.com/opensearch-project/opensearch-php/tree/2.1.0"
             },
-            "time": "2022-10-01T07:54:51+00:00"
+            "time": "2023-02-14T20:15:15+00:00"
         },
         {
             "name": "psr/cache",
@@ -5662,30 +5662,30 @@
     "packages-dev": [
         {
             "name": "malukenho/mcbumpface",
-            "version": "1.1.5",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/malukenho/mcbumpface.git",
-                "reference": "8d172d6935d7e0c1e79f244df5ed324909692a93"
+                "reference": "af986cc6598bf7362584783a455ff39493e9b123"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/malukenho/mcbumpface/zipball/8d172d6935d7e0c1e79f244df5ed324909692a93",
-                "reference": "8d172d6935d7e0c1e79f244df5ed324909692a93",
+                "url": "https://api.github.com/repos/malukenho/mcbumpface/zipball/af986cc6598bf7362584783a455ff39493e9b123",
+                "reference": "af986cc6598bf7362584783a455ff39493e9b123",
                 "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^1.0.0 || ^2.0.0",
-                "php": "^7.2 || ~8.0"
+                "php": "^7.2 || ~8.0 || ~8.1 || ~8.2"
             },
             "require-dev": {
                 "composer/composer": "^1.9.3 || ^2.0.2",
-                "doctrine/coding-standard": "^8.2.0",
+                "doctrine/coding-standard": "^9.0.2",
                 "ext-json": "*",
                 "ext-zip": "*",
-                "infection/infection": "^0.19.1",
-                "phpunit/phpunit": "^9.4.2",
-                "staabm/annotate-pull-request-from-checkstyle": "^1.4.0"
+                "infection/infection": "^0.26.19",
+                "phpunit/phpunit": "^9.6.4",
+                "staabm/annotate-pull-request-from-checkstyle": "^1.8.3"
             },
             "type": "composer-plugin",
             "extra": {
@@ -5709,9 +5709,15 @@
             "description": "Bumping into packages",
             "support": {
                 "issues": "https://github.com/malukenho/mcbumpface/issues",
-                "source": "https://github.com/malukenho/mcbumpface/tree/1.1.5"
+                "source": "https://github.com/malukenho/mcbumpface/tree/1.2.0"
             },
-            "time": "2020-10-29T20:32:02+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/malukenho",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-02-27T19:23:58+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6603,16 +6609,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.0.12",
+            "version": "10.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "87d5cfdb4ecf440fb9f08b636b1152be433fc6f1"
+                "reference": "c37a88d7a905266eab6498817a1bf1170043313f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/87d5cfdb4ecf440fb9f08b636b1152be433fc6f1",
-                "reference": "87d5cfdb4ecf440fb9f08b636b1152be433fc6f1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c37a88d7a905266eab6498817a1bf1170043313f",
+                "reference": "c37a88d7a905266eab6498817a1bf1170043313f",
                 "shasum": ""
             },
             "require": {
@@ -6683,7 +6689,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.0.12"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.0.13"
             },
             "funding": [
                 {
@@ -6699,7 +6705,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-25T06:05:15+00:00"
+            "time": "2023-02-27T13:07:57+00:00"
         },
         {
             "name": "pierres/doctrine-migrations-test",
