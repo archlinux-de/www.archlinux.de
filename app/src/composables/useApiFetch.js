@@ -3,7 +3,7 @@ import { createFetch } from '@vueuse/core'
 
 export const useApiFetch = createFetch({
   options: {
-    timeout: 5000
+    timeout: 10000
   },
   fetchOptions: {
     headers: { Accept: 'application/json' },
