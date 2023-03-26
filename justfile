@@ -151,10 +151,10 @@ update-opensearch-fixtures: start-db
 
 test-coverage:
 	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests --coverage --coverageDirectory var/coverage/jest
-	{{PHP-RUN}} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
+	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 
 test-db-coverage: start-db
-	{{PHP-RUN}} phpdbg -qrr -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
+	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
 
 test-security: (composer "audit")
 	{{NODE-RUN}} yarn audit --groups dependencies
