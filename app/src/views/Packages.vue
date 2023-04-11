@@ -84,7 +84,7 @@
 </template>
 
 <style>
-  @media (min-width: 1200px) {
+  @media (width >= 1200px) {
     .w-lg-25 {
       width: 25% !important;
     }
