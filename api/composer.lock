@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f8cfb9dce5335fa4e4c13d2b29b203e",
+    "content-hash": "436b35277e023516334588e7265c5533",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -2790,16 +2790,16 @@
         },
         {
             "name": "symfony/doctrine-bridge",
-            "version": "v6.2.8",
+            "version": "v6.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/doctrine-bridge.git",
-                "reference": "70e9e36a590699c26c1a0a0c46b0eaa7a6bb019d"
+                "reference": "4b3aeaa90d41c5527d7ba211d12102cedf06936e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/doctrine-bridge/zipball/70e9e36a590699c26c1a0a0c46b0eaa7a6bb019d",
-                "reference": "70e9e36a590699c26c1a0a0c46b0eaa7a6bb019d",
+                "url": "https://api.github.com/repos/symfony/doctrine-bridge/zipball/4b3aeaa90d41c5527d7ba211d12102cedf06936e",
+                "reference": "4b3aeaa90d41c5527d7ba211d12102cedf06936e",
                 "shasum": ""
             },
             "require": {
@@ -2885,7 +2885,7 @@
             "description": "Provides integration for Doctrine with various Symfony components",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/doctrine-bridge/tree/v6.2.8"
+                "source": "https://github.com/symfony/doctrine-bridge/tree/v6.2.9"
             },
             "funding": [
                 {
@@ -2901,7 +2901,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-09T16:20:02+00:00"
+            "time": "2023-04-11T16:08:35+00:00"
         },
         {
             "name": "symfony/dotenv",
@@ -2979,16 +2979,16 @@
         },
         {
             "name": "symfony/error-handler",
-            "version": "v6.2.7",
+            "version": "v6.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/error-handler.git",
-                "reference": "61e90f94eb014054000bc902257d2763fac09166"
+                "reference": "e95f1273b3953c3b5e5341172dae838bacee11ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/error-handler/zipball/61e90f94eb014054000bc902257d2763fac09166",
-                "reference": "61e90f94eb014054000bc902257d2763fac09166",
+                "url": "https://api.github.com/repos/symfony/error-handler/zipball/e95f1273b3953c3b5e5341172dae838bacee11ee",
+                "reference": "e95f1273b3953c3b5e5341172dae838bacee11ee",
                 "shasum": ""
             },
             "require": {
@@ -3030,7 +3030,7 @@
             "description": "Provides tools to manage errors and ease debugging PHP code",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/error-handler/tree/v6.2.7"
+                "source": "https://github.com/symfony/error-handler/tree/v6.2.9"
             },
             "funding": [
                 {
@@ -3046,7 +3046,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-14T08:44:56+00:00"
+            "time": "2023-04-11T16:03:19+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -3467,16 +3467,16 @@
         },
         {
             "name": "symfony/framework-bundle",
-            "version": "v6.2.8",
+            "version": "v6.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/framework-bundle.git",
-                "reference": "92bf9008afea94408d10148dcff89b259b8fc328"
+                "reference": "df1899b6e9e52fc495daad6b4e307801860a66da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/framework-bundle/zipball/92bf9008afea94408d10148dcff89b259b8fc328",
-                "reference": "92bf9008afea94408d10148dcff89b259b8fc328",
+                "url": "https://api.github.com/repos/symfony/framework-bundle/zipball/df1899b6e9e52fc495daad6b4e307801860a66da",
+                "reference": "df1899b6e9e52fc495daad6b4e307801860a66da",
                 "shasum": ""
             },
             "require": {
@@ -3598,7 +3598,7 @@
             "description": "Provides a tight integration between Symfony components and the Symfony full-stack framework",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/framework-bundle/tree/v6.2.8"
+                "source": "https://github.com/symfony/framework-bundle/tree/v6.2.9"
             },
             "funding": [
                 {
@@ -3614,7 +3614,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-31T09:55:36+00:00"
+            "time": "2023-04-01T11:12:43+00:00"
         },
         {
             "name": "symfony/html-sanitizer",
@@ -3687,16 +3687,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v6.2.8",
+            "version": "v6.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "66391ba3a8862c560e1d9134c96d9bd2a619b477"
+                "reference": "7daf5d24c21a683164688b95bb73b7a4bd3b32fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/66391ba3a8862c560e1d9134c96d9bd2a619b477",
-                "reference": "66391ba3a8862c560e1d9134c96d9bd2a619b477",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/7daf5d24c21a683164688b95bb73b7a4bd3b32fc",
+                "reference": "7daf5d24c21a683164688b95bb73b7a4bd3b32fc",
                 "shasum": ""
             },
             "require": {
@@ -3755,7 +3755,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v6.2.8"
+                "source": "https://github.com/symfony/http-client/tree/v6.2.9"
             },
             "funding": [
                 {
@@ -3771,7 +3771,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-31T09:14:44+00:00"
+            "time": "2023-04-11T16:03:19+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -3934,16 +3934,16 @@
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v6.2.8",
+            "version": "v6.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "9563229e56076070d92ca30c089e801e8a4629a3"
+                "reference": "02246510cf7031726f7237138d61b796b95799b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/9563229e56076070d92ca30c089e801e8a4629a3",
-                "reference": "9563229e56076070d92ca30c089e801e8a4629a3",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/02246510cf7031726f7237138d61b796b95799b3",
+                "reference": "02246510cf7031726f7237138d61b796b95799b3",
                 "shasum": ""
             },
             "require": {
@@ -4025,7 +4025,7 @@
             "description": "Provides a structured process for converting a Request into a Response",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-kernel/tree/v6.2.8"
+                "source": "https://github.com/symfony/http-kernel/tree/v6.2.9"
             },
             "funding": [
                 {
@@ -4041,7 +4041,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-31T12:00:10+00:00"
+            "time": "2023-04-13T16:41:43+00:00"
         },
         {
             "name": "symfony/lock",
@@ -6301,16 +6301,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "10.0.2",
+            "version": "10.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "20800e84296ea4732f9a125e08ce86b4004ae3e4"
+                "reference": "fc4f5ee614fa82d50ecf9014b51af0a9561f3df8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/20800e84296ea4732f9a125e08ce86b4004ae3e4",
-                "reference": "20800e84296ea4732f9a125e08ce86b4004ae3e4",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/fc4f5ee614fa82d50ecf9014b51af0a9561f3df8",
+                "reference": "fc4f5ee614fa82d50ecf9014b51af0a9561f3df8",
                 "shasum": ""
             },
             "require": {
@@ -6338,7 +6338,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "10.0-dev"
+                    "dev-main": "10.1-dev"
                 }
             },
             "autoload": {
@@ -6366,7 +6366,8 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/10.0.2"
+                "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/10.1.0"
             },
             "funding": [
                 {
@@ -6374,7 +6375,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-06T13:00:19+00:00"
+            "time": "2023-04-13T07:08:27+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -7871,16 +7872,16 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v6.2.8",
+            "version": "v6.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "0e0d0f709997ad1224ef22bb0a28287c44b7840f"
+                "reference": "328bc3795059651d2d4e462e8febdf7ec2d7a626"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/0e0d0f709997ad1224ef22bb0a28287c44b7840f",
-                "reference": "0e0d0f709997ad1224ef22bb0a28287c44b7840f",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/328bc3795059651d2d4e462e8febdf7ec2d7a626",
+                "reference": "328bc3795059651d2d4e462e8febdf7ec2d7a626",
                 "shasum": ""
             },
             "require": {
@@ -7921,7 +7922,7 @@
             "description": "Eases DOM navigation for HTML and XML documents",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/dom-crawler/tree/v6.2.8"
+                "source": "https://github.com/symfony/dom-crawler/tree/v6.2.9"
             },
             "funding": [
                 {
@@ -7937,7 +7938,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-09T16:20:02+00:00"
+            "time": "2023-04-11T16:03:19+00:00"
         },
         {
             "name": "symfony/phpunit-bridge",
