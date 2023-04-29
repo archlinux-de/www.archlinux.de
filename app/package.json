@@ -7,8 +7,8 @@
     "serve": "webpack serve --mode development --host 0.0.0.0 --port 8080 --allowed-hosts all --hot"
   },
   "dependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
+    "@babel/core": "^7.21.5",
+    "@babel/preset-env": "^7.21.5",
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@vue/compiler-sfc": "^3.2.47",
     "@vueuse/core": "^10.1.0",
@@ -27,7 +27,7 @@
     "mini-css-extract-plugin": "^2.7.5",
     "postcss": "^8.4.23",
     "postcss-html": "^1.5.0",
-    "postcss-loader": "^7.2.4",
+    "postcss-loader": "^7.3.0",
     "pretty-bytes": "^6.1.0",
     "sass": "^1.62.1",
     "sass-loader": "^13.2.2",
@@ -44,7 +44,7 @@
     "eslint": "^8.39.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-compat": "^4.1.4",
-    "eslint-plugin-cypress": "^2.13.2",
+    "eslint-plugin-cypress": "^2.13.3",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
