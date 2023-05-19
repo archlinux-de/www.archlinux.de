@@ -193,9 +193,9 @@ class RepositoryManagerTest extends TestCase
     {
         return [
             ['core', false],
-            ['community', false],
-            ['testing', true],
-            ['community-testing', true]
+            ['extra', false],
+            ['core-testing', true],
+            ['extra-testing', true]
         ];
     }
 }

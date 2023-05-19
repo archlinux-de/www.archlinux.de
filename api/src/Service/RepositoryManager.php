@@ -49,7 +49,7 @@ class RepositoryManager
                 $repository = $this->repositoryRepository->findByNameAndArchitecture($repoName, $archName);
                 if ($repository === null) {
                     $repository = new Repository($repoName, $archName);
-                    $repository->setTesting(preg_match('/(-|^)testing$/', $repoName) > 0);
+                    $repository->setTesting(str_ends_with($repoName, '-testing'));
 
                     $errors = $this->validator->validate($repository);
                     if ($errors->count() > 0) {

@@ -87,7 +87,7 @@ services:
         $packageStatisticsApiUrl: '%app.packages.packageStatisticsApiUrl%'
 
     App\Serializer\PackageNormalizer:
-        $githubUrl: '%app.packages.github_url%'
+        $gitlabUrl: '%app.packages.gitlab_url%'
 
     App\Controller\MirrorController:
         $mirrorCountry: '%app.mirrors.country%'

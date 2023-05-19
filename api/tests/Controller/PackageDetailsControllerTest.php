@@ -57,9 +57,9 @@ class PackageDetailsControllerTest extends DatabaseTestCase
                     'testing' => false
                 ],
                 'packageUrl' => 'http://localhost/download/core/os/x86_64/pacman-5.0.2-2-x86_64.pkg.tar.xz',
-                'sourceUrl' => 'https://github.com/archlinux/svntogit-packages/tree/packages/pacman/trunk',
+                'sourceUrl' => 'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/tree/5.0.2-2',
                 'sourceChangelogUrl' =>
-                    'https://github.com/archlinux/svntogit-packages/commits/packages/pacman/trunk',
+                    'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/commits/5.0.2-2',
                 'popularity' => 0
             ],
             json_decode($client->getResponse()->getContent(), true)
@@ -133,7 +133,7 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $entityManager->flush();
 
         $client = $this->getClient();
-        $client->request('GET', '/api/packages/testing/x86_64/pacman');
+        $client->request('GET', '/api/packages/core-testing/x86_64/pacman');
 
         $this->assertTrue($client->getResponse()->isRedirection());
     }

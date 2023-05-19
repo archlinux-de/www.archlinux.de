@@ -14,7 +14,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
     public function __construct(
         private UrlGeneratorInterface $router,
         private ObjectNormalizer $normalizer,
-        private string $githubUrl
+        private string $gitlabUrl
     ) {
     }
 
@@ -67,23 +67,37 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $githubLink = $this->githubUrl . 'svntogit-' . (
-            in_array(
-                $object->getRepository()->getName(),
-                [
-                    'community',
-                    'community-testing',
-                    'multilib',
-                    'multilib-testing',
-                ]
-            ) ? 'community' : 'packages'
-            )
-            . '/';
-
-        $data['sourceUrl'] = $githubLink . 'tree/packages/' . $object->getBase() . '/trunk';
-        $data['sourceChangelogUrl'] = $githubLink . 'commits/packages/' . $object->getBase() . '/trunk';
+        $data['sourceUrl'] = $this->createGitlabLink('tree', $object);
+        $data['sourceChangelogUrl'] = $this->createGitlabLink('commits', $object);
 
         return $data;
+    }
+
+    private function createGitlabLink(string $type, Package $package): string
+    {
+        assert(in_array($type, ['tree', 'commits']));
+
+        return sprintf(
+            '%s/%s/-/%s/%s',
+            $this->gitlabUrl,
+            $this->createGitlabProjectName($package->getBase()),
+            $type,
+            $package->getVersion()
+        );
+    }
+
+    private function createGitlabProjectName(string $name): string
+    {
+        // see https://github.com/archlinux/archweb/blob/master/main/utils.py#L139-L148
+        $replaces = [
+            '/([a-zA-Z0-9]+)\+([a-zA-Z]+)/' => '$1-$2',
+            '/\+/' => 'plus',
+            '/[^a-zA-Z0-9_\-\.]/' => '-',
+            '/[_\-]{2,}/' => '-',
+            '/^tree$/' => 'unix-tree'
+        ];
+
+        return (string)preg_replace(array_keys($replaces), array_values($replaces), $name);
     }
 
     public function hasCacheableSupportsMethod(): bool
