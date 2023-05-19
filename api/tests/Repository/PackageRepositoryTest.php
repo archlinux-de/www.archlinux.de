@@ -109,7 +109,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $testingRepository = (new Repository('testing', Architecture::X86_64))->setTesting();
+        $testingRepository = (new Repository('core-testing', Architecture::X86_64))->setTesting();
         $pacman = new Package(
             $coreRepository,
             'pacman',

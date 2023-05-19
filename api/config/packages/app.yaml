@@ -1,13 +1,12 @@
 parameters:
     env(PACKAGES_MIRROR): 'https://mirror.leaseweb.net/archlinux/'
     app.packages.mirror: '%env(PACKAGES_MIRROR)%'
-    app.packages.github_url: 'https://github.com/archlinux/'
+    app.packages.gitlab_url: 'https://gitlab.archlinux.org/archlinux/packaging/packages'
     app.packages.repositories:
         core: ['x86_64']
+        core-testing: ['x86_64']
         extra: ['x86_64']
-        testing: ['x86_64']
-        community: ['x86_64']
-        community-testing: ['x86_64']
+        extra-testing: ['x86_64']
         multilib: ['x86_64']
         multilib-testing: ['x86_64']
     app.packages.default_architecture: 'x86_64'

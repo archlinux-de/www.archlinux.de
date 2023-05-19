@@ -7,6 +7,7 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
 use App\Entity\Packages\Repository;
 use App\Serializer\PackageNormalizer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Serializer\Serializer;
 
@@ -74,12 +75,41 @@ class PackageNormalizerTest extends KernelTestCase
                 'sha256sum' => 'abcdef',
                 'licenses' => ['GPL'],
                 'packageUrl' => 'http://localhost/download/core/os/x86_64/pacman-6.0-1-x86_64.pkg.tar.xz',
-                'sourceUrl' => 'https://github.com/archlinux/svntogit-packages/tree/packages/pacman/trunk',
+                'sourceUrl' => 'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/tree/6.0-1',
                 'sourceChangelogUrl' =>
-                    'https://github.com/archlinux/svntogit-packages/commits/packages/pacman/trunk',
+                    'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/commits/6.0-1',
                 'popularity' => 0
             ],
             $jsonArray
         );
+    }
+
+    #[DataProvider('providePackageNames')]
+    public function testGitlabPathConversion(string $packageName, string $expectedPath): void
+    {
+        $repository = new Repository('core', Architecture::X86_64);
+        $package = (new Package($repository, $packageName, '6.0-1', Architecture::X86_64));
+
+        $json = $this->serializer->serialize($package, 'json');
+        $this->assertJson($json);
+        $jsonArray = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($jsonArray);
+
+        $this->assertStringContainsString($expectedPath, $jsonArray['sourceUrl']);
+        $this->assertStringContainsString($expectedPath, $jsonArray['sourceChangelogUrl']);
+    }
+
+    public static function providePackageNames(): iterable
+    {
+        return [
+            ['mysql++', 'mysqlplusplus'],
+            ['foo+bar', 'foo-bar'],
+            ['foo+', 'fooplus'],
+            ['foo%bar', 'foo-bar'],
+            ['foo_bar', 'foo_bar'],
+            ['percona-server', 'percona-server'],
+            ['lua-std-_debug', 'lua-std-debug'],
+            ['tree', 'unix-tree']
+        ];
     }
 }
