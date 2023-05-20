@@ -112,4 +112,29 @@ class PackageNormalizerTest extends KernelTestCase
             ['tree', 'unix-tree']
         ];
     }
+
+    #[DataProvider('providePackageVersions')]
+    public function testGitlabTagConversion(string $packageVersion, string $expectedTag): void
+    {
+        $repository = new Repository('core', Architecture::X86_64);
+        $package = (new Package($repository, 'foo', $packageVersion, Architecture::X86_64));
+
+        $json = $this->serializer->serialize($package, 'json');
+        $this->assertJson($json);
+        $jsonArray = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($jsonArray);
+
+        $this->assertStringContainsString($expectedTag, $jsonArray['sourceUrl']);
+        $this->assertStringContainsString($expectedTag, $jsonArray['sourceChangelogUrl']);
+    }
+
+    public static function providePackageVersions(): iterable
+    {
+        return [
+            ['1:1.2.3-4', '1-1.2.3-4'],
+            ['1.2.3beta-6-4', '1.2.3beta-6-4'],
+            ['1.2.3beta-6-4', '1.2.3beta-6-4'],
+            ['0.33+0.3.2-4', '0.33+0.3.2-4']
+        ];
+    }
 }

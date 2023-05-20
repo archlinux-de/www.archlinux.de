@@ -82,7 +82,7 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             $this->gitlabUrl,
             $this->createGitlabPath($package->getBase()),
             $type,
-            $this->createGitlabPath($package->getVersion())
+            $this->createGitlabTag($package->getVersion())
         );
     }
 
@@ -98,6 +98,11 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         ];
 
         return (string)preg_replace(array_keys($replaces), array_values($replaces), $name);
+    }
+
+    private function createGitlabTag(string $version): string
+    {
+        return (string)preg_replace('/[^a-zA-Z0-9_\-\.\+]+/', '-', $version);
     }
 
     public function hasCacheableSupportsMethod(): bool
