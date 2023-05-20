@@ -80,13 +80,13 @@ class PackageNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         return sprintf(
             '%s/%s/-/%s/%s',
             $this->gitlabUrl,
-            $this->createGitlabProjectName($package->getBase()),
+            $this->createGitlabPath($package->getBase()),
             $type,
-            $package->getVersion()
+            $this->createGitlabPath($package->getVersion())
         );
     }
 
-    private function createGitlabProjectName(string $name): string
+    private function createGitlabPath(string $name): string
     {
         // see https://github.com/archlinux/archweb/blob/master/main/utils.py#L139-L148
         $replaces = [
