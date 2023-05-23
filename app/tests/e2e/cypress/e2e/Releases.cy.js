@@ -9,7 +9,7 @@ describe('Releases page', () => {
   })
 
   it('filter releases', () => {
-    cy.get('[data-test=releases-search]').type('2019')
+    cy.get('[data-test=releases-search]').type('2019', { delay: 200 })
     cy.location().should((loc) => {
       expect(loc.search).to.eq('?search=2019')
     })

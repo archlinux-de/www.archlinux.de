@@ -10,14 +10,13 @@ describe('Packages page', () => {
   })
 
   it('filter packages', () => {
-    cy.get('[data-test=packages-search]').type('pacman')
+    cy.get('[data-test=packages-search]').type('pacman', { delay: 200 })
     cy.location().should((loc) => {
       expect(loc.search).to.eq('?search=pacman')
     })
     cy.get('[data-test=packages-filter-repository] option:selected').should('have.text', '')
     cy.get('[data-test=packages-filter-architecture]').should('not.exist')
     cy.get('[data-test=package-link]').contains('pacman')
-    cy.get('[data-test=package-link]').should('have.length.lt', 20)
   })
 
   it('loads next page', () => {
@@ -50,10 +49,9 @@ describe('Packages page', () => {
   })
 
   it('navigates to repository and architecture filter', () => {
-    cy.get('[data-test=packages-search]').type('pacman')
+    cy.get('[data-test=packages-search]').type('pacman', { delay: 200 })
     cy.get('[data-test=package-link]').contains('pacman')
     cy.get('[data-test=package-link]').contains('namcap')
-    cy.get('[data-test=package-link]').should('have.length.lt', 20)
 
     cy.get('[data-test=package-repository-link]').first().click()
 

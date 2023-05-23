@@ -24,7 +24,7 @@ describe('Start page', () => {
 
   // crashes on headless electron
   ;(!Cypress.isBrowser('electron') ? it : it.skip)('shows package search suggestions', () => {
-    cy.get('#searchfield').should('be.visible').type('lin')
+    cy.get('#searchfield').should('be.visible').type('lin', { delay: 200 })
     cy.get('#searchfield-list option').should('have.length', 10)
   })
 })

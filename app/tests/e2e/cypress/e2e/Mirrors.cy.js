@@ -9,7 +9,7 @@ describe('Mirrors page', () => {
   })
 
   it('filter mirrors', () => {
-    cy.get('[data-test=mirrors-search]').type('pkgbuild')
+    cy.get('[data-test=mirrors-search]').type('pkgbuild', { delay: 200 })
     cy.location().should((loc) => {
       expect(loc.search).to.eq('?search=pkgbuild')
     })

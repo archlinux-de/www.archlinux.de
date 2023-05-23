@@ -9,7 +9,7 @@ describe('News page', () => {
   })
 
   it('filter news', () => {
-    cy.get('[data-test=news-search]').type('LinuxTag')
+    cy.get('[data-test=news-search]').type('LinuxTag', { delay: 200 })
     cy.location().should((loc) => {
       expect(loc.search).to.eq('?search=LinuxTag')
     })
