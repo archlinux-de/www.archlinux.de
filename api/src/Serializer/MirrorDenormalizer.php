@@ -30,12 +30,13 @@ class MirrorDenormalizer implements DenormalizerInterface, CacheableSupportsMeth
                         !$mirrorData['delay'] ||
                         !$mirrorData['duration_avg'] ||
                         !$mirrorData['duration_stddev'] ||
-                        !$mirrorData['isos']
+                        !$mirrorData['isos'] ||
+                        $mirrorData['protocol'] !== 'https' // filter out http, rsync and ftp mirrors
                     ) {
                         continue;
                     }
 
-                    $mirror = (new Mirror($mirrorData['url'], $mirrorData['protocol']))
+                    $mirror = (new Mirror($mirrorData['url']))
                         ->setDelay($mirrorData['delay'])
                         ->setDurationAvg($mirrorData['duration_avg'])
                         ->setScore($mirrorData['score'])

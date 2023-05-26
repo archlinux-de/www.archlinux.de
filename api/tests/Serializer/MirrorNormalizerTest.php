@@ -19,7 +19,7 @@ class MirrorNormalizerTest extends KernelTestCase
 
     public function testNormalize(): void
     {
-        $mirror = (new Mirror('localhost', 'https'))
+        $mirror = (new Mirror('localhost'))
             ->setCountry((new Country('de'))->setName('Germany'))
             ->setDurationAvg(0.42)
             ->setDelay(34)
@@ -36,7 +36,6 @@ class MirrorNormalizerTest extends KernelTestCase
         $this->assertEquals(
             [
                 'url' => 'localhost',
-                'protocol' => 'https',
                 'country' => [
                     'code' => 'de',
                     'name' => 'Germany'

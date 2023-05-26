@@ -10,7 +10,7 @@ class MirrorTest extends TestCase
 {
     public function testUpdate(): void
     {
-        $mirror = (new Mirror('localhost', 'https'))
+        $mirror = (new Mirror('localhost'))
             ->setCountry((new Country('de'))->setName('Germany'))
             ->setDurationAvg(0.42)
             ->setDelay(34)
@@ -22,7 +22,7 @@ class MirrorTest extends TestCase
             ->setIpv6(true);
 
         $mirror->update(
-            (new Mirror('localhost', 'http'))
+            (new Mirror('localhost'))
                 ->setCountry((new Country('fr'))->setName('France'))
                 ->setDurationAvg(1.42)
                 ->setDelay(43)
@@ -34,7 +34,6 @@ class MirrorTest extends TestCase
                 ->setIpv6(false)
         );
 
-        $this->assertEquals('http', $mirror->getProtocol());
         $this->assertNotNull($mirror->getCountry());
         $this->assertEquals('fr', $mirror->getCountry()->getCode());
         $this->assertEquals(1.42, $mirror->getDurationAvg());
@@ -49,8 +48,8 @@ class MirrorTest extends TestCase
 
     public function testUpdateFailsOnMismatchedUrl(): void
     {
-        $mirror = new Mirror('localhost', 'https');
+        $mirror = new Mirror('localhost');
         $this->expectException(\InvalidArgumentException::class);
-        $mirror->update(new Mirror('myhost', 'https'));
+        $mirror->update(new Mirror('myhost'));
     }
 }

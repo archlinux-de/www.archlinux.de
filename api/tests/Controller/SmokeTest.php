@@ -41,7 +41,7 @@ class SmokeTest extends DatabaseSearchTestCase
             ->setFileName('release.iso');
         $entityManager->persist($release);
 
-        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+        $mirror = (new Mirror('https://127.0.0.2/'))
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);

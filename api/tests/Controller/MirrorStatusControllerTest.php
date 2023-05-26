@@ -14,7 +14,7 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
     public function testMirrorsAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+        $mirror = (new Mirror('https://127.0.0.2/'))
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-02-02'));
         $entityManager->persist($mirror);
@@ -33,14 +33,13 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
         $this->assertEquals(1, $jsonArray['total']);
         $this->assertCount(1, $jsonArray['items']);
         $this->assertEquals('https://127.0.0.2/', $jsonArray['items'][0]['url']);
-        $this->assertEquals('https', $jsonArray['items'][0]['protocol']);
     }
 
     public function testMirrorAction(): void
     {
         $entityManager = $this->getEntityManager();
         $country = (new Country('DE'))->setName('Germany');
-        $mirror = (new Mirror('https://127.0.0.2/', 'https'))
+        $mirror = (new Mirror('https://127.0.0.2/'))
             ->setCountry($country)
             ->setDurationAvg(1.2)
             ->setDelay(2)
@@ -65,7 +64,6 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
         $this->assertEquals(
             [
                 'url' => 'https://127.0.0.2/',
-                'protocol' => 'https',
                 'country' => [
                     'code' => 'DE',
                     'name' => 'Germany'
