@@ -102,6 +102,7 @@
 pre:has(> code) {
   background-color: $dark;
   color: $light;
+  // stylelint-disable-next-line
   padding: map-get($gutters, 2);
 }
 </style>
