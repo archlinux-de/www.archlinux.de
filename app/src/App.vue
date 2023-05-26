@@ -98,6 +98,12 @@
   width: 1em;
   height: 1em;
 }
+
+pre:has(> code) {
+  background-color: $dark;
+  color: $light;
+  padding: map-get($gutters, 2);
+}
 </style>
 
 <script setup>
