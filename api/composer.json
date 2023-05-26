@@ -22,7 +22,7 @@
         "doctrine/orm": "^2.15.1",
         "league/iso3166": "^4.2.1",
         "maxmind-db/reader": "^1.11.0",
-        "opensearch-project/opensearch-php": "^2.1.0",
+        "opensearch-project/opensearch-php": "^2.2.0",
         "symfony/console": "^6.2.10",
         "symfony/dotenv": "^6.2.8",
         "symfony/expression-language": "^6.2.7",
