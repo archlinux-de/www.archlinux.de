@@ -9,8 +9,6 @@ use OpenSearch\Client;
 
 class MirrorSearchRepository
 {
-    private const PROTOCOL = 'https';
-
     public function __construct(
         private string $mirrorCountry,
         private Client $client,
@@ -38,7 +36,7 @@ class MirrorSearchRepository
             $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.1]]];
         }
 
-        $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
+        $bool['must'][] = ['wildcard' => ['url' => 'https*']];
 
         $results = $this->client->search(
             [
@@ -109,7 +107,7 @@ class MirrorSearchRepository
                 ]
             ];
         }
-        $bool['must'][] = ['term' => ['protocol' => self::PROTOCOL]];
+        $bool['must'][] = ['wildcard' => ['url' => 'https*']];
 
         $results = $this->client->search(
             [

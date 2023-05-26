@@ -57,7 +57,6 @@ class MirrorDenormalizerTest extends TestCase
 
         $this->assertCount(1, $mirrors);
         $this->assertEquals('https://127.0.0.1', $mirrors[0]->getUrl());
-        $this->assertEquals('https', $mirrors[0]->getProtocol());
         $this->assertNotNull($mirrors[0]->getCountry());
         $this->assertEquals('DE', $mirrors[0]->getCountry()->getCode());
         $this->assertEquals(new \DateTime('2018-01-01'), $mirrors[0]->getLastSync());

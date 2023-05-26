@@ -23,8 +23,8 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 {
     public function testCommand(): void
     {
-        $newMirror = new Mirror('https://127.0.0.2', 'https');
-        $oldMirror = new Mirror('https://127.0.0.1', 'https');
+        $newMirror = new Mirror('https://127.0.0.2');
+        $oldMirror = new Mirror('https://127.0.0.1');
 
         /** @var MirrorRepository|MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);
@@ -75,7 +75,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $mirrorFetcher
             ->expects($this->once())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator([new Mirror('%invslid', 'https')]));
+            ->willReturn(new \ArrayIterator([new Mirror('%invslid')]));
 
         /** @var ValidatorInterface|MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
@@ -103,7 +103,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 
     public function testUpdateMirror(): void
     {
-        $mirror = new Mirror('https://127.0.0.2', 'https');
+        $mirror = new Mirror('https://127.0.0.2');
 
         /** @var MirrorRepository|MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);

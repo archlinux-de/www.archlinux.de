@@ -28,7 +28,6 @@ class MirrorNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
                 [
                     AbstractNormalizer::ATTRIBUTES => [
                         'url',
-                        'protocol',
                         'country',
                         'lastSync',
                         'delay',

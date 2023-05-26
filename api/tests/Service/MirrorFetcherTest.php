@@ -24,7 +24,7 @@ class MirrorFetcherTest extends TestCase
             ->expects($this->once())
             ->method('deserialize')
             ->with($content, Mirror::class . '[]', 'json')
-            ->willReturn([new Mirror('', '')]);
+            ->willReturn([new Mirror('')]);
 
         $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $serializer);
         /** @var Mirror[] $mirrors */

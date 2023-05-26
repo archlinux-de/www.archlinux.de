@@ -25,7 +25,6 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
                                 'name' => ['type' => 'text']
                             ]
                         ],
-                        'protocol' => ['type' => 'keyword'],
                         'score' => ['type' => 'float'],
                         'lastSync' => ['type' => 'date']
                     ]
@@ -50,7 +49,6 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
                 'code' => $object->getCountry()->getCode(),
                 'name' => $object->getCountry()->getName()
             ] : null,
-            'protocol' => $object->getProtocol(),
             'score' => $object->getScore(),
             'lastSync' => $object->getLastSync()->format(DATE_W3C)
         ];

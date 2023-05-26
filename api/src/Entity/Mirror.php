@@ -16,10 +16,6 @@ class Mirror
     #[Assert\Length(min: 10, max: 255)]
     private string $url;
 
-    #[ORM\Column]
-    #[Assert\Choice(['http', 'https', 'rsync'])]
-    private string $protocol;
-
     #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EAGER')]
     #[ORM\JoinColumn(referencedColumnName: 'code', nullable: true)]
     private ?Country $country = null;
@@ -53,27 +49,15 @@ class Mirror
     #[ORM\Column(type: 'boolean')]
     private bool $ipv6 = false;
 
-    public function __construct(string $url, string $protocol)
+    public function __construct(string $url)
     {
         $this->url = $url;
-        $this->protocol = $protocol;
         $this->lastSync = new \DateTime();
     }
 
     public function getUrl(): string
     {
         return $this->url;
-    }
-
-    public function getProtocol(): string
-    {
-        return $this->protocol;
-    }
-
-    public function setProtocol(string $protocol): Mirror
-    {
-        $this->protocol = $protocol;
-        return $this;
     }
 
     public function getCountry(): ?Country
@@ -185,8 +169,7 @@ class Mirror
             ->setDurationStddev($mirror->getDurationStddev())
             ->setIpv6($mirror->hasIpv6())
             ->setLastSync($mirror->getLastSync())
-            ->setScore($mirror->getScore())
-            ->setProtocol($mirror->getProtocol());
+            ->setScore($mirror->getScore());
     }
 
     public function setIpv6(bool $ipv6): Mirror
