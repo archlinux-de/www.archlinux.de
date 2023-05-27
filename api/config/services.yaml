@@ -49,7 +49,9 @@ services:
             - allowElement: !returns_clone ['li']
             - allowElement: !returns_clone ['br']
             - allowElement: !returns_clone ['strong']
+            - allowElement: !returns_clone ['b']
             - allowElement: !returns_clone ['em']
+            - allowElement: !returns_clone ['i']
             - allowElement: !returns_clone ['del']
             - allowElement: !returns_clone ['ins']
             - allowElement: !returns_clone ['blockquote']
@@ -58,6 +60,8 @@ services:
             - allowElement: !returns_clone ['h5']
             - allowElement: !returns_clone ['h6']
             - forceAttribute: !returns_clone ['a', 'rel', 'noopener noreferrer nofollow']
+            - blockElement: !returns_clone ['div']
+            - blockElement: !returns_clone ['span']
 
     Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface:
         class: Symfony\Component\HtmlSanitizer\HtmlSanitizer
