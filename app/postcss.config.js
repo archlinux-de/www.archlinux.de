@@ -6,7 +6,8 @@ module.exports = {
     autoprefixer,
     purgecss({
       content: ['**/*.js', '**/*.html', '**/*.vue'],
-      skippedContentGlobs: ['node_modules/**', 'tests/**']
+      skippedContentGlobs: ['node_modules/**', 'tests/**'],
+      variables: true
     })
   ]
 }

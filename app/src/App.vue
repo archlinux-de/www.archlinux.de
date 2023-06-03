@@ -100,8 +100,11 @@
 }
 
 pre:has(> code) {
-  background-color: $dark;
-  color: $light;
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-secondary-color);
+  border-width: $border-width;
+  border-style: $border-style;
+  border-color: var(--bs-border-color);
   // stylelint-disable-next-line
   padding: map-get($gutters, 2);
 }
