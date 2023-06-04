@@ -108,6 +108,13 @@ pre:has(> code) {
   // stylelint-disable-next-line
   padding: map-get($gutters, 2);
 }
+
+@media (prefers-color-scheme: dark) {
+  .btn.btn-outline-secondary {
+    --bs-btn-color: var(--bs-light);
+    --bs-btn-border-color: var(--bs-gray-600);
+  }
+}
 </style>
 
 <script setup>
