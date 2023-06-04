@@ -61,7 +61,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
             'description' => $object->getDescription(),
             'url' => $object->getUrl(),
             'groups' => $object->getGroups(),
-            'buildDate' => $object->getBuildDate() !== null ? $object->getBuildDate()->format(DATE_W3C) : null,
+            'buildDate' => $object->getBuildDate()?->format(DATE_W3C),
             'replacements' => $object->getReplacements()->map(
                 fn(Replacement $replacement) => $replacement->getTargetName()
             )->toArray(),
