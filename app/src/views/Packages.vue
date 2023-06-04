@@ -31,7 +31,7 @@
 
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <table class="table table-striped table-responsive table-sm table-borderless table-bordered table-fixed" v-show="data.total > 0" data-test="packages">
+    <table class="table table-striped table-responsive table-sm table-borderless table-fixed" v-show="data.total > 0" data-test="packages">
       <thead>
         <tr>
           <th class="d-none d-lg-table-cell">Repositorium</th>

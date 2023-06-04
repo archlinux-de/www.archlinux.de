@@ -22,7 +22,7 @@
 
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <table class="table table-striped table-responsive table-sm table-borderless table-bordered table-fixed" v-show="data.total > 0" data-test="news">
+    <table class="table table-striped table-responsive table-sm table-borderless table-fixed" v-show="data.total > 0" data-test="news">
       <thead>
         <tr>
           <th class="d-none d-md-table-cell">Veröffentlichung</th>

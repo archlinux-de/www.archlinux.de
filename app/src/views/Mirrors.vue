@@ -22,7 +22,7 @@
 
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
 
-    <table class="table table-striped table-responsive table-sm table-borderless table-bordered" v-show="data.total > 0" data-test="mirrors">
+    <table class="table table-striped table-responsive table-sm table-borderless" v-show="data.total > 0" data-test="mirrors">
       <thead>
         <tr>
           <th>URL</th>
