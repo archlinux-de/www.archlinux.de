@@ -156,9 +156,14 @@ class PackageDenormalizer implements DenormalizerInterface
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        return $type == Package::class
-            && $format == 'pacman-database'
+        return $type === Package::class
+            && $format === 'pacman-database'
             && isset($context['repository'])
             && $context['repository'] instanceof Repository;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [Package::class => false];
     }
 }

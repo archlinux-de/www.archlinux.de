@@ -13,7 +13,7 @@ class ReleaseDenormalizerTest extends TestCase
         $releaseDenormalizer = new ReleaseDenormalizer();
 
         $this->assertTrue($releaseDenormalizer->supportsDenormalization([], Release::class . '[]'));
-        $this->assertTrue($releaseDenormalizer->hasCacheableSupportsMethod());
+        $this->assertEquals([Release::class . '[]' => true], $releaseDenormalizer->getSupportedTypes('json'));
     }
 
     public function testDenormalize(): void

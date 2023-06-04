@@ -59,6 +59,6 @@ class NewsItemDenormalizerTest extends TestCase
         $newsItemDenormalizer = new NewsItemDenormalizer('');
 
         $this->assertTrue($newsItemDenormalizer->supportsDenormalization([], NewsItem::class . '[]'));
-        $this->assertTrue($newsItemDenormalizer->hasCacheableSupportsMethod());
+        $this->assertEquals([NewsItem::class . '[]' => true], $newsItemDenormalizer->getSupportedTypes('json'));
     }
 }

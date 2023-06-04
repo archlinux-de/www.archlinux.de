@@ -35,7 +35,7 @@ class PacmanDatabaseDecoder implements DecoderInterface
                 if (empty($entry)) {
                     return null;
                 }
-                if (count($entry) == 1) {
+                if (count($entry) === 1) {
                     return $entry[0];
                 }
                 return $entry;

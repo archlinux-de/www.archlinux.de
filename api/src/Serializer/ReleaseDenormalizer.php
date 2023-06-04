@@ -3,10 +3,9 @@
 namespace App\Serializer;
 
 use App\Entity\Release;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
+class ReleaseDenormalizer implements DenormalizerInterface
 {
     /**
      * @param array $data
@@ -50,11 +49,11 @@ class ReleaseDenormalizer implements DenormalizerInterface, CacheableSupportsMet
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        return $type == Release::class . '[]';
+        return $type === Release::class . '[]';
     }
 
-    public function hasCacheableSupportsMethod(): bool
+    public function getSupportedTypes(?string $format): array
     {
-        return true;
+        return [Release::class . '[]' => true];
     }
 }

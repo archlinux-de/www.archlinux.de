@@ -4,12 +4,11 @@ namespace App\Serializer;
 
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
+class NewsItemDenormalizer implements DenormalizerInterface
 {
-    public function __construct(private string $flarumUrl)
+    public function __construct(private readonly string $flarumUrl)
     {
     }
 
@@ -83,11 +82,11 @@ class NewsItemDenormalizer implements DenormalizerInterface, CacheableSupportsMe
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
-        return $type == NewsItem::class . '[]';
+        return $type === NewsItem::class . '[]';
     }
 
-    public function hasCacheableSupportsMethod(): bool
+    public function getSupportedTypes(?string $format): array
     {
-        return true;
+        return [NewsItem::class . '[]' => true];
     }
 }

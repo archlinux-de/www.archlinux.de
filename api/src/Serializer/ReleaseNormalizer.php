@@ -3,25 +3,29 @@
 namespace App\Serializer;
 
 use App\Entity\Release;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class ReleaseNormalizer implements NormalizerInterface
 {
+    private NormalizerInterface $normalizer;
+
     public function __construct(
-        private UrlGeneratorInterface $router,
-        private ObjectNormalizer $normalizer,
-        private HtmlSanitizerInterface $htmlSanitizer
+        private readonly UrlGeneratorInterface $router,
+        #[Autowire(service: 'serializer.normalizer.object')] NormalizerInterface $normalizer,
+        private readonly HtmlSanitizerInterface $htmlSanitizer
     ) {
+        assert($normalizer instanceof ObjectNormalizer);
+        $this->normalizer = $normalizer;
     }
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
-        return $data instanceof Release && $format == 'json';
+        return $data instanceof Release && $format === 'json';
     }
 
     /**
@@ -105,8 +109,8 @@ class ReleaseNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         return $release->getTorrentUrl() ? 'https://archlinux.org' . $release->getTorrentUrl() : null;
     }
 
-    public function hasCacheableSupportsMethod(): bool
+    public function getSupportedTypes(?string $format): array
     {
-        return true;
+        return [Release::class => $format === 'json'];
     }
 }

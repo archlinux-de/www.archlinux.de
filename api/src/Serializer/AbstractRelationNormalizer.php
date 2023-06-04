@@ -4,12 +4,11 @@ namespace App\Serializer;
 
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class AbstractRelationNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class AbstractRelationNormalizer implements NormalizerInterface
 {
-    public function __construct(private RepositoryNormalizer $repositoryNormalizer)
+    public function __construct(private readonly RepositoryNormalizer $repositoryNormalizer)
     {
     }
 
@@ -38,11 +37,11 @@ class AbstractRelationNormalizer implements NormalizerInterface, CacheableSuppor
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
-        return $data instanceof AbstractRelation && $format == 'json';
+        return $data instanceof AbstractRelation && $format === 'json';
     }
 
-    public function hasCacheableSupportsMethod(): bool
+    public function getSupportedTypes(?string $format): array
     {
-        return true;
+        return [AbstractRelation::class => $format === 'json'];
     }
 }

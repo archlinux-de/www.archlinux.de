@@ -3,15 +3,20 @@
 namespace App\Serializer;
 
 use App\Entity\Country;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class CountryNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class CountryNormalizer implements NormalizerInterface
 {
-    public function __construct(private ObjectNormalizer $normalizer)
-    {
+    private NormalizerInterface $normalizer;
+
+    public function __construct(
+        #[Autowire(service: 'serializer.normalizer.object')] NormalizerInterface $normalizer,
+    ) {
+        assert($normalizer instanceof ObjectNormalizer);
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -39,11 +44,11 @@ class CountryNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
-        return $data instanceof Country && $format == 'json';
+        return $data instanceof Country && $format === 'json';
     }
 
-    public function hasCacheableSupportsMethod(): bool
+    public function getSupportedTypes(?string $format): array
     {
-        return true;
+        return [Country::class => $format === 'json'];
     }
 }
