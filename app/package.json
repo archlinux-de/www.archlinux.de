@@ -20,7 +20,7 @@
     "bootstrap-icons": "^1.10.5",
     "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "core-js": "^3.30.2",
+    "core-js": "^3.31.0",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.5.3",
