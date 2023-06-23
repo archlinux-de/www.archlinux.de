@@ -13,7 +13,7 @@
     "@vue/compiler-sfc": "^3.3.4",
     "@vueuse/core": "^10.2.0",
     "@vueuse/head": "^1.1.26",
-    "@vueuse/router": "^10.1.2",
+    "@vueuse/router": "~10.1.2 || > 10.2.0",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^9.1.2",
     "bootstrap": "^5.3.0",
