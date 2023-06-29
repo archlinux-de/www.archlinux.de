@@ -42,7 +42,7 @@ class PackageRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('source')
-            ->join('App:Packages\Package', 'target')
+            ->join(Package::class, 'target')
             ->join($relationType, 'relation')
             ->andWhere('relation.target = target')
             ->andWhere('relation.source = source')
@@ -172,7 +172,7 @@ class PackageRepository extends ServiceEntityRepository
 
         return $this
             ->createQueryBuilder('source')
-            ->join('App:Packages\Package', 'target')
+            ->join(Package::class, 'target')
             ->join($type, 'relation')
             ->andWhere('relation.target = target')
             ->andWhere('relation.source = source')

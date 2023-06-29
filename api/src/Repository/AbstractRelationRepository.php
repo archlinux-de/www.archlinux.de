@@ -6,6 +6,7 @@ use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Relations\LibraryRelation;
+use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Version;
 use App\Service\PackageVersionCompare;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -56,7 +57,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
     {
         /** @var AbstractRelation[] $candidates */
         $candidates = $this->createQueryBuilder('relation')
-            ->where('relation INSTANCE OF App:Packages\Relations\Provision')
+            ->where('relation INSTANCE OF ' . Provision::class)
             ->andWhere('relation.targetName = :targetName')
             ->setParameter('targetName', $relation->getTargetName())
             ->getQuery()
