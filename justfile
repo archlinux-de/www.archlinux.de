@@ -35,13 +35,13 @@ init: start
 
 start:
 	{{COMPOSE}} up -d
-	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=120 ping
+	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --wait=120 ping
 	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
 	@echo URL: http://localhost:${PORT}
 
 start-db:
 	{{COMPOSE}} up -d mariadb opensearch
-	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb --wait=120 ping
+	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --wait=120 ping
 	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
 
 stop:
@@ -49,9 +49,9 @@ stop:
 
 # Load a (gzipped) database backup for local testing
 import-db-dump file name='www_archlinux_de': start
-	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb drop -f {{name}} || true
-	{{MARIADB-RUN}} mysqladmin -uroot -hmariadb create {{name}}
-	zcat {{file}} | {{MARIADB-RUN}} mysql -uroot -hmariadb {{name}}
+	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb drop -f {{name}} || true
+	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb create {{name}}
+	zcat {{file}} | {{MARIADB-RUN}} mariadb -uroot -hmariadb {{name}}
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 

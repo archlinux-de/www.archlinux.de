@@ -84,6 +84,7 @@
 </template>
 
 <style>
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   @media (width >= 1200px) {
     .w-lg-25 {
       width: 25% !important;

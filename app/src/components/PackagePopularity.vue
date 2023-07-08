@@ -8,6 +8,8 @@
 
 <style lang="scss">
 .package-popularity {
+
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   .bi {
     vertical-align: unset;
     margin-top: 0.25em;
