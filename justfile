@@ -168,8 +168,6 @@ update:
 	{{PHP-RUN}} composer --no-interaction update
 	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
 	{{NODE-RUN}} yarn upgrade --non-interactive --latest
-	# Downgrade router due to https://github.com/vueuse/vueuse/issues/3173
-	{{NODE-RUN}} yarn add --non-interactive '@vueuse/router@~10.1.2 || > 10.2.1'
 
 deploy:
 	cd app && yarn install --non-interactive --frozen-lockfile --production
