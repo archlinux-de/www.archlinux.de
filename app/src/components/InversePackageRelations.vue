@@ -41,5 +41,6 @@ const props = defineProps({
   }
 })
 
+// eslint-disable-next-line vue/no-setup-props-destructure
 const { data: relations } = useFetchPackageInverseDependencies(props.repository, props.architecture, props.name, props.type)
 </script>

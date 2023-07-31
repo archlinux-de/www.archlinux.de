@@ -31,5 +31,6 @@ const props = defineProps({
   }
 })
 
+// eslint-disable-next-line vue/no-setup-props-destructure
 const { data: suggestions } = useFetchPackages({ query: props.name, limit: props.limit })
 </script>
