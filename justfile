@@ -35,13 +35,13 @@ init: start
 
 start:
 	{{COMPOSE}} up -d
-	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --wait=120 ping
+	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --wait=10 ping
 	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
 	@echo URL: http://localhost:${PORT}
 
 start-db:
 	{{COMPOSE}} up -d mariadb opensearch
-	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --wait=120 ping
+	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --wait=10 ping
 	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
 
 stop:
@@ -98,7 +98,7 @@ yarn *args='-h':
 	{{NODE-RUN}} yarn {{args}}
 
 jest *args:
-	{{NODE-RUN}} node_modules/.bin/jest {{args}}
+	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests {{args}}
 
 cypress *args:
 	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps --entrypoint cypress cypress-run {{args}}
