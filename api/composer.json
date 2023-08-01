@@ -34,11 +34,11 @@
         "symfony/monolog-bundle": "^3.8.0",
         "symfony/property-access": "^6.3.2",
         "symfony/runtime": "^6.3.2",
-        "symfony/serializer": "^6.3.2",
+        "symfony/serializer": "^6.3.3",
         "symfony/string": "^6.3.2",
         "symfony/twig-bundle": "^6.3.0",
         "symfony/validator": "^6.3.2",
-        "symfony/yaml": "^6.3.0"
+        "symfony/yaml": "^6.3.3"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
