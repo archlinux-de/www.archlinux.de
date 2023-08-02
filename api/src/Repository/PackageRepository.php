@@ -117,7 +117,7 @@ class PackageRepository extends ServiceEntityRepository
 
     public function getSize(): int
     {
-        return $this->createQueryBuilder('package')
+        return (int)$this->createQueryBuilder('package')
             ->select('COUNT(package)')
             ->getQuery()
             ->getSingleScalarResult();

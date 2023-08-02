@@ -42,7 +42,7 @@ class NewsItemRepository extends ServiceEntityRepository
 
     public function getSize(): int
     {
-        return $this->createQueryBuilder('news')
+        return (int)$this->createQueryBuilder('news')
             ->select('COUNT(news)')
             ->getQuery()
             ->getSingleScalarResult();
