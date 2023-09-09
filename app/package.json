@@ -7,7 +7,7 @@
     "serve": "webpack serve --mode development --host 0.0.0.0 --port 8080 --allowed-hosts all --hot"
   },
   "dependencies": {
-    "@babel/core": "^7.22.15",
+    "@babel/core": "^7.22.17",
     "@babel/preset-env": "^7.22.15",
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@vue/compiler-sfc": "^3.3.4",
@@ -41,7 +41,7 @@
     "workbox-webpack-plugin": "^7.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
+    "eslint": "^8.49.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-compat": "^4.2.0",
     "eslint-plugin-cypress": "^2.14.0",
