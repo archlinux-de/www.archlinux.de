@@ -7,8 +7,8 @@
     "serve": "webpack serve --mode development --host 0.0.0.0 --port 8080 --allowed-hosts all --hot"
   },
   "dependencies": {
-    "@babel/core": "^7.22.19",
-    "@babel/preset-env": "^7.22.15",
+    "@babel/core": "^7.22.20",
+    "@babel/preset-env": "^7.22.20",
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@vue/compiler-sfc": "^3.3.4",
     "@vueuse/core": "^10.4.1",
