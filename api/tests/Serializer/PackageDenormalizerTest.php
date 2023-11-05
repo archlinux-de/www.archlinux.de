@@ -244,4 +244,45 @@ class PackageDenormalizerTest extends TestCase
         yield ['foo<bar@archlinux.org>', 'foo', 'bar@archlinux.org'];
         yield ['  foo bar   <bar@archlinux.org>  ', 'foo bar', 'bar@archlinux.org'];
     }
+
+    public function testLicensesAreSplitAtANDKeyword(): void
+    {
+        $repository = new Repository('core', 'x86_64');
+        $packageDenormalizer = new PackageDenormalizer();
+
+        $package = $packageDenormalizer->denormalize(
+            [
+                'NAME' => 'pacman',
+                'VERSION' => '5.2.1-4',
+                'ARCH' => 'x86_64',
+                'FILENAME' => 'pacman-5.2.1-4-x86_64.pkg.tar.zst',
+                'URL' => '',
+                'DESC' => 'A library-based package manager with dependency support',
+                'BUILDDATE' => 1578623077,
+                'CSIZE' => 856711,
+                'ISIZE' => 4623024,
+                'PACKAGER' => 'foo<foo@localhost>',
+                'SHA256SUM' => 'a3f6168d59005527b98139607db510fad42a685662f6e86975d941c8c3c476ab',
+                'FILES' => '',
+                'LICENSE' => [
+                    '(EPL-2.0 OR GPL-2.0-only OR LGPL-2.1-only)'
+                    . 'AND BSD-3-Clause AND MIT AND MIT-0 AND Apache-2.0 AND Ruby'
+                ]
+            ],
+            Package::class,
+            'pacman-database',
+            ['repository' => $repository]
+        );
+
+        $this->assertEquals(
+            [
+            'EPL-2.0 OR GPL-2.0-only OR LGPL-2.1-only',
+            'BSD-3-Clause',
+            'MIT',
+            'MIT-0',
+            'Apache-2.0',
+            'Ruby'],
+            $package->getLicenses()
+        );
+    }
 }

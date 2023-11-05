@@ -38,7 +38,7 @@ class PackageDenormalizer implements DenormalizerInterface
             ->setInstalledSize($data['ISIZE'])
             ->setPackager($this->createPackagerFromString($data['PACKAGER']))
             ->setSha256sum($data['SHA256SUM'])
-            ->setLicenses((array)($data['LICENSE'] ?? []))
+            ->setLicenses($this->createLicenseArray((array)($data['LICENSE'] ?? [])))
             ->setGroups((array)($data['GROUPS'] ?? []))
             ->setFiles(Files::createFromArray((array)($data['FILES'] ?? [])));
 
@@ -165,5 +165,21 @@ class PackageDenormalizer implements DenormalizerInterface
     public function getSupportedTypes(?string $format): array
     {
         return [Package::class => false];
+    }
+
+    /**
+     * @param string[] $licenses
+     * @return string[]
+     */
+    private function createLicenseArray(array $licenses): array
+    {
+        $result = [];
+        foreach ($licenses as $licenseString) {
+            foreach (preg_split('/\s*and\s*/i', $licenseString) ?: [] as $license) {
+                $result[] = trim($license, " \t\n\r\0\x0B()");
+            }
+        }
+
+        return $result;
     }
 }
