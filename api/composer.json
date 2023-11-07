@@ -31,7 +31,7 @@
         "symfony/html-sanitizer": "^6.3.7",
         "symfony/http-client": "^6.3.7",
         "symfony/lock": "^6.3.7",
-        "symfony/monolog-bundle": "^3.8.0",
+        "symfony/monolog-bundle": "^3.10.0",
         "symfony/property-access": "^6.3.2",
         "symfony/runtime": "^6.3.2",
         "symfony/serializer": "^6.3.7",
