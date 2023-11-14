@@ -18,7 +18,7 @@
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^2.11.0",
-        "doctrine/doctrine-migrations-bundle": "^3.2.4",
+        "doctrine/doctrine-migrations-bundle": "^3.3.0",
         "doctrine/orm": "^2.16.2",
         "league/iso3166": "^4.3.1",
         "maxmind-db/reader": "^1.11.0",
