@@ -57,7 +57,7 @@ class Release
 
     #[ORM\Column(type: 'bigint', nullable: true)]
     #[Assert\Range(min: 1, max: 4294967296)]
-    private ?int $fileLength = null;
+    private ?string $fileLength = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Length(max: 255)]
@@ -200,12 +200,12 @@ class Release
 
     public function getFileLength(): ?int
     {
-        return $this->fileLength;
+        return $this->fileLength ? (int) $this->fileLength : null;
     }
 
     public function setFileLength(?int $fileLength): Release
     {
-        $this->fileLength = $fileLength;
+        $this->fileLength = $fileLength ? (string) $fileLength : null;
         return $this;
     }
 

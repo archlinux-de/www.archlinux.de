@@ -13,6 +13,7 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\NoResultException;
 
@@ -60,7 +61,8 @@ class PackageRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('package')
             ->select('package', 'repository')
-            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
+            ->join('package.repository', 'repository')
+            ->where('repository.architecture = :architecture')
             ->orderBy('package.buildDate', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('architecture', $architecture)
@@ -76,8 +78,9 @@ class PackageRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('package')
             ->select('package', 'repository')
-            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
-            ->where('repository.testing = 0')
+            ->join('package.repository', 'repository')
+            ->where('repository.architecture = :architecture')
+            ->andWhere('repository.testing = 0')
             ->setParameter('architecture', $architecture)
             ->getQuery()
             ->getResult();
@@ -105,8 +108,9 @@ class PackageRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('package')
             ->select('package', 'repository')
-            ->join('package.repository', 'repository', 'WITH', 'repository.architecture = :architecture')
-            ->where('package.name = :pkgname')
+            ->join('package.repository', 'repository')
+            ->where('repository.architecture = :architecture')
+            ->andWhere('package.name = :pkgname')
             ->orderBy('repository.testing', 'ASC')
             ->setParameter('architecture', $architecture)
             ->setParameter('pkgname', $name)

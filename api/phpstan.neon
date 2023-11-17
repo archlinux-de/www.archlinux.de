@@ -15,12 +15,6 @@ parameters:
 	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		-
-			# Assertions ensure that int values are kept below PHP_INT_MAX
-			message: '#type mapping mismatch: database can contain string(\|null)? but property expects int(\|null)?#'
-			paths:
-				- src/Entity/Packages/Package.php
-				- src/Entity/Release.php
-		-
 			# ORM ensures correct types
 			message: '#Method .+ should return .+ but returns (array|mixed)#'
 			paths:

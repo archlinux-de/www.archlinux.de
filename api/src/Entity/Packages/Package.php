@@ -60,11 +60,11 @@ class Package
 
     #[ORM\Column(type: 'bigint')]
     #[Assert\Range(min: 0, max: 107374182400)]
-    private int $compressedSize = 0;
+    private string $compressedSize = '0';
 
     #[ORM\Column(type: 'bigint')]
     #[Assert\Range(min: 0, max: 107374182400)]
-    private int $installedSize = 0;
+    private string $installedSize = '0';
 
     #[ORM\Column(length: 64, nullable: true)]
     #[Assert\Regex('/^[0-9a-f]{64}$/')]
@@ -365,23 +365,23 @@ class Package
 
     public function getCompressedSize(): int
     {
-        return $this->compressedSize;
+        return (int) $this->compressedSize;
     }
 
     public function setCompressedSize(int $compressedSize): Package
     {
-        $this->compressedSize = $compressedSize;
+        $this->compressedSize = (string) $compressedSize;
         return $this;
     }
 
     public function getInstalledSize(): int
     {
-        return $this->installedSize;
+        return (int) $this->installedSize;
     }
 
     public function setInstalledSize(int $installedSize): Package
     {
-        $this->installedSize = $installedSize;
+        $this->installedSize = (string) $installedSize;
         return $this;
     }
 
