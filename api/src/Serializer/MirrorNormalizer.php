@@ -41,7 +41,8 @@ class MirrorNormalizer implements NormalizerInterface
                         'completionPct',
                         'durationStddev',
                         'ipv4',
-                        'ipv6'
+                        'ipv6',
+                        'popularity'
                     ]
                 ]
             )

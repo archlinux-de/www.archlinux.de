@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Service;
+
+use App\Entity\MirrorPopularity as Popularity;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+class MirrorPopularityFetcher implements \IteratorAggregate
+{
+    public function __construct(private string $mirrorStatisticsApiUrl, private HttpClientInterface $httpClient)
+    {
+    }
+
+    /**
+     * @return \Traversable<string, Popularity>
+     */
+    public function getIterator(): \Traversable
+    {
+        $count = 1;
+        $offset = 0;
+        $limit = 10000;
+
+        while ($count != 0) {
+            $response = $this->httpClient->request(
+                'GET',
+                $this->mirrorStatisticsApiUrl,
+                [
+                    'query' => ['offset' => $offset, 'limit' => $limit],
+                    'json' => true
+                ]
+            );
+            $content = $response->getContent();
+            $mirrorPopularityList = json_decode($content, true);
+            if (!is_array($mirrorPopularityList)) {
+                throw new \RuntimeException('Invalid mirrorPopularityList');
+            }
+
+            $count = 0;
+            foreach ($mirrorPopularityList['mirrorPopularities'] as $mirrorPopularity) {
+                yield $mirrorPopularity['url'] => new Popularity(
+                    $mirrorPopularity['popularity'],
+                    $mirrorPopularity['samples'],
+                    $mirrorPopularity['count']
+                );
+                $count++;
+            }
+            $offset += $count;
+            if ($count < $limit) {
+                break;
+            }
+        }
+    }
+}

@@ -33,7 +33,7 @@ class MirrorSearchRepository
 
             $bool['minimum_should_match'] = 1;
         } else {
-            $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.1]]];
+            $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.5]]];
         }
 
         $bool['must'][] = ['wildcard' => ['url' => 'https*']];
@@ -42,7 +42,17 @@ class MirrorSearchRepository
             [
                 'index' => $this->mirrorSearchIndexer->getIndexName(),
                 'body' => [
-                    'query' => ['bool' => $bool],
+                    'query' => [
+                        'function_score' => [
+                            'query' => ['bool' => $bool],
+                            'field_value_factor' => [
+                                'field' => 'popularity',
+                                'factor' => 0.1,
+                                'modifier' => 'sqrt',
+                                'missing' => 0
+                            ]
+                        ]
+                    ],
                     'sort' => $sort
                 ],
                 'from' => $offset,
@@ -95,7 +105,7 @@ class MirrorSearchRepository
         ];
 
         $bool = [];
-        $bool['should'][] = ['term' => ['country.code' => $countryCode]];
+        $bool['should'][] = ['term' => ['country.code' => ['value' => $countryCode, 'boost' => 0.5]]];
         if ($lastSync) {
             $bool['should'][] = [
                 'range' => [
@@ -113,7 +123,17 @@ class MirrorSearchRepository
             [
                 'index' => $this->mirrorSearchIndexer->getIndexName(),
                 'body' => [
-                    'query' => ['bool' => $bool],
+                    'query' => [
+                        'function_score' => [
+                            'query' => ['bool' => $bool],
+                            'field_value_factor' => [
+                                'field' => 'popularity',
+                                'factor' => 0.1,
+                                'modifier' => 'sqrt',
+                                'missing' => 0
+                            ]
+                        ]
+                    ],
                     'sort' => $sort
                 ],
                 'size' => $limit,

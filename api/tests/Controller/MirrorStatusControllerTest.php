@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Country;
 use App\Entity\Mirror;
+use App\Entity\MirrorPopularity as Popularity;
 use App\Tests\DatabaseSearchTestCase;
 
 /**
@@ -48,7 +49,8 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
             ->setScore(7.8)
             ->setLastSync(new \DateTime('2020-02-02'))
             ->setIpv4(true)
-            ->setIpv6(true);
+            ->setIpv6(true)
+            ->setPopularity(new Popularity(12.34, 1234, 512));
         $entityManager->persist($country);
         $entityManager->persist($mirror);
         $entityManager->flush();
@@ -76,6 +78,11 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
                 'lastSync' => '2020-02-02T00:00:00+00:00',
                 'ipv4' => true,
                 'ipv6' => true,
+                'popularity' => [
+                    'popularity' => 12.34,
+                    'samples' => 1234,
+                    'count' => 512
+                ],
                 'host' => '127.0.0.2'
             ],
             $jsonArray

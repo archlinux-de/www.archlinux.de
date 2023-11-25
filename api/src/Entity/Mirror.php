@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MirrorRepository;
+use App\Entity\MirrorPopularity as Popularity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -48,6 +49,10 @@ class Mirror
 
     #[ORM\Column(type: 'boolean')]
     private bool $ipv6 = false;
+
+    #[ORM\Embedded(class: Popularity::class)]
+    #[Assert\Valid]
+    private ?Popularity $popularity = null;
 
     public function __construct(string $url)
     {
@@ -181,6 +186,17 @@ class Mirror
     public function setIpv4(bool $ipv4): Mirror
     {
         $this->ipv4 = $ipv4;
+        return $this;
+    }
+
+    public function getPopularity(): ?Popularity
+    {
+        return $this->popularity;
+    }
+
+    public function setPopularity(?Popularity $popularity): Mirror
+    {
+        $this->popularity = $popularity;
         return $this;
     }
 }

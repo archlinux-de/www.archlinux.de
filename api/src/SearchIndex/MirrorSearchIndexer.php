@@ -26,7 +26,8 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
                             ]
                         ],
                         'score' => ['type' => 'float'],
-                        'lastSync' => ['type' => 'date']
+                        'lastSync' => ['type' => 'date'],
+                        'popularity' => ['type' => 'float'],
                     ]
                 ]
             ]
@@ -50,7 +51,8 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
                 'name' => $object->getCountry()->getName()
             ] : null,
             'score' => $object->getScore(),
-            'lastSync' => $object->getLastSync()->format(DATE_W3C)
+            'lastSync' => $object->getLastSync()->format(DATE_W3C),
+            'popularity' => $object->getPopularity()?->getPopularity(),
         ];
 
         return $paramsBody;
