@@ -40,9 +40,7 @@ class PackagePopularityFetcher implements \IteratorAggregate
                 yield $packagePopularity['name'] => new Popularity(
                     $packagePopularity['popularity'],
                     $packagePopularity['samples'],
-                    $packagePopularity['count'],
-                    $packagePopularity['startMonth'],
-                    $packagePopularity['endMonth']
+                    $packagePopularity['count']
                 );
                 $count++;
             }
