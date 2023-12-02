@@ -16,7 +16,7 @@ class PackagesControllerTest extends DatabaseSearchTestCase
 {
     public function testOpenSearchAction(): void
     {
-        $client = static::createClient();
+        $client = static::getClient();
 
         $client->request('GET', '/packages/opensearch');
 
