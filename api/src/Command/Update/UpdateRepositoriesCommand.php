@@ -30,7 +30,7 @@ class UpdateRepositoriesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');
-        ini_set('memory_limit', '-1');
+        ini_set('memory_limit', '8G');
 
         $this->repositoryManager->createNewRepositories();
         if ($this->repositoryManager->removeObsoleteRepositories()) {

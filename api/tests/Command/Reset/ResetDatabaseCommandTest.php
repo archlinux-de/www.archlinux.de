@@ -2,6 +2,7 @@
 
 namespace App\Tests\Command\Reset;
 
+use Symfony\Component\HttpKernel\KernelInterface;
 use SymfonyDatabaseTest\DatabaseTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -13,6 +14,7 @@ class ResetDatabaseCommandTest extends DatabaseTestCase
 {
     public function testCommand(): void
     {
+        $this->assertInstanceOf(KernelInterface::class, static::$kernel);
         $command = (new Application(static::$kernel))->find('app:reset:database');
         $commandTester = new CommandTester($command);
         $commandTester->execute(

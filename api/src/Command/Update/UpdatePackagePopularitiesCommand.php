@@ -36,7 +36,7 @@ class UpdatePackagePopularitiesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');
-        ini_set('memory_limit', '4G');
+        ini_set('memory_limit', '8G');
 
         /**
          * @var string $name

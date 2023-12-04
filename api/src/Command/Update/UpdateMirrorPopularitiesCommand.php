@@ -37,7 +37,7 @@ class UpdateMirrorPopularitiesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('mirrors.lock');
-        ini_set('memory_limit', '4G');
+        ini_set('memory_limit', '8G');
 
         /**
          * @var string $url

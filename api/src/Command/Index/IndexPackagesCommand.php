@@ -32,7 +32,7 @@ class IndexPackagesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->lock('packages.lock');
-        ini_set('memory_limit', '4G');
+        ini_set('memory_limit', '8G');
 
         if ($this->client->indices()->exists(['index' => $this->packageSearchIndexer->getIndexName()])) {
             $this->client->indices()->delete(['index' => $this->packageSearchIndexer->getIndexName()]);
