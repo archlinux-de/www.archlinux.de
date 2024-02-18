@@ -60,7 +60,8 @@ class PackageDetailsControllerTest extends DatabaseTestCase
                 'sourceUrl' => 'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/tree/5.0.2-2',
                 'sourceChangelogUrl' =>
                     'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/commits/5.0.2-2',
-                'popularity' => 0
+                'popularity' => 0,
+                'issueUrl' => 'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/issues'
             ],
             json_decode($client->getResponse()->getContent(), true)
         );

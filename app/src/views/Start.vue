@@ -74,9 +74,9 @@
           </li>
           <li><a href="https://www.archlinux.org/packages/differences/" rel="noopener">Architektur-Unterschiede</a></li>
           <li><a href="https://aur.archlinux.de/">AUR</a></li>
-          <li><a href="https://bugs.archlinux.org/" rel="noopener">Bug Tracker</a></li>
-          <li><a href="https://www.archlinux.org/svn/" rel="noopener">SVN Repositories</a></li>
-          <li><a href="https://projects.archlinux.org/" rel="noopener">Projekte in Git</a></li>
+          <li><a href="https://gitlab.archlinux.org/groups/archlinux/packaging/packages/-/issues" rel="noopener">Issue Tracker</a></li>
+          <li><a href="https://gitlab.archlinux.org/archlinux/packaging/packages" rel="noopener">Git Repositories</a></li>
+          <li><a href="https://gitlab.archlinux.org/" rel="noopener">Projekte in Git</a></li>
           <li><a href="https://github.com/archlinux-de" rel="nofollow noopener">archlinux.de Projekte in Git</a></li>
           <li><a href="https://wiki.archlinux.org/index.php/DeveloperWiki" rel="noopener">Entwickler-Wiki</a></li>
         </ul>

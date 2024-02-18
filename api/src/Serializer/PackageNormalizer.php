@@ -74,6 +74,8 @@ class PackageNormalizer implements NormalizerInterface
         $data['sourceUrl'] = $this->createGitlabLink('tree', $object);
         $data['sourceChangelogUrl'] = $this->createGitlabLink('commits', $object);
 
+        $data['issueUrl'] = $this->createGitlabIssueLink($object);
+
         return $data;
     }
 
@@ -87,6 +89,15 @@ class PackageNormalizer implements NormalizerInterface
             $this->createGitlabPath($package->getBase()),
             $type,
             $this->createGitlabTag($package->getVersion())
+        );
+    }
+
+    private function createGitlabIssueLink(Package $package): string
+    {
+        return sprintf(
+            '%s/%s/-/issues',
+            $this->gitlabUrl,
+            $this->createGitlabPath($package->getBase())
         );
     }
 

@@ -78,7 +78,8 @@ class PackageNormalizerTest extends KernelTestCase
                 'sourceUrl' => 'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/tree/6.0-1',
                 'sourceChangelogUrl' =>
                     'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/commits/6.0-1',
-                'popularity' => 0
+                'popularity' => 0,
+                'issueUrl' => 'https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/issues'
             ],
             $jsonArray
         );

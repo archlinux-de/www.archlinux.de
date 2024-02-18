@@ -71,11 +71,10 @@
             <td><a class="p-0" :href="pkg.sourceUrl" rel="nofollow noopener" target="_blank">Quelldateien</a>, <a class="p-0" :href="pkg.sourceChangelogUrl" rel="nofollow noopener" target="_blank">Änderungshistorie</a>
             </td>
           </tr>
-          <tr>
+          <tr v-if="pkg.issueUrl">
             <th>Bugs</th>
             <td>
-              <a class="p-0" :href="'https://bugs.archlinux.org/index.php?string=%5B'+ pkg.name +'%5D'"
-                 rel="noopener">Bug-Tracker</a>
+              <a class="p-0" :href="pkg.issueUrl" rel="noopener">Issue-Tracker</a>
             </td>
           </tr>
           <tr>
