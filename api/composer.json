@@ -19,7 +19,7 @@
         "ext-pdo_mysql": "*",
         "doctrine/doctrine-bundle": "^2.11.3",
         "doctrine/doctrine-migrations-bundle": "^3.3.0",
-        "doctrine/orm": "^2.18.2",
+        "doctrine/orm": "^2.19.0",
         "league/iso3166": "^4.3.1",
         "maxmind-db/reader": "^1.11.1",
         "opensearch-project/opensearch-php": "^2.2.0",
