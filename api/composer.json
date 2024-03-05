@@ -29,7 +29,7 @@
         "symfony/flex": "^2.4.5",
         "symfony/framework-bundle": "^7.0.4",
         "symfony/html-sanitizer": "^7.0.4",
-        "symfony/http-client": "^7.0.4",
+        "symfony/http-client": "^7.0.5",
         "symfony/lock": "^7.0.3",
         "symfony/monolog-bundle": "^3.10.0",
         "symfony/property-access": "^7.0.4",
@@ -37,7 +37,7 @@
         "symfony/serializer": "^7.0.4",
         "symfony/string": "^7.0.4",
         "symfony/twig-bundle": "^7.0.4",
-        "symfony/validator": "^7.0.4",
+        "symfony/validator": "^7.0.5",
         "symfony/yaml": "^7.0.3"
     },
     "require-dev": {
