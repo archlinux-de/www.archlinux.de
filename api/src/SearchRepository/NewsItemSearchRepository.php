@@ -28,8 +28,18 @@ class NewsItemSearchRepository
         if ($query) {
             $bool['should'][] = ['wildcard' => ['title' => ['value' => '*' . $query . '*', 'boost' => 2]]];
             $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
+            $bool['should'][] = ['wildcard' => ['author' => '*' . $query . '*']];
 
-            $bool['should'][] = ['multi_match' => ['query' => $query]];
+            $bool['should'][] = [
+                'multi_match' => [
+                    'query' => $query,
+                    'fields' => [
+                        'title^2',
+                        'description',
+                        'author',
+                    ]
+                ]
+            ];
 
             $bool['minimum_should_match'] = 1;
         }

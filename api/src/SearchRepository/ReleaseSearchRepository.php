@@ -30,7 +30,16 @@ class ReleaseSearchRepository
             $bool['should'][] = ['wildcard' => ['kernelVersion' => '*' . $query . '*']];
             $bool['should'][] = ['wildcard' => ['info' => '*' . $query . '*']];
 
-            $bool['should'][] = ['multi_match' => ['query' => $query]];
+            $bool['should'][] = [
+                'multi_match' => [
+                    'query' => $query,
+                    'fields' => [
+                        'version^2',
+                        'kernelVersion',
+                        'info',
+                    ]
+                ]
+            ];
 
             $bool['minimum_should_match'] = 1;
         }

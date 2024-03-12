@@ -29,7 +29,15 @@ class MirrorSearchRepository
             $bool['should'][] = ['wildcard' => ['url' => '*' . $query . '*']];
             $bool['should'][] = ['wildcard' => ['country.name' => '*' . $query . '*']];
 
-            $bool['should'][] = ['multi_match' => ['query' => $query]];
+            $bool['should'][] = [
+                'multi_match' => [
+                    'query' => $query,
+                    'fields' => [
+                        'url',
+                        'country.name',
+                    ]
+                ]
+            ];
 
             $bool['minimum_should_match'] = 1;
         } else {
