@@ -2,7 +2,8 @@ FROM php:8.3-fpm-alpine
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-RUN apk add --no-cache libarchive git pacman
+RUN apk add --no-cache libarchive git
+RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/community pacman
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 RUN install-php-extensions opcache ffi apcu intl pdo_mysql

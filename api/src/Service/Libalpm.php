@@ -17,7 +17,7 @@ class Libalpm
             '
             int alpm_pkg_vercmp(const char *a, const char *b);
             ',
-            'libalpm.so.13'
+            'libalpm.so.14'
         );
     }
 
