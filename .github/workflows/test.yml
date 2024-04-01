@@ -28,15 +28,15 @@ jobs:
       - name: Maintain Composer cache
         uses: actions/cache@v4
         with:
-          path: api/vendor
+          path: api/.cache/composer
           key: composer-${{ hashFiles('api/composer.lock') }}
           restore-keys: composer-
-      - name: Maintain Yarn cache
+      - name: Maintain pnpm cache
         uses: actions/cache@v4
         with:
-          path: app/node_modules
-          key: yarn-${{ hashFiles('app/yarn.lock') }}
-          restore-keys: yarn-
+          path: app/.cache/node
+          key: pnpm-${{ hashFiles('app/pnpm-lock.yaml') }}
+          restore-keys: pnpm-
       - name: Install dependencies
         run: just install
       - name: Run ${{ matrix.type }}
