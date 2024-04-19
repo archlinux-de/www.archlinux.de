@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "781f280d0725843a64467a9ebf8389bf",
+    "content-hash": "aa555955f5532dc530d6a75eaf9dc155",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -101,16 +101,16 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "420480fc085bc65f3c956af13abe8e7546f94813"
+                "reference": "d8af7f248c74f195f7347424600fd9e17b57af59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/420480fc085bc65f3c956af13abe8e7546f94813",
-                "reference": "420480fc085bc65f3c956af13abe8e7546f94813",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/d8af7f248c74f195f7347424600fd9e17b57af59",
+                "reference": "d8af7f248c74f195f7347424600fd9e17b57af59",
                 "shasum": ""
             },
             "require": {
@@ -167,7 +167,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/collections/issues",
-                "source": "https://github.com/doctrine/collections/tree/2.2.1"
+                "source": "https://github.com/doctrine/collections/tree/2.2.2"
             },
             "funding": [
                 {
@@ -183,7 +183,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-05T22:28:45+00:00"
+            "time": "2024-04-18T06:56:21+00:00"
         },
         {
             "name": "doctrine/common",
@@ -5557,16 +5557,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.9.2",
+            "version": "v3.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "856cb5a6cfd6f3e4dc1f6c9a8f54e259503f7cf3"
+                "reference": "a842d75fed59cdbcbd3a3ad7fb9eb768fc350d58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/856cb5a6cfd6f3e4dc1f6c9a8f54e259503f7cf3",
-                "reference": "856cb5a6cfd6f3e4dc1f6c9a8f54e259503f7cf3",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/a842d75fed59cdbcbd3a3ad7fb9eb768fc350d58",
+                "reference": "a842d75fed59cdbcbd3a3ad7fb9eb768fc350d58",
                 "shasum": ""
             },
             "require": {
@@ -5620,7 +5620,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.9.2"
+                "source": "https://github.com/twigphp/Twig/tree/v3.9.3"
             },
             "funding": [
                 {
@@ -5632,7 +5632,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-17T14:16:25+00:00"
+            "time": "2024-04-18T11:59:33+00:00"
         }
     ],
     "packages-dev": [
@@ -6082,16 +6082,16 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "1.3.66",
+            "version": "1.3.69",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "45aa4438527ef1ec84c1fca1355c53a5857a1e69"
+                "reference": "ac567407e750b94e2133dace33b19082ad9ed751"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/45aa4438527ef1ec84c1fca1355c53a5857a1e69",
-                "reference": "45aa4438527ef1ec84c1fca1355c53a5857a1e69",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/ac567407e750b94e2133dace33b19082ad9ed751",
+                "reference": "ac567407e750b94e2133dace33b19082ad9ed751",
                 "shasum": ""
             },
             "require": {
@@ -6148,9 +6148,9 @@
             "description": "Doctrine extensions for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
-                "source": "https://github.com/phpstan/phpstan-doctrine/tree/1.3.66"
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/1.3.69"
             },
-            "time": "2024-04-15T07:24:11+00:00"
+            "time": "2024-04-18T12:56:14+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
