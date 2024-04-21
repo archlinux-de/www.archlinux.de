@@ -3361,8 +3361,8 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
-  nwsapi@2.2.7:
-    resolution: {integrity: sha512-ub5E4+FBPKwAZx0UwIQOjYWGHTEq5sPqHQNRN8Z9e4A7u3Tj1weLJsL59yH9vmvqEtBHaOmT6cYQKIZOxp35FQ==}
+  nwsapi@2.2.8:
+    resolution: {integrity: sha512-GU/I3lTEFQ9mkEm07Q7HvdRajss8E1wVMGOk3/lHl60QPseG+B3BIQY+JUjYWw7gF8cCeoQCXd4N7DB7avw0Rg==}
 
   object-inspect@1.13.1:
     resolution: {integrity: sha512-5qoj1RUiKOMsCCNLV1CBiPYE10sziTsnmNxkAI/rZhiD63CF7IqdFGC/XzjWjpSgLf0LxXX3bDFIh0E18f6UhQ==}
@@ -8453,7 +8453,7 @@ snapshots:
       http-proxy-agent: 5.0.0
       https-proxy-agent: 5.0.1
       is-potential-custom-element-name: 1.0.1
-      nwsapi: 2.2.7
+      nwsapi: 2.2.8
       parse5: 7.1.2
       saxes: 6.0.0
       symbol-tree: 3.2.4
@@ -8702,7 +8702,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nwsapi@2.2.7: {}
+  nwsapi@2.2.8: {}
 
   object-inspect@1.13.1: {}
 
