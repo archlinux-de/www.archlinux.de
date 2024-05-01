@@ -75,11 +75,11 @@ importers:
         specifier: ^6.1.1
         version: 6.1.1
       sass:
-        specifier: ^1.75.0
-        version: 1.75.0
+        specifier: ^1.76.0
+        version: 1.76.0
       sass-loader:
         specifier: ^14.2.1
-        version: 14.2.1(sass@1.75.0)(webpack@5.91.0(webpack-cli@5.1.4))
+        version: 14.2.1(sass@1.76.0)(webpack@5.91.0(webpack-cli@5.1.4))
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.91.0(webpack-cli@5.1.4))
@@ -110,7 +110,7 @@ importers:
         version: 8.57.0
       eslint-config-standard:
         specifier: ^17.1.0
-        version: 17.1.0(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint-plugin-n@17.3.1(eslint@8.57.0))(eslint-plugin-promise@6.1.1(eslint@8.57.0))(eslint@8.57.0)
+        version: 17.1.0(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint-plugin-n@17.4.0(eslint@8.57.0))(eslint-plugin-promise@6.1.1(eslint@8.57.0))(eslint@8.57.0)
       eslint-plugin-compat:
         specifier: ^4.2.0
         version: 4.2.0(eslint@8.57.0)
@@ -121,8 +121,8 @@ importers:
         specifier: ^2.29.1
         version: 2.29.1(eslint@8.57.0)
       eslint-plugin-n:
-        specifier: ^17.3.1
-        version: 17.3.1(eslint@8.57.0)
+        specifier: ^17.4.0
+        version: 17.4.0(eslint@8.57.0)
       eslint-plugin-promise:
         specifier: ^6.1.1
         version: 6.1.1(eslint@8.57.0)
@@ -932,14 +932,14 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/json-pack@1.0.2':
-    resolution: {integrity: sha512-4KMApTgb1Hvjz9Ue7unziJ1xNy3k6d2erp0hz1iXryXsf6LEM3KwN6YrfbqT0vqkUO8Tu+CSnvMia9cWX6YGVw==}
+  '@jsonjoy.com/json-pack@1.0.3':
+    resolution: {integrity: sha512-Q0SPAdmK6s5Fe3e1kcNvwNyk6e2+CxM8XZdGbf4abZG7nUO05KSie3/iX29loTBuY+75uVP6RixDSPVpotfzmQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/util@1.1.0':
-    resolution: {integrity: sha512-Yz+xITJ3Y/w0DBISwPkBETP5/cITHXscjgQNZIkfrVz1V7/ahJY8vw+T+LZy/KtXgKuUWqu4GALAQ3bhGt9J8A==}
+  '@jsonjoy.com/util@1.1.2':
+    resolution: {integrity: sha512-HOGa9wtE6LEz2I5mMQ2pMSjth85PmD71kPbsecs02nEUq3/Kw0wRK3gmZn5BCEB8mFLXByqPxjHgApoMwIPMKQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -947,8 +947,8 @@ packages:
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
 
-  '@mdn/browser-compat-data@5.5.23':
-    resolution: {integrity: sha512-nIy38qL3nfNcGOz5J2BJQpBXa7vM9QO1+wbyvqqS89lgNTWE8Q10whLsmE0sTVBooXiEaRc4fVME5IXjCYiHAw==}
+  '@mdn/browser-compat-data@5.5.24':
+    resolution: {integrity: sha512-8z/7mkez6xKhbUtmwVRrSuZ28wv3VpOWVvA8ykdovbC5kFyxlJ2QWsfRjpe+f50tirdPC7hN7TZO5eZfTvUqhg==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2084,8 +2084,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.4.751:
-    resolution: {integrity: sha512-2DEPi++qa89SMGRhufWTiLmzqyuGmNF3SK4+PQetW1JKiZdEpF4XQonJXJCzyuYSA6mauiMhbyVhqYAP45Hvfw==}
+  electron-to-chromium@1.4.752:
+    resolution: {integrity: sha512-P3QJreYI/AUTcfBVrC4zy9KvnZWekViThgQMX/VpJ+IsOBbcX5JFpORM4qWapwWQ+agb2nYAOyn/4PMXOk0m2Q==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -2247,8 +2247,8 @@ packages:
       '@typescript-eslint/parser':
         optional: true
 
-  eslint-plugin-n@17.3.1:
-    resolution: {integrity: sha512-25+HTtKe1F8U/M4ERmdzbz/xkm/gaY0OYC8Fcv1z/WvpLJ8Xfh9LzJ13JV5uj4QyCUD8kOPJrNjn/3y+tc57Vw==}
+  eslint-plugin-n@17.4.0:
+    resolution: {integrity: sha512-RtgGgNpYxECwE9dFr+D66RtbN0B8r/fY6ZF8EVsmK2YnZxE8/n9LNQhgnkL9z37UFZjYVmvMuC32qu7fQBsLVQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: '>=8.23.0'
@@ -2543,8 +2543,8 @@ packages:
     resolution: {integrity: sha512-926gJqg+4mkxwYKiFvoomM4J0kWESfk3qfTvRL2/oc/tK/eTDBbrfcKnSa2KtfdxB5onoL7D3A3qIHQFpd4+UA==}
     engines: {node: '>=18'}
 
-  globalthis@1.0.3:
-    resolution: {integrity: sha512-sFdI5LyBiNTHjRd7cGPWapiHWMOXKyuBNX/cWJ3NfzrZQVa8GI/8cofCl74AOVqq9W5kNmguTIzJ/1s2gyI9wA==}
+  globalthis@1.0.4:
+    resolution: {integrity: sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==}
     engines: {node: '>= 0.4'}
 
   globby@11.1.0:
@@ -3274,8 +3274,8 @@ packages:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
     engines: {node: '>= 0.6'}
 
-  memfs@4.9.1:
-    resolution: {integrity: sha512-36cVYFMaa9HNEYyvkyKCwker8DBmOdjWLrfekE/cHEKJ806fCfKNVhOJNvoyV/CrGSZDtfQPbhn0Zid0gbH0Hw==}
+  memfs@4.9.2:
+    resolution: {integrity: sha512-f16coDZlTG1jskq3mxarwB+fGRrd0uXWt+o1WIhRfOwbXQZqUDsTVxQBFK9JjRQHblg8eAG2JSbprDXKjc7ijQ==}
     engines: {node: '>= 4.0.0'}
 
   meow@13.2.0:
@@ -4026,8 +4026,8 @@ packages:
       webpack:
         optional: true
 
-  sass@1.75.0:
-    resolution: {integrity: sha512-ShMYi3WkrDWxExyxSZPst4/okE9ts46xZmJDSawJQrnte7M1V9fScVB+uNXOVKRBt0PggHOwoZcn8mYX4trnBw==}
+  sass@1.76.0:
+    resolution: {integrity: sha512-nc3LeqvF2FNW5xGF1zxZifdW3ffIz5aBb7I7tSvOoNu7z1RQ6pFt9MBuiPtjgaI62YWrM/txjWlOCFiGtf2xpw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -4135,8 +4135,8 @@ packages:
   sockjs@0.3.24:
     resolution: {integrity: sha512-GJgLTZ7vYb/JtPSSZ10hsOYIvEYsjbNU+zPdIHcUaWVNUEPivzxku31865sSSud0Da0W4lEeOPlmw93zLQchuQ==}
 
-  sonic-forest@1.0.0:
-    resolution: {integrity: sha512-yFO2N4uTUFtgKLw03WWFpN1iEwZySweMsa18XN3Kt0yYrlmVHunC2ZgM+437zDoKISAJHcH3Cg18U7d6tuSgSQ==}
+  sonic-forest@1.0.1:
+    resolution: {integrity: sha512-YWIS40U3Y7N2e5gxkQiz40eisSsi7s+plZpqU6CSOehjybSDGkhFIMXmr5dmM7GaqqE+VZDihfTrxxdb0of/wA==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -5882,22 +5882,21 @@ snapshots:
     dependencies:
       tslib: 2.6.2
 
-  '@jsonjoy.com/json-pack@1.0.2(tslib@2.6.2)':
+  '@jsonjoy.com/json-pack@1.0.3(tslib@2.6.2)':
     dependencies:
       '@jsonjoy.com/base64': 1.1.1(tslib@2.6.2)
-      '@jsonjoy.com/util': 1.1.0(tslib@2.6.2)
+      '@jsonjoy.com/util': 1.1.2(tslib@2.6.2)
       hyperdyperid: 1.2.0
       thingies: 1.21.0(tslib@2.6.2)
       tslib: 2.6.2
 
-  '@jsonjoy.com/util@1.1.0(tslib@2.6.2)':
+  '@jsonjoy.com/util@1.1.2(tslib@2.6.2)':
     dependencies:
-      hyperdyperid: 1.2.0
       tslib: 2.6.2
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 
-  '@mdn/browser-compat-data@5.5.23': {}
+  '@mdn/browser-compat-data@5.5.24': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -6509,7 +6508,7 @@ snapshots:
 
   ast-metadata-inferer@0.8.0:
     dependencies:
-      '@mdn/browser-compat-data': 5.5.23
+      '@mdn/browser-compat-data': 5.5.24
 
   astral-regex@2.0.0: {}
 
@@ -6670,7 +6669,7 @@ snapshots:
   browserslist@4.23.0:
     dependencies:
       caniuse-lite: 1.0.30001614
-      electron-to-chromium: 1.4.751
+      electron-to-chromium: 1.4.752
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.23.0)
 
@@ -7184,7 +7183,7 @@ snapshots:
     dependencies:
       jake: 10.8.7
 
-  electron-to-chromium@1.4.751: {}
+  electron-to-chromium@1.4.752: {}
 
   emittery@0.13.1: {}
 
@@ -7232,7 +7231,7 @@ snapshots:
       function.prototype.name: 1.1.6
       get-intrinsic: 1.2.4
       get-symbol-description: 1.0.2
-      globalthis: 1.0.3
+      globalthis: 1.0.4
       gopd: 1.0.1
       has-property-descriptors: 1.0.2
       has-proto: 1.0.3
@@ -7315,11 +7314,11 @@ snapshots:
       eslint: 8.57.0
       semver: 7.6.0
 
-  eslint-config-standard@17.1.0(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint-plugin-n@17.3.1(eslint@8.57.0))(eslint-plugin-promise@6.1.1(eslint@8.57.0))(eslint@8.57.0):
+  eslint-config-standard@17.1.0(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint-plugin-n@17.4.0(eslint@8.57.0))(eslint-plugin-promise@6.1.1(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       eslint: 8.57.0
       eslint-plugin-import: 2.29.1(eslint@8.57.0)
-      eslint-plugin-n: 17.3.1(eslint@8.57.0)
+      eslint-plugin-n: 17.4.0(eslint@8.57.0)
       eslint-plugin-promise: 6.1.1(eslint@8.57.0)
 
   eslint-import-resolver-node@0.3.9:
@@ -7341,7 +7340,7 @@ snapshots:
 
   eslint-plugin-compat@4.2.0(eslint@8.57.0):
     dependencies:
-      '@mdn/browser-compat-data': 5.5.23
+      '@mdn/browser-compat-data': 5.5.24
       ast-metadata-inferer: 0.8.0
       browserslist: 4.23.0
       caniuse-lite: 1.0.30001614
@@ -7387,7 +7386,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-n@17.3.1(eslint@8.57.0):
+  eslint-plugin-n@17.4.0(eslint@8.57.0):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.57.0)
       enhanced-resolve: 5.16.0
@@ -7772,9 +7771,10 @@ snapshots:
 
   globals@15.1.0: {}
 
-  globalthis@1.0.3:
+  globalthis@1.0.4:
     dependencies:
       define-properties: 1.2.1
+      gopd: 1.0.1
 
   globby@11.1.0:
     dependencies:
@@ -8679,11 +8679,11 @@ snapshots:
 
   media-typer@0.3.0: {}
 
-  memfs@4.9.1:
+  memfs@4.9.2:
     dependencies:
-      '@jsonjoy.com/json-pack': 1.0.2(tslib@2.6.2)
-      '@jsonjoy.com/util': 1.1.0(tslib@2.6.2)
-      sonic-forest: 1.0.0(tslib@2.6.2)
+      '@jsonjoy.com/json-pack': 1.0.3(tslib@2.6.2)
+      '@jsonjoy.com/util': 1.1.2(tslib@2.6.2)
+      sonic-forest: 1.0.1(tslib@2.6.2)
       tslib: 2.6.2
 
   meow@13.2.0: {}
@@ -9370,14 +9370,14 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sass-loader@14.2.1(sass@1.75.0)(webpack@5.91.0(webpack-cli@5.1.4)):
+  sass-loader@14.2.1(sass@1.76.0)(webpack@5.91.0(webpack-cli@5.1.4)):
     dependencies:
       neo-async: 2.6.2
     optionalDependencies:
-      sass: 1.75.0
+      sass: 1.76.0
       webpack: 5.91.0(webpack-cli@5.1.4)
 
-  sass@1.75.0:
+  sass@1.76.0:
     dependencies:
       chokidar: 3.6.0
       immutable: 4.3.5
@@ -9519,7 +9519,7 @@ snapshots:
       uuid: 8.3.2
       websocket-driver: 0.7.4
 
-  sonic-forest@1.0.0(tslib@2.6.2):
+  sonic-forest@1.0.1(tslib@2.6.2):
     dependencies:
       tslib: 2.6.2
 
@@ -10103,7 +10103,7 @@ snapshots:
   webpack-dev-middleware@7.2.1(webpack@5.91.0(webpack-cli@5.1.4)):
     dependencies:
       colorette: 2.0.20
-      memfs: 4.9.1
+      memfs: 4.9.2
       mime-types: 2.1.35
       on-finished: 2.4.1
       range-parser: 1.2.1
