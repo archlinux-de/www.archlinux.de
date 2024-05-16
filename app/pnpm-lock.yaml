@@ -2080,8 +2080,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.4.768:
-    resolution: {integrity: sha512-z2U3QcvNuxdkk33YV7R1bVMNq7fL23vq3WfO5BHcqrm4TnDGReouBfYKLEFh5umoK1XACjEwp8mmnhXk2EJigw==}
+  electron-to-chromium@1.4.772:
+    resolution: {integrity: sha512-jFfEbxR/abTTJA3ci+2ok1NTuOBBtB4jH+UT6PUmRN+DY3WSD4FFRsgoVQ+QNIJ0T7wrXwzsWCI2WKC46b++2A==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -6663,7 +6663,7 @@ snapshots:
   browserslist@4.23.0:
     dependencies:
       caniuse-lite: 1.0.30001618
-      electron-to-chromium: 1.4.768
+      electron-to-chromium: 1.4.772
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.0)
 
@@ -7177,7 +7177,7 @@ snapshots:
     dependencies:
       jake: 10.9.1
 
-  electron-to-chromium@1.4.768: {}
+  electron-to-chromium@1.4.772: {}
 
   emittery@0.13.1: {}
 
