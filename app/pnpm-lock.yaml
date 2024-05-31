@@ -75,11 +75,11 @@ importers:
         specifier: ^6.1.1
         version: 6.1.1
       sass:
-        specifier: ^1.77.3
-        version: 1.77.3
+        specifier: ^1.77.4
+        version: 1.77.4
       sass-loader:
         specifier: ^14.2.1
-        version: 14.2.1(sass@1.77.3)(webpack@5.91.0(webpack-cli@5.1.4))
+        version: 14.2.1(sass@1.77.4)(webpack@5.91.0(webpack-cli@5.1.4))
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.91.0(webpack-cli@5.1.4))
@@ -1074,8 +1074,8 @@ packages:
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
-  '@types/express-serve-static-core@4.19.2':
-    resolution: {integrity: sha512-dPSEQElyVJ97BuGduAqQjpBocZWAs0GR94z+ptL7JXQJeJdHw2WBG3EWdFrK36b8Q6j8P4cXOMhgUoi0IIfIsg==}
+  '@types/express-serve-static-core@4.19.3':
+    resolution: {integrity: sha512-KOzM7MhcBFlmnlr/fzISFF5vGWVSvN6fTd4T+ExOt08bA/dA5kpSzY52nMsI1KDFmUREpJelPYyuslLRSjjgCg==}
 
   '@types/express@4.17.21':
     resolution: {integrity: sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==}
@@ -2080,8 +2080,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.4.785:
-    resolution: {integrity: sha512-V94FSLwW6V1JYeYT/pl23zIdwiAbeod7gBjyud2uhuWTa2yV3gZ4IaWt6l0t808y4l6NwOspyR5hiENGrYQqvA==}
+  electron-to-chromium@1.4.787:
+    resolution: {integrity: sha512-d0EFmtLPjctczO3LogReyM2pbBiiZbnsKnGF+cdZhsYzHm/A0GV7W94kqzLD8SN4O3f3iHlgLUChqghgyznvCQ==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -4018,8 +4018,8 @@ packages:
       webpack:
         optional: true
 
-  sass@1.77.3:
-    resolution: {integrity: sha512-WJHo+jmFp0dwRuymPmIovuxHaBntcCyja5hCB0yYY9wWrViEp4kF5Cdai98P72v6FzroPuABqu+ddLMbQWmwzA==}
+  sass@1.77.4:
+    resolution: {integrity: sha512-vcF3Ckow6g939GMA4PeU7b2K/9FALXk2KF9J87txdHzXbUF9XRQRwSxcAs/fGaTnJeBFd7UoV22j3lzMLdM0Pw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -4581,8 +4581,8 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  vue-demi@0.14.7:
-    resolution: {integrity: sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==}
+  vue-demi@0.14.8:
+    resolution: {integrity: sha512-Uuqnk9YE9SsWeReYqK2alDI5YzciATE0r2SkA6iMAtuXvNTMNACJLJEXNXaEy94ECuBe4Sk6RzRU80kjdbIo1Q==}
     engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
@@ -6013,7 +6013,7 @@ snapshots:
 
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
-      '@types/express-serve-static-core': 4.19.2
+      '@types/express-serve-static-core': 4.19.3
       '@types/node': 20.12.13
 
   '@types/connect@3.4.38':
@@ -6034,7 +6034,7 @@ snapshots:
 
   '@types/estree@1.0.5': {}
 
-  '@types/express-serve-static-core@4.19.2':
+  '@types/express-serve-static-core@4.19.3':
     dependencies:
       '@types/node': 20.12.13
       '@types/qs': 6.9.15
@@ -6044,7 +6044,7 @@ snapshots:
   '@types/express@4.17.21':
     dependencies:
       '@types/body-parser': 1.19.5
-      '@types/express-serve-static-core': 4.19.2
+      '@types/express-serve-static-core': 4.19.3
       '@types/qs': 6.9.15
       '@types/serve-static': 1.15.7
 
@@ -6226,7 +6226,7 @@ snapshots:
       '@types/web-bluetooth': 0.0.20
       '@vueuse/metadata': 10.10.0
       '@vueuse/shared': 10.10.0(vue@3.4.27)
-      vue-demi: 0.14.7(vue@3.4.27)
+      vue-demi: 0.14.8(vue@3.4.27)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -6244,7 +6244,7 @@ snapshots:
   '@vueuse/router@10.10.0(vue-router@4.3.2(vue@3.4.27))(vue@3.4.27)':
     dependencies:
       '@vueuse/shared': 10.10.0(vue@3.4.27)
-      vue-demi: 0.14.7(vue@3.4.27)
+      vue-demi: 0.14.8(vue@3.4.27)
       vue-router: 4.3.2(vue@3.4.27)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -6252,7 +6252,7 @@ snapshots:
 
   '@vueuse/shared@10.10.0(vue@3.4.27)':
     dependencies:
-      vue-demi: 0.14.7(vue@3.4.27)
+      vue-demi: 0.14.8(vue@3.4.27)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -6663,7 +6663,7 @@ snapshots:
   browserslist@4.23.0:
     dependencies:
       caniuse-lite: 1.0.30001625
-      electron-to-chromium: 1.4.785
+      electron-to-chromium: 1.4.787
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.0)
 
@@ -7177,7 +7177,7 @@ snapshots:
     dependencies:
       jake: 10.9.1
 
-  electron-to-chromium@1.4.785: {}
+  electron-to-chromium@1.4.787: {}
 
   emittery@0.13.1: {}
 
@@ -9360,14 +9360,14 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sass-loader@14.2.1(sass@1.77.3)(webpack@5.91.0(webpack-cli@5.1.4)):
+  sass-loader@14.2.1(sass@1.77.4)(webpack@5.91.0(webpack-cli@5.1.4)):
     dependencies:
       neo-async: 2.6.2
     optionalDependencies:
-      sass: 1.77.3
+      sass: 1.77.4
       webpack: 5.91.0(webpack-cli@5.1.4)
 
-  sass@1.77.3:
+  sass@1.77.4:
     dependencies:
       chokidar: 3.6.0
       immutable: 4.3.6
@@ -10013,7 +10013,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vue-demi@0.14.7(vue@3.4.27):
+  vue-demi@0.14.8(vue@3.4.27):
     dependencies:
       vue: 3.4.27
 
