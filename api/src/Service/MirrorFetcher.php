@@ -6,12 +6,15 @@ use App\Entity\Mirror;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * @implements \IteratorAggregate<Mirror>
+ */
 class MirrorFetcher implements \IteratorAggregate
 {
     public function __construct(
-        private HttpClientInterface $httpClient,
-        private string $mirrorStatusUrl,
-        private SerializerInterface $serializer
+        private readonly HttpClientInterface $httpClient,
+        private readonly string $mirrorStatusUrl,
+        private readonly SerializerInterface $serializer
     ) {
     }
 

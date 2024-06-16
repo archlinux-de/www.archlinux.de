@@ -2,11 +2,15 @@
 
 namespace App\Repository;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NoResultException;
 use App\Entity\Release;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Release>
+ */
 class ReleaseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -25,7 +29,7 @@ class ReleaseRepository extends ServiceEntityRepository
             ->orderBy('release.releaseDate', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleResult();
+            ->getSingleResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     /**
@@ -38,7 +42,7 @@ class ReleaseRepository extends ServiceEntityRepository
             ->where('release.version = :version')
             ->setParameter('version', $version)
             ->getQuery()
-            ->getSingleResult();
+            ->getSingleResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     /**

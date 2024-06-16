@@ -17,9 +17,9 @@ class IndexMirrorsCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private Client $client,
-        private MirrorRepository $mirrorRepository,
-        private MirrorSearchIndexer $mirrorSearchIndexer
+        private readonly Client $client,
+        private readonly MirrorRepository $mirrorRepository,
+        private readonly MirrorSearchIndexer $mirrorSearchIndexer
     ) {
         parent::__construct();
     }

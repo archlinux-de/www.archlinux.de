@@ -16,10 +16,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class MirrorController extends AbstractController
 {
     public function __construct(
-        private GeoIp $geoIp,
-        private string $mirrorCountry,
-        private MirrorSearchRepository $mirrorSearchRepository,
-        private string $mirrorArchive
+        private readonly GeoIp $geoIp,
+        private readonly string $mirrorCountry,
+        private readonly MirrorSearchRepository $mirrorSearchRepository,
+        private readonly string $mirrorArchive
     ) {
     }
 

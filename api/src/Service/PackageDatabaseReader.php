@@ -9,8 +9,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PackageDatabaseReader
 {
     public function __construct(
-        private SerializerInterface $serializer,
-        private PackageDatabaseExtractor $packageDatabaseExtractor
+        private readonly SerializerInterface $serializer,
+        private readonly PackageDatabaseExtractor $packageDatabaseExtractor
     ) {
     }
 

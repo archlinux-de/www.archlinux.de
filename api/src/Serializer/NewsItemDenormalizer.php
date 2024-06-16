@@ -6,9 +6,9 @@ use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class NewsItemDenormalizer implements DenormalizerInterface
+readonly class NewsItemDenormalizer implements DenormalizerInterface
 {
-    public function __construct(private readonly string $flarumUrl)
+    public function __construct(private string $flarumUrl)
     {
     }
 

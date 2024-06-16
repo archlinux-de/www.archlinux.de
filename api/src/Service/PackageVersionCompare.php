@@ -5,9 +5,9 @@ namespace App\Service;
 use App\Entity\Packages\Version;
 use App\Entity\Packages\VersionConstraint;
 
-class PackageVersionCompare
+readonly class PackageVersionCompare
 {
-    public function __construct(private readonly Libalpm $libalpm)
+    public function __construct(private Libalpm $libalpm)
     {
     }
 

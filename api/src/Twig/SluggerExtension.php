@@ -9,7 +9,7 @@ use Twig\TwigFilter;
 
 class SluggerExtension extends AbstractExtension
 {
-    public function __construct(private SluggerInterface $slugger)
+    public function __construct(private readonly SluggerInterface $slugger)
     {
     }
 

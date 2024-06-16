@@ -54,7 +54,7 @@ class Package
      */
     #[ORM\Column(type: 'simple_array', nullable: true)]
     #[Assert\All(
-        new Assert\Length(min: 2, max: 100)
+        [new Assert\Length(min: 2, max: 100)]
     )]
     private ?array $groups = [];
 
@@ -79,7 +79,7 @@ class Package
      */
     #[ORM\Column(type: 'simple_array', nullable: true)]
     #[Assert\All(
-        new Assert\Length(min: 3, max: 100)
+        [new Assert\Length(min: 3, max: 100)]
     )]
     private ?array $licenses = null;
 

@@ -8,7 +8,7 @@ use Twig\TwigFilter;
 
 class HtmlSanitizerExtension extends AbstractExtension
 {
-    public function __construct(private HtmlSanitizerInterface $htmlSanitizer)
+    public function __construct(private readonly HtmlSanitizerInterface $htmlSanitizer)
     {
     }
 

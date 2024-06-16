@@ -5,6 +5,9 @@ namespace App\Entity\Packages;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @implements \IteratorAggregate<string>
+ */
 #[ORM\Entity]
 class Files implements \IteratorAggregate
 {

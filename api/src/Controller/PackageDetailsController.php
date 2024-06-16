@@ -9,6 +9,7 @@ use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
 use App\Entity\Packages\Relations\Provision;
+use App\Entity\Packages\Relations\RelationTarget;
 use App\Entity\Packages\Relations\Replacement;
 use App\Repository\PackageRepository;
 use Doctrine\ORM\NoResultException;
@@ -21,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PackageDetailsController extends AbstractController
 {
-    public function __construct(private PackageRepository $packageRepository)
+    public function __construct(private readonly PackageRepository $packageRepository)
     {
     }
 
@@ -77,6 +78,7 @@ class PackageDetailsController extends AbstractController
         string $name,
         string $type
     ): Response {
+        /** @var array<string,class-string<RelationTarget>> $types */
         $types = [
             'check-dependency' => CheckDependency::class,
             'conflict' => Conflict::class,

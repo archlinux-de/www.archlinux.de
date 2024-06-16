@@ -5,9 +5,12 @@ namespace App\Service;
 use App\Entity\Country;
 use League\ISO3166\ISO3166;
 
+/**
+ * @implements \IteratorAggregate<Country>
+ */
 class CountryFetcher implements \IteratorAggregate
 {
-    public function __construct(private ISO3166 $iso3166)
+    public function __construct(private readonly ISO3166 $iso3166)
     {
     }
 

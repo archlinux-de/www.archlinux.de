@@ -17,9 +17,9 @@ class IndexPackagesCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private Client $client,
-        private PackageRepository $packageRepository,
-        private PackageSearchIndexer $packageSearchIndexer
+        private readonly Client $client,
+        private readonly PackageRepository $packageRepository,
+        private readonly PackageSearchIndexer $packageSearchIndexer
     ) {
         parent::__construct();
     }

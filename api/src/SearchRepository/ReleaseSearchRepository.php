@@ -10,9 +10,9 @@ use OpenSearch\Client;
 class ReleaseSearchRepository
 {
     public function __construct(
-        private Client $client,
-        private ReleaseRepository $releaseRepository,
-        private ReleaseSearchIndexer $releaseSearchIndexer
+        private readonly Client $client,
+        private readonly ReleaseRepository $releaseRepository,
+        private readonly ReleaseSearchIndexer $releaseSearchIndexer
     ) {
     }
 

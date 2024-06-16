@@ -11,9 +11,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Entity\Packages\Architecture;
 use App\Request\ArchitectureRequest;
 
-class ArchitectureValueResolver implements ValueResolverInterface
+readonly class ArchitectureValueResolver implements ValueResolverInterface
 {
-    public function __construct(private readonly ValidatorInterface $validator)
+    public function __construct(private ValidatorInterface $validator)
     {
     }
 

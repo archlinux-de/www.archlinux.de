@@ -7,9 +7,9 @@ use App\Entity\Mirror;
 use App\Repository\CountryRepository;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class MirrorDenormalizer implements DenormalizerInterface
+readonly class MirrorDenormalizer implements DenormalizerInterface
 {
-    public function __construct(private readonly CountryRepository $countryRepository)
+    public function __construct(private CountryRepository $countryRepository)
     {
     }
 

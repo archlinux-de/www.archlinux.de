@@ -10,9 +10,9 @@ use OpenSearch\Client;
 class NewsItemSearchRepository
 {
     public function __construct(
-        private Client $client,
-        private NewsItemRepository $newsItemRepository,
-        private NewsSearchIndexer $newsSearchIndexer
+        private readonly Client $client,
+        private readonly NewsItemRepository $newsItemRepository,
+        private readonly NewsSearchIndexer $newsSearchIndexer
     ) {
     }
 

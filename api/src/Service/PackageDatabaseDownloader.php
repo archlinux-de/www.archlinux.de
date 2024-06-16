@@ -6,11 +6,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseDownloader
 {
-    private const DB_EXT = '.files';
+    private const string DB_EXT = '.files';
 
     public function __construct(
-        private HttpClientInterface $httpClient,
-        private PackageDatabaseMirror $packageDatabaseMirror
+        private readonly HttpClientInterface $httpClient,
+        private readonly PackageDatabaseMirror $packageDatabaseMirror
     ) {
     }
 

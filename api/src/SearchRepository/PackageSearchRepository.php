@@ -10,9 +10,9 @@ use OpenSearch\Client;
 class PackageSearchRepository
 {
     public function __construct(
-        private PackageRepository $packageRepository,
-        private Client $client,
-        private PackageSearchIndexer $packageSearchIndexer
+        private readonly PackageRepository $packageRepository,
+        private readonly Client $client,
+        private readonly PackageSearchIndexer $packageSearchIndexer
     ) {
     }
 

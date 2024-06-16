@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MirrorStatusController extends AbstractController
 {
-    public function __construct(private MirrorSearchRepository $mirrorSearchRepository)
+    public function __construct(private readonly MirrorSearchRepository $mirrorSearchRepository)
     {
     }
 
@@ -30,7 +30,7 @@ class MirrorStatusController extends AbstractController
         );
     }
 
-    #[Route(path: '/api/mirrors/{url<.+>}', methods: ['GET'])]
+    #[Route(path: '/api/mirrors/{mirror<.+>}', methods: ['GET'])]
     #[Cache(maxage: 300, smaxage: 600)]
     public function mirrorAction(Mirror $mirror): Response
     {

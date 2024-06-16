@@ -10,9 +10,9 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Request\RepositoryRequest;
 
-class RepositoryValueResolver implements ValueResolverInterface
+readonly class RepositoryValueResolver implements ValueResolverInterface
 {
-    public function __construct(private readonly ValidatorInterface $validator)
+    public function __construct(private ValidatorInterface $validator)
     {
     }
 

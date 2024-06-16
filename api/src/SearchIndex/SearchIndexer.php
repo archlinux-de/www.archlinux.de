@@ -4,12 +4,12 @@ namespace App\SearchIndex;
 
 class SearchIndexer implements SearchIndexerInterface
 {
-    public const BULK_SIZE = 1000;
+    public const int BULK_SIZE = 1000;
 
     /**
      * @param SearchIndexerInterface[] $searchIndexers
      */
-    public function __construct(private array $searchIndexers)
+    public function __construct(private readonly array $searchIndexers)
     {
     }
 

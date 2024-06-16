@@ -18,10 +18,10 @@ class UpdateCountriesCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private CountryFetcher $countryFetcher,
-        private CountryRepository $countryRepository,
-        private ValidatorInterface $validator
+        private readonly EntityManagerInterface $entityManager,
+        private readonly CountryFetcher $countryFetcher,
+        private readonly CountryRepository $countryRepository,
+        private readonly ValidatorInterface $validator
     ) {
         parent::__construct();
     }

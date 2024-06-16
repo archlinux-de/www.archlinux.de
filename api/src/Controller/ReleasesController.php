@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class ReleasesController extends AbstractController
 {
     public function __construct(
-        private ReleaseRepository $releaseRepository,
-        private ReleaseSearchRepository $releaseSearchRepository
+        private readonly ReleaseRepository $releaseRepository,
+        private readonly ReleaseSearchRepository $releaseSearchRepository
     ) {
     }
 
@@ -50,7 +50,7 @@ class ReleasesController extends AbstractController
         );
     }
 
-    #[Route(path: '/api/releases/{version<^[0-9]+[\.\-\w]+$>}', methods: ['GET'])]
+    #[Route(path: '/api/releases/{release<^[0-9]+[\.\-\w]+$>}', methods: ['GET'])]
     #[Cache(maxage: 300, smaxage: 600)]
     public function apiReleaseAction(Release $release): Response
     {

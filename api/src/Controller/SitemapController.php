@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SitemapController extends AbstractController
 {
-    public function __construct(private string $defaultArchitecture)
+    public function __construct(private readonly string $defaultArchitecture)
     {
     }
 

@@ -6,12 +6,15 @@ use App\Entity\Release;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * @implements \IteratorAggregate<Release>
+ */
 class ReleaseFetcher implements \IteratorAggregate
 {
     public function __construct(
-        private HttpClientInterface $httpClient,
-        private string $releaseUrl,
-        private SerializerInterface $serializer
+        private readonly HttpClientInterface $httpClient,
+        private readonly string $releaseUrl,
+        private readonly SerializerInterface $serializer
     ) {
     }
 

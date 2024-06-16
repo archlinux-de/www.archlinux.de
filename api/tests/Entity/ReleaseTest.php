@@ -32,7 +32,6 @@ class ReleaseTest extends TestCase
         $this->assertEquals('sha1', $release->getSha1Sum());
         $this->assertEquals('sha256', $release->getSha256Sum());
         $this->assertEquals('b2', $release->getB2Sum());
-        $this->assertEquals('info', $release->getInfo());
 
         $this->assertSame('/foo.torrent', $release->getTorrentUrl());
     }

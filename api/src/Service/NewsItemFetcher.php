@@ -6,19 +6,19 @@ use App\Entity\NewsItem;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * @implements \IteratorAggregate<NewsItem>
+ */
 class NewsItemFetcher implements \IteratorAggregate
 {
     public function __construct(
-        private string $flarumUrl,
-        private string $flarumTag,
-        private HttpClientInterface $httpClient,
-        private SerializerInterface $serializer
+        private readonly string $flarumUrl,
+        private readonly string $flarumTag,
+        private readonly HttpClientInterface $httpClient,
+        private readonly SerializerInterface $serializer
     ) {
     }
 
-    /**
-     * @return \Traversable<int, NewsItem>
-     */
     public function getIterator(): \Traversable
     {
         $offset = 0;

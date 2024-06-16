@@ -18,11 +18,11 @@ class UpdateMirrorsCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private MirrorFetcher $mirrorFetcher,
-        private MirrorRepository $mirrorRepository,
-        private ValidatorInterface $validator,
-        private LoggerInterface $logger
+        private readonly EntityManagerInterface $entityManager,
+        private readonly MirrorFetcher $mirrorFetcher,
+        private readonly MirrorRepository $mirrorRepository,
+        private readonly ValidatorInterface $validator,
+        private readonly LoggerInterface $logger
     ) {
         parent::__construct();
     }

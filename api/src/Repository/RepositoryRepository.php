@@ -4,8 +4,12 @@ namespace App\Repository;
 
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Repository>
+ */
 class RepositoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -21,6 +25,6 @@ class RepositoryRepository extends ServiceEntityRepository
             ->setParameter('repository', $repoName)
             ->setParameter('architecture', $archName)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT);
     }
 }

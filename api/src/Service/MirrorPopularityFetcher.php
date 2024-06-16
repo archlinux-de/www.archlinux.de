@@ -5,15 +5,15 @@ namespace App\Service;
 use App\Entity\MirrorPopularity as Popularity;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class MirrorPopularityFetcher implements \IteratorAggregate
+/**
+ * @implements \IteratorAggregate<string, Popularity>
+ */
+readonly class MirrorPopularityFetcher implements \IteratorAggregate
 {
     public function __construct(private string $mirrorStatisticsApiUrl, private HttpClientInterface $httpClient)
     {
     }
 
-    /**
-     * @return \Traversable<string, Popularity>
-     */
     public function getIterator(): \Traversable
     {
         $count = 1;

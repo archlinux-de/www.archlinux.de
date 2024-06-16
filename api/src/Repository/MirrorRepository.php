@@ -6,6 +6,9 @@ use App\Entity\Mirror;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Mirror>
+ */
 class MirrorRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

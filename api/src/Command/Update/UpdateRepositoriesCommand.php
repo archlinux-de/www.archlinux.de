@@ -15,9 +15,9 @@ class UpdateRepositoriesCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private RepositoryManager $repositoryManager,
-        private AbstractRelationRepository $relationRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly RepositoryManager $repositoryManager,
+        private readonly AbstractRelationRepository $relationRepository
     ) {
         parent::__construct();
     }

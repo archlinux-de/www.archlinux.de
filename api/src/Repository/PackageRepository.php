@@ -10,13 +10,17 @@ use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Relations\MakeDependency;
 use App\Entity\Packages\Relations\OptionalDependency;
 use App\Entity\Packages\Relations\Provision;
+use App\Entity\Packages\Relations\RelationTarget;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\NoResultException;
 
+/**
+ * @extends ServiceEntityRepository<Package>
+ */
 class PackageRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -33,15 +37,17 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('repository', $repository)
             ->setParameter('name', $name)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     /**
+     * @param class-string<RelationTarget> $relationType
      * @return Package[]
      */
     public function findByInverseRelationType(Package $package, string $relationType): array
     {
-        return $this
+        /** @var Package[] $packages */
+        $packages = $this
             ->createQueryBuilder('source')
             ->join(Package::class, 'target')
             ->join($relationType, 'relation')
@@ -51,6 +57,8 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('target', $package)
             ->getQuery()
             ->getResult();
+
+        return $packages;
     }
 
     /**
@@ -116,7 +124,7 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('pkgname', $name)
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleResult();
+            ->getSingleResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     public function getSize(): int
@@ -160,6 +168,7 @@ class PackageRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param class-string<RelationTarget> $type
      * @return Package[]
      */
     public function findInverseRelationsByQuery(
@@ -174,7 +183,8 @@ class PackageRepository extends ServiceEntityRepository
             return [];
         }
 
-        return $this
+        /** @var Package[] $packages */
+        $packages = $this
             ->createQueryBuilder('source')
             ->join(Package::class, 'target')
             ->join($type, 'relation')
@@ -185,6 +195,8 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('target', $package)
             ->getQuery()
             ->getResult();
+
+        return $packages;
     }
 
     /**
@@ -202,7 +214,7 @@ class PackageRepository extends ServiceEntityRepository
             ->setParameter('repository', $repository)
             ->setParameter('architecture', $architecture)
             ->getQuery()
-            ->getSingleResult();
+            ->getSingleResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     /**

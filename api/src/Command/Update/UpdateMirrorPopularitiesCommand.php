@@ -21,10 +21,10 @@ class UpdateMirrorPopularitiesCommand extends Command
     private array $mirrorPopularities = [];
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private MirrorPopularityFetcher $mirrorPopularityFetcher,
-        private MirrorRepository $mirrorRepository,
-        private ValidatorInterface $validator
+        private readonly EntityManagerInterface $entityManager,
+        private readonly MirrorPopularityFetcher $mirrorPopularityFetcher,
+        private readonly MirrorRepository $mirrorRepository,
+        private readonly ValidatorInterface $validator
     ) {
         parent::__construct();
     }

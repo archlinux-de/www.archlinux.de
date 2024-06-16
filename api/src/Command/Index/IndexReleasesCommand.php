@@ -17,9 +17,9 @@ class IndexReleasesCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private Client $client,
-        private ReleaseRepository $releaseRepository,
-        private ReleaseSearchIndexer $releaseSearchIndexer
+        private readonly Client $client,
+        private readonly ReleaseRepository $releaseRepository,
+        private readonly ReleaseSearchIndexer $releaseSearchIndexer
     ) {
         parent::__construct();
     }

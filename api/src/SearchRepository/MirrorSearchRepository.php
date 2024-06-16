@@ -10,10 +10,10 @@ use OpenSearch\Client;
 class MirrorSearchRepository
 {
     public function __construct(
-        private string $mirrorCountry,
-        private Client $client,
-        private MirrorRepository $mirrorRepository,
-        private MirrorSearchIndexer $mirrorSearchIndexer
+        private readonly string $mirrorCountry,
+        private readonly Client $client,
+        private readonly MirrorRepository $mirrorRepository,
+        private readonly MirrorSearchIndexer $mirrorSearchIndexer
     ) {
     }
 

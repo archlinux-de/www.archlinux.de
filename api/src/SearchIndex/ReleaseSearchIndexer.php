@@ -6,7 +6,7 @@ use App\Entity\Release;
 
 class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
 {
-    public function __construct(private string $environment)
+    public function __construct(private readonly string $environment)
     {
     }
 

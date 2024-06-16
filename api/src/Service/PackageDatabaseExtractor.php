@@ -7,9 +7,9 @@ use Symfony\Component\String\ByteString;
 
 class PackageDatabaseExtractor
 {
-    private const DESCRIPTION_FILES = ['desc', 'files'];
+    private const array DESCRIPTION_FILES = ['desc', 'files'];
 
-    public function __construct(private Libarchive $libarchive)
+    public function __construct(private readonly Libarchive $libarchive)
     {
     }
 

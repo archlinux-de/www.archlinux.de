@@ -20,10 +20,10 @@ class UpdatePackagePopularitiesCommand extends Command
     private array $packagePopularities = [];
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private PackagePopularityFetcher $packagePopularityFetcher,
-        private PackageRepository $packageRepository,
-        private ValidatorInterface $validator
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PackagePopularityFetcher $packagePopularityFetcher,
+        private readonly PackageRepository $packageRepository,
+        private readonly ValidatorInterface $validator
     ) {
         parent::__construct();
     }

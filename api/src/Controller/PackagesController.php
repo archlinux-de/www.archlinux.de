@@ -18,9 +18,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class PackagesController extends AbstractController
 {
     public function __construct(
-        private PackageRepository $packageRepository,
-        private PackageSearchRepository $packageSearchRepository,
-        private string $defaultArchitecture
+        private readonly PackageRepository $packageRepository,
+        private readonly PackageSearchRepository $packageSearchRepository,
+        private readonly string $defaultArchitecture
     ) {
     }
 

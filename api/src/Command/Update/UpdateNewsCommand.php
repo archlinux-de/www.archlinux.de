@@ -18,10 +18,10 @@ class UpdateNewsCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private NewsItemFetcher $newsItemFetcher,
-        private NewsItemRepository $newsItemRepository,
-        private ValidatorInterface $validator
+        private readonly EntityManagerInterface $entityManager,
+        private readonly NewsItemFetcher $newsItemFetcher,
+        private readonly NewsItemRepository $newsItemRepository,
+        private readonly ValidatorInterface $validator
     ) {
         parent::__construct();
     }

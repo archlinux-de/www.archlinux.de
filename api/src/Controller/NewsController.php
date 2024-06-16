@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class NewsController extends AbstractController
 {
     public function __construct(
-        private NewsItemRepository $newsRepository,
-        private NewsItemSearchRepository $newsItemSearchRepository
+        private readonly NewsItemRepository $newsRepository,
+        private readonly NewsItemSearchRepository $newsItemSearchRepository
     ) {
     }
 

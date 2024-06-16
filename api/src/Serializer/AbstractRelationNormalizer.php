@@ -6,9 +6,9 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\AbstractRelation;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class AbstractRelationNormalizer implements NormalizerInterface
+readonly class AbstractRelationNormalizer implements NormalizerInterface
 {
-    public function __construct(private readonly RepositoryNormalizer $repositoryNormalizer)
+    public function __construct(private RepositoryNormalizer $repositoryNormalizer)
     {
     }
 

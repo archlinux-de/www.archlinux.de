@@ -11,11 +11,6 @@ parameters:
 		- config
 		- bin
 		- migrations
-	checkMissingIterableValueType: false
-	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		-
-			# ORM ensures correct types
-			message: '#Method .+ should return .+ but returns (array|mixed)#'
-			paths:
-				- src/Repository
+			identifier: missingType.iterableValue

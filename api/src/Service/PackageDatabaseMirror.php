@@ -8,15 +8,15 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class PackageDatabaseMirror
 {
     /** @var string */
-    public const CACHE_KEY = 'PackageDatabaseMirror_lastupdate';
+    public const string CACHE_KEY = 'PackageDatabaseMirror_lastupdate';
 
     /** @var string */
     private string $lastUpdateHash = '';
 
     public function __construct(
-        private HttpClientInterface $httpClient,
-        private CacheItemPoolInterface $cache,
-        private string $mirrorUrl
+        private readonly HttpClientInterface $httpClient,
+        private readonly CacheItemPoolInterface $cache,
+        private readonly string $mirrorUrl
     ) {
     }
 
@@ -29,7 +29,7 @@ class PackageDatabaseMirror
     {
         $lastLocalUpdateCache = $this->cache->getItem(self::CACHE_KEY);
         if ($lastLocalUpdateCache->isHit()) {
-            $contentHash = (string)hash(
+            $contentHash = hash(
                 'sha256',
                 $this->httpClient->request(
                     'GET',

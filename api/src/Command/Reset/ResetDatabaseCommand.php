@@ -27,8 +27,10 @@ class ResetDatabaseCommand extends Command
     /** @var array<LockInterface|null> */
     private array $locks = [];
 
-    public function __construct(private EntityManagerInterface $entityManager, private CacheItemPoolInterface $cache)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly CacheItemPoolInterface $cache
+    ) {
         parent::__construct();
     }
 

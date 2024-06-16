@@ -23,14 +23,14 @@ class UpdatePackagesCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private PackageDatabaseMirror $packageDatabaseMirror,
-        private RepositoryRepository $repositoryRepository,
-        private AbstractRelationRepository $relationRepository,
-        private PackageDatabaseReader $packageDatabaseReader,
-        private ValidatorInterface $validator,
-        private PackageDatabaseDownloader $packageDatabaseDownloader,
-        private PackageRepository $packageRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PackageDatabaseMirror $packageDatabaseMirror,
+        private readonly RepositoryRepository $repositoryRepository,
+        private readonly AbstractRelationRepository $relationRepository,
+        private readonly PackageDatabaseReader $packageDatabaseReader,
+        private readonly ValidatorInterface $validator,
+        private readonly PackageDatabaseDownloader $packageDatabaseDownloader,
+        private readonly PackageRepository $packageRepository
     ) {
         parent::__construct();
     }
@@ -55,7 +55,7 @@ class UpdatePackagesCommand extends Command
                     $repository->getName(),
                     $repository->getArchitecture()
                 );
-                $repositorySha256sum = (string)hash('sha256', $packageDatabase);
+                $repositorySha256sum = hash('sha256', $packageDatabase);
 
                 if ($repositorySha256sum !== $repository->getSha256sum()) {
                     $repository->setSha256sum($repositorySha256sum);

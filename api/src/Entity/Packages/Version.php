@@ -4,7 +4,7 @@ namespace App\Entity\Packages;
 
 class Version implements \Stringable
 {
-    private const VERSION_PATTERN = '/^([<=>]*)(?:([0-9]+):)?([^;:\/\s]+?)(?:-([0-9.]+))?$/';
+    private const string VERSION_PATTERN = '/^([<=>]*)(?:([0-9]+):)?([^;:\/\s]+?)(?:-([0-9.]+))?$/';
 
     public function __construct(
         private readonly string $version,

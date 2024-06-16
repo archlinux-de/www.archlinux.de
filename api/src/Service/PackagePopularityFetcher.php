@@ -5,15 +5,15 @@ namespace App\Service;
 use App\Entity\Packages\Popularity;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class PackagePopularityFetcher implements \IteratorAggregate
+/**
+ * @implements \IteratorAggregate<string, Popularity>
+ */
+readonly class PackagePopularityFetcher implements \IteratorAggregate
 {
     public function __construct(private string $packageStatisticsApiUrl, private HttpClientInterface $httpClient)
     {
     }
 
-    /**
-     * @return \Traversable<string, Popularity>
-     */
     public function getIterator(): \Traversable
     {
         $count = 1;

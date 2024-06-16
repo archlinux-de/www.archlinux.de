@@ -18,10 +18,10 @@ class UpdateReleasesCommand extends Command
     use LockableTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private ReleaseFetcher $releaseFetcher,
-        private ReleaseRepository $releaseRepository,
-        private ValidatorInterface $validator
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ReleaseFetcher $releaseFetcher,
+        private readonly ReleaseRepository $releaseRepository,
+        private readonly ValidatorInterface $validator
     ) {
         parent::__construct();
     }

@@ -23,13 +23,13 @@ class GeoIpTest extends TestCase
         $this->geoIp = new GeoIp($this->reader, $this->logger);
     }
 
-    public function testGeoIpReturnesCountryCode(): void
+    public function testGeoIpReturnsCountryCode(): void
     {
         $this->reader->method('get')->willReturn(['country' => ['iso_code' => 'DE']]);
         $this->assertEquals('DE', $this->geoIp->getCountryCode('::1'));
     }
 
-    public function testGeoIpReturnesNullOnError(): void
+    public function testGeoIpReturnsNullOnError(): void
     {
         $this->reader->method('get')->willThrowException(new \Exception());
         $this->assertNull($this->geoIp->getCountryCode('foo'));

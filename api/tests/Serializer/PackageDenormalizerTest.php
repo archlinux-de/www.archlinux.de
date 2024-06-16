@@ -116,9 +116,11 @@ class PackageDenormalizerTest extends TestCase
         $this->assertNull($package->getUrl());
     }
 
+    /**
+     * @param Collection<int, covariant AbstractRelation> $dependencies
+     */
     private function assertDependency(array $expected, Collection $dependencies): void
     {
-        /** @var AbstractRelation[] $dependencyArray */
         $dependencyArray = $dependencies->toArray();
         $this->assertEquals(
             $expected,
