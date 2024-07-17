@@ -11,7 +11,7 @@ class Libalpm
 {
     private FFI $ffi;
 
-    private const LIB_LOCATIONS = ['/ust/lib/libalpm.so.15', '/usr/lib/libalpm.so.14'];
+    private const LIB_LOCATIONS = ['/usr/lib/libalpm.so.15', '/usr/lib/libalpm.so.14'];
 
     public function __construct()
     {
