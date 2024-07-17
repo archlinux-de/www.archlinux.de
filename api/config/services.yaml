@@ -26,6 +26,7 @@ services:
     # please note that last definitions always *replace* previous ones
 
     MaxMind\Db\Reader:
+        lazy: true
         arguments:
             - '%geoip.database%'
 
@@ -137,3 +138,9 @@ services:
 
     App\SearchIndex\ReleaseSearchIndexer:
         $environment: '%kernel.environment%'
+
+    App\Service\Libalpm:
+        lazy: true
+
+    App\Service\Libarchive:
+        lazy: true

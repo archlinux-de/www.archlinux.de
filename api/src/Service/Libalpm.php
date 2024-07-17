@@ -11,14 +11,27 @@ class Libalpm
 {
     private FFI $ffi;
 
+    private const LIB_LOCATIONS = ['/usr/lib/libalpm.so.15', '/usr/lib/libalpm.so.14'];
+
     public function __construct()
     {
         $this->ffi = FFI::cdef(
             '
             int alpm_pkg_vercmp(const char *a, const char *b);
             ',
-            'libalpm.so.14'
+            $this->getLibFileName()
         );
+    }
+
+    private function getLibFileName(): string
+    {
+        foreach (self::LIB_LOCATIONS as $fileName) {
+            if (file_exists($fileName)) {
+                return $fileName;
+            }
+        }
+
+        throw new \RuntimeException('libalpm.so not found!');
     }
 
     public function __call(string $name, array $arguments): mixed
