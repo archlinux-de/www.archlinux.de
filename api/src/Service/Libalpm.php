@@ -25,7 +25,7 @@ class Libalpm
 
     private function getLibFileName(): string
     {
-        foreach(self::LIB_LOCATIONS as $fileName) {
+        foreach (self::LIB_LOCATIONS as $fileName) {
             if (file_exists($fileName)) {
                 return $fileName;
             }
