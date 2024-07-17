@@ -137,3 +137,9 @@ services:
 
     App\SearchIndex\ReleaseSearchIndexer:
         $environment: '%kernel.environment%'
+
+    App\Service\Libalpm:
+        lazy: true
+
+    App\Service\Libarchive:
+        lazy: true
