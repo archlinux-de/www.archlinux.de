@@ -26,6 +26,7 @@ services:
     # please note that last definitions always *replace* previous ones
 
     MaxMind\Db\Reader:
+        lazy: true
         arguments:
             - '%geoip.database%'
 
