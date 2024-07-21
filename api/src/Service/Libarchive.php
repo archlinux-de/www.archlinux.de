@@ -20,7 +20,7 @@ use FFI\CType;
  * @method int archive_read_data(CData $archive, CData $buffer, int $size)
  * @method int archive_entry_size(CData $archiveEntry)
  */
-class Libarchive
+readonly class Libarchive
 {
     private FFI $ffi;
 
@@ -38,7 +38,7 @@ class Libarchive
             size_t archive_read_data(struct archive *, void *, size_t);
             int64_t archive_entry_size(struct archive_entry *);
             ',
-            'libarchive.so.13'
+            'libarchive.so'
         );
     }
 

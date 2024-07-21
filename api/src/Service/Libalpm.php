@@ -7,11 +7,9 @@ use FFI;
 /**
  * @method int alpm_pkg_vercmp(string $a, string $b)
  */
-class Libalpm
+readonly class Libalpm
 {
     private FFI $ffi;
-
-    private const LIB_LOCATIONS = ['/usr/lib/libalpm.so.15', '/usr/lib/libalpm.so.14'];
 
     public function __construct()
     {
@@ -19,19 +17,8 @@ class Libalpm
             '
             int alpm_pkg_vercmp(const char *a, const char *b);
             ',
-            $this->getLibFileName()
+            'libalpm.so'
         );
-    }
-
-    private function getLibFileName(): string
-    {
-        foreach (self::LIB_LOCATIONS as $fileName) {
-            if (file_exists($fileName)) {
-                return $fileName;
-            }
-        }
-
-        throw new \RuntimeException('libalpm.so not found!');
     }
 
     public function __call(string $name, array $arguments): mixed
