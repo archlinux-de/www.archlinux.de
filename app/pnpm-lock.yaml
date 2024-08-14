@@ -943,8 +943,8 @@ packages:
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
 
-  '@mdn/browser-compat-data@5.5.45':
-    resolution: {integrity: sha512-ZSQFGihUPlFxG2S9sUWS2tjDKQNTVVEgN62Au5yFcnbYsC183T1JrLz6I5H467Hw8WMCjwRuOEFQSpBW6IvZCg==}
+  '@mdn/browser-compat-data@5.5.46':
+    resolution: {integrity: sha512-FTcBvYkPLJWfWjfAYTKUyY+cRW6pB7DDOAqZnN7Q10kYNHYK8FefKGLhsM1jcWlmXb+ClSxpF77jr5fzUZaJbw==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1523,8 +1523,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-preset-current-node-syntax@1.0.1:
-    resolution: {integrity: sha512-M7LQ0bxarkxQoN+vz5aJPsLBn77n8QgTFmo8WK0/44auK2xlCXrYcUxHFxgU7qW5Yzw/CjmLRK2uJzaCd7LvqQ==}
+  babel-preset-current-node-syntax@1.1.0:
+    resolution: {integrity: sha512-ldYss8SbBlWva1bs28q78Ju5Zq1F+8BrqBZZ0VFhLBvhh6lCpC2o3gDJi/5DRLs9FgYZCnmPYIVFU4lRXCkyUw==}
     peerDependencies:
       '@babel/core': ^7.0.0
 
@@ -4421,8 +4421,8 @@ packages:
       uglify-js:
         optional: true
 
-  terser@5.31.5:
-    resolution: {integrity: sha512-YPmas0L0rE1UyLL/llTWA0SiDOqIcAQYLeUj7cJYzXHlRTAnMSg9pPe4VJ5PlKvTrPQsdVFuiRiwyeNlYgwh2Q==}
+  terser@5.31.6:
+    resolution: {integrity: sha512-PQ4DAriWzKj+qgehQ7LK5bQqCFNMmlhjR2PFFLuqGCpuCAauxemVBWwWOxo3UIwWQx8+Pr61Df++r76wDmkQBg==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -4655,8 +4655,8 @@ packages:
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
 
-  watchpack@2.4.1:
-    resolution: {integrity: sha512-8wrBCMtVhqcXP2Sup1ctSkga6uc2Bx0IIvKyT7yTFier5AXHooSI+QyQQAtTb7+E0IUCCKyTFmXqdqgum2XWGg==}
+  watchpack@2.4.2:
+    resolution: {integrity: sha512-TnbFSbcOCcDgjZ4piURLCbJ3nJhznVh9kw6F6iokjiFPl8ONxe9A6nMDVXDiNbrSfLILs6vB07F7wLBrwPYzJw==}
     engines: {node: '>=10.13.0'}
 
   wbuf@1.7.3:
@@ -5976,7 +5976,7 @@ snapshots:
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 
-  '@mdn/browser-compat-data@5.5.45': {}
+  '@mdn/browser-compat-data@5.5.46': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -6027,7 +6027,7 @@ snapshots:
     dependencies:
       serialize-javascript: 6.0.2
       smob: 1.5.0
-      terser: 5.31.5
+      terser: 5.31.6
     optionalDependencies:
       rollup: 2.79.1
 
@@ -6595,7 +6595,7 @@ snapshots:
 
   ast-metadata-inferer@0.8.0:
     dependencies:
-      '@mdn/browser-compat-data': 5.5.45
+      '@mdn/browser-compat-data': 5.5.46
 
   astral-regex@2.0.0: {}
 
@@ -6680,12 +6680,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-preset-current-node-syntax@1.0.1(@babel/core@7.25.2):
+  babel-preset-current-node-syntax@1.1.0(@babel/core@7.25.2):
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-syntax-async-generators': 7.8.4(@babel/core@7.25.2)
       '@babel/plugin-syntax-bigint': 7.8.3(@babel/core@7.25.2)
       '@babel/plugin-syntax-class-properties': 7.12.13(@babel/core@7.25.2)
+      '@babel/plugin-syntax-class-static-block': 7.14.5(@babel/core@7.25.2)
+      '@babel/plugin-syntax-import-attributes': 7.24.7(@babel/core@7.25.2)
       '@babel/plugin-syntax-import-meta': 7.10.4(@babel/core@7.25.2)
       '@babel/plugin-syntax-json-strings': 7.8.3(@babel/core@7.25.2)
       '@babel/plugin-syntax-logical-assignment-operators': 7.10.4(@babel/core@7.25.2)
@@ -6694,13 +6696,14 @@ snapshots:
       '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.25.2)
       '@babel/plugin-syntax-optional-catch-binding': 7.8.3(@babel/core@7.25.2)
       '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.25.2)
+      '@babel/plugin-syntax-private-property-in-object': 7.14.5(@babel/core@7.25.2)
       '@babel/plugin-syntax-top-level-await': 7.14.5(@babel/core@7.25.2)
 
   babel-preset-jest@29.6.3(@babel/core@7.25.2):
     dependencies:
       '@babel/core': 7.25.2
       babel-plugin-jest-hoist: 29.6.3
-      babel-preset-current-node-syntax: 1.0.1(@babel/core@7.25.2)
+      babel-preset-current-node-syntax: 1.1.0(@babel/core@7.25.2)
 
   balanced-match@1.0.2: {}
 
@@ -7433,7 +7436,7 @@ snapshots:
 
   eslint-plugin-compat@6.0.0(eslint@8.57.0):
     dependencies:
-      '@mdn/browser-compat-data': 5.5.45
+      '@mdn/browser-compat-data': 5.5.46
       ast-metadata-inferer: 0.8.0
       browserslist: 4.23.3
       caniuse-lite: 1.0.30001651
@@ -7958,7 +7961,7 @@ snapshots:
       he: 1.2.0
       param-case: 3.0.4
       relateurl: 0.2.7
-      terser: 5.31.5
+      terser: 5.31.6
 
   html-tags@3.3.1: {}
 
@@ -8536,7 +8539,7 @@ snapshots:
       '@jest/expect-utils': 29.7.0
       '@jest/transform': 29.7.0
       '@jest/types': 29.6.3
-      babel-preset-current-node-syntax: 1.0.1(@babel/core@7.25.2)
+      babel-preset-current-node-syntax: 1.1.0(@babel/core@7.25.2)
       chalk: 4.1.2
       expect: 29.7.0
       graceful-fs: 4.2.11
@@ -9935,10 +9938,10 @@ snapshots:
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
-      terser: 5.31.5
+      terser: 5.31.6
       webpack: 5.93.0(webpack-cli@5.1.4)
 
-  terser@5.31.5:
+  terser@5.31.6:
     dependencies:
       '@jridgewell/source-map': 0.3.6
       acorn: 8.12.1
@@ -10144,7 +10147,7 @@ snapshots:
     dependencies:
       chalk: 4.1.2
       hash-sum: 2.0.0
-      watchpack: 2.4.1
+      watchpack: 2.4.2
       webpack: 5.93.0(webpack-cli@5.1.4)
     optionalDependencies:
       '@vue/compiler-sfc': 3.4.37
@@ -10171,7 +10174,7 @@ snapshots:
     dependencies:
       makeerror: 1.0.12
 
-  watchpack@2.4.1:
+  watchpack@2.4.2:
     dependencies:
       glob-to-regexp: 0.4.1
       graceful-fs: 4.2.11
@@ -10298,7 +10301,7 @@ snapshots:
       schema-utils: 3.3.0
       tapable: 2.2.1
       terser-webpack-plugin: 5.3.10(webpack@5.93.0(webpack-cli@5.1.4))
-      watchpack: 2.4.1
+      watchpack: 2.4.2
       webpack-sources: 3.2.3
     optionalDependencies:
       webpack-cli: 5.1.4(webpack-dev-server@5.0.4)(webpack@5.93.0)
