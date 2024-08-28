@@ -99,6 +99,7 @@ class MirrorController extends AbstractController
     ): Response {
         preg_match('#^([^-]+.*)-[^-]+-[^-]+-.*$#', $file, $matches);
         try {
+            assert(isset($matches[1]));
             $package = $packageRepository->getByName($repository, $architecture, $matches[1]);
         } catch (UnexpectedResultException $e) {
             throw $this->createNotFoundException('Package not found', $e);

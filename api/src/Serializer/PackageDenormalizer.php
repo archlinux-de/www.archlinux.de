@@ -88,7 +88,7 @@ class PackageDenormalizer implements DenormalizerInterface
 
         preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
         $name = trim($matches[1] ?? $packagerDefinition);
-        $email = $matches[2] ? trim($matches[2]) : null;
+        $email = !empty($matches[2]) ? trim($matches[2]) : null;
 
         if (!$name && !$email) {
             return null;
@@ -106,9 +106,12 @@ class PackageDenormalizer implements DenormalizerInterface
     private function createTargetFromString(string $targetDefinition): array
     {
         if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:\-]+)(?::.+)?$/', $targetDefinition, $matches) > 0) {
+            assert(isset($matches[1]));
             $targetName = $matches[1];
+            assert(isset($matches[2]));
             $targetVersion = $matches[2];
         } elseif (preg_match('/^([\w\-+@.]+)/', $targetDefinition, $matches) > 0) {
+            assert(isset($matches[1]));
             $targetName = $matches[1];
             $targetVersion = null;
         } else {
