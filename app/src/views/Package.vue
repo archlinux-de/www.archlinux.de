@@ -12,97 +12,99 @@
       <div class="col-12 col-xl-6">
         <h2 class="mb-3">Paket-Details</h2>
         <table class="table table-sm table-borderless">
-          <tr>
-            <th>Name</th>
-            <td>{{ pkg.name }}</td>
-          </tr>
-          <tr>
-            <th>Version</th>
-            <td>{{ pkg.version }}</td>
-          </tr>
-          <tr>
-            <th>Beschreibung</th>
-            <td class="text-break">{{ pkg.description }}</td>
-          </tr>
-          <tr v-if="pkg.url">
-            <th>URL</th>
-            <td class="text-break">
-              <a class="p-0" rel="nofollow noopener" :href="pkg.url">{{ pkg.url }}</a>
-            </td>
-          </tr>
-          <tr v-if="pkg.licenses && pkg.licenses.length > 0">
-            <th>Lizenzen</th>
-            <td>{{ pkg.licenses.join(', ') }}</td>
-          </tr>
-          <tr>
-            <th>Repositorium</th>
-            <td>
-              <router-link class="p-0"
-                :to="{name: 'packages', query: {architecture: pkg.repository.architecture, repository: pkg.repository.name}}">
-                {{ pkg.repository.name }}
-              </router-link>
-            </td>
-          </tr>
-          <tr>
-            <th>Architektur</th>
-            <td>
-              {{ pkg.architecture }}
-            </td>
-          </tr>
-          <tr v-if="pkg.groups && pkg.groups.length > 0">
-            <th>Gruppen</th>
-            <td>{{ pkg.groups.join(', ') }}</td>
-          </tr>
-          <tr v-if="pkg.packager">
-            <th>Packer</th>
-            <td>
-              <template v-if="pkg.packager.email">
-                <a class="p-0" rel="nofollow noopener" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
-              </template>
-              <template v-else>{{ pkg.packager.name }}</template>
-            </td>
-          </tr>
-          <tr>
-            <th>Erstellt am</th>
-            <td>{{ (new Date(pkg.buildDate)).toLocaleDateString('de-DE') }}</td>
-          </tr>
-          <tr>
-            <th>Quelltext</th>
-            <td><a class="p-0" :href="pkg.sourceUrl" rel="nofollow noopener" target="_blank">Quelldateien</a>, <a class="p-0" :href="pkg.sourceChangelogUrl" rel="nofollow noopener" target="_blank">Änderungshistorie</a>
-            </td>
-          </tr>
-          <tr v-if="pkg.issueUrl">
-            <th>Bugs</th>
-            <td>
-              <a class="p-0" :href="pkg.issueUrl" rel="noopener">Issue-Tracker</a>
-            </td>
-          </tr>
-          <tr>
-            <th>Paket</th>
-            <td>
-              <a class="p-0" :href="pkg.packageUrl" download rel="nofollow noopener">{{ pkg.fileName }}</a>
-            </td>
-          </tr>
-          <tr>
-            <th>PGP-Signatur</th>
-            <td>
-              <a class="p-0" :href="pkg.packageUrl+'.sig'" download rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
-            </td>
-          </tr>
-          <tr>
-            <th>Paket-Größe</th>
-            <td>{{ prettyBytes(pkg.compressedSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
-          </tr>
-          <tr>
-            <th>Installations-Größe</th>
-            <td>{{ prettyBytes(pkg.installedSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
-          </tr>
-          <tr>
-            <th>Beliebtheit</th>
-            <td>
-              <package-popularity class="p-0" :popularity="pkg.popularity"></package-popularity>
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <td>{{ pkg.name }}</td>
+            </tr>
+            <tr>
+              <th>Version</th>
+              <td>{{ pkg.version }}</td>
+            </tr>
+            <tr>
+              <th>Beschreibung</th>
+              <td class="text-break">{{ pkg.description }}</td>
+            </tr>
+            <tr v-if="pkg.url">
+              <th>URL</th>
+              <td class="text-break">
+                <a class="p-0" rel="nofollow noopener" :href="pkg.url">{{ pkg.url }}</a>
+              </td>
+            </tr>
+            <tr v-if="pkg.licenses && pkg.licenses.length > 0">
+              <th>Lizenzen</th>
+              <td>{{ pkg.licenses.join(', ') }}</td>
+            </tr>
+            <tr>
+              <th>Repositorium</th>
+              <td>
+                <router-link class="p-0"
+                  :to="{name: 'packages', query: {architecture: pkg.repository.architecture, repository: pkg.repository.name}}">
+                  {{ pkg.repository.name }}
+                </router-link>
+              </td>
+            </tr>
+            <tr>
+              <th>Architektur</th>
+              <td>
+                {{ pkg.architecture }}
+              </td>
+            </tr>
+            <tr v-if="pkg.groups && pkg.groups.length > 0">
+              <th>Gruppen</th>
+              <td>{{ pkg.groups.join(', ') }}</td>
+            </tr>
+            <tr v-if="pkg.packager">
+              <th>Packer</th>
+              <td>
+                <template v-if="pkg.packager.email">
+                  <a class="p-0" rel="nofollow noopener" :href="'mailto:'+ pkg.packager.email">{{ pkg.packager.name }}</a>
+                </template>
+                <template v-else>{{ pkg.packager.name }}</template>
+              </td>
+            </tr>
+            <tr>
+              <th>Erstellt am</th>
+              <td>{{ (new Date(pkg.buildDate)).toLocaleDateString('de-DE') }}</td>
+            </tr>
+            <tr>
+              <th>Quelltext</th>
+              <td><a class="p-0" :href="pkg.sourceUrl" rel="nofollow noopener" target="_blank">Quelldateien</a>, <a class="p-0" :href="pkg.sourceChangelogUrl" rel="nofollow noopener" target="_blank">Änderungshistorie</a>
+              </td>
+            </tr>
+            <tr v-if="pkg.issueUrl">
+              <th>Bugs</th>
+              <td>
+                <a class="p-0" :href="pkg.issueUrl" rel="noopener">Issue-Tracker</a>
+              </td>
+            </tr>
+            <tr>
+              <th>Paket</th>
+              <td>
+                <a class="p-0" :href="pkg.packageUrl" download rel="nofollow noopener">{{ pkg.fileName }}</a>
+              </td>
+            </tr>
+            <tr>
+              <th>PGP-Signatur</th>
+              <td>
+                <a class="p-0" :href="pkg.packageUrl+'.sig'" download rel="nofollow noopener">{{ pkg.fileName }}.sig</a>
+              </td>
+            </tr>
+            <tr>
+              <th>Paket-Größe</th>
+              <td>{{ prettyBytes(pkg.compressedSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
+            </tr>
+            <tr>
+              <th>Installations-Größe</th>
+              <td>{{ prettyBytes(pkg.installedSize, { locale: 'de', maximumFractionDigits: 2 }) }}</td>
+            </tr>
+            <tr>
+              <th>Beliebtheit</th>
+              <td>
+                <package-popularity class="p-0" :popularity="pkg.popularity"></package-popularity>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
 

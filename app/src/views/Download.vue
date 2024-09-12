@@ -52,22 +52,24 @@
 
         <h3>Prüfsummen</h3>
           <table class="table table-sm table-borderless mb-4">
-            <tr v-if="release.isoSigUrl">
-              <th>PGP</th>
-              <td class="ps-2"><a class="p-0" :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></td>
-            </tr>
-            <tr v-if="release.sha1Sum">
-              <th>SHA1</th>
-              <td class="ps-2 text-break">{{ release.sha1Sum }}</td>
-            </tr>
-            <tr v-if="release.sha256Sum">
-              <th>SHA256</th>
-              <td class="ps-2 text-break">{{ release.sha256Sum }}</td>
-            </tr>
-            <tr v-if="release.b2Sum">
-              <th>B2</th>
-              <td class="ps-2 text-break">{{ release.b2Sum }}</td>
-            </tr>
+            <tbody>
+              <tr v-if="release.isoSigUrl">
+                <th>PGP</th>
+                <td class="ps-2"><a class="p-0" :href="release.isoSigUrl" download rel="nofollow noopener">PGP-Signatur</a></td>
+              </tr>
+              <tr v-if="release.sha1Sum">
+                <th>SHA1</th>
+                <td class="ps-2 text-break">{{ release.sha1Sum }}</td>
+              </tr>
+              <tr v-if="release.sha256Sum">
+                <th>SHA256</th>
+                <td class="ps-2 text-break">{{ release.sha256Sum }}</td>
+              </tr>
+              <tr v-if="release.b2Sum">
+                <th>B2</th>
+                <td class="ps-2 text-break">{{ release.b2Sum }}</td>
+              </tr>
+            </tbody>
           </table>
       </div>
 
