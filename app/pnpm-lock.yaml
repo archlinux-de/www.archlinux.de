@@ -130,8 +130,8 @@ importers:
         specifier: ^7.1.0
         version: 7.1.0(eslint@8.57.0)
       eslint-plugin-vue:
-        specifier: ^9.29.1
-        version: 9.29.1(eslint@8.57.0)
+        specifier: ^9.30.0
+        version: 9.30.0(eslint@8.57.0)
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.8.1)
@@ -2337,8 +2337,8 @@ packages:
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
 
-  eslint-plugin-vue@9.29.1:
-    resolution: {integrity: sha512-MH/MbVae4HV/tM8gKAVWMPJbYgW04CK7SuzYRrlNERpxbO0P3+Zdsa2oAcFBW6xNu7W6lIkGOsFAMCRTYmrlWQ==}
+  eslint-plugin-vue@9.30.0:
+    resolution: {integrity: sha512-CyqlRgShvljFkOeYK8wN5frh/OGTvkj1S7wlr2Q2pUvwq+X5VYiLd6ZjujpgSgLnys2W8qrBLkXQ41SUYaoPIQ==}
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.2.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
@@ -3342,8 +3342,8 @@ packages:
   mdn-data@2.10.0:
     resolution: {integrity: sha512-qq7C3EtK3yJXMwz1zAab65pjl+UhohqMOctTgcqjLOWABqmwj+me02LSsCuEUxnst9X1lCBpoE0WArGKgdGDzw==}
 
-  mdn-data@2.11.1:
-    resolution: {integrity: sha512-Hdx3wmyqPFrhd6YHVuSkUK2eIGAcxR0xlndcgZqjA68yMJTbfXrjJwbgsBOsNjI7LnBIVUQnmyMVSdi/ob0GpQ==}
+  mdn-data@2.12.0:
+    resolution: {integrity: sha512-WF52f/zAu7qiEqYxapSt+LW6Pc/jw8zfn0fx3G9fSckaWDvFLUminV0y0w/3hx8Z5pbMZTYZrXuSnBBxwT48Bg==}
 
   media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
@@ -3585,8 +3585,8 @@ packages:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
 
-  parse5@7.2.0:
-    resolution: {integrity: sha512-ZkDsAOcxsUMZ4Lz5fVciOehNcJ+Gb8gTzcA4yl3wnc273BAybYWrQ+Ks/OjCjSEpjvQkDSeZbybK9qj2VHHdGA==}
+  parse5@7.2.1:
+    resolution: {integrity: sha512-BuBYQYlv1ckiPdQi/ohiivi9Sagc9JG+Ozs0r7b/0iK3sKmrb0b9FdWdBbOdx6hBCM/F9Ir82ofnBhtZOjCRPQ==}
 
   parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
@@ -6230,7 +6230,7 @@ snapshots:
     dependencies:
       '@types/node': 22.8.1
       '@types/tough-cookie': 4.0.5
-      parse5: 7.2.0
+      parse5: 7.2.1
 
   '@types/json-schema@7.0.15': {}
 
@@ -7558,7 +7558,7 @@ snapshots:
     dependencies:
       eslint: 8.57.0
 
-  eslint-plugin-vue@9.29.1(eslint@8.57.0):
+  eslint-plugin-vue@9.30.0(eslint@8.57.0):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@8.57.0)
       eslint: 8.57.0
@@ -8695,7 +8695,7 @@ snapshots:
       https-proxy-agent: 5.0.1
       is-potential-custom-element-name: 1.0.1
       nwsapi: 2.2.13
-      parse5: 7.2.0
+      parse5: 7.2.1
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 4.1.4
@@ -8827,7 +8827,7 @@ snapshots:
 
   mdn-data@2.10.0: {}
 
-  mdn-data@2.11.1: {}
+  mdn-data@2.12.0: {}
 
   media-typer@0.3.0: {}
 
@@ -9055,7 +9055,7 @@ snapshots:
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4
 
-  parse5@7.2.0:
+  parse5@7.2.1:
     dependencies:
       entities: 4.5.0
 
@@ -9875,7 +9875,7 @@ snapshots:
       css-tree: 3.0.0
       is-plain-object: 5.0.0
       known-css-properties: 0.34.0
-      mdn-data: 2.11.1
+      mdn-data: 2.12.0
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.6
       postcss-selector-parser: 6.1.2
