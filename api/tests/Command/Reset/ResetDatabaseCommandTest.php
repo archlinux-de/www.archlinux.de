@@ -2,14 +2,14 @@
 
 namespace App\Tests\Command\Reset;
 
+use App\Command\Reset\ResetDatabaseCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpKernel\KernelInterface;
 use SymfonyDatabaseTest\DatabaseTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @covers \App\Command\Reset\ResetDatabaseCommand
- */
+#[CoversClass(ResetDatabaseCommand::class)]
 class ResetDatabaseCommandTest extends DatabaseTestCase
 {
     public function testCommand(): void

@@ -2,13 +2,13 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\NewsController;
 use App\Entity\NewsAuthor;
 use App\Entity\NewsItem;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \App\Controller\NewsController
- */
+#[CoversClass(NewsController::class)]
 class NewsControllerTest extends DatabaseSearchTestCase
 {
     public function testFeedAction(): void

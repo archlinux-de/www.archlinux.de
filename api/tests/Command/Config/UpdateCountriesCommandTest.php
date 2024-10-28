@@ -7,6 +7,7 @@ use App\Entity\Country;
 use App\Repository\CountryRepository;
 use App\Service\CountryFetcher;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -16,9 +17,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @covers \App\Command\Config\UpdateCountriesCommand
- */
+#[CoversClass(UpdateCountriesCommand::class)]
 class UpdateCountriesCommandTest extends KernelTestCase
 {
     public function testCommand(): void

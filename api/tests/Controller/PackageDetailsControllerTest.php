@@ -2,16 +2,16 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\PackageDetailsController;
 use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Files;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Relations\Dependency;
 use App\Entity\Packages\Repository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use SymfonyDatabaseTest\DatabaseTestCase;
 
-/**
- * @covers \App\Controller\PackageDetailsController
- */
+#[CoversClass(PackageDetailsController::class)]
 class PackageDetailsControllerTest extends DatabaseTestCase
 {
     public function testPackageAction(): void

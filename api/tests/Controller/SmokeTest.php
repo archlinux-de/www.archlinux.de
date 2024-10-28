@@ -10,11 +10,10 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * @coversNothing
- */
+#[CoversNothing]
 class SmokeTest extends DatabaseSearchTestCase
 {
     public function setUp(): void

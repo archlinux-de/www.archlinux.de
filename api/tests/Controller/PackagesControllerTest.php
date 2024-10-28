@@ -2,16 +2,16 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\PackagesController;
 use App\Entity\Packages\Architecture;
 use App\Entity\Packages\Package;
 use App\Entity\Packages\Packager;
 use App\Entity\Packages\Repository;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * @covers \App\Controller\PackagesController
- */
+#[CoversClass(PackagesController::class)]
 class PackagesControllerTest extends DatabaseSearchTestCase
 {
     public function testOpenSearchAction(): void

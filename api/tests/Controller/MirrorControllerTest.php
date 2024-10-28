@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\MirrorController;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Entity\Packages\Architecture;
@@ -9,11 +10,10 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * @covers \App\Controller\MirrorController
- */
+#[CoversClass(MirrorController::class)]
 class MirrorControllerTest extends DatabaseSearchTestCase
 {
     public function testIsoAction(): void

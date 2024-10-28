@@ -7,6 +7,7 @@ use App\Entity\Release;
 use App\Repository\ReleaseRepository;
 use App\Service\ReleaseFetcher;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -16,9 +17,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @covers \App\Command\Update\UpdateReleasesCommand
- */
+#[CoversClass(UpdateReleasesCommand::class)]
 class UpdateReleasesCommandTest extends KernelTestCase
 {
     public function testCommand(): void

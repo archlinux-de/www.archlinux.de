@@ -7,6 +7,7 @@ use App\Entity\Mirror;
 use App\Repository\MirrorRepository;
 use App\Service\MirrorFetcher;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -16,9 +17,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @covers \App\Command\Update\UpdateMirrorsCommand
- */
+#[CoversClass(UpdateMirrorsCommand::class)]
 class UpdateMirrorsCommandTest extends KernelTestCase
 {
     public function testCommand(): void

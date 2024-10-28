@@ -6,14 +6,13 @@ use App\Command\Update\UpdateRepositoriesCommand;
 use App\Repository\AbstractRelationRepository;
 use App\Service\RepositoryManager;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @covers \App\Command\Update\UpdateRepositoriesCommand
- */
+#[CoversClass(UpdateRepositoriesCommand::class)]
 class UpdateRepositoriesCommandTest extends KernelTestCase
 {
     public function testCommand(): void

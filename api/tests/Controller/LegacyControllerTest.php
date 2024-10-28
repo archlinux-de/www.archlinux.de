@@ -2,15 +2,15 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\LegacyController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\ByteString;
 
-/**
- * @covers \App\Controller\LegacyController
- */
+#[CoversClass(LegacyController::class)]
 class LegacyControllerTest extends WebTestCase
 {
     #[DataProvider('provideLegacyPages')]

@@ -15,13 +15,12 @@ use App\Entity\Packages\Relations\Provision;
 use App\Entity\Packages\Relations\Replacement;
 use App\Entity\Packages\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Entity\Packages\Package
- */
+#[CoversClass(Package::class)]
 class PackageTest extends TestCase
 {
     #[DataProvider('provideUpdateStringMethods')]

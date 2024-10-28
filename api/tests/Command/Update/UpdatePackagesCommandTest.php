@@ -12,6 +12,7 @@ use App\Service\PackageDatabaseDownloader;
 use App\Service\PackageDatabaseMirror;
 use App\Service\PackageDatabaseReader;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -21,9 +22,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @covers \App\Command\Update\UpdatePackagesCommand
- */
+#[CoversClass(UpdatePackagesCommand::class)]
 class UpdatePackagesCommandTest extends KernelTestCase
 {
     public function testCommand(): void

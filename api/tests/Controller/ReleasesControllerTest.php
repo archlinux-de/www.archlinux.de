@@ -2,12 +2,12 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\ReleasesController;
 use App\Entity\Release;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \App\Controller\ReleasesController
- */
+#[CoversClass(ReleasesController::class)]
 class ReleasesControllerTest extends DatabaseSearchTestCase
 {
     public function testFeedAction(): void

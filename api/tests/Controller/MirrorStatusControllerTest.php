@@ -2,14 +2,14 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\MirrorStatusController;
 use App\Entity\Country;
 use App\Entity\Mirror;
 use App\Entity\MirrorPopularity as Popularity;
 use App\Tests\DatabaseSearchTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \App\Controller\MirrorStatusController
- */
+#[CoversClass(MirrorStatusController::class)]
 class MirrorStatusControllerTest extends DatabaseSearchTestCase
 {
     public function testMirrorsAction(): void

@@ -8,6 +8,7 @@ use App\Entity\NewsItem;
 use App\Repository\NewsItemRepository;
 use App\Service\NewsItemFetcher;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,9 +18,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @covers \App\Command\Update\UpdateNewsCommand
- */
+#[CoversClass(UpdateNewsCommand::class)]
 class UpdateNewsCommandTest extends KernelTestCase
 {
     public function testCommand(): void
