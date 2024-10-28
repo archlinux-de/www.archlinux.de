@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ReleaseRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,21 +19,21 @@ class Release
     #[Assert\Regex('/^[0-9]+[\.\-\w]+$/')]
     private string $version;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $available;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: Types::TEXT)]
     #[Assert\Length(max: 16384)]
     private string $info;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTime $created;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Regex('/^[\d\.]{5,10}$/')]
     private ?string $kernelVersion = null;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private \DateTime $releaseDate;
 
     #[ORM\Column(length: 40, nullable: true)]
@@ -55,9 +56,9 @@ class Release
     #[Assert\Length(max: 255)]
     private ?string $fileName = null;
 
-    #[ORM\Column(type: 'bigint', nullable: true)]
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
     #[Assert\Range(min: 1, max: 4294967296)]
-    private ?string $fileLength = null;
+    private ?int $fileLength = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Length(max: 255)]
@@ -200,12 +201,12 @@ class Release
 
     public function getFileLength(): ?int
     {
-        return $this->fileLength ? (int) $this->fileLength : null;
+        return $this->fileLength;
     }
 
     public function setFileLength(?int $fileLength): Release
     {
-        $this->fileLength = $fileLength ? (string) $fileLength : null;
+        $this->fileLength = $fileLength;
         return $this;
     }
 

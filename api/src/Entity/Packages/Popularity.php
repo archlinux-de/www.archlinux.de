@@ -2,21 +2,22 @@
 
 namespace App\Entity\Packages;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class Popularity
 {
-    #[ORM\Column(type: 'float', nullable: true)]
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
     #[Assert\Range(min: 0, max: 100)]
     private ?float $popularity = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     #[Assert\Range(min: 0, max: 10000000)]
     private ?int $samples = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     #[Assert\Range(min: 0, max: 10000000)]
     private ?int $count = null;
 

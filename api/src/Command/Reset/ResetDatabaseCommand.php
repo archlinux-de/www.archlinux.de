@@ -11,7 +11,7 @@ use App\Entity\Packages\Relations\AbstractRelation;
 use App\Entity\Packages\Repository;
 use App\Entity\Release;
 use App\Service\PackageDatabaseMirror;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Command\Command;
@@ -116,7 +116,7 @@ class ResetDatabaseCommand extends Command
         $connection = $this->entityManager->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
 
-        if ($connection->getDriver()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if ($dbPlatform instanceof SQLitePlatform) {
             $connection->executeQuery('PRAGMA foreign_keys = OFF');
         } else {
             // @codeCoverageIgnoreStart

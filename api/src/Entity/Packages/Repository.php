@@ -5,6 +5,7 @@ namespace App\Entity\Packages;
 use App\Repository\RepositoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -19,7 +20,7 @@ class Repository
     #[Assert\Length(max: 255)]
     private string $name;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $testing = false;
 
     #[ORM\Column]

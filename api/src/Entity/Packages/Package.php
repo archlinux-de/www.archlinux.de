@@ -12,6 +12,7 @@ use App\Entity\Packages\Relations\Replacement;
 use App\Repository\PackageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -52,19 +53,19 @@ class Package
     /**
      * @var string[]
      */
-    #[ORM\Column(type: 'simple_array', nullable: true)]
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     #[Assert\All(
         [new Assert\Length(min: 2, max: 100)]
     )]
     private ?array $groups = [];
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: Types::BIGINT)]
     #[Assert\Range(min: 0, max: 107374182400)]
-    private string $compressedSize = '0';
+    private int $compressedSize = 0;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: Types::BIGINT)]
     #[Assert\Range(min: 0, max: 107374182400)]
-    private string $installedSize = '0';
+    private int $installedSize = 0;
 
     #[ORM\Column(length: 64, nullable: true)]
     #[Assert\Regex('/^[0-9a-f]{64}$/')]
@@ -77,7 +78,7 @@ class Package
     /**
      * @var string[]|null
      */
-    #[ORM\Column(type: 'simple_array', nullable: true)]
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     #[Assert\All(
         [new Assert\Length(min: 3, max: 100)]
     )]
@@ -87,7 +88,7 @@ class Package
     #[Assert\Choice(['x86_64', 'any'])]
     private string $architecture;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTime $buildDate = null;
 
     #[ORM\Embedded(class: Packager::class)]
@@ -365,23 +366,23 @@ class Package
 
     public function getCompressedSize(): int
     {
-        return (int) $this->compressedSize;
+        return $this->compressedSize;
     }
 
     public function setCompressedSize(int $compressedSize): Package
     {
-        $this->compressedSize = (string) $compressedSize;
+        $this->compressedSize = $compressedSize;
         return $this;
     }
 
     public function getInstalledSize(): int
     {
-        return (int) $this->installedSize;
+        return $this->installedSize;
     }
 
     public function setInstalledSize(int $installedSize): Package
     {
-        $this->installedSize = (string) $installedSize;
+        $this->installedSize = $installedSize;
         return $this;
     }
 

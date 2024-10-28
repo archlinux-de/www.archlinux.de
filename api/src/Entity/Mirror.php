@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\MirrorRepository;
 use App\Entity\MirrorPopularity as Popularity;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -21,33 +22,33 @@ class Mirror
     #[ORM\JoinColumn(referencedColumnName: 'code', nullable: true)]
     private ?Country $country = null;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTime $lastSync;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     #[Assert\Range(min: 0, max: 63072000)]
     private int $delay = 0;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: Types::FLOAT)]
     #[Assert\Range(min: 0, max: 10240)]
     private float $durationAvg = 0;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: Types::FLOAT)]
     #[Assert\Range(min: 0, max: 102400)]
     private float $score = 0;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: Types::FLOAT)]
     #[Assert\Range(min: 0, max: 1)]
     private float $completionPct = 0;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: Types::FLOAT)]
     #[Assert\Range(min: 0, max: 10240)]
     private float $durationStddev = 0;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $ipv4 = false;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $ipv6 = false;
 
     #[ORM\Embedded(class: Popularity::class)]

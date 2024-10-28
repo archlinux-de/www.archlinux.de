@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\NewsItemRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -24,7 +25,7 @@ class NewsItem
     #[Assert\Length(min: 10, max: 255)]
     private string $link;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 65535)]
     private string $description;
@@ -33,7 +34,7 @@ class NewsItem
     #[Assert\Valid]
     private NewsAuthor $author;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTime $lastModified;
 
     public function __construct(int $id)
