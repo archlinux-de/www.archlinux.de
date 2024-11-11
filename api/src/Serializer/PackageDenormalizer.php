@@ -106,12 +106,9 @@ class PackageDenormalizer implements DenormalizerInterface
     private function createTargetFromString(string $targetDefinition): array
     {
         if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:\-]+)(?::.+)?$/', $targetDefinition, $matches) > 0) {
-            assert(isset($matches[1]));
             $targetName = $matches[1];
-            assert(isset($matches[2]));
             $targetVersion = $matches[2];
         } elseif (preg_match('/^([\w\-+@.]+)/', $targetDefinition, $matches) > 0) {
-            assert(isset($matches[1]));
             $targetName = $matches[1];
             $targetVersion = null;
         } else {
