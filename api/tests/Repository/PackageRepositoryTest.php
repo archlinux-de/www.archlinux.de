@@ -136,6 +136,9 @@ class PackageRepositoryTest extends DatabaseTestCase
         $this->assertEquals($pacman->getId(), $packages[0]->getId());
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public static function provideTerms(): array
     {
         return [

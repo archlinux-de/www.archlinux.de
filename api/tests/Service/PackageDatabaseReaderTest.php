@@ -14,20 +14,16 @@ class PackageDatabaseReaderTest extends TestCase
 {
     public function testReadPackages(): void
     {
-        /** @var Repository|MockObject $repository */
         $repository = $this->createMock(Repository::class);
 
-        /** @var Package $package */
         $package = $this->createMock(Package::class);
 
-        /** @var SerializerInterface|MockObject $serializer */
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer
             ->expects($this->once())
             ->method('deserialize')
             ->willReturn($package);
 
-        /** @var PackageDatabaseExtractor|MockObject $packageDatabaseExtractor */
         $packageDatabaseExtractor = $this->createMock(PackageDatabaseExtractor::class);
         $packageDatabaseExtractor
             ->expects($this->once())

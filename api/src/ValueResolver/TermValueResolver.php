@@ -16,6 +16,9 @@ readonly class TermValueResolver implements ValueResolverInterface
     {
     }
 
+    /**
+     * @return iterable<TermRequest>
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         if (!$argument->getType() || !is_a($argument->getType(), TermRequest::class, true)) {

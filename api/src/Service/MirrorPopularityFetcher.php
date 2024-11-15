@@ -20,7 +20,7 @@ readonly class MirrorPopularityFetcher implements \IteratorAggregate
         $offset = 0;
         $limit = 10000;
 
-        while ($count != 0) {
+        while ($count != 0) { // @phpstan-ignore notEqual.alwaysTrue
             $response = $this->httpClient->request(
                 'GET',
                 $this->mirrorStatisticsApiUrl,
@@ -30,6 +30,7 @@ readonly class MirrorPopularityFetcher implements \IteratorAggregate
                 ]
             );
             $content = $response->getContent();
+            /** @var array{'mirrorPopularities': list<array{'url': string, 'popularity': float, 'samples': int, 'count': int}>} $mirrorPopularityList */
             $mirrorPopularityList = json_decode($content, true);
             if (!is_array($mirrorPopularityList)) {
                 throw new \RuntimeException('Invalid mirrorPopularityList');

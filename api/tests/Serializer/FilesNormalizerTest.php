@@ -17,6 +17,9 @@ class FilesNormalizerTest extends KernelTestCase
         $this->serializer = static::getContainer()->get('serializer');
     }
 
+    /**
+     * @param string[] $filesArray
+     */
     #[DataProvider('provideFilesArray')]
     public function testNormalize(array $filesArray): void
     {
@@ -28,6 +31,9 @@ class FilesNormalizerTest extends KernelTestCase
         $this->assertEquals($filesArray, $jsonArray);
     }
 
+    /**
+     * @return list<list<string[]>>
+     */
     public static function provideFilesArray(): array
     {
         return [

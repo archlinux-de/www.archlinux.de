@@ -17,6 +17,9 @@ readonly class ArchitectureValueResolver implements ValueResolverInterface
     {
     }
 
+    /**
+     * @return iterable<ArchitectureRequest>
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         if (!$argument->getType() || !is_a($argument->getType(), ArchitectureRequest::class, true)) {

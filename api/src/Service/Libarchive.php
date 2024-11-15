@@ -42,6 +42,9 @@ readonly class Libarchive
         );
     }
 
+    /**
+     * @param mixed[] $arguments
+     */
     public function __call(string $name, array $arguments): mixed
     {
         return $this->ffi->$name(...$arguments);

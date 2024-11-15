@@ -10,6 +10,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RepositoryManager
 {
+    /**
+     * @param array<string, string[]> $repositoryConfiguration
+     */
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly array $repositoryConfiguration,

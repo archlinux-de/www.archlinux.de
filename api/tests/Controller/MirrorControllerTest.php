@@ -144,6 +144,9 @@ class MirrorControllerTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function providePackageExtensions(): array
     {
         return [

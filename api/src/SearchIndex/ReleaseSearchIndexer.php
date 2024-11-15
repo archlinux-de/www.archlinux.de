@@ -10,6 +10,9 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
     {
     }
 
+    /**
+     * @return array{'index': string, 'body': mixed[]}
+     */
     public function createIndexConfiguration(): array
     {
         return [
@@ -33,6 +36,9 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return ($this->environment == 'test' ? 'test-' : '') . 'release';
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkIndexStatement(object $object): array
     {
         assert($object instanceof Release);
@@ -49,6 +55,9 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return $paramsBody;
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkDeleteStatement(object $object): array
     {
         assert($object instanceof Release);

@@ -18,6 +18,10 @@ use Symfony\Component\String\ByteString;
 
 class PackageDenormalizer implements DenormalizerInterface
 {
+    /**
+     * @param mixed[] $data
+     * @param mixed[] $context
+     */
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Package
     {
         assert(is_array($data));
@@ -103,6 +107,9 @@ class PackageDenormalizer implements DenormalizerInterface
         return new Dependency($target['name'], $target['version']);
     }
 
+    /**
+     * @return array{'name': string, 'version': ?string}
+     */
     private function createTargetFromString(string $targetDefinition): array
     {
         if (preg_match('/^([\w\-+@.]+?)((?:<|<=|=|>=|>)+[\w.:\-]+)(?::.+)?$/', $targetDefinition, $matches) > 0) {

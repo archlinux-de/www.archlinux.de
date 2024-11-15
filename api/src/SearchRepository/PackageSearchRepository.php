@@ -16,6 +16,17 @@ class PackageSearchRepository
     ) {
     }
 
+    /**
+     * @return array{
+     *     'offset': int,
+     *     'limit': int,
+     *     'total': int,
+     *     'count': int,
+     *     'items': Package[],
+     *     'repositories': string[],
+     *     'architectures': string[]
+     * }
+     */
     public function findLatestByQueryAndArchitecture(
         int $offset,
         int $limit,
@@ -61,6 +72,7 @@ class PackageSearchRepository
             $bool['must'][] = ['term' => ['repository.name' => $repository]];
         }
 
+        /** @var array{'hits': array{'hits': array<array{'_id': string}>, 'total': array{'value': int}}} $results */
         $results = $this->client->search(
             [
                 'index' => $this->packageSearchIndexer->getIndexName(),
@@ -102,17 +114,18 @@ class PackageSearchRepository
             'count' => count($packages),
             'items' => $packages,
             'repositories' => isset($results['aggregations']['repository']['buckets']) ? array_map(
-                fn(array $repository): string => $repository['key'],
-                $results['aggregations']['repository']['buckets']
+                fn(array $repository): string => $repository['key'], // @phpstan-ignore return.type, argument.type
+                $results['aggregations']['repository']['buckets'] // @phpstan-ignore argument.type
             ) : [],
             'architectures' => isset($results['aggregations']['architecture']['buckets']) ? array_map(
-                fn(array $repository): string => $repository['key'],
-                $results['aggregations']['architecture']['buckets']
+                fn(array $repository): string => $repository['key'], // @phpstan-ignore return.type, argument.type
+                $results['aggregations']['architecture']['buckets'] // @phpstan-ignore argument.type
             ) : []
         ];
     }
 
     /**
+     * @param array{'hits': array{'hits': array<array{'_id': string}>}} $results
      * @return Package[]
      */
     private function findBySearchResults(array $results): array
@@ -133,6 +146,7 @@ class PackageSearchRepository
      */
     public function findByTerm(string $term, int $limit): array
     {
+        /** @var array{'hits': array{'hits': array<array{'_id': string}>, 'total': array{'value': int}}} $results */
         $results = $this->client->search(
             [
                 'index' => $this->packageSearchIndexer->getIndexName(),

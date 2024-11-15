@@ -16,6 +16,9 @@ readonly class RepositoryValueResolver implements ValueResolverInterface
     {
     }
 
+    /**
+     * @return iterable<RepositoryRequest>
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         if (!$argument->getType() || !is_a($argument->getType(), RepositoryRequest::class, true)) {

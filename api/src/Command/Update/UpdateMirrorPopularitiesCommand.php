@@ -18,6 +18,7 @@ class UpdateMirrorPopularitiesCommand extends Command
 {
     use LockableTrait;
 
+    /** @var array<string, Popularity> */
     private array $mirrorPopularities = [];
 
     public function __construct(

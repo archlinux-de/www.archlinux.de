@@ -117,6 +117,7 @@ class PackageDenormalizerTest extends TestCase
     }
 
     /**
+     * @param mixed[] $expected
      * @param Collection<int, covariant AbstractRelation> $dependencies
      */
     private function assertDependency(array $expected, Collection $dependencies): void
@@ -131,6 +132,10 @@ class PackageDenormalizerTest extends TestCase
         );
     }
 
+    /**
+     * @param mixed[]|string|null $values
+     * @param mixed[] $expected
+     */
     #[DataProvider('provideDependencies')]
     public function testDependencies(string $type, array|string|null $values, array $expected): void
     {
@@ -189,6 +194,9 @@ class PackageDenormalizerTest extends TestCase
         }
     }
 
+    /**
+     * @return iterable<mixed[]>
+     */
     public static function provideDependencies(): iterable
     {
         $types = ['DEPENDS', 'CONFLICTS', 'REPLACES', 'OPTDEPENDS', 'PROVIDES', 'MAKEDEPENDS', 'CHECKDEPENDS'];
@@ -239,6 +247,9 @@ class PackageDenormalizerTest extends TestCase
         }
     }
 
+    /**
+     * @return iterable<mixed[]>
+     */
     public static function providePackagers(): iterable
     {
         yield [null, null, null];

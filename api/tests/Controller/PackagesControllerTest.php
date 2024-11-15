@@ -76,6 +76,9 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isClientError());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideInvalideSuggestTerms(): array
     {
         return [

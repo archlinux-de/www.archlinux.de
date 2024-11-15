@@ -189,6 +189,9 @@ class RepositoryManagerTest extends TestCase
         $repositoryManager->createNewRepositories();
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public static function provideRepositories(): array
     {
         return [

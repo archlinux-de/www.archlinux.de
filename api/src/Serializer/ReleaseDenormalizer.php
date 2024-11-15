@@ -8,13 +8,14 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class ReleaseDenormalizer implements DenormalizerInterface
 {
     /**
-     * @param array $data
+     * @param mixed[] $data
      * @return Release[]
      */
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
+                assert(is_array($data['releases']));
                 foreach ($data['releases'] as $releaseData) {
                     $release = (new Release($releaseData['version']))
                         ->setAvailable(

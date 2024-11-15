@@ -14,13 +14,14 @@ readonly class MirrorDenormalizer implements DenormalizerInterface
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      * @return Mirror[]
      */
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
+                assert(is_array($data['urls']));
                 foreach ($data['urls'] as $mirrorData) {
                     if (
                         !$mirrorData['active'] ||

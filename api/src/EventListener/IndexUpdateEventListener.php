@@ -9,6 +9,7 @@ use OpenSearch\Client;
 
 class IndexUpdateEventListener
 {
+    /** @var array<mixed[]> */
     private array $bulkStatements = [];
 
     public function __construct(

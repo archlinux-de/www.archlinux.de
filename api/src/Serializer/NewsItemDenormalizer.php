@@ -13,13 +13,14 @@ readonly class NewsItemDenormalizer implements DenormalizerInterface
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      * @return NewsItem[]
      */
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
+                assert(is_array($data['data']));
                 foreach ($data['data'] as $discussions) {
                     $firstPostContent = $this->getFirstPost(
                         $data['included'],
@@ -60,6 +61,10 @@ readonly class NewsItemDenormalizer implements DenormalizerInterface
         ];
     }
 
+    /**
+     * @param mixed[] $included
+     * @return mixed[]
+     */
     private function getUser(array $included, int $id): array
     {
         foreach ($included as $item) {
@@ -70,6 +75,10 @@ readonly class NewsItemDenormalizer implements DenormalizerInterface
         return [];
     }
 
+    /**
+     * @param mixed[] $included
+     * @return mixed[]
+     */
     private function getFirstPost(array $included, int $id): array
     {
         foreach ($included as $item) {

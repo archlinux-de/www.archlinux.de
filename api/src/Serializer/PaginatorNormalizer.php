@@ -12,14 +12,15 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
     use NormalizerAwareTrait;
 
     /**
-     * @param Paginator $object
+     * @param Paginator<object> $object
+     * @return array{'offset': int, 'limit': ?int, 'total': int, 'count': int, 'items': mixed[]}
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         $objectIterator = $object->getIterator();
         assert($objectIterator instanceof \Countable);
 
-        return [
+        return [ // @phpstan-ignore return.type
             'offset' => $object->getQuery()->getFirstResult(),
             'limit' => $object->getQuery()->getMaxResults(),
             'total' => $object->count(),

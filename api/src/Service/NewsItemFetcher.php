@@ -48,6 +48,6 @@ class NewsItemFetcher implements \IteratorAggregate
             if ($count < $limit) {
                 break;
             }
-        } while ($count != 0);
+        } while ($count != 0); // @phpstan-ignore notEqual.alwaysTrue
     }
 }

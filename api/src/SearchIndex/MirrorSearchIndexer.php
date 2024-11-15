@@ -10,6 +10,9 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
     {
     }
 
+    /**
+     * @return array{'index': string, 'body': mixed[]}
+     */
     public function createIndexConfiguration(): array
     {
         return [
@@ -39,6 +42,9 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
         return ($this->environment == 'test' ? 'test-' : '') . 'mirror';
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkIndexStatement(object $object): array
     {
         assert($object instanceof Mirror);
@@ -58,6 +64,9 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
         return $paramsBody;
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkDeleteStatement(object $object): array
     {
         assert($object instanceof Mirror);

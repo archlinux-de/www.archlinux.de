@@ -100,6 +100,9 @@ class PackageNormalizerTest extends KernelTestCase
         $this->assertStringContainsString($expectedPath, $jsonArray['sourceChangelogUrl']);
     }
 
+    /**
+     * @return iterable<string[]>
+     */
     public static function providePackageNames(): iterable
     {
         return [
@@ -129,6 +132,9 @@ class PackageNormalizerTest extends KernelTestCase
         $this->assertStringContainsString($expectedTag, $jsonArray['sourceChangelogUrl']);
     }
 
+    /**
+     * @return iterable<string[]>
+     */
     public static function providePackageVersions(): iterable
     {
         return [

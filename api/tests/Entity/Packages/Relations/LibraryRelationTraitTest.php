@@ -25,13 +25,16 @@ class LibraryRelationTraitTest extends TestCase
                 return $this->targetName;
             }
 
-            public function getTargetVersion(): ?string
+            public function getTargetVersion(): ?string // @phpstan-ignore return.unusedType
             {
                 return '';
             }
         })->isLibrary());
     }
 
+    /**
+     * @return iterable<array<string|boolean>>
+     */
     public static function provideLibrary(): iterable
     {
         return [
@@ -62,13 +65,16 @@ class LibraryRelationTraitTest extends TestCase
                 return 'lib.so';
             }
 
-            public function getTargetVersion(): ?string
+            public function getTargetVersion(): ?string // @phpstan-ignore return.unusedType
             {
                 return $this->targetVersion;
             }
         })->isLibraryArchitecture($architecture));
     }
 
+    /**
+     * @return iterable<array<string|boolean>>
+     */
     public static function provideLibraryArchitecture(): iterable
     {
         return [

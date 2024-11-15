@@ -54,10 +54,8 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
     private function getOpenSearchClient(): Client
     {
         $container = static::getClient()->getContainer();
-        static::assertNotNull($container);
-        /** @var Client $client */
         $client = $container->get(Client::class);
-        static::assertNotNull($client);
+        $this->assertInstanceOf(Client::class, $client);
         return $client;
     }
 

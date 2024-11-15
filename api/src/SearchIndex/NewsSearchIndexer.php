@@ -10,6 +10,9 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
     {
     }
 
+    /**
+     * @return array{'index': string, 'body': mixed[]}
+     */
     public function createIndexConfiguration(): array
     {
         return [
@@ -32,6 +35,9 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
         return ($this->environment == 'test' ? 'test-' : '') . 'news_item';
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkIndexStatement(object $object): array
     {
         assert($object instanceof NewsItem);
@@ -47,6 +53,9 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
         return $paramsBody;
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkDeleteStatement(object $object): array
     {
         assert($object instanceof NewsItem);

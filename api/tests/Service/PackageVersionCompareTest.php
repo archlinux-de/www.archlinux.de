@@ -29,6 +29,9 @@ class PackageVersionCompareTest extends TestCase
         );
     }
 
+    /**
+     * @return iterable<mixed[]>
+     */
     public static function provideVersions(): iterable
     {
         // test cases from https://gitlab.archlinux.org/pacman/pacman/-/blob/master/test/util/vercmptest.sh
@@ -118,6 +121,9 @@ class PackageVersionCompareTest extends TestCase
         );
     }
 
+    /**
+     * @return iterable<mixed[]>
+     */
     public static function provideVersionConstraints(): iterable
     {
         yield ['7.5-2', '>=7.5-1', true];

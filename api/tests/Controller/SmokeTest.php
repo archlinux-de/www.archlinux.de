@@ -86,6 +86,9 @@ class SmokeTest extends DatabaseSearchTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideUrls(): array
     {
         return [
@@ -97,6 +100,9 @@ class SmokeTest extends DatabaseSearchTestCase
         ];
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideRedirectUrls(): array
     {
         return [

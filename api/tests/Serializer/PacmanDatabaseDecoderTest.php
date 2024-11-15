@@ -15,6 +15,9 @@ class PacmanDatabaseDecoderTest extends TestCase
         $this->assertTrue($pacmanDatabaseDecoder->supportsDecoding('pacman-database'));
     }
 
+    /**
+     * @param mixed[] $expected
+     */
     #[DataProvider('provideInput')]
     public function testDecode(string $input, array $expected): void
     {
@@ -23,6 +26,9 @@ class PacmanDatabaseDecoderTest extends TestCase
         $this->assertSame($expected, $pacmanDatabaseDecoder->decode($input, 'pacman-database'));
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public static function provideInput(): array
     {
         return [

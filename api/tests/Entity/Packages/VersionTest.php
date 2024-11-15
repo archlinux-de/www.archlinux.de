@@ -25,6 +25,9 @@ class VersionTest extends TestCase
         $this->assertSame($constraint, $packageVersion->getConstraint());
     }
 
+    /**
+     * @return iterable<mixed[]>
+     */
     public static function provideVersions(): iterable
     {
         yield ['1:2.3-4.5', 1, '2.3', '4.5', VersionConstraint::ANY];

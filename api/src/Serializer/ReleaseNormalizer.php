@@ -30,10 +30,11 @@ class ReleaseNormalizer implements NormalizerInterface
 
     /**
      * @param Release $object
+     * @return mixed[]
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        /** @var array $data */
+        /** @var mixed[] $data */
         $data = $this->normalizer->normalize(
             $object,
             $format,

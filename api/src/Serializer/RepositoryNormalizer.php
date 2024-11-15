@@ -26,10 +26,11 @@ class RepositoryNormalizer implements NormalizerInterface
 
     /**
      * @param Repository $object
+     * @return mixed[]
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        /** @var array $data */
+        /** @var mixed[] $data */
         $data = $this->normalizer->normalize(
             $object,
             $format,

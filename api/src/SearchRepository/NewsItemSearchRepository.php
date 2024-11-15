@@ -16,6 +16,9 @@ class NewsItemSearchRepository
     ) {
     }
 
+    /**
+     * @return array{'offset': int, 'limit': int, 'total': int, 'count': int, 'items': NewsItem[]}
+     */
     public function findLatestByQuery(int $offset, int $limit, string $query): array
     {
         $sort = [];
@@ -49,6 +52,7 @@ class NewsItemSearchRepository
             $body['query'] = ['bool' => $bool];
         }
 
+        /** @var array{'hits': array{'hits': array<array{'_id': string}>, 'total': array{'value': int}}} $results */
         $results = $this->client->search(
             [
                 'index' => $this->newsSearchIndexer->getIndexName(),
@@ -72,6 +76,7 @@ class NewsItemSearchRepository
     }
 
     /**
+     * @param array{'hits': array{'hits': array<array{'_id': string}>}} $results
      * @return NewsItem[]
      */
     private function findBySearchResults(array $results): array

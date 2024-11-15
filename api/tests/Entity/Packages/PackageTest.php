@@ -45,6 +45,9 @@ class PackageTest extends TestCase
         $this->assertEquals('foo', $package->$stringMethod());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideUpdateStringMethods(): array
     {
         return [
@@ -102,6 +105,9 @@ class PackageTest extends TestCase
         $this->assertEquals(new \DateTime('2018-01-30'), $package->$timeMethod());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideTimeMethods(): array
     {
         return [
@@ -131,6 +137,9 @@ class PackageTest extends TestCase
         $this->assertEquals(1234, $package->$sizeMethod());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideSiteMethods(): array
     {
         return [
@@ -162,6 +171,9 @@ class PackageTest extends TestCase
         $this->assertEquals($list, $package->$listMethod());
     }
 
+    /**
+     * @return list<string[]>
+     */
     public static function provideListMethods(): array
     {
         return [

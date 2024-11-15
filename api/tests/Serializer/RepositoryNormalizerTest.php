@@ -48,6 +48,9 @@ class RepositoryNormalizerTest extends KernelTestCase
         );
     }
 
+    /**
+     * @return list<boolean[]>
+     */
     public static function provideTesting(): array
     {
         return [

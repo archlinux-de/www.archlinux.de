@@ -14,6 +14,7 @@ readonly class AbstractRelationNormalizer implements NormalizerInterface
 
     /**
      * @param AbstractRelation $object
+     * @return mixed[]
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {

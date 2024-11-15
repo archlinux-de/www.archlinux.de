@@ -13,6 +13,9 @@ class PackageDatabaseExtractor
     {
     }
 
+    /**
+     * @return \Traversable<string>
+     */
     public function extractPackageDescriptions(string $packageDatabase): \Traversable
     {
         $entry = $this->libarchive->new($this->libarchive->type('struct archive_entry*'));

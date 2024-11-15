@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LegacyController extends AbstractController
 {
+    /** @var array<string, string> */
     private array $internalPages = [
         'GetFileFromMirror' => 'app_mirror_fallback',
         'GetOpenSearch' => 'app_packages_opensearch',
@@ -22,6 +23,7 @@ class LegacyController extends AbstractController
         'Start' => 'app_start'
     ];
 
+    /** @var array<string, string> */
     private array $externalPages = [
         'ArchitectureDifferences' => 'https://www.archlinux.org/packages/differences/',
         'MirrorProblems' => 'https://www.archlinux.org/mirrors/status/#outofsync',

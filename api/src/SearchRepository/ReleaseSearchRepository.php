@@ -16,6 +16,9 @@ class ReleaseSearchRepository
     ) {
     }
 
+    /**
+     * @return array{'offset': int, 'limit': int, 'total': int, 'count': int, 'items': Release[]}
+     */
     public function findAllByQuery(int $offset, int $limit, string $query, bool $onlyAvailable = false): array
     {
         $sort = [];
@@ -53,6 +56,7 @@ class ReleaseSearchRepository
             $body['query'] = ['bool' => $bool];
         }
 
+        /** @var array{'hits': array{'hits': array<array{'_id': string}>, 'total': array{'value': int}}} $results */
         $results = $this->client->search(
             [
                 'index' => $this->releaseSearchIndexer->getIndexName(),
@@ -76,6 +80,7 @@ class ReleaseSearchRepository
     }
 
     /**
+     * @param array{'hits': array{'hits': array<array{'_id': string}>}} $results
      * @return Release[]
      */
     private function findBySearchResults(array $results): array

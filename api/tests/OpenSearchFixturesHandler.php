@@ -17,6 +17,9 @@ class OpenSearchFixturesHandler
         $this->defaultHandler = ClientBuilder::defaultHandler();
     }
 
+    /**
+     * @param mixed[] $request
+     */
     public function __invoke(array $request): CompletedFutureArray
     {
         if ($this->mode == 'off') {

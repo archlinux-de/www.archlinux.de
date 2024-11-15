@@ -20,7 +20,7 @@ readonly class PackagePopularityFetcher implements \IteratorAggregate
         $offset = 0;
         $limit = 10000;
 
-        while ($count != 0) {
+        while ($count != 0) { // @phpstan-ignore notEqual.alwaysTrue
             $response = $this->httpClient->request(
                 'GET',
                 $this->packageStatisticsApiUrl,
@@ -30,6 +30,7 @@ readonly class PackagePopularityFetcher implements \IteratorAggregate
                 ]
             );
             $content = $response->getContent();
+            /** @var array{'packagePopularities': list<array{'name': string, 'popularity': float, 'samples': int, 'count': int}>} $packagePopularityList */
             $packagePopularityList = json_decode($content, true);
             if (!is_array($packagePopularityList)) {
                 throw new \RuntimeException('Invalid packagePopularityList');

@@ -17,6 +17,9 @@ class MirrorSearchRepository
     ) {
     }
 
+    /**
+     * @return array{'offset': int, 'limit': int, 'total': int, 'count': int, 'items': Mirror[]}
+     */
     public function findSecureByQuery(int $offset, int $limit, string $query): array
     {
         $sort = [
@@ -46,6 +49,7 @@ class MirrorSearchRepository
 
         $bool['must'][] = ['wildcard' => ['url' => 'https*']];
 
+        /** @var array{'hits': array{'hits': array<array{'_id': string}>, 'total': array{'value': int}}} $results */
         $results = $this->client->search(
             [
                 'index' => $this->mirrorSearchIndexer->getIndexName(),
@@ -82,6 +86,7 @@ class MirrorSearchRepository
     }
 
     /**
+     * @param array{'hits': array{'hits': array<array{'_id': string}>}} $results
      * @return Mirror[]
      */
     private function findBySearchResults(array $results): array
@@ -127,6 +132,7 @@ class MirrorSearchRepository
         }
         $bool['must'][] = ['wildcard' => ['url' => 'https*']];
 
+        /** @var array{'hits': array{'hits': array<array{'_id': string}>}} $results */
         $results = $this->client->search(
             [
                 'index' => $this->mirrorSearchIndexer->getIndexName(),

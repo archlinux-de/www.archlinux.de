@@ -1,7 +1,8 @@
 parameters:
 	level: max
+	treatPhpDocTypesAsCertain: false
 	symfony:
-		container_xml_path: '%rootDir%/../../../var/cache/dev/App_KernelDevDebugContainer.xml'
+		containerXmlPath: '%rootDir%/../../../var/cache/dev/App_KernelDevDebugContainer.xml'
 	doctrine:
 		objectManagerLoader: tests/object-manager.php
 	paths:
@@ -11,6 +12,38 @@ parameters:
 		- config
 		- bin
 		- migrations
+	excludePaths:
+		- public/index.php
+		- tests/bootstrap.php
+		- tests/object-manager.php
 	ignoreErrors:
 		-
-			identifier: missingType.iterableValue
+			identifier: offsetAccess.nonOffsetAccessible
+			path: src/Serializer
+		-
+			identifier: argument.type
+			path: src/Serializer
+		-
+			identifier: cast.int
+			path: src/Serializer
+		-
+			identifier: return.type
+			path: src/Serializer
+		-
+			identifier: offsetAccess.nonOffsetAccessible
+			path: src/SearchIndex
+		-
+			identifier: offsetAccess.nonOffsetAccessible
+			path: src/SearchRepository
+		-
+			identifier: offsetAccess.nonOffsetAccessible
+			path: tests
+		-
+			identifier: argument.type
+			path: tests
+		-
+			identifier: return.type
+			path: tests
+		-
+			identifier: cast.string
+			path: tests

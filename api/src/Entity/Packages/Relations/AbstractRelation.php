@@ -30,7 +30,7 @@ abstract class AbstractRelation
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Package $target = null;
 
-    final public function __construct(string $targetName, ?string $targetVersion = null)
+    public function __construct(string $targetName, ?string $targetVersion = null)
     {
         $this->targetName = $targetName;
         $this->targetVersion = $targetVersion;

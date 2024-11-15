@@ -12,6 +12,9 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
     {
     }
 
+    /**
+     * @return array{'index': string, 'body': mixed[]}
+     */
     public function createIndexConfiguration(): array
     {
         return [
@@ -50,6 +53,9 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return ($this->environment == 'test' ? 'test-' : '') . 'package';
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkIndexStatement(object $object): array
     {
         assert($object instanceof Package);
@@ -80,6 +86,9 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
         return $paramsBody;
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkDeleteStatement(object $object): array
     {
         assert($object instanceof Package);

@@ -80,6 +80,9 @@ class PackageDatabaseMirrorTest extends TestCase
         $this->assertEquals('', $cache->getItem(PackageDatabaseMirror::CACHE_KEY)->get());
     }
 
+    /**
+     * @return list<int[]>
+     */
     public static function provideLastUpdated(): array
     {
         return [

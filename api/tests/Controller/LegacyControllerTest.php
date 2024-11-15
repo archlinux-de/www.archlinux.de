@@ -13,6 +13,9 @@ use Symfony\Component\String\ByteString;
 #[CoversClass(LegacyController::class)]
 class LegacyControllerTest extends WebTestCase
 {
+    /**
+     * @param string[] $parameters
+     */
     #[DataProvider('provideLegacyPages')]
     public function testLegacyPagesAreRedirected(string $legacyPage, array $parameters = []): void
     {
@@ -26,6 +29,9 @@ class LegacyControllerTest extends WebTestCase
         }
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public static function provideLegacyPages(): array
     {
         return [
@@ -57,6 +63,9 @@ class LegacyControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
+    /**
+     * @param string[] $parameters
+     */
     #[DataProvider('provideInvalidLegacyPages')]
     public function testInvalidParametersWillReturnNotFoundStatus(string $legacyPage, array $parameters = []): void
     {
@@ -67,6 +76,9 @@ class LegacyControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->isNotFound());
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public static function provideInvalidLegacyPages(): array
     {
         return [
@@ -87,6 +99,9 @@ class LegacyControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @param string[] $parameters
+     */
     private function createLegacyRequest(string $legacyPage, array $parameters = []): string
     {
         return (new ByteString(

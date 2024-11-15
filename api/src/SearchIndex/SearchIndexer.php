@@ -13,6 +13,9 @@ class SearchIndexer implements SearchIndexerInterface
     {
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkIndexStatement(object $object): array
     {
         foreach ($this->searchIndexers as $searchIndexer) {
@@ -23,6 +26,9 @@ class SearchIndexer implements SearchIndexerInterface
         return [];
     }
 
+    /**
+     * @return list<mixed[]>
+     */
     public function createBulkDeleteStatement(object $object): array
     {
         foreach ($this->searchIndexers as $searchIndexer) {
