@@ -17,7 +17,7 @@ readonly class MirrorDenormalizer implements DenormalizerInterface
      * @param mixed[] $data
      * @return Mirror[]
      */
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
@@ -58,8 +58,12 @@ readonly class MirrorDenormalizer implements DenormalizerInterface
         ];
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === Mirror::class . '[]';
     }
 

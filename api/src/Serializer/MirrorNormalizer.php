@@ -23,7 +23,7 @@ class MirrorNormalizer implements NormalizerInterface
      * @param Mirror $object
      * @return mixed[]
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         /** @var mixed[] $data */
         $data = $this->normalizer->normalize(
@@ -54,7 +54,7 @@ class MirrorNormalizer implements NormalizerInterface
         return $data;
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Mirror && $format === 'json';
     }

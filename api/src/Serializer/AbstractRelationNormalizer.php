@@ -16,7 +16,7 @@ readonly class AbstractRelationNormalizer implements NormalizerInterface
      * @param AbstractRelation $object
      * @return mixed[]
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         $data = [
             'name' => $object->getTargetName(),
@@ -36,7 +36,7 @@ readonly class AbstractRelationNormalizer implements NormalizerInterface
         return $data;
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof AbstractRelation && $format === 'json';
     }

@@ -15,7 +15,7 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
      * @param Paginator<object> $object
      * @return array{'offset': int, 'limit': ?int, 'total': int, 'count': int, 'items': mixed[]}
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         $objectIterator = $object->getIterator();
         assert($objectIterator instanceof \Countable);
@@ -29,7 +29,7 @@ class PaginatorNormalizer implements NormalizerInterface, NormalizerAwareInterfa
         ];
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Paginator && $format === 'json';
     }

@@ -22,7 +22,7 @@ class PackageDenormalizer implements DenormalizerInterface
      * @param mixed[] $data
      * @param mixed[] $context
      */
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Package
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): Package
     {
         assert(is_array($data));
         assert($context['repository'] instanceof Repository);
@@ -161,8 +161,12 @@ class PackageDenormalizer implements DenormalizerInterface
         return new CheckDependency($target['name'], $target['version']);
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === Package::class
             && $format === 'pacman-database'
             && isset($context['repository'])

@@ -16,7 +16,7 @@ readonly class NewsItemDenormalizer implements DenormalizerInterface
      * @param mixed[] $data
      * @return NewsItem[]
      */
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
@@ -89,8 +89,12 @@ readonly class NewsItemDenormalizer implements DenormalizerInterface
         return [];
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === NewsItem::class . '[]';
     }
 

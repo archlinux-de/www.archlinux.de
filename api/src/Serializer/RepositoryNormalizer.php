@@ -19,7 +19,7 @@ class RepositoryNormalizer implements NormalizerInterface
         $this->normalizer = $normalizer;
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Repository && $format === 'json';
     }
@@ -28,7 +28,7 @@ class RepositoryNormalizer implements NormalizerInterface
      * @param Repository $object
      * @return mixed[]
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         /** @var mixed[] $data */
         $data = $this->normalizer->normalize(

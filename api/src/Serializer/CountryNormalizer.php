@@ -23,7 +23,7 @@ class CountryNormalizer implements NormalizerInterface
      * @param Country $object
      * @return mixed[]
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         /** @var mixed[] $data */
         $data = $this->normalizer->normalize(
@@ -43,7 +43,7 @@ class CountryNormalizer implements NormalizerInterface
         return $data;
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Country && $format === 'json';
     }

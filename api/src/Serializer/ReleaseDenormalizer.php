@@ -11,7 +11,7 @@ class ReleaseDenormalizer implements DenormalizerInterface
      * @param mixed[] $data
      * @return Release[]
      */
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): array
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
     {
         return [
             ...(function () use ($data) {
@@ -48,8 +48,12 @@ class ReleaseDenormalizer implements DenormalizerInterface
         return $available && (new \DateTime())->getTimestamp() - $created->getTimestamp() >= 3 * 60 * 60;
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
-    {
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool {
         return $type === Release::class . '[]';
     }
 

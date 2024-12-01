@@ -23,7 +23,7 @@ class SluggerExtension extends AbstractExtension
         ];
     }
 
-    public function slug(string $string, string $separator = '-', string $locale = null): AbstractUnicodeString
+    public function slug(string $string, string $separator = '-', ?string $locale = null): AbstractUnicodeString
     {
         return $this->slugger->slug($string, $separator, $locale);
     }
