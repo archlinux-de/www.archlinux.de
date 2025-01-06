@@ -86,7 +86,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('error');
+            ->method('warning');
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
