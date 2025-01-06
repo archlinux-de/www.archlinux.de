@@ -41,7 +41,7 @@ class UpdateMirrorsCommand extends Command
         foreach ($this->mirrorFetcher as $mirror) {
             $errors = $this->validator->validate($mirror);
             if ($errors->count() > 0) {
-                $this->logger->error(
+                $this->logger->warning(
                     sprintf('Ignoring "%s" due to validation errors', $mirror->getUrl()),
                     ['errors' => $errors]
                 );
