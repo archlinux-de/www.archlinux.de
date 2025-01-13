@@ -4,6 +4,8 @@ import { useApiFetch, useApiUrl } from '~/composables/useApiFetch'
 const initialData = []
 const validTerm = /[^\w\- ]+/g
 
+const filterTerm = (term) => term.substring(0, 255).replaceAll(validTerm, '').trim()
+
 /**
  * @param {string} term
  * @returns {Promise<any>}
@@ -11,11 +13,11 @@ const validTerm = /[^\w\- ]+/g
 export const useFetchPackageSuggestions = (term) => {
   const filteredTerm = ref(unref(term))
   watch(term, (newTerm, oldTerm) => {
-    const filteredNewTerm = newTerm.substring(0, 255).replaceAll(validTerm, '').trim()
+    const filteredNewTerm = filterTerm(newTerm)
     if (filteredNewTerm !== oldTerm) {
       filteredTerm.value = filteredNewTerm
     }
-  })
+  }, { immediate: true })
 
   return useApiFetch(
     useApiUrl('/packages/suggest', {
@@ -25,7 +27,7 @@ export const useFetchPackageSuggestions = (term) => {
       initialData,
       refetch: true,
       async beforeFetch ({ url, options, cancel }) {
-        if (!unref(term)) {
+        if (!unref(filteredTerm)) {
           cancel()
         }
 
