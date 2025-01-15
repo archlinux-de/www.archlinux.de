@@ -1,6 +1,6 @@
 describe('Start page', () => {
   beforeEach(() => {
-    cy.visit('/')
+    cy.visit('/', { waitForApi: true })
   })
 
   it('shows the welcome message', () => {

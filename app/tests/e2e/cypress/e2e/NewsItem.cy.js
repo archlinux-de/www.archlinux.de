@@ -1,6 +1,6 @@
 describe('News Item page', () => {
   beforeEach(() => {
-    cy.visit('/news/18784-Das-Canterbury-Projekt')
+    cy.visit('/news/18784-Das-Canterbury-Projekt', { waitForApi: true })
   })
 
   it('shows title', () => {

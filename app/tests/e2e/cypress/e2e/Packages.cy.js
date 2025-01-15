@@ -1,7 +1,6 @@
 describe('Packages page', () => {
   beforeEach(() => {
-    // cy.intercept({ method: 'GET', pathname: /^\/api\/packages$/ }).as('api-packages')
-    cy.visit('/packages')
+    cy.visit('/packages', { waitForApi: true })
   })
 
   it('shows packages', () => {

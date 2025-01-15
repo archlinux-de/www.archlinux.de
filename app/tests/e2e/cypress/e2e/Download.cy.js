@@ -1,6 +1,6 @@
 describe('Download page', () => {
   beforeEach(() => {
-    cy.visit('/download')
+    cy.visit('/download', { waitForApi: true })
   })
 
   it('shows the current release', () => {

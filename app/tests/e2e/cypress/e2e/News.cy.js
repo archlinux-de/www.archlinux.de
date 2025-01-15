@@ -1,6 +1,6 @@
 describe('News page', () => {
   beforeEach(() => {
-    cy.visit('/news')
+    cy.visit('/news', { waitForApi: true })
   })
 
   it('shows news', () => {

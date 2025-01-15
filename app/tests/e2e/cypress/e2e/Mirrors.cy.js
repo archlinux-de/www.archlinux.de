@@ -1,6 +1,6 @@
 describe('Mirrors page', () => {
   beforeEach(() => {
-    cy.visit('/mirrors')
+    cy.visit('/mirrors', { waitForApi: true })
   })
 
   it('shows mirrors', () => {

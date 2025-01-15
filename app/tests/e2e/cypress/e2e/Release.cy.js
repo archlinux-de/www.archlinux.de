@@ -1,6 +1,6 @@
 describe('Release page', () => {
   beforeEach(() => {
-    cy.visit('/releases/2022.01.01')
+    cy.visit('/releases/2022.01.01', { waitForApi: true })
   })
 
   it('shows version', () => {
