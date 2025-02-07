@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class TermRequest
 {
-    #[Assert\Length(min: 1, max: 50)]
+    #[Assert\Length(min: 0, max: 50)]
     #[Assert\Regex(
         pattern: '/^[\w\- ]+$/u',
         normalizer: 'trim'

@@ -146,6 +146,10 @@ class PackageSearchRepository
      */
     public function findByTerm(string $term, int $limit): array
     {
+        if (!$term) {
+            return [];
+        }
+
         /** @var array{'hits': array{'hits': array<array{'_id': string}>, 'total': array{'value': int}}} $results */
         $results = $this->client->search(
             [
