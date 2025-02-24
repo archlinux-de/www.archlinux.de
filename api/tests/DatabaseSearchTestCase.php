@@ -8,6 +8,7 @@ use App\SearchIndex\PackageSearchIndexer;
 use App\SearchIndex\ReleaseSearchIndexer;
 use App\SearchIndex\SearchIndexConfigurationInterface;
 use OpenSearch\Client;
+use OpenSearch\Exception\NotFoundHttpException;
 use SymfonyDatabaseTest\DatabaseTestCase;
 
 abstract class DatabaseSearchTestCase extends DatabaseTestCase
@@ -45,8 +46,9 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
     {
         $openSearchClient = $this->getOpenSearchClient();
 
-        if ($openSearchClient->indices()->exists(['index' => $searchIndexer->getIndexName()])) {
+        try {
             $openSearchClient->indices()->delete(['index' => $searchIndexer->getIndexName()]);
+        } catch (NotFoundHttpException $_) {
         }
         $openSearchClient->indices()->create($searchIndexer->createIndexConfiguration());
     }

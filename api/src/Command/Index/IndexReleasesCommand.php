@@ -7,6 +7,7 @@ use App\Repository\ReleaseRepository;
 use App\SearchIndex\ReleaseSearchIndexer;
 use App\SearchIndex\SearchIndexer;
 use OpenSearch\Client;
+use OpenSearch\Exception\NotFoundHttpException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,10 +34,10 @@ class IndexReleasesCommand extends Command
     {
         $this->lock('releases.lock');
 
-        if ($this->client->indices()->exists(['index' => $this->releaseSearchIndexer->getIndexName()])) {
+        try {
             $this->client->indices()->delete(['index' => $this->releaseSearchIndexer->getIndexName()]);
+        } catch (NotFoundHttpException $_) {
         }
-
         $this->client->indices()->create($this->releaseSearchIndexer->createIndexConfiguration());
 
         foreach (array_chunk($this->releaseRepository->findAll(), SearchIndexer::BULK_SIZE) as $releases) {

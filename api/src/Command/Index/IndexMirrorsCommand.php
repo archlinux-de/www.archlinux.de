@@ -7,6 +7,7 @@ use App\Repository\MirrorRepository;
 use App\SearchIndex\MirrorSearchIndexer;
 use App\SearchIndex\SearchIndexer;
 use OpenSearch\Client;
+use OpenSearch\Exception\NotFoundHttpException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,10 +34,10 @@ class IndexMirrorsCommand extends Command
     {
         $this->lock('mirrors.lock');
 
-        if ($this->client->indices()->exists(['index' => $this->mirrorSearchIndexer->getIndexName()])) {
+        try {
             $this->client->indices()->delete(['index' => $this->mirrorSearchIndexer->getIndexName()]);
+        } catch (NotFoundHttpException $_) {
         }
-
         $this->client->indices()->create($this->mirrorSearchIndexer->createIndexConfiguration());
 
         foreach (array_chunk($this->mirrorRepository->findAll(), SearchIndexer::BULK_SIZE) as $mirrors) {

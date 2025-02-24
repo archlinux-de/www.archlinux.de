@@ -7,6 +7,7 @@ use App\Repository\NewsItemRepository;
 use App\SearchIndex\NewsSearchIndexer;
 use App\SearchIndex\SearchIndexer;
 use OpenSearch\Client;
+use OpenSearch\Exception\NotFoundHttpException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,10 +34,10 @@ class IndexNewsCommand extends Command
     {
         $this->lock('news.lock');
 
-        if ($this->client->indices()->exists(['index' => $this->newsSearchIndexer->getIndexName()])) {
+        try {
             $this->client->indices()->delete(['index' => $this->newsSearchIndexer->getIndexName()]);
+        } catch (NotFoundHttpException $_) {
         }
-
         $this->client->indices()->create($this->newsSearchIndexer->createIndexConfiguration());
 
         foreach (array_chunk($this->newsItemRepository->findAll(), SearchIndexer::BULK_SIZE) as $newsItems) {

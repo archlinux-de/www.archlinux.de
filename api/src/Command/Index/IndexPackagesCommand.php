@@ -7,6 +7,7 @@ use App\Repository\PackageRepository;
 use App\SearchIndex\PackageSearchIndexer;
 use App\SearchIndex\SearchIndexer;
 use OpenSearch\Client;
+use OpenSearch\Exception\NotFoundHttpException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,10 +35,10 @@ class IndexPackagesCommand extends Command
         $this->lock('packages.lock');
         ini_set('memory_limit', '8G');
 
-        if ($this->client->indices()->exists(['index' => $this->packageSearchIndexer->getIndexName()])) {
+        try {
             $this->client->indices()->delete(['index' => $this->packageSearchIndexer->getIndexName()]);
+        } catch (NotFoundHttpException $_) {
         }
-
         $this->client->indices()->create($this->packageSearchIndexer->createIndexConfiguration());
 
         foreach (array_chunk($this->packageRepository->findAll(), SearchIndexer::BULK_SIZE) as $packages) {
