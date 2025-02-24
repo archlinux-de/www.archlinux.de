@@ -1,0 +1,1 @@
+{"status":200,"headers":{"content-type":["application\/json; charset=UTF-8"]},"body":"{\"acknowledged\":true,\"shards_acknowledged\":true,\"index\":\"test-news_item\"}","version":"1.1","reason":"OK"}

@@ -1,13 +1,18 @@
 services:
-    App\Tests\OpenSearchFixturesHandler:
-        arguments:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tests\OpenSearchMock\:
+        resource: '../tests/OpenSearchMock/'
+
+    App\Tests\OpenSearchMock\OpenSearchFixturesHandler:
+        bind:
             $mode: '%env(resolve:OPENSEARCH_MOCK_MODE)%'
 
-    OpenSearch\ClientBuilder:
-        calls:
-            - [setHandler, ['@App\Tests\OpenSearchFixturesHandler']]
-            - [setHosts, [['%env(resolve:OPENSEARCH_URL)%']]]
-
     OpenSearch\Client:
-        factory: ['@OpenSearch\ClientBuilder', build]
+        factory: ['@App\Tests\OpenSearchMock\OpenSearchFixturesHandler', create]
+        arguments:
+            -
+                base_uri: '%env(resolve:OPENSEARCH_URL)%'
         public: true

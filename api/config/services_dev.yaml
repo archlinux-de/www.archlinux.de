@@ -3,5 +3,8 @@ services:
         tags: ['kernel.event_subscriber']
 
     OpenSearch\Client:
-        factory: [ '@OpenSearch\ClientBuilder', build ]
+        factory: ['@OpenSearch\SymfonyClientFactory', create]
+        arguments:
+            -
+                base_uri: '%env(resolve:OPENSEARCH_URL)%'
         public: true

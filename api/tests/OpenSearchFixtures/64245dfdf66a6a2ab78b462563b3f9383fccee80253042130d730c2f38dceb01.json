@@ -1,1 +1,0 @@
-{"transfer_stats":{"total_time":1},"curl":{"error":"","errno":0},"effective_url":"http://opensearch/test-mirror","headers":{"content-type":["application/json; charset=UTF-8"],"content-length":["70"]},"version":"1.1","status":200,"reason":"OK","body":"{\"acknowledged\":true,\"shards_acknowledged\":true,\"index\":\"test-mirror\"}"}

@@ -150,8 +150,8 @@ test-db-migrations *args: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test' {{args}}
 
 update-opensearch-fixtures: start-db
-	rm -f api/tests/OpenSearchFixtures/*.json
-	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api vendor/bin/phpunit
+	rm -f api/tests/OpenSearchMock/Fixtures/*.json
+	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api php -d memory_limit=-1 vendor/bin/phpunit
 
 test-coverage:
 	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests --coverage --coverageDirectory var/coverage/jest

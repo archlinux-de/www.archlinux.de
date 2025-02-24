@@ -32,12 +32,14 @@ services:
 
     League\ISO3166\ISO3166:
 
-    OpenSearch\ClientBuilder:
-        calls:
-            - [ setHosts, [ [ '%env(resolve:OPENSEARCH_URL)%' ] ] ]
+    OpenSearch\SymfonyClientFactory:
 
     OpenSearch\Client:
-        factory: [ '@OpenSearch\ClientBuilder', build ]
+        factory: ['@OpenSearch\SymfonyClientFactory', create]
+        arguments:
+            -
+                base_uri: '%env(resolve:OPENSEARCH_URL)%'
+
 
     Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig:
         calls:
