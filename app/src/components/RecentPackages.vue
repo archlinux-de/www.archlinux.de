@@ -42,6 +42,5 @@ const props = defineProps({
   }
 })
 
-// eslint-disable-next-line vue/no-setup-props-destructure
 const { data } = useFetchPackages({ limit: props.limit })
 </script>
