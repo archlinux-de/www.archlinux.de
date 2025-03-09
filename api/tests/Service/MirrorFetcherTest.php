@@ -18,7 +18,7 @@ class MirrorFetcherTest extends TestCase
         $responseMock = new MockResponse($content);
         $httpClient = new MockHttpClient($responseMock);
 
-        /** @var SerializerInterface|MockObject $serializer */
+        /** @var SerializerInterface&MockObject $serializer */
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer
             ->expects($this->once())
@@ -37,7 +37,7 @@ class MirrorFetcherTest extends TestCase
     {
         $httpClient = new MockHttpClient(new MockResponse());
 
-        /** @var SerializerInterface|MockObject $serializer */
+        /** @var SerializerInterface&MockObject $serializer */
         $serializer = $this->createMock(SerializerInterface::class);
 
         $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $serializer);
@@ -50,7 +50,7 @@ class MirrorFetcherTest extends TestCase
     {
         $httpClient = new MockHttpClient(new MockResponse('foo'));
 
-        /** @var SerializerInterface|MockObject $serializer */
+        /** @var SerializerInterface&MockObject $serializer */
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer
             ->expects($this->once())

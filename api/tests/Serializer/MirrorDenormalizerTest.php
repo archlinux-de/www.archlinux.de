@@ -21,7 +21,7 @@ class MirrorDenormalizerTest extends TestCase
 
     public function testDenormalize(): void
     {
-        /** @var CountryRepository|MockObject $countryRepository */
+        /** @var CountryRepository&MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
         $countryRepository
             ->expects($this->once())

@@ -15,7 +15,7 @@ use App\Request\QueryRequest;
 
 class QueryValueResolverTest extends TestCase
 {
-    /** @var ValidatorInterface|MockObject */
+    /** @var ValidatorInterface&MockObject */
     private mixed $validator;
 
     private QueryValueResolver $queryValueResolver;
@@ -28,7 +28,7 @@ class QueryValueResolverTest extends TestCase
 
     public function testResolve(): void
     {
-        /** @var ArgumentMetadata|MockObject $argument */
+        /** @var ArgumentMetadata&MockObject $argument */
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument
             ->expects($this->atLeastOnce())
@@ -55,7 +55,7 @@ class QueryValueResolverTest extends TestCase
 
     public function testDefault(): void
     {
-        /** @var ArgumentMetadata|MockObject $argument */
+        /** @var ArgumentMetadata&MockObject $argument */
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument
             ->expects($this->atLeastOnce())
@@ -82,7 +82,7 @@ class QueryValueResolverTest extends TestCase
 
     public function testResolveFailsOnValidationErrors(): void
     {
-        /** @var ArgumentMetadata|MockObject $argument */
+        /** @var ArgumentMetadata&MockObject $argument */
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument
             ->expects($this->atLeastOnce())

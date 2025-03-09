@@ -22,7 +22,7 @@ class PackageDatabaseDownloaderTest extends TestCase
 
     public function createDownloader(ResponseInterface $response): PackageDatabaseDownloader
     {
-        /** @var PackageDatabaseMirror|MockObject $packageDatabaseMirror */
+        /** @var PackageDatabaseMirror&MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror
             ->expects($this->any())

@@ -20,7 +20,7 @@ class RepositoryTest extends TestCase
 
     public function testAddPackage(): void
     {
-        /** @var Package|MockObject $package */
+        /** @var Package&MockObject $package */
         $package = $this->createMock(Package::class);
         $repository = new Repository('core', Architecture::X86_64);
         $this->assertSame($repository, $repository->addPackage($package));

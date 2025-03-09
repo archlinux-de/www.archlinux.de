@@ -25,21 +25,21 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $newMirror = new Mirror('https://127.0.0.2');
         $oldMirror = new Mirror('https://127.0.0.1');
 
-        /** @var MirrorRepository|MockObject $mirrorRepository */
+        /** @var MirrorRepository&MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);
         $mirrorRepository->method('findAllExceptByUrls')->willReturn([$oldMirror]);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('persist')->with($newMirror);
         $entityManager->expects($this->once())->method('remove')->with($oldMirror);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var MirrorFetcher|MockObject $mirrorFetcher */
+        /** @var MirrorFetcher&MockObject $mirrorFetcher */
         $mirrorFetcher = $this->createMock(MirrorFetcher::class);
         $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newMirror]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 
@@ -61,22 +61,22 @@ class UpdateMirrorsCommandTest extends KernelTestCase
 
     public function testIgnoreInvalidMirrors(): void
     {
-        /** @var MirrorRepository|MockObject $mirrorRepository */
+        /** @var MirrorRepository&MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);
         $mirrorRepository->expects($this->once())->method('findAllExceptByUrls')->with([]);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var MirrorFetcher|MockObject $mirrorFetcher */
+        /** @var MirrorFetcher&MockObject $mirrorFetcher */
         $mirrorFetcher = $this->createMock(MirrorFetcher::class);
         $mirrorFetcher
             ->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([new Mirror('%invslid')]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
             ->expects($this->atLeastOnce())
@@ -104,19 +104,19 @@ class UpdateMirrorsCommandTest extends KernelTestCase
     {
         $mirror = new Mirror('https://127.0.0.2');
 
-        /** @var MirrorRepository|MockObject $mirrorRepository */
+        /** @var MirrorRepository&MockObject $mirrorRepository */
         $mirrorRepository = $this->createMock(MirrorRepository::class);
         $mirrorRepository->expects($this->once())->method('find')->with($mirror->getUrl())->willReturn($mirror);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var MirrorFetcher|MockObject $mirrorFetcher */
+        /** @var MirrorFetcher&MockObject $mirrorFetcher */
         $mirrorFetcher = $this->createMock(MirrorFetcher::class);
         $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$mirror]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 

@@ -17,11 +17,11 @@ class UpdateRepositoriesCommandTest extends KernelTestCase
 {
     public function testCommand(): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var RepositoryManager|MockObject $repositoryManager */
+        /** @var RepositoryManager&MockObject $repositoryManager */
         $repositoryManager = $this->createMock(RepositoryManager::class);
         $repositoryManager
             ->expects($this->once())
@@ -31,7 +31,7 @@ class UpdateRepositoriesCommandTest extends KernelTestCase
             ->method('removeObsoleteRepositories')
             ->willReturn(true);
 
-        /** @var AbstractRelationRepository|MockObject $relationRepository */
+        /** @var AbstractRelationRepository&MockObject $relationRepository */
         $relationRepository = $this->createMock(AbstractRelationRepository::class);
         $relationRepository
             ->expects($this->once())

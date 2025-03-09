@@ -17,10 +17,10 @@ class PackageDatabaseMirrorTest extends TestCase
 {
     public function testGetMirrorUrl(): void
     {
-        /** @var HttpClientInterface|MockObject $httpClient */
+        /** @var HttpClientInterface&MockObject $httpClient */
         $httpClient = $this->createMock(HttpClientInterface::class);
 
-        /** @var CacheItemPoolInterface|MockObject $cache */
+        /** @var CacheItemPoolInterface&MockObject $cache */
         $cache = $this->createMock(CacheItemPoolInterface::class);
 
         $packageDatabaseMirror = new PackageDatabaseMirror($httpClient, $cache, 'foo');
@@ -30,7 +30,7 @@ class PackageDatabaseMirrorTest extends TestCase
 
     public function testHasUpdatedIsTrueForNewMirror(): void
     {
-        /** @var HttpClientInterface|MockObject $httpClient */
+        /** @var HttpClientInterface&MockObject $httpClient */
         $httpClient = $this->createMock(HttpClientInterface::class);
 
         $cache = new ArrayAdapter();
@@ -44,7 +44,7 @@ class PackageDatabaseMirrorTest extends TestCase
     {
         $httpClient = new MockHttpClient(new MockResponse((string)$newLastUpdated));
 
-        /** @var CacheItemInterface|MockObject $cacheItem */
+        /** @var CacheItemInterface&MockObject $cacheItem */
         $cacheItem = $this->createMock(CacheItemInterface::class);
         $cacheItem
             ->expects($this->once())
@@ -55,7 +55,7 @@ class PackageDatabaseMirrorTest extends TestCase
             ->method('get')
             ->willReturn(hash('sha256', (string)$oldLastUpdated));
 
-        /** @var CacheItemPoolInterface|MockObject $cache */
+        /** @var CacheItemPoolInterface&MockObject $cache */
         $cache = $this->createMock(CacheItemPoolInterface::class);
         $cache
             ->expects($this->once())
@@ -69,7 +69,7 @@ class PackageDatabaseMirrorTest extends TestCase
 
     public function testUpdateLastUpdate(): void
     {
-        /** @var HttpClientInterface|MockObject $httpClient */
+        /** @var HttpClientInterface&MockObject $httpClient */
         $httpClient = $this->createMock(HttpClientInterface::class);
 
         $cache = new ArrayAdapter();

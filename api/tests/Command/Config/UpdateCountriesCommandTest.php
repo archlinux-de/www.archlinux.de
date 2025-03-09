@@ -25,21 +25,21 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $newCountry = new Country('DE');
         $oldCountry = new Country('DD');
 
-        /** @var CountryRepository|MockObject $countryRepository */
+        /** @var CountryRepository&MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
         $countryRepository->method('findAllExceptByCodes')->willReturn([$oldCountry]);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('persist')->with($newCountry);
         $entityManager->expects($this->once())->method('remove')->with($oldCountry);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var CountryFetcher|MockObject $countryFetcher */
+        /** @var CountryFetcher&MockObject $countryFetcher */
         $countryFetcher = $this->createMock(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newCountry]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 
@@ -57,19 +57,19 @@ class UpdateCountriesCommandTest extends KernelTestCase
 
     public function testFailOnInvalidCountries(): void
     {
-        /** @var CountryRepository|MockObject $countryRepository */
+        /** @var CountryRepository&MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
         $countryRepository->expects($this->never())->method('findAllExceptByCodes');
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('flush');
 
-        /** @var CountryFetcher|MockObject $countryFetcher */
+        /** @var CountryFetcher&MockObject $countryFetcher */
         $countryFetcher = $this->createMock(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([new Country('%invalid')]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
             ->expects($this->atLeastOnce())
@@ -91,19 +91,19 @@ class UpdateCountriesCommandTest extends KernelTestCase
     {
         $country = (new Country('DE'))->setName('Germany');
 
-        /** @var CountryRepository|MockObject $countryRepository */
+        /** @var CountryRepository&MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
         $countryRepository->expects($this->once())->method('find')->with($country->getCode())->willReturn($country);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var CountryFetcher|MockObject $countryFetcher */
+        /** @var CountryFetcher&MockObject $countryFetcher */
         $countryFetcher = $this->createMock(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$country]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 

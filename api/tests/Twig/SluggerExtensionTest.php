@@ -12,7 +12,7 @@ class SluggerExtensionTest extends TestCase
 {
     public function testGetFilters(): void
     {
-        /** @var SluggerInterface|MockObject $slugger */
+        /** @var SluggerInterface&MockObject $slugger */
         $slugger = $this->createMock(SluggerInterface::class);
         $slugger
             ->expects($this->once())
@@ -29,7 +29,7 @@ class SluggerExtensionTest extends TestCase
 
     public function testSlug(): void
     {
-        /** @var SluggerInterface|MockObject $slugger */
+        /** @var SluggerInterface&MockObject $slugger */
         $slugger = $this->createMock(SluggerInterface::class);
         $slugger
             ->expects($this->once())

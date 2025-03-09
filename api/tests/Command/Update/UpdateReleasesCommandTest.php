@@ -25,21 +25,21 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $newRelease = new Release('2');
         $oldRelease = new Release('1');
 
-        /** @var ReleaseRepository|MockObject $releaseRepository */
+        /** @var ReleaseRepository&MockObject $releaseRepository */
         $releaseRepository = $this->createMock(ReleaseRepository::class);
         $releaseRepository->method('findAllExceptByVersions')->willReturn([$oldRelease]);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('persist')->with($newRelease);
         $entityManager->expects($this->once())->method('remove')->with($oldRelease);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var ReleaseFetcher|MockObject $releaseFetcher */
+        /** @var ReleaseFetcher&MockObject $releaseFetcher */
         $releaseFetcher = $this->createMock(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newRelease]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 
@@ -57,18 +57,18 @@ class UpdateReleasesCommandTest extends KernelTestCase
 
     public function testUpdateFailsOnInvalidRelease(): void
     {
-        /** @var ReleaseRepository|MockObject $releaseRepository */
+        /** @var ReleaseRepository&MockObject $releaseRepository */
         $releaseRepository = $this->createMock(ReleaseRepository::class);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('flush');
 
-        /** @var ReleaseFetcher|MockObject $releaseFetcher */
+        /** @var ReleaseFetcher&MockObject $releaseFetcher */
         $releaseFetcher = $this->createMock(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([new Release('2')]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
             ->expects($this->atLeastOnce())
@@ -94,19 +94,19 @@ class UpdateReleasesCommandTest extends KernelTestCase
             ->setInfo('')
             ->setReleaseDate(new \DateTime('2018-01-01'));
 
-        /** @var ReleaseRepository|MockObject $releaseRepository */
+        /** @var ReleaseRepository&MockObject $releaseRepository */
         $releaseRepository = $this->createMock(ReleaseRepository::class);
         $releaseRepository->expects($this->once())->method('find')->with($release->getVersion())->willReturn($release);
 
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');
 
-        /** @var ReleaseFetcher|MockObject $releaseFetcher */
+        /** @var ReleaseFetcher&MockObject $releaseFetcher */
         $releaseFetcher = $this->createMock(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([$release]));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 

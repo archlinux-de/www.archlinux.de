@@ -18,7 +18,7 @@ class RepositoryManagerTest extends TestCase
 {
     public function testRemoveObsoleteRepositories(): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
@@ -32,14 +32,14 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
-        /** @var RepositoryRepository|MockObject $repositoryRepository */
+        /** @var RepositoryRepository&MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
             ->method('findAll')
             ->willReturn([new Repository('core', 'x86_64')]);
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->never())->method('validate');
 
@@ -50,7 +50,7 @@ class RepositoryManagerTest extends TestCase
 
     public function testConfiguredRepositoriesAreNotRemoved(): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
@@ -59,14 +59,14 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->never())
             ->method('flush');
 
-        /** @var RepositoryRepository|MockObject $repositoryRepository */
+        /** @var RepositoryRepository&MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
             ->method('findAll')
             ->willReturn([new Repository('core', 'x86_64')]);
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->never())->method('validate');
 
@@ -83,7 +83,7 @@ class RepositoryManagerTest extends TestCase
     #[DataProvider('provideRepositories')]
     public function testCreateNewRepositories(string $repositoryName, bool $isTesting): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->once())
@@ -98,7 +98,7 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
-        /** @var RepositoryRepository|MockObject $repositoryRepository */
+        /** @var RepositoryRepository&MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
@@ -106,7 +106,7 @@ class RepositoryManagerTest extends TestCase
             ->with($repositoryName, 'x86_64')
             ->willReturn(null);
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 
@@ -122,7 +122,7 @@ class RepositoryManagerTest extends TestCase
 
     public function testCreateNewRepositoriesIsSkippedForExistingRepositories(): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
@@ -131,7 +131,7 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->never())
             ->method('flush');
 
-        /** @var RepositoryRepository|MockObject $repositoryRepository */
+        /** @var RepositoryRepository&MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
@@ -139,7 +139,7 @@ class RepositoryManagerTest extends TestCase
             ->with('core', 'x86_64')
             ->willReturn(new Repository('core', 'x86_64'));
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->never())->method('validate');
 
@@ -155,7 +155,7 @@ class RepositoryManagerTest extends TestCase
 
     public function testFailOnInvalidConfiguration(): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
+        /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager
             ->expects($this->never())
@@ -164,14 +164,14 @@ class RepositoryManagerTest extends TestCase
             ->expects($this->never())
             ->method('flush');
 
-        /** @var RepositoryRepository|MockObject $repositoryRepository */
+        /** @var RepositoryRepository&MockObject $repositoryRepository */
         $repositoryRepository = $this->createMock(RepositoryRepository::class);
         $repositoryRepository
             ->expects($this->once())
             ->method('findByNameAndArchitecture')
             ->willReturn(null);
 
-        /** @var ValidatorInterface|MockObject $validator */
+        /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
             ->expects($this->atLeastOnce())

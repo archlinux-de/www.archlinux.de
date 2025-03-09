@@ -11,7 +11,7 @@ class HtmlSanitizerExtensionTest extends TestCase
 {
     public function testGetFilters(): void
     {
-        /** @var HtmlSanitizerInterface|MockObject $purifier */
+        /** @var HtmlSanitizerInterface&MockObject $purifier */
         $purifier = $this->createMock(HtmlSanitizerInterface::class);
         $purifier
             ->expects($this->once())
