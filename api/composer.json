@@ -23,7 +23,7 @@
         "league/iso3166": "^4.3.2",
         "maxmind-db/reader": "^1.12.0",
         "nyholm/psr7": "^1.8.2",
-        "opensearch-project/opensearch-php": "^2.4.2",
+        "opensearch-project/opensearch-php": "^2.4.3",
         "symfony/console": "^7.2.1",
         "symfony/dotenv": "^7.2.0",
         "symfony/expression-language": "^7.2.0",
