@@ -93,6 +93,9 @@ services:
     App\Service\PackagePopularityFetcher:
         $packageStatisticsApiUrl: '%app.packages.packageStatisticsApiUrl%'
 
+    App\Service\AppStreamDataFetcher:
+        $packageStatisticsApiUrl: '%app.packages.appStreamDataBaseUrl%'
+
     App\Service\MirrorPopularityFetcher:
         $mirrorStatisticsApiUrl: '%app.mirrors.mirrorStatisticsApiUrl%'
 
