@@ -44,6 +44,3 @@ parameters:
 		-
 			identifier: return.type
 			path: tests
-		-
-			identifier: cast.string
-			path: tests
