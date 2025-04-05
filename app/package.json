@@ -16,7 +16,7 @@
     "@vueuse/router": "^13.0.0",
     "autoprefixer": "^10.4.21",
     "babel-loader": "^10.0.0",
-    "bootstrap": "^5.3.4",
+    "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "compression-webpack-plugin": "^11.1.0",
     "copy-webpack-plugin": "^13.0.0",
