@@ -101,9 +101,6 @@ node *args='-h':
 pnpm *args='-h':
 	{{NODE-RUN}} pnpm {{args}}
 
-jest *args:
-	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests {{args}}
-
 cypress *args:
 	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps --entrypoint cypress cypress-run {{args}}
 
@@ -124,9 +121,8 @@ test-php:
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-js:
-	{{NODE-RUN}} node_modules/.bin/eslint '*.js' src tests --ext js --ext vue
+	{{NODE-RUN}} node_modules/.bin/eslint
 	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
-	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests
 	{{NODE-RUN}} pnpm run build --output-path $(mktemp -d)
 
 test: test-php test-js
@@ -154,7 +150,6 @@ update-opensearch-fixtures: start-db
 	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api php -d memory_limit=-1 vendor/bin/phpunit
 
 test-coverage:
-	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests --coverage --coverageDirectory var/coverage/jest
 	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 
 test-db-coverage: start-db
@@ -165,7 +160,7 @@ test-security: (composer "audit")
 
 fix-code-style:
 	{{PHP-RUN}} vendor/bin/phpcbf || true
-	{{NODE-RUN}} node_modules/.bin/eslint '*.js' src tests --ext js --ext vue --fix
+	{{NODE-RUN}} node_modules/.bin/eslint --fix
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix=strict 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
 update:
