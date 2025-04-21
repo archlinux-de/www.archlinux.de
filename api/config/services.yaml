@@ -93,14 +93,15 @@ services:
     App\Service\PackagePopularityFetcher:
         $packageStatisticsApiUrl: '%app.packages.packageStatisticsApiUrl%'
 
-    App\Service\AppStreamDataFetcher:
-        $packageStatisticsApiUrl: '%app.packages.appStreamDataBaseUrl%'
-
     App\Service\MirrorPopularityFetcher:
         $mirrorStatisticsApiUrl: '%app.mirrors.mirrorStatisticsApiUrl%'
 
     App\Serializer\PackageNormalizer:
         $gitlabUrl: '%app.packages.gitlab_url%'
+
+    App\Command\Update\UpdateAppStreamData:
+        $appStreamDataBaseUrl: '%app.packages.appStreamDataBaseUrl%'
+        $appStreamDataFile: '%app.packages.appStreamDataFile%'
 
     App\Controller\MirrorController:
         $mirrorCountry: '%app.mirrors.country%'

@@ -12,6 +12,7 @@ parameters:
     app.packages.default_architecture: 'x86_64'
     app.packages.packageStatisticsApiUrl: 'https://pkgstats.archlinux.de/api/packages'
     app.packages.appStreamDataBaseUrl: 'https://sources.archlinux.org/other/packages/archlinux-appstream-data/'
+    app.packages.appStreamDataFile: 'Components-x86_64.xml.gz'
     app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
     env(DEFAULT_MIRROR): '%app.packages.mirror%'
     app.mirrors.default: '%env(DEFAULT_MIRROR)%'
