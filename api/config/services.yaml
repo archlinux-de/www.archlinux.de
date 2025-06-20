@@ -102,7 +102,7 @@ services:
     App\Command\Update\UpdateAppStreamData:
         $appStreamDataBaseUrl: '%app.packages.appStreamDataBaseUrl%'
         $appStreamDataFile: '%app.packages.appStreamDataFile%'
-        $reposToFetch: '%app.packages.appStreamReposToFetch'
+        $appStreamDataReposToFetch: '%app.packages.appStreamDataReposToFetch'
 
     App\Controller\MirrorController:
         $mirrorCountry: '%app.mirrors.country%'
