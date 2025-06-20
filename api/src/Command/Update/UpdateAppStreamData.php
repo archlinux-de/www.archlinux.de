@@ -25,6 +25,7 @@ class UpdateAppStreamData extends Command
     public function __construct(
         private readonly string $appStreamDataBaseUrl,
         private readonly string $appStreamDataFile,
+        /** @var string[] $appStreamDataReposToFetch */
         private readonly array $appStreamDataReposToFetch,
         private readonly EntityManagerInterface $entityManager,
         private readonly PackageRepository $packageRepository,
