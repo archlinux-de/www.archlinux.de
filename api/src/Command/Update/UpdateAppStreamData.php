@@ -17,9 +17,7 @@ class UpdateAppStreamData extends Command
 {
     use LockableTrait;
 
-    /**
-     * @var array<string, Metadata>
-     */
+    /** @var array<string, Metadata> */
     private array $packageMetaData = [];
 
     public function __construct(
@@ -37,7 +35,9 @@ class UpdateAppStreamData extends Command
     {
         $this
             ->setName('app:update:appstream-data')
-            ->setDescription('Update appstream data for packages of core and extra.');
+            ->setDescription('
+            Update appstream data for packages defined in app.yaml "app.packages.appStreamDataReposToFetch".'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
