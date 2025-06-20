@@ -26,6 +26,7 @@ class UpdateAppStreamData extends Command
     public function __construct(
         private readonly string $appStreamDataBaseUrl,
         private readonly string $appStreamDataFile,
+        private readonly array $appStreamDataReposToFetch,
         private readonly EntityManagerInterface $entityManager,
         private readonly PackageRepository $packageRepository,
         private readonly ValidatorInterface $validator
@@ -36,7 +37,7 @@ class UpdateAppStreamData extends Command
     {
         $this
             ->setName('app:update:appstream-data')
-            ->setDescription('Update appstream data for packages of core or extra.');
+            ->setDescription('Update appstream data for packages of core and extra.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -44,8 +45,7 @@ class UpdateAppStreamData extends Command
         $this->lock('appstream.lock');
         ini_set('memory_limit', '8G');
 
-        // todo: was input argument before; nicer way to configure via yaml or sth.
-        foreach (['core', 'extra'] as $repoToFetchFor) {
+        foreach ($this->appStreamDataReposToFetch as $repoToFetchFor) {
             $dataFetcher = new AppStreamDataFetcher(
                 $this->appStreamDataBaseUrl,
                 $this->appStreamDataFile,
