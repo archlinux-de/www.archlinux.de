@@ -5,7 +5,6 @@ namespace App\Entity\Packages;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-//component type, name & description in German, categories
 #[ORM\Embeddable]
 class Metadata
 {

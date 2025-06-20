@@ -8,7 +8,6 @@ use App\Service\AppStreamDataFetcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -45,6 +44,7 @@ class UpdateAppStreamData extends Command
         $this->lock('appstream.lock');
         ini_set('memory_limit', '8G');
 
+        // AppStreamDataFetcher yields an array of [pkgname => MetaData]
         foreach ($this->appStreamDataReposToFetch as $repoToFetchFor) {
             $dataFetcher = new AppStreamDataFetcher(
                 $this->appStreamDataBaseUrl,
