@@ -94,7 +94,8 @@ class QueryValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(QueryRequest $_): ConstraintViolationList => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
+                fn(QueryRequest $_): ConstraintViolationList
+                => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);

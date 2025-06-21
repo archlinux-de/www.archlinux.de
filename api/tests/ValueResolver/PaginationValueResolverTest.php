@@ -96,7 +96,8 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_): ConstraintViolationList => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
+                fn(PaginationRequest $_): ConstraintViolationList
+                => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);
