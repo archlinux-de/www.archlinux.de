@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Rector\CodeQuality\Rector\Empty_\SimplifyEmptyCheckOnEmptyArrayRector;
 use Rector\CodeQuality\Rector\FuncCall\SimplifyRegexPatternRector;
-use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\Config\RectorConfig;
 use Rector\Php55\Rector\Class_\ClassConstantToSelfClassRector;
@@ -56,7 +55,6 @@ return RectorConfig::configure()
         ExplicitBoolCompareRector::class,
         DisallowedEmptyRuleFixerRector::class,
         SimplifyEmptyCheckOnEmptyArrayRector::class,
-        FlipTypeControlToUseExclusiveTypeRector::class,
         // want to replace [0-9]  with \d which is not the same though
         SimplifyRegexPatternRector::class,
     ]);

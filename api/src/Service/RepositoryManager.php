@@ -50,7 +50,7 @@ class RepositoryManager
         foreach ($this->repositoryConfiguration as $repoName => $archNames) {
             foreach ($archNames as $archName) {
                 $repository = $this->repositoryRepository->findByNameAndArchitecture($repoName, $archName);
-                if ($repository === null) {
+                if (!$repository instanceof Repository) {
                     $repository = new Repository($repoName, $archName);
                     $repository->setTesting(str_ends_with($repoName, '-testing'));
 

@@ -2,6 +2,7 @@
 
 namespace App\SearchIndex;
 
+use App\Entity\Country;
 use App\Entity\Mirror;
 
 class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurationInterface
@@ -52,7 +53,7 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
         $paramsBody[] = ['index' => ['_index' => $this->getIndexName(), '_id' => $object->getUrl()]];
         $paramsBody[] = [
             'url' => $object->getUrl(),
-            'country' => $object->getCountry() !== null ? [
+            'country' => $object->getCountry() instanceof Country ? [
                 'code' => $object->getCountry()->getCode(),
                 'name' => $object->getCountry()->getName()
             ] : null,
