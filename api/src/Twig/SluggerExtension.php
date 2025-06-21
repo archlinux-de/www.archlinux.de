@@ -5,9 +5,8 @@ namespace App\Twig;
 use Twig\Attribute\AsTwigFilter;
 use Symfony\Component\String\AbstractUnicodeString;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Twig\Extension\AbstractExtension;
 
-class SluggerExtension extends AbstractExtension
+class SluggerExtension
 {
     public function __construct(private readonly SluggerInterface $slugger)
     {
