@@ -6,7 +6,6 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Service\PackageDatabaseExtractor;
 use App\Service\PackageDatabaseReader;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\SerializerInterface;
 

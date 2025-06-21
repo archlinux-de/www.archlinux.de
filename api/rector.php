@@ -46,6 +46,7 @@ return RectorConfig::configure()
     ->withSymfonyContainerPhp(__DIR__ . '/tests/symfony-container.php')
     ->registerService(SymfonyRoutesProvider::class, SymfonyRoutesProviderInterface::class)
     ->withPreparedSets(deadCode: true, codeQuality: true, typeDeclarations: true)
+    ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     ->withSkip([
         ClassPropertyAssignToConstructorPromotionRector::class,
         NewMethodCallWithoutParenthesesRector::class,
