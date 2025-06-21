@@ -32,7 +32,7 @@ class PackageDatabaseExtractorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->archiveFile = sys_get_temp_dir() . '/' . hash('sha256', __CLASS__ . random_int(0, PHP_INT_MAX)) . '.tar';
+        $this->archiveFile = sys_get_temp_dir() . '/' . hash('sha256', self::class . random_int(0, PHP_INT_MAX)) . '.tar';
     }
 
     protected function tearDown(): void
