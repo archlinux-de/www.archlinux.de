@@ -58,7 +58,7 @@ class IndexUpdateEventListener
                 $this->client->bulk(
                     [
                         'body' => array_merge(...$bulkIndexChunk),
-                        'refresh' => $this->environment != 'prod'
+                        'refresh' => $this->environment !== 'prod'
                     ]
                 );
             }

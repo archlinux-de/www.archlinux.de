@@ -64,7 +64,7 @@ class PackageDatabaseMirrorTest extends TestCase
             ->willReturn($cacheItem);
 
         $packageDatabaseMirror = new PackageDatabaseMirror($httpClient, $cache, 'http://foo');
-        $this->assertEquals($oldLastUpdated != $newLastUpdated, $packageDatabaseMirror->hasUpdated());
+        $this->assertEquals($oldLastUpdated !== $newLastUpdated, $packageDatabaseMirror->hasUpdated());
     }
 
     public function testUpdateLastUpdate(): void

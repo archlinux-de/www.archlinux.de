@@ -32,7 +32,7 @@ class NewsSearchIndexer implements SearchIndexerInterface, SearchIndexConfigurat
 
     public function getIndexName(): string
     {
-        return ($this->environment == 'test' ? 'test-' : '') . 'news_item';
+        return ($this->environment === 'test' ? 'test-' : '') . 'news_item';
     }
 
     /**

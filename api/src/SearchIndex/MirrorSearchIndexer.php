@@ -39,7 +39,7 @@ class MirrorSearchIndexer implements SearchIndexerInterface, SearchIndexConfigur
 
     public function getIndexName(): string
     {
-        return ($this->environment == 'test' ? 'test-' : '') . 'mirror';
+        return ($this->environment === 'test' ? 'test-' : '') . 'mirror';
     }
 
     /**

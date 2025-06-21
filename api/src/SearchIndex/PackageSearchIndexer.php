@@ -50,7 +50,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     public function getIndexName(): string
     {
-        return ($this->environment == 'test' ? 'test-' : '') . 'package';
+        return ($this->environment === 'test' ? 'test-' : '') . 'package';
     }
 
     /**

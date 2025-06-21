@@ -26,7 +26,7 @@ class OpenSearchFixturesHandler implements ClientFactoryInterface
     {
         $psr18Client = new SymfonyHttpClientFactory($this->maxRetries, $this->logger)->create($options);
 
-        if ($this->mode == 'off') {
+        if ($this->mode === 'off') {
             $httpClient = $psr18Client;
         } else {
             $httpClient = new MockPSR18Client($psr18Client, $this->mode, $this->serializer);
