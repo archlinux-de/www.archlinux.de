@@ -65,7 +65,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $newsItemRepository = $this->createMock(NewsItemRepository::class);
         $newsItemRepository
             ->method('findAllExceptByIds')
-            ->willReturnCallback(function (array $ids) use ($oldNewsItem, $newNewsItem) {
+            ->willReturnCallback(function (array $ids) use ($oldNewsItem, $newNewsItem): array {
                 $this->assertEquals([$oldNewsItem->getId(), $newNewsItem->getId()], $ids);
                 return[];
             });

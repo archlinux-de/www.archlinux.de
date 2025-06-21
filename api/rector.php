@@ -24,7 +24,6 @@ use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\Symfony\Bridge\Symfony\Routing\SymfonyRoutesProvider;
 use Rector\Symfony\Contract\Bridge\Symfony\Routing\SymfonyRoutesProviderInterface;
 use Rector\Symfony\Symfony73\Rector\Class_\GetFiltersToAsTwigFilterAttributeRector;
-use Rector\TypeDeclaration\Rector\Closure\ClosureReturnTypeRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -60,7 +59,6 @@ return RectorConfig::configure()
         SimplifyEmptyCheckOnEmptyArrayRector::class,
         FlipTypeControlToUseExclusiveTypeRector::class,
         UseIdenticalOverEqualWithSameTypeRector::class,
-        ClosureReturnTypeRector::class,
         // want to replace [0-9]  with \d which is not the same though
         SimplifyRegexPatternRector::class,
     ]);

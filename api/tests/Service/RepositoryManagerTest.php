@@ -23,7 +23,7 @@ class RepositoryManagerTest extends TestCase
         $entityManager
             ->expects($this->once())
             ->method('remove')
-            ->with($this->callback(function (Repository $repository) {
+            ->with($this->callback(function (Repository $repository): true {
                 $this->assertEquals('core', $repository->getName());
                 $this->assertEquals('x86_64', $repository->getArchitecture());
                 return true;
@@ -88,7 +88,7 @@ class RepositoryManagerTest extends TestCase
         $entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(function (Repository $repository) use ($repositoryName, $isTesting) {
+            ->with($this->callback(function (Repository $repository) use ($repositoryName, $isTesting): true {
                 $this->assertEquals($repositoryName, $repository->getName());
                 $this->assertEquals('x86_64', $repository->getArchitecture());
                 $this->assertEquals($isTesting, $repository->isTesting());
