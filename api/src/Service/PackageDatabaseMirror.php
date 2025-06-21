@@ -7,10 +7,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PackageDatabaseMirror
 {
-    /** @var string */
     public const string CACHE_KEY = 'PackageDatabaseMirror_lastupdate';
 
-    /** @var string */
     private string $lastUpdateHash = '';
 
     public function __construct(

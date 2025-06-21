@@ -10,9 +10,7 @@ use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\CodeQuality\Rector\If_\SimplifyIfElseToTernaryRector;
 use Rector\CodeQuality\Rector\Ternary\SwitchNegatedTernaryRector;
 use Rector\Config\RectorConfig;
-use Rector\DeadCode\Rector\ClassMethod\RemoveUselessReturnTagRector;
 use Rector\DeadCode\Rector\If_\RemoveUnusedNonEmptyArrayBeforeForeachRector;
-use Rector\DeadCode\Rector\Property\RemoveUselessVarTagRector;
 use Rector\Php55\Rector\Class_\ClassConstantToSelfClassRector;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php80\Rector\Catch_\RemoveUnusedVariableInCatchRector;
@@ -74,6 +72,4 @@ return RectorConfig::configure()
         SimplifyIfElseToTernaryRector::class,
         SwitchNegatedTernaryRector::class,
         RemoveUnusedNonEmptyArrayBeforeForeachRector::class,
-        RemoveUselessVarTagRector::class,
-        RemoveUselessReturnTagRector::class,
     ]);

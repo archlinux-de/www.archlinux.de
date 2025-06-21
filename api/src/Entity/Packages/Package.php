@@ -418,7 +418,6 @@ class Package
 
     /**
      * @param string[]|null $licenses
-     * @return Package
      */
     public function setLicenses(?array $licenses): Package
     {
@@ -436,7 +435,6 @@ class Package
 
     /**
      * @param string[] $groups
-     * @return Package
      */
     public function setGroups(array $groups): Package
     {
