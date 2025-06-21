@@ -70,18 +70,16 @@ class AbstractRelationRepository extends ServiceEntityRepository
     {
         $candidates = $this->getPackagesByRelation($relation);
 
-        if (count($candidates) > 0) {
-            foreach ($candidates as $candidate) {
-                if (
-                    $candidate->getRepository()->isTesting()
-                    && !$relation->getSource()->getRepository()->isTesting()
-                ) {
-                    continue;
-                }
+        foreach ($candidates as $candidate) {
+            if (
+                $candidate->getRepository()->isTesting()
+                && !$relation->getSource()->getRepository()->isTesting()
+            ) {
+                continue;
+            }
 
-                if ($this->isVersionCompatible($candidate->getVersion(), $relation->getTargetVersion())) {
-                    return $candidate;
-                }
+            if ($this->isVersionCompatible($candidate->getVersion(), $relation->getTargetVersion())) {
+                return $candidate;
             }
         }
 
