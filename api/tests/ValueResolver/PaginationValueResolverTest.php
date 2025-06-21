@@ -15,8 +15,7 @@ use App\Request\PaginationRequest;
 
 class PaginationValueResolverTest extends TestCase
 {
-    /** @var ValidatorInterface&MockObject */
-    private mixed $validator;
+    private ValidatorInterface&MockObject $validator;
 
     private PaginationValueResolver $paginationValueResolver;
 

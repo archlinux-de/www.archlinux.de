@@ -15,8 +15,7 @@ use App\Request\QueryRequest;
 
 class QueryValueResolverTest extends TestCase
 {
-    /** @var ValidatorInterface&MockObject */
-    private mixed $validator;
+    private ValidatorInterface&MockObject $validator;
 
     private QueryValueResolver $queryValueResolver;
 
