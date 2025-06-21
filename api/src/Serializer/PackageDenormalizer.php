@@ -92,7 +92,7 @@ class PackageDenormalizer implements DenormalizerInterface
 
         preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
         $name = trim($matches[1] ?? $packagerDefinition);
-        $email = !empty($matches[2]) ? trim($matches[2]) : null;
+        $email = empty($matches[2]) ? null : trim($matches[2]);
 
         if (!$name && !$email) {
             return null;
