@@ -7,12 +7,10 @@ use Rector\CodeQuality\Rector\FuncCall\SimplifyRegexPatternRector;
 use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\Config\RectorConfig;
 use Rector\Php55\Rector\Class_\ClassConstantToSelfClassRector;
-use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php80\Rector\Catch_\RemoveUnusedVariableInCatchRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php80\Rector\Switch_\ChangeSwitchToMatchRector;
 use Rector\Php81\Rector\Array_\FirstClassCallableRector;
-use Rector\Php81\Rector\FuncCall\NullToStrictStringFuncCallArgRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php83\Rector\Class_\ReadOnlyAnonymousClassRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
@@ -50,8 +48,6 @@ return RectorConfig::configure()
         AddOverrideAttributeToOverriddenMethodsRector::class,
         GetFiltersToAsTwigFilterAttributeRector::class,
         FirstClassCallableRector::class,
-        NullToStrictStringFuncCallArgRector::class,
-        ClosureToArrowFunctionRector::class,
         ExplicitBoolCompareRector::class,
         DisallowedEmptyRuleFixerRector::class,
         SimplifyEmptyCheckOnEmptyArrayRector::class,

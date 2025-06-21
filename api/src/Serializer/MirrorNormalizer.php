@@ -49,7 +49,7 @@ class MirrorNormalizer implements NormalizerInterface
             )
         );
 
-        $data['host'] = parse_url($data['url'], PHP_URL_HOST);
+        $data['host'] = parse_url((string) $data['url'], PHP_URL_HOST);
 
         return $data;
     }
