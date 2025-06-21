@@ -19,7 +19,7 @@ class SluggerExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('slug', [$this, 'slug']),
+            new TwigFilter('slug', $this->slug(...)),
         ];
     }
 

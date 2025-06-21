@@ -10,7 +10,6 @@ use Rector\Php55\Rector\Class_\ClassConstantToSelfClassRector;
 use Rector\Php80\Rector\Catch_\RemoveUnusedVariableInCatchRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php80\Rector\Switch_\ChangeSwitchToMatchRector;
-use Rector\Php81\Rector\Array_\FirstClassCallableRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php83\Rector\Class_\ReadOnlyAnonymousClassRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
@@ -47,7 +46,6 @@ return RectorConfig::configure()
         AddOverrideAttributeToOverriddenMethodsRector::class,
         AddOverrideAttributeToOverriddenMethodsRector::class,
         GetFiltersToAsTwigFilterAttributeRector::class,
-        FirstClassCallableRector::class,
         ExplicitBoolCompareRector::class,
         DisallowedEmptyRuleFixerRector::class,
         SimplifyEmptyCheckOnEmptyArrayRector::class,

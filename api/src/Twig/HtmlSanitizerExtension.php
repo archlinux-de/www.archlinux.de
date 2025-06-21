@@ -18,7 +18,7 @@ class HtmlSanitizerExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('sanitize', [$this->htmlSanitizer, 'sanitize'], ['is_safe' => ['html']])
+            new TwigFilter('sanitize', $this->htmlSanitizer->sanitize(...), ['is_safe' => ['html']])
         ];
     }
 }
