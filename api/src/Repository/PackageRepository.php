@@ -179,7 +179,7 @@ class PackageRepository extends ServiceEntityRepository
     ): array {
         try {
             $package = $this->getByName($repository, $architecture, $name);
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return [];
         }
 
@@ -224,7 +224,7 @@ class PackageRepository extends ServiceEntityRepository
     {
         try {
             $package = $this->getByName($repository, $architecture, $name);
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return [];
         }
 

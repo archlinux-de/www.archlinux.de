@@ -49,7 +49,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
 
         try {
             $openSearchClient->indices()->delete(['index' => $searchIndexer->getIndexName()]);
-        } catch (NotFoundHttpException $_) {
+        } catch (NotFoundHttpException) {
         }
         $openSearchClient->indices()->create($searchIndexer->createIndexConfiguration());
     }

@@ -36,7 +36,7 @@ class IndexNewsCommand extends Command
 
         try {
             $this->client->indices()->delete(['index' => $this->newsSearchIndexer->getIndexName()]);
-        } catch (NotFoundHttpException $_) {
+        } catch (NotFoundHttpException) {
         }
         $this->client->indices()->create($this->newsSearchIndexer->createIndexConfiguration());
 

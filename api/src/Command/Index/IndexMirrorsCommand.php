@@ -36,7 +36,7 @@ class IndexMirrorsCommand extends Command
 
         try {
             $this->client->indices()->delete(['index' => $this->mirrorSearchIndexer->getIndexName()]);
-        } catch (NotFoundHttpException $_) {
+        } catch (NotFoundHttpException) {
         }
         $this->client->indices()->create($this->mirrorSearchIndexer->createIndexConfiguration());
 

@@ -46,7 +46,7 @@ class PackageDetailsController extends AbstractController
         try {
             try {
                 $package = $this->packageRepository->getByName($repository, $architecture, $name);
-            } catch (NoResultException $e) {
+            } catch (NoResultException) {
                 return $this->redirectToPackage(
                     $this->packageRepository->getByRepositoryArchitectureAndName($architecture, $name)
                 );
