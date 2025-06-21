@@ -167,31 +167,16 @@ class PackageDenormalizerTest extends TestCase
             ['repository' => $repository]
         );
 
-        switch ($type) {
-            case 'DEPENDS':
-                $this->assertDependency($expected, $package->getDependencies());
-                break;
-            case 'CONFLICTS':
-                $this->assertDependency($expected, $package->getConflicts());
-                break;
-            case 'REPLACES':
-                $this->assertDependency($expected, $package->getReplacements());
-                break;
-            case 'OPTDEPENDS':
-                $this->assertDependency($expected, $package->getOptionalDependencies());
-                break;
-            case 'PROVIDES':
-                $this->assertDependency($expected, $package->getProvisions());
-                break;
-            case 'MAKEDEPENDS':
-                $this->assertDependency($expected, $package->getMakeDependencies());
-                break;
-            case 'CHECKDEPENDS':
-                $this->assertDependency($expected, $package->getCheckDependencies());
-                break;
-            default:
-                $this->fail(sprintf('Invalid dependency type: %s', $type));
-        }
+        match ($type) {
+            'DEPENDS' => $this->assertDependency($expected, $package->getDependencies()),
+            'CONFLICTS' => $this->assertDependency($expected, $package->getConflicts()),
+            'REPLACES' => $this->assertDependency($expected, $package->getReplacements()),
+            'OPTDEPENDS' => $this->assertDependency($expected, $package->getOptionalDependencies()),
+            'PROVIDES' => $this->assertDependency($expected, $package->getProvisions()),
+            'MAKEDEPENDS' => $this->assertDependency($expected, $package->getMakeDependencies()),
+            'CHECKDEPENDS' => $this->assertDependency($expected, $package->getCheckDependencies()),
+            default => $this->fail(sprintf('Invalid dependency type: %s', $type)),
+        };
     }
 
     /**
