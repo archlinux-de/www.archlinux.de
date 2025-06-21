@@ -11,7 +11,7 @@ class TermRequest
         pattern: '/^[\w\- ]+$/u',
         normalizer: 'trim'
     )]
-    private string $term;
+    private readonly string $term;
 
     public function __construct(string $term)
     {

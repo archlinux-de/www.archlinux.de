@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class CountryNormalizer implements NormalizerInterface
 {
-    private NormalizerInterface $normalizer;
+    private readonly NormalizerInterface $normalizer;
 
     public function __construct(
         #[Autowire(service: 'serializer.normalizer.object')] NormalizerInterface $normalizer,

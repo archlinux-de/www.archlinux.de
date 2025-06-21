@@ -11,7 +11,7 @@ class QueryRequest
         pattern: '/^[\w@:\.+\- ]+$/u',
         normalizer: 'trim'
     )]
-    private string $query;
+    private readonly string $query;
 
     public function __construct(string $query)
     {
