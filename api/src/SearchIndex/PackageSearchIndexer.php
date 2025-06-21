@@ -69,10 +69,10 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
             'groups' => $object->getGroups(),
             'buildDate' => $object->getBuildDate()?->format(DATE_W3C),
             'replacements' => $object->getReplacements()->map(
-                fn(Replacement $replacement) => $replacement->getTargetName()
+                fn(Replacement $replacement): string => $replacement->getTargetName()
             )->toArray(),
             'provisions' => $object->getProvisions()->map(
-                fn(Provision $provision) => $provision->getTargetName()
+                fn(Provision $provision): string => $provision->getTargetName()
             )->toArray(),
             'repository' => [
                 'name' => $object->getRepository()->getName(),

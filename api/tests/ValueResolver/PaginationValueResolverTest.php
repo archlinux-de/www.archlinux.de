@@ -40,7 +40,7 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_) => new ConstraintViolationList()
+                fn(PaginationRequest $_): ConstraintViolationList => new ConstraintViolationList()
             );
 
         $values = [...$this->paginationValueResolver->resolve($request, $argument)];
@@ -68,7 +68,7 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_) => new ConstraintViolationList()
+                fn(PaginationRequest $_): ConstraintViolationList => new ConstraintViolationList()
             );
 
         $values = [...$this->paginationValueResolver->resolve($request, $argument)];
@@ -96,7 +96,7 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_) => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
+                fn(PaginationRequest $_): ConstraintViolationList => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);
