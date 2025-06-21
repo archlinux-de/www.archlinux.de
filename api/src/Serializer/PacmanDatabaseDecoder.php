@@ -23,11 +23,7 @@ class PacmanDatabaseDecoder implements DecoderInterface
                     $result[$key] = [];
                 } elseif ($key) {
                     $value = $line->trim();
-                    if ($value->match('/^[0-9]+$/')) {
-                        $value = (int)$value->toString();
-                    } else {
-                        $value = $value->toString();
-                    }
+                    $value = $value->match('/^[0-9]+$/') ? (int)$value->toString() : $value->toString();
                     $result[$key][] = $value;
                 }
             }

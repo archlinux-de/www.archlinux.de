@@ -7,7 +7,6 @@ use Rector\CodeQuality\Rector\Equal\UseIdenticalOverEqualWithSameTypeRector;
 use Rector\CodeQuality\Rector\FuncCall\SimplifyRegexPatternRector;
 use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
-use Rector\CodeQuality\Rector\If_\SimplifyIfElseToTernaryRector;
 use Rector\Config\RectorConfig;
 use Rector\Php55\Rector\Class_\ClassConstantToSelfClassRector;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
@@ -67,5 +66,4 @@ return RectorConfig::configure()
         AddArrowFunctionReturnTypeRector::class,
         TypedPropertyFromCreateMockAssignRector::class,
         SimplifyRegexPatternRector::class,
-        SimplifyIfElseToTernaryRector::class,
     ]);
