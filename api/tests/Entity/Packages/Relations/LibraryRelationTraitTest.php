@@ -13,10 +13,10 @@ class LibraryRelationTraitTest extends TestCase
     public function testIsLibrary(string $targetName, bool $isLibrary): void
     {
         $this->assertSame($isLibrary, (
-        new class ($targetName) implements LibraryRelation {
+        new readonly class ($targetName) implements LibraryRelation {
             use LibraryRelationTrait;
 
-            public function __construct(private readonly string $targetName)
+            public function __construct(private string $targetName)
             {
             }
 
@@ -53,10 +53,10 @@ class LibraryRelationTraitTest extends TestCase
         bool $isArchitecture
     ): void {
         $this->assertSame($isArchitecture, (
-        new class ($targetVersion) implements LibraryRelation {
+        new readonly class ($targetVersion) implements LibraryRelation {
             use LibraryRelationTrait;
 
-            public function __construct(private readonly string $targetVersion)
+            public function __construct(private string $targetVersion)
             {
             }
 
