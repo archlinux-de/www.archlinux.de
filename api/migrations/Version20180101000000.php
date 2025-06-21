@@ -35,6 +35,7 @@ final class Version20180101000000 extends AbstractMigration
         }
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE mirror DROP FOREIGN KEY FK_5BA71B4AF92F3E70');
@@ -52,6 +53,7 @@ final class Version20180101000000 extends AbstractMigration
         $this->addSql('DROP TABLE files');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

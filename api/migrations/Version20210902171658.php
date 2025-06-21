@@ -14,6 +14,7 @@ final class Version20210902171658 extends AbstractMigration
         $this->addSql('ALTER TABLE releng_release DROP iso_url');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql(
@@ -21,6 +22,7 @@ final class Version20210902171658 extends AbstractMigration
         );
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

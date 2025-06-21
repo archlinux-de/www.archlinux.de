@@ -12,7 +12,6 @@ use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php80\Rector\Switch_\ChangeSwitchToMatchRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php83\Rector\Class_\ReadOnlyAnonymousClassRector;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\Php84\Rector\MethodCall\NewMethodCallWithoutParenthesesRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
@@ -42,8 +41,6 @@ return RectorConfig::configure()
         ClassConstantToSelfClassRector::class,
         ChangeSwitchToMatchRector::class,
         RemoveUnusedVariableInCatchRector::class,
-        AddOverrideAttributeToOverriddenMethodsRector::class,
-        AddOverrideAttributeToOverriddenMethodsRector::class,
         ExplicitBoolCompareRector::class,
         DisallowedEmptyRuleFixerRector::class,
         SimplifyEmptyCheckOnEmptyArrayRector::class,

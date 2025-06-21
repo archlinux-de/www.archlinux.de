@@ -16,6 +16,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 #[CoversNothing]
 class SmokeTest extends DatabaseSearchTestCase
 {
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();

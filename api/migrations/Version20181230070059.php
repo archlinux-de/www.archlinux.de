@@ -48,11 +48,13 @@ final class Version20181230070059 extends AbstractMigration
         return false;
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE news_item DROP slug');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

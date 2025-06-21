@@ -14,11 +14,13 @@ final class Version20210904041418 extends AbstractMigration
         $this->addSql('ALTER TABLE package DROP pgp_signature');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE package ADD pgp_signature LONGBLOB DEFAULT NULL');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

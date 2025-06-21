@@ -21,11 +21,13 @@ final class Version20200531080135 extends AbstractMigration
         $this->addSql('ALTER TABLE mirror DROP isos');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE mirror ADD isos TINYINT(1) NOT NULL');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

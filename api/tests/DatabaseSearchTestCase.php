@@ -18,6 +18,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
      */
     private array $searchIndexers = [];
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -61,6 +62,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
         return $client;
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         foreach ($this->searchIndexers as $searchIndexer) {

@@ -15,6 +15,7 @@ final class Version20200127181847 extends AbstractMigration
         $this->addSql('ALTER TABLE releng_release DROP md5_sum');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql(
@@ -25,6 +26,7 @@ final class Version20200127181847 extends AbstractMigration
         );
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;
