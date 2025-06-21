@@ -16,7 +16,7 @@ class PacmanDatabaseDecoder implements DecoderInterface
         $result = [];
 
         /** @var ByteString $line */
-        foreach ((new ByteString($data))->split("\n") as $line) {
+        foreach (new ByteString($data)->split("\n") as $line) {
             if ($line->match('/\S+/')) {
                 if ($line->length() > 2 && $line->startsWith('%') && $line->endsWith('%')) {
                     $key = $line->slice(1, -1)->toString();

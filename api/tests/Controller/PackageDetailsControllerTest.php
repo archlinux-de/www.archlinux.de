@@ -78,13 +78,13 @@ class PackageDetailsControllerTest extends DatabaseTestCase
             '5.0.2-2',
             Architecture::X86_64
         );
-        $pacmanGui = (new Package(
+        $pacmanGui = new Package(
             $coreRepository,
             'pacman-gui',
             '0.0.1-1',
             Architecture::X86_64
-        ))
-            ->addDependency((new Dependency('pacman'))->setTarget($pacman));
+        )
+            ->addDependency(new Dependency('pacman')->setTarget($pacman));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->persist($pacmanGui);

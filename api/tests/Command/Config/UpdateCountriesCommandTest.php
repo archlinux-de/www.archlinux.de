@@ -89,7 +89,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
 
     public function testUpdateCountry(): void
     {
-        $country = (new Country('DE'))->setName('Germany');
+        $country = new Country('DE')->setName('Germany');
 
         /** @var CountryRepository&MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);

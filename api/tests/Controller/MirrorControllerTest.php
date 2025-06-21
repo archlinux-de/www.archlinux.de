@@ -19,14 +19,14 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testIsoAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $country = (new Country('de'))->setName('Germany');
+        $country = new Country('de')->setName('Germany');
 
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'))
             ->setCountry($country);
 
-        $release = (new Release('2018.01.01'))
+        $release = new Release('2018.01.01')
             ->setAvailable(true)
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
@@ -48,7 +48,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testFailIfIsoIsUnkown(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
@@ -65,7 +65,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testPackageAction(string $packageExtension): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $coreRepository = new Repository('core', Architecture::X86_64);
@@ -90,7 +90,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testPackageNotFoundAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
@@ -106,7 +106,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testInvalidPackageNotFoundAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
@@ -122,7 +122,7 @@ class MirrorControllerTest extends DatabaseSearchTestCase
     public function testFallbackAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);

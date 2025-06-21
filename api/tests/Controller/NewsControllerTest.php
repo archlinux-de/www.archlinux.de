@@ -19,7 +19,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime('2018-01-01'));
         $news->setAuthor(
-            (new NewsAuthor())
+            new NewsAuthor()
                 ->setName('')
                 ->setUri('')
         );
@@ -54,7 +54,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime('2018-01-01'));
         $news->setAuthor(
-            (new NewsAuthor())
+            new NewsAuthor()
                 ->setName('')
                 ->setUri('')
         );
@@ -85,7 +85,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime('2020-02-02'));
         $news->setAuthor(
-            (new NewsAuthor())
+            new NewsAuthor()
                 ->setName('Bob')
                 ->setUri('http://localhost/bob')
         );

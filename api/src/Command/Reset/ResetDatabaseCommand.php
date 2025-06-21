@@ -97,7 +97,7 @@ class ResetDatabaseCommand extends Command
             $store = new FlockStore();
         }
 
-        $this->locks[$name] = (new LockFactory($store))->createLock($name);
+        $this->locks[$name] = new LockFactory($store)->createLock($name);
         if (!$this->locks[$name]->acquire()) {
             $this->locks[$name] = null;
         }

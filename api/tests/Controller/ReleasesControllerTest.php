@@ -13,7 +13,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
     public function testFeedAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $release = (new Release('2018.01.01'))
+        $release = new Release('2018.01.01')
             ->setAvailable(true)
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
@@ -47,7 +47,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
     public function testReleasesAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $release = (new Release('2018.01.01'))
+        $release = new Release('2018.01.01')
             ->setAvailable(true)
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
@@ -73,7 +73,7 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
     public function testReleaseAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $release = (new Release('2018.01.01'))
+        $release = new Release('2018.01.01')
             ->setAvailable(true)
             ->setInfo('info')
             ->setCreated(new \DateTime('2018-01-01'))

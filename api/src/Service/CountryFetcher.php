@@ -19,7 +19,7 @@ class CountryFetcher implements \IteratorAggregate
         foreach ($this->iso3166 as $iso3166Country) {
             assert(is_string($iso3166Country['alpha2']));
             assert(is_string($iso3166Country['name']));
-            yield (new Country($iso3166Country['alpha2']))->setName($iso3166Country['name']);
+            yield new Country($iso3166Country['alpha2'])->setName($iso3166Country['name']);
         }
     }
 }

@@ -104,8 +104,8 @@ class LegacyControllerTest extends WebTestCase
      */
     private function createLegacyRequest(string $legacyPage, array $parameters = []): string
     {
-        return (new ByteString(
+        return new ByteString(
             Request::create('/', 'GET', array_merge(['page' => $legacyPage], $parameters))->getUri()
-        ))->replace('&', ';');
+        )->replace('&', ';');
     }
 }

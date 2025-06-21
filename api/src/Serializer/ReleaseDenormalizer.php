@@ -17,7 +17,7 @@ class ReleaseDenormalizer implements DenormalizerInterface
             ...(function () use ($data) {
                 assert(is_array($data['releases']));
                 foreach ($data['releases'] as $releaseData) {
-                    $release = (new Release($releaseData['version']))
+                    $release = new Release($releaseData['version'])
                         ->setAvailable(
                             $this->guessAvailability($releaseData['available'], new \DateTime($releaseData['created']))
                         )
@@ -45,7 +45,7 @@ class ReleaseDenormalizer implements DenormalizerInterface
     private function guessAvailability(bool $available, \DateTime $created): bool
     {
         // Give mirrors 3 hours to sync a newly released ISO image
-        return $available && (new \DateTime())->getTimestamp() - $created->getTimestamp() >= 3 * 60 * 60;
+        return $available && new \DateTime()->getTimestamp() - $created->getTimestamp() >= 3 * 60 * 60;
     }
 
     public function supportsDenormalization(

@@ -88,7 +88,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
 
     public function testUpdateRelease(): void
     {
-        $release = (new Release('2'))
+        $release = new Release('2')
             ->setAvailable(true)
             ->setCreated(new \DateTime('2018-01-01'))
             ->setInfo('')

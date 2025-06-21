@@ -23,7 +23,7 @@ final class Version20181230070059 extends AbstractMigration
             foreach ($this->connection->fetchAllAssociative('SELECT id, title FROM news_item') as $row) {
                 assert(is_int($row['id']));
                 assert(is_string($row['title']));
-                $newsItem = (new NewsItem($row['id']))->setTitle($row['title']);
+                $newsItem = new NewsItem($row['id'])->setTitle($row['title']);
                 $this->connection->update(
                     'news_item',
                     ['slug' => $slugger->slug($newsItem->getTitle())],

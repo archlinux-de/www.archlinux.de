@@ -32,7 +32,7 @@ class SmokeTest extends DatabaseSearchTestCase
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
 
-        $release = (new Release('2018.01.01'))
+        $release = new Release('2018.01.01')
             ->setAvailable(true)
             ->setInfo('')
             ->setCreated(new \DateTime('2018-01-01'))
@@ -41,17 +41,17 @@ class SmokeTest extends DatabaseSearchTestCase
             ->setFileName('release.iso');
         $entityManager->persist($release);
 
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-01-01'));
         $entityManager->persist($mirror);
 
-        $newsItem = (new NewsItem(1))
+        $newsItem = new NewsItem(1)
             ->setTitle('Big News')
             ->setLink('https://www.archlinux.de/')
             ->setDescription('Foo bar')
             ->setLastModified(new \DateTime('2018-01-01'))
-            ->setAuthor((new NewsAuthor())->setName('Bob'));
+            ->setAuthor(new NewsAuthor()->setName('Bob'));
         $entityManager->persist($newsItem);
 
         $entityManager->flush();

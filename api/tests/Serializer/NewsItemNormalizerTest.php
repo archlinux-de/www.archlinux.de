@@ -27,11 +27,11 @@ class NewsItemNormalizerTest extends KernelTestCase
 
     public function testNormalize(): void
     {
-        $newsAuthor = (new NewsAuthor())
+        $newsAuthor = new NewsAuthor()
             ->setName('Bob')
             ->setUri('http://localhost');
         $lastModified = new \DateTime('1982-02-05');
-        $newsItem = (new NewsItem(1))
+        $newsItem = new NewsItem(1)
             ->setAuthor($newsAuthor)
             ->setTitle('Big Story')
             ->setDescription('Foo bar')

@@ -15,7 +15,7 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
     public function testMirrorsAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setScore(1)
             ->setLastSync(new \DateTime('2020-02-02'));
         $entityManager->persist($mirror);
@@ -39,8 +39,8 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
     public function testMirrorAction(): void
     {
         $entityManager = $this->getEntityManager();
-        $country = (new Country('DE'))->setName('Germany');
-        $mirror = (new Mirror('https://127.0.0.2/'))
+        $country = new Country('DE')->setName('Germany');
+        $mirror = new Mirror('https://127.0.0.2/')
             ->setCountry($country)
             ->setDurationAvg(1.2)
             ->setDelay(2)

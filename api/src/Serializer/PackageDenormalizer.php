@@ -27,17 +27,17 @@ class PackageDenormalizer implements DenormalizerInterface
         assert(is_array($data));
         assert($context['repository'] instanceof Repository);
 
-        $package = (new Package(
+        $package = new Package(
             $context['repository'],
             $data['NAME'],
             $data['VERSION'],
             $data['ARCH']
-        ))
+        )
             ->setFileName($data['FILENAME'])
             ->setUrl($this->normalizeUrl($data['URL'] ?? null))
             ->setDescription($data['DESC'])
             ->setBase($data['BASE'] ?? $data['NAME'])
-            ->setBuildDate((new \DateTime())->setTimestamp($data['BUILDDATE']))
+            ->setBuildDate(new \DateTime()->setTimestamp($data['BUILDDATE']))
             ->setCompressedSize($data['CSIZE'])
             ->setInstalledSize($data['ISIZE'])
             ->setPackager($this->createPackagerFromString($data['PACKAGER']))

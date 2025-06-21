@@ -38,7 +38,7 @@ class ReleaseTest extends TestCase
 
     public function testUpdate(): void
     {
-        $release = (new Release('2019.01.01'))
+        $release = new Release('2019.01.01')
             ->setSha1Sum('abc')
             ->setSha256Sum('def')
             ->setB2Sum('ghi')
@@ -48,7 +48,7 @@ class ReleaseTest extends TestCase
             ->setCreated(new \DateTime('2018-01-01'))
             ->setAvailable(true);
 
-        $release->update((new Release('2019.01.01'))
+        $release->update(new Release('2019.01.01')
             ->setSha1Sum('1234')
             ->setSha256Sum('567')
             ->setB2Sum('890')

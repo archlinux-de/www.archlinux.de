@@ -18,7 +18,7 @@ class PackageDenormalizerTest extends TestCase
     public function testSupportsDenormalization(): void
     {
         $this->assertTrue(
-            (new PackageDenormalizer())->supportsDenormalization(
+            new PackageDenormalizer()->supportsDenormalization(
                 [],
                 Package::class,
                 'pacman-database',
