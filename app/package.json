@@ -7,13 +7,13 @@
     "serve": "webpack serve --mode development --host 0.0.0.0 --port 8080 --allowed-hosts all --hot"
   },
   "dependencies": {
-    "@babel/core": "^7.27.7",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
     "@fullhuman/postcss-purgecss": "^7.0.2",
     "@vue/compiler-sfc": "^3.5.17",
-    "@vueuse/core": "^13.4.0",
+    "@vueuse/core": "^13.5.0",
     "@vueuse/head": "^2.0.0",
-    "@vueuse/router": "^13.4.0",
+    "@vueuse/router": "^13.5.0",
     "autoprefixer": "^10.4.21",
     "babel-loader": "^10.0.0",
     "bootstrap": "^5.3.7",
@@ -41,7 +41,7 @@
     "workbox-webpack-plugin": "^7.3.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.27.5",
+    "@babel/eslint-parser": "^7.28.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.30.1",
     "eslint": "^9.30.1",
@@ -50,7 +50,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^17.20.0",
     "eslint-plugin-promise": "^7.2.1",
-    "eslint-plugin-vue": "^10.2.0",
+    "eslint-plugin-vue": "^10.3.0",
     "neostandard": "^0.12.1",
     "stylelint": "^16.21.0",
     "stylelint-config-recommended-vue": "^1.6.1",
