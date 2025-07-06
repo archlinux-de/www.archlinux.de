@@ -27,7 +27,7 @@
         "symfony/console": "^7.3.1",
         "symfony/dotenv": "^7.3.0",
         "symfony/expression-language": "^7.3.0",
-        "symfony/flex": "^2.8.0",
+        "symfony/flex": "^2.8.1",
         "symfony/framework-bundle": "^7.3.1",
         "symfony/html-sanitizer": "^7.3.0",
         "symfony/http-client": "^7.3.1",
