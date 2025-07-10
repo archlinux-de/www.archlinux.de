@@ -78,7 +78,7 @@ services:
       - mariadb
 
   opensearch:
-    image: opensearchproject/opensearch:3.0.0
+    image: opensearchproject/opensearch:3
     environment:
       - "discovery.type=single-node"
       - "plugins.security.disabled=true"
