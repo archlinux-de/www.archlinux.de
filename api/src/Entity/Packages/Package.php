@@ -72,7 +72,7 @@ class Package
     private ?string $sha256sum = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Url(protocols: ['http', 'https'])]
+    #[Assert\Url(protocols: ['http', 'https'], requireTld: true)]
     private ?string $url = null;
 
     /**
