@@ -191,6 +191,6 @@ class PackageDenormalizer implements DenormalizerInterface
             }
         }
 
-        return $result;
+        return array_values(array_filter($result));
     }
 }
