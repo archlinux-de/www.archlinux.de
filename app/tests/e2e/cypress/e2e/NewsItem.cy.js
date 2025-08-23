@@ -16,10 +16,10 @@ describe('News Item page', () => {
   })
 
   it('shows content', () => {
-    cy.get('[data-test=news-content]').should('be.visible').invoke('text').should('contains', 'Canterbury')
+    cy.get('[data-test=news-content]').should('be.visible').invoke('text').should('not.be.empty')
   })
 
   it('links comments', () => {
-    cy.get('[data-test=news-comments-link]').should('have.attr', 'href').and('contain', 'forum.archlinux.de')
+    cy.get('[data-test=news-comments-link]').should('have.attr', 'href').and('contain', 'http')
   })
 })

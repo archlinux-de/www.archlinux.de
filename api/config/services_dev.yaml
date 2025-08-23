@@ -1,4 +1,8 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
     App\Debug\ApiProfilerSubscriber:
         tags: ['kernel.event_subscriber']
 
@@ -8,3 +12,17 @@ services:
             -
                 base_uri: '%env(resolve:OPENSEARCH_URL)%'
         public: true
+
+    App\DataFixtures\:
+        resource: '../src/DataFixtures/'
+
+    Faker\Generator:
+        factory: ['Faker\Factory', 'create']
+        calls:
+            - seed: [1]
+
+    App\DataFixtures\RepositoryFixtures:
+        $repositoryConfiguration: '%app.packages.repositories%'
+
+    App\DataFixtures\PackageFixtures:
+        $repositoryConfiguration: '%app.packages.repositories%'

@@ -9,7 +9,8 @@ module.exports = {
     openMode: 0
   },
   e2e: {
-    setupNodeEvents (on, config) {}
+    setupNodeEvents (on, config) {},
+    experimentalRunAllSpecs: true
   },
   component: {
     setupNodeEvents (on, config) {},

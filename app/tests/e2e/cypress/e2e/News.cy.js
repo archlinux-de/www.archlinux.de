@@ -9,11 +9,11 @@ describe('News page', () => {
   })
 
   it('filter news', () => {
-    cy.get('[data-test=news-search]').type('LinuxTag', { delay: 200 })
+    cy.get('[data-test=news-search]').type('Canterbury', { delay: 200 })
     cy.location().should((loc) => {
-      expect(loc.search).to.eq('?search=LinuxTag')
+      expect(loc.search).to.eq('?search=Canterbury')
     })
-    cy.get('[data-test=news-item-link]').contains('LinuxTag')
+    cy.get('[data-test=news-item-link]').contains('Canterbury')
     cy.get('[data-test=news-item-link]').should('have.length.lt', 20)
   })
 

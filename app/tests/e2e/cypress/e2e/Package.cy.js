@@ -6,7 +6,7 @@ describe('Package page', () => {
 
   it('shows dependencies', () => {
     cy.visit('/packages/core/x86_64/pacman', { waitForApi: true })
-    cy.get('[data-test=package-relations-dependency] li').should('have.length.gt', 3)
+    cy.get('[data-test=package-relations-dependency] li').should('have.length.gt', 0)
     cy.get('[data-test=package-relations-dependency] li a').should('have.attr', 'href')
   })
 
@@ -21,9 +21,9 @@ describe('Package page', () => {
 
   it('shows files', () => {
     cy.visit('/packages/core/x86_64/pacman', { waitForApi: true })
-    cy.get('[data-test=package-files]').should('not.contain', 'usr/')
+    cy.get('[data-test=package-files]').should('not.contain', '/')
     cy.get('[data-test=package-show-files]').click()
-    cy.get('[data-test=package-files]').should('contain', 'usr/')
+    cy.get('[data-test=package-files]').should('contain', '/')
   })
 
   it('shows suggestions', () => {

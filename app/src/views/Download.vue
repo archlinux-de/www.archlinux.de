@@ -29,7 +29,7 @@
             <router-link :to="{name: 'release', params: {version: release.version}}">Release-Informationen</router-link>
           </li>
           <li><strong>Enthaltener Kernel:</strong>&nbsp;{{ release.kernelVersion }}</li>
-          <li><strong>ISO Größe:</strong>&nbsp;{{ prettyBytes(release.fileSize, { locale: 'de', maximumFractionDigits: 2 }) }}</li>
+          <li v-if="release.fileSize"><strong>ISO Größe:</strong>&nbsp;{{ prettyBytes(release.fileSize, { locale: 'de', maximumFractionDigits: 2 }) }}</li>
           <li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
         </ul>
 
@@ -99,7 +99,7 @@
           "@type": "SoftwareApplication",
           "name": "Arch Linux",
           "operatingSystem": "Arch Linux",
-          "fileSize": "{{ prettyBytes(release.fileSize, { maximumFractionDigits: 0 }) }}",
+          "fileSize": "{{ prettyBytes(release.fileSize ?? 0, { maximumFractionDigits: 0 }) }}",
           "datePublished": "{{ (new Date(release.releaseDate)).toJSON() }}",
           "softwareVersion": "{{ release.version }}",
           "offers": {

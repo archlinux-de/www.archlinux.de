@@ -15,7 +15,7 @@ describe('Download page', () => {
 
   it('shows mirror list', () => {
     cy.get('[data-test=mirror-list]').should('be.visible')
-    cy.get('[data-test=mirror-list] li').should('have.length', 10)
+    cy.get('[data-test=mirror-list] li').should('length.be.within', 5, 10)
     cy.get('[data-test=mirror-list] li a').should('have.attr', 'href').and('match', /\.iso$/)
   })
 })

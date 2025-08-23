@@ -14,13 +14,19 @@ MARIADB-RUN := COMPOSE-RUN + ' -T --no-deps mariadb'
 default:
 	just --list
 
-init: start
+[private]
+init-database: start
 	{{PHP-DB-RUN}} bin/console cache:warmup
 	{{PHP-DB-RUN}} bin/console doctrine:database:drop --force --if-exists
 	{{PHP-DB-RUN}} bin/console doctrine:database:create
 	{{PHP-DB-RUN}} bin/console doctrine:schema:create
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:version --add --all --no-interaction
+
+init: init-database
+	{{PHP-DB-RUN}} bin/console doctrine:fixtures:load --no-interaction
+
+init-prod: init-database
 	{{PHP-DB-RUN}} bin/console app:config:update-countries
 	{{PHP-DB-RUN}} bin/console app:update:mirrors
 	{{PHP-DB-RUN}} bin/console app:update:news
