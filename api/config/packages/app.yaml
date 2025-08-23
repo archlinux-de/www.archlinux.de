@@ -11,7 +11,7 @@ parameters:
         multilib-testing: ['x86_64']
     app.packages.default_architecture: 'x86_64'
     app.packages.packageStatisticsApiUrl: 'https://pkgstats.archlinux.de/api/packages'
-    app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
+    app.mirrors.status: 'https://archlinux.org/mirrors/status/json/'
     env(DEFAULT_MIRROR): '%app.packages.mirror%'
     app.mirrors.default: '%env(DEFAULT_MIRROR)%'
     app.mirrors.country: 'DE'
@@ -19,7 +19,7 @@ parameters:
     app.mirrors.mirrorStatisticsApiUrl: 'https://pkgstats.archlinux.de/api/mirrors'
     app.news.flarum_url: 'https://forum.archlinux.de'
     app.news.flarum_tag: 'neuigkeiten'
-    app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
+    app.releng.releases: 'https://archlinux.org/releng/releases/json/'
 
 when@dev:
     parameters:
