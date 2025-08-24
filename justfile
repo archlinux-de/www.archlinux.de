@@ -137,17 +137,19 @@ test-js:
 
 test: test-php test-js
 
-test-e2e:
+test-e2e *init='init':
 	#!/usr/bin/env bash
 	set -e
 	if [ "${CI-}" = "true" ]; then
 		git clean -xdf app/dist
-		just init
+		just {{ init }}
 		just pnpm run build
 		CYPRESS_baseUrl=http://nginx:8081 just cypress-run
 	else
 		just cypress-run
 	fi
+
+test-integration: (test-e2e 'init-prod')
 
 test-db *args: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml {{args}}
