@@ -15,6 +15,7 @@ framework:
             max_duration: 1800
             headers:
                 'User-Agent': 'www.archlinux.de'
+            retry_failed:
     default_locale: de
 
 when@test:

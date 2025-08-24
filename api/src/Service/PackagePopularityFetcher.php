@@ -26,7 +26,7 @@ readonly class PackagePopularityFetcher implements \IteratorAggregate
                 $this->packageStatisticsApiUrl,
                 [
                     'query' => ['offset' => $offset, 'limit' => $limit],
-                    'json' => true
+                    'headers' => ['Accept' => 'application/json'],
                 ]
             );
             $content = $response->getContent();

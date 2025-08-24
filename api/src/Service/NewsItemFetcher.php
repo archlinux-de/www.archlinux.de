@@ -34,7 +34,8 @@ class NewsItemFetcher implements \IteratorAggregate
                         'include' => 'user,firstPost',
                         'filter' => ['tag' => $this->flarumTag],
                         'page' => ['offset' => $offset, 'limit' => $limit]
-                    ]
+                    ],
+                    'headers' => ['Accept' => 'application/json'],
                 ]
             );
             $content = $response->getContent();

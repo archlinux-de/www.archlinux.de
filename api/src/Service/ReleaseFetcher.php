@@ -20,7 +20,11 @@ class ReleaseFetcher implements \IteratorAggregate
 
     public function getIterator(): \Traversable
     {
-        $response = $this->httpClient->request('GET', $this->releaseUrl);
+        $response = $this->httpClient->request(
+            'GET',
+            $this->releaseUrl,
+            ['headers' => ['Accept' => 'application/json']],
+        );
         $content = $response->getContent();
         if (empty($content)) {
             throw new \RuntimeException('empty releng releases');

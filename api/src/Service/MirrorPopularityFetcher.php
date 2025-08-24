@@ -26,7 +26,7 @@ readonly class MirrorPopularityFetcher implements \IteratorAggregate
                 $this->mirrorStatisticsApiUrl,
                 [
                     'query' => ['offset' => $offset, 'limit' => $limit],
-                    'json' => true
+                    'headers' => ['Accept' => 'application/json'],
                 ]
             );
             $content = $response->getContent();
