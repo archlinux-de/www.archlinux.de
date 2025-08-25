@@ -17,8 +17,7 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class PackageDetailsController extends AbstractController
 {
@@ -78,18 +77,9 @@ class PackageDetailsController extends AbstractController
         string $name,
         string $type
     ): Response {
-        /** @var array<string,class-string<RelationTarget>> $types */
-        $types = [
-            'check-dependency' => CheckDependency::class,
-            'conflict' => Conflict::class,
-            'dependency' => Dependency::class,
-            'make-dependency' => MakeDependency::class,
-            'optional-dependency' => OptionalDependency::class,
-            'provision' => Provision::class,
-            'replacement' => Replacement::class,
-        ];
-        if (!isset($types[$type])) {
-            throw new BadRequestHttpException(sprintf('Invalid type: "%s"', $type));
+        $relationClass = $this->getRelationClass($type);
+        if (null === $relationClass) {
+            return $this->json(['error' => sprintf('Invalid type: "%s"', $type)], Response::HTTP_BAD_REQUEST);
         }
 
         return $this->json(
@@ -97,7 +87,7 @@ class PackageDetailsController extends AbstractController
                 $repository,
                 $architecture,
                 $name,
-                $types[$type]
+                $relationClass
             )
         );
     }
@@ -110,6 +100,27 @@ class PackageDetailsController extends AbstractController
         string $name,
         string $type
     ): Response {
+        $relationClass = $this->getRelationClass($type);
+        if (null === $relationClass) {
+            return $this->json(['error' => sprintf('Invalid type: "%s"', $type)], Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json(
+            $this->packageRepository->findRelationsByQuery(
+                $repository,
+                $architecture,
+                $name,
+                $relationClass
+            )
+        );
+    }
+
+    /**
+     * @return ?class-string<RelationTarget>
+     */
+    private function getRelationClass(string $type): ?string
+    {
+        /** @var array<string,class-string<RelationTarget>> $types */
         $types = [
             'check-dependency' => CheckDependency::class,
             'conflict' => Conflict::class,
@@ -119,17 +130,7 @@ class PackageDetailsController extends AbstractController
             'provision' => Provision::class,
             'replacement' => Replacement::class,
         ];
-        if (!isset($types[$type])) {
-            throw new BadRequestHttpException(sprintf('Invalid type: "%s"', $type));
-        }
 
-        return $this->json(
-            $this->packageRepository->findRelationsByQuery(
-                $repository,
-                $architecture,
-                $name,
-                $types[$type]
-            )
-        );
+        return $types[$type] ?? null;
     }
 }

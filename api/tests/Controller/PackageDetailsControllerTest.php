@@ -108,6 +108,34 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $client->request('GET', '/api/packages/core/x86_64/pacman/inverse-dependencies/foo');
 
         $this->assertTrue($client->getResponse()->isClientError());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+
+        $this->assertEquals(
+            [
+                'error' => 'Invalid type: "foo"'
+            ],
+            json_decode($client->getResponse()->getContent(), true)
+        );
+    }
+
+    public function testPackageDependencyActionFailsWithInvalidType(): void
+    {
+        $client = $this->getClient();
+        $client->request('GET', '/api/packages/core/x86_64/pacman/dependencies/foo');
+
+        $this->assertTrue($client->getResponse()->isClientError());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+
+        $this->assertEquals(
+            [
+                'error' => 'Invalid type: "foo"'
+            ],
+            json_decode($client->getResponse()->getContent(), true)
+        );
     }
 
     public function testUnknownPackageReturnsCorrectHttpStatus(): void
