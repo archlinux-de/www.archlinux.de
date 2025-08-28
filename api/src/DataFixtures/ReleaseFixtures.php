@@ -29,6 +29,7 @@ class ReleaseFixtures extends Fixture
         for ($i = 0; $i < self::NUMBER_OF_RELEASES; $i++) {
             $versions[] = $this->faker->unique()->dateTimeThisDecade()->format('Y.m.d');
         }
+        $versions = array_unique($versions);
 
         foreach ($versions as $version) {
             $release = new Release($version);

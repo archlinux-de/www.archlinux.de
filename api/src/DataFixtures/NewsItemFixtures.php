@@ -30,6 +30,7 @@ class NewsItemFixtures extends Fixture
         for ($i = 0; $i < self::NUMBER_OF_NEWS; $i++) {
             $titles[$this->faker->unique()->numberBetween(1, 100000)] = $this->faker->sentence();
         }
+        $titles = array_unique($titles);
 
         foreach ($titles as $id => $title) {
             $newsItem = new NewsItem($id);

@@ -54,6 +54,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < self::NUMBER_OF_PACKAGES; $i++) {
             $names[] = $this->faker->unique()->word();
         }
+        $names = array_unique($names);
 
         foreach ($names as $name) {
             /** @var Repository $repository */

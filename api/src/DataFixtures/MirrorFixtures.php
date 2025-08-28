@@ -32,6 +32,7 @@ class MirrorFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < self::NUMBER_OF_MIRRORS; $i++) {
             $urls[] = str_replace('http://', 'https://', $this->faker->unique()->url());
         }
+        $urls = array_unique($urls);
 
         foreach ($urls as $url) {
             $mirror = new Mirror($url);
