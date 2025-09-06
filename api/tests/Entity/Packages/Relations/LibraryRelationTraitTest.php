@@ -42,13 +42,13 @@ class LibraryRelationTraitTest extends TestCase
             ['', false],
             ['app', false],
             ['appso', false],
-            ['lib.so-32', false]
+            ['lib.so-32', false],
         ];
     }
 
     #[DataProvider('provideLibraryArchitecture')]
     public function testIsLibraryArchitecture(
-        string $targetVersion,
+        ?string $targetVersion,
         string $architecture,
         bool $isArchitecture
     ): void {
@@ -56,7 +56,7 @@ class LibraryRelationTraitTest extends TestCase
         new readonly class ($targetVersion) implements LibraryRelation {
             use LibraryRelationTrait;
 
-            public function __construct(private string $targetVersion)
+            public function __construct(private ?string $targetVersion)
             {
             }
 
@@ -65,7 +65,7 @@ class LibraryRelationTraitTest extends TestCase
                 return 'lib.so';
             }
 
-            public function getTargetVersion(): ?string // @phpstan-ignore return.unusedType
+            public function getTargetVersion(): ?string
             {
                 return $this->targetVersion;
             }
@@ -73,7 +73,7 @@ class LibraryRelationTraitTest extends TestCase
     }
 
     /**
-     * @return iterable<array<string|boolean>>
+     * @return iterable<array<string|boolean|null>>
      */
     public static function provideLibraryArchitecture(): iterable
     {
@@ -81,7 +81,8 @@ class LibraryRelationTraitTest extends TestCase
             ['1.2.3-64', 'x86_64', true],
             ['1.2.3-32', 'i686', true],
             ['1.2.3-16', 'i686', false],
-            ['1.2.3', 'x86_64', false]
+            ['1.2.3', 'x86_64', false],
+            [null, 'x86_64', false],
         ];
     }
 }

@@ -30,7 +30,7 @@ class PacmanDatabaseDecoder implements DecoderInterface
         }
 
         return array_map(
-            function (array $entry) {
+            function (array $entry): null|int|string|array {
                 if (empty($entry)) {
                     return null;
                 }
