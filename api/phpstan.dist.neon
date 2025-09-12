@@ -30,8 +30,8 @@ parameters:
 			identifier: return.type
 			path: src/Serializer
 		-
-			identifier: offsetAccess.nonOffsetAccessible
-			path: src/SearchIndex
+			identifier: offsetAccess.notFound
+			path: src/SearchRepository
 		-
 			identifier: offsetAccess.nonOffsetAccessible
 			path: src/SearchRepository
