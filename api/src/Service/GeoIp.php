@@ -15,7 +15,11 @@ readonly class GeoIp
     {
         try {
             $response = $this->reader->get($clientIp);
-            if (is_array($response) && is_array($response['country']) && is_string($response['country']['iso_code'])) {
+            if (
+                is_array($response)
+                && array_key_exists('country', $response) && is_array($response['country'])
+                && array_key_exists('iso_code', $response['country']) && is_string($response['country']['iso_code'])
+            ) {
                 return $response['country']['iso_code'];
             }
         } catch (\Exception $e) {

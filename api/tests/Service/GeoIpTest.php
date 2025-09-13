@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Service\GeoIp;
 use MaxMind\Db\Reader;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -27,6 +28,13 @@ class GeoIpTest extends TestCase
         $this->assertEquals('DE', $this->geoIp->getCountryCode('::1'));
     }
 
+    #[DataProvider('provideInvalidData')]
+    public function testGeoIpHandlesInvalidGeoIpDate(mixed $data): void
+    {
+        $this->reader->method('get')->willReturn($data);
+        $this->assertNull($this->geoIp->getCountryCode('::1'));
+    }
+
     public function testGeoIpReturnsNullOnError(): void
     {
         $this->reader->method('get')->willThrowException(new \Exception());
@@ -44,5 +52,21 @@ class GeoIpTest extends TestCase
                 $this->arrayHasKey('exception')
             );
         $this->geoIp->getCountryCode('foo');
+    }
+
+    /**
+     * @return iterable<array<mixed>>
+     */
+    public static function provideInvalidData(): iterable
+    {
+        yield [null];
+        yield ['[]'];
+        yield [['country']];
+        yield [['country' => null]];
+        yield [['country' => '[]']];
+        yield [['country' => []]];
+        yield [['country' => ['iso_code']]];
+        yield [['country' => ['iso_code' => null]]];
+        yield [['country' => ['iso_code' => []]]];
     }
 }
