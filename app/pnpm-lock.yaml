@@ -72,8 +72,8 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0(postcss@8.5.6)(typescript@5.7.3)(webpack@5.101.3)
       pretty-bytes:
-        specifier: ^7.0.1
-        version: 7.0.1
+        specifier: ^7.1.0
+        version: 7.1.0
       sass:
         specifier: ^1.93.0
         version: 1.93.0
@@ -849,9 +849,9 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@keyv/bigmap@1.0.1':
-    resolution: {integrity: sha512-dZ7TMshK6brpuGPPRoq4pHNzNH4KTWaxVPB7KEnPErlgJpc+jG1Oyx3sw6nBFiZ0OCKwC1zU6skMEG7H421f9g==}
-    engines: {node: '>= 20'}
+  '@keyv/bigmap@1.0.2':
+    resolution: {integrity: sha512-KR03xkEZlAZNF4IxXgVXb+uNIVNvwdh8UwI0cnc7WI6a+aQcDp8GL80qVfeB4E5NpsKJzou5jU0r6yLSSbMOtA==}
+    engines: {node: '>= 18'}
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
@@ -3706,8 +3706,8 @@ packages:
     resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
     engines: {node: '>=6'}
 
-  pretty-bytes@7.0.1:
-    resolution: {integrity: sha512-285/jRCYIbMGDciDdrw0KPNC4LKEEwz/bwErcYNxSJOi4CpGUuLpb9gQpg3XJP0XYj9ldSRluXxih4lX2YN8Xw==}
+  pretty-bytes@7.1.0:
+    resolution: {integrity: sha512-nODzvTiYVRGRqAOvE84Vk5JDPyyxsVk0/fbA/bq7RqlnhksGpset09XTxbpvLTIjoaF7K8Z8DG8yHtKGTPSYRw==}
     engines: {node: '>=20'}
 
   pretty-error@4.0.0:
@@ -5358,7 +5358,7 @@ snapshots:
     dependencies:
       '@cacheable/memoize': 2.0.1
       '@cacheable/utils': 2.0.1
-      '@keyv/bigmap': 1.0.1
+      '@keyv/bigmap': 1.0.2
       hookified: 1.12.1
       keyv: 5.5.2
 
@@ -5548,7 +5548,7 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@keyv/bigmap@1.0.1':
+  '@keyv/bigmap@1.0.2':
     dependencies:
       hookified: 1.12.1
 
@@ -8632,7 +8632,7 @@ snapshots:
 
   pretty-bytes@5.6.0: {}
 
-  pretty-bytes@7.0.1: {}
+  pretty-bytes@7.1.0: {}
 
   pretty-error@4.0.0:
     dependencies:

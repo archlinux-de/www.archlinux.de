@@ -28,7 +28,7 @@
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
     "postcss-loader": "^8.2.0",
-    "pretty-bytes": "^7.0.1",
+    "pretty-bytes": "^7.1.0",
     "sass": "^1.93.0",
     "sass-loader": "^16.0.5",
     "style-loader": "^4.0.0",
