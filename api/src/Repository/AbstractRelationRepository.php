@@ -180,12 +180,12 @@ class AbstractRelationRepository extends ServiceEntityRepository
                 continue;
             }
 
-            if (!isset($compatibleCandidates[$candidateSource->getId()])) {
+            if ($candidateSource->getId() && !isset($compatibleCandidates[$candidateSource->getId()])) {
                 $compatibleCandidates[$candidateSource->getId()] = $candidateSource;
             }
         }
 
-        if (count($compatibleCandidates) == 1) {
+        if (count($compatibleCandidates) === 1) {
             return array_values($compatibleCandidates)[0];
         }
 

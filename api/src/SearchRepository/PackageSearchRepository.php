@@ -136,7 +136,8 @@ class PackageSearchRepository
 
         /** @var array<int, string> $positions */
         $positions = array_flip($ids);
-        usort($packages, fn(Package $a, Package $b): int => $positions[$a->getId()] <=> $positions[$b->getId()]);
+        usort($packages, fn(Package $a, Package $b): int
+        => $a->getId() && $b->getId() ? $positions[$a->getId()] <=> $positions[$b->getId()] : 0);
 
         return $packages;
     }

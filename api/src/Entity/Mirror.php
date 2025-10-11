@@ -155,7 +155,7 @@ class Mirror
 
     public function update(Mirror $mirror): Mirror
     {
-        if (strcasecmp($this->getUrl(), $mirror->getUrl()) != 0) {
+        if (strcasecmp($this->getUrl(), $mirror->getUrl()) !== 0) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Url mismatch "%s" instead of "%s"',

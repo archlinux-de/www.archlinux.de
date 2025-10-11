@@ -42,7 +42,7 @@ class PackageDatabaseExtractor
 
                 $packageDescriptions[$pathName][$fileName] = FFI::string($entryBuffer);
 
-                if ($descriptionFileTotalCount == count($packageDescriptions[$pathName])) {
+                if ($descriptionFileTotalCount === count($packageDescriptions[$pathName])) {
                     yield implode("\n", $packageDescriptions[$pathName]);
                     unset($packageDescriptions[$pathName]);
                 }
