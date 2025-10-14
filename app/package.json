@@ -55,7 +55,7 @@
     "stylelint": "^16.25.0",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard-scss": "^16.0.0",
-    "stylelint-no-unsupported-browser-features": "^8.0.4",
+    "stylelint-no-unsupported-browser-features": "^8.0.5",
     "webpack-dev-server": "^5.2.2"
   },
   "engines": {
