@@ -43,7 +43,7 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
-        "doctrine/doctrine-fixtures-bundle": "^4.2.0",
+        "doctrine/doctrine-fixtures-bundle": "^4.3.0",
         "fakerphp/faker": "^1.24.1",
         "malukenho/mcbumpface": "^1.2.0",
         "phpstan/extension-installer": "^1.4.3",
