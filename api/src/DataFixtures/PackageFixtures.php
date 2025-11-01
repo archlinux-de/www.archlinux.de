@@ -121,8 +121,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $dependency = new Dependency(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addDependency($dependency);
                 }
@@ -135,8 +134,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $conflict = new Conflict(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addConflict($conflict);
                 }
@@ -149,8 +147,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $replacement = new Replacement(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addReplacement($replacement);
                 }
@@ -163,8 +160,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $optionalDependency = new OptionalDependency(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addOptionalDependency($optionalDependency);
                 }
@@ -177,8 +173,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $provision = new Provision(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addProvision($provision);
                 }
@@ -191,8 +186,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $makeDependency = new MakeDependency(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addMakeDependency($makeDependency);
                 }
@@ -205,8 +199,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                     /** @var Package $targetPackage */
                     $targetPackage = $this->faker->randomElement($packages);
                     $checkDependency = new CheckDependency(
-                        $targetPackage->getName(),
-                        null
+                        $targetPackage->getName()
                     );
                     $package->addCheckDependency($checkDependency);
                 }

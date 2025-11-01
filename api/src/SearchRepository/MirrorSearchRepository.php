@@ -91,6 +91,10 @@ class MirrorSearchRepository
      */
     private function findBySearchResults(array $results): array
     {
+        if (!$results['hits']['hits']) {
+            return [];
+        }
+
         $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
         /** @var Mirror[] $mirrors */
         $mirrors = $this->mirrorRepository->findBy(['url' => $ids]);

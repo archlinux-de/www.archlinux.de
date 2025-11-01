@@ -81,6 +81,10 @@ class NewsItemSearchRepository
      */
     private function findBySearchResults(array $results): array
     {
+        if (!$results['hits']['hits']) {
+            return [];
+        }
+
         $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
         /** @var NewsItem[] $newsItems */
         $newsItems = $this->newsItemRepository->findBy(['id' => $ids]);
