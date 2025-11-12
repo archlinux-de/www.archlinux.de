@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7fe714a9a027cde4123c6427a1736df6",
+    "content-hash": "5857077f9d033ac50df403424c09be78",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -880,16 +880,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "3.5.6",
+            "version": "3.5.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "b62292256a304257a9c049546a063ac616b0514e"
+                "reference": "f18de9d569f00ed6eb9dac4b33c7844d705d17da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/b62292256a304257a9c049546a063ac616b0514e",
-                "reference": "b62292256a304257a9c049546a063ac616b0514e",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/f18de9d569f00ed6eb9dac4b33c7844d705d17da",
+                "reference": "f18de9d569f00ed6eb9dac4b33c7844d705d17da",
                 "shasum": ""
             },
             "require": {
@@ -905,8 +905,8 @@
                 "ext-ctype": "*",
                 "php": "^8.1",
                 "psr/cache": "^1 || ^2 || ^3",
-                "symfony/console": "^5.4 || ^6.0 || ^7.0 || ^8.0",
-                "symfony/var-exporter": "^6.3.9 || ^7.0 || ^8.0"
+                "symfony/console": "^5.4 || ^6.0 || ^7.0",
+                "symfony/var-exporter": "^6.3.9 || ^7.0"
             },
             "require-dev": {
                 "doctrine/coding-standard": "^14.0",
@@ -917,7 +917,7 @@
                 "phpstan/phpstan-deprecation-rules": "^2",
                 "phpunit/phpunit": "^10.5.0 || ^11.5",
                 "psr/log": "^1 || ^2 || ^3",
-                "symfony/cache": "^5.4 || ^6.2 || ^7.0 || ^8.0"
+                "symfony/cache": "^5.4 || ^6.2 || ^7.0"
             },
             "suggest": {
                 "ext-dom": "Provides support for XSD validation for XML mapping files",
@@ -963,9 +963,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/3.5.6"
+                "source": "https://github.com/doctrine/orm/tree/3.5.7"
             },
-            "time": "2025-11-10T21:11:37+00:00"
+            "time": "2025-11-11T18:27:40+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -6499,11 +6499,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.31",
+            "version": "2.1.32",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ead89849d879fe203ce9292c6ef5e7e76f867b96",
-                "reference": "ead89849d879fe203ce9292c6ef5e7e76f867b96",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e126cad1e30a99b137b8ed75a85a676450ebb227",
+                "reference": "e126cad1e30a99b137b8ed75a85a676450ebb227",
                 "shasum": ""
             },
             "require": {
@@ -6548,7 +6548,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-10T14:14:11+00:00"
+            "time": "2025-11-11T15:18:17+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -6672,21 +6672,21 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "2.0.7",
+            "version": "2.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "9a9b161baee88a5f5c58d816943cff354ff233dc"
+                "reference": "2fe9fbeceaf76dd1ebaa7bbbb25e2fb5e59db2fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/9a9b161baee88a5f5c58d816943cff354ff233dc",
-                "reference": "9a9b161baee88a5f5c58d816943cff354ff233dc",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/2fe9fbeceaf76dd1ebaa7bbbb25e2fb5e59db2fe",
+                "reference": "2fe9fbeceaf76dd1ebaa7bbbb25e2fb5e59db2fe",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "phpstan/phpstan": "^2.1.18"
+                "phpstan/phpstan": "^2.1.32"
             },
             "conflict": {
                 "phpunit/phpunit": "<7.0"
@@ -6719,9 +6719,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.7"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.8"
             },
-            "time": "2025-07-13T11:31:46+00:00"
+            "time": "2025-11-11T07:55:22+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
