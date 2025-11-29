@@ -25,7 +25,7 @@ readonly class RepositoryValueResolver implements ValueResolverInterface
             return [];
         }
 
-        $repository = $request->get('repository', '');
+        $repository = $request->query->get('repository', '');
         if (!is_string($repository)) {
             throw new BadRequestHttpException('Invalid request');
         }

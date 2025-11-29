@@ -46,7 +46,9 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+        $application->addCommand(
+            new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator)
+        );
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);
@@ -79,7 +81,9 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+        $application->addCommand(
+            new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator)
+        );
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);
@@ -110,7 +114,9 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+        $application->addCommand(
+            new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator)
+        );
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);

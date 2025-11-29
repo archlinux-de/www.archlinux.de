@@ -102,7 +102,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdatePackagesCommand(
                 $entityManager,
                 $packageDatabaseMirror,
@@ -187,7 +187,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdatePackagesCommand(
                 $entityManager,
                 $packageDatabaseMirror,

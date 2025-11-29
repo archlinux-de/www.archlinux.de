@@ -26,7 +26,7 @@ readonly class ArchitectureValueResolver implements ValueResolverInterface
             return [];
         }
 
-        $architecture = $request->get('architecture', Architecture::X86_64);
+        $architecture = $request->query->get('architecture', Architecture::X86_64);
         if (!is_string($architecture)) {
             throw new BadRequestHttpException('Invalid request');
         }

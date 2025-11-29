@@ -46,7 +46,9 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
+        $application->addCommand(
+            new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator)
+        );
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);
@@ -78,7 +80,9 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
+        $application->addCommand(
+            new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator)
+        );
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);
@@ -113,7 +117,9 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
+        $application->addCommand(
+            new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator)
+        );
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);

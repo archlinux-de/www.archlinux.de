@@ -47,7 +47,9 @@ class UpdateNewsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator));
+        $application->addCommand(
+            new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator)
+        );
 
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);
@@ -87,7 +89,9 @@ class UpdateNewsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator));
+        $application->addCommand(
+            new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator)
+        );
 
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);
@@ -119,7 +123,9 @@ class UpdateNewsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator));
+        $application->addCommand(
+            new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator)
+        );
 
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);
@@ -156,7 +162,9 @@ class UpdateNewsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator));
+        $application->addCommand(
+            new UpdateNewsCommand($entityManager, $newsItemFetcher, $newsItemRepository, $validator)
+        );
 
         $command = $application->find('app:update:news');
         $commandTester = new CommandTester($command);

@@ -48,7 +48,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator, $logger)
         );
 
@@ -91,7 +91,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator, $logger)
         );
 
@@ -125,7 +125,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator, $logger)
         );
 

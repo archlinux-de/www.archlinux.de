@@ -45,7 +45,7 @@ class ReleasesController extends AbstractController
                 $paginationRequest->getOffset(),
                 $paginationRequest->getLimit(),
                 $queryRequest->getQuery(),
-                $request->get('onlyAvailable', 'false') == 'true'
+                $request->query->getBoolean('onlyAvailable', false)
             )
         );
     }
