@@ -40,8 +40,12 @@ final class Version20181230070059 extends AbstractMigration
 
     private function hasColumn(string $table, string $columnName): bool
     {
-        foreach ($this->connection->createSchemaManager()->listTableColumns($table) as $column) {
-            if ($column->getName() == $columnName) {
+        if (!$table) {
+            return false;
+        }
+
+        foreach ($this->connection->createSchemaManager()->introspectTableColumnsByUnquotedName($table) as $column) {
+            if ($column->getObjectName()->toString() == $columnName) {
                 return true;
             }
         }
