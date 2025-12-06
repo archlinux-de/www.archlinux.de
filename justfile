@@ -162,10 +162,10 @@ update-opensearch-fixtures: start-db
 	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api php -d memory_limit=-1 vendor/bin/phpunit
 
 test-coverage:
-	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
+	{{PHP-RUN}} php -d extension=pcov -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 
 test-db-coverage: start-db
-	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
+	{{PHP-RUN}} php -d extension=pcov -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
 
 test-security: (composer "audit")
 	{{NODE-RUN}} pnpm audit --prod
