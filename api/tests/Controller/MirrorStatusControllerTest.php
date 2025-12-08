@@ -88,4 +88,58 @@ class MirrorStatusControllerTest extends DatabaseSearchTestCase
             $jsonArray
         );
     }
+
+    public function testMirrorsActionWithQuotes(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $countryDE = new Country('DE')->setName('Germany');
+        $countryUS = new Country('US')->setName('United States');
+        $countryUK = new Country('UK')->setName('United Kingdom');
+
+        $mirror1 = new Mirror('https://mirror.example.de/')
+            ->setCountry($countryDE)
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2023-01-01'));
+
+        $mirror2 = new Mirror('https://mirror.example.us/')
+            ->setCountry($countryUS)
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2023-01-01'));
+
+        $mirror3 = new Mirror('https://mirror.example.uk/')
+            ->setCountry($countryUK)
+            ->setScore(1)
+            ->setLastSync(new \DateTime('2023-01-01'));
+
+        $entityManager->persist($countryDE);
+        $entityManager->persist($countryUS);
+        $entityManager->persist($countryUK);
+        $entityManager->persist($mirror1);
+        $entityManager->persist($mirror2);
+        $entityManager->persist($mirror3);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        // Test quoted search for exact phrase in country name
+        $client->request('GET', '/api/mirrors', ['query' => '"United States"']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('https://mirror.example.us/', $responseData['items'][0]['url']);
+
+        // Test unquoted search
+        $client->request('GET', '/api/mirrors', ['query' => 'United']);
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(2, $responseData['items']);
+    }
 }

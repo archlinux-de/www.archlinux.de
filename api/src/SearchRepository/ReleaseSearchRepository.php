@@ -29,21 +29,32 @@ class ReleaseSearchRepository
 
         $bool = [];
         if ($query) {
-            $bool['should'][] = ['wildcard' => ['version' => ['value' => '*' . $query . '*', 'boost' => 2]]];
-            $bool['should'][] = ['wildcard' => ['kernelVersion' => '*' . $query . '*']];
-            $bool['should'][] = ['wildcard' => ['info' => '*' . $query . '*']];
+            $isQuoted = str_starts_with($query, '"') && str_ends_with($query, '"');
+            if ($isQuoted) {
+                $query = trim($query, '"');
+            }
 
-            $bool['should'][] = [
-                'multi_match' => [
-                    'query' => $query,
-                    'fields' => [
-                        'version^2',
-                        'kernelVersion',
-                        'info',
-                    ]
-                ]
+            $multiMatch = [
+                'query' => $query,
+                'fields' => [
+                    'version^2',
+                    'kernelVersion',
+                    'info',
+                ],
             ];
 
+            if ($isQuoted) {
+                $bool['should'][] = ['match_phrase' => ['version' => ['query' => $query, 'boost' => 2]]];
+                $bool['should'][] = ['match_phrase' => ['kernelVersion' => $query]];
+                $bool['should'][] = ['match_phrase' => ['info' => $query]];
+                $multiMatch['type'] = 'phrase';
+            } else {
+                $bool['should'][] = ['wildcard' => ['version' => ['value' => '*' . $query . '*', 'boost' => 2]]];
+                $bool['should'][] = ['wildcard' => ['kernelVersion' => '*' . $query . '*']];
+                $bool['should'][] = ['wildcard' => ['info' => '*' . $query . '*']];
+            }
+
+            $bool['should'][] = ['multi_match' => $multiMatch];
             $bool['minimum_should_match'] = 1;
         }
 

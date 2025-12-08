@@ -116,4 +116,51 @@ class ReleasesControllerTest extends DatabaseSearchTestCase
             $responseData
         );
     }
+
+    public function testReleasesActionWithQuotes(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $release1 = new Release('2023.01.01');
+        $release1->setAvailable(true);
+        $release1->setInfo('This is a major release with many new features.');
+        $release1->setCreated(new \DateTime('2023-01-01'));
+        $release1->setReleaseDate(new \DateTime('2023-01-01'));
+        $release1->setFileLength(1);
+        $release1->setFileName('release1.iso');
+
+        $release2 = new Release('2023.01.02');
+        $release2->setAvailable(true);
+        $release2->setInfo('This is a minor release with some bug fixes.');
+        $release2->setCreated(new \DateTime('2023-01-02'));
+        $release2->setReleaseDate(new \DateTime('2023-01-02'));
+        $release2->setFileLength(1);
+        $release2->setFileName('release2.iso');
+
+        $entityManager->persist($release1);
+        $entityManager->persist($release2);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        // Test quoted search for exact phrase in info
+        $client->request('GET', '/api/releases', ['query' => '"major release"']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('2023.01.01', $responseData['items'][0]['version']);
+
+        // Test unquoted search
+        $client->request('GET', '/api/releases', ['query' => 'release']);
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(2, $responseData['items']);
+    }
 }

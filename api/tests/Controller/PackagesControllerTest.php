@@ -167,4 +167,52 @@ class PackagesControllerTest extends DatabaseSearchTestCase
         $this->assertIsArray($responseData);
         $this->assertCount(0, $responseData);
     }
+    public function testPackagesActionWithQuotes(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $coreRepository = new Repository('core', Architecture::X86_64);
+        $phpFramework = new Package(
+            $coreRepository,
+            'php-framework',
+            '1.0-1',
+            Architecture::X86_64
+        );
+        $phpFramework->setDescription('A PHP framework for web development');
+
+        $php = new Package(
+            $coreRepository,
+            'php',
+            '7.3.1-1',
+            Architecture::X86_64
+        );
+        $php->setDescription('The PHP language');
+
+        $entityManager->persist($coreRepository);
+        $entityManager->persist($phpFramework);
+        $entityManager->persist($php);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        // Test quoted search for exact phrase in description
+        $client->request('GET', '/api/packages', ['query' => '"PHP framework"']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('php-framework', $responseData['items'][0]['name']);
+
+        // Test unquoted search
+        $client->request('GET', '/api/packages', ['query' => 'php']);
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(2, $responseData['items']);
+    }
 }

@@ -29,19 +29,29 @@ class MirrorSearchRepository
 
         $bool = [];
         if ($query) {
-            $bool['should'][] = ['wildcard' => ['url' => '*' . $query . '*']];
-            $bool['should'][] = ['wildcard' => ['country.name' => '*' . $query . '*']];
+            $isQuoted = str_starts_with($query, '"') && str_ends_with($query, '"');
+            if ($isQuoted) {
+                $query = trim($query, '"');
+            }
 
-            $bool['should'][] = [
-                'multi_match' => [
-                    'query' => $query,
-                    'fields' => [
-                        'url',
-                        'country.name',
-                    ]
+            $multiMatch = [
+                'query' => $query,
+                'fields' => [
+                    'url',
+                    'country.name',
                 ]
             ];
 
+            if ($isQuoted) {
+                $bool['should'][] = ['match_phrase' => ['url' => $query]];
+                $bool['should'][] = ['match_phrase' => ['country.name' => $query]];
+                $multiMatch['type'] = 'phrase';
+            } else {
+                $bool['should'][] = ['wildcard' => ['url' => '*' . $query . '*']];
+                $bool['should'][] = ['wildcard' => ['country.name' => '*' . $query . '*']];
+            }
+
+            $bool['should'][] = ['multi_match' => $multiMatch];
             $bool['minimum_should_match'] = 1;
         } else {
             $bool['should'][] = ['term' => ['country.code' => ['value' => $this->mirrorCountry, 'boost' => 0.5]]];

@@ -8,7 +8,7 @@ class QueryRequest
 {
     #[Assert\Length(min: 0, max: 191)]
     #[Assert\Regex(
-        pattern: '/^[\w@:\.+\- ]+$/u',
+        pattern: '/^[\w@:\.+\- "]+$/u',
         normalizer: 'trim'
     )]
     private readonly string $query;
