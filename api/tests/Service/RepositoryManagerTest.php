@@ -176,7 +176,7 @@ class RepositoryManagerTest extends TestCase
         $validator
             ->expects($this->atLeastOnce())
             ->method('validate')
-            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+            ->willReturn(new ConstraintViolationList([$this->createStub(ConstraintViolation::class)]));
 
         $repositoryManager = new RepositoryManager(
             $entityManager,

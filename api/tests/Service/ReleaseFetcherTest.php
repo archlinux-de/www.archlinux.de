@@ -38,7 +38,7 @@ class ReleaseFetcherTest extends TestCase
         $httpClient = new MockHttpClient(new MockResponse());
 
         /** @var SerializerInterface&MockObject $serializer */
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
 
         $releaseFetcher = new ReleaseFetcher($httpClient, 'http://foo', $serializer);
 

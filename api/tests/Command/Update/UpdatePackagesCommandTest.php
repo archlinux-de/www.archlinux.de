@@ -28,7 +28,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
     public function testCommand(): void
     {
         /** @var Repository&MockObject $repository */
-        $repository = $this->createMock(Repository::class);
+        $repository = $this->createStub(Repository::class);
 
         /** @var Package&MockObject $packageA */
         $packageA = $this->createMock(Package::class);
@@ -49,7 +49,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
             ->willReturn('packageB');
 
         /** @var Package&MockObject $packageC */
-        $packageC = $this->createMock(Package::class);
+        $packageC = $this->createStub(Package::class);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -64,7 +64,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $repositoryRepository->expects($this->once())->method('findAll')->willReturn([$repository]);
 
         /** @var AbstractRelationRepository&MockObject $relationRepository */
-        $relationRepository = $this->createMock(AbstractRelationRepository::class);
+        $relationRepository = $this->createStub(AbstractRelationRepository::class);
 
         $packageDatabase = '';
 
@@ -136,10 +136,10 @@ class UpdatePackagesCommandTest extends KernelTestCase
     public function testUpdateFailsOnInvalidPackage(): void
     {
         /** @var Repository&MockObject $repository */
-        $repository = $this->createMock(Repository::class);
+        $repository = $this->createStub(Repository::class);
 
         /** @var Package&MockObject $package */
-        $package = $this->createMock(Package::class);
+        $package = $this->createStub(Package::class);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -154,7 +154,7 @@ class UpdatePackagesCommandTest extends KernelTestCase
         $repositoryRepository->expects($this->once())->method('findAll')->willReturn([$repository]);
 
         /** @var AbstractRelationRepository&MockObject $relationRepository */
-        $relationRepository = $this->createMock(AbstractRelationRepository::class);
+        $relationRepository = $this->createStub(AbstractRelationRepository::class);
 
         $packageDatabase = '';
 
@@ -175,14 +175,14 @@ class UpdatePackagesCommandTest extends KernelTestCase
             ->willReturn($packageDatabase);
 
         /** @var PackageRepository&MockObject $packageRepository */
-        $packageRepository = $this->createMock(PackageRepository::class);
+        $packageRepository = $this->createStub(PackageRepository::class);
 
         /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
             ->expects($this->atLeastOnce())
             ->method('validate')
-            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+            ->willReturn(new ConstraintViolationList([$this->createStub(ConstraintViolation::class)]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);

@@ -24,26 +24,29 @@ class GeoIpTest extends TestCase
 
     public function testGeoIpReturnsCountryCode(): void
     {
-        $this->reader->method('get')->willReturn(['country' => ['iso_code' => 'DE']]);
+        $this->reader->expects($this->once())->method('get')->willReturn(['country' => ['iso_code' => 'DE']]);
+        $this->logger->expects($this->never())->method('error');
         $this->assertEquals('DE', $this->geoIp->getCountryCode('::1'));
     }
 
     #[DataProvider('provideInvalidData')]
     public function testGeoIpHandlesInvalidGeoIpDate(mixed $data): void
     {
-        $this->reader->method('get')->willReturn($data);
+        $this->reader->expects($this->once())->method('get')->willReturn($data);
+        $this->logger->expects($this->never())->method('error');
         $this->assertNull($this->geoIp->getCountryCode('::1'));
     }
 
     public function testGeoIpReturnsNullOnError(): void
     {
-        $this->reader->method('get')->willThrowException(new \Exception());
+        $this->reader->expects($this->once())->method('get')->willThrowException(new \Exception());
+        $this->logger->expects($this->once())->method('error');
         $this->assertNull($this->geoIp->getCountryCode('foo'));
     }
 
     public function testGeoIpLogsErrors(): void
     {
-        $this->reader->method('get')->willThrowException(new \Exception(':-('));
+        $this->reader->expects($this->once())->method('get')->willThrowException(new \Exception(':-('));
         $this->logger
             ->expects($this->once())
             ->method('error')

@@ -30,7 +30,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method($stringMethod)->willReturn('foo');
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
@@ -67,7 +67,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
         $databasePackage->method('getReplacements')->willReturn(new ArrayCollection());
@@ -91,7 +91,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method($timeMethod)->willReturn(new \DateTime('2018-01-30'));
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
@@ -122,7 +122,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method($sizeMethod)->willReturn(1234);
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
@@ -156,7 +156,7 @@ class PackageTest extends TestCase
         $list = ['foo', 'bar'];
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method($listMethod)->willReturn($list);
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
@@ -189,7 +189,7 @@ class PackageTest extends TestCase
         $pacmanFiles = ['usr/bin', 'usr/bin/pacman'];
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method('getFiles')->willReturn(Files::createFromArray($pacmanFiles));
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection());
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection());
@@ -210,7 +210,7 @@ class PackageTest extends TestCase
         $package = new Package($repository, 'pacman', '1.0-1', 'x86_64');
 
         /** @var Package&MockObject $databasePackage */
-        $databasePackage = $this->createMock(Package::class);
+        $databasePackage = $this->createStub(Package::class);
         $databasePackage->method('getDependencies')->willReturn(new ArrayCollection([new Dependency('a')]));
         $databasePackage->method('getConflicts')->willReturn(new ArrayCollection([new Conflict('b')]));
         $databasePackage->method('getReplacements')->willReturn(new ArrayCollection([new Replacement('c')]));

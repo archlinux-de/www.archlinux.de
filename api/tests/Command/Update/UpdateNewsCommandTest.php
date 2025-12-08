@@ -27,7 +27,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $oldNewsItem = new NewsItem(1)->setLastModified(new \DateTime('2018-01-01'));
 
         /** @var NewsItemRepository&MockObject $newsItemRepository */
-        $newsItemRepository = $this->createMock(NewsItemRepository::class);
+        $newsItemRepository = $this->createStub(NewsItemRepository::class);
         $newsItemRepository->method('findAllExceptByIds')->willReturn([$oldNewsItem]);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
@@ -37,7 +37,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var NewsItemFetcher&MockObject $newsItemFetcher */
-        $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
+        $newsItemFetcher = $this->createStub(NewsItemFetcher::class);
         $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newNewsItem]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -64,7 +64,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $oldNewsItem = new NewsItem(1)->setLastModified(new \DateTime('2018-01-01'));
 
         /** @var NewsItemRepository&MockObject $newsItemRepository */
-        $newsItemRepository = $this->createMock(NewsItemRepository::class);
+        $newsItemRepository = $this->createStub(NewsItemRepository::class);
         $newsItemRepository
             ->method('findAllExceptByIds')
             ->willReturnCallback(function (array $ids) use ($oldNewsItem, $newNewsItem): array {
@@ -79,7 +79,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var NewsItemFetcher&MockObject $newsItemFetcher */
-        $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
+        $newsItemFetcher = $this->createStub(NewsItemFetcher::class);
         $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$oldNewsItem, $newNewsItem]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -103,14 +103,14 @@ class UpdateNewsCommandTest extends KernelTestCase
     public function testUpdateFailsOnInvalidItems(): void
     {
         /** @var NewsItemRepository&MockObject $newsItemRepository */
-        $newsItemRepository = $this->createMock(NewsItemRepository::class);
+        $newsItemRepository = $this->createStub(NewsItemRepository::class);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('flush');
 
         /** @var NewsItemFetcher&MockObject $newsItemFetcher */
-        $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
+        $newsItemFetcher = $this->createStub(NewsItemFetcher::class);
         $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([new NewsItem(2)]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -118,7 +118,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $validator
             ->expects($this->atLeastOnce())
             ->method('validate')
-            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+            ->willReturn(new ConstraintViolationList([$this->createStub(ConstraintViolation::class)]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
@@ -152,7 +152,7 @@ class UpdateNewsCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var NewsItemFetcher&MockObject $newsItemFetcher */
-        $newsItemFetcher = $this->createMock(NewsItemFetcher::class);
+        $newsItemFetcher = $this->createStub(NewsItemFetcher::class);
         $newsItemFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newsItem]));
 
         /** @var ValidatorInterface&MockObject $validator */

@@ -13,9 +13,9 @@ class PackageDatabaseReaderTest extends TestCase
 {
     public function testReadPackages(): void
     {
-        $repository = $this->createMock(Repository::class);
+        $repository = $this->createStub(Repository::class);
 
-        $package = $this->createMock(Package::class);
+        $package = $this->createStub(Package::class);
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer

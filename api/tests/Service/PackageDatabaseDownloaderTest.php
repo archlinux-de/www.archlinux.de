@@ -25,7 +25,7 @@ class PackageDatabaseDownloaderTest extends TestCase
         /** @var PackageDatabaseMirror&MockObject $packageDatabaseMirror */
         $packageDatabaseMirror = $this->createMock(PackageDatabaseMirror::class);
         $packageDatabaseMirror
-            ->expects($this->any())
+            ->expects($this->once())
             ->method('getMirrorUrl')
             ->willReturn('http://foo');
 

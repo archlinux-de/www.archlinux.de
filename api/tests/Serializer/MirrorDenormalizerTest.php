@@ -13,7 +13,7 @@ class MirrorDenormalizerTest extends TestCase
 {
     public function testSupportsDenormalization(): void
     {
-        $mirrorDenormalizer = new MirrorDenormalizer($this->createMock(CountryRepository::class));
+        $mirrorDenormalizer = new MirrorDenormalizer($this->createStub(CountryRepository::class));
 
         $this->assertTrue($mirrorDenormalizer->supportsDenormalization([], Mirror::class . '[]'));
         $this->assertEquals([Mirror::class . '[]' => true], $mirrorDenormalizer->getSupportedTypes('json'));
