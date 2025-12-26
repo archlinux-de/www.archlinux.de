@@ -54,6 +54,8 @@ class UpdateAppStreamData extends Command
                 $this->packageRepository
             );
 
+            var_dump('HERE 1');
+
             foreach ($dataFetcher as $name => $metaData) {
                 $errors = $this->validator->validate($metaData);
                 if ($errors->count() > 0) {
@@ -61,6 +63,7 @@ class UpdateAppStreamData extends Command
                 }
                 $this->packageMetaData[$name] = $metaData;
             }
+            var_dump('HERE 2');
 
             foreach ($this->packageRepository->findStable() as $package) {
                 $package->setMetaData($this->packageMetaData[$package->getName()] ?? null);
