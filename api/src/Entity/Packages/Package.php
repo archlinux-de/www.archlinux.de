@@ -95,6 +95,10 @@ class Package
     #[Assert\Valid]
     private ?Packager $packager = null;
 
+    #[ORM\Embedded(class: Metadata::class)]
+    #[Assert\Valid]
+    private ?Metadata $metadata = null;
+
     #[ORM\Embedded(class: Popularity::class)]
     #[Assert\Valid]
     private ?Popularity $popularity = null;
@@ -394,6 +398,17 @@ class Package
     public function setPackager(?Packager $packager): Package
     {
         $this->packager = $packager;
+        return $this;
+    }
+
+    public function getMetadata(): ?Metadata
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?Metadata $metadata): Package
+    {
+        $this->metadata = $metadata;
         return $this;
     }
 

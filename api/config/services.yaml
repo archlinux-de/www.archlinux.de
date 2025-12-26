@@ -103,6 +103,11 @@ services:
     App\Serializer\PackageNormalizer:
         $gitlabUrl: '%app.packages.gitlab_url%'
 
+    App\Command\Update\UpdateAppStreamData:
+        $appStreamDataBaseUrl: '%app.packages.appStreamDataBaseUrl%'
+        $appStreamDataFile: '%app.packages.appStreamDataFile%'
+        $appStreamDataReposToFetch: '%app.packages.appStreamDataReposToFetch%'
+
     App\Controller\MirrorController:
         $mirrorCountry: '%app.mirrors.country%'
         $mirrorArchive: '%app.mirrors.archive%'
