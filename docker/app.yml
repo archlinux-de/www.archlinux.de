@@ -24,6 +24,7 @@ services:
     working_dir: /app/app
     environment:
       - HOME=/tmp
+      - NODE_OPTIONS=--no-experimental-webstorage
     command: pnpm run serve
     user: "${UID}:${GID}"
     userns_mode: host
@@ -55,7 +56,7 @@ services:
       - app
 
   mariadb:
-    image: mariadb:11.7
+    image: mariadb:12.1
     environment:
       - MYSQL_ROOT_PASSWORD=
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
@@ -78,7 +79,7 @@ services:
       - mariadb
 
   opensearch:
-    image: opensearchproject/opensearch:2.19.0
+    image: opensearchproject/opensearch:3
     environment:
       - "discovery.type=single-node"
       - "plugins.security.disabled=true"

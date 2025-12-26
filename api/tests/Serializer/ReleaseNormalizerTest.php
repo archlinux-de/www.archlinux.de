@@ -31,7 +31,7 @@ class ReleaseNormalizerTest extends KernelTestCase
     {
         $releaseDate = new \DateTime('2018-01-01');
 
-        $release = (new Release('2018.01.01'))
+        $release = new Release('2018.01.01')
             ->setReleaseDate($releaseDate)
             ->setAvailable(true)
             ->setKernelVersion('3.11')

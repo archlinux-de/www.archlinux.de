@@ -29,21 +29,32 @@ class NewsItemSearchRepository
 
         $bool = [];
         if ($query) {
-            $bool['should'][] = ['wildcard' => ['title' => ['value' => '*' . $query . '*', 'boost' => 2]]];
-            $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
-            $bool['should'][] = ['wildcard' => ['author' => '*' . $query . '*']];
+            $isQuoted = str_starts_with($query, '"') && str_ends_with($query, '"');
+            if ($isQuoted) {
+                $query = trim($query, '"');
+            }
 
-            $bool['should'][] = [
-                'multi_match' => [
-                    'query' => $query,
-                    'fields' => [
-                        'title^2',
-                        'description',
-                        'author',
-                    ]
-                ]
+            $multiMatch = [
+                'query' => $query,
+                'fields' => [
+                    'title^2',
+                    'description',
+                    'author',
+                ],
             ];
 
+            if ($isQuoted) {
+                $bool['should'][] = ['match_phrase' => ['title' => ['query' => $query, 'boost' => 2]]];
+                $bool['should'][] = ['match_phrase' => ['description' => $query]];
+                $bool['should'][] = ['match_phrase' => ['author' => $query]];
+                $multiMatch['type'] = 'phrase';
+            } else {
+                $bool['should'][] = ['wildcard' => ['title' => ['value' => '*' . $query . '*', 'boost' => 2]]];
+                $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
+                $bool['should'][] = ['wildcard' => ['author' => '*' . $query . '*']];
+            }
+
+            $bool['should'][] = ['multi_match' => $multiMatch];
             $bool['minimum_should_match'] = 1;
         }
 
@@ -81,6 +92,10 @@ class NewsItemSearchRepository
      */
     private function findBySearchResults(array $results): array
     {
+        if (!$results['hits']['hits']) {
+            return [];
+        }
+
         $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
         /** @var NewsItem[] $newsItems */
         $newsItems = $this->newsItemRepository->findBy(['id' => $ids]);

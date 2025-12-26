@@ -15,7 +15,7 @@ class ResetDatabaseCommandTest extends DatabaseTestCase
     public function testCommand(): void
     {
         $this->assertInstanceOf(KernelInterface::class, static::$kernel);
-        $command = (new Application(static::$kernel))->find('app:reset:database');
+        $command = new Application(static::$kernel)->find('app:reset:database');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [

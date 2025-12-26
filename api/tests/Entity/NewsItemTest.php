@@ -35,19 +35,19 @@ class NewsItemTest extends TestCase
 
     public function testUpdate(): void
     {
-        $newsItem = (new NewsItem(1))
+        $newsItem = new NewsItem(1)
             ->setTitle('title')
             ->setLink('link')
             ->setLastModified(new \DateTime('2018-01-01'))
             ->setDescription('description')
             ->setAuthor(new NewsAuthor());
 
-        $newsItem->update((new NewsItem(1))
+        $newsItem->update(new NewsItem(1)
             ->setTitle('foo')
             ->setLink('baz')
             ->setLastModified(new \DateTime('2019-01-01'))
             ->setDescription('another description')
-            ->setAuthor((new NewsAuthor())->setName('bob')));
+            ->setAuthor(new NewsAuthor()->setName('bob')));
 
         $this->assertEquals('foo', $newsItem->getTitle());
         $this->assertEquals('baz', $newsItem->getLink());

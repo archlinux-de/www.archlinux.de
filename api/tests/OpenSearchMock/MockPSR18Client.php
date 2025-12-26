@@ -39,7 +39,7 @@ class MockPSR18Client implements
         ];
         $filename = $this->fixturesDirectory . '/' . hash('sha256', implode(':', $requestIdentifier)) . '.json';
 
-        if ($this->mode == 'read') {
+        if ($this->mode === 'read') {
             if (!file_exists($filename)) {
                 throw new RuntimeException(
                     sprintf('Fixture not found for request "%s"', implode('; ', $requestIdentifier))
@@ -50,7 +50,7 @@ class MockPSR18Client implements
                 Response::class,
                 'json'
             );
-        } elseif ($this->mode == 'write') {
+        } elseif ($this->mode === 'write') {
             $response = $this->psr18Client->sendRequest($request);
             file_put_contents($filename, $this->serializer->serialize($response, 'json'));
             $response->getBody()->rewind();

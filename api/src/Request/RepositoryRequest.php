@@ -8,7 +8,7 @@ class RepositoryRequest
 {
     #[Assert\Length(min: 0, max: 25)]
     #[Assert\Regex('/^[a-z\-]+$/')]
-    private string $repository;
+    private readonly string $repository;
 
     public function __construct(string $repository)
     {

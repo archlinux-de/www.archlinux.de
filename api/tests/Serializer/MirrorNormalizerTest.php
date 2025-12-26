@@ -20,8 +20,8 @@ class MirrorNormalizerTest extends KernelTestCase
 
     public function testNormalize(): void
     {
-        $mirror = (new Mirror('localhost'))
-            ->setCountry((new Country('de'))->setName('Germany'))
+        $mirror = new Mirror('localhost')
+            ->setCountry(new Country('de')->setName('Germany'))
             ->setDurationAvg(0.42)
             ->setDelay(34)
             ->setDurationStddev(53.1)

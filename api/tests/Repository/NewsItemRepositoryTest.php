@@ -29,12 +29,12 @@ class NewsItemRepositoryTest extends DatabaseTestCase
 
     private function createNewsItem(int $id, \DateTime $lastModified): NewsItem
     {
-        return (new NewsItem($id))
+        return new NewsItem($id)
             ->setLastModified($lastModified)
             ->setTitle('')
             ->setLink('http://localhost/news/' . $id)
             ->setDescription('')
-            ->setAuthor((new NewsAuthor())->setName(''));
+            ->setAuthor(new NewsAuthor()->setName(''));
     }
 
     public function testFindLatestItemsAreLimited(): void

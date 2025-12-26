@@ -25,7 +25,7 @@ readonly class TermValueResolver implements ValueResolverInterface
             return [];
         }
 
-        $term = $request->get('term', '');
+        $term = $request->query->get('term', '');
         if (!is_string($term)) {
             throw new BadRequestHttpException('Invalid request');
         }

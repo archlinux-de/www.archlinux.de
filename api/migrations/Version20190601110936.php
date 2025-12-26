@@ -17,11 +17,13 @@ final class Version20190601110936 extends AbstractMigration
         );
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->warnIf(true, 'Removal of orphaned files cannot be reverted');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

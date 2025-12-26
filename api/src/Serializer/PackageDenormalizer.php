@@ -27,17 +27,17 @@ class PackageDenormalizer implements DenormalizerInterface
         assert(is_array($data));
         assert($context['repository'] instanceof Repository);
 
-        $package = (new Package(
+        $package = new Package(
             $context['repository'],
             $data['NAME'],
             $data['VERSION'],
             $data['ARCH']
-        ))
+        )
             ->setFileName($data['FILENAME'])
             ->setUrl($this->normalizeUrl($data['URL'] ?? null))
             ->setDescription($data['DESC'])
             ->setBase($data['BASE'] ?? $data['NAME'])
-            ->setBuildDate((new \DateTime())->setTimestamp($data['BUILDDATE']))
+            ->setBuildDate(new \DateTime()->setTimestamp($data['BUILDDATE']))
             ->setCompressedSize($data['CSIZE'])
             ->setInstalledSize($data['ISIZE'])
             ->setPackager($this->createPackagerFromString($data['PACKAGER']))
@@ -92,7 +92,7 @@ class PackageDenormalizer implements DenormalizerInterface
 
         preg_match('/([^<>]+)(?:<(.+?)>)?/', $packagerDefinition, $matches);
         $name = trim($matches[1] ?? $packagerDefinition);
-        $email = !empty($matches[2]) ? trim($matches[2]) : null;
+        $email = empty($matches[2]) ? null : trim($matches[2]);
 
         if (!$name && !$email) {
             return null;
@@ -191,6 +191,6 @@ class PackageDenormalizer implements DenormalizerInterface
             }
         }
 
-        return $result;
+        return array_values(array_filter($result));
     }
 }

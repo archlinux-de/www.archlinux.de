@@ -31,9 +31,6 @@ parameters:
 			path: src/Serializer
 		-
 			identifier: offsetAccess.nonOffsetAccessible
-			path: src/SearchIndex
-		-
-			identifier: offsetAccess.nonOffsetAccessible
 			path: src/SearchRepository
 		-
 			identifier: offsetAccess.nonOffsetAccessible
@@ -43,7 +40,4 @@ parameters:
 			path: tests
 		-
 			identifier: return.type
-			path: tests
-		-
-			identifier: cast.string
 			path: tests

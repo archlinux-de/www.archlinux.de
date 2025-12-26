@@ -20,7 +20,7 @@ class NewsItemDenormalizerTest extends TestCase
                         'attributes' => [
                             'title' => 'Test Title',
                             'slug' => '1-test-title',
-                            'createdAt' => (new \DateTime('2018-02-22T19:06:26Z'))->format(\DATE_RFC3339)
+                            'createdAt' => new \DateTime('2018-02-22T19:06:26Z')->format(\DATE_RFC3339)
                         ],
                         'relationships' => [
                             'user' => ['data' => ['id' => 123]],

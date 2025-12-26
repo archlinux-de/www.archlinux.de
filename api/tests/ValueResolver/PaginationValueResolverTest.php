@@ -15,8 +15,7 @@ use App\Request\PaginationRequest;
 
 class PaginationValueResolverTest extends TestCase
 {
-    /** @var ValidatorInterface&MockObject */
-    private mixed $validator;
+    private ValidatorInterface&MockObject $validator;
 
     private PaginationValueResolver $paginationValueResolver;
 
@@ -41,7 +40,7 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_) => new ConstraintViolationList()
+                fn(PaginationRequest $_): ConstraintViolationList => new ConstraintViolationList()
             );
 
         $values = [...$this->paginationValueResolver->resolve($request, $argument)];
@@ -69,7 +68,7 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_) => new ConstraintViolationList()
+                fn(PaginationRequest $_): ConstraintViolationList => new ConstraintViolationList()
             );
 
         $values = [...$this->paginationValueResolver->resolve($request, $argument)];
@@ -97,7 +96,8 @@ class PaginationValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(PaginationRequest $_) => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
+                fn(PaginationRequest $_): ConstraintViolationList
+                => new ConstraintViolationList([$this->createStub(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);

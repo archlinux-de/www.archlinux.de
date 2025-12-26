@@ -36,7 +36,7 @@ readonly class MirrorDenormalizer implements DenormalizerInterface
                         continue;
                     }
 
-                    $mirror = (new Mirror($mirrorData['url']))
+                    $mirror = new Mirror($mirrorData['url'])
                         ->setDelay($mirrorData['delay'])
                         ->setDurationAvg($mirrorData['duration_avg'])
                         ->setScore($mirrorData['score'])

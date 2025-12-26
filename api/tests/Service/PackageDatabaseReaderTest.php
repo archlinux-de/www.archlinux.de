@@ -6,7 +6,6 @@ use App\Entity\Packages\Package;
 use App\Entity\Packages\Repository;
 use App\Service\PackageDatabaseExtractor;
 use App\Service\PackageDatabaseReader;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -14,9 +13,9 @@ class PackageDatabaseReaderTest extends TestCase
 {
     public function testReadPackages(): void
     {
-        $repository = $this->createMock(Repository::class);
+        $repository = $this->createStub(Repository::class);
 
-        $package = $this->createMock(Package::class);
+        $package = $this->createStub(Package::class);
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer

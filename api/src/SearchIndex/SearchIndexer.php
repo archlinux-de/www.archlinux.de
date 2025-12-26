@@ -41,11 +41,6 @@ class SearchIndexer implements SearchIndexerInterface
 
     public function supportsIndexing(object $object): bool
     {
-        foreach ($this->searchIndexers as $searchIndexer) {
-            if ($searchIndexer->supportsIndexing($object)) {
-                return true;
-            }
-        }
-        return false;
+        return array_any($this->searchIndexers, fn($searchIndexer): bool => $searchIndexer->supportsIndexing($object));
     }
 }

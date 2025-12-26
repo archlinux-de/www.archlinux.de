@@ -26,7 +26,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $oldCountry = new Country('DD');
 
         /** @var CountryRepository&MockObject $countryRepository */
-        $countryRepository = $this->createMock(CountryRepository::class);
+        $countryRepository = $this->createStub(CountryRepository::class);
         $countryRepository->method('findAllExceptByCodes')->willReturn([$oldCountry]);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
@@ -36,7 +36,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var CountryFetcher&MockObject $countryFetcher */
-        $countryFetcher = $this->createMock(CountryFetcher::class);
+        $countryFetcher = $this->createStub(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newCountry]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -46,7 +46,9 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+        $application->addCommand(
+            new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator)
+        );
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);
@@ -66,7 +68,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $entityManager->expects($this->never())->method('flush');
 
         /** @var CountryFetcher&MockObject $countryFetcher */
-        $countryFetcher = $this->createMock(CountryFetcher::class);
+        $countryFetcher = $this->createStub(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([new Country('%invalid')]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -74,12 +76,14 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $validator
             ->expects($this->atLeastOnce())
             ->method('validate')
-            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+            ->willReturn(new ConstraintViolationList([$this->createStub(ConstraintViolation::class)]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+        $application->addCommand(
+            new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator)
+        );
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);
@@ -89,7 +93,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
 
     public function testUpdateCountry(): void
     {
-        $country = (new Country('DE'))->setName('Germany');
+        $country = new Country('DE')->setName('Germany');
 
         /** @var CountryRepository&MockObject $countryRepository */
         $countryRepository = $this->createMock(CountryRepository::class);
@@ -100,7 +104,7 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var CountryFetcher&MockObject $countryFetcher */
-        $countryFetcher = $this->createMock(CountryFetcher::class);
+        $countryFetcher = $this->createStub(CountryFetcher::class);
         $countryFetcher->method('getIterator')->willReturn(new \ArrayIterator([$country]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -110,7 +114,9 @@ class UpdateCountriesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator));
+        $application->addCommand(
+            new UpdateCountriesCommand($entityManager, $countryFetcher, $countryRepository, $validator)
+        );
 
         $command = $application->find('app:config:update-countries');
         $commandTester = new CommandTester($command);

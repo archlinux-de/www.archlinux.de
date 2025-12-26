@@ -78,13 +78,13 @@ class PackageDetailsControllerTest extends DatabaseTestCase
             '5.0.2-2',
             Architecture::X86_64
         );
-        $pacmanGui = (new Package(
+        $pacmanGui = new Package(
             $coreRepository,
             'pacman-gui',
             '0.0.1-1',
             Architecture::X86_64
-        ))
-            ->addDependency((new Dependency('pacman'))->setTarget($pacman));
+        )
+            ->addDependency(new Dependency('pacman')->setTarget($pacman));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->persist($pacmanGui);
@@ -108,6 +108,34 @@ class PackageDetailsControllerTest extends DatabaseTestCase
         $client->request('GET', '/api/packages/core/x86_64/pacman/inverse-dependencies/foo');
 
         $this->assertTrue($client->getResponse()->isClientError());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+
+        $this->assertEquals(
+            [
+                'error' => 'Invalid type: "foo"'
+            ],
+            json_decode($client->getResponse()->getContent(), true)
+        );
+    }
+
+    public function testPackageDependencyActionFailsWithInvalidType(): void
+    {
+        $client = $this->getClient();
+        $client->request('GET', '/api/packages/core/x86_64/pacman/dependencies/foo');
+
+        $this->assertTrue($client->getResponse()->isClientError());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+
+        $this->assertEquals(
+            [
+                'error' => 'Invalid type: "foo"'
+            ],
+            json_decode($client->getResponse()->getContent(), true)
+        );
     }
 
     public function testUnknownPackageReturnsCorrectHttpStatus(): void

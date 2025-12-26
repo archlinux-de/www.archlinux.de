@@ -26,7 +26,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $oldRelease = new Release('1');
 
         /** @var ReleaseRepository&MockObject $releaseRepository */
-        $releaseRepository = $this->createMock(ReleaseRepository::class);
+        $releaseRepository = $this->createStub(ReleaseRepository::class);
         $releaseRepository->method('findAllExceptByVersions')->willReturn([$oldRelease]);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
@@ -36,7 +36,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var ReleaseFetcher&MockObject $releaseFetcher */
-        $releaseFetcher = $this->createMock(ReleaseFetcher::class);
+        $releaseFetcher = $this->createStub(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newRelease]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -46,7 +46,9 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
+        $application->addCommand(
+            new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator)
+        );
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);
@@ -58,14 +60,14 @@ class UpdateReleasesCommandTest extends KernelTestCase
     public function testUpdateFailsOnInvalidRelease(): void
     {
         /** @var ReleaseRepository&MockObject $releaseRepository */
-        $releaseRepository = $this->createMock(ReleaseRepository::class);
+        $releaseRepository = $this->createStub(ReleaseRepository::class);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('flush');
 
         /** @var ReleaseFetcher&MockObject $releaseFetcher */
-        $releaseFetcher = $this->createMock(ReleaseFetcher::class);
+        $releaseFetcher = $this->createStub(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([new Release('2')]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -73,12 +75,14 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $validator
             ->expects($this->atLeastOnce())
             ->method('validate')
-            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+            ->willReturn(new ConstraintViolationList([$this->createStub(ConstraintViolation::class)]));
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
+        $application->addCommand(
+            new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator)
+        );
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);
@@ -88,7 +92,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
 
     public function testUpdateRelease(): void
     {
-        $release = (new Release('2'))
+        $release = new Release('2')
             ->setAvailable(true)
             ->setCreated(new \DateTime('2018-01-01'))
             ->setInfo('')
@@ -103,7 +107,7 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var ReleaseFetcher&MockObject $releaseFetcher */
-        $releaseFetcher = $this->createMock(ReleaseFetcher::class);
+        $releaseFetcher = $this->createStub(ReleaseFetcher::class);
         $releaseFetcher->method('getIterator')->willReturn(new \ArrayIterator([$release]));
 
         /** @var ValidatorInterface&MockObject $validator */
@@ -113,7 +117,9 @@ class UpdateReleasesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator));
+        $application->addCommand(
+            new UpdateReleasesCommand($entityManager, $releaseFetcher, $releaseRepository, $validator)
+        );
 
         $command = $application->find('app:update:releases');
         $commandTester = new CommandTester($command);

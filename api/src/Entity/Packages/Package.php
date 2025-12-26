@@ -72,7 +72,7 @@ class Package
     private ?string $sha256sum = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Url(protocols: ['http', 'https'])]
+    #[Assert\Url(protocols: ['http', 'https'], requireTld: true)]
     private ?string $url = null;
 
     /**
@@ -107,8 +107,8 @@ class Package
      * @var Collection<int, Replacement>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: Replacement::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         orphanRemoval: true
     )]
@@ -119,8 +119,8 @@ class Package
      * @var Collection<int, Conflict>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: Conflict::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         fetch: 'LAZY',
         orphanRemoval: true
@@ -132,8 +132,8 @@ class Package
      * @var Collection<int, Provision>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: Provision::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         fetch: 'LAZY',
         orphanRemoval: true
@@ -145,8 +145,8 @@ class Package
      * @var Collection<int, Dependency>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: Dependency::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         fetch: 'LAZY',
         orphanRemoval: true
@@ -158,8 +158,8 @@ class Package
      * @var Collection<int, OptionalDependency>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: OptionalDependency::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         fetch: 'LAZY',
         orphanRemoval: true
@@ -171,8 +171,8 @@ class Package
      * @var Collection<int, MakeDependency>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: MakeDependency::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         fetch: 'LAZY',
         orphanRemoval: true
@@ -184,8 +184,8 @@ class Package
      * @var Collection<int, CheckDependency>
      */
     #[ORM\OneToMany(
-        mappedBy: 'source',
         targetEntity: CheckDependency::class,
+        mappedBy: 'source',
         cascade: ['persist'],
         fetch: 'LAZY',
         orphanRemoval: true
@@ -433,7 +433,6 @@ class Package
 
     /**
      * @param string[]|null $licenses
-     * @return Package
      */
     public function setLicenses(?array $licenses): Package
     {
@@ -451,7 +450,6 @@ class Package
 
     /**
      * @param string[] $groups
-     * @return Package
      */
     public function setGroups(array $groups): Package
     {

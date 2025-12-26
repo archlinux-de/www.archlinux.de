@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Just
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.MAINTENANCE_TOKEN }}
       - name: Pulling Docker images
@@ -24,13 +24,13 @@ jobs:
       - name: Building Docker images
         run: just compose build
       - name: Maintain Composer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: api/.cache/composer
           key: composer-${{ hashFiles('api/composer.lock') }}
           restore-keys: composer-
       - name: Maintain pnpm cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: app/.cache/node
           key: pnpm-${{ hashFiles('app/pnpm-lock.yaml') }}
@@ -39,13 +39,15 @@ jobs:
         run: just install
       - name: Update dependencies
         run: just update
+      - name: Run Rector
+        run: just rector
       - name: Fix code style
         run: just fix-code-style
       - run: just test
       - run: just test-db
       - run: just test-e2e
       - name: Commit updates
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Update dependencies
           commit_user_name: Maintenance Bob

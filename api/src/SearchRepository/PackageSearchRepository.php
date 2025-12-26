@@ -43,28 +43,38 @@ class PackageSearchRepository
 
         $bool = [];
         if ($query) {
-            $bool['should'][] = ['term' => ['name' => ['value' => $query, 'boost' => 7]]];
-            $bool['should'][] = ['term' => ['base' => ['value' => $query, 'boost' => 6]]];
+            $isQuoted = str_starts_with($query, '"') && str_ends_with($query, '"');
+            if ($isQuoted) {
+                $query = trim($query, '"');
+            }
 
-            $bool['should'][] = ['wildcard' => ['name' => '*' . $query . '*']];
-            $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
-
-            $bool['should'][] = [
-                'multi_match' => [
-                    'query' => $query,
-                    'fields' => [
-                        'name^5',
-                        'base^4',
-                        'description^3',
-                        'url',
-                        'groups^2',
-                        'replacements',
-                        'provisions',
-                        'files'
-                    ]
-                ]
+            $multiMatch = [
+                'query' => $query,
+                'fields' => [
+                    'name^5',
+                    'base^4',
+                    'description^3',
+                    'url',
+                    'groups^2',
+                    'replacements',
+                    'provisions',
+                    'files'
+                ],
             ];
 
+            if ($isQuoted) {
+                $bool['should'][] = ['match_phrase' => ['name' => ['query' => $query, 'boost' => 7]]];
+                $bool['should'][] = ['match_phrase' => ['base' => ['query' => $query, 'boost' => 6]]];
+                $multiMatch['type'] = 'phrase';
+            } else {
+                $bool['should'][] = ['term' => ['name' => ['value' => $query, 'boost' => 7]]];
+                $bool['should'][] = ['term' => ['base' => ['value' => $query, 'boost' => 6]]];
+
+                $bool['should'][] = ['wildcard' => ['name' => '*' . $query . '*']];
+                $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
+            }
+
+            $bool['should'][] = ['multi_match' => $multiMatch];
             $bool['minimum_should_match'] = 1;
         }
         $bool['must'][] = ['term' => ['repository.architecture' => $architecture]];
@@ -130,13 +140,18 @@ class PackageSearchRepository
      */
     private function findBySearchResults(array $results): array
     {
+        if (!$results['hits']['hits']) {
+            return [];
+        }
+
         $ids = array_map(fn(array $result): string => $result['_id'], $results['hits']['hits']);
         /** @var Package[] $packages */
         $packages = $this->packageRepository->findBy(['id' => $ids]);
 
         /** @var array<int, string> $positions */
         $positions = array_flip($ids);
-        usort($packages, fn(Package $a, Package $b): int => $positions[$a->getId()] <=> $positions[$b->getId()]);
+        usort($packages, fn(Package $a, Package $b): int
+        => $a->getId() && $b->getId() ? $positions[$a->getId()] <=> $positions[$b->getId()] : 0);
 
         return $packages;
     }

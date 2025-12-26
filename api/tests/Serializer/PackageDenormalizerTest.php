@@ -18,7 +18,7 @@ class PackageDenormalizerTest extends TestCase
     public function testSupportsDenormalization(): void
     {
         $this->assertTrue(
-            (new PackageDenormalizer())->supportsDenormalization(
+            new PackageDenormalizer()->supportsDenormalization(
                 [],
                 Package::class,
                 'pacman-database',
@@ -167,31 +167,16 @@ class PackageDenormalizerTest extends TestCase
             ['repository' => $repository]
         );
 
-        switch ($type) {
-            case 'DEPENDS':
-                $this->assertDependency($expected, $package->getDependencies());
-                break;
-            case 'CONFLICTS':
-                $this->assertDependency($expected, $package->getConflicts());
-                break;
-            case 'REPLACES':
-                $this->assertDependency($expected, $package->getReplacements());
-                break;
-            case 'OPTDEPENDS':
-                $this->assertDependency($expected, $package->getOptionalDependencies());
-                break;
-            case 'PROVIDES':
-                $this->assertDependency($expected, $package->getProvisions());
-                break;
-            case 'MAKEDEPENDS':
-                $this->assertDependency($expected, $package->getMakeDependencies());
-                break;
-            case 'CHECKDEPENDS':
-                $this->assertDependency($expected, $package->getCheckDependencies());
-                break;
-            default:
-                $this->fail(sprintf('Invalid dependency type: %s', $type));
-        }
+        match ($type) {
+            'DEPENDS' => $this->assertDependency($expected, $package->getDependencies()),
+            'CONFLICTS' => $this->assertDependency($expected, $package->getConflicts()),
+            'REPLACES' => $this->assertDependency($expected, $package->getReplacements()),
+            'OPTDEPENDS' => $this->assertDependency($expected, $package->getOptionalDependencies()),
+            'PROVIDES' => $this->assertDependency($expected, $package->getProvisions()),
+            'MAKEDEPENDS' => $this->assertDependency($expected, $package->getMakeDependencies()),
+            'CHECKDEPENDS' => $this->assertDependency($expected, $package->getCheckDependencies()),
+            default => $this->fail(sprintf('Invalid dependency type: %s', $type)),
+        };
     }
 
     /**
@@ -294,7 +279,47 @@ class PackageDenormalizerTest extends TestCase
             'MIT',
             'MIT-0',
             'Apache-2.0',
-            'Ruby'],
+            'Ruby'
+            ],
+            $package->getLicenses()
+        );
+    }
+
+    public function testInvalidLicensesAreFiltered(): void
+    {
+        $repository = new Repository('core', 'x86_64');
+        $packageDenormalizer = new PackageDenormalizer();
+
+        $package = $packageDenormalizer->denormalize(
+            [
+                'NAME' => 'pacman',
+                'VERSION' => '5.2.1-4',
+                'ARCH' => 'x86_64',
+                'FILENAME' => 'pacman-5.2.1-4-x86_64.pkg.tar.zst',
+                'URL' => '',
+                'DESC' => 'A library-based package manager with dependency support',
+                'BUILDDATE' => 1578623077,
+                'CSIZE' => 856711,
+                'ISIZE' => 4623024,
+                'PACKAGER' => 'foo<foo@localhost>',
+                'SHA256SUM' => 'a3f6168d59005527b98139607db510fad42a685662f6e86975d941c8c3c476ab',
+                'FILES' => '',
+                'LICENSE' => [
+                    'Apache-2.0',
+                    'AND',
+                    'Ruby',
+                ]
+            ],
+            Package::class,
+            'pacman-database',
+            ['repository' => $repository]
+        );
+
+        $this->assertEquals(
+            [
+                'Apache-2.0',
+                'Ruby'
+            ],
             $package->getLicenses()
         );
     }

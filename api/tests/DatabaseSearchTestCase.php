@@ -18,6 +18,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
      */
     private array $searchIndexers = [];
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -48,7 +49,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
 
         try {
             $openSearchClient->indices()->delete(['index' => $searchIndexer->getIndexName()]);
-        } catch (NotFoundHttpException $_) {
+        } catch (NotFoundHttpException) {
         }
         $openSearchClient->indices()->create($searchIndexer->createIndexConfiguration());
     }
@@ -61,6 +62,7 @@ abstract class DatabaseSearchTestCase extends DatabaseTestCase
         return $client;
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         foreach ($this->searchIndexers as $searchIndexer) {

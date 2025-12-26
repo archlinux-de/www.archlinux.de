@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class ReleaseNormalizer implements NormalizerInterface
 {
-    private NormalizerInterface $normalizer;
+    private readonly NormalizerInterface $normalizer;
 
     public function __construct(
         private readonly UrlGeneratorInterface $router,

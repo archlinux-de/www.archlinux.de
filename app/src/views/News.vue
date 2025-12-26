@@ -107,7 +107,7 @@ const previous = () => {
 
 const canonical = computed(() => window.location.origin + router.resolve({ name: 'news', query: createQuery() }).href)
 
-const validSearchQuery = /[^a-zA-Z0-9@:.+_\- ]+/g
+const validSearchQuery = /[^a-zA-Z0-9@:.+_\- "]+/g
 
 const filterSearchQuery = (query) => query.substring(0, 255).replaceAll(validSearchQuery, '').trim()
 

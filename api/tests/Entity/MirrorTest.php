@@ -10,8 +10,8 @@ class MirrorTest extends TestCase
 {
     public function testUpdate(): void
     {
-        $mirror = (new Mirror('localhost'))
-            ->setCountry((new Country('de'))->setName('Germany'))
+        $mirror = new Mirror('localhost')
+            ->setCountry(new Country('de')->setName('Germany'))
             ->setDurationAvg(0.42)
             ->setDelay(34)
             ->setDurationStddev(53.1)
@@ -22,8 +22,8 @@ class MirrorTest extends TestCase
             ->setIpv6(true);
 
         $mirror->update(
-            (new Mirror('localhost'))
-                ->setCountry((new Country('fr'))->setName('France'))
+            new Mirror('localhost')
+                ->setCountry(new Country('fr')->setName('France'))
                 ->setDurationAvg(1.42)
                 ->setDelay(43)
                 ->setDurationStddev(153.1)

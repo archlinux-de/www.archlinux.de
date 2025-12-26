@@ -16,6 +16,7 @@ final class Version20220402072003 extends AbstractMigration
         );
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql(
@@ -23,6 +24,7 @@ final class Version20220402072003 extends AbstractMigration
         );
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

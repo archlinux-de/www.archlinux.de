@@ -30,7 +30,7 @@ class Repository
     /**
      * @var Collection<int, Package>
      */
-    #[ORM\OneToMany(mappedBy: 'repository', targetEntity: Package::class, cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Package::class, mappedBy: 'repository', cascade: ['remove'])]
     private Collection $packages;
 
     #[ORM\Column(length: 64, nullable: true)]

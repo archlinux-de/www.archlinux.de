@@ -20,13 +20,13 @@ readonly class MirrorPopularityFetcher implements \IteratorAggregate
         $offset = 0;
         $limit = 10000;
 
-        while ($count != 0) { // @phpstan-ignore notEqual.alwaysTrue
+        while ($count !== 0) { // @phpstan-ignore notIdentical.alwaysTrue
             $response = $this->httpClient->request(
                 'GET',
                 $this->mirrorStatisticsApiUrl,
                 [
                     'query' => ['offset' => $offset, 'limit' => $limit],
-                    'json' => true
+                    'headers' => ['Accept' => 'application/json'],
                 ]
             );
             $content = $response->getContent();

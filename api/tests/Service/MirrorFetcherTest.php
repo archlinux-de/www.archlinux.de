@@ -38,7 +38,7 @@ class MirrorFetcherTest extends TestCase
         $httpClient = new MockHttpClient(new MockResponse());
 
         /** @var SerializerInterface&MockObject $serializer */
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
 
         $mirrorFetcher = new MirrorFetcher($httpClient, 'http://foo', $serializer);
 

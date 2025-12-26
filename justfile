@@ -14,13 +14,19 @@ MARIADB-RUN := COMPOSE-RUN + ' -T --no-deps mariadb'
 default:
 	just --list
 
-init: start
+[private]
+init-database: start
 	{{PHP-DB-RUN}} bin/console cache:warmup
 	{{PHP-DB-RUN}} bin/console doctrine:database:drop --force --if-exists
 	{{PHP-DB-RUN}} bin/console doctrine:database:create
 	{{PHP-DB-RUN}} bin/console doctrine:schema:create
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 	{{PHP-DB-RUN}} bin/console doctrine:migrations:version --add --all --no-interaction
+
+init: init-database
+	{{PHP-DB-RUN}} bin/console doctrine:fixtures:load --no-interaction
+
+init-prod: init-database
 	{{PHP-DB-RUN}} bin/console app:config:update-countries
 	{{PHP-DB-RUN}} bin/console app:update:mirrors
 	{{PHP-DB-RUN}} bin/console app:update:news
@@ -95,14 +101,14 @@ phpunit *args:
 phpstan *args:
 	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan {{args}}
 
+rector *args:
+	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/rector {{args}}
+
 node *args='-h':
 	{{NODE-RUN}} node {{args}}
 
 pnpm *args='-h':
 	{{NODE-RUN}} pnpm {{args}}
-
-jest *args:
-	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests {{args}}
 
 cypress *args:
 	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps --entrypoint cypress cypress-run {{args}}
@@ -121,27 +127,29 @@ test-php:
 	{{PHP-RUN}} bin/console lint:yaml --parse-tags config
 	{{PHP-RUN}} bin/console lint:twig templates
 	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan analyse
+	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/rector --dry-run
 	{{PHP-RUN}} vendor/bin/phpunit
 
 test-js:
-	{{NODE-RUN}} node_modules/.bin/eslint '*.js' src tests --ext js --ext vue
+	{{NODE-RUN}} node_modules/.bin/eslint
 	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
-	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests
 	{{NODE-RUN}} pnpm run build --output-path $(mktemp -d)
 
 test: test-php test-js
 
-test-e2e:
+test-e2e *init='init':
 	#!/usr/bin/env bash
 	set -e
 	if [ "${CI-}" = "true" ]; then
 		git clean -xdf app/dist
-		just init
+		just {{ init }}
 		just pnpm run build
 		CYPRESS_baseUrl=http://nginx:8081 just cypress-run
 	else
 		just cypress-run
 	fi
+
+test-integration: (test-e2e 'init-prod')
 
 test-db *args: start-db
 	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml {{args}}
@@ -154,18 +162,17 @@ update-opensearch-fixtures: start-db
 	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api php -d memory_limit=-1 vendor/bin/phpunit
 
 test-coverage:
-	{{NODE-RUN}} node_modules/.bin/jest --passWithNoTests --coverage --coverageDirectory var/coverage/jest
-	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
+	{{PHP-RUN}} php -d extension=pcov -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
 
 test-db-coverage: start-db
-	{{PHP-RUN}} php -d zend_extension=xdebug -d xdebug.mode=coverage -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
+	{{PHP-RUN}} php -d extension=pcov -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
 
 test-security: (composer "audit")
 	{{NODE-RUN}} pnpm audit --prod
 
 fix-code-style:
 	{{PHP-RUN}} vendor/bin/phpcbf || true
-	{{NODE-RUN}} node_modules/.bin/eslint '*.js' src tests --ext js --ext vue --fix
+	{{NODE-RUN}} node_modules/.bin/eslint --fix
 	{{NODE-RUN}} node_modules/.bin/stylelint --fix=strict 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
 
 update:
@@ -175,7 +182,7 @@ update:
 
 deploy:
 	cd app && pnpm install --frozen-lockfile --prod
-	cd app && pnpm run build
+	cd app && NODE_OPTIONS=--no-experimental-webstorage pnpm run build
 	cd app && find dist -type f -atime +512 -delete # needs to be above the highest TTL
 	cd app && find dist -type d -empty -delete
 	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader --classmap-authoritative

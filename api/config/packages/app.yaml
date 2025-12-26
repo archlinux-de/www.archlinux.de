@@ -1,5 +1,5 @@
 parameters:
-    env(PACKAGES_MIRROR): 'https://mirror.leaseweb.net/archlinux/'
+    env(PACKAGES_MIRROR): 'https://geo.mirror.pkgbuild.com/'
     app.packages.mirror: '%env(PACKAGES_MIRROR)%'
     app.packages.gitlab_url: 'https://gitlab.archlinux.org/archlinux/packaging/packages'
     app.packages.repositories:
@@ -14,7 +14,7 @@ parameters:
     app.packages.appStreamDataBaseUrl: 'https://sources.archlinux.org/other/packages/archlinux-appstream-data/'
     app.packages.appStreamDataFile: 'Components-x86_64.xml.gz'
     app.packages.appStreamDataReposToFetch: ['core', 'extra']
-    app.mirrors.status: 'https://www.archlinux.org/mirrors/status/json/'
+    app.mirrors.status: 'https://archlinux.org/mirrors/status/json/'
     env(DEFAULT_MIRROR): '%app.packages.mirror%'
     app.mirrors.default: '%env(DEFAULT_MIRROR)%'
     app.mirrors.country: 'DE'
@@ -22,15 +22,4 @@ parameters:
     app.mirrors.mirrorStatisticsApiUrl: 'https://pkgstats.archlinux.de/api/mirrors'
     app.news.flarum_url: 'https://forum.archlinux.de'
     app.news.flarum_tag: 'neuigkeiten'
-    app.releng.releases: 'https://www.archlinux.org/releng/releases/json/'
-
-when@dev:
-    parameters:
-        app.packages.repositories:
-            core: ['x86_64']
-            extra: ['x86_64']
-
-when@test:
-    parameters:
-        app.packages.repositories:
-            core: ['x86_64']
+    app.releng.releases: 'https://archlinux.org/releng/releases/json/'

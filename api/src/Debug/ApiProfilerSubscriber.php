@@ -23,7 +23,7 @@ class ApiProfilerSubscriber implements EventSubscriberInterface
         }
 
         $response = $event->getResponse();
-        $response->setContent(preg_replace_callback('/<script([^>]+)/i', function (array $matches) {
+        $response->setContent(preg_replace_callback('/<script([^>]+)/i', function (array $matches): string {
             if (stripos($matches[1], 'src') !== false && stripos($matches[1], 'defer') === false) {
                 return '<script defer' . $matches[1];
             }

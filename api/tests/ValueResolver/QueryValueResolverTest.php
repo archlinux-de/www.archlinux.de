@@ -15,8 +15,7 @@ use App\Request\QueryRequest;
 
 class QueryValueResolverTest extends TestCase
 {
-    /** @var ValidatorInterface&MockObject */
-    private mixed $validator;
+    private ValidatorInterface&MockObject $validator;
 
     private QueryValueResolver $queryValueResolver;
 
@@ -41,7 +40,7 @@ class QueryValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(QueryRequest $_) => new ConstraintViolationList()
+                fn(QueryRequest $_): ConstraintViolationList => new ConstraintViolationList()
             );
 
         $values = [...$this->queryValueResolver->resolve($request, $argument)];
@@ -68,7 +67,7 @@ class QueryValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(QueryRequest $_) => new ConstraintViolationList()
+                fn(QueryRequest $_): ConstraintViolationList => new ConstraintViolationList()
             );
 
         $values = [...$this->queryValueResolver->resolve($request, $argument)];
@@ -95,7 +94,8 @@ class QueryValueResolverTest extends TestCase
             ->expects($this->once())
             ->method('validate')
             ->willReturnCallback(
-                fn(QueryRequest $_) => new ConstraintViolationList([$this->createMock(ConstraintViolation::class)])
+                fn(QueryRequest $_): ConstraintViolationList
+                => new ConstraintViolationList([$this->createStub(ConstraintViolation::class)])
             );
 
         $this->expectException(BadRequestHttpException::class);

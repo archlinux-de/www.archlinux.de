@@ -14,11 +14,13 @@ final class Version20181230072002 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_CAC6D395989D9B62 ON news_item (slug)');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('DROP INDEX UNIQ_CAC6D395989D9B62 ON news_item');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

@@ -18,6 +18,7 @@ final class Version20210904180118 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_DE686795ADE25A90 ON package (build_date)');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('DROP INDEX idx_de686795ade25a90 ON package');
@@ -27,6 +28,7 @@ final class Version20210904180118 extends AbstractMigration
         );
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

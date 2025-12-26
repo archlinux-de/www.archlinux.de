@@ -34,7 +34,7 @@ class PackageNormalizerTest extends KernelTestCase
     public function testNormalize(): void
     {
         $repository = new Repository('core', Architecture::X86_64);
-        $package = (new Package($repository, 'pacman', '6.0-1', Architecture::X86_64))
+        $package = new Package($repository, 'pacman', '6.0-1', Architecture::X86_64)
             ->setBuildDate(new \DateTime('2018-01-30'))
             ->setDescription('foo bar')
             ->setGroups(['base'])

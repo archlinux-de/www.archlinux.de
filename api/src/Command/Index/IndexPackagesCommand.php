@@ -37,7 +37,7 @@ class IndexPackagesCommand extends Command
 
         try {
             $this->client->indices()->delete(['index' => $this->packageSearchIndexer->getIndexName()]);
-        } catch (NotFoundHttpException $_) {
+        } catch (NotFoundHttpException) {
         }
         $this->client->indices()->create($this->packageSearchIndexer->createIndexConfiguration());
 

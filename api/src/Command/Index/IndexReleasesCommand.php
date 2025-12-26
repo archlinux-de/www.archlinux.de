@@ -36,7 +36,7 @@ class IndexReleasesCommand extends Command
 
         try {
             $this->client->indices()->delete(['index' => $this->releaseSearchIndexer->getIndexName()]);
-        } catch (NotFoundHttpException $_) {
+        } catch (NotFoundHttpException) {
         }
         $this->client->indices()->create($this->releaseSearchIndexer->createIndexConfiguration());
 

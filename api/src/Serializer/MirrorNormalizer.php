@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class MirrorNormalizer implements NormalizerInterface
 {
-    private NormalizerInterface $normalizer;
+    private readonly NormalizerInterface $normalizer;
 
     public function __construct(
         #[Autowire(service: 'serializer.normalizer.object')] NormalizerInterface $normalizer,
@@ -25,7 +25,7 @@ class MirrorNormalizer implements NormalizerInterface
      */
     public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
-        /** @var mixed[] $data */
+        /** @var array<string, string|int|float|\Stringable> $data */
         $data = $this->normalizer->normalize(
             $object,
             $format,
@@ -49,7 +49,7 @@ class MirrorNormalizer implements NormalizerInterface
             )
         );
 
-        $data['host'] = parse_url($data['url'], PHP_URL_HOST);
+        $data['host'] = parse_url((string) $data['url'], PHP_URL_HOST);
 
         return $data;
     }

@@ -18,10 +18,10 @@ class PackageDatabaseMirrorTest extends TestCase
     public function testGetMirrorUrl(): void
     {
         /** @var HttpClientInterface&MockObject $httpClient */
-        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient = $this->createStub(HttpClientInterface::class);
 
         /** @var CacheItemPoolInterface&MockObject $cache */
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache = $this->createStub(CacheItemPoolInterface::class);
 
         $packageDatabaseMirror = new PackageDatabaseMirror($httpClient, $cache, 'foo');
 
@@ -31,7 +31,7 @@ class PackageDatabaseMirrorTest extends TestCase
     public function testHasUpdatedIsTrueForNewMirror(): void
     {
         /** @var HttpClientInterface&MockObject $httpClient */
-        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient = $this->createStub(HttpClientInterface::class);
 
         $cache = new ArrayAdapter();
 
@@ -64,13 +64,13 @@ class PackageDatabaseMirrorTest extends TestCase
             ->willReturn($cacheItem);
 
         $packageDatabaseMirror = new PackageDatabaseMirror($httpClient, $cache, 'http://foo');
-        $this->assertEquals($oldLastUpdated != $newLastUpdated, $packageDatabaseMirror->hasUpdated());
+        $this->assertEquals($oldLastUpdated !== $newLastUpdated, $packageDatabaseMirror->hasUpdated());
     }
 
     public function testUpdateLastUpdate(): void
     {
         /** @var HttpClientInterface&MockObject $httpClient */
-        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient = $this->createStub(HttpClientInterface::class);
 
         $cache = new ArrayAdapter();
 

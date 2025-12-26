@@ -26,7 +26,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $oldMirror = new Mirror('https://127.0.0.1');
 
         /** @var MirrorRepository&MockObject $mirrorRepository */
-        $mirrorRepository = $this->createMock(MirrorRepository::class);
+        $mirrorRepository = $this->createStub(MirrorRepository::class);
         $mirrorRepository->method('findAllExceptByUrls')->willReturn([$oldMirror]);
 
         /** @var EntityManagerInterface&MockObject $entityManager */
@@ -36,19 +36,19 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var MirrorFetcher&MockObject $mirrorFetcher */
-        $mirrorFetcher = $this->createMock(MirrorFetcher::class);
+        $mirrorFetcher = $this->createStub(MirrorFetcher::class);
         $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$newMirror]));
 
         /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator, $logger)
         );
 
@@ -81,7 +81,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $validator
             ->expects($this->atLeastOnce())
             ->method('validate')
-            ->willReturn(new ConstraintViolationList([$this->createMock(ConstraintViolation::class)]));
+            ->willReturn(new ConstraintViolationList([$this->createStub(ConstraintViolation::class)]));
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger
@@ -91,7 +91,7 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator, $logger)
         );
 
@@ -113,19 +113,19 @@ class UpdateMirrorsCommandTest extends KernelTestCase
         $entityManager->expects($this->once())->method('flush');
 
         /** @var MirrorFetcher&MockObject $mirrorFetcher */
-        $mirrorFetcher = $this->createMock(MirrorFetcher::class);
+        $mirrorFetcher = $this->createStub(MirrorFetcher::class);
         $mirrorFetcher->method('getIterator')->willReturn(new \ArrayIterator([$mirror]));
 
         /** @var ValidatorInterface&MockObject $validator */
         $validator = $this->createMock(ValidatorInterface::class);
         $validator->expects($this->atLeastOnce())->method('validate')->willReturn(new ConstraintViolationList());
 
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
 
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(
+        $application->addCommand(
             new UpdateMirrorsCommand($entityManager, $mirrorFetcher, $mirrorRepository, $validator, $logger)
         );
 

@@ -19,7 +19,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime('2018-01-01'));
         $news->setAuthor(
-            (new NewsAuthor())
+            new NewsAuthor()
                 ->setName('')
                 ->setUri('')
         );
@@ -54,7 +54,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime('2018-01-01'));
         $news->setAuthor(
-            (new NewsAuthor())
+            new NewsAuthor()
                 ->setName('')
                 ->setUri('')
         );
@@ -85,7 +85,7 @@ class NewsControllerTest extends DatabaseSearchTestCase
         $news->setDescription('Hell has frozen over!');
         $news->setLastModified(new \DateTime('2020-02-02'));
         $news->setAuthor(
-            (new NewsAuthor())
+            new NewsAuthor()
                 ->setName('Bob')
                 ->setUri('http://localhost/bob')
         );
@@ -115,5 +115,54 @@ class NewsControllerTest extends DatabaseSearchTestCase
             ],
             json_decode($client->getResponse()->getContent(), true)
         );
+    }
+
+    public function testNewsActionWithQuotes(): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $newsAuthor = new NewsAuthor();
+        $newsAuthor->setName('Gemini');
+        $newsAuthor->setUri('http://localhost/gemini');
+
+        $newsItem1 = new NewsItem(1);
+        $newsItem1->setTitle('Important Security Update');
+        $newsItem1->setDescription('A critical security patch for all systems');
+        $newsItem1->setLastModified(new \DateTime('2023-01-01'));
+        $newsItem1->setAuthor($newsAuthor);
+        $newsItem1->setLink('https://www.archlinux.de/news/1');
+
+        $newsItem2 = new NewsItem(2);
+        $newsItem2->setTitle('General Update');
+        $newsItem2->setDescription('Some general security fixes');
+        $newsItem2->setLastModified(new \DateTime('2023-01-02'));
+        $newsItem2->setAuthor($newsAuthor);
+        $newsItem2->setLink('https://www.archlinux.de/news/2');
+
+        $entityManager->persist($newsItem1);
+        $entityManager->persist($newsItem2);
+        $entityManager->flush();
+
+        $client = $this->getClient();
+
+        // Test quoted search for exact phrase in description
+        $client->request('GET', '/api/news', ['query' => '"critical security patch"']);
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(1, $responseData['items']);
+        $this->assertEquals('Important Security Update', $responseData['items'][0]['title']);
+
+        // Test unquoted search
+        $client->request('GET', '/api/news', ['query' => 'security']);
+        $this->assertTrue($client->getResponse()->isSuccessful());
+        $this->assertIsString($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($responseData);
+        $this->assertCount(2, $responseData['items']);
     }
 }

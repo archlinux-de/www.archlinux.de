@@ -98,7 +98,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
 
         $coreRepository = new Repository('core', Architecture::X86_64);
         $extraRepository = new Repository('extra', Architecture::X86_64);
-        $testingRepository = (new Repository('core-testing', Architecture::X86_64))->setTesting();
+        $testingRepository = new Repository('core-testing', Architecture::X86_64)->setTesting();
         $pacman = new Package(
             $extraRepository,
             'pacman',
@@ -489,7 +489,7 @@ class AbstractRelationRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $testingRepository = (new Repository('core-testing', Architecture::X86_64))->setTesting();
+        $testingRepository = new Repository('core-testing', Architecture::X86_64)->setTesting();
         $pacman = new Package(
             $coreRepository,
             'pacman',

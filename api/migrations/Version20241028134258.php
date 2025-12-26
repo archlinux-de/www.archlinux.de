@@ -14,11 +14,13 @@ final class Version20241028134258 extends AbstractMigration
         $this->addSql('ALTER TABLE package CHANGE groups groups LONGTEXT DEFAULT NULL, CHANGE licenses licenses LONGTEXT DEFAULT NULL');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE package CHANGE groups groups LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:simple_array)\', CHANGE licenses licenses LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:simple_array)\'');
     }
 
+    #[\Override]
     public function isTransactional(): bool
     {
         return false;

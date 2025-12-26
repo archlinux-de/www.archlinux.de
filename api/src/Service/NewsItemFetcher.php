@@ -34,7 +34,8 @@ class NewsItemFetcher implements \IteratorAggregate
                         'include' => 'user,firstPost',
                         'filter' => ['tag' => $this->flarumTag],
                         'page' => ['offset' => $offset, 'limit' => $limit]
-                    ]
+                    ],
+                    'headers' => ['Accept' => 'application/json'],
                 ]
             );
             $content = $response->getContent();
@@ -48,6 +49,6 @@ class NewsItemFetcher implements \IteratorAggregate
             if ($count < $limit) {
                 break;
             }
-        } while ($count != 0); // @phpstan-ignore notEqual.alwaysTrue
+        } while ($count !== 0); // @phpstan-ignore notIdentical.alwaysTrue
     }
 }

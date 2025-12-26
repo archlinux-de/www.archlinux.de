@@ -79,18 +79,18 @@ class PackageRepositoryTest extends DatabaseTestCase
     {
         $entityManager = $this->getEntityManager();
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $pacman = (new Package(
+        $pacman = new Package(
             $coreRepository,
             'pacman',
             '5.0.2-2',
             Architecture::X86_64
-        ))->setBuildDate(new \DateTime('2018-02-01'));
-        $glibc = (new Package(
+        )->setBuildDate(new \DateTime('2018-02-01'));
+        $glibc = new Package(
             $coreRepository,
             'glibc',
             '2.26-10',
             Architecture::X86_64
-        ))->setBuildDate(new \DateTime('2018-01-01'));
+        )->setBuildDate(new \DateTime('2018-01-01'));
         $entityManager->persist($coreRepository);
         $entityManager->persist($pacman);
         $entityManager->persist($glibc);
@@ -109,7 +109,7 @@ class PackageRepositoryTest extends DatabaseTestCase
         $entityManager = $this->getEntityManager();
 
         $coreRepository = new Repository('core', Architecture::X86_64);
-        $testingRepository = (new Repository('core-testing', Architecture::X86_64))->setTesting();
+        $testingRepository = new Repository('core-testing', Architecture::X86_64)->setTesting();
         $pacman = new Package(
             $coreRepository,
             'pacman',

@@ -20,7 +20,11 @@ class MirrorFetcher implements \IteratorAggregate
 
     public function getIterator(): \Traversable
     {
-        $response = $this->httpClient->request('GET', $this->mirrorStatusUrl);
+        $response = $this->httpClient->request(
+            'GET',
+            $this->mirrorStatusUrl,
+            ['headers' => ['Accept' => 'application/json']]
+        );
         $content = $response->getContent();
         if (empty($content)) {
             throw new \RuntimeException('empty mirrorstatus');

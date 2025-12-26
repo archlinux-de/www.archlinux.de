@@ -38,12 +38,12 @@ readonly class NewsItemDenormalizer implements DenormalizerInterface
                         ];
                     }
 
-                    $newsItem = (new NewsItem($discussions['id']))
+                    $newsItem = new NewsItem($discussions['id'])
                         ->setTitle($discussions['attributes']['title'])
                         ->setLink(sprintf('%s/d/%s', $this->flarumUrl, $discussions['attributes']['slug']))
                         ->setDescription($firstPostContent)
                         ->setAuthor(
-                            (new NewsAuthor())
+                            new NewsAuthor()
                                 ->setUri(
                                     $user['attributes']['slug'] ? sprintf(
                                         '%s/u/%s',

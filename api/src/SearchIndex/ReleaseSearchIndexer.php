@@ -33,7 +33,7 @@ class ReleaseSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
 
     public function getIndexName(): string
     {
-        return ($this->environment == 'test' ? 'test-' : '') . 'release';
+        return ($this->environment === 'test' ? 'test-' : '') . 'release';
     }
 
     /**

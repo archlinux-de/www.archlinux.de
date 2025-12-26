@@ -38,7 +38,7 @@ class NewsItemFetcherTest extends TestCase
         $httpClient = new MockHttpClient(new MockResponse('foo'));
 
         /** @var SerializerInterface&MockObject $serializer */
-        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer = $this->createStub(SerializerInterface::class);
 
         $newsItemFetcher = new NewsItemFetcher('http://foo', 'bar', $httpClient, $serializer);
 

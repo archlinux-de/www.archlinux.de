@@ -40,7 +40,9 @@ class UpdateRepositoriesCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new UpdateRepositoriesCommand($entityManager, $repositoryManager, $relationRepository));
+        $application->addCommand(
+            new UpdateRepositoriesCommand($entityManager, $repositoryManager, $relationRepository)
+        );
 
         $command = $application->find('app:update:repositories');
         $commandTester = new CommandTester($command);
