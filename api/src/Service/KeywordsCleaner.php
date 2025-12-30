@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use http\Exception\RuntimeException;
-
 class KeywordsCleaner
 {
     public function cleanAppStreamDescription(string $uncleanDescription): string
@@ -35,10 +33,10 @@ class KeywordsCleaner
     {
         $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
 
-        if ($words) {
+        if ($words !== false) {
             return array_unique($words);
         }
 
-        throw new RuntimeException('Failed deduplicating words in KeywordsCleaner.php');
+        throw new \RuntimeException('Failed deduplicating words in KeywordsCleaner.php');
     }
 }
