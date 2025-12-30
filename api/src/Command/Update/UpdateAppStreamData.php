@@ -2,9 +2,10 @@
 
 namespace App\Command\Update;
 
-use App\Entity\Packages\Metadata;
 use App\Repository\PackageRepository;
 use App\Service\AppStreamDataFetcher;
+use App\Service\AppStreamDataVersionObtainer;
+use App\Service\KeywordsCleaner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -17,8 +18,8 @@ class UpdateAppStreamData extends Command
 {
     use LockableTrait;
 
-    /** @var array<string, Metadata> */
-    private array $packageMetaData = [];
+    /** @var array<string> */
+    private array $packageKeywords = [];
 
     public function __construct(
         private readonly string $appStreamDataBaseUrl,
@@ -27,7 +28,9 @@ class UpdateAppStreamData extends Command
         private readonly array $appStreamDataReposToFetch,
         private readonly EntityManagerInterface $entityManager,
         private readonly PackageRepository $packageRepository,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
+        private readonly AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
+        private readonly KeywordsCleaner $keywordCleaner
     ) {
         parent::__construct();
     }
@@ -36,8 +39,7 @@ class UpdateAppStreamData extends Command
         $this
             ->setName('app:update:appstream-data')
             ->setDescription('
-            Update appstream data for packages defined in app.yaml "app.packages.appStreamDataReposToFetch".'
-            );
+            Update appstream data for packages defined in app.yaml "app.packages.appStreamDataReposToFetch".');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -45,28 +47,29 @@ class UpdateAppStreamData extends Command
         $this->lock('appstream.lock');
         ini_set('memory_limit', '8G');
 
-        // AppStreamDataFetcher yields an array of [pkgname => MetaData]
+        // AppStreamDataFetcher yields pkgname => keywords
         foreach ($this->appStreamDataReposToFetch as $repoToFetchFor) {
             $dataFetcher = new AppStreamDataFetcher(
                 $this->appStreamDataBaseUrl,
                 $this->appStreamDataFile,
                 $repoToFetchFor,
-                $this->packageRepository
+                $this->appStreamDataVersionObtainer,
+                $this->keywordCleaner
             );
 
-            var_dump('HERE 1');
-
-            foreach ($dataFetcher as $name => $metaData) {
-                $errors = $this->validator->validate($metaData);
+            foreach ($dataFetcher as $name => $keywords) {
+                $errors = $this->validator->validate($keywords);
                 if ($errors->count() > 0) {
-                    throw new ValidationFailedException($metaData, $errors);
+                    throw new ValidationFailedException($keywords, $errors);
                 }
-                $this->packageMetaData[$name] = $metaData;
+                $this->packageKeywords[$name] = $keywords;
             }
-            var_dump('HERE 2');
 
             foreach ($this->packageRepository->findStable() as $package) {
-                $package->setMetaData($this->packageMetaData[$package->getName()] ?? null);
+                if (isset($this->packageKeywords[$package->getName()])) {
+                    $package->setKeywords($this->packageKeywords[$package->getName()]);
+                    $this->entityManager->persist($package);
+                }
             }
 
             $this->entityManager->flush();

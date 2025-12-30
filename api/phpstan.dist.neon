@@ -16,6 +16,7 @@ parameters:
 		- public/index.php
 		- tests/bootstrap.php
 		- tests/object-manager.php
+		- config/reference.php
 	ignoreErrors:
 		-
 			identifier: offsetAccess.nonOffsetAccessible

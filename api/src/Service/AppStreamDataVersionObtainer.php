@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Service;
+
+use App\Repository\PackageRepository;
+use Doctrine\ORM\NoResultException;
+use Psr\Log\LoggerInterface;
+
+readonly class AppStreamDataVersionObtainer
+{
+    public function __construct(private PackageRepository $packageRepository)
+    {
+    }
+
+    /**
+     * @throws NoResultException
+     */
+    public function obtainAppStreamDataVersion(): string
+    {
+
+        $appStreamData = $this->packageRepository->getByName(
+            repository: 'extra',
+            architecture: 'x86_64',
+            name:'archlinux-appstream-data'
+        );
+
+        // version is provided as YYYYMMDD-n
+        return explode('-', $appStreamData->getVersion())[0];
+    }
+}

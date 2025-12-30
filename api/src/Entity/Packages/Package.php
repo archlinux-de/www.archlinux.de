@@ -95,10 +95,6 @@ class Package
     #[Assert\Valid]
     private ?Packager $packager = null;
 
-    #[ORM\Embedded(class: Metadata::class)]
-    #[Assert\Valid]
-    private ?Metadata $metadata = null;
-
     #[ORM\Embedded(class: Popularity::class)]
     #[Assert\Valid]
     private ?Popularity $popularity = null;
@@ -203,6 +199,12 @@ class Package
     #[Assert\Valid]
     private Files $files;
 
+    /**
+     * @var array<string>|null
+     */
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $keywords = null;
+
     public function __construct(Repository $repository, string $name, string $version, string $architecture)
     {
         $this->name = $name;
@@ -223,6 +225,24 @@ class Package
 
         $this->files = Files::createFromArray([]);
     }
+
+    /**
+     * @return array<string>|null
+     */
+    public function getKeywords(): ?array
+    {
+        return $this->keywords;
+    }
+
+    /**
+     * @param array<string>|null $keywords
+     */
+    public function setKeywords(?array $keywords): Package
+    {
+        $this->keywords = $keywords;
+        return $this;
+    }
+
 
     public function getPopularity(): ?Popularity
     {
@@ -398,17 +418,6 @@ class Package
     public function setPackager(?Packager $packager): Package
     {
         $this->packager = $packager;
-        return $this;
-    }
-
-    public function getMetadata(): ?Metadata
-    {
-        return $this->metadata;
-    }
-
-    public function setMetadata(?Metadata $metadata): Package
-    {
-        $this->metadata = $metadata;
         return $this;
     }
 

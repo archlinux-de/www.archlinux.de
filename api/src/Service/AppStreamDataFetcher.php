@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Packages\Metadata;
-use App\Repository\PackageRepository;
 use App\Serializer\AppStreamDataDenormalizer;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -12,7 +10,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * @implements \IteratorAggregate<string, Metadata>
+ * @implements \IteratorAggregate<string, array<string>>
  */
 readonly class AppStreamDataFetcher implements \IteratorAggregate
 {
@@ -20,7 +18,8 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
         private string $appStreamDataBaseUrl,
         private string $appStreamDataFile,
         private string $repoToFetchFor,
-        private PackageRepository $packageRepository
+        private AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
+        private KeywordsCleaner $keywordCleaner
     ) {
     }
 
@@ -32,21 +31,20 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
      */
     public function getIterator(): \Traversable
     {
-        $appStreamData = $this->packageRepository->getByName(
-            repository: 'extra',
-            architecture: 'any',
-            name:'app-stream-data'
-        );
-        $asdYmd =  strtok($appStreamData->getVersion(), '-');
-
-        $upstreamUrl = $this->appStreamDataBaseUrl . $asdYmd . '/' . $this->repoToFetchFor . $this->appStreamDataFile;
+        $upstreamUrl =
+            $this->appStreamDataBaseUrl .
+            $this->appStreamDataVersionObtainer->obtainAppStreamDataVersion() .
+            '/' .
+            $this->repoToFetchFor .
+            '/' .
+            $this->appStreamDataFile;
 
         $fetchedXml = $this->downloadAndExtract($upstreamUrl);
 
-        $denormalizer = new AppStreamDataDenormalizer();
+        $denormalizer = new AppStreamDataDenormalizer($this->keywordCleaner);
 
-        foreach ($denormalizer->denormalize($fetchedXml) as $pkgname => $metaData) {
-            yield $pkgname => $metaData;
+        foreach ($denormalizer->denormalize($fetchedXml) as $pkgname => $keywords) {
+            yield $pkgname => $keywords;
         }
     }
 
