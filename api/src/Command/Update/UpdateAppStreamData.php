@@ -18,7 +18,7 @@ class UpdateAppStreamData extends Command
 {
     use LockableTrait;
 
-    /** @var array<string> */
+    /** @var array<string, array<string>> */
     private array $packageKeywords = [];
 
     public function __construct(
