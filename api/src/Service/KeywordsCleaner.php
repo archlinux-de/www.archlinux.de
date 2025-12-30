@@ -16,7 +16,8 @@ class KeywordsCleaner
         $filteredWords = array_filter($words, function ($word) {
             $stopWords = [
                 'the', 'and', 'for', 'with', 'from', 'this', 'that', 'your', 'have', 'a', 'an', 'to', 'of', 'if', 'on',
-                'der', 'die', 'das', 'und', 'ein', 'eine', 'mit', 'von', 'für', 'ist'
+                'is', 'as', 'it', 'you', 'in', 'all', 'at', 'der', 'die', 'das', 'und', 'ein', 'eine', 'mit',
+                'von', 'für', 'ist', 'auf', 'sie'
             ];
             $word = trim($word);
             return !in_array($word, $stopWords);
