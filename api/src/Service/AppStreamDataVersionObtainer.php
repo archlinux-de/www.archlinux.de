@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Repository\PackageRepository;
 use Doctrine\ORM\NoResultException;
-use Psr\Log\LoggerInterface;
 
 readonly class AppStreamDataVersionObtainer
 {

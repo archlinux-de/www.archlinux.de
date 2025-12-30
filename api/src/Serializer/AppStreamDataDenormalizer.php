@@ -7,7 +7,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class AppStreamDataDenormalizer
+readonly class AppStreamDataDenormalizer
 {
     private Serializer $serializer;
     private KeywordsCleaner $keywordCleaner;
@@ -28,9 +28,6 @@ class AppStreamDataDenormalizer
     public function denormalize(string $xml): \Traversable
     {
         $data = $this->parseXml($xml);
-        if (empty($data)) {
-            return;
-        }
 
         foreach ($data as $component) {
             if (!isset($component['pkgname']) || !is_string($component['pkgname'])) {
@@ -95,7 +92,7 @@ class AppStreamDataDenormalizer
                 $lang = $block['@xml:lang'] ?? null;
 
                 if ($lang === null || in_array($lang, ['en', 'de'])) {
-                    array_walk_recursive($block, function ($value, $key) use (&$allText) {
+                    array_walk_recursive($block, function ($value, $key) use (&$allText): void {
                         // Grab all strings, skip keys starting with @ (attributes)
                         //@phpstan-ignore-next-line cast.string
                         if (is_string($value) && !str_starts_with((string)$key, '@')) {
@@ -127,12 +124,12 @@ class AppStreamDataDenormalizer
 
         // If it's an array, lowercase every element before imploding
         if (is_array($categoryData)) {
-            $lowercasedCategories = array_map(fn($cat) => mb_strtolower($cat, 'UTF-8'), $categoryData);
+            $lowercasedCategories = array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
             return implode(' ', $lowercasedCategories);
         }
 
         // If it's a single string, just lowercase it
-        return mb_strtolower($categoryData, 'UTF-8');
+        return mb_strtolower((string) $categoryData, 'UTF-8');
     }
 
     /**
@@ -149,13 +146,11 @@ class AppStreamDataDenormalizer
             foreach ($blocks as $block) {
                 $lang = $block['@xml:lang'] ?? null;
 
-                if ($lang === null || $lang === 'de') {
-                    if (isset($block['keyword'])) {
-                        $list = is_array($block['keyword']) ? $block['keyword'] : [$block['keyword']];
-                        foreach ($list as $word) {
-                            if (is_string($word)) {
-                                $allKeywords[] = mb_strtolower($word, 'UTF-8');
-                            }
+                if (($lang === null || $lang === 'de') && isset($block['keyword'])) {
+                    $list = is_array($block['keyword']) ? $block['keyword'] : [$block['keyword']];
+                    foreach ($list as $word) {
+                        if (is_string($word)) {
+                            $allKeywords[] = mb_strtolower($word, 'UTF-8');
                         }
                     }
                 }

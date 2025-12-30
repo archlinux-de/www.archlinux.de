@@ -13,7 +13,7 @@ class KeywordsCleaner
         $clean = mb_strtolower($clean, 'UTF-8');
 
         $words = explode(' ', $clean);
-        $filteredWords = array_filter($words, function ($word) {
+        $filteredWords = array_filter($words, function (string $word): bool {
             $stopWords = [
                 'the', 'and', 'for', 'with', 'from', 'this', 'that', 'your', 'have', 'a', 'an', 'to', 'of', 'if', 'on',
                 'is', 'as', 'it', 'you', 'in', 'all', 'at', 'der', 'die', 'das', 'und', 'ein', 'eine', 'mit',

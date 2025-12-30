@@ -14,6 +14,7 @@ final class Version20251230172305 extends AbstractMigration
         $this->addSql('ALTER TABLE package ADD keywords LONGTEXT DEFAULT NULL');
     }
 
+    #[\Override]
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE package DROP keywords');
