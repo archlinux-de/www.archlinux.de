@@ -8,6 +8,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 readonly class AppStreamDataDenormalizer implements DenormalizerInterface
 {
     /**
+     * @param mixed[] $data
      * @return AppStreamDataComponentDto[]
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
@@ -112,10 +113,12 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
         $categoryData = $component['categories']['category'];
 
         if (is_array($categoryData)) {
+            /** @var array<string> $categoryData */
             return array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
         }
 
-        return [mb_strtolower((string) $categoryData, 'UTF-8')];
+        /** @var string $categoryData */
+        return [mb_strtolower($categoryData, 'UTF-8')];
     }
 
     /**

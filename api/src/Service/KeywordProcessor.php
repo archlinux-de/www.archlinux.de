@@ -11,9 +11,9 @@ class KeywordProcessor
      */
     public function generatePackageKeywords(AppStreamDataComponentDto $appStreamDataComponentDto): array
     {
-        $cleanedDescription = $this->cleanAppStreamDescription($appStreamDataComponentDto->getDescription());
-        $appDataCategories = implode(' ', $appStreamDataComponentDto->getCategories());
-        $appDataKeywords = implode(' ', $appStreamDataComponentDto->getKeywords());
+        $cleanedDescription = $this->cleanAppStreamDescription($appStreamDataComponentDto->getDescription() ?? '');
+        $appDataCategories = implode(' ', $appStreamDataComponentDto->getCategories() ?? []);
+        $appDataKeywords = implode(' ', $appStreamDataComponentDto->getKeywords() ?? []);
 
         $keywords = $cleanedDescription . ' ' . $appDataCategories . ' ' . $appDataKeywords;
 
