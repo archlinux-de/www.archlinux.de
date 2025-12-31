@@ -124,11 +124,13 @@ readonly class AppStreamDataDenormalizer
 
         // If it's an array, lowercase every element before imploding
         if (is_array($categoryData)) {
+            //@phpstan-ignore-next-line cast.string
             $lowercasedCategories = array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
             return implode(' ', $lowercasedCategories);
         }
 
         // If it's a single string, just lowercase it
+        //@phpstan-ignore-next-line cast.string
         return mb_strtolower((string) $categoryData, 'UTF-8');
     }
 
