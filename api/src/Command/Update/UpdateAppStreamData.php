@@ -31,7 +31,7 @@ class UpdateAppStreamData extends Command
         $this
             ->setName('app:update:appstream-data')
             ->setDescription('
-            Update appstream data for packages defined in app.yaml "app.packages.appStreamDataReposToFetch".');
+            Update appstream data for packages of non-testing repos.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
