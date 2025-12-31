@@ -3,16 +3,16 @@
 namespace App\Command\Update;
 
 use App\Repository\PackageRepository;
+use App\Repository\RepositoryRepository;
 use App\Service\AppStreamDataFetcher;
 use App\Service\AppStreamDataVersionObtainer;
-use App\Service\KeywordsCleaner;
+use App\Service\KeywordProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UpdateAppStreamData extends Command
@@ -23,15 +23,13 @@ class UpdateAppStreamData extends Command
     private array $packageKeywords = [];
 
     public function __construct(
-        private readonly string $appStreamDataBaseUrl,
-        private readonly string $appStreamDataFile,
         /** @var string[] $appStreamDataReposToFetch */
         private readonly array $appStreamDataReposToFetch,
+        private readonly AppStreamDataFetcher $appStreamDataFetcher,
         private readonly EntityManagerInterface $entityManager,
         private readonly PackageRepository $packageRepository,
-        private readonly ValidatorInterface $validator,
-        private readonly AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
-        private readonly KeywordsCleaner $keywordCleaner
+        private readonly KeywordProcessor $keywordProcessor,
+        private readonly RepositoryRepository $repositoryRepository
     ) {
         parent::__construct();
     }
@@ -48,35 +46,25 @@ class UpdateAppStreamData extends Command
         $this->lock('appstream.lock');
         ini_set('memory_limit', '8G');
 
-        // AppStreamDataFetcher yields pkgname => keywords
-        foreach ($this->appStreamDataReposToFetch as $repoToFetchFor) {
-            $dataFetcher = new AppStreamDataFetcher(
-                $this->appStreamDataBaseUrl,
-                $this->appStreamDataFile,
-                $repoToFetchFor,
-                $this->appStreamDataVersionObtainer,
-                $this->keywordCleaner
-            );
-
-            foreach ($dataFetcher as $appStreamDto) {
+        foreach ($this->appStreamDataFetcher as $appStreamDto) {
+            foreach($this->repositoryRepository->findBy(['testing' => false]) as $repository) {
                 try {
                     $package = $this->packageRepository->getByName(
-                        $repoToFetchFor,
+                        $repository->getName(),
                         'x86_64',
                         $appStreamDto->getPackageName()
                     );
-                    // todo: keywords at package should be description, category and keywords
-                    // from appStreamDto; need function to generate -> refactor KeywordsCleaner
-                    $package->setKeywords($appStreamDto->getKeywords());
+                    $package->setKeywords($this->keywordProcessor->generatePackageKeywords($appStreamDto));
                     $this->entityManager->persist($package);
                 } catch (NoResultException $e) {
                     // @todo: discuss what to do
                 }
             }
-
-            $this->entityManager->flush();
-            $this->release();
         }
+
+        $this->entityManager->flush();
+        $this->release();
+
 
         return Command::SUCCESS;
     }

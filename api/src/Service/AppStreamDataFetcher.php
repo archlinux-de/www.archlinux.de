@@ -2,50 +2,58 @@
 
 namespace App\Service;
 
-use App\Serializer\AppStreamDataDenormalizer;
+use App\Dto\AppStreamDataComponentDto;
+use App\Repository\RepositoryRepository;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * @implements \IteratorAggregate<string, array<string>>
+ * @implements \IteratorAggregate<AppStreamDataComponentDto>
  */
 readonly class AppStreamDataFetcher implements \IteratorAggregate
 {
     public function __construct(
         private string $appStreamDataBaseUrl,
         private string $appStreamDataFile,
-        private string $repoToFetchFor,
         private AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
-        private KeywordsCleaner $keywordCleaner
+        private SerializerInterface $serializer,
+        private RepositoryRepository $repositoryRepository,
     ) {
     }
 
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
+     * @throws ExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getIterator(): \Traversable
     {
-        $upstreamUrl =
-            $this->appStreamDataBaseUrl .
-            $this->appStreamDataVersionObtainer->obtainAppStreamDataVersion() .
-            '/' .
-            $this->repoToFetchFor .
-            '/' .
-            $this->appStreamDataFile;
+        $reposToFetchFor = $this->repositoryRepository->findBy(['testing' => false]);
 
-        $fetchedXml = $this->downloadAndExtract($upstreamUrl);
+        $res = [];
+        foreach ($reposToFetchFor as $repo) {
+            $upstreamUrl =
+                $this->appStreamDataBaseUrl .
+                $this->appStreamDataVersionObtainer->obtainAppStreamDataVersion() .
+                '/' .
+                $repo->getName() .
+                '/' .
+                $this->appStreamDataFile;
 
-        $denormalizer = new AppStreamDataDenormalizer($this->keywordCleaner);
-
-        foreach ($denormalizer->denormalize($fetchedXml) as $pkgname => $keywords) {
-            yield $pkgname => $keywords;
+            $fetchedXml = $this->downloadAndExtract($upstreamUrl);
+            $des = $this->serializer->deserialize($fetchedXml, AppStreamDataComponentDto::class . '[]', 'xml');
+            $res = array_merge($res, $des);
         }
+
+
+        return $res;
     }
 
     /**

@@ -13,6 +13,7 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
     {
+        var_dump($data);
         if (!isset($data['component'])) {
             throw new \RuntimeException('Invalid AppStreamData structure.');
         }
