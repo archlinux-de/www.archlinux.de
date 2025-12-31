@@ -3,10 +3,7 @@
 namespace App\Service;
 
 use App\Dto\AppStreamDataComponentDto;
-use App\Exception\AppStreamDataPackageNotFoundException;
-use App\Exception\AppStreamDataUnavailableException;
 use App\Repository\RepositoryRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -26,18 +23,20 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
         private AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
         private SerializerInterface $serializer,
         private RepositoryRepository $repositoryRepository,
-        private LoggerInterface $logger,
     ) {
     }
 
+    /**
+     * @throws \RuntimeException
+     * @throws ClientExceptionInterface
+     * @throws ExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function getIterator(): \Traversable
     {
-        try {
-            $version = $this->appStreamDataVersionObtainer->obtainAppStreamDataVersion();
-        } catch (AppStreamDataPackageNotFoundException $e) {
-            $this->logger->critical($e->getMessage());
-            return;
-        }
+        $version = $this->appStreamDataVersionObtainer->obtainAppStreamDataVersion();
 
         $reposToFetchFor = $this->repositoryRepository->findBy(['testing' => false]);
 
@@ -57,17 +56,20 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
                 foreach ($deserializedComponents as $component) {
                     yield $component;
                 }
-            } catch (AppStreamDataUnavailableException $e) {
-                $this->logger->error($e->getMessage());
+            } catch (\Exception $e) {
+                // For now, we can log them and continue.
+                error_log("Failed to fetch or process data from $upstreamUrl: " . $e->getMessage());
                 continue;
-            } catch (ExceptionInterface $e) {
-                $this->logger->error(sprintf('Failed to deserialize appstream data from %s: %s', $upstreamUrl, $e->getMessage()));
             }
         }
     }
 
     /**
-     * @throws AppStreamDataUnavailableException
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws \RuntimeException
      */
     private function downloadAndExtract(string $url): string
     {
@@ -76,13 +78,14 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
             $response = $httpClient->request('GET', $url);
             $compressedContent = $response->getContent();
         } catch (TransportExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
-            throw new AppStreamDataUnavailableException(sprintf('Failed to download appstream data from %s: %s', $url, $e->getMessage()), 0, $e);
+            throw new \RuntimeException(sprintf('Failed to download appstream data from %s: %s', $url, $e->getMessage()), 0, $e);
         }
+
 
         $xmlContent = gzdecode($compressedContent);
 
         if ($xmlContent === false) {
-            throw new AppStreamDataUnavailableException("Failed to decompress: $url");
+            throw new \RuntimeException("Failed to decompress: $url");
         }
 
         return $xmlContent;
