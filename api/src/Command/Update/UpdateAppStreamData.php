@@ -7,6 +7,7 @@ use App\Service\AppStreamDataFetcher;
 use App\Service\AppStreamDataVersionObtainer;
 use App\Service\KeywordsCleaner;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -57,18 +58,19 @@ class UpdateAppStreamData extends Command
                 $this->keywordCleaner
             );
 
-            foreach ($dataFetcher as $name => $keywords) {
-                $errors = $this->validator->validate($keywords);
-                if ($errors->count() > 0) {
-                    throw new ValidationFailedException($keywords, $errors);
-                }
-                $this->packageKeywords[$name] = $keywords;
-            }
-
-            foreach ($this->packageRepository->findStable() as $package) {
-                if (isset($this->packageKeywords[$package->getName()])) {
-                    $package->setKeywords($this->packageKeywords[$package->getName()]);
+            foreach ($dataFetcher as $appStreamDto) {
+                try {
+                    $package = $this->packageRepository->getByName(
+                        $repoToFetchFor,
+                        'x86_64',
+                        $appStreamDto->getPackageName()
+                    );
+                    // todo: keywords at package should be description, category and keywords
+                    // from appStreamDto; need function to generate -> refactor KeywordsCleaner
+                    $package->setKeywords($appStreamDto->getKeywords());
                     $this->entityManager->persist($package);
+                } catch (NoResultException $e) {
+                    // @todo: discuss what to do
                 }
             }
 

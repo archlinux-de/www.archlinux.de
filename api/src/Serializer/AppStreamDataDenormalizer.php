@@ -2,75 +2,65 @@
 
 namespace App\Serializer;
 
-use App\Service\KeywordsCleaner;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use App\Dto\AppStreamDataComponentDto;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-readonly class AppStreamDataDenormalizer
+readonly class AppStreamDataDenormalizer implements DenormalizerInterface
 {
-    private Serializer $serializer;
-    private KeywordsCleaner $keywordCleaner;
-
-    public function __construct(KeywordsCleaner $keywordCleaner)
-    {
-        $encoder = new XmlEncoder();
-        $normalizer = new ObjectNormalizer();
-
-        $this->serializer = new Serializer([$normalizer], [$encoder]);
-
-        $this->keywordCleaner = $keywordCleaner;
-    }
 
     /**
-     * @return \Traversable<string, array<string>>
+     * @return AppStreamDataComponentDto[]
      */
-    public function denormalize(string $xml): \Traversable
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
     {
-        $data = $this->parseXml($xml);
-
-        foreach ($data as $component) {
-            if (!isset($component['pkgname']) || !is_string($component['pkgname'])) {
-                continue;
-            }
-
-            yield $component['pkgname'] => $this->mapToMetaData($component);
-        }
-    }
-
-    /**
-     * @return array<array<string, mixed>>
-     */
-    private function parseXml(string $xmlContent): array
-    {
-        $data = $this->serializer->decode($xmlContent, 'xml');
-
         if (!isset($data['component'])) {
             throw new \RuntimeException('Invalid AppStreamData structure.');
         }
 
-        return (array) $data['component'];
+        return [
+            ...(function () use ($data) {
+                foreach ($data as $component) {
+                    if (!isset($component['pkgname']) || !is_string($component['pkgname'])) {
+                        continue;
+                    }
+
+                    yield $this->mapToMetaData($component);
+                }
+            })()
+        ];
+    }
+
+    public function supportsDenormalization(
+        mixed $data,
+        string $type,
+        ?string $format = null,
+        array $context = []
+    ): bool
+    {
+        return $type === AppStreamDataComponentDto::class . '[]';
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [AppStreamDataComponentDto::class . '[]' => true];
     }
 
     /**
      * @param array<string, mixed> $component
-     * @return array<string>
      */
-    private function mapToMetaData(array $component): array
+    private function mapToMetaData(array $component): AppStreamDataComponentDto
     {
 
         $description = $this->parseAppStreamDescription($component);
         $categories = $this->getCategories($component);
         $keywords = $this->getKeywords($component);
 
-        $cleanDescription =
-            $this->keywordCleaner->cleanAppStreamDescription($description) .
-            ' ' .
-            $categories .
-            ' ' .
-            $keywords;
-
-        return $this->keywordCleaner->deduplicateWords($cleanDescription);
+        return new AppStreamDataComponentDto(
+            $component['pkgname'],
+            $categories,
+            $keywords,
+            $description
+        );
     }
 
     /**
@@ -113,31 +103,29 @@ readonly class AppStreamDataDenormalizer
      * @see https://www.freedesktop.org/software/appstream/docs/chap-CatalogData.html#tag-ct-categories
      *
      * @param array<string, mixed> $component
+     * @return array<string>
      */
-    private function getCategories(array $component): string
+    private function getCategories(array $component): array
     {
         if (!isset($component['categories']['category'])) {
-            return '';
+            return [];
         }
 
         $categoryData = $component['categories']['category'];
 
-        // If it's an array, lowercase every element before imploding
         if (is_array($categoryData)) {
-            //@phpstan-ignore-next-line cast.string
-            $lowercasedCategories = array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
-            return implode(' ', $lowercasedCategories);
+            return array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
+
         }
 
-        // If it's a single string, just lowercase it
-        //@phpstan-ignore-next-line cast.string
-        return mb_strtolower((string) $categoryData, 'UTF-8');
+        return [mb_strtolower((string) $categoryData, 'UTF-8')];
     }
 
     /**
      * @param array<string, mixed> $component
+     * @return array<string>
      */
-    public function getKeywords(array $component): string
+    public function getKeywords(array $component): array
     {
         $allKeywords = [];
         $keywordData = $component['keywords'] ?? [];
@@ -159,6 +147,6 @@ readonly class AppStreamDataDenormalizer
             }
         }
 
-        return implode(' ', $allKeywords);
+        return $allKeywords;
     }
 }
