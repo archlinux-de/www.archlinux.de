@@ -19,11 +19,11 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
 
         return [
             ...(function () use ($data) {
-                foreach ($data as $component) {
+                //@phpstan-ignore-next-line foreach.nonIterable
+                foreach ($data['component'] as $component) {
                     if (!isset($component['pkgname']) || !is_string($component['pkgname'])) {
                         continue;
                     }
-
                     yield $this->mapToMetaData($component);
                 }
             })()
