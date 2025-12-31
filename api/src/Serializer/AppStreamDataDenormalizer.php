@@ -7,7 +7,6 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 readonly class AppStreamDataDenormalizer implements DenormalizerInterface
 {
-
     /**
      * @return AppStreamDataComponentDto[]
      */
@@ -35,8 +34,7 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
         string $type,
         ?string $format = null,
         array $context = []
-    ): bool
-    {
+    ): bool {
         return $type === AppStreamDataComponentDto::class . '[]';
     }
 
@@ -115,7 +113,6 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
 
         if (is_array($categoryData)) {
             return array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
-
         }
 
         return [mb_strtolower((string) $categoryData, 'UTF-8')];

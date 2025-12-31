@@ -42,7 +42,10 @@ class UpdateAppStreamData extends Command
             $package = $this->packageRepository->findOneByName($appStreamDto->getPackageName());
 
             if ($package === null) {
-                $this->logger->info(sprintf('Package with name %s not found in database', $appStreamDto->getPackageName()));
+                $this->logger->info(sprintf(
+                    'Package with name %s not found in database',
+                    $appStreamDto->getPackageName()
+                ));
                 continue;
             }
 

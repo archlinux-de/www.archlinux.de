@@ -32,7 +32,6 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
      * @throws ExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function getIterator(): \Traversable
     {
@@ -52,7 +51,10 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
 
             try {
                 $fetchedXml = $this->downloadAndExtract($upstreamUrl);
-                $deserializedComponents = $this->serializer->deserialize($fetchedXml, AppStreamDataComponentDto::class . '[]', 'xml');
+                $deserializedComponents =
+                    $this
+                        ->serializer
+                        ->deserialize($fetchedXml, AppStreamDataComponentDto::class . '[]', 'xml');
                 foreach ($deserializedComponents as $component) {
                     yield $component;
                 }
@@ -75,10 +77,18 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
         try {
             $response = $httpClient->request('GET', $url);
             $compressedContent = $response->getContent();
-        } catch (TransportExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
-            throw new \RuntimeException(sprintf('Failed to download appstream data from %s: %s', $url, $e->getMessage()), 0, $e);
+        } catch (
+            TransportExceptionInterface |
+            ClientExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface $e
+        ) {
+            throw new \RuntimeException(sprintf(
+                'Failed to download appstream data from %s: %s',
+                $url,
+                $e->getMessage()
+            ), 0, $e);
         }
-
 
         $xmlContent = gzdecode($compressedContent);
 

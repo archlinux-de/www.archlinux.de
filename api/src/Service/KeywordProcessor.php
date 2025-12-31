@@ -13,12 +13,11 @@ class KeywordProcessor
     {
         $cleanedDescription = $this->cleanAppStreamDescription($appStreamDataComponentDto->getDescription());
         $appDataCategories = implode(' ', $appStreamDataComponentDto->getCategories());
-        $appDataKeywords = implode( ' ', $appStreamDataComponentDto->getKeywords());
+        $appDataKeywords = implode(' ', $appStreamDataComponentDto->getKeywords());
 
         $keywords = $cleanedDescription . ' ' . $appDataCategories . ' ' . $appDataKeywords;
 
         return $this->deduplicateWords($keywords);
-
     }
     private function cleanAppStreamDescription(string $uncleanDescription): string
     {

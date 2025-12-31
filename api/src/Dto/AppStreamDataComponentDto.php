@@ -5,17 +5,17 @@ namespace App\Dto;
 readonly class AppStreamDataComponentDto
 {
     public function __construct(
-        private string  $packageName,
+        private string $packageName,
         /** @var string[]|null */
-        private ?array  $categories = null,
+        private ?array $categories = null,
         /** @var string[]|null */
-        private ?array  $keywords = null,
+        private ?array $keywords = null,
         private ?string $description = null
-
     ) {
     }
 
-    public function getPackageName(): string {
+    public function getPackageName(): string
+    {
         return $this->packageName;
     }
 
