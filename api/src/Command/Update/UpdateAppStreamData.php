@@ -35,11 +35,8 @@ class UpdateAppStreamData extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$this->lock('appstream.lock')) {
-            $output->writeln('The command is already running in another process.');
-
-            return Command::SUCCESS;
-        }
+        $this->lock('appstream.lock');
+        ini_set('memory_limit', '8G');
 
         foreach ($this->appStreamDataFetcher as $appStreamDto) {
             $package = $this->packageRepository->findOneByName($appStreamDto->getPackageName());
