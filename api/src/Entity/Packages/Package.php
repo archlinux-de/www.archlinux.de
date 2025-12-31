@@ -199,6 +199,12 @@ class Package
     #[Assert\Valid]
     private Files $files;
 
+    /**
+     * @var array<string>|null
+     */
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $keywords = null;
+
     public function __construct(Repository $repository, string $name, string $version, string $architecture)
     {
         $this->name = $name;
@@ -219,6 +225,24 @@ class Package
 
         $this->files = Files::createFromArray([]);
     }
+
+    /**
+     * @return array<string>|null
+     */
+    public function getKeywords(): ?array
+    {
+        return $this->keywords;
+    }
+
+    /**
+     * @param array<string>|null $keywords
+     */
+    public function setKeywords(?array $keywords): Package
+    {
+        $this->keywords = $keywords;
+        return $this;
+    }
+
 
     public function getPopularity(): ?Popularity
     {
