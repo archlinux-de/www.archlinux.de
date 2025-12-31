@@ -114,7 +114,7 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
 
         if (is_array($categoryData)) {
             /** @var array<string> $categoryData */
-            return array_map(fn($cat) => mb_strtolower((string) $cat, 'UTF-8'), $categoryData);
+            return array_map(fn(string $cat) => mb_strtolower($cat, 'UTF-8'), $categoryData);
         }
 
         /** @var string $categoryData */

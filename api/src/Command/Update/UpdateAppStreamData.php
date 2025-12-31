@@ -2,6 +2,7 @@
 
 namespace App\Command\Update;
 
+use App\Entity\Packages\Package;
 use App\Repository\PackageRepository;
 use App\Service\AppStreamDataFetcher;
 use App\Service\KeywordProcessor;
@@ -41,7 +42,7 @@ class UpdateAppStreamData extends Command
         foreach ($this->appStreamDataFetcher as $appStreamDto) {
             $package = $this->packageRepository->findOneByName($appStreamDto->getPackageName());
 
-            if ($package === null) {
+            if (!$package instanceof Package) {
                 $this->logger->info(sprintf(
                     'Package with name %s not found in database',
                     $appStreamDto->getPackageName()
