@@ -57,7 +57,6 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
                     yield $component;
                 }
             } catch (\Exception $e) {
-                // For now, we can log them and continue.
                 error_log("Failed to fetch or process data from $upstreamUrl: " . $e->getMessage());
                 continue;
             }
@@ -68,7 +67,6 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      * @throws \RuntimeException
      */
     private function downloadAndExtract(string $url): string

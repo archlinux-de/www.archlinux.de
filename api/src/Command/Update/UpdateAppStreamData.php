@@ -6,7 +6,6 @@ use App\Repository\PackageRepository;
 use App\Service\AppStreamDataFetcher;
 use App\Service\KeywordProcessor;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\NoResultException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
