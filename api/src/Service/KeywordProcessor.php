@@ -6,6 +6,9 @@ use App\Dto\AppStreamDataComponentDto;
 
 class KeywordProcessor
 {
+    /**
+     * @return string[]
+     */
     public function generatePackageKeywords(AppStreamDataComponentDto $appStreamDataComponentDto): array
     {
         $cleanedDescription = $this->cleanAppStreamDescription($appStreamDataComponentDto->getDescription());
