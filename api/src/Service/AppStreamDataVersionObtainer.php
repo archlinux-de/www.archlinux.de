@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Exception\AppStreamDataPackageNotFoundException;
 use App\Repository\PackageRepository;
 use Doctrine\ORM\NoResultException;
 
@@ -12,16 +13,23 @@ readonly class AppStreamDataVersionObtainer
     }
 
     /**
-     * @throws NoResultException
+     * @throws AppStreamDataPackageNotFoundException
      */
     public function obtainAppStreamDataVersion(): string
     {
-
-        $appStreamData = $this->packageRepository->getByName(
-            repository: 'extra',
-            architecture: 'x86_64',
-            name:'archlinux-appstream-data'
-        );
+        try {
+            $appStreamData = $this->packageRepository->getByName(
+                'extra',
+                'x86_64',
+                'archlinux-appstream-data'
+            );
+        } catch (NoResultException $e) {
+            throw new AppStreamDataPackageNotFoundException(
+                'archlinux-appstream-data package not found in database, please run app:update:packages command',
+                0,
+                $e
+            );
+        }
 
         // version is provided as YYYYMMDD-n
         return explode('-', $appStreamData->getVersion())[0];

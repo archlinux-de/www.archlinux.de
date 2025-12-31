@@ -239,4 +239,17 @@ class PackageRepository extends ServiceEntityRepository
             default => [],
         };
     }
+
+    public function findOneByName(string $name): ?Package
+    {
+        return $this->createQueryBuilder('package')
+            ->select('package', 'repository')
+            ->join('package.repository', 'repository')
+            ->where('package.name = :pkgname')
+            ->andWhere('repository.testing = false')
+            ->setParameter('pkgname', $name)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT);
+    }
 }
