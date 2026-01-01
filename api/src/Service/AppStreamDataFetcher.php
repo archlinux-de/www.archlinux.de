@@ -4,14 +4,11 @@ namespace App\Service;
 
 use App\Dto\AppStreamDataComponentDto;
 use App\Repository\RepositoryRepository;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @implements \IteratorAggregate<int, AppStreamDataComponentDto>
@@ -24,7 +21,7 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
         private AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
         private SerializerInterface $serializer,
         private RepositoryRepository $repositoryRepository,
-        private HTTPClientInterface $httpClient
+        private XmlExtractor $xmlExtractor,
     ) {
     }
 
@@ -52,7 +49,7 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
                 $this->appStreamDataFile;
 
             try {
-                $fetchedXml = $this->downloadAndExtract($upstreamUrl);
+                $fetchedXml = $this->xmlExtractor->downloadAndExtract($upstreamUrl);
                 $deserializedComponents =
                     $this
                         ->serializer
@@ -65,38 +62,5 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
                 continue;
             }
         }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws \RuntimeException
-     */
-    private function downloadAndExtract(string $url): string
-    {
-        try {
-            $response = $this->httpClient->request('GET', $url);
-            $compressedContent = $response->getContent();
-        } catch (
-            TransportExceptionInterface |
-            ClientExceptionInterface |
-            RedirectionExceptionInterface |
-            ServerExceptionInterface $e
-        ) {
-            throw new \RuntimeException(sprintf(
-                'Failed to download appstream data from %s: %s',
-                $url,
-                $e->getMessage()
-            ), 0, $e);
-        }
-
-        $xmlContent = gzdecode($compressedContent);
-
-        if ($xmlContent === false) {
-            throw new \RuntimeException("Failed to decompress: $url");
-        }
-
-        return $xmlContent;
     }
 }
