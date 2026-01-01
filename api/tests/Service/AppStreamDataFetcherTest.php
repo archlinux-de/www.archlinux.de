@@ -73,8 +73,6 @@ class AppStreamDataFetcherTest extends TestCase
 
         $appStreamDataComponentDtos = [...$appStreamDataFetcher];
 
-        var_dump($appStreamDataComponentDtos);
-
         $this->assertCount(3, $appStreamDataComponentDtos);
     }
 
