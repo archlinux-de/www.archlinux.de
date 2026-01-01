@@ -16,12 +16,10 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 readonly class AppStreamDataFetcher implements \IteratorAggregate
 {
     public function __construct(
-        private string $appStreamDataBaseUrl,
-        private string $appStreamDataFile,
-        private AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
         private SerializerInterface $serializer,
         private RepositoryRepository $repositoryRepository,
         private XmlExtractor $xmlExtractor,
+        private AppStreamDataHelper $appStreamDataHelper,
     ) {
     }
 
@@ -34,19 +32,14 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
      */
     public function getIterator(): \Traversable
     {
-        $version = $this->appStreamDataVersionObtainer->obtainAppStreamDataVersion();
-
+        $version = $this->appStreamDataHelper->obtainAppStreamDataVersion();
         $reposToFetchFor = $this->repositoryRepository->findBy(['testing' => false]);
 
         foreach ($reposToFetchFor as $repo) {
-            $upstreamUrl =
-                $this->appStreamDataBaseUrl .
-                '/' .
-                $version .
-                '/' .
-                $repo->getName() .
-                '/' .
-                $this->appStreamDataFile;
+            $upstreamUrl = $this->appStreamDataHelper->buildUpstreamUrl(
+                $version,
+                $repo->getName()
+            );
 
             try {
                 $fetchedXml = $this->xmlExtractor->downloadAndExtract($upstreamUrl);

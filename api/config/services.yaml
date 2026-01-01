@@ -103,7 +103,7 @@ services:
     App\Serializer\PackageNormalizer:
         $gitlabUrl: '%app.packages.gitlab_url%'
 
-    App\Service\AppStreamDataFetcher:
+    App\Service\AppStreamDataHelper:
         $appStreamDataBaseUrl: '%app.packages.appStreamDataBaseUrl%'
         $appStreamDataFile: '%app.packages.appStreamDataFile%'
 
