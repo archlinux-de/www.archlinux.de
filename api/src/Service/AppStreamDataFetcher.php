@@ -11,6 +11,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @implements \IteratorAggregate<int, AppStreamDataComponentDto>
@@ -23,6 +24,7 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
         private AppStreamDataVersionObtainer $appStreamDataVersionObtainer,
         private SerializerInterface $serializer,
         private RepositoryRepository $repositoryRepository,
+        private HTTPClientInterface $httpClient
     ) {
     }
 
@@ -73,9 +75,8 @@ readonly class AppStreamDataFetcher implements \IteratorAggregate
      */
     private function downloadAndExtract(string $url): string
     {
-        $httpClient = HttpClient::create();
         try {
-            $response = $httpClient->request('GET', $url);
+            $response = $this->httpClient->request('GET', $url);
             $compressedContent = $response->getContent();
         } catch (
             TransportExceptionInterface |
