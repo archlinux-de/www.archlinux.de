@@ -24,7 +24,7 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
                     if (!isset($component['pkgname']) || !is_string($component['pkgname'])) {
                         continue;
                     }
-                    yield $this->mapToMetaData($component);
+                    yield $this->mapToAppStreamComponentDto($component);
                 }
             })()
         ];
@@ -47,7 +47,7 @@ readonly class AppStreamDataDenormalizer implements DenormalizerInterface
     /**
      * @param array<string, mixed> $component
      */
-    private function mapToMetaData(array $component): AppStreamDataComponentDto
+    private function mapToAppStreamComponentDto(array $component): AppStreamDataComponentDto
     {
 
         $description = $this->parseAppStreamDescription($component);
