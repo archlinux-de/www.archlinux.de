@@ -4,7 +4,6 @@ namespace App\Tests\Service;
 
 use App\Service\XmlExtractor;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -58,5 +57,4 @@ class XmlExtractorTest extends TestCase
         </component>
         </components>';
     }
-
 }

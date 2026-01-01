@@ -33,11 +33,10 @@ class AppStreamDataHelperTest extends TestCase
         $result = $appStreamDataHelper->obtainAppstreamDataVersion();
 
         $this->assertEquals('20250202', $result);
-
     }
     public function testBuildUpstreamUrl(): void
     {
-        /** @var PackageRepository&MockObject  $repositoryRepository */
+        /** @var PackageRepository&MockObject  $packageRepository */
         $packageRepository = $this->createStub(PackageRepository::class);
         $appStreamDataHelper = new AppStreamDataHelper(
             'https://foo.bar',
@@ -48,5 +47,4 @@ class AppStreamDataHelperTest extends TestCase
         $result = $appStreamDataHelper->buildUpstreamUrl('42', 'super');
         $this->assertEquals('https://foo.bar/42/super/foobar.gz', $result);
     }
-
 }

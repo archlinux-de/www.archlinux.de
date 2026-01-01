@@ -11,8 +11,7 @@ readonly class AppStreamDataHelper
         private string $appStreamDataBaseUrl,
         private string $appStreamDataFile,
         private PackageRepository $packageRepository
-    )
-    {
+    ) {
     }
 
     /**
@@ -34,8 +33,7 @@ readonly class AppStreamDataHelper
     public function buildUpstreamUrl(
         string $version,
         string $repoName
-    ): string
-    {
+    ): string {
         return
             $this->appStreamDataBaseUrl .
             '/' .

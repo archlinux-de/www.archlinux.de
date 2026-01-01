@@ -25,10 +25,10 @@ readonly class XmlExtractor
             $response = $this->httpClient->request('GET', $url);
             $compressedContent = $response->getContent();
         } catch (
-        TransportExceptionInterface |
-        ClientExceptionInterface |
-        RedirectionExceptionInterface |
-        ServerExceptionInterface $e
+            TransportExceptionInterface |
+            ClientExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface $e
         ) {
             throw new \RuntimeException(sprintf(
                 'Failed to download appstream data from %s: %s',
@@ -45,5 +45,4 @@ readonly class XmlExtractor
 
         return $xmlContent;
     }
-
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Tests\Service;
+
 use App\Dto\AppStreamDataComponentDto;
 use App\Service\KeywordProcessor;
 use PHPUnit\Framework\TestCase;
