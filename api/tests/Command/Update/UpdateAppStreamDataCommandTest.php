@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-
 class UpdateAppStreamDataCommandTest extends KernelTestCase
 {
     public function testCommand(): void
@@ -62,5 +61,4 @@ class UpdateAppStreamDataCommandTest extends KernelTestCase
 
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
-
 }
