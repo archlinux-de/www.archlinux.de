@@ -28,6 +28,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
                         'description' => ['type' => 'text'],
                         'url' => ['type' => 'text'],
                         'groups' => ['type' => 'text'],
+                        'keywords' => ['type' => 'text'],
                         'buildDate' => ['type' => 'date'],
                         'replacements' => ['type' => 'text'],
                         'provisions' => ['type' => 'text'],
@@ -67,6 +68,7 @@ class PackageSearchIndexer implements SearchIndexerInterface, SearchIndexConfigu
             'description' => $object->getDescription(),
             'url' => $object->getUrl(),
             'groups' => $object->getGroups(),
+            'keywords' => $object->getKeywords(),
             'buildDate' => $object->getBuildDate()?->format(DATE_W3C),
             'replacements' => $object->getReplacements()->map(
                 fn(Replacement $replacement): string => $replacement->getTargetName()

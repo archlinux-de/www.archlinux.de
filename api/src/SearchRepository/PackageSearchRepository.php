@@ -56,6 +56,7 @@ class PackageSearchRepository
                     'description^3',
                     'url',
                     'groups^2',
+                    'keywords',
                     'replacements',
                     'provisions',
                     'files'
