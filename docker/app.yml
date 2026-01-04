@@ -84,6 +84,8 @@ services:
       - "discovery.type=single-node"
       - "plugins.security.disabled=true"
       - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
+    ports:
+      - "9200:9200"
 
   wait:
     image: dokku/wait
