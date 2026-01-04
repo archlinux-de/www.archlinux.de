@@ -73,6 +73,7 @@ class PackageSearchRepository
 
                 $bool['should'][] = ['wildcard' => ['name' => '*' . $query . '*']];
                 $bool['should'][] = ['wildcard' => ['description' => '*' . $query . '*']];
+                $multiMatch['type'] = 'bool_prefix';
             }
 
             $bool['should'][] = ['multi_match' => $multiMatch];
