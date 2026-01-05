@@ -31,7 +31,7 @@
         "symfony/framework-bundle": "^7.4.3",
         "symfony/html-sanitizer": "^7.4.0",
         "symfony/http-client": "^7.4.3",
-        "symfony/lock": "^7.4.1",
+        "symfony/lock": "^7.4.3",
         "symfony/monolog-bundle": "^4.0.1",
         "symfony/property-access": "^7.4.3",
         "symfony/runtime": "^7.4.1",
