@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cb3ca16015e867b4c9fb6d27dcd9833",
+    "content-hash": "44b85129eb1023ee51a500d1175f7750",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -1225,16 +1225,16 @@
         },
         {
             "name": "league/iso3166",
-            "version": "4.3.3",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcohol/iso3166.git",
-                "reference": "3f692113a1c07859ec69303a0127b43da8a66768"
+                "reference": "928ac7ecc569db9123a83ef5b1c6efc279e7cb49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcohol/iso3166/zipball/3f692113a1c07859ec69303a0127b43da8a66768",
-                "reference": "3f692113a1c07859ec69303a0127b43da8a66768",
+                "url": "https://api.github.com/repos/alcohol/iso3166/zipball/928ac7ecc569db9123a83ef5b1c6efc279e7cb49",
+                "reference": "928ac7ecc569db9123a83ef5b1c6efc279e7cb49",
                 "shasum": ""
             },
             "require": {
@@ -1288,7 +1288,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-06-05T08:06:30+00:00"
+            "time": "2026-01-02T09:49:36+00:00"
         },
         {
             "name": "league/uri",

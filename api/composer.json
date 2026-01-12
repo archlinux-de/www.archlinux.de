@@ -20,7 +20,7 @@
         "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^3.7.0",
         "doctrine/orm": "^3.6.1",
-        "league/iso3166": "^4.3.3",
+        "league/iso3166": "^4.4.0",
         "maxmind-db/reader": "^1.13.1",
         "nyholm/psr7": "^1.8.2",
         "opensearch-project/opensearch-php": "^2.5.0",
