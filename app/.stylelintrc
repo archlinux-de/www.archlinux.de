@@ -4,8 +4,7 @@
     "stylelint-config-recommended-vue"
   ],
   "plugins": [
-    "stylelint-no-unsupported-browser-features",
-    "stylelint-scss"
+    "stylelint-no-unsupported-browser-features"
   ],
   "rules": {
     "plugin/no-unsupported-browser-features": [
