@@ -186,7 +186,7 @@ class AbstractRelationRepository extends ServiceEntityRepository
         }
 
         if (count($compatibleCandidates) === 1) {
-            return array_values($compatibleCandidates)[0];
+            return array_first($compatibleCandidates);
         }
 
         return null;
