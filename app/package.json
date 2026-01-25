@@ -9,7 +9,7 @@
   "dependencies": {
     "@babel/core": "^7.28.6",
     "@babel/preset-env": "^7.28.6",
-    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@fullhuman/postcss-purgecss": "^8.0.0",
     "@vue/compiler-sfc": "^3.5.27",
     "@vueuse/core": "^14.1.0",
     "@vueuse/head": "^2.0.0",
