@@ -8,6 +8,7 @@ use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\FunctionLike\NarrowWideUnionReturnTypeRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
+use Rector\PHPUnit\PHPUnit120\Rector\Class_\AllowMockObjectsForDataProviderRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\Symfony\Bridge\Symfony\Routing\SymfonyRoutesProvider;
@@ -38,4 +39,5 @@ return RectorConfig::configure()
         NarrowWideUnionReturnTypeRector::class => [
             __DIR__ . '/tests/Entity/Packages/Relations/LibraryRelationTraitTest.php',
         ],
+        AllowMockObjectsForDataProviderRector::class,
     ]);
