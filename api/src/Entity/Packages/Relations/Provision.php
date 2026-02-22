@@ -12,5 +12,6 @@ class Provision extends AbstractRelation implements LibraryRelation
 
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'provisions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[\Override]
     protected Package $source;
 }

@@ -10,5 +10,6 @@ class MakeDependency extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'makeDependencies')]
     #[ORM\JoinColumn(nullable: false)]
+    #[\Override]
     protected Package $source;
 }

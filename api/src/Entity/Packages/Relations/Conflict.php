@@ -10,5 +10,6 @@ class Conflict extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'conflicts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[\Override]
     protected Package $source;
 }

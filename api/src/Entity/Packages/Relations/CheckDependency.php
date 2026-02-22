@@ -10,5 +10,6 @@ class CheckDependency extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'checkDependencies')]
     #[ORM\JoinColumn(nullable: false)]
+    #[\Override]
     protected Package $source;
 }

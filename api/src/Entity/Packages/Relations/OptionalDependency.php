@@ -10,5 +10,6 @@ class OptionalDependency extends AbstractRelation
 {
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'optionalDependencies')]
     #[ORM\JoinColumn(nullable: false)]
+    #[\Override]
     protected Package $source;
 }

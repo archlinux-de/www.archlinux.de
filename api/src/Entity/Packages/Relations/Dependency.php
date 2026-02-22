@@ -12,5 +12,6 @@ class Dependency extends AbstractRelation implements LibraryRelation
 
     #[ORM\ManyToOne(targetEntity: Package::class, inversedBy: 'dependencies')]
     #[ORM\JoinColumn(nullable: false)]
+    #[\Override]
     protected Package $source;
 }
