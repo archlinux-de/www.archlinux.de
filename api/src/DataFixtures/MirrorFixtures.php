@@ -37,7 +37,7 @@ class MirrorFixtures extends Fixture implements DependentFixtureInterface
         foreach ($urls as $url) {
             $mirror = new Mirror($url);
             $mirror->setCountry($this->getReference($this->faker->countryCode(), Country::class));
-            $mirror->setLastSync($this->faker->dateTimeThisDecade());
+            $mirror->setLastSync($this->faker->dateTimeBetween('2020-01-01', '2025-12-31'));
             $mirror->setDelay($this->faker->numberBetween(0, 3600));
             $mirror->setDurationAvg($this->faker->randomFloat(4, 0, 10));
             $mirror->setScore($this->faker->randomFloat(4, 0, 100));

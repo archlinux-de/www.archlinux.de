@@ -27,7 +27,7 @@ class ReleaseFixtures extends Fixture
     {
         $versions = self::STATIC_VERSIONS;
         for ($i = 0; $i < self::NUMBER_OF_RELEASES; $i++) {
-            $versions[] = $this->faker->unique()->dateTimeThisDecade()->format('Y.m.d');
+            $versions[] = $this->faker->unique()->dateTimeBetween('2020-01-01', '2025-12-31')->format('Y.m.d');
         }
         $versions = array_unique($versions);
 
@@ -35,9 +35,9 @@ class ReleaseFixtures extends Fixture
             $release = new Release($version);
             $release->setAvailable($this->faker->boolean());
             $release->setInfo($this->faker->text());
-            $release->setCreated($this->faker->dateTimeThisDecade());
+            $release->setCreated($this->faker->dateTimeBetween('2020-01-01', '2025-12-31'));
             $release->setKernelVersion($this->faker->optional()->semver());
-            $release->setReleaseDate($this->faker->dateTimeThisDecade());
+            $release->setReleaseDate($this->faker->dateTimeBetween('2020-01-01', '2025-12-31'));
             $release->setSha1Sum($this->faker->optional()->sha1());
             $release->setSha256Sum($this->faker->optional()->sha256());
             $release->setB2Sum($this->faker->optional()->regexify('[0-9a-f]{128}'));

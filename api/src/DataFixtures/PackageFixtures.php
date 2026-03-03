@@ -80,7 +80,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
                 /** @phpstan-ignore argument.type */
                 $this->faker->randomElements(['GPL', 'MIT', 'LGPL'], $this->faker->numberBetween(0, 3))
             );
-            $package->setBuildDate($this->faker->dateTimeThisYear());
+            $package->setBuildDate($this->faker->dateTimeBetween('2020-01-01', '2025-12-31'));
 
             $packager = new Packager($this->faker->name(), $this->faker->optional()->email());
             $package->setPackager($packager);
@@ -115,7 +115,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
         // Add relations in a second loop
         foreach ($packages as $package) {
             // Add random dependencies
-            if ($this->faker->boolean(80)) { // 80% chance to have dependencies
+            if ($this->faker->boolean(70)) { // 70% chance to have dependencies
                 $numDependencies = $this->faker->numberBetween(1, 5);
                 for ($j = 0; $j < $numDependencies; $j++) {
                     /** @var Package $targetPackage */

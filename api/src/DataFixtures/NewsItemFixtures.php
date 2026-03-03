@@ -38,7 +38,7 @@ class NewsItemFixtures extends Fixture
             $newsItem->setLink($this->faker->unique()->url());
             /** @phpstan-ignore argument.type */
             $newsItem->setDescription(nl2br($this->faker->paragraphs(asText: true)));
-            $newsItem->setLastModified($this->faker->dateTimeThisDecade());
+            $newsItem->setLastModified($this->faker->dateTimeBetween('2020-01-01', '2025-12-31'));
 
             $author = new NewsAuthor();
             $author->setName($this->faker->name());
