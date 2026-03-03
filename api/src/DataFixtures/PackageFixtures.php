@@ -115,7 +115,7 @@ class PackageFixtures extends Fixture implements DependentFixtureInterface
         // Add relations in a second loop
         foreach ($packages as $package) {
             // Add random dependencies
-            if ($this->faker->boolean(70)) { // 70% chance to have dependencies
+            if ($this->faker->boolean(80)) { // 80% chance to have dependencies
                 $numDependencies = $this->faker->numberBetween(1, 5);
                 for ($j = 0; $j < $numDependencies; $j++) {
                     /** @var Package $targetPackage */
