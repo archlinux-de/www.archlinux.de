@@ -47,21 +47,16 @@
           Dein im <a href="https://forum.archlinux.de/">Forum</a> angelegtes Benutzer-Konto wird
           zudem für das <a href="https://wiki.archlinux.de/">Wiki</a> verwendet.</p>
         <h2>Löschen des Benutzerkontos</h2>
-        <p>Du kannst Dein Konto und die enthaltenen Daten auf Wunsch löschen lassen. Schicke hierzu eine formlose
-          Anfrage an die im <router-link :to="{name: 'impressum'}">Impressum</router-link>
-          hinterlegte E-Mail-Adresse.
+        <p>Du kannst Dein Konto und die enthaltenen Daten selbständig in den
+          <a href="https://forum.archlinux.de/settings">Einstellungen</a> Deines Forum-Kontos löschen.
+          Dein Wiki-Konto wird dabei automatisch mit entfernt.
           Alle von Dir verfassten Beiträge im <a href="https://forum.archlinux.de/">Forum</a> oder
-          <a href="https://wiki.archlinux.de/">Wiki</a> bleiben hierbei erhalten. Dein Benutzername selbst
-          wird weiterhin als Verfasser angezeigt.
-        </p>
-        <h2>Änderung des Benutzernamens</h2>
-        <p>Auf besonderen Wunsch hin kann der Benutzername geändert werden. Diese Anfrage muss jedoch unbedingt
-          vor dem Löschen des Benutzerkontos erfolgen. Schicke hierzu eine formlose Anfrage an die im
-          <router-link :to="{name: 'impressum'}">Impressum</router-link> hinterlegte E-Mail-Adresse.
+          <a href="https://wiki.archlinux.de/">Wiki</a> bleiben hierbei erhalten. Dein Benutzername wird
+          dabei anonymisiert.
         </p>
         <h2>Auskunft über personenbezogene Daten</h2>
-        <p>Du hast das Recht Auskunft über die hier gespeicherten personenbezogenen Daten zu erfragen. Nutze
-          auch hierzu die im <router-link :to="{name: 'impressum'}">Impressum</router-link> hinterlegte E-Mail-Adresse.
+        <p>Du kannst Deine personenbezogenen Daten in den
+          <a href="https://forum.archlinux.de/settings">Einstellungen</a> Deines Forum-Kontos exportieren.
         </p>
         <h2>Kontakt</h2>
         <p>Weitere Kontakt-Möglichkeiten findest Du im <router-link :to="{name: 'impressum'}">Impressum</router-link>.
