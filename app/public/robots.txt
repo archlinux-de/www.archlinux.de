@@ -1,13 +1,20 @@
-User-agent: *
-sitemap: https://www.archlinux.de/sitemap.xml
+User-agent: Googlebot
 Allow: /
 Disallow: /download/*
 
-User-agent: SemrushBot
-User-agent: AhrefsBot
-User-agent: dotbot
-User-agent: MJ12bot
-User-agent: GPTBot
-User-agent: OAI-SearchBot
-User-agent: Bytespider
+User-agent: bingbot
+Allow: /
+Disallow: /download/*
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /download/*
+
+User-agent: Applebot
+Allow: /
+Disallow: /download/*
+
+User-agent: *
 Disallow: /
+
+Sitemap: https://www.archlinux.de/sitemap.xml
