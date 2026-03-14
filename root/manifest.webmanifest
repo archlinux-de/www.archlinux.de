@@ -1,0 +1,17 @@
+{
+    "name": "archlinux.de",
+    "short_name": "archlinux.de",
+    "start_url": "/",
+    "display": "browser",
+    "background_color": "#f6f9fc",
+    "theme_color": "#333",
+    "scope": "/",
+    "lang": "de",
+    "icons": [
+        {
+            "src": "/static/archicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

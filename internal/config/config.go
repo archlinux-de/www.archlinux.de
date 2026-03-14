@@ -1,0 +1,33 @@
+package config
+
+import (
+	"errors"
+	"os"
+)
+
+type Config struct {
+	Database      string
+	GeoIPDatabase string
+	Port          string
+}
+
+func Load() (Config, error) {
+	cfg := Config{
+		Database:      getEnv("DATABASE", ""),
+		GeoIPDatabase: getEnv("GEOIP_DATABASE", ""),
+		Port:          getEnv("PORT", "8080"),
+	}
+
+	if cfg.Database == "" {
+		return Config{}, errors.New("DATABASE environment variable is required")
+	}
+
+	return cfg, nil
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}

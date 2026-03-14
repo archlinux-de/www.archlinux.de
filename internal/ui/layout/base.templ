@@ -1,0 +1,117 @@
+package layout
+
+type Page struct {
+	Title         string
+	Description   string
+	Path          string
+	Manifest      *Manifest
+	NoIndex       bool
+	CanonicalPath string
+	CanonicalURL  string
+}
+
+templ Base(page Page, contents templ.Component) {
+	<!DOCTYPE html>
+	<html lang="de">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<meta name="theme-color" content="#333"/>
+			if page.NoIndex {
+				<meta name="robots" content="noindex"/>
+			}
+			<title>{ page.Title }</title>
+			if page.Description != "" {
+				<meta name="description" content={ page.Description }/>
+			}
+			if page.CanonicalURL != "" {
+				<link rel="canonical" href={ page.CanonicalURL }/>
+				<meta property="og:title" content={ page.Title }/>
+				if page.Description != "" {
+					<meta property="og:description" content={ page.Description }/>
+				}
+				<meta property="og:url" content={ page.CanonicalURL }/>
+				<meta property="og:type" content="website"/>
+				<meta property="og:site_name" content="archlinux.de"/>
+			}
+			@CSSTags(page.Manifest)
+			<link rel="icon" href="/static/archicon.svg" type="image/svg+xml"/>
+			<link rel="manifest" href="/manifest.webmanifest"/>
+			<link rel="search" type="application/opensearchdescription+xml" title="archlinux.de" href="/packages/opensearch"/>
+		</head>
+		<body>
+			<a href="#content" class="visually-hidden-focusable">Zum Inhalt springen</a>
+			<div id="page">
+				@Navigation(page.Path)
+				<main id="content" class="container">
+					@contents
+				</main>
+				@Footer()
+			</div>
+			@JSTags(page.Manifest)
+		</body>
+	</html>
+}
+
+templ CSSTags(manifest *Manifest) {
+	for _, file := range manifest.CSS {
+		<link rel="stylesheet" href={ file }/>
+	}
+}
+
+templ JSTags(manifest *Manifest) {
+	for _, file := range manifest.JS {
+		<script type="module" src={ file }></script>
+	}
+}
+
+templ Navigation(path string) {
+	<nav class="navbar navbar-expand-md navbar-border-brand bg-dark mb-4" data-bs-theme="dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">
+				<img alt="Arch Linux" height="40" width="190" src="/static/archlogo.svg" class="d-inline-block align-text-top"/>
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#archlinux-navbar" aria-controls="archlinux-navbar" aria-expanded="false" aria-label="Navigation umschalten">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="archlinux-navbar">
+				<ul class="navbar-nav ms-auto mb-2 mb-md-0">
+					@navLink(path, "/", "Start")
+					@navLink(path, "/packages", "Pakete")
+					@navExternalLink("https://forum.archlinux.de/", "Forum")
+					@navExternalLink("https://wiki.archlinux.de/", "Wiki")
+					@navExternalLink("https://aur.archlinux.org/", "AUR")
+					@navLink(path, "/download", "Download")
+				</ul>
+			</div>
+		</div>
+	</nav>
+}
+
+templ navLink(currentPath, href, label string) {
+	<li class="nav-item">
+		if currentPath == href {
+			<a class="nav-link ms-3 fw-bold active" aria-current="page" href={ templ.SafeURL(href) }>{ label }</a>
+		} else {
+			<a class="nav-link ms-3 fw-bold" href={ templ.SafeURL(href) }>{ label }</a>
+		}
+	</li>
+}
+
+templ navExternalLink(href, label string) {
+	<li class="nav-item">
+		<a class="nav-link ms-3 fw-bold" href={ templ.SafeURL(href) } rel="noopener">{ label }</a>
+	</li>
+}
+
+templ Footer() {
+	<footer id="footer">
+		<nav class="nav justify-content-end mt-4" aria-label="Footer">
+			<a class="nav-link" href="/news">Neuigkeiten</a>
+			<a class="nav-link" href="/mirrors">Mirrors</a>
+			<a class="nav-link" href="/releases">Releases</a>
+			<a class="nav-link" href="/privacy-policy">Privacy policy</a>
+			<a class="nav-link" href="/impressum">Impressum</a>
+		</nav>
+	</footer>
+}
