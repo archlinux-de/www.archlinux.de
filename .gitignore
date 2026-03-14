@@ -1,5 +1,19 @@
-/.idea/
-/.cache/node/*
-!/.cache/node/.gitkeep
-/.cache/composer/*
-!/.cache/composer/.gitkeep
+# IDE/OS specific
+.idea
+.vscode
+.DS_Store
+
+# application
+/www.db*
+/dist
+/node_modules
+*_templ.go
+/tmp/*
+!/tmp/.gitkeep
+/www
+/.assets-rebuilt
+
+# old Symfony directories/files
+.cache
+api/*
+app/*

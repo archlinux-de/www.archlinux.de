@@ -1,200 +1,102 @@
-set dotenv-load := true
+set quiet := true
 
-export UID := `id -u`
-export GID := `id -g`
-export COMPOSE_PROFILES := if env_var_or_default("CI", "0") == "true" { "test" } else { "dev" }
-
-COMPOSE := 'docker compose -f docker/app.yml -p ' + env_var('PROJECT_NAME')
-COMPOSE-RUN := COMPOSE + ' run --rm'
-PHP-DB-RUN := COMPOSE-RUN + ' api'
-PHP-RUN := COMPOSE-RUN + ' --no-deps api'
-NODE-RUN := COMPOSE-RUN + ' --no-deps app'
-MARIADB-RUN := COMPOSE-RUN + ' -T --no-deps mariadb'
-
-default:
-	just --list
+export CGO_ENABLED := '0'
+export PORT := '8080'
+export DATABASE := 'tmp/www.db'
 
 [private]
-init-database: start
-	{{PHP-DB-RUN}} bin/console cache:warmup
-	{{PHP-DB-RUN}} bin/console doctrine:database:drop --force --if-exists
-	{{PHP-DB-RUN}} bin/console doctrine:database:create
-	{{PHP-DB-RUN}} bin/console doctrine:schema:create
-	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
-	{{PHP-DB-RUN}} bin/console doctrine:migrations:version --add --all --no-interaction
+default:
+    just --list
 
-init: init-database
-	{{PHP-DB-RUN}} bin/console doctrine:fixtures:load --no-interaction
+# first-time setup: install dependencies, build and generate fixtures
+init: install build-assets build-templates
 
-init-prod: init-database
-	{{PHP-DB-RUN}} bin/console app:config:update-countries
-	{{PHP-DB-RUN}} bin/console app:update:mirrors
-	{{PHP-DB-RUN}} bin/console app:update:news
-	{{PHP-DB-RUN}} bin/console app:update:releases
-	{{PHP-DB-RUN}} bin/console app:update:repositories
-	{{PHP-DB-RUN}} bin/console app:update:packages
-	{{PHP-DB-RUN}} bin/console app:update:package-popularities
-	{{PHP-DB-RUN}} bin/console app:index:mirrors
-	{{PHP-DB-RUN}} bin/console app:index:news
-	{{PHP-DB-RUN}} bin/console app:index:packages
-	{{PHP-DB-RUN}} bin/console app:index:releases
-
-start:
-	{{COMPOSE}} up -d
-	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --skip-ssl --wait=10 ping
-	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
-	@echo URL: http://localhost:${PORT}
-
-start-db:
-	{{COMPOSE}} up -d mariadb opensearch
-	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --skip-ssl --wait=10 ping
-	{{COMPOSE-RUN}} wait -c opensearch:9200 -t 360
-
-stop:
-	{{COMPOSE}} stop
-
-# Load a (gzipped) database backup for local testing
-import-db-dump file name='www_archlinux_de': start
-	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --skip-ssl drop -f {{name}} || true
-	{{MARIADB-RUN}} mariadb-admin -uroot -hmariadb --skip-ssl create {{name}}
-	zcat {{file}} | {{MARIADB-RUN}} mariadb -uroot -hmariadb --skip-ssl {{name}}
-	{{PHP-DB-RUN}} bin/console doctrine:migrations:sync-metadata-storage --no-interaction
-	{{PHP-DB-RUN}} bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-
-clean:
-	{{COMPOSE}} rm -vsf
-	git clean -fdqx -e .idea
-
-rebuild: clean
-	{{COMPOSE}} -f docker/cypress-run.yml -f docker/cypress-open.yml build --pull
-	just install
-	just init
-
+# install dependencies
 install:
-	{{PHP-RUN}} composer --no-interaction install
-	{{NODE-RUN}} pnpm install --frozen-lockfile
+    go mod download
+    pnpm install
 
-compose *args:
-	{{COMPOSE}} {{args}}
+# compile frontend assets
+build-assets:
+    pnpm run build
 
-compose-run *args:
-	{{COMPOSE-RUN}} {{args}}
+# generate templ templates
+build-templates:
+    go tool templ generate
 
-php *args='-h':
-	{{PHP-RUN}} php {{args}}
+# build the production binary
+build: build-assets build-templates
+    go build -tags production -o www -ldflags="-s -w" -trimpath
 
-composer *args:
-	{{PHP-RUN}} composer {{args}}
+# run the application locally
+run:
+    go run -tags development .
 
-composer-outdated: (composer "install") (composer "outdated --direct --strict")
+# open the local dev server in the default browser
+open:
+    xdg-open 'http://localhost:{{ PORT }}'
 
-pnpm-outdated: (pnpm "install --frozen-lockfile") (pnpm "outdated")
+# watch for template and Go changes and rebuild automatically
+[parallel]
+dev: dev-assets dev-server
 
-outdated: composer-outdated pnpm-outdated
+[private]
+dev-assets:
+    pnpm exec vite build --watch
 
-console *args:
-	{{PHP-RUN}} bin/console {{args}}
+[private]
+dev-server:
+    air
 
-phpunit *args:
-	{{PHP-RUN}} vendor/bin/phpunit {{args}}
+# run all tests
+test:
+    go test ./...
 
-phpstan *args:
-	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan {{args}}
+# run all linters
+lint:
+    pnpm run lint
+    golangci-lint run
+    just --fmt --unstable --check
 
-rector *args:
-	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/rector {{args}}
+# auto-format all code
+fmt:
+    pnpm run format
+    go tool templ fmt .
+    golangci-lint fmt
+    just --fmt --unstable
 
-node *args='-h':
-	{{NODE-RUN}} node {{args}}
+# remove all untracked and ignored files
+clean:
+    git clean -fdqx -e .idea
 
-pnpm *args='-h':
-	{{NODE-RUN}} pnpm {{args}}
+# remove untracked files, reinstall dependencies and rebuild
+rebuild: clean install build-assets build-templates
 
-cypress *args:
-	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps --entrypoint cypress cypress-run {{args}}
+# list outdated direct dependencies
+outdated:
+    pnpm outdated
+    go list -u -m -json all | jq -r 'select(.Update and (.Indirect | not)) | "\(.Path): \(.Version) -> \(.Update.Version)"'
 
-cypress-run *args:
-	{{COMPOSE}} -f docker/cypress-run.yml run --rm --no-deps cypress-run --headless --browser chrome --project tests/e2e {{args}}
+# audit dependencies for known vulnerabilities
+audit:
+    pnpm audit --prod
 
-cypress-open *args:
-	Xephyr :${PORT} -screen 1920x1080 -resizeable -name Cypress -title "Cypress - {{ env_var('PROJECT_NAME') }}" -terminate -no-host-grab -extension MIT-SHM -extension XTEST -nolisten tcp &
-	DISPLAY=:${PORT} DISPLAY_SOCKET=/tmp/.X11-unix/X${PORT%%:*} {{COMPOSE}} -f docker/cypress-open.yml run --rm --no-deps cypress-open --project tests/e2e --e2e {{args}}
+# update Go toolchain and module dependencies
+update-go:
+    go mod edit -go=$(go env GOVERSION | sed 's/go//; s/-.*//')
+    go get -u -t all
+    go mod tidy
 
-test-php:
-	{{PHP-RUN}} composer validate
-	{{PHP-RUN}} vendor/bin/phpcs
-	{{PHP-RUN}} bin/console lint:container
-	{{PHP-RUN}} bin/console lint:yaml --parse-tags config
-	{{PHP-RUN}} bin/console lint:twig templates
-	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/phpstan analyse
-	{{PHP-RUN}} php -dmemory_limit=-1 vendor/bin/rector --dry-run
-	{{PHP-RUN}} vendor/bin/phpunit
+# update pnpm dependencies
+update-pnpm:
+    pnpm update --latest
 
-test-js:
-	{{NODE-RUN}} node_modules/.bin/eslint
-	{{NODE-RUN}} node_modules/.bin/stylelint 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
-	{{NODE-RUN}} pnpm run build --output-path $(mktemp -d)
+# update all dependencies to latest versions
+update: update-go update-pnpm
 
-test: test-php test-js
-
-test-e2e *init='init':
-	#!/usr/bin/env bash
-	set -e
-	if [ "${CI-}" = "true" ]; then
-		git clean -xdf app/dist
-		just {{ init }}
-		just pnpm run build
-		CYPRESS_baseUrl=http://nginx:8081 just cypress-run
-	else
-		just cypress-run
-	fi
-
-test-integration: (test-e2e 'init-prod')
-
-test-db *args: start-db
-	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml {{args}}
-
-test-db-migrations *args: start-db
-	{{PHP-DB-RUN}} vendor/bin/phpunit -c phpunit-db.xml --testsuite 'Doctrine Migrations Test' {{args}}
-
-update-opensearch-fixtures: start-db
-	rm -f api/tests/OpenSearchMock/Fixtures/*.json
-	{{COMPOSE-RUN}} -e OPENSEARCH_MOCK_MODE=write api php -d memory_limit=-1 vendor/bin/phpunit
-
-test-coverage:
-	{{PHP-RUN}} php -d extension=pcov -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage/phpunit
-
-test-db-coverage: start-db
-	{{PHP-RUN}} php -d extension=pcov -d memory_limit=-1 vendor/bin/phpunit --coverage-html var/coverage -c phpunit-db.xml
-
-test-security: (composer "audit")
-	{{NODE-RUN}} pnpm audit --prod
-
-fix-code-style:
-	{{PHP-RUN}} vendor/bin/phpcbf || true
-	{{NODE-RUN}} node_modules/.bin/eslint --fix
-	{{NODE-RUN}} node_modules/.bin/stylelint --fix=strict 'src/assets/css/**/*.scss' 'src/assets/css/**/*.css' 'src/**/*.vue'
-
-update:
-	{{PHP-RUN}} composer --no-interaction update
-	{{PHP-RUN}} composer --no-interaction update --lock --no-scripts
-	{{NODE-RUN}} pnpm update --latest
-
-deploy:
-	cd app && pnpm install --frozen-lockfile --prod
-	cd app && NODE_OPTIONS=--no-experimental-webstorage pnpm run build
-	cd app && find dist -type f -atime +512 -delete # needs to be above the highest TTL
-	cd app && find dist -type d -empty -delete
-	cd api && composer --no-interaction install --prefer-dist --no-dev --optimize-autoloader --classmap-authoritative
-	cd api && composer dump-env prod
-	systemctl restart php-fpm@www.service
-	cd api && bin/console doctrine:migrations:sync-metadata-storage --no-interaction
-	cd api && bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-	cd api && bin/console app:config:update-countries
-	cd api && bin/console app:update:repositories
-
-deploy-permissions:
-	cd api && sudo setfacl -dR -m u:php-www:rwX -m u:deployer:rwX var
-	cd api && sudo setfacl -R -m u:php-www:rwX -m u:deployer:rwX var
-
-# vim: set ft=make :
+# generate test coverage report
+coverage:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    go test -coverpkg=./... -coverprofile coverage.out ./...
+    go tool cover -func=coverage.out
