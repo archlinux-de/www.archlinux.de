@@ -1,11 +1,14 @@
 package ui
 
 import (
+	"database/sql"
 	"fmt"
 	"io/fs"
 	"net/http"
 	"strings"
 
+	"www/internal/packagedetail"
+	"www/internal/packages"
 	"www/internal/ui/home"
 	"www/internal/ui/layout"
 	"www/internal/ui/legal"
@@ -19,10 +22,13 @@ const (
 func RegisterRoutes(
 	mux *http.ServeMux,
 	manifest *layout.Manifest,
+	db *sql.DB,
 	assets, static, root fs.FS,
 ) {
 	home.NewHandler(manifest).RegisterRoutes(mux)
 	legal.NewHandler(manifest).RegisterRoutes(mux)
+	packages.NewHandler(db, manifest).RegisterRoutes(mux)
+	packagedetail.NewHandler(db, manifest).RegisterRoutes(mux)
 	handleAssets(mux, assets)
 	handleStatic(mux, static)
 	handleFavicon(mux, root)

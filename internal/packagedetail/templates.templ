@@ -1,0 +1,161 @@
+package packagedetail
+
+import (
+	"fmt"
+	"strings"
+	"time"
+)
+
+templ PackageDetail(pkg packageDetail, inverseRels map[string][]relation) {
+	<h1 class="mb-4">{ pkg.Name }</h1>
+	<div class="row">
+		<div class="col-12 col-xl-6">
+			<h2 class="mb-3">Paket-Details</h2>
+			<table class="table table-sm table-borderless">
+				<tbody>
+					<tr>
+						<th>Name</th>
+						<td>{ pkg.Name }</td>
+					</tr>
+					<tr>
+						<th>Version</th>
+						<td>{ pkg.Version }</td>
+					</tr>
+					<tr>
+						<th>Beschreibung</th>
+						<td class="text-break">{ pkg.Description }</td>
+					</tr>
+					if pkg.URL != "" {
+						<tr>
+							<th>URL</th>
+							<td class="text-break">
+								<a rel="nofollow noopener" href={ templ.SafeURL(pkg.URL) }>{ pkg.URL }</a>
+							</td>
+						</tr>
+					}
+					if len(pkg.Licenses) > 0 {
+						<tr>
+							<th>Lizenzen</th>
+							<td>{ strings.Join(pkg.Licenses, ", ") }</td>
+						</tr>
+					}
+					<tr>
+						<th>Repositorium</th>
+						<td>
+							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s", pkg.Repository)) }>{ pkg.Repository }</a>
+						</td>
+					</tr>
+					<tr>
+						<th>Architektur</th>
+						<td>{ pkg.Architecture }</td>
+					</tr>
+					if len(pkg.Groups) > 0 {
+						<tr>
+							<th>Gruppen</th>
+							<td>{ strings.Join(pkg.Groups, ", ") }</td>
+						</tr>
+					}
+					if pkg.PackagerName != "" {
+						<tr>
+							<th>Packer</th>
+							<td>
+								if pkg.PackagerEmail != "" {
+									<a rel="nofollow noopener" href={ templ.SafeURL("mailto:" + pkg.PackagerEmail) }>{ pkg.PackagerName }</a>
+								} else {
+									{ pkg.PackagerName }
+								}
+							</td>
+						</tr>
+					}
+					<tr>
+						<th>Erstellt am</th>
+						<td>{ formatDate(pkg.BuildDate) }</td>
+					</tr>
+					<tr>
+						<th>Quelltext</th>
+						<td>
+							<a rel="nofollow noopener" target="_blank" href={ templ.SafeURL(sourceURL(pkg.Base)) }>Quelldateien</a>,
+							<a rel="nofollow noopener" target="_blank" href={ templ.SafeURL(sourceURL(pkg.Base) + "/-/commits/main") }>Änderungshistorie</a>
+						</td>
+					</tr>
+					<tr>
+						<th>Paket-Größe</th>
+						<td>{ formatBytes(pkg.CompressedSize) }</td>
+					</tr>
+					<tr>
+						<th>Installations-Größe</th>
+						<td>{ formatBytes(pkg.InstalledSize) }</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-12 col-xl-6">
+			<h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
+			<div class="row">
+				@relationSection("benötigt", pkg.Relations["depends"], pkg.Repository, pkg.Architecture)
+				@relationSection("optional", pkg.Relations["optdepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("stellt bereit", pkg.Relations["provides"], pkg.Repository, pkg.Architecture)
+				@relationSection("ersetzt", pkg.Relations["replaces"], pkg.Repository, pkg.Architecture)
+				@relationSection("kollidiert mit", pkg.Relations["conflicts"], pkg.Repository, pkg.Architecture)
+				@relationSection("zum bauen", pkg.Relations["makedepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("zum testen", pkg.Relations["checkdepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("benötigt von", inverseRels["depends"], pkg.Repository, pkg.Architecture)
+				@relationSection("optional für", inverseRels["optdepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("bauen für", inverseRels["makedepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("testen für", inverseRels["checkdepends"], pkg.Repository, pkg.Architecture)
+			</div>
+		</div>
+		if len(pkg.Files) > 0 {
+			<div class="col-12">
+				<h2 class="mb-3 mt-5">Dateien</h2>
+				<ul class="list-unstyled small">
+					for _, f := range pkg.Files {
+						<li>{ "/" + f }</li>
+					}
+				</ul>
+			</div>
+		}
+	</div>
+}
+
+templ relationSection(title string, rels []relation, repo, arch string) {
+	if len(rels) > 0 {
+		<div class="col-12 col-sm-6 mb-3">
+			<h6>{ title }</h6>
+			<ul class="list-unstyled small">
+				for _, r := range rels {
+					<li>
+						<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", repo, arch, r.TargetName)) }>{ r.TargetName }</a>
+						if r.TargetVersion != "" {
+							<span class="text-muted">{ r.VersionConstraint + r.TargetVersion }</span>
+						}
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+func formatDate(unix int64) string {
+	if unix == 0 {
+		return ""
+	}
+	return time.Unix(unix, 0).Format("02.01.2006")
+}
+
+func formatBytes(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
+}
+
+func sourceURL(base string) string {
+	return "https://gitlab.archlinux.org/archlinux/packaging/packages/" + base
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
@@ -8,6 +9,7 @@ import (
 
 	"www/internal/config"
 	"www/internal/database"
+	"www/internal/packages"
 	"www/internal/ui"
 	"www/internal/ui/httperror"
 	uilayout "www/internal/ui/layout"
@@ -23,10 +25,41 @@ func main() {
 		os.Exit(1)
 	}
 
+	if len(os.Args) > 1 {
+		os.Exit(runCommand(os.Args[1], cfg))
+	}
+
 	if err := run(cfg); err != nil {
 		slog.Error("fatal error", "error", err)
 		os.Exit(1)
 	}
+}
+
+func runCommand(cmd string, cfg config.Config) int {
+	logger := setupLogger(isDevelopment)
+	slog.SetDefault(logger)
+
+	db, err := database.New(cfg.Database)
+	if err != nil {
+		slog.Error("failed to open database", "error", err)
+		return 1
+	}
+	defer func() { _ = db.Close() }()
+
+	ctx := context.Background()
+
+	switch cmd {
+	case "update-packages":
+		if err := packages.Update(ctx, db); err != nil {
+			slog.Error("update-packages failed", "error", err)
+			return 1
+		}
+	default:
+		slog.Error("unknown command", "command", cmd)
+		return 1
+	}
+
+	return 0
 }
 
 func run(cfg config.Config) error {
@@ -46,7 +79,7 @@ func run(cfg config.Config) error {
 
 	mux := http.NewServeMux()
 
-	ui.RegisterRoutes(mux, manifest, embedAssets, embedStatic, embedRoot)
+	ui.RegisterRoutes(mux, manifest, db, embedAssets, embedStatic, embedRoot)
 
 	var cacheMiddleware web.Middleware
 	if isDevelopment {
