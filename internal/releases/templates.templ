@@ -1,0 +1,173 @@
+package releases
+
+import (
+	"fmt"
+	"time"
+)
+
+templ ReleaseList(data releasesData) {
+	<h1 class="mb-4">Releases</h1>
+	<form action="/releases" method="get" class="mb-3">
+		<div class="input-group">
+			<input
+				class="form-control"
+				placeholder="Release suchen"
+				type="search"
+				name="search"
+				autocomplete="off"
+				value={ data.Search }
+			/>
+			<button class="btn btn-outline-primary" type="submit">Suchen</button>
+		</div>
+	</form>
+	if len(data.Releases) > 0 {
+		<table class="table table-striped table-responsive table-sm table-borderless">
+			<thead>
+				<tr>
+					<th>Version</th>
+					<th class="d-none d-md-table-cell">Datum</th>
+					<th class="d-none d-xl-table-cell">Kernel-Version</th>
+					<th class="d-none d-md-table-cell text-end">Größe</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, rel := range data.Releases {
+					<tr>
+						<td>
+							<a href={ templ.SafeURL("/releases/" + rel.Version) }>{ rel.Version }</a>
+						</td>
+						<td class="d-none d-md-table-cell">{ formatDate(rel.ReleaseDate) }</td>
+						<td class="d-none d-xl-table-cell">{ rel.KernelVersion }</td>
+						<td class="d-none d-md-table-cell text-end">{ formatFileSize(rel.FileLength) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	if data.Total == 0 && data.Search != "" {
+		<div class="alert alert-warning">Keine Releases gefunden</div>
+	}
+	if data.Total > data.Limit {
+		<div class="row">
+			<div class="col-12 col-sm-6 mb-3 text-end text-sm-start">
+				{ fmt.Sprintf("%d", data.From()) } bis { fmt.Sprintf("%d", data.To()) } von { fmt.Sprintf("%d", data.Total) } Releases
+			</div>
+			<div class="col-12 col-sm-6 text-end">
+				if data.HasPrevious() {
+					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(releasesPaginationURL(data.Search, data.PrevOffset())) }>neuer</a>
+				}
+				if data.HasNext() {
+					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(releasesPaginationURL(data.Search, data.NextOffset())) }>älter</a>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ ReleaseDetail(rel releaseRow) {
+	<h1 class="mb-4">Arch Linux { rel.Version }</h1>
+	if rel.Info != "" {
+		<div class="mb-4 text-break">
+			@templ.Raw(rel.Info)
+		</div>
+	}
+	<table class="table table-sm table-borderless">
+		<tbody>
+			if rel.ReleaseDate > 0 {
+				<tr>
+					<th>Datum</th>
+					<td>{ formatDate(rel.ReleaseDate) }</td>
+				</tr>
+			}
+			if rel.KernelVersion != "" {
+				<tr>
+					<th>Kernel-Version</th>
+					<td>{ rel.KernelVersion }</td>
+				</tr>
+			}
+			if rel.FileLength > 0 {
+				<tr>
+					<th>Größe</th>
+					<td>{ formatFileSize(rel.FileLength) }</td>
+				</tr>
+			}
+			if rel.SHA1Sum != "" {
+				<tr>
+					<th>SHA1</th>
+					<td class="text-break font-monospace">{ rel.SHA1Sum }</td>
+				</tr>
+			}
+			if rel.SHA256Sum != "" {
+				<tr>
+					<th>SHA256</th>
+					<td class="text-break font-monospace">{ rel.SHA256Sum }</td>
+				</tr>
+			}
+			if rel.B2Sum != "" {
+				<tr>
+					<th>BLAKE2</th>
+					<td class="text-break font-monospace">{ rel.B2Sum }</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<div class="mt-3">
+		if rel.ISOUrl() != "" {
+			<a class="btn btn-primary me-2 mb-2" href={ templ.SafeURL(rel.ISOUrl()) }>
+				Download
+			</a>
+			<a class="btn btn-outline-secondary me-2 mb-2" href={ templ.SafeURL(rel.ISOSigUrl()) }>
+				PGP-Signatur
+			</a>
+		}
+		if rel.TorrentURL != "" {
+			<a class="btn btn-outline-secondary me-2 mb-2" href={ templ.SafeURL(rel.TorrentURL) } rel="nofollow noopener">
+				Torrent
+			</a>
+		}
+		if rel.MagnetURI != "" {
+			<a class="btn btn-outline-secondary me-2 mb-2" href={ templ.SafeURL(rel.MagnetURI) } rel="nofollow noopener">
+				Magnet-Link
+			</a>
+		}
+	</div>
+	<div class="mt-3">
+		<a href="/releases" class="btn btn-outline-secondary btn-sm">zum Archiv</a>
+	</div>
+}
+
+func formatDate(unix int64) string {
+	if unix == 0 {
+		return ""
+	}
+	return time.Unix(unix, 0).Format("02.01.2006")
+}
+
+func formatFileSize(bytes int64) string {
+	if bytes <= 0 {
+		return ""
+	}
+	const (
+		kb = 1024
+		mb = 1024 * kb
+		gb = 1024 * mb
+	)
+	switch {
+	case bytes >= gb:
+		return fmt.Sprintf("%.1f GB", float64(bytes)/float64(gb))
+	case bytes >= mb:
+		return fmt.Sprintf("%.1f MB", float64(bytes)/float64(mb))
+	case bytes >= kb:
+		return fmt.Sprintf("%.1f KB", float64(bytes)/float64(kb))
+	default:
+		return fmt.Sprintf("%d B", bytes)
+	}
+}
+
+func releasesPaginationURL(search string, offset int) string {
+	u := fmt.Sprintf("/releases?offset=%d", offset)
+	if search != "" {
+		u += "&search=" + search
+	}
+	return u
+}

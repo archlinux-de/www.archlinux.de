@@ -8,8 +8,13 @@ import (
 	"time"
 
 	"www/internal/config"
+	"www/internal/countries"
 	"www/internal/database"
+	"www/internal/mirrors"
+	"www/internal/news"
 	"www/internal/packages"
+	"www/internal/popularity"
+	"www/internal/releases"
 	"www/internal/ui"
 	"www/internal/ui/httperror"
 	uilayout "www/internal/ui/layout"
@@ -52,6 +57,35 @@ func runCommand(cmd string, cfg config.Config) int {
 	case "update-packages":
 		if err := packages.Update(ctx, db); err != nil {
 			slog.Error("update-packages failed", "error", err)
+			return 1
+		}
+	case "update-news":
+		if err := news.Update(ctx, db); err != nil {
+			slog.Error("update-news failed", "error", err)
+			return 1
+		}
+	case "update-mirrors":
+		if err := mirrors.Update(ctx, db); err != nil {
+			slog.Error("update-mirrors failed", "error", err)
+			return 1
+		}
+	case "update-releases":
+		if err := releases.Update(ctx, db); err != nil {
+			slog.Error("update-releases failed", "error", err)
+			return 1
+		}
+	case "update-countries":
+		if err := countries.Update(ctx, db); err != nil {
+			slog.Error("update-countries failed", "error", err)
+			return 1
+		}
+	case "update-popularities":
+		if err := popularity.UpdatePackages(ctx, db); err != nil {
+			slog.Error("update-popularities (packages) failed", "error", err)
+			return 1
+		}
+		if err := popularity.UpdateMirrors(ctx, db); err != nil {
+			slog.Error("update-popularities (mirrors) failed", "error", err)
 			return 1
 		}
 	default:

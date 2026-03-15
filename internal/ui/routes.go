@@ -7,8 +7,11 @@ import (
 	"net/http"
 	"strings"
 
+	"www/internal/mirrors"
+	"www/internal/news"
 	"www/internal/packagedetail"
 	"www/internal/packages"
+	"www/internal/releases"
 	"www/internal/ui/home"
 	"www/internal/ui/layout"
 	"www/internal/ui/legal"
@@ -29,6 +32,9 @@ func RegisterRoutes(
 	legal.NewHandler(manifest).RegisterRoutes(mux)
 	packages.NewHandler(db, manifest).RegisterRoutes(mux)
 	packagedetail.NewHandler(db, manifest).RegisterRoutes(mux)
+	news.NewHandler(db, manifest).RegisterRoutes(mux)
+	mirrors.NewHandler(db, manifest).RegisterRoutes(mux)
+	releases.NewHandler(db, manifest).RegisterRoutes(mux)
 	handleAssets(mux, assets)
 	handleStatic(mux, static)
 	handleFavicon(mux, root)
