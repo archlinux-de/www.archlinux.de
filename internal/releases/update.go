@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"time"
+
+	"www/internal/sanitize"
 )
 
 const relengURL = "https://archlinux.org/releng/releases/json/"
@@ -37,6 +40,14 @@ type relengTorrent struct {
 	FileLength int64  `json:"file_length"`
 }
 
+var (
+	versionRe       = regexp.MustCompile(`^[0-9]+[\.\-\w]+$`)
+	kernelVersionRe = regexp.MustCompile(`^[\d\.]{5,10}$`)
+	sha1Re          = regexp.MustCompile(`^[0-9a-f]{40}$`)
+	sha256Re        = regexp.MustCompile(`^[0-9a-f]{64}$`)
+	b2Re            = regexp.MustCompile(`^[0-9a-f]{128}$`)
+)
+
 func Update(ctx context.Context, db *sql.DB) error {
 	releases, err := fetchReleases(ctx)
 	if err != nil {
@@ -64,6 +75,11 @@ func Update(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	for _, r := range releases {
+		if !versionRe.MatchString(r.Version) {
+			slog.Warn("skipping release with invalid version", "version", r.Version)
+			continue
+		}
+
 		var created, releaseDate *int64
 		if t, err := time.Parse(time.RFC3339Nano, r.Created); err == nil {
 			unix := t.Unix()
@@ -87,10 +103,16 @@ func Update(ctx context.Context, db *sql.DB) error {
 			torrentURL = &full
 		}
 
+		info := sanitize.HTML(r.Info)
+		kernelVersion := matchOrNil(r.KernelVersion, kernelVersionRe)
+		sha1Sum := matchOrNil(r.SHA1Sum, sha1Re)
+		sha256Sum := matchOrNil(r.SHA256Sum, sha256Re)
+		b2Sum := matchOrNil(r.B2Sum, b2Re)
+
 		if _, err := stmt.ExecContext(ctx,
-			r.Version, r.Available, r.Info, created, releaseDate,
-			r.KernelVersion, fileName, fileLength,
-			r.SHA1Sum, r.SHA256Sum, r.B2Sum,
+			r.Version, r.Available, info, created, releaseDate,
+			kernelVersion, fileName, fileLength,
+			sha1Sum, sha256Sum, b2Sum,
 			torrentURL, r.MagnetURI,
 		); err != nil {
 			return err
@@ -98,6 +120,13 @@ func Update(ctx context.Context, db *sql.DB) error {
 	}
 
 	return tx.Commit()
+}
+
+func matchOrNil(s *string, re *regexp.Regexp) *string {
+	if s != nil && re.MatchString(*s) {
+		return s
+	}
+	return nil
 }
 
 func fetchReleases(ctx context.Context) ([]relengRelease, error) {

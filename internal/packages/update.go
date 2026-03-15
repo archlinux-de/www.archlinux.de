@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"www/internal/pacmandb"
+	"www/internal/sanitize"
 )
 
 const defaultMirror = "https://geo.mirror.pkgbuild.com/"
@@ -139,8 +140,13 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 	defer insertFiles.Close()
 
 	for _, pkg := range packages {
+		var pkgURL *string
+		if pkg.URL != "" && sanitize.IsValidURL(pkg.URL, "http", "https") {
+			pkgURL = &pkg.URL
+		}
+
 		result, err := insertPkg.ExecContext(ctx,
-			repoID, pkg.Name, pkg.Base, pkg.Version, pkg.Description, pkg.URL,
+			repoID, pkg.Name, pkg.Base, pkg.Version, pkg.Description, pkgURL,
 			pkg.BuildDate, pkg.CompressedSize, pkg.InstalledSize,
 			pkg.PackagerName, nullString(pkg.PackagerEmail),
 			licensesJSON(pkg.Licenses), groupsJSON(pkg.Groups),

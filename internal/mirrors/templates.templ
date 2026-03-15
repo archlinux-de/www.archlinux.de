@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+	"www/internal/sanitize"
 )
 
 templ MirrorList(data mirrorsData) {
@@ -38,7 +39,7 @@ templ MirrorList(data mirrorsData) {
 				for _, m := range data.Mirrors {
 					<tr>
 						<td>
-							<a href={ templ.SafeURL(m.URL) } rel="nofollow noopener" target="_blank">{ extractHost(m.URL) }</a>
+							<a href={ templ.SafeURL(sanitize.URL(m.URL)) } rel="nofollow noopener" target="_blank">{ extractHost(m.URL) }</a>
 						</td>
 						<td class="d-none d-md-table-cell">{ m.CountryName }</td>
 						<td class="d-none d-lg-table-cell">{ renderDuration(m.DurationAvg) }</td>

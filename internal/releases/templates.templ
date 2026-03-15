@@ -3,6 +3,7 @@ package releases
 import (
 	"fmt"
 	"time"
+	"www/internal/sanitize"
 )
 
 templ ReleaseList(data releasesData) {
@@ -82,7 +83,7 @@ templ ReleaseDetail(rel Release) {
 					if rel.Info != "" {
 						<tr>
 							<th>Informationen</th>
-							<td>@templ.Raw(rel.Info)</td>
+							<td>@templ.Raw(sanitize.HTML(rel.Info))</td>
 						</tr>
 					}
 					if rel.KernelVersion != "" {
@@ -138,10 +139,10 @@ templ ReleaseDetail(rel Release) {
 			}
 			<ul class="list-unstyled ms-4 link-list">
 				if rel.MagnetURI != "" {
-					<li><a href={ templ.SafeURL(rel.MagnetURI) } rel="nofollow noopener">Magnet link für { rel.Version }</a></li>
+					<li><a href={ templ.SafeURL(sanitize.URL(rel.MagnetURI)) } rel="nofollow noopener">Magnet link für { rel.Version }</a></li>
 				}
 				if rel.TorrentURL != "" {
-					<li><a href={ templ.SafeURL(rel.TorrentURL) } rel="nofollow noopener">Torrent für { rel.Version }</a></li>
+					<li><a href={ templ.SafeURL(sanitize.URL(rel.TorrentURL)) } rel="nofollow noopener">Torrent für { rel.Version }</a></li>
 				}
 			</ul>
 		</div>

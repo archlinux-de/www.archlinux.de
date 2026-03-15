@@ -5,6 +5,7 @@ import (
 	"time"
 	"www/internal/news"
 	"www/internal/packages"
+	"www/internal/sanitize"
 )
 
 templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
@@ -47,7 +48,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 							<div>{ time.Unix(item.LastModified, 0).Format("02.01.2006") }</div>
 						</div>
 						<div class="text-break">
-							@templ.Raw(item.Description)
+							@templ.Raw(sanitize.HTML(item.Description))
 						</div>
 					</div>
 				}

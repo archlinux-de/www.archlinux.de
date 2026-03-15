@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"www/internal/sanitize"
 )
 
 templ PackageDetailPage(pkg PackageDetail) {
@@ -29,7 +30,7 @@ templ PackageDetailPage(pkg PackageDetail) {
 						<tr>
 							<th>URL</th>
 							<td class="text-break">
-								<a rel="nofollow noopener" href={ templ.SafeURL(pkg.URL) }>{ pkg.URL }</a>
+								<a rel="nofollow noopener" href={ templ.SafeURL(sanitize.URL(pkg.URL)) }>{ pkg.URL }</a>
 							</td>
 						</tr>
 					}

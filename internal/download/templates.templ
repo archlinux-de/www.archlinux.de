@@ -3,6 +3,7 @@ package download
 import (
 	"fmt"
 	"time"
+	"www/internal/sanitize"
 )
 
 templ DownloadPage(data downloadData) {
@@ -45,10 +46,10 @@ templ DownloadPage(data downloadData) {
 				<p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
 				<ul class="list-unstyled ms-4 link-list">
 					if data.Release.MagnetURI != "" {
-						<li><a href={ templ.SafeURL(data.Release.MagnetURI) } rel="nofollow noopener">Magnet link für { data.Release.Version }</a></li>
+						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.MagnetURI)) } rel="nofollow noopener">Magnet link für { data.Release.Version }</a></li>
 					}
 					if data.Release.TorrentURL != "" {
-						<li><a href={ templ.SafeURL(data.Release.TorrentURL) } rel="nofollow noopener">Torrent für { data.Release.Version }</a></li>
+						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.TorrentURL)) } rel="nofollow noopener">Torrent für { data.Release.Version }</a></li>
 					}
 				</ul>
 				<h2>Direkte HTTP-Downloads</h2>
@@ -94,7 +95,7 @@ templ DownloadPage(data downloadData) {
 					<ul class="list-unstyled ms-4 link-list">
 						for _, m := range data.Mirrors {
 							<li>
-								<a href={ templ.SafeURL(m.URL + data.ISOPath) } rel="nofollow noopener">{ extractHost(m.URL) }</a>
+								<a href={ templ.SafeURL(sanitize.URL(m.URL + data.ISOPath)) } rel="nofollow noopener">{ extractHost(m.URL) }</a>
 							</li>
 						}
 					</ul>

@@ -3,6 +3,7 @@ package news
 import (
 	"fmt"
 	"time"
+	"www/internal/sanitize"
 )
 
 templ NewsList(data newsData) {
@@ -38,7 +39,7 @@ templ NewsList(data newsData) {
 						</td>
 						<td class="d-none d-xl-table-cell">
 							if item.AuthorLink != "" {
-								<a href={ templ.SafeURL(item.AuthorLink) } rel="nofollow noopener">{ item.AuthorName }</a>
+								<a href={ templ.SafeURL(sanitize.URL(item.AuthorLink)) } rel="nofollow noopener">{ item.AuthorName }</a>
 							} else {
 								{ item.AuthorName }
 							}
@@ -74,16 +75,16 @@ templ NewsDetail(item NewsItem) {
 		<span>{ formatDate(item.LastModified) }</span>
 		&ndash;
 		if item.AuthorLink != "" {
-			<a class="text-muted" href={ templ.SafeURL(item.AuthorLink) } rel="nofollow noopener">{ item.AuthorName }</a>
+			<a class="text-muted" href={ templ.SafeURL(sanitize.URL(item.AuthorLink)) } rel="nofollow noopener">{ item.AuthorName }</a>
 		} else {
 			<span>{ item.AuthorName }</span>
 		}
 	</div>
 	<div class="text-break mb-4">
-		@templ.Raw(item.Description)
+		@templ.Raw(sanitize.HTML(item.Description))
 	</div>
 	<a href="/news" class="btn btn-outline-secondary btn-sm">zum Archiv</a>
-	<a class="btn btn-primary btn-sm" href={ templ.SafeURL(item.Link) } rel="nofollow noopener">Kommentare</a>
+	<a class="btn btn-primary btn-sm" href={ templ.SafeURL(sanitize.URL(item.Link)) } rel="nofollow noopener">Kommentare</a>
 }
 
 func formatDate(unix int64) string {

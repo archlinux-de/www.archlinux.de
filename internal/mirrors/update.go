@@ -8,6 +8,8 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"www/internal/sanitize"
 )
 
 const mirrorStatusURL = "https://archlinux.org/mirrors/status/json/"
@@ -59,6 +61,11 @@ func Update(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	for _, m := range mirrors {
+		if !sanitize.IsValidURL(m.URL, "https") {
+			slog.Warn("skipping mirror with invalid URL", "url", m.URL)
+			continue
+		}
+
 		var lastSync *int64
 		if m.LastSync != nil {
 			if t, err := time.Parse(time.RFC3339, *m.LastSync); err == nil {

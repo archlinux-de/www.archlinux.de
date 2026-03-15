@@ -8,6 +8,8 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"www/internal/sanitize"
 )
 
 const (
@@ -88,6 +90,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	for _, item := range items {
+		item.Description = sanitize.HTML(item.Description)
 		if _, err := stmt.ExecContext(ctx,
 			item.ID, item.Title, item.Link, item.Description,
 			item.AuthorName, item.AuthorLink, item.LastModified,
