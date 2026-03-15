@@ -7,14 +7,21 @@ import (
 	"net/http"
 	"strings"
 
+	"www/internal/download"
+	"www/internal/feeds"
+	"www/internal/legacy"
 	"www/internal/mirrors"
 	"www/internal/news"
+	"www/internal/opensearch"
 	"www/internal/packagedetail"
 	"www/internal/packages"
 	"www/internal/releases"
+	"www/internal/sitemap"
 	"www/internal/ui/home"
 	"www/internal/ui/layout"
 	"www/internal/ui/legal"
+
+	"github.com/oschwald/maxminddb-golang/v2"
 )
 
 const (
@@ -26,6 +33,7 @@ func RegisterRoutes(
 	mux *http.ServeMux,
 	manifest *layout.Manifest,
 	db *sql.DB,
+	geodb *maxminddb.Reader,
 	assets, static, root fs.FS,
 ) {
 	home.NewHandler(manifest).RegisterRoutes(mux)
@@ -35,6 +43,11 @@ func RegisterRoutes(
 	news.NewHandler(db, manifest).RegisterRoutes(mux)
 	mirrors.NewHandler(db, manifest).RegisterRoutes(mux)
 	releases.NewHandler(db, manifest).RegisterRoutes(mux)
+	download.NewHandler(db, manifest, geodb).RegisterRoutes(mux)
+	feeds.NewHandler(db).RegisterRoutes(mux)
+	sitemap.NewHandler(db).RegisterRoutes(mux)
+	opensearch.RegisterRoutes(mux)
+	legacy.RegisterRoutes(mux)
 	handleAssets(mux, assets)
 	handleStatic(mux, static)
 	handleFavicon(mux, root)

@@ -21,6 +21,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
+	github.com/oschwald/maxminddb-golang/v2 v2.1.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/mod v0.29.0 // indirect

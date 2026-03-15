@@ -19,6 +19,8 @@ import (
 	"www/internal/ui/httperror"
 	uilayout "www/internal/ui/layout"
 	"www/internal/web"
+
+	"github.com/oschwald/maxminddb-golang/v2"
 )
 
 const defaultCacheMaxAge = 5 * time.Minute
@@ -111,9 +113,19 @@ func run(cfg config.Config) error {
 		return err
 	}
 
+	var geodb *maxminddb.Reader
+	if cfg.GeoIPDatabase != "" {
+		geodb, err = maxminddb.Open(cfg.GeoIPDatabase)
+		if err != nil {
+			slog.Warn("failed to open GeoIP database, continuing without", "error", err)
+		} else {
+			defer geodb.Close()
+		}
+	}
+
 	mux := http.NewServeMux()
 
-	ui.RegisterRoutes(mux, manifest, db, embedAssets, embedStatic, embedRoot)
+	ui.RegisterRoutes(mux, manifest, db, geodb, embedAssets, embedStatic, embedRoot)
 
 	var cacheMiddleware web.Middleware
 	if isDevelopment {

@@ -1,0 +1,148 @@
+package download
+
+import (
+	"fmt"
+	"time"
+)
+
+templ DownloadPage(data downloadData) {
+	if data.Release != nil {
+		<h1 class="mb-4">Arch Linux herunterladen</h1>
+		<div class="row">
+			<div class="col-12 col-lg-8">
+				<h2>Release { data.Release.Version }</h2>
+				<table class="table table-sm table-borderless">
+					<tbody>
+						<tr>
+							<th>Version</th>
+							<td>{ data.Release.Version }</td>
+						</tr>
+						if data.Release.KernelVersion != "" {
+							<tr>
+								<th>Kernel</th>
+								<td>{ data.Release.KernelVersion }</td>
+							</tr>
+						}
+						if data.Release.FileLength > 0 {
+							<tr>
+								<th>Größe</th>
+								<td>{ formatFileSize(data.Release.FileLength) }</td>
+							</tr>
+						}
+						if data.Release.ReleaseDate > 0 {
+							<tr>
+								<th>Datum</th>
+								<td>{ formatDate(data.Release.ReleaseDate) }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+				<h3 class="mt-4">BitTorrent</h3>
+				<p>
+					if data.Release.MagnetURI != "" {
+						<a href={ templ.SafeURL(data.Release.MagnetURI) } class="btn btn-outline-primary me-2 mb-2" rel="nofollow noopener">Magnet-Link</a>
+					}
+					if data.Release.TorrentURL != "" {
+						<a href={ templ.SafeURL(data.Release.TorrentURL) } class="btn btn-outline-primary mb-2" rel="nofollow noopener">Torrent</a>
+					}
+				</p>
+				<h3 class="mt-4">HTTP Download</h3>
+				<table class="table table-sm table-borderless">
+					<tbody>
+						if data.ISOSigPath != "" {
+							<tr>
+								<th>PGP-Signatur</th>
+								<td>
+									<a href={ templ.SafeURL(data.DownloadURL + ".sig") } class="text-break">{ data.ISOSigPath }</a>
+								</td>
+							</tr>
+						}
+						if data.Release.SHA1Sum != "" {
+							<tr>
+								<th>SHA1</th>
+								<td class="text-break font-monospace">{ data.Release.SHA1Sum }</td>
+							</tr>
+						}
+						if data.Release.SHA256Sum != "" {
+							<tr>
+								<th>SHA256</th>
+								<td class="text-break font-monospace">{ data.Release.SHA256Sum }</td>
+							</tr>
+						}
+						if data.Release.B2Sum != "" {
+							<tr>
+								<th>BLAKE2</th>
+								<td class="text-break font-monospace">{ data.Release.B2Sum }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<div class="col-12 col-lg-4">
+				<div class="d-grid mb-4">
+					<a class="btn btn-primary btn-lg" href={ templ.SafeURL(data.DownloadURL) }>
+						Download
+					</a>
+				</div>
+				if len(data.Mirrors) > 0 {
+					<h3>Mirrors</h3>
+					<ul class="list-unstyled">
+						for _, m := range data.Mirrors {
+							<li class="mb-1">
+								<a href={ templ.SafeURL(m.URL + data.ISOPath) } rel="nofollow noopener">{ extractHost(m.URL) }</a>
+								if m.CountryName != "" {
+									<small class="text-muted">({ m.CountryName })</small>
+								}
+							</li>
+						}
+					</ul>
+				}
+				<div class="mt-3">
+					<a href="/releases/feed" class="text-muted me-3">Feed</a>
+					<a href="/releases" class="text-muted">Archiv</a>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+func formatFileSize(bytes int64) string {
+	if bytes <= 0 {
+		return ""
+	}
+	const (
+		kb = 1024
+		mb = 1024 * kb
+		gb = 1024 * mb
+	)
+	switch {
+	case bytes >= gb:
+		return fmt.Sprintf("%.1f GB", float64(bytes)/float64(gb))
+	case bytes >= mb:
+		return fmt.Sprintf("%.1f MB", float64(bytes)/float64(mb))
+	case bytes >= kb:
+		return fmt.Sprintf("%.1f KB", float64(bytes)/float64(kb))
+	default:
+		return fmt.Sprintf("%d B", bytes)
+	}
+}
+
+func formatDate(unix int64) string {
+	if unix == 0 {
+		return ""
+	}
+	return time.Unix(unix, 0).Format("02.01.2006")
+}
+
+func extractHost(rawURL string) string {
+	for _, prefix := range []string{"https://", "http://"} {
+		if len(rawURL) > len(prefix) {
+			s := rawURL[len(prefix):]
+			if idx := len(s) - 1; idx >= 0 && s[idx] == '/' {
+				s = s[:idx]
+			}
+			return s
+		}
+	}
+	return rawURL
+}
