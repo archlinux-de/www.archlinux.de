@@ -1,6 +1,12 @@
 package home
 
-templ Index() {
+import (
+	"fmt"
+	"time"
+	"www/internal/news"
+)
+
+templ Index(latestNews []news.NewsItem) {
 	<div class="row">
 		<div class="col-12 col-xl-8">
 			<div class="mb-4">
@@ -30,6 +36,25 @@ templ Index() {
 					</a>
 				</div>
 			</div>
+			if len(latestNews) > 0 {
+				for _, item := range latestNews {
+					<div class="mb-5">
+						<div class="d-lg-flex justify-content-between align-items-baseline border-bottom mb-2">
+							<h2 class="text-break">
+								<a href={ templ.SafeURL(fmt.Sprintf("/news/%d", item.ID)) }>{ item.Title }</a>
+							</h2>
+							<div>{ time.Unix(item.LastModified, 0).Format("02.01.2006") }</div>
+						</div>
+						<div class="text-break">
+							@templ.Raw(item.Description)
+						</div>
+					</div>
+				}
+				<div class="py-2 mb-5">
+					<a class="btn btn-outline-secondary btn-sm" href="/news/feed">Feed</a>
+					<a class="btn btn-primary btn-sm" href="/news">zum Archiv</a>
+				</div>
+			}
 		</div>
 		<div class="col-12 col-xl-4">
 			<div class="card mb-4">

@@ -42,7 +42,7 @@ func RegisterRoutes(
 	relRepo := releases.NewRepository(db)
 	mirRepo := mirrors.NewRepository(db)
 
-	home.NewHandler(manifest).RegisterRoutes(mux)
+	home.NewHandler(newsRepo, manifest).RegisterRoutes(mux)
 	legal.NewHandler(manifest).RegisterRoutes(mux)
 	packages.NewHandler(pkgRepo, manifest).RegisterRoutes(mux)
 	packagedetail.NewHandler(pkgDetailRepo, manifest).RegisterRoutes(mux)
