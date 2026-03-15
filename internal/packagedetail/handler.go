@@ -3,6 +3,8 @@ package packagedetail
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"www/internal/ui/layout"
@@ -18,6 +20,7 @@ func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /packages/{arch}/{name}", h.resolve)
 	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}", h.show)
 	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}/files", h.files)
 }
@@ -28,7 +31,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	pkgName := r.PathValue("name")
 
 	pkg, err := h.repo.FindByRepoArchName(r.Context(), repoName, arch, pkgName)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		http.NotFound(w, r)
 		return
 	}
@@ -48,6 +51,30 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	layout.Render(w, r, page, PackageDetailPage(pkg))
 }
 
+func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {
+	arch := r.PathValue("arch")
+	name := r.PathValue("name")
+	version := r.URL.Query().Get("v")
+	constraint := r.URL.Query().Get("c")
+
+	results := h.repo.Resolve(r.Context(), arch, name, version, constraint, false)
+	if len(results) == 0 {
+		http.NotFound(w, r)
+		return
+	}
+	if len(results) == 1 {
+		http.Redirect(w, r, fmt.Sprintf("/packages/%s/%s/%s", results[0].Repository, results[0].Arch, results[0].Name), http.StatusTemporaryRedirect)
+		return
+	}
+
+	page := layout.Page{
+		Title:    name,
+		Path:     r.URL.Path,
+		Manifest: h.manifest,
+	}
+	layout.Render(w, r, page, PackageResolvePage(name, results))
+}
+
 func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
 	repoName := r.PathValue("repo")
 	arch := r.PathValue("arch")
@@ -56,5 +83,5 @@ func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
 	files := h.repo.LoadFiles(r.Context(), repoName, arch, pkgName)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(files)
+	_ = json.NewEncoder(w).Encode(files)
 }

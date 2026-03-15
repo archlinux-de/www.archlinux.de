@@ -2,6 +2,7 @@ package packagedetail
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 	"www/internal/sanitize"
@@ -111,17 +112,17 @@ templ PackageDetailPage(pkg PackageDetail) {
 		<div class="col-12 col-xl-6">
 			<h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
 			<div class="row">
-				@relationSection("benötigt", pkg.Relations["depends"], pkg.Repository, pkg.Architecture)
-				@relationSection("optional", pkg.Relations["optdepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("stellt bereit", pkg.Relations["provides"], pkg.Repository, pkg.Architecture)
-				@relationSection("ersetzt", pkg.Relations["replaces"], pkg.Repository, pkg.Architecture)
-				@relationSection("kollidiert mit", pkg.Relations["conflicts"], pkg.Repository, pkg.Architecture)
-				@relationSection("zum bauen", pkg.Relations["makedepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("zum testen", pkg.Relations["checkdepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("benötigt von", pkg.InverseRels["depends"], pkg.Repository, pkg.Architecture)
-				@relationSection("optional für", pkg.InverseRels["optdepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("bauen für", pkg.InverseRels["makedepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("testen für", pkg.InverseRels["checkdepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("benötigt", pkg.Relations["depends"], pkg.Architecture)
+				@relationSection("optional", pkg.Relations["optdepends"], pkg.Architecture)
+				@relationSection("stellt bereit", pkg.Relations["provides"], pkg.Architecture)
+				@relationSection("ersetzt", pkg.Relations["replaces"], pkg.Architecture)
+				@relationSection("kollidiert mit", pkg.Relations["conflicts"], pkg.Architecture)
+				@relationSection("zum bauen", pkg.Relations["makedepends"], pkg.Architecture)
+				@relationSection("zum testen", pkg.Relations["checkdepends"], pkg.Architecture)
+				@relationSection("benötigt von", pkg.InverseRels["depends"], pkg.Architecture)
+				@relationSection("optional für", pkg.InverseRels["optdepends"], pkg.Architecture)
+				@relationSection("bauen für", pkg.InverseRels["makedepends"], pkg.Architecture)
+				@relationSection("testen für", pkg.InverseRels["checkdepends"], pkg.Architecture)
 			</div>
 		</div>
 		<div class="col-12">
@@ -131,14 +132,14 @@ templ PackageDetailPage(pkg PackageDetail) {
 	</div>
 }
 
-templ relationSection(title string, rels []Relation, repo, arch string) {
+templ relationSection(title string, rels []Relation, arch string) {
 	if len(rels) > 0 {
 		<div class="col-12 col-md-6 col-lg-4">
 			<h3>{ title }</h3>
 			<ul class="list-unstyled ps-4 link-list">
 				for _, r := range rels {
 					<li>
-						<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", repo, arch, r.TargetName)) }>{ r.TargetName }</a>{ r.VersionConstraint + r.TargetVersion }
+						<a href={ templ.SafeURL(resolveURL(arch, r)) }>{ r.TargetName }</a>{ constraintSymbol(r.VersionConstraint) + r.TargetVersion }
 					</li>
 				}
 			</ul>
@@ -176,4 +177,41 @@ func issueURL(base string) string {
 
 func packageURL(repo, arch, fileName string) string {
 	return fmt.Sprintf("https://geo.mirror.pkgbuild.com/%s/os/%s/%s", repo, arch, fileName)
+}
+
+func constraintSymbol(code string) string {
+	switch code {
+	case "EQ":
+		return "="
+	case "LE":
+		return "<="
+	case "LT":
+		return "<"
+	case "GE":
+		return ">="
+	case "GT":
+		return ">"
+	default:
+		return code
+	}
+}
+
+func resolveURL(arch string, r Relation) string {
+	u := fmt.Sprintf("/packages/%s/%s", arch, r.TargetName)
+	if r.TargetVersion != "" && r.VersionConstraint != "" {
+		u += "?" + url.Values{"v": {r.TargetVersion}, "c": {r.VersionConstraint}}.Encode()
+	}
+	return u
+}
+
+templ PackageResolvePage(name string, packages []ResolvedPackage) {
+	<h1 class="mb-4">{ name }</h1>
+	<p>Mehrere Pakete gefunden:</p>
+	<ul>
+		for _, p := range packages {
+			<li>
+				<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Arch, p.Name)) }>{ p.Name } ({ p.Repository })</a>
+			</li>
+		}
+	</ul>
 }

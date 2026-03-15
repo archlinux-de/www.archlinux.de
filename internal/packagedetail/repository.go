@@ -37,6 +37,12 @@ type Relation struct {
 	VersionConstraint string
 }
 
+type ResolvedPackage struct {
+	Name       string
+	Repository string
+	Arch       string
+}
+
 type Repository struct {
 	db *sql.DB
 }
@@ -105,7 +111,7 @@ func (r *Repository) loadRelations(ctx context.Context, pkgID int64) map[string]
 	if err != nil {
 		return rels
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var rel Relation
@@ -129,7 +135,7 @@ func (r *Repository) loadInverseRelations(ctx context.Context, name, arch string
 	if err != nil {
 		return rels
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var relType, pkgName string
@@ -138,6 +144,65 @@ func (r *Repository) loadInverseRelations(ctx context.Context, name, arch string
 		}
 	}
 	return rels
+}
+
+// Resolve finds packages matching a name by direct name match, then by
+// provides. Results are ordered like pacman: testing repos first when
+// testing is true (matching pacman.conf where testing repos precede
+// their non-testing counterparts).
+func (r *Repository) Resolve(ctx context.Context, arch, name, version, constraint string, testing bool) []ResolvedPackage {
+	order := "r.testing ASC"
+	if testing {
+		order = "r.testing DESC"
+	}
+
+	// 1. Direct name match
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT p.name, r.name, r.architecture FROM package p
+		 JOIN repository r ON r.id = p.repository_id
+		 WHERE p.name = ? AND r.architecture = ?
+		 ORDER BY `+order, name, arch)
+	if err != nil {
+		return nil
+	}
+	defer func() { _ = rows.Close() }()
+
+	var results []ResolvedPackage
+	for rows.Next() {
+		var rp ResolvedPackage
+		if err := rows.Scan(&rp.Name, &rp.Repository, &rp.Arch); err == nil {
+			results = append(results, rp)
+		}
+	}
+	if len(results) > 0 {
+		return results
+	}
+
+	// 2. Provider fallback — filter by version if specified
+	query := `SELECT DISTINCT p.name, r.name, r.architecture FROM package_relation pr
+		 JOIN package p ON p.id = pr.package_id
+		 JOIN repository r ON r.id = p.repository_id
+		 WHERE pr.type = 'provides' AND pr.target_name = ? AND r.architecture = ?`
+	args := []any{name, arch}
+	if version != "" && constraint != "" {
+		query += ` AND pr.target_version = ? AND pr.version_constraint = ?`
+		args = append(args, version, constraint)
+	}
+	query += ` ORDER BY ` + order + `, p.name`
+
+	rows2, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil
+	}
+	defer func() { _ = rows2.Close() }()
+
+	for rows2.Next() {
+		var rp ResolvedPackage
+		if err := rows2.Scan(&rp.Name, &rp.Repository, &rp.Arch); err == nil {
+			results = append(results, rp)
+		}
+	}
+	return results
 }
 
 func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []string {
