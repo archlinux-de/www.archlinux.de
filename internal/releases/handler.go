@@ -2,6 +2,7 @@ package releases
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -33,10 +34,14 @@ func (r Release) ISOUrl() string {
 }
 
 func (r Release) ISOSigUrl() string {
-	if r.FileName == "" {
+	if r.FileName == "" || r.ReleaseDate < 1342310400 { // 2012-07-15
 		return ""
 	}
 	return fmt.Sprintf("/download/iso/%s/%s.sig", r.Version, r.FileName)
+}
+
+func (r Release) DirectoryURL() string {
+	return fmt.Sprintf("/download/iso/%s/", r.Version)
 }
 
 type releasesData struct {
@@ -107,7 +112,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	version := r.PathValue("version")
 
 	rel, err := h.repo.FindByVersion(r.Context(), version)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		http.NotFound(w, r)
 		return
 	}

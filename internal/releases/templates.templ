@@ -2,6 +2,7 @@ package releases
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 	"www/internal/sanitize"
 )
@@ -83,7 +84,8 @@ templ ReleaseDetail(rel Release) {
 					if rel.Info != "" {
 						<tr>
 							<th>Informationen</th>
-							<td>@templ.Raw(sanitize.HTML(rel.Info))</td>
+							<td>@templ.Raw(sanitize.HTML(rel.Info))
+</td>
 						</tr>
 					}
 					if rel.KernelVersion != "" {
@@ -144,6 +146,7 @@ templ ReleaseDetail(rel Release) {
 				if rel.TorrentURL != "" {
 					<li><a href={ templ.SafeURL(sanitize.URL(rel.TorrentURL)) } rel="nofollow noopener">Torrent für { rel.Version }</a></li>
 				}
+				<li><a href={ templ.SafeURL(rel.DirectoryURL()) } rel="nofollow noopener">Verzeichnis für { rel.Version }</a></li>
 			</ul>
 		</div>
 	</div>
@@ -185,7 +188,7 @@ func formatFileSize(bytes int64) string {
 func releasesPaginationURL(search string, offset int) string {
 	u := fmt.Sprintf("/releases?offset=%d", offset)
 	if search != "" {
-		u += "&search=" + search
+		u += "&search=" + url.QueryEscape(search)
 	}
 	return u
 }

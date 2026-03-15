@@ -39,7 +39,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func() { _ = stmt.Close() }()
 
 	var codes []any
 	for _, c := range countries {
@@ -57,12 +57,12 @@ func Update(ctx context.Context, db *sql.DB) error {
 		placeholders = placeholders[:len(placeholders)-1]
 		q := fmt.Sprintf("NOT IN (%s)", placeholders)
 		if _, err := tx.ExecContext(ctx,
-			fmt.Sprintf("UPDATE mirror SET country_code = NULL WHERE country_code %s", q),
+			"UPDATE mirror SET country_code = NULL WHERE country_code "+q, //nolint:gosec // q is placeholders
 			codes...); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx,
-			fmt.Sprintf("DELETE FROM country WHERE code %s", q),
+			"DELETE FROM country WHERE code "+q, //nolint:gosec // q is placeholders
 			codes...); err != nil {
 			return err
 		}
@@ -82,7 +82,11 @@ func fetchCountries(ctx context.Context) ([]countryJSON, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("fetch countries: status %d", resp.StatusCode)
+	}
 
 	var countries []countryJSON
 	if err := json.NewDecoder(resp.Body).Decode(&countries); err != nil {

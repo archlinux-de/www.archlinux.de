@@ -2,6 +2,7 @@ package download
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 	"www/internal/sanitize"
 )
@@ -137,14 +138,8 @@ func formatDate(unix int64) string {
 }
 
 func extractHost(rawURL string) string {
-	for _, prefix := range []string{"https://", "http://"} {
-		if len(rawURL) > len(prefix) {
-			s := rawURL[len(prefix):]
-			if idx := len(s) - 1; idx >= 0 && s[idx] == '/' {
-				s = s[:idx]
-			}
-			return s
-		}
+	if u, err := url.Parse(rawURL); err == nil {
+		return u.Host
 	}
 	return rawURL
 }

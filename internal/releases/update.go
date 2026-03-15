@@ -75,7 +75,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func() { _ = stmt.Close() }()
 
 	var versions []any
 	for _, r := range releases {
@@ -155,7 +155,11 @@ func fetchReleases(ctx context.Context) ([]relengRelease, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("fetch releases: status %d", resp.StatusCode)
+	}
 
 	var data relengResponse
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {

@@ -60,7 +60,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func() { _ = stmt.Close() }()
 
 	var urls []any
 	for _, m := range mirrors {
@@ -116,7 +116,11 @@ func fetchMirrors(ctx context.Context) ([]mirrorJSON, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("fetch mirror status: status %d", resp.StatusCode)
+	}
 
 	var status mirrorStatusResponse
 	if err := json.NewDecoder(resp.Body).Decode(&status); err != nil {

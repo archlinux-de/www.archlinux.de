@@ -2,6 +2,7 @@ package news
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 	"www/internal/sanitize"
 )
@@ -95,9 +96,9 @@ func formatDate(unix int64) string {
 }
 
 func newsPaginationURL(search string, offset int) string {
-	url := fmt.Sprintf("/news?offset=%d", offset)
+	u := fmt.Sprintf("/news?offset=%d", offset)
 	if search != "" {
-		url += "&search=" + search
+		u += "&search=" + url.QueryEscape(search)
 	}
-	return url
+	return u
 }

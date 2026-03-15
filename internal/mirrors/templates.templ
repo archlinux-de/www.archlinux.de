@@ -122,7 +122,7 @@ func renderDuration(seconds float64) string {
 func mirrorPaginationURL(search string, offset int) string {
 	u := fmt.Sprintf("/mirrors?offset=%d", offset)
 	if search != "" {
-		u += "&search=" + search
+		u += "&search=" + url.QueryEscape(search)
 	}
 	return u
 }

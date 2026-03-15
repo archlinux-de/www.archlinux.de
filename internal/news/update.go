@@ -88,7 +88,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func() { _ = stmt.Close() }()
 
 	var ids []any
 	for _, item := range items {
@@ -134,11 +134,14 @@ func fetchNews(ctx context.Context) ([]newsItem, error) {
 		if err != nil {
 			return nil, err
 		}
+		defer func() { _ = resp.Body.Close() }()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("fetch news: status %d", resp.StatusCode)
+		}
 
 		var flarum flarumResponse
-		err = json.NewDecoder(resp.Body).Decode(&flarum)
-		resp.Body.Close()
-		if err != nil {
+		if err := json.NewDecoder(resp.Body).Decode(&flarum); err != nil {
 			return nil, fmt.Errorf("decode flarum response: %w", err)
 		}
 

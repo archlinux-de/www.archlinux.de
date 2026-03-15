@@ -44,11 +44,17 @@ func NewHandler(
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /download", h.index)
 	mux.HandleFunc("GET /download/iso/{version}/{file}", h.iso)
+	mux.HandleFunc("GET /download/iso/{version}/{$}", h.isoDir)
 	mux.HandleFunc("GET /download/{repository}/os/{architecture}/{file}", h.pkg)
 	mux.HandleFunc("GET /download/{file...}", h.fallback)
 }
 
-const mirrorArchive = "https://archive.archlinux.org/"
+const (
+	mirrorArchive     = "https://archive.archlinux.org/"
+	downloadMirrors   = 10
+	selectMirrorCount = 20
+	hashMultiplier    = 31
+)
 
 type downloadData struct {
 	Release     *releases.Release
@@ -67,7 +73,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mirrorList, err := h.mirrors.TopByScore(ctx, 10)
+	mirrorList, err := h.mirrors.TopByScore(ctx, downloadMirrors)
 	if err != nil {
 		layout.ServerError(w, "query mirrors", err)
 		return
@@ -94,8 +100,8 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 }
 
 var versionDirMap = map[string]string{
-	"0.7.1":    "0.7",
-	"0.7.2":    "0.7",
+	"0.7.1":     "0.7",
+	"0.7.2":     "0.7",
 	"2007.08-2": "2007.08",
 }
 
@@ -125,6 +131,33 @@ func (h *Handler) iso(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, mirror+"iso/"+version+"/"+file, http.StatusTemporaryRedirect)
+}
+
+func (h *Handler) isoDir(w http.ResponseWriter, r *http.Request) {
+	version := r.PathValue("version")
+
+	ra, err := h.releases.Availability(r.Context(), version)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	if !ra.Available {
+		dirVersion := version
+		if mapped, ok := versionDirMap[version]; ok {
+			dirVersion = mapped
+		}
+		http.Redirect(w, r, mirrorArchive+"iso/"+dirVersion+"/", http.StatusMovedPermanently)
+		return
+	}
+
+	mirror := h.selectMirror(r, ra.Created)
+	if mirror == "" {
+		http.NotFound(w, r)
+		return
+	}
+
+	http.Redirect(w, r, mirror+"iso/"+version+"/", http.StatusTemporaryRedirect)
 }
 
 var pkgNameRe = regexp.MustCompile(`^([^-]+.*)-[^-]+-[^-]+-.*$`)
@@ -164,7 +197,7 @@ func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
 	countryCode := h.lookupCountry(r)
 
-	urls, err := h.mirrors.SelectByCountry(r.Context(), countryCode, lastSync, 20)
+	urls, err := h.mirrors.SelectByCountry(r.Context(), countryCode, lastSync, selectMirrorCount)
 	if err != nil || len(urls) == 0 {
 		return ""
 	}
@@ -172,9 +205,9 @@ func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
 	clientIP := clientAddr(r)
 	seed := uint64(0)
 	for _, b := range []byte(clientIP) {
-		seed = seed*31 + uint64(b)
+		seed = seed*hashMultiplier + uint64(b)
 	}
-	rng := rand.New(rand.NewPCG(seed, 0))
+	rng := rand.New(rand.NewPCG(seed, 0)) //nolint:gosec // deterministic selection per client IP
 	return urls[rng.IntN(len(urls))]
 }
 
@@ -202,7 +235,7 @@ func (h *Handler) lookupCountry(r *http.Request) string {
 
 func clientAddr(r *http.Request) string {
 	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
-		parts := strings.SplitN(forwarded, ",", 2)
+		parts := strings.SplitN(forwarded, ",", 2) //nolint:mnd
 		return strings.TrimSpace(parts[0])
 	}
 	host, _, err := net.SplitHostPort(r.RemoteAddr)

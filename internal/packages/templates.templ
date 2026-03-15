@@ -2,6 +2,7 @@ package packages
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -90,12 +91,12 @@ func formatDate(unix int64) string {
 }
 
 func paginationURL(search, repo string, offset int) string {
-	url := fmt.Sprintf("/packages?offset=%d", offset)
+	u := fmt.Sprintf("/packages?offset=%d", offset)
 	if search != "" {
-		url += "&search=" + search
+		u += "&search=" + url.QueryEscape(search)
 	}
 	if repo != "" {
-		url += "&repository=" + repo
+		u += "&repository=" + url.QueryEscape(repo)
 	}
-	return url
+	return u
 }

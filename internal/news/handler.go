@@ -2,13 +2,17 @@ package news
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 
 	"www/internal/ui/layout"
 )
 
-const defaultLimit = 25
+const (
+	defaultLimit      = 25
+	maxDescriptionLen = 100
+)
 
 type Handler struct {
 	repo     *Repository
@@ -97,7 +101,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	item, err := h.repo.FindByID(r.Context(), id)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		http.NotFound(w, r)
 		return
 	}
@@ -108,7 +112,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 
 	page := layout.Page{
 		Title:       item.Title,
-		Description: truncate(item.Title, 100),
+		Description: truncate(item.Title, maxDescriptionLen),
 		Path:        "/news/" + idStr,
 		Manifest:    h.manifest,
 	}
@@ -117,8 +121,9 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 }
 
 func truncate(s string, maxLen int) string {
-	if len(s) <= maxLen {
+	r := []rune(s)
+	if len(r) <= maxLen {
 		return s
 	}
-	return s[:maxLen]
+	return string(r[:maxLen])
 }

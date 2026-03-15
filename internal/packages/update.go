@@ -1,9 +1,11 @@
 package packages
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
 	"database/sql"
-	"encoding/json"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log/slog"
@@ -62,24 +64,52 @@ func ensureRepository(ctx context.Context, db *sql.DB, repo repoConfig) error {
 func updateRepository(ctx context.Context, db *sql.DB, mirror string, repo repoConfig) error {
 	url := fmt.Sprintf("%s%s/os/%s/%s.files", mirror, repo.Name, repo.Architecture, repo.Name)
 
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return fmt.Errorf("create request %s: %w", url, err)
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("download %s: %w", url, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("download %s: status %d", url, resp.StatusCode)
 	}
 
-	packages, err := pacmandb.Parse(resp.Body)
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("read %s: %w", url, err)
+	}
+
+	newHash := sha256hex(data)
+
+	var storedHash sql.NullString
+	_ = db.QueryRowContext(ctx,
+		`SELECT sha256sum FROM repository WHERE name = ? AND architecture = ?`,
+		repo.Name, repo.Architecture).Scan(&storedHash)
+
+	if storedHash.Valid && storedHash.String == newHash {
+		slog.Info("repository unchanged, skipping", "repo", repo.Name)
+		return nil
+	}
+
+	packages, err := pacmandb.Parse(bytes.NewReader(data))
 	if err != nil {
 		return fmt.Errorf("parse %s: %w", repo.Name, err)
 	}
 
 	slog.Info("parsed packages", "repo", repo.Name, "count", len(packages))
 
-	return syncPackages(ctx, db, repo, packages)
+	if err := syncPackages(ctx, db, repo, packages); err != nil {
+		return err
+	}
+
+	_, err = db.ExecContext(ctx,
+		`UPDATE repository SET sha256sum = ? WHERE name = ? AND architecture = ?`,
+		newHash, repo.Name, repo.Architecture)
+	return err
 }
 
 func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []pacmandb.Package) error {
@@ -98,7 +128,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 		return fmt.Errorf("find repository: %w", err)
 	}
 
-	// Delete existing packages for this repository (full replace strategy)
+	// Delete existing packages for this repository (full replace per repo)
 	if _, err := tx.ExecContext(ctx,
 		`DELETE FROM package_relation WHERE package_id IN (SELECT id FROM package WHERE repository_id = ?)`,
 		repoID,
@@ -122,7 +152,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 	if err != nil {
 		return fmt.Errorf("prepare package insert: %w", err)
 	}
-	defer insertPkg.Close()
+	defer func() { _ = insertPkg.Close() }()
 
 	insertRel, err := tx.PrepareContext(ctx,
 		`INSERT INTO package_relation (package_id, type, target_name, target_version, version_constraint)
@@ -130,14 +160,14 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 	if err != nil {
 		return fmt.Errorf("prepare relation insert: %w", err)
 	}
-	defer insertRel.Close()
+	defer func() { _ = insertRel.Close() }()
 
 	insertFiles, err := tx.PrepareContext(ctx,
 		`INSERT INTO files (package_id, file_list) VALUES (?, ?)`)
 	if err != nil {
 		return fmt.Errorf("prepare files insert: %w", err)
 	}
-	defer insertFiles.Close()
+	defer func() { _ = insertFiles.Close() }()
 
 	for _, pkg := range packages {
 		var pkgURL *string
@@ -149,7 +179,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 			repoID, pkg.Name, pkg.Base, pkg.Version, pkg.Description, pkgURL,
 			pkg.BuildDate, pkg.CompressedSize, pkg.InstalledSize,
 			pkg.PackagerName, nullString(pkg.PackagerEmail),
-			licensesJSON(pkg.Licenses), groupsJSON(pkg.Groups),
+			pacmandb.LicensesJSON(pkg.Licenses), pacmandb.GroupsJSON(pkg.Groups),
 		)
 		if err != nil {
 			return fmt.Errorf("insert package %s: %w", pkg.Name, err)
@@ -184,39 +214,14 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 	return tx.Commit()
 }
 
+func sha256hex(data []byte) string {
+	h := sha256.Sum256(data)
+	return hex.EncodeToString(h[:])
+}
+
 func nullString(s string) any {
 	if s == "" {
 		return nil
 	}
 	return s
-}
-
-func licensesJSON(licenses []string) string {
-	if len(licenses) == 0 {
-		return "[]"
-	}
-	b, _ := json.Marshal(licenses)
-	return string(b)
-}
-
-func groupsJSON(groups []string) string {
-	if len(groups) == 0 {
-		return "[]"
-	}
-	b, _ := json.Marshal(groups)
-	return string(b)
-}
-
-// Download downloads the .files database for a repo and returns the body reader.
-func Download(mirror, repoName, arch string) (io.ReadCloser, error) {
-	url := fmt.Sprintf("%s%s/os/%s/%s.files", mirror, repoName, arch, repoName)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		resp.Body.Close()
-		return nil, fmt.Errorf("download %s: status %d", url, resp.StatusCode)
-	}
-	return resp.Body, nil
 }
