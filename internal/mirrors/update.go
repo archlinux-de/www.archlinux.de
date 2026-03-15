@@ -52,7 +52,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 
 	stmt, err := tx.PrepareContext(ctx,
 		`INSERT INTO mirror (url, country_code, last_sync, delay, duration_avg, duration_stddev, score, completion_pct, ipv4, ipv6)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+		 VALUES (?, (SELECT code FROM country WHERE code = ?), ?, ?, ?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		return err
 	}

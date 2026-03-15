@@ -8,8 +8,8 @@ export DATABASE := 'tmp/www.db'
 default:
     just --list
 
-# first-time setup: install dependencies, build and generate fixtures
-init: install build-assets build-templates
+# first-time setup: install dependencies, build and fetch data
+init: install build-assets build-templates update-data
 
 # install dependencies
 install:
@@ -93,6 +93,33 @@ update-pnpm:
 
 # update all dependencies to latest versions
 update: update-go update-pnpm
+
+# fetch all external data into the local database
+update-data: update-countries update-packages update-news update-mirrors update-releases update-popularities
+
+# fetch package data from Arch Linux repositories
+update-packages:
+    go run . update-packages
+
+# fetch news from archlinux.org
+update-news:
+    go run . update-news
+
+# fetch mirror list from archlinux.org
+update-mirrors:
+    go run . update-mirrors
+
+# fetch release data from archlinux.org
+update-releases:
+    go run . update-releases
+
+# fetch country data from restcountries.com
+update-countries:
+    go run . update-countries
+
+# fetch popularity data from pkgstats.archlinux.de
+update-popularities:
+    go run . update-popularities
 
 # generate test coverage report
 coverage:

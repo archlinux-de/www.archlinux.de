@@ -170,14 +170,8 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 		}
 	}
 
-	// Rebuild FTS index
-	if _, err := tx.ExecContext(ctx, `DELETE FROM package_fts`); err != nil {
-		return fmt.Errorf("clear fts: %w", err)
-	}
-	if _, err := tx.ExecContext(ctx,
-		`INSERT INTO package_fts(rowid, name, base, description, groups)
-		 SELECT id, name, base, description, groups FROM package`,
-	); err != nil {
+	// Rebuild FTS index from content table
+	if _, err := tx.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
 		return fmt.Errorf("rebuild fts: %w", err)
 	}
 

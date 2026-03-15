@@ -3,6 +3,7 @@ package packages
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 type PackageSummary struct {
@@ -29,7 +30,7 @@ func (r *Repository) ListRepositoryNames(ctx context.Context) ([]string, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var repos []string
 	for rows.Next() {
@@ -47,7 +48,7 @@ func (r *Repository) Search(ctx context.Context, search, repo string, limit, off
 	var countArgs, dataArgs []any
 
 	if search != "" {
-		ftsSearch := search + "*"
+		ftsSearch := `"` + strings.ReplaceAll(search, `"`, `""`) + `" *`
 		baseWhere := `FROM package p
 			JOIN package_fts fts ON fts.rowid = p.id
 			JOIN repository r ON r.id = p.repository_id
@@ -90,7 +91,7 @@ func (r *Repository) Search(ctx context.Context, search, repo string, limit, off
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var pkgs []PackageSummary
 	for rows.Next() {
@@ -115,7 +116,7 @@ func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSumm
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var pkgs []PackageSummary
 	for rows.Next() {
@@ -154,7 +155,7 @@ func (r *Repository) AllStableRefs(ctx context.Context) ([]PackageRef, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var refs []PackageRef
 	for rows.Next() {
