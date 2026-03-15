@@ -17,19 +17,24 @@ type relengResponse struct {
 }
 
 type relengRelease struct {
-	Version       string  `json:"version"`
-	Available     bool    `json:"available"`
-	Info          string  `json:"info"`
-	Created       string  `json:"created"`
-	ReleaseDate   string  `json:"release_date"`
-	KernelVersion *string `json:"kernel_version"`
-	FileName      *string `json:"file_name"`
-	FileLength    *int64  `json:"file_length"`
-	SHA1Sum       *string `json:"sha1_sum"`
-	SHA256Sum     *string `json:"sha256_sum"`
-	B2Sum         *string `json:"b2_sum"`
-	TorrentURL    *string `json:"torrent_url"`
-	MagnetURI     *string `json:"magnet_uri"`
+	Version       string         `json:"version"`
+	Available     bool           `json:"available"`
+	Info          string         `json:"info"`
+	Created       string         `json:"created"`
+	ReleaseDate   string         `json:"release_date"`
+	KernelVersion *string        `json:"kernel_version"`
+	ISOUrl        *string        `json:"iso_url"`
+	SHA1Sum       *string        `json:"sha1_sum"`
+	SHA256Sum     *string        `json:"sha256_sum"`
+	B2Sum         *string        `json:"b2_sum"`
+	TorrentURL    *string        `json:"torrent_url"`
+	MagnetURI     *string        `json:"magnet_uri"`
+	Torrent       *relengTorrent `json:"torrent"`
+}
+
+type relengTorrent struct {
+	FileName   string `json:"file_name"`
+	FileLength int64  `json:"file_length"`
 }
 
 func Update(ctx context.Context, db *sql.DB) error {
@@ -60,7 +65,7 @@ func Update(ctx context.Context, db *sql.DB) error {
 
 	for _, r := range releases {
 		var created, releaseDate *int64
-		if t, err := time.Parse("2006-01-02T15:04:05.999999", r.Created); err == nil {
+		if t, err := time.Parse(time.RFC3339Nano, r.Created); err == nil {
 			unix := t.Unix()
 			created = &unix
 		}
@@ -69,11 +74,24 @@ func Update(ctx context.Context, db *sql.DB) error {
 			releaseDate = &unix
 		}
 
+		var fileName *string
+		var fileLength *int64
+		if r.Torrent != nil {
+			fileName = &r.Torrent.FileName
+			fileLength = &r.Torrent.FileLength
+		}
+
+		var torrentURL *string
+		if r.TorrentURL != nil && *r.TorrentURL != "" {
+			full := "https://archlinux.org" + *r.TorrentURL
+			torrentURL = &full
+		}
+
 		if _, err := stmt.ExecContext(ctx,
 			r.Version, r.Available, r.Info, created, releaseDate,
-			r.KernelVersion, r.FileName, r.FileLength,
+			r.KernelVersion, fileName, fileLength,
 			r.SHA1Sum, r.SHA256Sum, r.B2Sum,
-			r.TorrentURL, r.MagnetURI,
+			torrentURL, r.MagnetURI,
 		); err != nil {
 			return err
 		}
