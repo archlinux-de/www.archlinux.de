@@ -25,7 +25,6 @@ type PackageDetail struct {
 	Groups         []string
 	Relations      map[string][]Relation
 	InverseRels    map[string][]Relation
-	Files          []string
 }
 
 func (p PackageDetail) FileName() string {
@@ -84,7 +83,6 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 	if pkgID > 0 {
 		pkg.Relations = r.loadRelations(ctx, pkgID)
 		pkg.InverseRels = r.loadInverseRelations(ctx, name, arch)
-		pkg.Files = r.loadFiles(ctx, pkgID)
 	}
 
 	return pkg, nil
@@ -140,6 +138,14 @@ func (r *Repository) loadInverseRelations(ctx context.Context, name, arch string
 		}
 	}
 	return rels
+}
+
+func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []string {
+	pkgID := r.packageID(ctx, repo, arch, name)
+	if pkgID == 0 {
+		return nil
+	}
+	return r.loadFiles(ctx, pkgID)
 }
 
 func (r *Repository) loadFiles(ctx context.Context, pkgID int64) []string {

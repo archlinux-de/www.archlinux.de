@@ -125,17 +125,7 @@ templ PackageDetailPage(pkg PackageDetail) {
 		</div>
 		<div class="col-12">
 			<h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
-			if len(pkg.Files) > 0 {
-				<ul class="list-unstyled ms-4 overflow-auto">
-					for _, f := range pkg.Files {
-						if strings.HasSuffix(f, "/") {
-							<li class="text-muted">{ f }</li>
-						} else {
-							<li>{ f }</li>
-						}
-					}
-				</ul>
-			}
+			<package-files src={ fmt.Sprintf("/packages/%s/%s/%s/files", pkg.Repository, pkg.Architecture, pkg.Name) }></package-files>
 		</div>
 	</div>
 }

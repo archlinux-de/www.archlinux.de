@@ -2,6 +2,7 @@ package packagedetail
 
 import (
 	"database/sql"
+	"encoding/json"
 	"net/http"
 
 	"www/internal/ui/layout"
@@ -18,6 +19,7 @@ func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}", h.show)
+	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}/files", h.files)
 }
 
 func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
@@ -44,4 +46,15 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	layout.Render(w, r, page, PackageDetailPage(pkg))
+}
+
+func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
+	repoName := r.PathValue("repo")
+	arch := r.PathValue("arch")
+	pkgName := r.PathValue("name")
+
+	files := h.repo.LoadFiles(r.Context(), repoName, arch, pkgName)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(files)
 }
