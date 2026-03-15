@@ -1,0 +1,19 @@
+package httperror
+
+templ NotFoundContent(path string) {
+	<div class="alert alert-danger" role="alert">
+		<h4 class="alert-heading">Datei nicht gefunden</h4>
+		<p>Die angeforderte Datei <strong>{ path }</strong> wurde nicht gefunden.</p>
+		<hr/>
+		<p class="mb-0">Kontaktiere uns, falls das Problem weiterhin besteht.</p>
+	</div>
+}
+
+templ ErrorContent(title string) {
+	<div class="alert alert-danger" role="alert">
+		<h4 class="alert-heading">{ title }</h4>
+		<p>Ein unerwarteter Fehler ist aufgetreten.</p>
+		<hr/>
+		<p class="mb-0">Kontaktiere uns, falls das Problem weiterhin besteht.</p>
+	</div>
+}

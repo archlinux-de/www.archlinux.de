@@ -57,7 +57,7 @@ func renderErrorPage(w http.ResponseWriter, r *http.Request, manifest *layout.Ma
 
 	var content templ.Component
 	if status == http.StatusNotFound {
-		page.Title = "File not found"
+		page.Title = "Datei nicht gefunden"
 		content = NotFoundContent(r.URL.Path)
 	} else {
 		content = ErrorContent(http.StatusText(status))

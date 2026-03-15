@@ -10,13 +10,13 @@ import (
 	"www/internal/config"
 	"www/internal/countries"
 	"www/internal/database"
+	"www/internal/httperror"
 	"www/internal/mirrors"
 	"www/internal/news"
 	"www/internal/packages"
 	"www/internal/popularity"
 	"www/internal/releases"
 	"www/internal/ui"
-	"www/internal/ui/httperror"
 	uilayout "www/internal/ui/layout"
 	"www/internal/web"
 
@@ -91,7 +91,7 @@ func runCommand(cmd string, cfg config.Config) int {
 			return 1
 		}
 	default:
-		slog.Error("unknown command", "command", cmd)
+		slog.Error("unknown command", "command", cmd) //nolint:gosec // cmd is from os.Args
 		return 1
 	}
 
@@ -119,7 +119,7 @@ func run(cfg config.Config) error {
 		if err != nil {
 			slog.Warn("failed to open GeoIP database, continuing without", "error", err)
 		} else {
-			defer geodb.Close()
+			defer func() { _ = geodb.Close() }()
 		}
 	}
 

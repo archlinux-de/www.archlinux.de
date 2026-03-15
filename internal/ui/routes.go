@@ -17,9 +17,9 @@ import (
 	"www/internal/packages"
 	"www/internal/releases"
 	"www/internal/sitemap"
-	"www/internal/ui/home"
+	"www/internal/home"
+	"www/internal/legal"
 	"www/internal/ui/layout"
-	"www/internal/ui/legal"
 
 	"github.com/oschwald/maxminddb-golang/v2"
 )
