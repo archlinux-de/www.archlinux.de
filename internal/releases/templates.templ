@@ -64,7 +64,7 @@ templ ReleaseList(data releasesData) {
 	}
 }
 
-templ ReleaseDetail(rel releaseRow) {
+templ ReleaseDetail(rel Release) {
 	<h1 class="mb-4">Arch Linux { rel.Version }</h1>
 	if rel.Info != "" {
 		<div class="mb-4 text-break">

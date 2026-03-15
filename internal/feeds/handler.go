@@ -1,18 +1,26 @@
 package feeds
 
 import (
-	"database/sql"
 	"encoding/xml"
+	"fmt"
 	"net/http"
 	"time"
+
+	"www/internal/news"
+	"www/internal/packages"
+	"www/internal/releases"
 )
 
+const feedItems = 25
+
 type Handler struct {
-	db *sql.DB
+	news     *news.Repository
+	packages *packages.Repository
+	releases *releases.Repository
 }
 
-func NewHandler(db *sql.DB) *Handler {
-	return &Handler{db: db}
+func NewHandler(n *news.Repository, p *packages.Repository, r *releases.Repository) *Handler {
+	return &Handler{news: n, packages: p, releases: r}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -38,12 +46,12 @@ type atomLink struct {
 }
 
 type atomEntry struct {
-	Title   string      `xml:"title"`
-	Link    atomLink    `xml:"link"`
-	ID      string      `xml:"id"`
-	Updated string      `xml:"updated"`
-	Author  *atomAuthor `xml:"author,omitempty"`
-	Summary string      `xml:"summary,omitempty"`
+	Title   string       `xml:"title"`
+	Link    atomLink     `xml:"link"`
+	ID      string       `xml:"id"`
+	Updated string       `xml:"updated"`
+	Author  *atomAuthor  `xml:"author,omitempty"`
+	Summary string       `xml:"summary,omitempty"`
 	Content *atomContent `xml:"content,omitempty"`
 }
 
@@ -59,10 +67,10 @@ type atomContent struct {
 
 func writeAtom(w http.ResponseWriter, feed atomFeed) {
 	w.Header().Set("Content-Type", "application/atom+xml; charset=UTF-8")
-	w.Write([]byte(xml.Header))
+	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	enc.Encode(feed)
+	_ = enc.Encode(feed)
 }
 
 func formatTime(unix int64) string {
@@ -70,50 +78,38 @@ func formatTime(unix int64) string {
 }
 
 func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
-	rows, err := h.db.QueryContext(r.Context(),
-		`SELECT id, title, link, COALESCE(description, ''), COALESCE(author_name, ''), COALESCE(author_link, ''), last_modified
-		 FROM news_item ORDER BY last_modified DESC LIMIT 25`)
+	items, err := h.news.Latest(r.Context(), feedItems)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
 
 	feed := atomFeed{
-		XMLNS:   "http://www.w3.org/2005/Atom",
-		Title:   "Neuigkeiten - www.archlinux.de",
-		Link:    atomLink{Href: "/news"},
-		ID:      "/news/feed",
+		XMLNS: "http://www.w3.org/2005/Atom",
+		Title: "Neuigkeiten - www.archlinux.de",
+		Link:  atomLink{Href: "/news"},
+		ID:    "/news/feed",
 	}
 
-	for rows.Next() {
-		var id int
-		var title, link, desc, authorName, authorLink string
-		var lastMod int64
-		if err := rows.Scan(&id, &title, &link, &desc, &authorName, &authorLink, &lastMod); err != nil {
-			continue
-		}
-
+	for _, item := range items {
 		entry := atomEntry{
-			Title:   title,
-			Link:    atomLink{Href: link},
-			ID:      link,
-			Updated: formatTime(lastMod),
+			Title:   item.Title,
+			Link:    atomLink{Href: item.Link},
+			ID:      item.Link,
+			Updated: formatTime(item.LastModified),
 		}
-		if authorName != "" {
-			entry.Author = &atomAuthor{Name: authorName, URI: authorLink}
+		if item.AuthorName != "" {
+			entry.Author = &atomAuthor{Name: item.AuthorName, URI: item.AuthorLink}
 		}
-		if desc != "" {
-			entry.Content = &atomContent{Type: "html", Content: desc}
+		if item.Description != "" {
+			entry.Content = &atomContent{Type: "html", Content: item.Description}
 		}
-
 		feed.Entries = append(feed.Entries, entry)
-		if feed.Updated == "" {
-			feed.Updated = entry.Updated
-		}
 	}
 
-	if feed.Updated == "" {
+	if len(feed.Entries) > 0 {
+		feed.Updated = feed.Entries[0].Updated
+	} else {
 		feed.Updated = formatTime(time.Now().Unix())
 	}
 
@@ -121,52 +117,37 @@ func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
-	rows, err := h.db.QueryContext(r.Context(),
-		`SELECT p.name, p.version, COALESCE(p.description, ''), COALESCE(p.build_date, 0),
-		        COALESCE(p.packager_name, ''), r.name, r.architecture
-		 FROM package p
-		 JOIN repository r ON r.id = p.repository_id
-		 WHERE r.testing = 0
-		 ORDER BY p.build_date DESC LIMIT 25`)
+	pkgs, err := h.packages.LatestStable(r.Context(), feedItems)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
 
 	feed := atomFeed{
-		XMLNS:   "http://www.w3.org/2005/Atom",
-		Title:   "Pakete - www.archlinux.de",
-		Link:    atomLink{Href: "/packages"},
-		ID:      "/packages/feed",
+		XMLNS: "http://www.w3.org/2005/Atom",
+		Title: "Pakete - www.archlinux.de",
+		Link:  atomLink{Href: "/packages"},
+		ID:    "/packages/feed",
 	}
 
-	for rows.Next() {
-		var name, version, desc, packager, repo, arch string
-		var buildDate int64
-		if err := rows.Scan(&name, &version, &desc, &buildDate, &packager, &repo, &arch); err != nil {
-			continue
-		}
-
-		url := "/packages/" + repo + "/" + arch + "/" + name
+	for _, p := range pkgs {
+		url := fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Architecture, p.Name)
 		entry := atomEntry{
-			Title:   name + " " + version,
+			Title:   p.Name + " " + p.Version,
 			Link:    atomLink{Href: url},
 			ID:      url,
-			Updated: formatTime(buildDate),
-			Summary: desc,
+			Updated: formatTime(p.BuildDate),
+			Summary: p.Description,
 		}
-		if packager != "" {
-			entry.Author = &atomAuthor{Name: packager}
+		if p.PackagerName != "" {
+			entry.Author = &atomAuthor{Name: p.PackagerName}
 		}
-
 		feed.Entries = append(feed.Entries, entry)
-		if feed.Updated == "" {
-			feed.Updated = entry.Updated
-		}
 	}
 
-	if feed.Updated == "" {
+	if len(feed.Entries) > 0 {
+		feed.Updated = feed.Entries[0].Updated
+	} else {
 		feed.Updated = formatTime(time.Now().Unix())
 	}
 
@@ -174,47 +155,34 @@ func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) releasesFeed(w http.ResponseWriter, r *http.Request) {
-	rows, err := h.db.QueryContext(r.Context(),
-		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(file_name, '')
-		 FROM release WHERE available = 1 ORDER BY release_date DESC`)
+	rels, err := h.releases.AllAvailable(r.Context())
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
 
 	feed := atomFeed{
-		XMLNS:   "http://www.w3.org/2005/Atom",
-		Title:   "Releases - www.archlinux.de",
-		Link:    atomLink{Href: "/releases"},
-		ID:      "/releases/feed",
+		XMLNS: "http://www.w3.org/2005/Atom",
+		Title: "Releases - www.archlinux.de",
+		Link:  atomLink{Href: "/releases"},
+		ID:    "/releases/feed",
 	}
 
-	for rows.Next() {
-		var version, info, fileName string
-		var available bool
-		var releaseDate int64
-		if err := rows.Scan(&version, &available, &info, &releaseDate, &fileName); err != nil {
-			continue
-		}
-
-		url := "/releases/" + version
+	for _, rel := range rels {
 		entry := atomEntry{
-			Title:   "Arch Linux " + version,
-			Link:    atomLink{Href: url},
-			ID:      url,
-			Updated: formatTime(releaseDate),
+			Title:   "Arch Linux " + rel.Version,
+			Link:    atomLink{Href: "/releases/" + rel.Version},
+			ID:      "/releases/" + rel.Version,
+			Updated: formatTime(rel.ReleaseDate),
 			Author:  &atomAuthor{Name: "Arch Linux"},
-			Summary: info,
+			Summary: rel.Info,
 		}
-
 		feed.Entries = append(feed.Entries, entry)
-		if feed.Updated == "" {
-			feed.Updated = entry.Updated
-		}
 	}
 
-	if feed.Updated == "" {
+	if len(feed.Entries) > 0 {
+		feed.Updated = feed.Entries[0].Updated
+	} else {
 		feed.Updated = formatTime(time.Now().Unix())
 	}
 

@@ -68,7 +68,7 @@ templ NewsList(data newsData) {
 	}
 }
 
-templ NewsDetail(item newsRow) {
+templ NewsDetail(item NewsItem) {
 	<h1 class="mb-4">{ item.Title }</h1>
 	<div class="mb-3 text-muted">
 		<span>{ formatDate(item.LastModified) }</span>

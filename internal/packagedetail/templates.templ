@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-templ PackageDetail(pkg packageDetail, inverseRels map[string][]relation) {
+templ PackageDetailPage(pkg PackageDetail) {
 	<h1 class="mb-4">{ pkg.Name }</h1>
 	<div class="row">
 		<div class="col-12 col-xl-6">
@@ -99,10 +99,10 @@ templ PackageDetail(pkg packageDetail, inverseRels map[string][]relation) {
 				@relationSection("kollidiert mit", pkg.Relations["conflicts"], pkg.Repository, pkg.Architecture)
 				@relationSection("zum bauen", pkg.Relations["makedepends"], pkg.Repository, pkg.Architecture)
 				@relationSection("zum testen", pkg.Relations["checkdepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("benötigt von", inverseRels["depends"], pkg.Repository, pkg.Architecture)
-				@relationSection("optional für", inverseRels["optdepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("bauen für", inverseRels["makedepends"], pkg.Repository, pkg.Architecture)
-				@relationSection("testen für", inverseRels["checkdepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("benötigt von", pkg.InverseRels["depends"], pkg.Repository, pkg.Architecture)
+				@relationSection("optional für", pkg.InverseRels["optdepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("bauen für", pkg.InverseRels["makedepends"], pkg.Repository, pkg.Architecture)
+				@relationSection("testen für", pkg.InverseRels["checkdepends"], pkg.Repository, pkg.Architecture)
 			</div>
 		</div>
 		if len(pkg.Files) > 0 {
@@ -118,7 +118,7 @@ templ PackageDetail(pkg packageDetail, inverseRels map[string][]relation) {
 	</div>
 }
 
-templ relationSection(title string, rels []relation, repo, arch string) {
+templ relationSection(title string, rels []Relation, repo, arch string) {
 	if len(rels) > 0 {
 		<div class="col-12 col-sm-6 mb-3">
 			<h6>{ title }</h6>

@@ -1,18 +1,24 @@
 package sitemap
 
 import (
-	"database/sql"
 	"encoding/xml"
 	"net/http"
+	"strconv"
 	"time"
+
+	"www/internal/news"
+	"www/internal/packages"
+	"www/internal/releases"
 )
 
 type Handler struct {
-	db *sql.DB
+	news     *news.Repository
+	packages *packages.Repository
+	releases *releases.Repository
 }
 
-func NewHandler(db *sql.DB) *Handler {
-	return &Handler{db: db}
+func NewHandler(n *news.Repository, p *packages.Repository, r *releases.Repository) *Handler {
+	return &Handler{news: n, packages: p, releases: r}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -42,87 +48,42 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		{Loc: "/download"},
 	}
 
-	// Packages
-	rows, err := h.db.QueryContext(ctx,
-		`SELECT p.name, r.name, r.architecture, COALESCE(p.build_date, 0)
-		 FROM package p
-		 JOIN repository r ON r.id = p.repository_id
-		 WHERE r.testing = 0`)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var name, repo, arch string
-			var buildDate int64
-			if err := rows.Scan(&name, &repo, &arch, &buildDate); err != nil {
-				continue
-			}
-			u := siteURL{Loc: "/packages/" + repo + "/" + arch + "/" + name}
-			if buildDate > 0 {
-				u.LastMod = time.Unix(buildDate, 0).UTC().Format("2006-01-02")
+	if pkgRefs, err := h.packages.AllStableRefs(ctx); err == nil {
+		for _, ref := range pkgRefs {
+			u := siteURL{Loc: "/packages/" + ref.Repository + "/" + ref.Architecture + "/" + ref.Name}
+			if ref.BuildDate > 0 {
+				u.LastMod = time.Unix(ref.BuildDate, 0).UTC().Format("2006-01-02")
 			}
 			urls = append(urls, u)
 		}
 	}
 
-	// News
-	rows2, err := h.db.QueryContext(ctx,
-		`SELECT id, last_modified FROM news_item`)
-	if err == nil {
-		defer rows2.Close()
-		for rows2.Next() {
-			var id int
-			var lastMod int64
-			if err := rows2.Scan(&id, &lastMod); err != nil {
-				continue
-			}
-			u := siteURL{Loc: "/news/" + itoa(id)}
-			if lastMod > 0 {
-				u.LastMod = time.Unix(lastMod, 0).UTC().Format("2006-01-02")
+	if newsRefs, err := h.news.AllRefs(ctx); err == nil {
+		for _, ref := range newsRefs {
+			u := siteURL{Loc: "/news/" + strconv.Itoa(ref.ID)}
+			if ref.LastModified > 0 {
+				u.LastMod = time.Unix(ref.LastModified, 0).UTC().Format("2006-01-02")
 			}
 			urls = append(urls, u)
 		}
 	}
 
-	// Releases
-	rows3, err := h.db.QueryContext(ctx,
-		`SELECT version, COALESCE(created, 0) FROM release`)
-	if err == nil {
-		defer rows3.Close()
-		for rows3.Next() {
-			var version string
-			var created int64
-			if err := rows3.Scan(&version, &created); err != nil {
-				continue
-			}
-			u := siteURL{Loc: "/releases/" + version}
-			if created > 0 {
-				u.LastMod = time.Unix(created, 0).UTC().Format("2006-01-02")
+	if relRefs, err := h.releases.AllRefs(ctx); err == nil {
+		for _, ref := range relRefs {
+			u := siteURL{Loc: "/releases/" + ref.Version}
+			if ref.Created > 0 {
+				u.LastMod = time.Unix(ref.Created, 0).UTC().Format("2006-01-02")
 			}
 			urls = append(urls, u)
 		}
 	}
 
 	w.Header().Set("Content-Type", "application/xml; charset=UTF-8")
-	w.Write([]byte(xml.Header))
+	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	enc.Encode(urlSet{
+	_ = enc.Encode(urlSet{
 		XMLNS: "http://www.sitemaps.org/schemas/sitemap/0.9",
 		URLs:  urls,
 	})
-}
-
-func itoa(i int) string {
-	if i == 0 {
-		return "0"
-	}
-	b := make([]byte, 0, 10)
-	for i > 0 {
-		b = append(b, byte('0'+i%10))
-		i /= 10
-	}
-	for l, r := 0, len(b)-1; l < r; l, r = l+1, r-1 {
-		b[l], b[r] = b[r], b[l]
-	}
-	return string(b)
 }

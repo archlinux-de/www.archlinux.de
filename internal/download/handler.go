@@ -1,7 +1,6 @@
 package download
 
 import (
-	"database/sql"
 	"fmt"
 	"math/rand/v2"
 	"net"
@@ -10,19 +9,36 @@ import (
 	"regexp"
 	"strings"
 
+	"www/internal/mirrors"
+	"www/internal/packages"
+	"www/internal/releases"
 	"www/internal/ui/layout"
 
 	"github.com/oschwald/maxminddb-golang/v2"
 )
 
 type Handler struct {
-	db       *sql.DB
+	releases *releases.Repository
+	packages *packages.Repository
+	mirrors  *mirrors.Repository
 	manifest *layout.Manifest
 	geodb    *maxminddb.Reader
 }
 
-func NewHandler(db *sql.DB, manifest *layout.Manifest, geodb *maxminddb.Reader) *Handler {
-	return &Handler{db: db, manifest: manifest, geodb: geodb}
+func NewHandler(
+	relRepo *releases.Repository,
+	pkgRepo *packages.Repository,
+	mirRepo *mirrors.Repository,
+	manifest *layout.Manifest,
+	geodb *maxminddb.Reader,
+) *Handler {
+	return &Handler{
+		releases: relRepo,
+		packages: pkgRepo,
+		mirrors:  mirRepo,
+		manifest: manifest,
+		geodb:    geodb,
+	}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -35,74 +51,25 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 const mirrorArchive = "https://archive.archlinux.org/"
 
 type downloadData struct {
-	Release     *downloadRelease
-	Mirrors     []downloadMirror
+	Release     *releases.Release
+	Mirrors     []mirrors.MirrorSummary
 	ISOPath     string
 	ISOSigPath  string
 	DownloadURL string
 }
 
-type downloadRelease struct {
-	Version       string
-	KernelVersion string
-	FileLength    int64
-	ReleaseDate   int64
-	SHA1Sum       string
-	SHA256Sum     string
-	B2Sum         string
-	TorrentURL    string
-	MagnetURI     string
-	FileName      string
-}
-
-type downloadMirror struct {
-	URL         string
-	CountryName string
-}
-
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var rel downloadRelease
-	err := h.db.QueryRowContext(ctx,
-		`SELECT version, COALESCE(kernel_version, ''), COALESCE(file_length, 0), COALESCE(release_date, 0),
-		        COALESCE(sha1_sum, ''), COALESCE(sha256_sum, ''), COALESCE(b2_sum, ''),
-		        COALESCE(torrent_url, ''), COALESCE(magnet_uri, ''), COALESCE(file_name, '')
-		 FROM release WHERE available = 1 ORDER BY release_date DESC LIMIT 1`).Scan(
-		&rel.Version, &rel.KernelVersion, &rel.FileLength, &rel.ReleaseDate,
-		&rel.SHA1Sum, &rel.SHA256Sum, &rel.B2Sum,
-		&rel.TorrentURL, &rel.MagnetURI, &rel.FileName,
-	)
-	if err == sql.ErrNoRows {
-		layout.ServerError(w, "no available release", fmt.Errorf("no available release found"))
-		return
-	}
+	rel, err := h.releases.LatestAvailable(ctx)
 	if err != nil {
 		layout.ServerError(w, "get release", err)
 		return
 	}
 
-	rows, err := h.db.QueryContext(ctx,
-		`SELECT m.url, COALESCE(c.name, '')
-		 FROM mirror m LEFT JOIN country c ON c.code = m.country_code
-		 ORDER BY m.score ASC LIMIT 10`)
+	mirrorList, err := h.mirrors.TopByScore(ctx, 10)
 	if err != nil {
 		layout.ServerError(w, "query mirrors", err)
-		return
-	}
-	defer rows.Close()
-
-	var mirrors []downloadMirror
-	for rows.Next() {
-		var m downloadMirror
-		if err := rows.Scan(&m.URL, &m.CountryName); err != nil {
-			layout.ServerError(w, "scan mirror", err)
-			return
-		}
-		mirrors = append(mirrors, m)
-	}
-	if err := rows.Err(); err != nil {
-		layout.ServerError(w, "mirror rows", err)
 		return
 	}
 
@@ -110,7 +77,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 	data := downloadData{
 		Release:     &rel,
-		Mirrors:     mirrors,
+		Mirrors:     mirrorList,
 		ISOPath:     isoPath,
 		ISOSigPath:  isoPath + ".sig",
 		DownloadURL: fmt.Sprintf("/download/iso/%s/%s", rel.Version, rel.FileName),
@@ -136,20 +103,13 @@ func (h *Handler) iso(w http.ResponseWriter, r *http.Request) {
 	version := r.PathValue("version")
 	file := r.PathValue("file")
 
-	var available bool
-	var buildDate *int64
-	err := h.db.QueryRowContext(r.Context(),
-		`SELECT available, created FROM release WHERE version = ?`, version).Scan(&available, &buildDate)
-	if err == sql.ErrNoRows {
+	ra, err := h.releases.Availability(r.Context(), version)
+	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	if err != nil {
-		layout.ServerError(w, "get release", err)
-		return
-	}
 
-	if !available {
+	if !ra.Available {
 		dirVersion := version
 		if mapped, ok := versionDirMap[version]; ok {
 			dirVersion = mapped
@@ -158,7 +118,7 @@ func (h *Handler) iso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mirror := h.selectMirror(r, buildDate)
+	mirror := h.selectMirror(r, ra.Created)
 	if mirror == "" {
 		http.NotFound(w, r)
 		return
@@ -177,11 +137,7 @@ func (h *Handler) pkg(w http.ResponseWriter, r *http.Request) {
 	var buildDate *int64
 	matches := pkgNameRe.FindStringSubmatch(file)
 	if matches != nil {
-		_ = h.db.QueryRowContext(r.Context(),
-			`SELECT p.build_date FROM package p
-			 JOIN repository r ON r.id = p.repository_id
-			 WHERE p.name = ? AND r.name = ? AND r.architecture = ?`,
-			matches[1], repo, arch).Scan(&buildDate)
+		buildDate = h.packages.BuildDate(r.Context(), matches[1], repo, arch)
 	}
 
 	mirror := h.selectMirror(r, buildDate)
@@ -208,45 +164,8 @@ func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
 	countryCode := h.lookupCountry(r)
 
-	var query string
-	var args []any
-
-	if lastSync != nil {
-		query = `SELECT m.url FROM mirror m
-			LEFT JOIN country c ON c.code = m.country_code
-			WHERE m.url LIKE 'https%'
-			ORDER BY
-				(CASE WHEN m.country_code = ? THEN 1 ELSE 0 END) DESC,
-				(CASE WHEN m.last_sync >= ? THEN 1 ELSE 0 END) DESC,
-				m.score ASC
-			LIMIT 20`
-		args = []any{countryCode, *lastSync}
-	} else {
-		query = `SELECT m.url FROM mirror m
-			WHERE m.url LIKE 'https%'
-			ORDER BY
-				(CASE WHEN m.country_code = ? THEN 1 ELSE 0 END) DESC,
-				m.score ASC
-			LIMIT 20`
-		args = []any{countryCode}
-	}
-
-	rows, err := h.db.QueryContext(r.Context(), query, args...)
-	if err != nil {
-		return ""
-	}
-	defer rows.Close()
-
-	var mirrors []string
-	for rows.Next() {
-		var url string
-		if err := rows.Scan(&url); err != nil {
-			continue
-		}
-		mirrors = append(mirrors, url)
-	}
-
-	if len(mirrors) == 0 {
+	urls, err := h.mirrors.SelectByCountry(r.Context(), countryCode, lastSync, 20)
+	if err != nil || len(urls) == 0 {
 		return ""
 	}
 
@@ -256,7 +175,7 @@ func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
 		seed = seed*31 + uint64(b)
 	}
 	rng := rand.New(rand.NewPCG(seed, 0))
-	return mirrors[rng.IntN(len(mirrors))]
+	return urls[rng.IntN(len(urls))]
 }
 
 func (h *Handler) lookupCountry(r *http.Request) string {

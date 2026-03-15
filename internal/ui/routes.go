@@ -9,6 +9,8 @@ import (
 
 	"www/internal/download"
 	"www/internal/feeds"
+	"www/internal/home"
+	"www/internal/legal"
 	"www/internal/legacy"
 	"www/internal/mirrors"
 	"www/internal/news"
@@ -17,8 +19,6 @@ import (
 	"www/internal/packages"
 	"www/internal/releases"
 	"www/internal/sitemap"
-	"www/internal/home"
-	"www/internal/legal"
 	"www/internal/ui/layout"
 
 	"github.com/oschwald/maxminddb-golang/v2"
@@ -36,16 +36,22 @@ func RegisterRoutes(
 	geodb *maxminddb.Reader,
 	assets, static, root fs.FS,
 ) {
+	newsRepo := news.NewRepository(db)
+	pkgRepo := packages.NewRepository(db)
+	pkgDetailRepo := packagedetail.NewRepository(db)
+	relRepo := releases.NewRepository(db)
+	mirRepo := mirrors.NewRepository(db)
+
 	home.NewHandler(manifest).RegisterRoutes(mux)
 	legal.NewHandler(manifest).RegisterRoutes(mux)
-	packages.NewHandler(db, manifest).RegisterRoutes(mux)
-	packagedetail.NewHandler(db, manifest).RegisterRoutes(mux)
-	news.NewHandler(db, manifest).RegisterRoutes(mux)
-	mirrors.NewHandler(db, manifest).RegisterRoutes(mux)
-	releases.NewHandler(db, manifest).RegisterRoutes(mux)
-	download.NewHandler(db, manifest, geodb).RegisterRoutes(mux)
-	feeds.NewHandler(db).RegisterRoutes(mux)
-	sitemap.NewHandler(db).RegisterRoutes(mux)
+	packages.NewHandler(pkgRepo, manifest).RegisterRoutes(mux)
+	packagedetail.NewHandler(pkgDetailRepo, manifest).RegisterRoutes(mux)
+	news.NewHandler(newsRepo, manifest).RegisterRoutes(mux)
+	mirrors.NewHandler(mirRepo, manifest).RegisterRoutes(mux)
+	releases.NewHandler(relRepo, manifest).RegisterRoutes(mux)
+	download.NewHandler(relRepo, pkgRepo, mirRepo, manifest, geodb).RegisterRoutes(mux)
+	feeds.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
+	sitemap.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
 	opensearch.RegisterRoutes(mux)
 	legacy.RegisterRoutes(mux)
 	handleAssets(mux, assets)

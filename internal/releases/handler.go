@@ -12,12 +12,12 @@ import (
 const defaultLimit = 25
 
 type Handler struct {
-	db       *sql.DB
+	repo     *Repository
 	manifest *layout.Manifest
 }
 
-func NewHandler(db *sql.DB, manifest *layout.Manifest) *Handler {
-	return &Handler{db: db, manifest: manifest}
+func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
+	return &Handler{repo: repo, manifest: manifest}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -25,29 +25,14 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /releases/{version}", h.show)
 }
 
-type releaseRow struct {
-	Version       string
-	Available     bool
-	Info          string
-	ReleaseDate   int64
-	KernelVersion string
-	FileLength    int64
-	FileName      string
-	SHA1Sum       string
-	SHA256Sum     string
-	B2Sum         string
-	TorrentURL    string
-	MagnetURI     string
-}
-
-func (r releaseRow) ISOUrl() string {
+func (r Release) ISOUrl() string {
 	if r.FileName == "" {
 		return ""
 	}
 	return fmt.Sprintf("/download/iso/%s/%s", r.Version, r.FileName)
 }
 
-func (r releaseRow) ISOSigUrl() string {
+func (r Release) ISOSigUrl() string {
 	if r.FileName == "" {
 		return ""
 	}
@@ -55,7 +40,7 @@ func (r releaseRow) ISOSigUrl() string {
 }
 
 type releasesData struct {
-	Releases []releaseRow
+	Releases []Release
 	Search   string
 	Total    int
 	Offset   int
@@ -93,55 +78,18 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		offset = 0
 	}
 
-	data := releasesData{
-		Search: search,
-		Limit:  defaultLimit,
-		Offset: offset,
-	}
-
-	ctx := r.Context()
-	var countQuery, dataQuery string
-	var countArgs, dataArgs []any
-
-	if search != "" {
-		searchArg := "%" + search + "%"
-		where := ` WHERE version LIKE ? OR info LIKE ? OR kernel_version LIKE ?`
-		countQuery = `SELECT COUNT(*) FROM release` + where
-		countArgs = []any{searchArg, searchArg, searchArg}
-
-		dataQuery = `SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''), COALESCE(file_length, 0), COALESCE(file_name, '')
-			FROM release` + where + ` ORDER BY release_date DESC LIMIT ? OFFSET ?`
-		dataArgs = []any{searchArg, searchArg, searchArg, defaultLimit, offset}
-	} else {
-		countQuery = `SELECT COUNT(*) FROM release`
-		dataQuery = `SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''), COALESCE(file_length, 0), COALESCE(file_name, '')
-			FROM release ORDER BY release_date DESC LIMIT ? OFFSET ?`
-		dataArgs = []any{defaultLimit, offset}
-	}
-
-	if err := h.db.QueryRowContext(ctx, countQuery, countArgs...).Scan(&data.Total); err != nil {
-		layout.ServerError(w, "count releases", err)
-		return
-	}
-
-	rows, err := h.db.QueryContext(ctx, dataQuery, dataArgs...)
+	rels, total, err := h.repo.Search(r.Context(), search, defaultLimit, offset)
 	if err != nil {
-		layout.ServerError(w, "query releases", err)
+		layout.ServerError(w, "search releases", err)
 		return
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var rel releaseRow
-		if err := rows.Scan(&rel.Version, &rel.Available, &rel.Info, &rel.ReleaseDate, &rel.KernelVersion, &rel.FileLength, &rel.FileName); err != nil {
-			layout.ServerError(w, "scan release", err)
-			return
-		}
-		data.Releases = append(data.Releases, rel)
-	}
-	if err := rows.Err(); err != nil {
-		layout.ServerError(w, "release rows", err)
-		return
+	data := releasesData{
+		Releases: rels,
+		Search:   search,
+		Total:    total,
+		Limit:    defaultLimit,
+		Offset:   offset,
 	}
 
 	page := layout.Page{
@@ -149,7 +97,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Description: "Arch Linux Release-Archiv",
 		Path:        "/releases",
 		Manifest:    h.manifest,
-		NoIndex:     data.Total == 0,
+		NoIndex:     total == 0,
 	}
 
 	layout.Render(w, r, page, ReleaseList(data))
@@ -158,16 +106,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	version := r.PathValue("version")
 
-	var rel releaseRow
-	err := h.db.QueryRowContext(r.Context(),
-		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''),
-		        COALESCE(file_length, 0), COALESCE(file_name, ''), COALESCE(sha1_sum, ''), COALESCE(sha256_sum, ''),
-		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, '')
-		 FROM release WHERE version = ?`, version).Scan(
-		&rel.Version, &rel.Available, &rel.Info, &rel.ReleaseDate, &rel.KernelVersion,
-		&rel.FileLength, &rel.FileName, &rel.SHA1Sum, &rel.SHA256Sum,
-		&rel.B2Sum, &rel.TorrentURL, &rel.MagnetURI,
-	)
+	rel, err := h.repo.FindByVersion(r.Context(), version)
 	if err == sql.ErrNoRows {
 		http.NotFound(w, r)
 		return
