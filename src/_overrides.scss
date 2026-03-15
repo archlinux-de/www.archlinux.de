@@ -1,0 +1,21 @@
+.navbar-border-brand {
+    border-bottom: 0.3125rem solid $primary;
+}
+
+// increase tap size for mobile
+@include media-breakpoint-down(md) {
+    .link-list li {
+        margin-bottom: $spacer;
+    }
+}
+
+.table-fixed {
+    table-layout: fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn.btn-outline-secondary {
+        --bs-btn-color: var(--bs-light);
+        --bs-btn-border-color: var(--bs-gray-600);
+    }
+}

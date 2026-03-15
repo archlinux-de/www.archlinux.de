@@ -10,8 +10,8 @@ import (
 	"www/internal/download"
 	"www/internal/feeds"
 	"www/internal/home"
-	"www/internal/legal"
 	"www/internal/legacy"
+	"www/internal/legal"
 	"www/internal/mirrors"
 	"www/internal/news"
 	"www/internal/opensearch"
@@ -42,7 +42,7 @@ func RegisterRoutes(
 	relRepo := releases.NewRepository(db)
 	mirRepo := mirrors.NewRepository(db)
 
-	home.NewHandler(newsRepo, manifest).RegisterRoutes(mux)
+	home.NewHandler(newsRepo, pkgRepo, manifest).RegisterRoutes(mux)
 	legal.NewHandler(manifest).RegisterRoutes(mux)
 	packages.NewHandler(pkgRepo, manifest).RegisterRoutes(mux)
 	packagedetail.NewHandler(pkgDetailRepo, manifest).RegisterRoutes(mux)

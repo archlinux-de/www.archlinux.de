@@ -28,6 +28,10 @@ type PackageDetail struct {
 	Files          []string
 }
 
+func (p PackageDetail) FileName() string {
+	return p.Name + "-" + p.Version + "-" + p.Architecture + ".pkg.tar.zst"
+}
+
 type Relation struct {
 	TargetName        string
 	TargetVersion     string

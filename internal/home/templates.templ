@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 	"www/internal/news"
+	"www/internal/packages"
 )
 
-templ Index(latestNews []news.NewsItem) {
+templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 	<div class="row">
 		<div class="col-12 col-xl-8">
 			<div class="mb-4">
@@ -62,11 +63,34 @@ templ Index(latestNews []news.NewsItem) {
 					<form action="/packages" method="get">
 						<div class="input-group">
 							<input type="text" name="search" class="form-control" placeholder="Paketsuche..." aria-label="Paketsuche"/>
-							<button class="btn btn-outline-primary" type="submit">Suchen</button>
+							<button class="btn btn-primary" type="submit">Suchen</button>
 						</div>
 					</form>
 				</div>
 			</div>
+			if len(recentPkgs) > 0 {
+				<div class="card">
+					<h3 class="card-title card-header">Aktuelle Pakete</h3>
+					<div class="card-body p-1 p-lg-3">
+						<table class="table table-sm table-borderless">
+							<tbody>
+								for _, pkg := range recentPkgs {
+									<tr>
+										<td class="w-75">
+											<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Architecture, pkg.Name)) }>{ pkg.Name }</a>
+										</td>
+										<td class="text-end text-truncate" title={ pkg.Version }>{ pkg.Version }</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+					<div class="card-footer text-muted d-inline-flex justify-content-between">
+						<a class="card-link" href="/packages">mehr Pakete</a>
+						<a class="card-link" href="/packages/feed">Feed</a>
+					</div>
+				</div>
+			}
 			<h4 class="mt-5">Dokumentation</h4>
 			<ul class="list-unstyled ps-4 link-list">
 				<li><a href="https://wiki.archlinux.de/">Wiki</a></li>

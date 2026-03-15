@@ -79,6 +79,24 @@ templ PackageDetailPage(pkg PackageDetail) {
 						</td>
 					</tr>
 					<tr>
+						<th>Bugs</th>
+						<td>
+							<a rel="noopener" href={ templ.SafeURL(issueURL(pkg.Base)) }>Issue-Tracker</a>
+						</td>
+					</tr>
+					<tr>
+						<th>Paket</th>
+						<td>
+							<a rel="nofollow noopener" href={ templ.SafeURL(packageURL(pkg.Repository, pkg.Architecture, pkg.FileName())) }>{ pkg.FileName() }</a>
+						</td>
+					</tr>
+					<tr>
+						<th>PGP-Signatur</th>
+						<td>
+							<a rel="nofollow noopener" href={ templ.SafeURL(packageURL(pkg.Repository, pkg.Architecture, pkg.FileName()) + ".sig") }>{ pkg.FileName() }.sig</a>
+						</td>
+					</tr>
+					<tr>
 						<th>Paket-Größe</th>
 						<td>{ formatBytes(pkg.CompressedSize) }</td>
 					</tr>
@@ -105,30 +123,31 @@ templ PackageDetailPage(pkg PackageDetail) {
 				@relationSection("testen für", pkg.InverseRels["checkdepends"], pkg.Repository, pkg.Architecture)
 			</div>
 		</div>
-		if len(pkg.Files) > 0 {
-			<div class="col-12">
-				<h2 class="mb-3 mt-5">Dateien</h2>
-				<ul class="list-unstyled small">
+		<div class="col-12">
+			<h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
+			if len(pkg.Files) > 0 {
+				<ul class="list-unstyled ms-4 overflow-auto">
 					for _, f := range pkg.Files {
-						<li>{ "/" + f }</li>
+						if strings.HasSuffix(f, "/") {
+							<li class="text-muted">{ f }</li>
+						} else {
+							<li>{ f }</li>
+						}
 					}
 				</ul>
-			</div>
-		}
+			}
+		</div>
 	</div>
 }
 
 templ relationSection(title string, rels []Relation, repo, arch string) {
 	if len(rels) > 0 {
-		<div class="col-12 col-sm-6 mb-3">
-			<h6>{ title }</h6>
-			<ul class="list-unstyled small">
+		<div class="col-12 col-md-6 col-lg-4">
+			<h3>{ title }</h3>
+			<ul class="list-unstyled ps-4 link-list">
 				for _, r := range rels {
 					<li>
-						<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", repo, arch, r.TargetName)) }>{ r.TargetName }</a>
-						if r.TargetVersion != "" {
-							<span class="text-muted">{ r.VersionConstraint + r.TargetVersion }</span>
-						}
+						<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", repo, arch, r.TargetName)) }>{ r.TargetName }</a>{ r.VersionConstraint + r.TargetVersion }
 					</li>
 				}
 			</ul>
@@ -158,4 +177,12 @@ func formatBytes(b int64) string {
 
 func sourceURL(base string) string {
 	return "https://gitlab.archlinux.org/archlinux/packaging/packages/" + base
+}
+
+func issueURL(base string) string {
+	return "https://gitlab.archlinux.org/archlinux/packaging/packages/" + base + "/-/issues"
+}
+
+func packageURL(repo, arch, fileName string) string {
+	return fmt.Sprintf("https://geo.mirror.pkgbuild.com/%s/os/%s/%s", repo, arch, fileName)
 }

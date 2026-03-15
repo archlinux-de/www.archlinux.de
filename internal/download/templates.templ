@@ -7,100 +7,101 @@ import (
 
 templ DownloadPage(data downloadData) {
 	if data.Release != nil {
-		<h1 class="mb-4">Arch Linux herunterladen</h1>
+		<h1 class="mb-4">Arch Linux Downloads</h1>
 		<div class="row">
-			<div class="col-12 col-lg-8">
-				<h2>Release { data.Release.Version }</h2>
-				<table class="table table-sm table-borderless">
-					<tbody>
-						<tr>
-							<th>Version</th>
-							<td>{ data.Release.Version }</td>
-						</tr>
-						if data.Release.KernelVersion != "" {
-							<tr>
-								<th>Kernel</th>
-								<td>{ data.Release.KernelVersion }</td>
-							</tr>
-						}
-						if data.Release.FileLength > 0 {
-							<tr>
-								<th>Größe</th>
-								<td>{ formatFileSize(data.Release.FileLength) }</td>
-							</tr>
-						}
-						if data.Release.ReleaseDate > 0 {
-							<tr>
-								<th>Datum</th>
-								<td>{ formatDate(data.Release.ReleaseDate) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-				<h3 class="mt-4">BitTorrent</h3>
+			<div class="col-12 col-lg-6">
+				<h2>Release Informationen</h2>
 				<p>
+					Das CD/USB-Image ist gleichzeitig Installations-Medium und Live-System, das zur Wartung oder
+					Reparatur benutzt werden kann. Die ISO-Datei kann sowohl auf CD gebrannt als auch mit Programmen wie
+					<a href="https://wiki.archlinux.de/title/Dd">dd</a> auf USB-Sticks kopiert
+					werden. Es kann nur für x86_64-Installationen verwendet werden.
+				</p>
+				<p>
+					Der Download ist nur für Neuinstallationen notwendig! Ein bestehendes Arch Linux System kann immer
+					mit <code>pacman -Syu</code> aktuell gehalten werden!
+				</p>
+				<ul class="list-unstyled ms-4">
+					<li>
+						<strong>Aktuelles Release:</strong>&nbsp;<a href={ templ.SafeURL("/releases/" + data.Release.Version) }>{ data.Release.Version }</a>
+					</li>
+					<li>
+						<a href={ templ.SafeURL("/releases/" + data.Release.Version) }>Release-Informationen</a>
+					</li>
+					if data.Release.KernelVersion != "" {
+						<li><strong>Enthaltener Kernel:</strong>&nbsp;{ data.Release.KernelVersion }</li>
+					}
+					if data.Release.FileLength > 0 {
+						<li><strong>ISO Größe:</strong>&nbsp;{ formatFileSize(data.Release.FileLength) }</li>
+					}
+					<li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
+				</ul>
+				<h2>Installation</h2>
+				<p>
+					Hilfe zur Erstellung der USB-Images und erste Schritte zum Aufsetzen des Basis-Systems findet man in
+					der <a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a>.
+				</p>
+				<h2>BitTorrent Download</h2>
+				<p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
+				<ul class="list-unstyled ms-4 link-list">
 					if data.Release.MagnetURI != "" {
-						<a href={ templ.SafeURL(data.Release.MagnetURI) } class="btn btn-outline-primary me-2 mb-2" rel="nofollow noopener">Magnet-Link</a>
+						<li><a href={ templ.SafeURL(data.Release.MagnetURI) } rel="nofollow noopener">Magnet link für { data.Release.Version }</a></li>
 					}
 					if data.Release.TorrentURL != "" {
-						<a href={ templ.SafeURL(data.Release.TorrentURL) } class="btn btn-outline-primary mb-2" rel="nofollow noopener">Torrent</a>
+						<li><a href={ templ.SafeURL(data.Release.TorrentURL) } rel="nofollow noopener">Torrent für { data.Release.Version }</a></li>
 					}
-				</p>
-				<h3 class="mt-4">HTTP Download</h3>
-				<table class="table table-sm table-borderless">
+				</ul>
+				<h2>Direkte HTTP-Downloads</h2>
+				<p>Nach dem Download sollten die Dateien stets überprüft werden.</p>
+				<h3>Prüfsummen</h3>
+				<table class="table table-sm table-borderless mb-4">
 					<tbody>
 						if data.ISOSigPath != "" {
 							<tr>
-								<th>PGP-Signatur</th>
-								<td>
-									<a href={ templ.SafeURL(data.DownloadURL + ".sig") } class="text-break">{ data.ISOSigPath }</a>
+								<th>PGP</th>
+								<td class="ps-2">
+									<a href={ templ.SafeURL(data.DownloadURL + ".sig") } rel="nofollow noopener">PGP-Signatur</a>
 								</td>
 							</tr>
 						}
 						if data.Release.SHA1Sum != "" {
 							<tr>
 								<th>SHA1</th>
-								<td class="text-break font-monospace">{ data.Release.SHA1Sum }</td>
+								<td class="ps-2 text-break">{ data.Release.SHA1Sum }</td>
 							</tr>
 						}
 						if data.Release.SHA256Sum != "" {
 							<tr>
 								<th>SHA256</th>
-								<td class="text-break font-monospace">{ data.Release.SHA256Sum }</td>
+								<td class="ps-2 text-break">{ data.Release.SHA256Sum }</td>
 							</tr>
 						}
 						if data.Release.B2Sum != "" {
 							<tr>
-								<th>BLAKE2</th>
-								<td class="text-break font-monospace">{ data.Release.B2Sum }</td>
+								<th>B2</th>
+								<td class="ps-2 text-break">{ data.Release.B2Sum }</td>
 							</tr>
 						}
 					</tbody>
 				</table>
 			</div>
-			<div class="col-12 col-lg-4">
-				<div class="d-grid mb-4">
-					<a class="btn btn-primary btn-lg" href={ templ.SafeURL(data.DownloadURL) }>
-						Download
-					</a>
-				</div>
+			<div class="col-12 col-lg-6 ps-lg-5">
+				<a class="btn btn-primary btn-lg mb-4" href={ templ.SafeURL(data.DownloadURL) } rel="nofollow noopener">
+					<span class="fw-bold">Download</span> Arch Linux { data.Release.Version }
+				</a>
 				if len(data.Mirrors) > 0 {
 					<h3>Mirrors</h3>
-					<ul class="list-unstyled">
+					<ul class="list-unstyled ms-4 link-list">
 						for _, m := range data.Mirrors {
-							<li class="mb-1">
+							<li>
 								<a href={ templ.SafeURL(m.URL + data.ISOPath) } rel="nofollow noopener">{ extractHost(m.URL) }</a>
-								if m.CountryName != "" {
-									<small class="text-muted">({ m.CountryName })</small>
-								}
 							</li>
 						}
 					</ul>
 				}
-				<div class="mt-3">
-					<a href="/releases/feed" class="text-muted me-3">Feed</a>
-					<a href="/releases" class="text-muted">Archiv</a>
-				</div>
+				<h3>Arch Linux Releases</h3>
+				<a class="btn btn-outline-secondary btn-sm" href="/releases/feed">Feed</a>
+				<a class="btn btn-secondary btn-sm" href="/releases">Archiv</a>
 			</div>
 		</div>
 	}
