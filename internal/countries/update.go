@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 )
 
 const countriesURL = "https://restcountries.com/v3.1/all?fields=cca2,name"
@@ -32,21 +33,37 @@ func Update(ctx context.Context, db *sql.DB) error {
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	if _, err := tx.ExecContext(ctx, `DELETE FROM country`); err != nil {
-		return err
-	}
-
-	stmt, err := tx.PrepareContext(ctx, `INSERT INTO country (code, name) VALUES (?, ?)`)
+	stmt, err := tx.PrepareContext(ctx,
+		`INSERT INTO country (code, name) VALUES (?, ?)
+		 ON CONFLICT (code) DO UPDATE SET name = excluded.name`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	var codes []any
 	for _, c := range countries {
 		if c.CCA2 == "" || c.Name.Common == "" {
 			continue
 		}
 		if _, err := stmt.ExecContext(ctx, c.CCA2, c.Name.Common); err != nil {
+			return err
+		}
+		codes = append(codes, c.CCA2)
+	}
+
+	if len(codes) > 0 {
+		placeholders := strings.Repeat("?,", len(codes))
+		placeholders = placeholders[:len(placeholders)-1]
+		q := fmt.Sprintf("NOT IN (%s)", placeholders)
+		if _, err := tx.ExecContext(ctx,
+			fmt.Sprintf("UPDATE mirror SET country_code = NULL WHERE country_code %s", q),
+			codes...); err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx,
+			fmt.Sprintf("DELETE FROM country WHERE code %s", q),
+			codes...); err != nil {
 			return err
 		}
 	}

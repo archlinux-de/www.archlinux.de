@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"www/internal/sanitize"
@@ -62,18 +63,21 @@ func Update(ctx context.Context, db *sql.DB) error {
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	if _, err := tx.ExecContext(ctx, `DELETE FROM release`); err != nil {
-		return err
-	}
-
 	stmt, err := tx.PrepareContext(ctx,
 		`INSERT INTO release (version, available, info, created, release_date, kernel_version, file_name, file_length, sha1_sum, sha256_sum, b2_sum, torrent_url, magnet_uri)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		 ON CONFLICT (version) DO UPDATE SET
+		   available = excluded.available, info = excluded.info, created = excluded.created,
+		   release_date = excluded.release_date, kernel_version = excluded.kernel_version,
+		   file_name = excluded.file_name, file_length = excluded.file_length,
+		   sha1_sum = excluded.sha1_sum, sha256_sum = excluded.sha256_sum, b2_sum = excluded.b2_sum,
+		   torrent_url = excluded.torrent_url, magnet_uri = excluded.magnet_uri`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	var versions []any
 	for _, r := range releases {
 		if !versionRe.MatchString(r.Version) {
 			slog.Warn("skipping release with invalid version", "version", r.Version)
@@ -115,6 +119,17 @@ func Update(ctx context.Context, db *sql.DB) error {
 			sha1Sum, sha256Sum, b2Sum,
 			torrentURL, r.MagnetURI,
 		); err != nil {
+			return err
+		}
+		versions = append(versions, r.Version)
+	}
+
+	if len(versions) > 0 {
+		placeholders := strings.Repeat("?,", len(versions))
+		placeholders = placeholders[:len(placeholders)-1]
+		if _, err := tx.ExecContext(ctx,
+			fmt.Sprintf("DELETE FROM release WHERE version NOT IN (%s)", placeholders),
+			versions...); err != nil {
 			return err
 		}
 	}

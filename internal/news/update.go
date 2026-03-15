@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	"www/internal/sanitize"
@@ -77,24 +78,36 @@ func Update(ctx context.Context, db *sql.DB) error {
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	if _, err := tx.ExecContext(ctx, `DELETE FROM news_item`); err != nil {
-		return err
-	}
-
 	stmt, err := tx.PrepareContext(ctx,
 		`INSERT INTO news_item (id, title, link, description, author_name, author_link, last_modified)
-		 VALUES (?, ?, ?, ?, ?, ?, ?)`)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)
+		 ON CONFLICT (id) DO UPDATE SET
+		   title = excluded.title, link = excluded.link, description = excluded.description,
+		   author_name = excluded.author_name, author_link = excluded.author_link,
+		   last_modified = excluded.last_modified`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	var ids []any
 	for _, item := range items {
 		item.Description = sanitize.HTML(item.Description)
 		if _, err := stmt.ExecContext(ctx,
 			item.ID, item.Title, item.Link, item.Description,
 			item.AuthorName, item.AuthorLink, item.LastModified,
 		); err != nil {
+			return err
+		}
+		ids = append(ids, item.ID)
+	}
+
+	if len(ids) > 0 {
+		placeholders := strings.Repeat("?,", len(ids))
+		placeholders = placeholders[:len(placeholders)-1]
+		if _, err := tx.ExecContext(ctx,
+			fmt.Sprintf("DELETE FROM news_item WHERE id NOT IN (%s)", placeholders),
+			ids...); err != nil {
 			return err
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	"www/internal/sanitize"
@@ -48,18 +49,20 @@ func Update(ctx context.Context, db *sql.DB) error {
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	if _, err := tx.ExecContext(ctx, `DELETE FROM mirror`); err != nil {
-		return err
-	}
-
 	stmt, err := tx.PrepareContext(ctx,
 		`INSERT INTO mirror (url, country_code, last_sync, delay, duration_avg, duration_stddev, score, completion_pct, ipv4, ipv6)
-		 VALUES (?, (SELECT code FROM country WHERE code = ?), ?, ?, ?, ?, ?, ?, ?, ?)`)
+		 VALUES (?, (SELECT code FROM country WHERE code = ?), ?, ?, ?, ?, ?, ?, ?, ?)
+		 ON CONFLICT (url) DO UPDATE SET
+		   country_code = excluded.country_code, last_sync = excluded.last_sync,
+		   delay = excluded.delay, duration_avg = excluded.duration_avg,
+		   duration_stddev = excluded.duration_stddev, score = excluded.score,
+		   completion_pct = excluded.completion_pct, ipv4 = excluded.ipv4, ipv6 = excluded.ipv6`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	var urls []any
 	for _, m := range mirrors {
 		if !sanitize.IsValidURL(m.URL, "https") {
 			slog.Warn("skipping mirror with invalid URL", "url", m.URL)
@@ -84,6 +87,17 @@ func Update(ctx context.Context, db *sql.DB) error {
 			m.DurationAvg, m.DurationStddev, m.Score, m.CompletionPct,
 			m.IPv4, m.IPv6,
 		); err != nil {
+			return err
+		}
+		urls = append(urls, m.URL)
+	}
+
+	if len(urls) > 0 {
+		placeholders := strings.Repeat("?,", len(urls))
+		placeholders = placeholders[:len(placeholders)-1]
+		if _, err := tx.ExecContext(ctx,
+			fmt.Sprintf("DELETE FROM mirror WHERE url NOT IN (%s)", placeholders),
+			urls...); err != nil {
 			return err
 		}
 	}
