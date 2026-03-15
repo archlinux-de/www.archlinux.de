@@ -1,0 +1,73 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+            - name: Run Common Setup
+              uses: ./.github/actions/setup
+            - name: Build Templates
+              run: just build-templates
+            - name: Run Linter
+              run: just lint
+
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+            - name: Run Common Setup
+              uses: ./.github/actions/setup
+            - name: Build Templates
+              run: just build-templates
+            - name: Run Tests
+              run: just test
+
+    build:
+        runs-on: ubuntu-latest
+        needs: [lint, test]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+            - name: Run Common Setup
+              uses: ./.github/actions/setup
+            - name: Build Application
+              run: just build
+            - name: Upload binary
+              uses: actions/upload-artifact@v7
+              if: github.ref == 'refs/heads/main'
+              with:
+                  name: www
+                  path: www
+                  retention-days: 7
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: [build]
+        if: github.ref == 'refs/heads/main'
+        steps:
+            - name: Download binary
+              uses: actions/download-artifact@v8
+              with:
+                  name: www
+            - name: Deploy
+              env:
+                  SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+                  KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+                  DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+                  DEPLOY_SSH_PORT: ${{ vars.DEPLOY_SSH_PORT }}
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+                  echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+                  chmod 600 ~/.ssh/id_ed25519
+                  chmod +x www
+                  rsync -e "ssh -p ${DEPLOY_SSH_PORT}" www www@${DEPLOY_HOST}:/opt/www/www.new
+                  ssh -p "${DEPLOY_SSH_PORT}" www@${DEPLOY_HOST} "mv /opt/www/www.new /opt/www/www"
