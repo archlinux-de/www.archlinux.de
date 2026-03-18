@@ -50,6 +50,24 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /download/{file...}", h.fallback)
 }
 
+func formatSize(b int64) string {
+	const (
+		kb = 1000
+		mb = 1000 * kb
+		gb = 1000 * mb
+	)
+	switch {
+	case b >= gb:
+		return fmt.Sprintf("%d GB", b/gb)
+	case b >= mb:
+		return fmt.Sprintf("%d MB", b/mb)
+	case b >= kb:
+		return fmt.Sprintf("%d kB", b/kb)
+	default:
+		return fmt.Sprintf("%d B", b)
+	}
+}
+
 const (
 	mirrorArchive     = "https://archive.archlinux.org/"
 	downloadMirrors   = 10
@@ -102,6 +120,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 			"operatingSystem": "Arch Linux",
 			"softwareVersion": rel.Version,
 			"datePublished":   time.Unix(rel.ReleaseDate, 0).UTC().Format(time.RFC3339),
+			"fileSize":        formatSize(rel.FileLength),
 			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
 		},
 	}

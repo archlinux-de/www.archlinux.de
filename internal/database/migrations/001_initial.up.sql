@@ -20,7 +20,8 @@ CREATE TABLE package (
     packager_name TEXT,
     packager_email TEXT,
     popularity_recent REAL DEFAULT 0,
-    popularity_total INTEGER DEFAULT 0,
+    popularity_count INTEGER DEFAULT 0,
+    popularity_samples INTEGER DEFAULT 0,
     licenses TEXT,
     groups TEXT,
     UNIQUE(repository_id, name)
@@ -92,6 +93,7 @@ CREATE TABLE mirror (
     ipv4 INTEGER NOT NULL DEFAULT 0,
     ipv6 INTEGER NOT NULL DEFAULT 0,
     popularity_recent REAL DEFAULT 0,
-    popularity_total INTEGER DEFAULT 0
+    popularity_count INTEGER DEFAULT 0,
+    popularity_samples INTEGER DEFAULT 0
 );
 CREATE INDEX idx_mirror_last_sync ON mirror(last_sync);

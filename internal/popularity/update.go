@@ -20,68 +20,58 @@ type popularityItem struct {
 	Key        string
 	Popularity float64
 	Count      int
+	Samples    int
 }
 
 func UpdatePackages(ctx context.Context, db *sql.DB) error {
-	items, err := fetchAll(ctx, packageStatsURL, func(data []byte) ([]popularityItem, int, error) {
-		var resp struct {
-			PackagePopularities []struct {
-				Name       string  `json:"name"`
-				Popularity float64 `json:"popularity"`
-				Count      int     `json:"count"`
-			} `json:"packagePopularities"`
-		}
-		if err := json.Unmarshal(data, &resp); err != nil {
-			return nil, 0, err
-		}
-		items := make([]popularityItem, len(resp.PackagePopularities))
-		for i, p := range resp.PackagePopularities {
-			items[i] = popularityItem{p.Name, p.Popularity, p.Count}
-		}
-		return items, len(resp.PackagePopularities), nil
-	})
-	if err != nil {
-		return err
-	}
-
-	slog.Info("fetched package popularities", "count", len(items))
-
-	return applyUpdates(ctx, db,
-		`UPDATE package SET popularity_recent = 0, popularity_total = 0`,
-		`UPDATE package SET popularity_recent = ?, popularity_total = ? WHERE name = ?`,
-		items,
+	return updatePopularities(ctx, db, packageStatsURL, "packagePopularities",
+		`UPDATE package SET popularity_recent = 0, popularity_count = 0, popularity_samples = 0`,
+		`UPDATE package SET popularity_recent = ?, popularity_count = ?, popularity_samples = ? WHERE name = ?`,
 	)
 }
 
 func UpdateMirrors(ctx context.Context, db *sql.DB) error {
-	items, err := fetchAll(ctx, mirrorStatsURL, func(data []byte) ([]popularityItem, int, error) {
-		var resp struct {
-			MirrorPopularities []struct {
-				URL        string  `json:"url"`
-				Popularity float64 `json:"popularity"`
-				Count      int     `json:"count"`
-			} `json:"mirrorPopularities"`
-		}
-		if err := json.Unmarshal(data, &resp); err != nil {
+	return updatePopularities(ctx, db, mirrorStatsURL, "mirrorPopularities",
+		`UPDATE mirror SET popularity_recent = 0, popularity_count = 0, popularity_samples = 0`,
+		`UPDATE mirror SET popularity_recent = ?, popularity_count = ?, popularity_samples = ? WHERE url = ?`,
+	)
+}
+
+func updatePopularities(ctx context.Context, db *sql.DB, baseURL, jsonKey, resetSQL, updateSQL string) error {
+	items, err := fetchAll(ctx, baseURL, func(data []byte) ([]popularityItem, int, error) {
+		var raw map[string]json.RawMessage
+		if err := json.Unmarshal(data, &raw); err != nil {
 			return nil, 0, err
 		}
-		items := make([]popularityItem, len(resp.MirrorPopularities))
-		for i, m := range resp.MirrorPopularities {
-			items[i] = popularityItem{m.URL, m.Popularity, m.Count}
+
+		var entries []struct {
+			Key        string  `json:"name"`
+			URL        string  `json:"url"`
+			Popularity float64 `json:"popularity"`
+			Count      int     `json:"count"`
+			Samples    int     `json:"samples"`
 		}
-		return items, len(resp.MirrorPopularities), nil
+		if err := json.Unmarshal(raw[jsonKey], &entries); err != nil {
+			return nil, 0, err
+		}
+
+		items := make([]popularityItem, len(entries))
+		for i, e := range entries {
+			key := e.Key
+			if key == "" {
+				key = e.URL
+			}
+			items[i] = popularityItem{key, e.Popularity, e.Count, e.Samples}
+		}
+		return items, len(entries), nil
 	})
 	if err != nil {
 		return err
 	}
 
-	slog.Info("fetched mirror popularities", "count", len(items))
+	slog.Info("fetched popularities", "source", jsonKey, "count", len(items))
 
-	return applyUpdates(ctx, db,
-		`UPDATE mirror SET popularity_recent = 0, popularity_total = 0`,
-		`UPDATE mirror SET popularity_recent = ?, popularity_total = ? WHERE url = ?`,
-		items,
-	)
+	return applyUpdates(ctx, db, resetSQL, updateSQL, items)
 }
 
 func fetchAll(ctx context.Context, baseURL string, parse func([]byte) ([]popularityItem, int, error)) ([]popularityItem, error) {
@@ -145,7 +135,7 @@ func applyUpdates(ctx context.Context, db *sql.DB, resetSQL, updateSQL string, i
 	defer func() { _ = stmt.Close() }()
 
 	for _, item := range items {
-		if _, err := stmt.ExecContext(ctx, item.Popularity, item.Count, item.Key); err != nil {
+		if _, err := stmt.ExecContext(ctx, item.Popularity, item.Count, item.Samples, item.Key); err != nil {
 			return err
 		}
 	}

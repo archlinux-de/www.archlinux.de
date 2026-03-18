@@ -8,24 +8,26 @@ import (
 )
 
 type PackageDetail struct {
-	Name           string
-	Base           string
-	Version        string
-	Description    string
-	URL            string
-	Repository     string
-	Architecture   string
-	Testing        bool
-	BuildDate      int64
-	CompressedSize int64
-	InstalledSize  int64
-	PackagerName   string
-	PackagerEmail  string
-	Licenses       []string
-	Groups         []string
-	Popularity     float64
-	Relations      map[string][]Relation
-	InverseRels    map[string][]Relation
+	Name              string
+	Base              string
+	Version           string
+	Description       string
+	URL               string
+	Repository        string
+	Architecture      string
+	Testing           bool
+	BuildDate         int64
+	CompressedSize    int64
+	InstalledSize     int64
+	PackagerName      string
+	PackagerEmail     string
+	Licenses          []string
+	Groups            []string
+	Popularity        float64
+	PopularityCount   int
+	PopularitySamples int
+	Relations         map[string][]Relation
+	InverseRels       map[string][]Relation
 }
 
 func (p PackageDetail) FileName() string {
@@ -62,7 +64,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 			r.name, r.architecture, r.testing,
 			COALESCE(p.build_date, 0), COALESCE(p.compressed_size, 0), COALESCE(p.installed_size, 0),
 			COALESCE(p.packager_name, ''), COALESCE(p.packager_email, ''),
-			COALESCE(p.popularity_recent, 0),
+			COALESCE(p.popularity_recent, 0), COALESCE(p.popularity_count, 0), COALESCE(p.popularity_samples, 0),
 			p.licenses, p.groups
 		FROM package p
 		JOIN repository r ON r.id = p.repository_id
@@ -73,7 +75,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 		&pkg.Repository, &pkg.Architecture, &testing,
 		&pkg.BuildDate, &pkg.CompressedSize, &pkg.InstalledSize,
 		&pkg.PackagerName, &pkg.PackagerEmail,
-		&pkg.Popularity,
+		&pkg.Popularity, &pkg.PopularityCount, &pkg.PopularitySamples,
 		&licensesJSON, &groupsJSON,
 	)
 	if err != nil {

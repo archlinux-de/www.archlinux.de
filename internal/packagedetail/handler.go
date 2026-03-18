@@ -11,6 +11,24 @@ import (
 	"www/internal/ui/layout"
 )
 
+func formatSize(b int64) string {
+	const (
+		kb = 1000
+		mb = 1000 * kb
+		gb = 1000 * mb
+	)
+	switch {
+	case b >= gb:
+		return fmt.Sprintf("%d GB", b/gb)
+	case b >= mb:
+		return fmt.Sprintf("%d MB", b/mb)
+	case b >= kb:
+		return fmt.Sprintf("%d kB", b/kb)
+	default:
+		return fmt.Sprintf("%d B", b)
+	}
+}
+
 type Handler struct {
 	repo           *Repository
 	manifest       *layout.Manifest
@@ -53,7 +71,19 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 			"description":     pkg.Description,
 			"url":             pkg.URL,
 			"dateModified":    time.Unix(pkg.BuildDate, 0).UTC().Format(time.RFC3339),
+			"fileSize":        formatSize(pkg.CompressedSize),
 			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+		}
+		if pkg.PopularityCount > 0 {
+			jsonLD["aggregateRating"] = map[string]any{
+				"@type":             "AggregateRating",
+				"worstRating":       0,
+				"bestRating":        100, //nolint:mnd // popularity scale 0-100
+				"ratingCount":       pkg.PopularityCount,
+				"ratingValue":       pkg.Popularity,
+				"ratingExplanation": fmt.Sprintf("The package %s got %d out of %d votes submitted to pkgstats.", pkg.Name, pkg.PopularityCount, pkg.PopularitySamples),
+				"url":               "https://pkgstats.archlinux.de/packages/" + pkg.Name,
+			}
 		}
 	}
 	page := layout.Page{
