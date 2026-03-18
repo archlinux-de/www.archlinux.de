@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"www/internal/ui/layout"
 )
@@ -41,12 +42,27 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var jsonLD map[string]any
+	if !pkg.Testing {
+		jsonLD = map[string]any{
+			"@context":        "https://schema.org",
+			"@type":           "SoftwareApplication",
+			"name":            pkg.Name,
+			"operatingSystem": "Arch Linux",
+			"softwareVersion": pkg.Version,
+			"description":     pkg.Description,
+			"url":             pkg.URL,
+			"dateModified":    time.Unix(pkg.BuildDate, 0).UTC().Format(time.RFC3339),
+			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+		}
+	}
 	page := layout.Page{
 		Title:       pkg.Name,
 		Description: pkg.Description,
 		Path:        r.URL.Path,
 		Manifest:    h.manifest,
 		NoIndex:     pkg.Testing,
+		JsonLD:      jsonLD,
 	}
 
 	layout.Render(w, r, page, PackageDetailPage(pkg, h.packagesMirror))

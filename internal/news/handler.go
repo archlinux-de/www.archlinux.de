@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"www/internal/ui/layout"
 )
@@ -115,11 +116,26 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	jsonLD := map[string]any{
+		"@context":      "https://schema.org",
+		"@type":         "NewsArticle",
+		"headline":      item.Title,
+		"datePublished": time.Unix(item.LastModified, 0).UTC().Format(time.RFC3339),
+		"discussionUrl": item.Link,
+	}
+	if item.AuthorName != "" {
+		jsonLD["author"] = []map[string]any{{
+			"@type": "Person",
+			"name":  item.AuthorName,
+			"url":   item.AuthorLink,
+		}}
+	}
 	page := layout.Page{
 		Title:       item.Title,
 		Description: truncate(item.Title, maxDescriptionLen),
 		Path:        item.URL(),
 		Manifest:    h.manifest,
+		JsonLD:      jsonLD,
 	}
 
 	layout.Render(w, r, page, NewsDetail(item))

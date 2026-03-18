@@ -8,6 +8,7 @@ import (
 	"net/netip"
 	"regexp"
 	"strings"
+	"time"
 
 	"www/internal/mirrors"
 	"www/internal/packages"
@@ -94,6 +95,15 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Description: fmt.Sprintf("Download Arch Linux %s (Kernel %s)", rel.Version, rel.KernelVersion),
 		Path:        "/download",
 		Manifest:    h.manifest,
+		JsonLD: map[string]any{
+			"@context":        "https://schema.org",
+			"@type":           "SoftwareApplication",
+			"name":            "Arch Linux",
+			"operatingSystem": "Arch Linux",
+			"softwareVersion": rel.Version,
+			"datePublished":   time.Unix(rel.ReleaseDate, 0).UTC().Format(time.RFC3339),
+			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+		},
 	}
 
 	layout.Render(w, r, page, DownloadPage(data))

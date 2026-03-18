@@ -8,6 +8,7 @@ type Page struct {
 	NoIndex       bool
 	CanonicalPath string
 	CanonicalURL  string
+	JsonLD        map[string]any
 }
 
 templ Base(page Page, contents templ.Component) {
@@ -33,6 +34,9 @@ templ Base(page Page, contents templ.Component) {
 				<meta property="og:url" content={ page.CanonicalURL }/>
 				<meta property="og:type" content="website"/>
 				<meta property="og:site_name" content="archlinux.de"/>
+			}
+			if page.JsonLD != nil {
+				@templ.JSONScript("jsonld", page.JsonLD).WithType("application/ld+json")
 			}
 			@CSSTags(page.Manifest)
 			<link rel="icon" href="/static/archicon.svg" type="image/svg+xml"/>

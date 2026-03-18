@@ -39,11 +39,24 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		slog.Error("failed to fetch recent packages", "error", err)
 	}
 
+	baseURL := layout.GetBaseURL(r)
 	page := layout.Page{
 		Title:       "Start",
 		Description: "Deutschsprachige Foren, Neuigkeiten, Pakete und ISO-Downloads zu Arch Linux",
 		Path:        "/",
 		Manifest:    h.manifest,
+		JsonLD: map[string]any{
+			"@context":      "https://schema.org",
+			"@type":         "WebSite",
+			"name":          "archlinux.de",
+			"alternateName": "Arch Linux Deutschland",
+			"url":           baseURL + "/",
+			"potentialAction": map[string]any{
+				"@type":       "SearchAction",
+				"target":      map[string]any{"@type": "EntryPoint", "urlTemplate": baseURL + "/packages?search={search}"},
+				"query-input": "required name=search",
+			},
+		},
 	}
 	layout.Render(w, r, page, Index(latestNews, recentPkgs))
 }
