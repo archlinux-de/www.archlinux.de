@@ -24,13 +24,15 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 type packagesData struct {
-	Packages     []PackageSummary
-	Search       string
-	Repository   string
-	Repositories []string
-	Total        int
-	Offset       int
-	Limit        int
+	Packages      []PackageSummary
+	Search        string
+	Repository    string
+	Architecture  string
+	Repositories  []string
+	Architectures []string
+	Total         int
+	Offset        int
+	Limit         int
 }
 
 func (d packagesData) HasPrevious() bool { return d.Offset > 0 }
@@ -64,6 +66,7 @@ func (d packagesData) TotalPages() int {
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 	repo := r.URL.Query().Get("repository")
+	arch := r.URL.Query().Get("architecture")
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 	if offset < 0 {
 		offset = 0
@@ -77,20 +80,31 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkgs, total, err := h.repo.Search(ctx, search, repo, defaultLimit, offset)
+	var archs []string
+	if arch != "" {
+		archs, err = h.repo.ListArchitectures(ctx)
+		if err != nil {
+			layout.ServerError(w, "list architectures", err)
+			return
+		}
+	}
+
+	pkgs, total, err := h.repo.Search(ctx, search, repo, arch, defaultLimit, offset)
 	if err != nil {
 		layout.ServerError(w, "search packages", err)
 		return
 	}
 
 	data := packagesData{
-		Packages:     pkgs,
-		Search:       search,
-		Repository:   repo,
-		Repositories: repos,
-		Total:        total,
-		Limit:        defaultLimit,
-		Offset:       offset,
+		Packages:      pkgs,
+		Search:        search,
+		Repository:    repo,
+		Architecture:  arch,
+		Repositories:  repos,
+		Architectures: archs,
+		Total:         total,
+		Limit:         defaultLimit,
+		Offset:        offset,
 	}
 
 	page := layout.Page{

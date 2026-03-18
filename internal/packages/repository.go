@@ -44,7 +44,26 @@ func (r *Repository) ListRepositoryNames(ctx context.Context) ([]string, error) 
 	return repos, rows.Err()
 }
 
-func (r *Repository) Search(ctx context.Context, search, repo string, limit, offset int) ([]PackageSummary, int, error) {
+func (r *Repository) ListArchitectures(ctx context.Context) ([]string, error) {
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT DISTINCT architecture FROM repository ORDER BY architecture`)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var archs []string
+	for rows.Next() {
+		var arch string
+		if err := rows.Scan(&arch); err != nil {
+			return nil, err
+		}
+		archs = append(archs, arch)
+	}
+	return archs, rows.Err()
+}
+
+func (r *Repository) Search(ctx context.Context, search, repo, arch string, limit, offset int) ([]PackageSummary, int, error) {
 	var countQuery, dataQuery string
 	var countArgs, dataArgs []any
 
@@ -62,6 +81,11 @@ func (r *Repository) Search(ctx context.Context, search, repo string, limit, off
 			countArgs = append(countArgs, repo)
 			dataArgs = append(dataArgs, repo)
 		}
+		if arch != "" {
+			baseWhere += ` AND r.architecture = ?`
+			countArgs = append(countArgs, arch)
+			dataArgs = append(dataArgs, arch)
+		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
 		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, COALESCE(p.description, ''), COALESCE(p.build_date, 0), COALESCE(p.popularity_recent, 0)
@@ -75,6 +99,11 @@ func (r *Repository) Search(ctx context.Context, search, repo string, limit, off
 			baseWhere += ` AND r.name = ?`
 			countArgs = append(countArgs, repo)
 			dataArgs = append(dataArgs, repo)
+		}
+		if arch != "" {
+			baseWhere += ` AND r.architecture = ?`
+			countArgs = append(countArgs, arch)
+			dataArgs = append(dataArgs, arch)
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere

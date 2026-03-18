@@ -29,6 +29,18 @@ templ PackageList(data packagesData) {
 					}
 				}
 			</select>
+			if len(data.Architectures) > 0 {
+				<select class="form-select d-none d-sm-block" name="architecture">
+					<option value=""></option>
+					for _, arch := range data.Architectures {
+						if arch == data.Architecture {
+							<option value={ arch } selected>{ arch }</option>
+						} else {
+							<option value={ arch }>{ arch }</option>
+						}
+					}
+				</select>
+			}
 			<button class="btn btn-outline-primary" type="submit">Suchen</button>
 		</div>
 	</form>
@@ -37,6 +49,7 @@ templ PackageList(data packagesData) {
 			<thead>
 				<tr>
 					<th class="d-none d-lg-table-cell">Repositorium</th>
+					<th class="d-none d-xl-table-cell">Architektur</th>
 					<th>Name</th>
 					<th>Version</th>
 					<th class="d-none d-sm-table-cell">Beschreibung</th>
@@ -48,10 +61,11 @@ templ PackageList(data packagesData) {
 				for _, pkg := range data.Packages {
 					<tr>
 						<td class="d-none d-lg-table-cell">
-							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s", pkg.Repository)) }>
+							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.Architecture)) }>
 								{ pkg.Repository }
 							</a>
 						</td>
+						<td class="d-none d-xl-table-cell">{ pkg.Architecture }</td>
 						<td class="text-break">
 							<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Architecture, pkg.Name)) }>
 								{ pkg.Name }
@@ -76,10 +90,10 @@ templ PackageList(data packagesData) {
 			</div>
 			<div class="col-12 col-sm-6 text-end">
 				if data.HasPrevious() {
-					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.PrevOffset())) }>neuer</a>
+					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.Architecture, data.PrevOffset())) }>neuer</a>
 				}
 				if data.HasNext() {
-					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.NextOffset())) }>älter</a>
+					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.Architecture, data.NextOffset())) }>älter</a>
 				}
 			</div>
 		</div>
@@ -93,13 +107,16 @@ func formatDate(unix int64) string {
 	return time.Unix(unix, 0).Format("02.01.2006")
 }
 
-func paginationURL(search, repo string, offset int) string {
+func paginationURL(search, repo, arch string, offset int) string {
 	u := fmt.Sprintf("/packages?offset=%d", offset)
 	if search != "" {
 		u += "&search=" + url.QueryEscape(search)
 	}
 	if repo != "" {
 		u += "&repository=" + url.QueryEscape(repo)
+	}
+	if arch != "" {
+		u += "&architecture=" + url.QueryEscape(arch)
 	}
 	return u
 }
