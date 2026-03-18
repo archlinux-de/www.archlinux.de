@@ -8,7 +8,7 @@ import (
 	"www/internal/sanitize"
 )
 
-templ PackageDetailPage(pkg PackageDetail) {
+templ PackageDetailPage(pkg PackageDetail, packagesMirror string) {
 	<h1 class="mb-4">{ pkg.Name }</h1>
 	<div class="row">
 		<div class="col-12 col-xl-6">
@@ -89,13 +89,13 @@ templ PackageDetailPage(pkg PackageDetail) {
 					<tr>
 						<th>Paket</th>
 						<td>
-							<a rel="nofollow noopener" href={ templ.SafeURL(packageURL(pkg.Repository, pkg.Architecture, pkg.FileName())) }>{ pkg.FileName() }</a>
+							<a rel="nofollow noopener" href={ templ.SafeURL(packagesMirror + pkg.Repository + "/os/" + pkg.Architecture + "/" + pkg.FileName()) }>{ pkg.FileName() }</a>
 						</td>
 					</tr>
 					<tr>
 						<th>PGP-Signatur</th>
 						<td>
-							<a rel="nofollow noopener" href={ templ.SafeURL(packageURL(pkg.Repository, pkg.Architecture, pkg.FileName()) + ".sig") }>{ pkg.FileName() }.sig</a>
+							<a rel="nofollow noopener" href={ templ.SafeURL(packagesMirror + pkg.Repository + "/os/" + pkg.Architecture + "/" + pkg.FileName() + ".sig") }>{ pkg.FileName() }.sig</a>
 						</td>
 					</tr>
 					<tr>
@@ -173,10 +173,6 @@ func sourceURL(base string) string {
 
 func issueURL(base string) string {
 	return "https://gitlab.archlinux.org/archlinux/packaging/packages/" + base + "/-/issues"
-}
-
-func packageURL(repo, arch, fileName string) string {
-	return fmt.Sprintf("https://geo.mirror.pkgbuild.com/%s/os/%s/%s", repo, arch, fileName)
 }
 
 func constraintSymbol(code string) string {

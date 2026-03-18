@@ -34,6 +34,7 @@ func RegisterRoutes(
 	manifest *layout.Manifest,
 	db *sql.DB,
 	geodb *maxminddb.Reader,
+	packagesMirror string,
 	assets, static, root fs.FS,
 ) {
 	newsRepo := news.NewRepository(db)
@@ -45,7 +46,7 @@ func RegisterRoutes(
 	home.NewHandler(newsRepo, pkgRepo, manifest).RegisterRoutes(mux)
 	legal.NewHandler(manifest).RegisterRoutes(mux)
 	packages.NewHandler(pkgRepo, manifest).RegisterRoutes(mux)
-	packagedetail.NewHandler(pkgDetailRepo, manifest).RegisterRoutes(mux)
+	packagedetail.NewHandler(pkgDetailRepo, manifest, packagesMirror).RegisterRoutes(mux)
 	news.NewHandler(newsRepo, manifest).RegisterRoutes(mux)
 	mirrors.NewHandler(mirRepo, manifest).RegisterRoutes(mux)
 	releases.NewHandler(relRepo, manifest).RegisterRoutes(mux)

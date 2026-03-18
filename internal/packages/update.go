@@ -16,8 +16,6 @@ import (
 	"www/internal/sanitize"
 )
 
-const defaultMirror = "https://geo.mirror.pkgbuild.com/"
-
 type repoConfig struct {
 	Name         string
 	Architecture string
@@ -33,9 +31,7 @@ var repositories = []repoConfig{
 	{"multilib-testing", "x86_64", true},
 }
 
-func Update(ctx context.Context, db *sql.DB) error {
-	mirror := defaultMirror
-
+func Update(ctx context.Context, db *sql.DB, mirror string) error {
 	for _, repo := range repositories {
 		if err := ensureRepository(ctx, db, repo); err != nil {
 			return fmt.Errorf("ensure repository %s: %w", repo.Name, err)

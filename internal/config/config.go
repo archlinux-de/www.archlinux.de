@@ -6,16 +6,18 @@ import (
 )
 
 type Config struct {
-	Database      string
-	GeoIPDatabase string
-	Port          string
+	Database       string
+	GeoIPDatabase  string
+	Port           string
+	PackagesMirror string
 }
 
 func Load() (Config, error) {
 	cfg := Config{
-		Database:      getEnv("DATABASE", ""),
-		GeoIPDatabase: getEnv("GEOIP_DATABASE", ""),
-		Port:          getEnv("PORT", "8080"),
+		Database:       getEnv("DATABASE", ""),
+		GeoIPDatabase:  getEnv("GEOIP_DATABASE", ""),
+		Port:           getEnv("PORT", "8080"),
+		PackagesMirror: getEnv("PACKAGES_MIRROR", "https://geo.mirror.pkgbuild.com/"),
 	}
 
 	if cfg.Database == "" {

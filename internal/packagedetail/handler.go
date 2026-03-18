@@ -11,12 +11,13 @@ import (
 )
 
 type Handler struct {
-	repo     *Repository
-	manifest *layout.Manifest
+	repo           *Repository
+	manifest       *layout.Manifest
+	packagesMirror string
 }
 
-func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
-	return &Handler{repo: repo, manifest: manifest}
+func NewHandler(repo *Repository, manifest *layout.Manifest, packagesMirror string) *Handler {
+	return &Handler{repo: repo, manifest: manifest, packagesMirror: packagesMirror}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -48,7 +49,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		NoIndex:     pkg.Testing,
 	}
 
-	layout.Render(w, r, page, PackageDetailPage(pkg))
+	layout.Render(w, r, page, PackageDetailPage(pkg, h.packagesMirror))
 }
 
 func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {

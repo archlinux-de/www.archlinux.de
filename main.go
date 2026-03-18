@@ -57,7 +57,7 @@ func runCommand(cmd string, cfg config.Config) int {
 
 	switch cmd {
 	case "update-packages":
-		if err := packages.Update(ctx, db); err != nil {
+		if err := packages.Update(ctx, db, cfg.PackagesMirror); err != nil {
 			slog.Error("update-packages failed", "error", err)
 			return 1
 		}
@@ -125,7 +125,7 @@ func run(cfg config.Config) error {
 
 	mux := http.NewServeMux()
 
-	ui.RegisterRoutes(mux, manifest, db, geodb, embedAssets, embedStatic, embedRoot)
+	ui.RegisterRoutes(mux, manifest, db, geodb, cfg.PackagesMirror, embedAssets, embedStatic, embedRoot)
 
 	var cacheMiddleware web.Middleware
 	if isDevelopment {
