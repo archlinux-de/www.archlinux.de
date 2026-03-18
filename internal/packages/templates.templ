@@ -74,7 +74,9 @@ templ PackageList(data packagesData) {
 						<td class="text-break">{ pkg.Version }</td>
 						<td class="d-none d-sm-table-cell text-break">{ pkg.Description }</td>
 						<td class="d-none d-lg-table-cell">{ formatDate(pkg.BuildDate) }</td>
-						<td class="d-none d-xl-table-cell">@components.Popularity(pkg.Popularity)</td>
+						<td class="d-none d-xl-table-cell">
+							@components.Popularity(pkg.Popularity)
+						</td>
 					</tr>
 				}
 			</tbody>

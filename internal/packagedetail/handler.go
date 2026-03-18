@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"www/internal/httperror"
 	"www/internal/ui/layout"
 )
 
@@ -52,7 +53,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 
 	pkg, err := h.repo.FindByRepoArchName(r.Context(), repoName, arch, pkgName)
 	if errors.Is(err, sql.ErrNoRows) {
-		http.NotFound(w, r)
+		h.notFound(w, r, pkgName)
 		return
 	}
 	if err != nil {
@@ -120,6 +121,23 @@ func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {
 		Manifest: h.manifest,
 	}
 	layout.Render(w, r, page, PackageResolvePage(name, results))
+}
+
+const suggestLimit = 5
+
+func (h *Handler) notFound(w http.ResponseWriter, r *http.Request, name string) {
+	suggestions := h.repo.Suggest(r.Context(), name, suggestLimit)
+
+	page := layout.Page{
+		Title:    name,
+		Path:     r.URL.Path,
+		Manifest: h.manifest,
+		NoIndex:  true,
+	}
+
+	httperror.SkipIntercept(w)
+	w.WriteHeader(http.StatusNotFound)
+	layout.Render(w, r, page, PackageNotFoundPage(name, suggestions))
 }
 
 func (h *Handler) files(w http.ResponseWriter, r *http.Request) {

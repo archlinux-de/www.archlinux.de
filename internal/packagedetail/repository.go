@@ -210,6 +210,39 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 	return results
 }
 
+type PackageSuggestion struct {
+	Repository   string
+	Architecture string
+	Name         string
+	Description  string
+	Popularity   float64
+}
+
+func (r *Repository) Suggest(ctx context.Context, name string, limit int) []PackageSuggestion {
+	ftsSearch := `"` + strings.ReplaceAll(name, `"`, `""`) + `" *`
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT r.name, r.architecture, p.name, COALESCE(p.description, ''), COALESCE(p.popularity_recent, 0)
+		 FROM package p
+		 JOIN package_fts fts ON fts.rowid = p.id
+		 JOIN repository r ON r.id = p.repository_id
+		 WHERE package_fts MATCH ?
+		 ORDER BY rank, p.popularity_recent DESC
+		 LIMIT ?`, ftsSearch, limit)
+	if err != nil {
+		return nil
+	}
+	defer func() { _ = rows.Close() }()
+
+	var suggestions []PackageSuggestion
+	for rows.Next() {
+		var s PackageSuggestion
+		if err := rows.Scan(&s.Repository, &s.Architecture, &s.Name, &s.Description, &s.Popularity); err == nil {
+			suggestions = append(suggestions, s)
+		}
+	}
+	return suggestions
+}
+
 func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []string {
 	pkgID := r.packageID(ctx, repo, arch, name)
 	if pkgID == 0 {

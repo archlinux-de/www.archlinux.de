@@ -109,7 +109,9 @@ templ PackageDetailPage(pkg PackageDetail, packagesMirror string) {
 					</tr>
 					<tr>
 						<th>Beliebtheit</th>
-						<td>@components.Popularity(pkg.Popularity)</td>
+						<td>
+							@components.Popularity(pkg.Popularity)
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -203,6 +205,46 @@ func resolveURL(arch string, r Relation) string {
 		u += "?" + url.Values{"v": {r.TargetVersion}, "c": {r.VersionConstraint}}.Encode()
 	}
 	return u
+}
+
+templ PackageNotFoundPage(name string, suggestions []PackageSuggestion) {
+	<div class="card border-danger">
+		<div class="card-header bg-danger text-white">Fehler beim Laden des Paket</div>
+		<div class="card-body">
+			<div class="card-text">
+				Das Paket <strong>{ name }</strong> konnte leider nicht angezeigt werden.
+			</div>
+			if len(suggestions) > 0 {
+				<table class="table table-borderless caption-top">
+					<caption>
+						Gefundene Vorschläge zu <strong>{ name }</strong>:
+					</caption>
+					<tbody>
+						for _, s := range suggestions {
+							<tr>
+								<td>
+									<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", s.Repository, s.Architecture, s.Name)) }>{ s.Name }</a>
+								</td>
+								<td>{ s.Description }</td>
+								<td class="d-none d-lg-table-cell">
+									@components.Popularity(s.Popularity)
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+		<div class="card-footer">
+			<div class="d-flex justify-content-end">
+				<small>
+					<a href={ templ.SafeURL("/packages?search=" + url.QueryEscape(name)) }>
+						Nach { name } suchen
+					</a>
+				</small>
+			</div>
+		</div>
+	</div>
 }
 
 templ PackageResolvePage(name string, packages []ResolvedPackage) {

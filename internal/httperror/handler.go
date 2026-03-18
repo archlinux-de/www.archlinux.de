@@ -33,14 +33,23 @@ type errorWriter struct {
 	intercepted bool
 }
 
+const skipInterceptHeader = "X-Skip-Error-Intercept"
+
+// SkipIntercept marks the response so the error middleware passes through
+// the handler's own error page instead of replacing it.
+func SkipIntercept(w http.ResponseWriter) {
+	w.Header().Set(skipInterceptHeader, "1")
+}
+
 func (ew *errorWriter) WriteHeader(code int) {
 	ew.status = code
 
-	if code >= http.StatusBadRequest {
+	if code >= http.StatusBadRequest && ew.Header().Get(skipInterceptHeader) == "" {
 		ew.intercepted = true
 		return
 	}
 
+	ew.Header().Del(skipInterceptHeader)
 	ew.ResponseWriter.WriteHeader(code)
 }
 

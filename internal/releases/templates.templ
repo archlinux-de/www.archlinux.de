@@ -84,8 +84,9 @@ templ ReleaseDetail(rel Release) {
 					if rel.Info != "" {
 						<tr>
 							<th>Informationen</th>
-							<td>@templ.Raw(sanitize.HTML(rel.Info))
-</td>
+							<td>
+								@templ.Raw(sanitize.HTML(rel.Info))
+							</td>
 						</tr>
 					}
 					if rel.KernelVersion != "" {
