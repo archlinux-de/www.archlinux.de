@@ -43,7 +43,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 					<div class="mb-5">
 						<div class="d-lg-flex justify-content-between align-items-baseline border-bottom mb-2">
 							<h2 class="text-break">
-								<a href={ templ.SafeURL(fmt.Sprintf("/news/%d", item.ID)) }>{ item.Title }</a>
+								<a href={ templ.SafeURL(item.URL()) }>{ item.Title }</a>
 							</h2>
 							<div>{ time.Unix(item.LastModified, 0).Format("02.01.2006") }</div>
 						</div>

@@ -36,7 +36,7 @@ templ NewsList(data newsData) {
 					<tr>
 						<td class="d-none d-md-table-cell">{ formatDate(item.LastModified) }</td>
 						<td>
-							<a href={ templ.SafeURL(fmt.Sprintf("/news/%d", item.ID)) }>{ item.Title }</a>
+							<a href={ templ.SafeURL(item.URL()) }>{ item.Title }</a>
 						</td>
 						<td class="d-none d-xl-table-cell">
 							if item.AuthorLink != "" {

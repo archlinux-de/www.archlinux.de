@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"www/internal/ui/layout"
 )
@@ -94,6 +95,10 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
+	if i := strings.IndexByte(idStr, '-'); i > 0 {
+		idStr = idStr[:i]
+	}
+
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.NotFound(w, r)
@@ -113,7 +118,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	page := layout.Page{
 		Title:       item.Title,
 		Description: truncate(item.Title, maxDescriptionLen),
-		Path:        "/news/" + idStr,
+		Path:        item.URL(),
 		Manifest:    h.manifest,
 	}
 

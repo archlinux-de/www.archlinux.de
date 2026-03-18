@@ -3,7 +3,6 @@ package sitemap
 import (
 	"encoding/xml"
 	"net/http"
-	"strconv"
 	"time"
 
 	"www/internal/news"
@@ -60,7 +59,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 	if newsRefs, err := h.news.AllRefs(ctx); err == nil {
 		for _, ref := range newsRefs {
-			u := siteURL{Loc: "/news/" + strconv.Itoa(ref.ID)}
+			u := siteURL{Loc: ref.URL()}
 			if ref.LastModified > 0 {
 				u.LastMod = time.Unix(ref.LastModified, 0).UTC().Format("2006-01-02")
 			}

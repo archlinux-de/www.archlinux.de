@@ -15,6 +15,10 @@ type NewsItem struct {
 	LastModified int64
 }
 
+func (n NewsItem) URL() string {
+	return newsURL(n.ID, n.Title)
+}
+
 type Repository struct {
 	db *sql.DB
 }
@@ -99,11 +103,16 @@ func (r *Repository) Latest(ctx context.Context, limit int) ([]NewsItem, error) 
 
 type NewsRef struct {
 	ID           int
+	Title        string
 	LastModified int64
 }
 
+func (n NewsRef) URL() string {
+	return newsURL(n.ID, n.Title)
+}
+
 func (r *Repository) AllRefs(ctx context.Context) ([]NewsRef, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT id, last_modified FROM news_item`)
+	rows, err := r.db.QueryContext(ctx, `SELECT id, title, last_modified FROM news_item`)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +121,7 @@ func (r *Repository) AllRefs(ctx context.Context) ([]NewsRef, error) {
 	var refs []NewsRef
 	for rows.Next() {
 		var ref NewsRef
-		if err := rows.Scan(&ref.ID, &ref.LastModified); err != nil {
+		if err := rows.Scan(&ref.ID, &ref.Title, &ref.LastModified); err != nil {
 			return nil, err
 		}
 		refs = append(refs, ref)

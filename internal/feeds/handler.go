@@ -94,8 +94,8 @@ func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 	for _, item := range items {
 		entry := atomEntry{
 			Title:   item.Title,
-			Link:    atomLink{Href: item.Link},
-			ID:      item.Link,
+			Link:    atomLink{Href: item.URL()},
+			ID:      item.URL(),
 			Updated: formatTime(item.LastModified),
 		}
 		if item.AuthorName != "" {
