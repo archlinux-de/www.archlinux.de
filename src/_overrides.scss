@@ -13,6 +13,13 @@
     table-layout: fixed;
 }
 
+.package-popularity .bi {
+    width: 1em;
+    height: 1em;
+    vertical-align: unset;
+    margin-top: 0.25em;
+}
+
 @media (prefers-color-scheme: dark) {
     .btn.btn-outline-secondary {
         --bs-btn-color: var(--bs-light);

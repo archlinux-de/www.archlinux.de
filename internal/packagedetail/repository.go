@@ -23,6 +23,7 @@ type PackageDetail struct {
 	PackagerEmail  string
 	Licenses       []string
 	Groups         []string
+	Popularity     float64
 	Relations      map[string][]Relation
 	InverseRels    map[string][]Relation
 }
@@ -61,6 +62,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 			r.name, r.architecture, r.testing,
 			COALESCE(p.build_date, 0), COALESCE(p.compressed_size, 0), COALESCE(p.installed_size, 0),
 			COALESCE(p.packager_name, ''), COALESCE(p.packager_email, ''),
+			COALESCE(p.popularity_recent, 0),
 			p.licenses, p.groups
 		FROM package p
 		JOIN repository r ON r.id = p.repository_id
@@ -71,6 +73,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 		&pkg.Repository, &pkg.Architecture, &testing,
 		&pkg.BuildDate, &pkg.CompressedSize, &pkg.InstalledSize,
 		&pkg.PackagerName, &pkg.PackagerEmail,
+		&pkg.Popularity,
 		&licensesJSON, &groupsJSON,
 	)
 	if err != nil {

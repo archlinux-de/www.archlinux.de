@@ -1,0 +1,45 @@
+package components
+
+import "fmt"
+import "math"
+
+const numStars = 5
+
+templ Popularity(popularity float64) {
+	<span title={ fmt.Sprintf("%.2f%%", popularity) } class="package-popularity text-primary">
+		for range fullStars(popularity) {
+			@templ.Raw(iconStarFill)
+		}
+		for range halfStars(popularity) {
+			@templ.Raw(iconStarHalf)
+		}
+		for range emptyStars(popularity) {
+			@templ.Raw(iconStarEmpty)
+		}
+	</span>
+}
+
+func fullStars(p float64) int {
+	if p <= 0 {
+		return 0
+	}
+	if p > 100 {
+		return numStars
+	}
+	return int(math.Floor(p / 100 * numStars))
+}
+
+func halfStars(p float64) int {
+	if p <= 0 || p > 100 {
+		return 0
+	}
+	frac := p / 100 * numStars
+	if math.Ceil(frac)-math.Floor(frac) >= 0.5 {
+		return 1
+	}
+	return 0
+}
+
+func emptyStars(p float64) int {
+	return numStars - fullStars(p) - halfStars(p)
+}

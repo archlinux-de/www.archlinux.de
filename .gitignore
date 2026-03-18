@@ -8,6 +8,8 @@
 /dist
 /node_modules
 *_templ.go
+/internal/ui/components/icons/*
+!/internal/ui/components/icons/.gitkeep
 /tmp/*
 !/tmp/.gitkeep
 /www

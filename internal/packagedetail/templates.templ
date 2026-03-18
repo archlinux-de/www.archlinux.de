@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 	"www/internal/sanitize"
+	"www/internal/ui/components"
 )
 
 templ PackageDetailPage(pkg PackageDetail, packagesMirror string) {
@@ -105,6 +106,10 @@ templ PackageDetailPage(pkg PackageDetail, packagesMirror string) {
 					<tr>
 						<th>Installations-Größe</th>
 						<td>{ formatBytes(pkg.InstalledSize) }</td>
+					</tr>
+					<tr>
+						<th>Beliebtheit</th>
+						<td>@components.Popularity(pkg.Popularity)</td>
 					</tr>
 				</tbody>
 			</table>

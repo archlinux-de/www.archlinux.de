@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+	"www/internal/ui/components"
 )
 
 templ PackageList(data packagesData) {
@@ -40,6 +41,7 @@ templ PackageList(data packagesData) {
 					<th>Version</th>
 					<th class="d-none d-sm-table-cell">Beschreibung</th>
 					<th class="d-none d-lg-table-cell">Datum</th>
+					<th class="d-none d-xl-table-cell">Beliebtheit</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -58,6 +60,7 @@ templ PackageList(data packagesData) {
 						<td class="text-break">{ pkg.Version }</td>
 						<td class="d-none d-sm-table-cell text-break">{ pkg.Description }</td>
 						<td class="d-none d-lg-table-cell">{ formatDate(pkg.BuildDate) }</td>
+						<td class="d-none d-xl-table-cell">@components.Popularity(pkg.Popularity)</td>
 					</tr>
 				}
 			</tbody>

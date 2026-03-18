@@ -20,8 +20,9 @@ install:
 build-assets:
     pnpm run build
 
-# generate templ templates
+# generate Go code and templ templates
 build-templates:
+    go generate ./...
     go tool templ generate
 
 # build the production binary
