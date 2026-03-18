@@ -21,7 +21,7 @@ templ Base(page Page, contents templ.Component) {
 			if page.NoIndex {
 				<meta name="robots" content="noindex"/>
 			}
-			<title>{ page.Title }</title>
+			<title>{ page.Title + " - archlinux.de" }</title>
 			if page.Description != "" {
 				<meta name="description" content={ page.Description }/>
 			}
