@@ -8,6 +8,7 @@ import (
 	"www/internal/news"
 	"www/internal/packages"
 	"www/internal/releases"
+	"www/internal/ui/layout"
 )
 
 type Handler struct {
@@ -37,19 +38,20 @@ type siteURL struct {
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	baseURL := layout.GetBaseURL(r)
 
 	urls := []siteURL{
-		{Loc: "/"},
-		{Loc: "/packages"},
-		{Loc: "/news"},
-		{Loc: "/mirrors"},
-		{Loc: "/releases"},
-		{Loc: "/download"},
+		{Loc: baseURL + "/"},
+		{Loc: baseURL + "/packages"},
+		{Loc: baseURL + "/news"},
+		{Loc: baseURL + "/mirrors"},
+		{Loc: baseURL + "/releases"},
+		{Loc: baseURL + "/download"},
 	}
 
 	if pkgRefs, err := h.packages.AllStableRefs(ctx); err == nil {
 		for _, ref := range pkgRefs {
-			u := siteURL{Loc: "/packages/" + ref.Repository + "/" + ref.Architecture + "/" + ref.Name}
+			u := siteURL{Loc: baseURL + "/packages/" + ref.Repository + "/" + ref.Architecture + "/" + ref.Name}
 			if ref.BuildDate > 0 {
 				u.LastMod = time.Unix(ref.BuildDate, 0).UTC().Format("2006-01-02")
 			}
@@ -59,7 +61,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 	if newsRefs, err := h.news.AllRefs(ctx); err == nil {
 		for _, ref := range newsRefs {
-			u := siteURL{Loc: ref.URL()}
+			u := siteURL{Loc: baseURL + ref.URL()}
 			if ref.LastModified > 0 {
 				u.LastMod = time.Unix(ref.LastModified, 0).UTC().Format("2006-01-02")
 			}
@@ -69,7 +71,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 	if relRefs, err := h.releases.AllRefs(ctx); err == nil {
 		for _, ref := range relRefs {
-			u := siteURL{Loc: "/releases/" + ref.Version}
+			u := siteURL{Loc: baseURL + "/releases/" + ref.Version}
 			if ref.Created > 0 {
 				u.LastMod = time.Unix(ref.Created, 0).UTC().Format("2006-01-02")
 			}
