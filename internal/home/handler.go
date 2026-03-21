@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"www/internal/legacy"
 	"www/internal/news"
 	"www/internal/packages"
 	"www/internal/ui/layout"
@@ -29,6 +30,10 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
+	if legacy.HandleLegacyQuery(w, r) {
+		return
+	}
+
 	latestNews, err := h.newsRepo.Latest(r.Context(), latestNewsCount)
 	if err != nil {
 		slog.Error("failed to fetch latest news", "error", err)

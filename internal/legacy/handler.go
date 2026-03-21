@@ -6,44 +6,48 @@ import (
 	"strings"
 )
 
+func emptyJSONArray(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write([]byte("[]"))
+}
+
 func RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			http.NotFound(w, r)
-			return
-		}
+	mux.HandleFunc("GET /packages/suggest", emptyJSONArray)
+}
 
-		rawQuery := r.URL.RawQuery
-		if rawQuery == "" {
-			// No query string — let the home handler deal with it
-			// This handler is registered after home, so it won't be reached
-			// unless there's a query string
-			http.NotFound(w, r)
-			return
-		}
+// HandleLegacyQuery handles legacy ?page= query strings on the root path.
+// Returns true if the request was handled.
+func HandleLegacyQuery(w http.ResponseWriter, r *http.Request) bool {
+	rawQuery := r.URL.RawQuery
+	if rawQuery == "" {
+		return false
+	}
 
-		// Legacy uses ; as separator
-		rawQuery = strings.ReplaceAll(rawQuery, ";", "&")
-		values, err := url.ParseQuery(rawQuery)
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
+	// Legacy uses ; as separator
+	rawQuery = strings.ReplaceAll(rawQuery, ";", "&")
+	values, err := url.ParseQuery(rawQuery)
+	if err != nil {
+		return false
+	}
 
-		page := values.Get("page")
-		if page == "" {
-			http.NotFound(w, r)
-			return
-		}
+	page := values.Get("page")
+	if page == "" {
+		return false
+	}
 
-		target := resolveTarget(page, values)
-		if target == "" {
-			http.NotFound(w, r)
-			return
-		}
+	if page == "PackagesSuggest" {
+		emptyJSONArray(w, r)
+		return true
+	}
 
-		http.Redirect(w, r, target, http.StatusMovedPermanently)
-	})
+	target := resolveTarget(page, values)
+	if target == "" {
+		http.NotFound(w, r)
+		return true
+	}
+
+	http.Redirect(w, r, target, http.StatusMovedPermanently)
+	return true
 }
 
 var externalRedirects = map[string]string{
@@ -91,8 +95,6 @@ func resolveTarget(page string, values url.Values) string {
 		}
 		return "/packages"
 
-	case "PackagesSuggest":
-		return "/packages"
 	}
 
 	return ""
