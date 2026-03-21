@@ -60,6 +60,7 @@ func RegisterRoutes(
 	handleFavicon(mux, root)
 	handleManifest(mux, root)
 	handleRobots(mux, root)
+	handleServiceWorker(mux, root)
 }
 
 func handleFavicon(mux *http.ServeMux, root fs.FS) {
@@ -72,6 +73,12 @@ func handleManifest(mux *http.ServeMux, root fs.FS) {
 	mux.Handle("GET /manifest.webmanifest", cacheHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/manifest+json")
 		http.ServeFileFS(w, r, root, "root/manifest.webmanifest")
+	}), staticCacheMaxAge))
+}
+
+func handleServiceWorker(mux *http.ServeMux, root fs.FS) {
+	mux.Handle("GET /service-worker.js", cacheHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFileFS(w, r, root, "root/service-worker.js")
 	}), staticCacheMaxAge))
 }
 
