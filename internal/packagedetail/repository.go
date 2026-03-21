@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"strings"
+
+	"www/internal/vercmp"
 )
 
 type PackageDetail struct {
@@ -27,7 +29,6 @@ type PackageDetail struct {
 	PopularityCount   int
 	PopularitySamples int
 	Relations         map[string][]Relation
-	InverseRels       map[string][]Relation
 }
 
 func (p PackageDetail) FileName() string {
@@ -41,9 +42,11 @@ type Relation struct {
 }
 
 type ResolvedPackage struct {
-	Name       string
-	Repository string
-	Arch       string
+	Name        string
+	Repository  string
+	Arch        string
+	Description string
+	Popularity  float64
 }
 
 type Repository struct {
@@ -59,18 +62,20 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 	var licensesJSON, groupsJSON sql.NullString
 	var testing int
 
+	var pkgID int64
 	err := r.db.QueryRowContext(ctx,
-		`SELECT p.name, p.base, p.version, COALESCE(p.description, ''), COALESCE(p.url, ''),
+		`SELECT p.id, p.name, p.base, p.version, p.description, COALESCE(p.url, ''),
 			r.name, r.architecture, r.testing,
-			COALESCE(p.build_date, 0), COALESCE(p.compressed_size, 0), COALESCE(p.installed_size, 0),
+			p.build_date, p.compressed_size, p.installed_size,
 			COALESCE(p.packager_name, ''), COALESCE(p.packager_email, ''),
-			COALESCE(p.popularity_recent, 0), COALESCE(p.popularity_count, 0), COALESCE(p.popularity_samples, 0),
+			p.popularity_recent, p.popularity_count, p.popularity_samples,
 			p.licenses, p.groups
 		FROM package p
 		JOIN repository r ON r.id = p.repository_id
 		WHERE r.name = ? AND r.architecture = ? AND p.name = ?`,
 		repo, arch, name,
 	).Scan(
+		&pkgID,
 		&pkg.Name, &pkg.Base, &pkg.Version, &pkg.Description, &pkg.URL,
 		&pkg.Repository, &pkg.Architecture, &testing,
 		&pkg.BuildDate, &pkg.CompressedSize, &pkg.InstalledSize,
@@ -90,11 +95,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 		_ = json.Unmarshal([]byte(groupsJSON.String), &pkg.Groups)
 	}
 
-	pkgID := r.packageID(ctx, repo, arch, name)
-	if pkgID > 0 {
-		pkg.Relations = r.loadRelations(ctx, pkgID)
-		pkg.InverseRels = r.loadInverseRelations(ctx, name, arch)
-	}
+	pkg.Relations = r.loadRelations(ctx, pkgID)
 
 	return pkg, nil
 }
@@ -128,15 +129,15 @@ func (r *Repository) loadRelations(ctx context.Context, pkgID int64) map[string]
 	return rels
 }
 
-func (r *Repository) loadInverseRelations(ctx context.Context, name, arch string) map[string][]Relation {
-	rels := make(map[string][]Relation)
+func (r *Repository) LoadInverseRelations(ctx context.Context, name, arch string) map[string][]string {
+	rels := make(map[string][]string)
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT pr.type, p.name
 		 FROM package_relation pr
 		 JOIN package p ON p.id = pr.package_id
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE pr.target_name = ? AND r.architecture = ?
-		 ORDER BY pr.type, p.name`, name, arch)
+		 ORDER BY pr.type, p.popularity_recent DESC, p.name`, name, arch)
 	if err != nil {
 		return rels
 	}
@@ -145,7 +146,7 @@ func (r *Repository) loadInverseRelations(ctx context.Context, name, arch string
 	for rows.Next() {
 		var relType, pkgName string
 		if err := rows.Scan(&relType, &pkgName); err == nil {
-			rels[relType] = append(rels[relType], Relation{TargetName: pkgName})
+			rels[relType] = append(rels[relType], pkgName)
 		}
 	}
 	return rels
@@ -155,18 +156,13 @@ func (r *Repository) loadInverseRelations(ctx context.Context, name, arch string
 // provides. Results are ordered like pacman: testing repos first when
 // testing is true (matching pacman.conf where testing repos precede
 // their non-testing counterparts).
-func (r *Repository) Resolve(ctx context.Context, arch, name, version, constraint string, testing bool) []ResolvedPackage {
-	order := "r.testing ASC"
-	if testing {
-		order = "r.testing DESC"
-	}
-
+func (r *Repository) Resolve(ctx context.Context, arch, name, version, constraint string) []ResolvedPackage {
 	// 1. Direct name match
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT p.name, r.name, r.architecture FROM package p
+		`SELECT p.name, r.name, r.architecture, p.description, p.popularity_recent FROM package p
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE p.name = ? AND r.architecture = ?
-		 ORDER BY `+order, name, arch)
+		 ORDER BY r.testing ASC, p.popularity_recent DESC`, name, arch)
 	if err != nil {
 		return nil
 	}
@@ -175,7 +171,7 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 	var results []ResolvedPackage
 	for rows.Next() {
 		var rp ResolvedPackage
-		if err := rows.Scan(&rp.Name, &rp.Repository, &rp.Arch); err == nil {
+		if err := rows.Scan(&rp.Name, &rp.Repository, &rp.Arch, &rp.Description, &rp.Popularity); err == nil {
 			results = append(results, rp)
 		}
 	}
@@ -183,19 +179,13 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 		return results
 	}
 
-	// 2. Provider fallback — filter by version if specified
-	query := `SELECT DISTINCT p.name, r.name, r.architecture FROM package_relation pr
+	// 2. Provider fallback — fetch all providers, filter by version in Go
+	query := `SELECT DISTINCT p.name, r.name, r.architecture, p.description, p.popularity_recent, COALESCE(pr.target_version, '') FROM package_relation pr
 		 JOIN package p ON p.id = pr.package_id
 		 JOIN repository r ON r.id = p.repository_id
-		 WHERE pr.type = 'provides' AND pr.target_name = ? AND r.architecture = ?`
-	args := []any{name, arch}
-	if version != "" && constraint != "" {
-		query += ` AND pr.target_version = ? AND pr.version_constraint = ?`
-		args = append(args, version, constraint)
-	}
-	query += ` ORDER BY ` + order + `, p.name`
-
-	rows2, err := r.db.QueryContext(ctx, query, args...)
+		 WHERE pr.type = 'provides' AND pr.target_name = ? AND r.architecture = ?
+		 ORDER BY r.testing ASC, p.popularity_recent DESC, p.name`
+	rows2, err := r.db.QueryContext(ctx, query, name, arch)
 	if err != nil {
 		return nil
 	}
@@ -203,11 +193,38 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 
 	for rows2.Next() {
 		var rp ResolvedPackage
-		if err := rows2.Scan(&rp.Name, &rp.Repository, &rp.Arch); err == nil {
-			results = append(results, rp)
+		var providedVersion string
+		if err := rows2.Scan(&rp.Name, &rp.Repository, &rp.Arch, &rp.Description, &rp.Popularity, &providedVersion); err == nil {
+			if satisfies(providedVersion, version, constraint) {
+				results = append(results, rp)
+			}
 		}
 	}
 	return results
+}
+
+func satisfies(provided, requested, constraint string) bool {
+	if requested == "" || constraint == "" {
+		return true
+	}
+	if provided == "" {
+		return false
+	}
+	cmp := vercmp.Vercmp(provided, requested)
+	switch constraint {
+	case "EQ":
+		return cmp == 0
+	case "GE":
+		return cmp >= 0
+	case "LE":
+		return cmp <= 0
+	case "GT":
+		return cmp > 0
+	case "LT":
+		return cmp < 0
+	default:
+		return true
+	}
 }
 
 type PackageSuggestion struct {
@@ -219,9 +236,9 @@ type PackageSuggestion struct {
 }
 
 func (r *Repository) Suggest(ctx context.Context, name string, limit int) []PackageSuggestion {
-	ftsSearch := `"` + strings.ReplaceAll(name, `"`, `""`) + `" *`
+	ftsSearch := ftsQuery(name)
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT r.name, r.architecture, p.name, COALESCE(p.description, ''), COALESCE(p.popularity_recent, 0)
+		`SELECT r.name, r.architecture, p.name, p.description, p.popularity_recent
 		 FROM package p
 		 JOIN package_fts fts ON fts.rowid = p.id
 		 JOIN repository r ON r.id = p.repository_id
@@ -241,6 +258,25 @@ func (r *Repository) Suggest(ctx context.Context, name string, limit int) []Pack
 		}
 	}
 	return suggestions
+}
+
+func ftsQuery(search string) string {
+	search = strings.ReplaceAll(search, `"`, `""`)
+	terms := strings.Fields(strings.ReplaceAll(search, "-", " "))
+	if len(terms) == 0 {
+		return `""`
+	}
+	var b strings.Builder
+	for i, t := range terms {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		b.WriteByte('"')
+		b.WriteString(t)
+		b.WriteByte('"')
+	}
+	b.WriteByte('*')
+	return b.String()
 }
 
 func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []string {

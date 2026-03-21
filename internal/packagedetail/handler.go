@@ -44,6 +44,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /packages/{arch}/{name}", h.resolve)
 	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}", h.show)
 	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}/files", h.files)
+	mux.HandleFunc("GET /packages/{repo}/{arch}/{name}/inverse-dependencies", h.inverseDeps)
 }
 
 func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
@@ -105,9 +106,9 @@ func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {
 	version := r.URL.Query().Get("v")
 	constraint := r.URL.Query().Get("c")
 
-	results := h.repo.Resolve(r.Context(), arch, name, version, constraint, false)
+	results := h.repo.Resolve(r.Context(), arch, name, version, constraint)
 	if len(results) == 0 {
-		http.NotFound(w, r)
+		h.notFound(w, r, name)
 		return
 	}
 	if len(results) == 1 {
@@ -138,6 +139,16 @@ func (h *Handler) notFound(w http.ResponseWriter, r *http.Request, name string) 
 	httperror.SkipIntercept(w)
 	w.WriteHeader(http.StatusNotFound)
 	layout.Render(w, r, page, PackageNotFoundPage(name, suggestions))
+}
+
+func (h *Handler) inverseDeps(w http.ResponseWriter, r *http.Request) {
+	arch := r.PathValue("arch")
+	pkgName := r.PathValue("name")
+
+	rels := h.repo.LoadInverseRelations(r.Context(), pkgName, arch)
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(rels)
 }
 
 func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
