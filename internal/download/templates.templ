@@ -56,7 +56,7 @@ templ DownloadPage(data downloadData) {
 				<h2>Direkte HTTP-Downloads</h2>
 				<p>Nach dem Download sollten die Dateien stets überprüft werden.</p>
 				<h3>Prüfsummen</h3>
-				<table class="table table-sm table-borderless mb-4">
+				<table class="table table-sm table-borderless mb-4" aria-label="Prüfsummen">
 					<tbody>
 						if data.ISOSigPath != "" {
 							<tr>

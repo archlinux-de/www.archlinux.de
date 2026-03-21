@@ -73,7 +73,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 				<div class="card">
 					<h3 class="card-title card-header">Aktuelle Pakete</h3>
 					<div class="card-body p-1 p-lg-3">
-						<table class="table table-sm table-borderless">
+						<table class="table table-sm table-borderless" aria-label="Aktuelle Pakete">
 							<tbody>
 								for _, pkg := range recentPkgs {
 									<tr>

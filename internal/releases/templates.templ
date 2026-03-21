@@ -17,13 +17,14 @@ templ ReleaseList(data releasesData) {
 				type="search"
 				name="search"
 				autocomplete="off"
+				aria-label="Release suchen"
 				value={ data.Search }
 			/>
 			<button class="btn btn-outline-primary" type="submit">Suchen</button>
 		</div>
 	</form>
 	if len(data.Releases) > 0 {
-		<table class="table table-striped table-responsive table-sm table-borderless">
+		<table class="table table-striped table-responsive table-sm table-borderless" aria-label="Releases">
 			<thead>
 				<tr>
 					<th>Version</th>
@@ -75,7 +76,7 @@ templ ReleaseDetail(rel Release) {
 	<div class="row">
 		<div class="col-12 col-xl-6">
 			<h2 class="mb-3">Release Informationen</h2>
-			<table class="table table-sm table-borderless mb-4">
+			<table class="table table-sm table-borderless mb-4" aria-label="Release Informationen">
 				<tbody>
 					<tr>
 						<th>Version</th>

@@ -17,9 +17,10 @@ templ PackageList(data packagesData) {
 				type="search"
 				name="search"
 				autocomplete="off"
+				aria-label="Pakete suchen"
 				value={ data.Search }
 			/>
-			<select class="form-select" name="repository">
+			<select class="form-select" name="repository" aria-label="Repositorium">
 				<option value="">Alle Repositorien</option>
 				for _, repo := range data.Repositories {
 					if repo == data.Repository {
@@ -30,7 +31,7 @@ templ PackageList(data packagesData) {
 				}
 			</select>
 			if len(data.Architectures) > 0 {
-				<select class="form-select d-none d-sm-block" name="architecture">
+				<select class="form-select d-none d-sm-block" name="architecture" aria-label="Architektur">
 					<option value=""></option>
 					for _, arch := range data.Architectures {
 						if arch == data.Architecture {
@@ -45,7 +46,7 @@ templ PackageList(data packagesData) {
 		</div>
 	</form>
 	if len(data.Packages) > 0 {
-		<table class="table table-striped table-responsive table-sm table-borderless table-fixed">
+		<table class="table table-striped table-responsive table-sm table-borderless table-fixed" aria-label="Pakete">
 			<thead>
 				<tr>
 					<th class="d-none d-lg-table-cell">Repositorium</th>
