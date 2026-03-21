@@ -1,7 +1,6 @@
 package packages
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 
@@ -24,43 +23,13 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 type packagesData struct {
+	layout.Pagination
 	Packages      []PackageSummary
 	Search        string
 	Repository    string
 	Architecture  string
 	Repositories  []string
 	Architectures []string
-	Total         int
-	Offset        int
-	Limit         int
-}
-
-func (d packagesData) HasPrevious() bool { return d.Offset > 0 }
-func (d packagesData) HasNext() bool     { return d.Offset+d.Limit < d.Total }
-func (d packagesData) From() int         { return d.Offset + 1 }
-
-func (d packagesData) To() int {
-	to := d.Offset + d.Limit
-	if to > d.Total {
-		to = d.Total
-	}
-	return to
-}
-
-func (d packagesData) PrevOffset() int {
-	o := d.Offset - d.Limit
-	if o < 0 {
-		o = 0
-	}
-	return o
-}
-
-func (d packagesData) NextOffset() int {
-	return d.Offset + d.Limit
-}
-
-func (d packagesData) TotalPages() int {
-	return int(math.Ceil(float64(d.Total) / float64(d.Limit)))
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
@@ -96,15 +65,13 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := packagesData{
+		Pagination:    layout.Pagination{Total: total, Limit: defaultLimit, Offset: offset},
 		Packages:      pkgs,
 		Search:        search,
 		Repository:    repo,
 		Architecture:  arch,
 		Repositories:  repos,
 		Architectures: archs,
-		Total:         total,
-		Limit:         defaultLimit,
-		Offset:        offset,
 	}
 
 	page := layout.Page{

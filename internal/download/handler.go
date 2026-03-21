@@ -5,7 +5,6 @@ import (
 	"math/rand/v2"
 	"net"
 	"net/http"
-	"net/netip"
 	"regexp"
 	"strings"
 	"time"
@@ -14,16 +13,14 @@ import (
 	"www/internal/packages"
 	"www/internal/releases"
 	"www/internal/ui/layout"
-
-	"github.com/oschwald/maxminddb-golang/v2"
 )
 
 type Handler struct {
-	releases *releases.Repository
-	packages *packages.Repository
-	mirrors  *mirrors.Repository
-	manifest *layout.Manifest
-	geodb    *maxminddb.Reader
+	releases      *releases.Repository
+	packages      *packages.Repository
+	mirrors       *mirrors.Repository
+	manifest      *layout.Manifest
+	defaultMirror string
 }
 
 func NewHandler(
@@ -31,14 +28,14 @@ func NewHandler(
 	pkgRepo *packages.Repository,
 	mirRepo *mirrors.Repository,
 	manifest *layout.Manifest,
-	geodb *maxminddb.Reader,
+	defaultMirror string,
 ) *Handler {
 	return &Handler{
-		releases: relRepo,
-		packages: pkgRepo,
-		mirrors:  mirRepo,
-		manifest: manifest,
-		geodb:    geodb,
+		releases:      relRepo,
+		packages:      pkgRepo,
+		mirrors:       mirRepo,
+		manifest:      manifest,
+		defaultMirror: defaultMirror,
 	}
 }
 
@@ -48,24 +45,6 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /download/iso/{version}/{$}", h.isoDir)
 	mux.HandleFunc("GET /download/{repository}/os/{architecture}/{file}", h.pkg)
 	mux.HandleFunc("GET /download/{file...}", h.fallback)
-}
-
-func formatSize(b int64) string {
-	const (
-		kb = 1000
-		mb = 1000 * kb
-		gb = 1000 * mb
-	)
-	switch {
-	case b >= gb:
-		return fmt.Sprintf("%d GB", b/gb)
-	case b >= mb:
-		return fmt.Sprintf("%d MB", b/mb)
-	case b >= kb:
-		return fmt.Sprintf("%d kB", b/kb)
-	default:
-		return fmt.Sprintf("%d B", b)
-	}
 }
 
 const (
@@ -120,7 +99,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 			"operatingSystem": "Arch Linux",
 			"softwareVersion": rel.Version,
 			"datePublished":   time.Unix(rel.ReleaseDate, 0).UTC().Format(time.RFC3339),
-			"fileSize":        formatSize(rel.FileLength),
+			"fileSize":        layout.FormatSize(rel.FileLength),
 			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
 		},
 	}
@@ -224,11 +203,9 @@ func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
-	countryCode := h.lookupCountry(r)
-
-	urls, err := h.mirrors.SelectByCountry(r.Context(), countryCode, lastSync, selectMirrorCount)
+	urls, err := h.mirrors.SelectByCountry(r.Context(), "", lastSync, selectMirrorCount)
 	if err != nil || len(urls) == 0 {
-		return ""
+		return h.defaultMirror
 	}
 
 	clientIP := clientAddr(r)
@@ -238,28 +215,6 @@ func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
 	}
 	rng := rand.New(rand.NewPCG(seed, 0)) //nolint:gosec // deterministic selection per client IP
 	return urls[rng.IntN(len(urls))]
-}
-
-func (h *Handler) lookupCountry(r *http.Request) string {
-	if h.geodb == nil {
-		return "DE"
-	}
-
-	addr, err := netip.ParseAddr(clientAddr(r))
-	if err != nil {
-		return "DE"
-	}
-
-	var result struct {
-		Country struct {
-			ISOCode string `maxminddb:"iso_code"`
-		} `maxminddb:"country"`
-	}
-	if err := h.geodb.Lookup(addr).Decode(&result); err != nil || result.Country.ISOCode == "" {
-		return "DE"
-	}
-
-	return result.Country.ISOCode
 }
 
 func clientAddr(r *http.Request) string {

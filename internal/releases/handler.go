@@ -45,35 +45,9 @@ func (r Release) DirectoryURL() string {
 }
 
 type releasesData struct {
+	layout.Pagination
 	Releases []Release
 	Search   string
-	Total    int
-	Offset   int
-	Limit    int
-}
-
-func (d releasesData) HasPrevious() bool { return d.Offset > 0 }
-func (d releasesData) HasNext() bool     { return d.Offset+d.Limit < d.Total }
-func (d releasesData) From() int         { return d.Offset + 1 }
-
-func (d releasesData) To() int {
-	to := d.Offset + d.Limit
-	if to > d.Total {
-		to = d.Total
-	}
-	return to
-}
-
-func (d releasesData) PrevOffset() int {
-	o := d.Offset - d.Limit
-	if o < 0 {
-		o = 0
-	}
-	return o
-}
-
-func (d releasesData) NextOffset() int {
-	return d.Offset + d.Limit
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
@@ -90,11 +64,9 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := releasesData{
-		Releases: rels,
-		Search:   search,
-		Total:    total,
-		Limit:    defaultLimit,
-		Offset:   offset,
+		Pagination: layout.Pagination{Total: total, Limit: defaultLimit, Offset: offset},
+		Releases:   rels,
+		Search:     search,
 	}
 
 	page := layout.Page{

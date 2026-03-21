@@ -12,32 +12,13 @@ import (
 	"www/internal/ui/layout"
 )
 
-func formatSize(b int64) string {
-	const (
-		kb = 1000
-		mb = 1000 * kb
-		gb = 1000 * mb
-	)
-	switch {
-	case b >= gb:
-		return fmt.Sprintf("%d GB", b/gb)
-	case b >= mb:
-		return fmt.Sprintf("%d MB", b/mb)
-	case b >= kb:
-		return fmt.Sprintf("%d kB", b/kb)
-	default:
-		return fmt.Sprintf("%d B", b)
-	}
-}
-
 type Handler struct {
-	repo           *Repository
-	manifest       *layout.Manifest
-	packagesMirror string
+	repo     *Repository
+	manifest *layout.Manifest
 }
 
-func NewHandler(repo *Repository, manifest *layout.Manifest, packagesMirror string) *Handler {
-	return &Handler{repo: repo, manifest: manifest, packagesMirror: packagesMirror}
+func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
+	return &Handler{repo: repo, manifest: manifest}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -73,7 +54,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 			"description":     pkg.Description,
 			"url":             pkg.URL,
 			"dateModified":    time.Unix(pkg.BuildDate, 0).UTC().Format(time.RFC3339),
-			"fileSize":        formatSize(pkg.CompressedSize),
+			"fileSize":        layout.FormatSize(pkg.CompressedSize),
 			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
 		}
 		if pkg.PopularityCount > 0 {
@@ -97,7 +78,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		JsonLD:      jsonLD,
 	}
 
-	layout.Render(w, r, page, PackageDetailPage(pkg, h.packagesMirror))
+	layout.Render(w, r, page, PackageDetailPage(pkg))
 }
 
 func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {
