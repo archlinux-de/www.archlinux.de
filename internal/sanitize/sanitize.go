@@ -14,6 +14,7 @@ func init() {
 	htmlPolicy.AllowElements("p", "code", "pre", "ul", "ol", "li", "br",
 		"strong", "b", "em", "i", "del", "ins", "blockquote",
 		"h3", "h4", "h5", "h6")
+	htmlPolicy.AllowStandardURLs()
 	htmlPolicy.AllowAttrs("href").OnElements("a")
 	htmlPolicy.RequireNoFollowOnLinks(true)
 	htmlPolicy.RequireNoReferrerOnLinks(true)
