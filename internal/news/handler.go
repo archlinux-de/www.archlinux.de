@@ -88,7 +88,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonLD := map[string]any{
+	article := map[string]any{
 		"@context":      "https://schema.org",
 		"@type":         "NewsArticle",
 		"headline":      item.Title,
@@ -96,7 +96,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		"discussionUrl": item.Link,
 	}
 	if item.AuthorName != "" {
-		jsonLD["author"] = []map[string]any{{
+		article["author"] = []map[string]any{{
 			"@type": "Person",
 			"name":  item.AuthorName,
 			"url":   item.AuthorLink,
@@ -107,7 +107,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 		Description: truncate(item.Title, maxDescriptionLen),
 		Path:        item.URL(),
 		Manifest:    h.manifest,
-		JsonLD:      jsonLD,
+		JsonLD:      map[string]any{"article": article},
 	}
 
 	layout.Render(w, r, page, NewsDetail(item))

@@ -45,7 +45,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 
 	var jsonLD map[string]any
 	if !pkg.Testing {
-		jsonLD = map[string]any{
+		app := map[string]any{
 			"@context":        "https://schema.org",
 			"@type":           "SoftwareApplication",
 			"name":            pkg.Name,
@@ -58,7 +58,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 			"offers":          map[string]any{"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
 		}
 		if pkg.PopularityCount > 0 {
-			jsonLD["aggregateRating"] = map[string]any{
+			app["aggregateRating"] = map[string]any{
 				"@type":             "AggregateRating",
 				"worstRating":       0,
 				"bestRating":        100, //nolint:mnd // popularity scale 0-100
@@ -68,6 +68,7 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 				"url":               "https://pkgstats.archlinux.de/packages/" + pkg.Name,
 			}
 		}
+		jsonLD = map[string]any{"package": app}
 	}
 	page := layout.Page{
 		Title:       pkg.Name,

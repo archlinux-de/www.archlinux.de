@@ -3,6 +3,8 @@ package opensearch
 import (
 	"encoding/xml"
 	"net/http"
+
+	"www/internal/ui/layout"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {
@@ -30,14 +32,15 @@ type osURL struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	baseURL := layout.GetBaseURL(r)
 	desc := openSearchDescription{
 		XMLNS:       "http://a9.com/-/spec/opensearch/1.1/",
 		ShortName:   "Paket-Suche",
 		Description: "Suche nach Arch Linux Paketen",
-		Image:       osImage{Type: "image/svg+xml", Content: "/static/archicon.svg"},
+		Image:       osImage{Type: "image/svg+xml", Content: baseURL + "/static/archicon.svg"},
 		URLs: []osURL{
-			{Type: "text/html", Template: "/packages?search={searchTerms}"},
-			{Type: "application/opensearchdescription+xml", Rel: "self", Template: "/packages/opensearch"},
+			{Type: "text/html", Template: baseURL + "/packages?search={searchTerms}"},
+			{Type: "application/opensearchdescription+xml", Rel: "self", Template: baseURL + "/packages/opensearch"},
 		},
 	}
 

@@ -9,6 +9,7 @@ import (
 	"www/internal/news"
 	"www/internal/packages"
 	"www/internal/releases"
+	"www/internal/ui/layout"
 )
 
 const feedItems = 25
@@ -33,7 +34,7 @@ type atomFeed struct {
 	XMLName xml.Name    `xml:"feed"`
 	XMLNS   string      `xml:"xmlns,attr"`
 	Title   string      `xml:"title"`
-	Link    atomLink    `xml:"link"`
+	Links   []atomLink  `xml:"link"`
 	ID      string      `xml:"id"`
 	Updated string      `xml:"updated"`
 	Entries []atomEntry `xml:"entry"`
@@ -66,6 +67,7 @@ type atomContent struct {
 }
 
 func writeAtom(w http.ResponseWriter, feed atomFeed) {
+	w.Header().Set("Cache-Control", "public, max-age=86400")
 	w.Header().Set("Content-Type", "application/atom+xml; charset=UTF-8")
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
@@ -84,18 +86,23 @@ func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	baseURL := layout.GetBaseURL(r)
+
 	feed := atomFeed{
 		XMLNS: "http://www.w3.org/2005/Atom",
 		Title: "Neuigkeiten - www.archlinux.de",
-		Link:  atomLink{Href: "/news"},
-		ID:    "/news/feed",
+		Links: []atomLink{
+			{Href: baseURL + "/news", Rel: "alternate", Type: "text/html"},
+			{Href: baseURL + "/news/feed", Rel: "self", Type: "application/atom+xml"},
+		},
+		ID: baseURL + "/news/feed",
 	}
 
 	for _, item := range items {
 		entry := atomEntry{
 			Title:   item.Title,
-			Link:    atomLink{Href: item.URL()},
-			ID:      item.URL(),
+			Link:    atomLink{Href: baseURL + item.URL()},
+			ID:      baseURL + item.URL(),
 			Updated: formatTime(item.LastModified),
 		}
 		if item.AuthorName != "" {
@@ -123,19 +130,24 @@ func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	baseURL := layout.GetBaseURL(r)
+
 	feed := atomFeed{
 		XMLNS: "http://www.w3.org/2005/Atom",
 		Title: "Pakete - www.archlinux.de",
-		Link:  atomLink{Href: "/packages"},
-		ID:    "/packages/feed",
+		Links: []atomLink{
+			{Href: baseURL + "/packages", Rel: "alternate", Type: "text/html"},
+			{Href: baseURL + "/packages/feed", Rel: "self", Type: "application/atom+xml"},
+		},
+		ID: baseURL + "/packages/feed",
 	}
 
 	for _, p := range pkgs {
-		url := fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Architecture, p.Name)
+		entryURL := baseURL + fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Architecture, p.Name)
 		entry := atomEntry{
 			Title:   p.Name + " " + p.Version,
-			Link:    atomLink{Href: url},
-			ID:      url,
+			Link:    atomLink{Href: entryURL},
+			ID:      entryURL,
 			Updated: formatTime(p.BuildDate),
 			Summary: p.Description,
 		}
@@ -161,18 +173,24 @@ func (h *Handler) releasesFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	baseURL := layout.GetBaseURL(r)
+
 	feed := atomFeed{
 		XMLNS: "http://www.w3.org/2005/Atom",
 		Title: "Releases - www.archlinux.de",
-		Link:  atomLink{Href: "/releases"},
-		ID:    "/releases/feed",
+		Links: []atomLink{
+			{Href: baseURL + "/releases", Rel: "alternate", Type: "text/html"},
+			{Href: baseURL + "/releases/feed", Rel: "self", Type: "application/atom+xml"},
+		},
+		ID: baseURL + "/releases/feed",
 	}
 
 	for _, rel := range rels {
+		entryURL := baseURL + "/releases/" + rel.Version
 		entry := atomEntry{
 			Title:   "Arch Linux " + rel.Version,
-			Link:    atomLink{Href: "/releases/" + rel.Version},
-			ID:      "/releases/" + rel.Version,
+			Link:    atomLink{Href: entryURL},
+			ID:      entryURL,
 			Updated: formatTime(rel.ReleaseDate),
 			Author:  &atomAuthor{Name: "Arch Linux"},
 			Summary: rel.Info,

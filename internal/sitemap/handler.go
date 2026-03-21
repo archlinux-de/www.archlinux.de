@@ -79,6 +79,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	w.Header().Set("Cache-Control", "public, max-age=86400")
 	w.Header().Set("Content-Type", "application/xml; charset=UTF-8")
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)

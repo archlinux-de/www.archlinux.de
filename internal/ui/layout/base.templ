@@ -35,12 +35,15 @@ templ Base(page Page, contents templ.Component) {
 				<meta property="og:type" content="website"/>
 				<meta property="og:site_name" content="archlinux.de"/>
 			}
-			if page.JsonLD != nil {
-				@templ.JSONScript("jsonld", page.JsonLD).WithType("application/ld+json")
+			for id, schema := range page.JsonLD {
+				@templ.JSONScript(id, schema).WithType("application/ld+json")
 			}
 			@CSSTags(page.Manifest)
 			<link rel="icon" href="/static/archicon.svg" type="image/svg+xml"/>
 			<link rel="manifest" href="/manifest.webmanifest"/>
+			<link rel="alternate" type="application/atom+xml" title="Neuigkeiten" href="/news/feed"/>
+			<link rel="alternate" type="application/atom+xml" title="Pakete" href="/packages/feed"/>
+			<link rel="alternate" type="application/atom+xml" title="Releases" href="/releases/feed"/>
 			<link rel="search" type="application/opensearchdescription+xml" title="archlinux.de" href="/packages/opensearch"/>
 		</head>
 		<body>
