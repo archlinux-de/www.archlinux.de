@@ -167,6 +167,62 @@ func TestHandleLegacyQuery_UnknownPage(t *testing.T) {
 	}
 }
 
+func TestLegacyMiddleware(t *testing.T) {
+	next := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	handler := LegacyMiddleware(next)
+
+	tests := []struct {
+		name       string
+		path       string
+		wantStatus int
+		wantTarget string
+	}{
+		{"archicon without hash", "/img/archicon.svg", http.StatusMovedPermanently, "/static/archicon.svg"},
+		{"archicon with hash", "/img/archicon.a1b2c3.svg", http.StatusMovedPermanently, "/static/archicon.svg"},
+		{"archlogo without hash", "/img/archlogo.svg", http.StatusMovedPermanently, "/static/archlogo.svg"},
+		{"archlogo with hash", "/img/archlogo.deadbeef.svg", http.StatusMovedPermanently, "/static/archlogo.svg"},
+		{"statistics root", "/statistics", http.StatusMovedPermanently, "https://pkgstats.archlinux.de/"},
+		{"statistics subpath", "/statistics/fun", http.StatusMovedPermanently, "https://pkgstats.archlinux.de/fun"},
+		{"statistics deep path", "/statistics/packages/linux", http.StatusMovedPermanently, "https://pkgstats.archlinux.de/packages/linux"},
+		{"old webpack js bundle", "/js/app.a1b2c3.js", http.StatusGone, ""},
+		{"old webpack css bundle", "/css/app.a1b2c3.css", http.StatusGone, ""},
+		{"old workbox file", "/workbox-08bdcb2c.js", http.StatusGone, ""},
+		{"unknown img path", "/img/something.png", http.StatusGone, ""},
+		{"api packages", "/api/packages", http.StatusGone, ""},
+		{"api news", "/api/news/1", http.StatusGone, ""},
+		{"api package detail", "/api/packages/extra/x86_64/linux", http.StatusGone, ""},
+		{"unrelated path passes through", "/packages", http.StatusOK, ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+
+			if rr.Code != tt.wantStatus {
+				t.Errorf("status = %d, want %d", rr.Code, tt.wantStatus)
+			}
+
+			if tt.wantTarget != "" {
+				loc := rr.Header().Get("Location")
+				if loc != tt.wantTarget {
+					t.Errorf("Location = %q, want %q", loc, tt.wantTarget)
+				}
+			}
+
+			if tt.wantStatus != http.StatusOK {
+				cc := rr.Header().Get("Cache-Control")
+				if cc == "" {
+					t.Error("expected Cache-Control header to be set")
+				}
+			}
+		})
+	}
+}
+
 func TestRegisterRoutes_PackagesSuggest(t *testing.T) {
 	mux := http.NewServeMux()
 	RegisterRoutes(mux)

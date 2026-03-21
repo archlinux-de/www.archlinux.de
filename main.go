@@ -11,6 +11,7 @@ import (
 	"www/internal/countries"
 	"www/internal/database"
 	"www/internal/httperror"
+	"www/internal/legacy"
 	"www/internal/mirrors"
 	"www/internal/news"
 	"www/internal/packages"
@@ -128,6 +129,7 @@ func run(cfg config.Config) error {
 		web.SecureHeaders(),
 		httperror.Middleware(manifest),
 		cacheMiddleware,
+		legacy.LegacyMiddleware,
 	)
 
 	server := web.NewServer(":"+cfg.Port, handler)

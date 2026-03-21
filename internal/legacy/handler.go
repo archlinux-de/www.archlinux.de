@@ -3,6 +3,7 @@ package legacy
 import (
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 )
 
@@ -13,6 +14,50 @@ func emptyJSONArray(w http.ResponseWriter, _ *http.Request) {
 
 func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /packages/suggest", emptyJSONArray)
+}
+
+type legacyRoute struct {
+	pattern *regexp.Regexp
+	target  string
+}
+
+var legacyRoutes = []legacyRoute{
+	{regexp.MustCompile(`^/img/(archicon|archlogo)(?:\.[a-f0-9]+)?\.svg$`), "/static/{1}.svg"},
+	{regexp.MustCompile(`^/statistics$`), "https://pkgstats.archlinux.de/"},
+	{regexp.MustCompile(`^/statistics/(.+)$`), "https://pkgstats.archlinux.de/{1}"},
+	{regexp.MustCompile(`^/js/`), ""},
+	{regexp.MustCompile(`^/css/`), ""},
+	{regexp.MustCompile(`^/workbox-[a-f0-9]+\.js$`), ""},
+	{regexp.MustCompile(`^/img/`), ""},
+	{regexp.MustCompile(`^/api/`), ""},
+}
+
+func LegacyMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for _, route := range legacyRoutes {
+			matches := route.pattern.FindStringSubmatch(r.URL.Path)
+			if matches == nil {
+				continue
+			}
+
+			w.Header().Set("Cache-Control", "public, max-age=86400")
+
+			if route.target == "" {
+				w.WriteHeader(http.StatusGone)
+				return
+			}
+
+			target := route.target
+			for i := 1; i < len(matches); i++ {
+				target = strings.ReplaceAll(target, "{"+string(rune('0'+i))+"}", matches[i])
+			}
+
+			http.Redirect(w, r, target, http.StatusMovedPermanently)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // HandleLegacyQuery handles legacy ?page= query strings on the root path.
