@@ -68,7 +68,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 	var countArgs, dataArgs []any
 
 	if search != "" {
-		ftsSearch := `"` + strings.ReplaceAll(search, `"`, `""`) + `" *`
+		ftsSearch := ftsQuery(search)
 		baseWhere := `FROM package p
 			JOIN package_fts fts ON fts.rowid = p.id
 			JOIN repository r ON r.id = p.repository_id
@@ -88,9 +88,9 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
-		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, COALESCE(p.description, ''), COALESCE(p.build_date, 0), COALESCE(p.popularity_recent, 0)
-			` + baseWhere + ` ORDER BY rank, p.popularity_recent DESC, p.build_date DESC LIMIT ? OFFSET ?`
-		dataArgs = append(dataArgs, limit, offset)
+		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent
+			` + baseWhere + ` ORDER BY (p.name = ?) DESC, bm25(package_fts, 10, 5, 1, 1, 3) - ln(1 + p.popularity_recent), p.build_date DESC LIMIT ? OFFSET ?`
+		dataArgs = append(dataArgs, search, limit, offset)
 	} else {
 		baseWhere := `FROM package p
 			JOIN repository r ON r.id = p.repository_id
@@ -107,7 +107,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
-		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, COALESCE(p.description, ''), COALESCE(p.build_date, 0), COALESCE(p.popularity_recent, 0)
+		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent
 			` + baseWhere + ` ORDER BY p.build_date DESC LIMIT ? OFFSET ?`
 		dataArgs = append(dataArgs, limit, offset)
 	}
@@ -137,7 +137,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 
 func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSummary, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT p.name, p.version, COALESCE(p.description, ''), COALESCE(p.build_date, 0),
+		`SELECT p.name, p.version, p.description, p.build_date,
 		        COALESCE(p.packager_name, ''), r.name, r.architecture
 		 FROM package p
 		 JOIN repository r ON r.id = p.repository_id
@@ -178,7 +178,7 @@ type PackageRef struct {
 
 func (r *Repository) AllStableRefs(ctx context.Context) ([]PackageRef, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT p.name, r.name, r.architecture, COALESCE(p.build_date, 0)
+		`SELECT p.name, r.name, r.architecture, p.build_date
 		 FROM package p
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE r.testing = 0`)
@@ -196,4 +196,25 @@ func (r *Repository) AllStableRefs(ctx context.Context) ([]PackageRef, error) {
 		refs = append(refs, ref)
 	}
 	return refs, rows.Err()
+}
+
+// ftsQuery builds an FTS5 MATCH expression from a user search string.
+// Splits on hyphens, quotes each term, and adds a prefix wildcard to the last term.
+func ftsQuery(search string) string {
+	search = strings.ReplaceAll(search, `"`, `""`)
+	terms := strings.Fields(strings.ReplaceAll(search, "-", " "))
+	if len(terms) == 0 {
+		return `""`
+	}
+	var b strings.Builder
+	for i, t := range terms {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		b.WriteByte('"')
+		b.WriteString(t)
+		b.WriteByte('"')
+	}
+	b.WriteByte('*')
+	return b.String()
 }
