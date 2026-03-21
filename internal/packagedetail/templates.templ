@@ -118,19 +118,18 @@ templ PackageDetailPage(pkg PackageDetail, packagesMirror string) {
 		</div>
 		<div class="col-12 col-xl-6">
 			<h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
-			<div class="row">
-				@relationSection("benötigt", pkg.Relations["depends"], pkg.Architecture)
-				@relationSection("optional", pkg.Relations["optdepends"], pkg.Architecture)
-				@relationSection("stellt bereit", pkg.Relations["provides"], pkg.Architecture)
-				@relationSection("ersetzt", pkg.Relations["replaces"], pkg.Architecture)
-				@relationSection("kollidiert mit", pkg.Relations["conflicts"], pkg.Architecture)
-				@relationSection("zum bauen", pkg.Relations["makedepends"], pkg.Architecture)
-				@relationSection("zum testen", pkg.Relations["checkdepends"], pkg.Architecture)
-				@relationSection("benötigt von", pkg.InverseRels["depends"], pkg.Architecture)
-				@relationSection("optional für", pkg.InverseRels["optdepends"], pkg.Architecture)
-				@relationSection("bauen für", pkg.InverseRels["makedepends"], pkg.Architecture)
-				@relationSection("testen für", pkg.InverseRels["checkdepends"], pkg.Architecture)
-			</div>
+			@relationSection("Benötigt", pkg.Relations["depends"], pkg.Architecture)
+			@relationSection("Optional", pkg.Relations["optdepends"], pkg.Architecture)
+			@relationSection("Stellt bereit", pkg.Relations["provides"], pkg.Architecture)
+			@relationSection("Ersetzt", pkg.Relations["replaces"], pkg.Architecture)
+			@relationSection("Konflikte", pkg.Relations["conflicts"], pkg.Architecture)
+			@relationSection("Build-Abhängigkeiten", pkg.Relations["makedepends"], pkg.Architecture)
+			@relationSection("Test-Abhängigkeiten", pkg.Relations["checkdepends"], pkg.Architecture)
+			<h2 class="mb-3 mt-5">Verwendet von</h2>
+			<package-inverse-deps
+				src={ fmt.Sprintf("/packages/%s/%s/%s/inverse-dependencies", pkg.Repository, pkg.Architecture, pkg.Name) }
+				arch={ pkg.Architecture }
+			></package-inverse-deps>
 		</div>
 		<div class="col-12">
 			<h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
@@ -141,15 +140,15 @@ templ PackageDetailPage(pkg PackageDetail, packagesMirror string) {
 
 templ relationSection(title string, rels []Relation, arch string) {
 	if len(rels) > 0 {
-		<div class="col-12 col-md-6 col-lg-4">
-			<h3>{ title }</h3>
-			<ul class="list-unstyled ps-4 link-list">
-				for _, r := range rels {
-					<li>
-						<a href={ templ.SafeURL(resolveURL(arch, r)) }>{ r.TargetName }</a>{ constraintSymbol(r.VersionConstraint) + r.TargetVersion }
-					</li>
+		<h3>{ title }</h3>
+		<div class="d-flex flex-wrap gap-2 ps-4 mb-3">
+			for _, r := range rels {
+				if r.TargetVersion != "" {
+					<a href={ templ.SafeURL(resolveURL(arch, r)) } title={ r.TargetName + constraintSymbol(r.VersionConstraint) + r.TargetVersion }>{ r.TargetName }</a>
+				} else {
+					<a href={ templ.SafeURL(resolveURL(arch, r)) }>{ r.TargetName }</a>
 				}
-			</ul>
+			}
 		</div>
 	}
 }
@@ -209,7 +208,7 @@ func resolveURL(arch string, r Relation) string {
 
 templ PackageNotFoundPage(name string, suggestions []PackageSuggestion) {
 	<div class="card border-danger">
-		<div class="card-header bg-danger text-white">Fehler beim Laden des Paket</div>
+		<div class="card-header">Fehler beim Laden des Pakets</div>
 		<div class="card-body">
 			<div class="card-text">
 				Das Paket <strong>{ name }</strong> konnte leider nicht angezeigt werden.
@@ -248,13 +247,36 @@ templ PackageNotFoundPage(name string, suggestions []PackageSuggestion) {
 }
 
 templ PackageResolvePage(name string, packages []ResolvedPackage) {
-	<h1 class="mb-4">{ name }</h1>
-	<p>Mehrere Pakete gefunden:</p>
-	<ul>
-		for _, p := range packages {
-			<li>
-				<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Arch, p.Name)) }>{ p.Name } ({ p.Repository })</a>
-			</li>
-		}
-	</ul>
+	<div class="card border-warning">
+		<div class="card-header">Paket auswählen</div>
+		<div class="card-body">
+			<div class="card-text">
+				Das Paket <strong>{ name }</strong> wurde in mehreren Repositorys gefunden:
+			</div>
+			<table class="table table-borderless mt-3 mb-0">
+				<tbody>
+					for _, p := range packages {
+						<tr>
+							<td>
+								<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Arch, p.Name)) }>{ p.Name }</a>
+							</td>
+							<td>{ p.Description }</td>
+							<td class="d-none d-lg-table-cell">
+								@components.Popularity(p.Popularity)
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="card-footer">
+			<div class="d-flex justify-content-end">
+				<small>
+					<a href={ templ.SafeURL("/packages?search=" + url.QueryEscape(name)) }>
+						Nach { name } suchen
+					</a>
+				</small>
+			</div>
+		</div>
+	</div>
 }
