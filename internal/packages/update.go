@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"sync"
 
 	"www/internal/pacmandb"
 	"www/internal/sanitize"
@@ -31,6 +32,12 @@ var repositories = []repoConfig{
 	{"multilib-testing", "x86_64", true},
 }
 
+type fetchedRepo struct {
+	repo     repoConfig
+	hash     string
+	packages []pacmandb.Package
+}
+
 func Update(ctx context.Context, db *sql.DB, mirror string) error {
 	for _, repo := range repositories {
 		if err := ensureRepository(ctx, db, repo); err != nil {
@@ -38,10 +45,54 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 		}
 	}
 
-	for _, repo := range repositories {
-		slog.Info("updating packages", "repo", repo.Name, "arch", repo.Architecture)
-		if err := updateRepository(ctx, db, mirror, repo); err != nil {
-			return fmt.Errorf("update %s: %w", repo.Name, err)
+	// Fetch and parse all repositories concurrently
+	fetched := make([]fetchedRepo, len(repositories))
+	var mu sync.Mutex
+	var firstErr error
+
+	var wg sync.WaitGroup
+	for i, repo := range repositories {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			f, err := fetchRepository(ctx, db, mirror, repo)
+			if err != nil {
+				mu.Lock()
+				if firstErr == nil {
+					firstErr = fmt.Errorf("fetch %s: %w", repo.Name, err)
+				}
+				mu.Unlock()
+				return
+			}
+			fetched[i] = f
+		}()
+	}
+	wg.Wait()
+
+	if firstErr != nil {
+		return firstErr
+	}
+
+	// Write to DB sequentially, rebuild FTS once at the end
+	changed := false
+	for _, f := range fetched {
+		if f.packages == nil {
+			continue
+		}
+		changed = true
+		if err := syncPackages(ctx, db, f.repo, f.packages); err != nil {
+			return err
+		}
+		if _, err := db.ExecContext(ctx,
+			`UPDATE repository SET sha256sum = ? WHERE name = ? AND architecture = ?`,
+			f.hash, f.repo.Name, f.repo.Architecture); err != nil {
+			return fmt.Errorf("update hash %s: %w", f.repo.Name, err)
+		}
+	}
+
+	if changed {
+		if _, err := db.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
+			return fmt.Errorf("rebuild fts: %w", err)
 		}
 	}
 
@@ -57,26 +108,28 @@ func ensureRepository(ctx context.Context, db *sql.DB, repo repoConfig) error {
 	return err
 }
 
-func updateRepository(ctx context.Context, db *sql.DB, mirror string, repo repoConfig) error {
+func fetchRepository(ctx context.Context, db *sql.DB, mirror string, repo repoConfig) (fetchedRepo, error) {
 	url := fmt.Sprintf("%s%s/os/%s/%s.files", mirror, repo.Name, repo.Architecture, repo.Name)
+
+	slog.Info("downloading repository", "repo", repo.Name, "arch", repo.Architecture)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return fmt.Errorf("create request %s: %w", url, err)
+		return fetchedRepo{}, fmt.Errorf("create request %s: %w", url, err)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("download %s: %w", url, err)
+		return fetchedRepo{}, fmt.Errorf("download %s: %w", url, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("download %s: status %d", url, resp.StatusCode)
+		return fetchedRepo{}, fmt.Errorf("download %s: status %d", url, resp.StatusCode)
 	}
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("read %s: %w", url, err)
+		return fetchedRepo{}, fmt.Errorf("read %s: %w", url, err)
 	}
 
 	newHash := sha256hex(data)
@@ -88,24 +141,17 @@ func updateRepository(ctx context.Context, db *sql.DB, mirror string, repo repoC
 
 	if storedHash.Valid && storedHash.String == newHash {
 		slog.Info("repository unchanged, skipping", "repo", repo.Name)
-		return nil
+		return fetchedRepo{repo: repo}, nil
 	}
 
 	packages, err := pacmandb.Parse(bytes.NewReader(data))
 	if err != nil {
-		return fmt.Errorf("parse %s: %w", repo.Name, err)
+		return fetchedRepo{}, fmt.Errorf("parse %s: %w", repo.Name, err)
 	}
 
 	slog.Info("parsed packages", "repo", repo.Name, "count", len(packages))
 
-	if err := syncPackages(ctx, db, repo, packages); err != nil {
-		return err
-	}
-
-	_, err = db.ExecContext(ctx,
-		`UPDATE repository SET sha256sum = ? WHERE name = ? AND architecture = ?`,
-		newHash, repo.Name, repo.Architecture)
-	return err
+	return fetchedRepo{repo: repo, hash: newHash, packages: packages}, nil
 }
 
 func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []pacmandb.Package) error {
@@ -143,8 +189,8 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 
 	insertPkg, err := tx.PrepareContext(ctx,
 		`INSERT INTO package (repository_id, name, base, version, description, url, build_date,
-		 compressed_size, installed_size, packager_name, packager_email, licenses, groups)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+		 compressed_size, installed_size, packager_name, packager_email, licenses, groups, provides)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		return fmt.Errorf("prepare package insert: %w", err)
 	}
@@ -171,11 +217,19 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 			pkgURL = &pkg.URL
 		}
 
+		var provides []string
+		for _, rel := range pkg.Relations {
+			if rel.Type == "provides" {
+				provides = append(provides, rel.TargetName)
+			}
+		}
+
 		result, err := insertPkg.ExecContext(ctx,
 			repoID, pkg.Name, pkg.Base, pkg.Version, pkg.Description, pkgURL,
 			pkg.BuildDate, pkg.CompressedSize, pkg.InstalledSize,
 			pkg.PackagerName, nullString(pkg.PackagerEmail),
 			pacmandb.LicensesJSON(pkg.Licenses), pacmandb.GroupsJSON(pkg.Groups),
+			nullString(strings.Join(provides, " ")),
 		)
 		if err != nil {
 			return fmt.Errorf("insert package %s: %w", pkg.Name, err)
@@ -200,11 +254,6 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 				return fmt.Errorf("insert files for %s: %w", pkg.Name, err)
 			}
 		}
-	}
-
-	// Rebuild FTS index from content table
-	if _, err := tx.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
-		return fmt.Errorf("rebuild fts: %w", err)
 	}
 
 	return tx.Commit()

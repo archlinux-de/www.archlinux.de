@@ -81,13 +81,14 @@ func runCommand(cmd string, cfg config.Config) int {
 			slog.Error("update-countries failed", "error", err)
 			return 1
 		}
-	case "update-popularities":
+	case "update-package-popularities":
 		if err := popularity.UpdatePackages(ctx, db); err != nil {
-			slog.Error("update-popularities (packages) failed", "error", err)
+			slog.Error("update-package-popularities failed", "error", err)
 			return 1
 		}
+	case "update-mirror-popularities":
 		if err := popularity.UpdateMirrors(ctx, db); err != nil {
-			slog.Error("update-popularities (mirrors) failed", "error", err)
+			slog.Error("update-mirror-popularities failed", "error", err)
 			return 1
 		}
 	default:
