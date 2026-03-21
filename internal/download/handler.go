@@ -225,9 +225,8 @@ func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
 }
 
 func clientAddr(r *http.Request) string {
-	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
-		parts := strings.SplitN(forwarded, ",", 2) //nolint:mnd
-		return strings.TrimSpace(parts[0])
+	if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
+		return realIP
 	}
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {

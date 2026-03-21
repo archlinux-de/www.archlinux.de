@@ -302,20 +302,19 @@ func TestClientAddr(t *testing.T) {
 	tests := []struct {
 		name       string
 		remoteAddr string
-		forwarded  string
+		realIP     string
 		want       string
 	}{
 		{"remote addr with port", "192.168.1.1:1234", "", "192.168.1.1"},
 		{"remote addr without port", "192.168.1.1", "", "192.168.1.1"},
-		{"X-Forwarded-For", "127.0.0.1:1234", "10.0.0.1", "10.0.0.1"},
-		{"X-Forwarded-For with chain", "127.0.0.1:1234", "10.0.0.1, 10.0.0.2", "10.0.0.1"},
+		{"X-Real-IP", "127.0.0.1:1234", "10.0.0.1", "10.0.0.1"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
 			req.RemoteAddr = tt.remoteAddr
-			if tt.forwarded != "" {
-				req.Header.Set("X-Forwarded-For", tt.forwarded)
+			if tt.realIP != "" {
+				req.Header.Set("X-Real-IP", tt.realIP)
 			}
 			got := clientAddr(req)
 			if got != tt.want {
