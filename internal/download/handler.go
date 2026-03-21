@@ -193,6 +193,11 @@ func (h *Handler) pkg(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 	file := r.PathValue("file")
 
+	if strings.Contains(file, "..") {
+		http.NotFound(w, r)
+		return
+	}
+
 	mirror := h.selectMirror(r, nil)
 	if mirror == "" {
 		http.NotFound(w, r)

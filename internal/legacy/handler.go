@@ -81,7 +81,7 @@ func resolveTarget(page string, values url.Values) string {
 	switch page {
 	case "GetFileFromMirror":
 		file := values.Get("file")
-		if file != "" {
+		if file != "" && !strings.Contains(file, "..") {
 			return "/download/" + file
 		}
 		return "/download"
