@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 )
 
 const (

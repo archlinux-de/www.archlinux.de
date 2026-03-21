@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"www/internal/sanitize"
+	"archded/internal/sanitize"
 )
 
 const relengURL = "https://archlinux.org/releng/releases/json/"

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 )
 
 const defaultLimit = 25

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"www/internal/mirrors"
-	"www/internal/packages"
-	"www/internal/releases"
-	"www/internal/ui/layout"
+	"archded/internal/mirrors"
+	"archded/internal/packages"
+	"archded/internal/releases"
+	"archded/internal/ui/layout"
 
 	_ "modernc.org/sqlite"
 )

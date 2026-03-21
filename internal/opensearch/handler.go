@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {

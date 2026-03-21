@@ -1,4 +1,4 @@
-module www
+module archded
 
 go 1.26.1
 

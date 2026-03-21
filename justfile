@@ -2,7 +2,7 @@ set quiet := true
 
 export CGO_ENABLED := '0'
 export PORT := '8080'
-export DATABASE := 'tmp/www.db'
+export DATABASE := 'tmp/archded.db'
 
 [private]
 default:
@@ -27,7 +27,7 @@ build-templates:
 
 # build the production binary
 build: build-assets build-templates
-    go build -tags production -o www -ldflags="-s -w" -trimpath
+    go build -tags production -o archded -ldflags="-s -w" -trimpath
 
 # run the application locally
 run:

@@ -13,8 +13,8 @@ import (
 	"strings"
 	"sync"
 
-	"www/internal/pacmandb"
-	"www/internal/sanitize"
+	"archded/internal/pacmandb"
+	"archded/internal/sanitize"
 )
 
 type repoConfig struct {

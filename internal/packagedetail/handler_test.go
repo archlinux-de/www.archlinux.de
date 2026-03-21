@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 
 	_ "modernc.org/sqlite"
 )

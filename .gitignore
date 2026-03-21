@@ -4,7 +4,7 @@
 .DS_Store
 
 # application
-/www.db*
+/archded.db*
 /dist
 /node_modules
 *_templ.go
@@ -12,7 +12,7 @@
 !/internal/ui/components/icons/.gitkeep
 /tmp/*
 !/tmp/.gitkeep
-/www
+/archded
 /.assets-rebuilt
 
 # old Symfony directories/files

@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"www/internal/mirrors"
-	"www/internal/packages"
-	"www/internal/releases"
-	"www/internal/ui/layout"
+	"archded/internal/mirrors"
+	"archded/internal/packages"
+	"archded/internal/releases"
+	"archded/internal/ui/layout"
 )
 
 type Handler struct {

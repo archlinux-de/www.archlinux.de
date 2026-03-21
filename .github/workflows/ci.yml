@@ -44,8 +44,8 @@ jobs:
               uses: actions/upload-artifact@v7
               if: github.ref == 'refs/heads/main'
               with:
-                  name: www
-                  path: www
+                  name: archded
+                  path: archded
                   retention-days: 7
 
     deploy:
@@ -56,7 +56,7 @@ jobs:
             - name: Download binary
               uses: actions/download-artifact@v8
               with:
-                  name: www
+                  name: archded
             - name: Deploy
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -68,6 +68,6 @@ jobs:
                   echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
                   echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
                   chmod 600 ~/.ssh/id_ed25519
-                  chmod +x www
-                  rsync -e "ssh -p ${DEPLOY_SSH_PORT}" www www@${DEPLOY_HOST}:/opt/www/www.new
-                  ssh -p "${DEPLOY_SSH_PORT}" www@${DEPLOY_HOST} "mv /opt/www/www.new /opt/www/www"
+                  chmod +x archded
+                  rsync -e "ssh -p ${DEPLOY_SSH_PORT}" archded archded@${DEPLOY_HOST}:/opt/archded/archded.new
+                  ssh -p "${DEPLOY_SSH_PORT}" archded@${DEPLOY_HOST} "mv /opt/archded/archded.new /opt/archded/archded"

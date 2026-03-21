@@ -1,7 +1,7 @@
 [build]
 pre_cmd = ["go tool templ generate"]
-cmd = "go build -tags development -o ./tmp/www ."
-entrypoint = ["./tmp/www"]
+cmd = "go build -tags development -o ./tmp/archded ."
+entrypoint = ["./tmp/archded"]
 include_ext = ["go", "templ"]
 include_file = [".assets-rebuilt"]
 exclude_dir = [".idea", "dist", "node_modules", "tmp"]

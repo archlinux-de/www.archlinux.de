@@ -6,7 +6,7 @@ import (
 
 	"github.com/a-h/templ"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 )
 
 func Middleware(manifest *layout.Manifest) func(http.Handler) http.Handler {

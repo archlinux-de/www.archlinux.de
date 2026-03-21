@@ -1,5 +1,5 @@
 {
-    "name": "www-archlinux-de",
+    "name": "archded",
     "type": "module",
     "packageManager": "pnpm@10.31.0",
     "scripts": {

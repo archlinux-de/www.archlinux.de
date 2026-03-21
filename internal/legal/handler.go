@@ -3,7 +3,7 @@ package legal
 import (
 	"net/http"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 )
 
 type Handler struct {

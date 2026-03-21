@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"www/internal/ui/layout"
+	"archded/internal/ui/layout"
 )
 
 func testManifest() *layout.Manifest {

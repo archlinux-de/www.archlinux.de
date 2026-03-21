@@ -4,10 +4,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"www/internal/legacy"
-	"www/internal/news"
-	"www/internal/packages"
-	"www/internal/ui/layout"
+	"archded/internal/legacy"
+	"archded/internal/news"
+	"archded/internal/packages"
+	"archded/internal/ui/layout"
 )
 
 const (

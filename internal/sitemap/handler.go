@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"www/internal/news"
-	"www/internal/packages"
-	"www/internal/releases"
-	"www/internal/ui/layout"
+	"archded/internal/news"
+	"archded/internal/packages"
+	"archded/internal/releases"
+	"archded/internal/ui/layout"
 )
 
 type Handler struct {

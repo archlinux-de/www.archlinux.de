@@ -36,7 +36,7 @@ formatters:
   settings:
     gofumpt:
       extra-rules: true
-      module-path: www
+      module-path: archded
 
 linters-settings:
   gocyclo:

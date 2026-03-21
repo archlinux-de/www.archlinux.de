@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"www/internal/news"
-	"www/internal/packages"
-	"www/internal/ui/layout"
+	"archded/internal/news"
+	"archded/internal/packages"
+	"archded/internal/ui/layout"
 
 	_ "modernc.org/sqlite"
 )

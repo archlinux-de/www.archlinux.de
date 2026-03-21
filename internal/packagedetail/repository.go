@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"www/internal/vercmp"
+	"archded/internal/vercmp"
 )
 
 type PackageDetail struct {

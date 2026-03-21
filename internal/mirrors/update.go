@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"www/internal/sanitize"
+	"archded/internal/sanitize"
 )
 
 const mirrorStatusURL = "https://archlinux.org/mirrors/status/json/"

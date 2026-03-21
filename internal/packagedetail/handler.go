@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"www/internal/httperror"
-	"www/internal/ui/layout"
+	"archded/internal/httperror"
+	"archded/internal/ui/layout"
 )
 
 type Handler struct {

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"www/internal/news"
-	"www/internal/packages"
-	"www/internal/releases"
+	"archded/internal/news"
+	"archded/internal/packages"
+	"archded/internal/releases"
 
 	_ "modernc.org/sqlite"
 )
