@@ -3,6 +3,7 @@ CREATE TABLE repository (
     name TEXT NOT NULL,
     architecture TEXT NOT NULL,
     testing INTEGER NOT NULL DEFAULT 0,
+    sha256sum TEXT,
     UNIQUE(name, architecture)
 );
 
@@ -10,27 +11,31 @@ CREATE TABLE package (
     id INTEGER PRIMARY KEY,
     repository_id INTEGER NOT NULL REFERENCES repository(id),
     name TEXT NOT NULL,
-    base TEXT,
+    base TEXT NOT NULL,
     version TEXT NOT NULL,
-    description TEXT,
+    description TEXT NOT NULL DEFAULT '',
     url TEXT,
-    build_date INTEGER,
-    compressed_size INTEGER,
-    installed_size INTEGER,
+    build_date INTEGER NOT NULL DEFAULT 0,
+    compressed_size INTEGER NOT NULL DEFAULT 0,
+    installed_size INTEGER NOT NULL DEFAULT 0,
     packager_name TEXT,
     packager_email TEXT,
-    popularity_recent REAL DEFAULT 0,
-    popularity_count INTEGER DEFAULT 0,
-    popularity_samples INTEGER DEFAULT 0,
+    popularity_recent REAL NOT NULL DEFAULT 0,
+    popularity_count INTEGER NOT NULL DEFAULT 0,
+    popularity_samples INTEGER NOT NULL DEFAULT 0,
     licenses TEXT,
     groups TEXT,
+    provides TEXT,
     UNIQUE(repository_id, name)
 );
 
 CREATE VIRTUAL TABLE package_fts USING fts5(
-    name, base, description, groups,
+    name, base, description, groups, provides,
     content='package', content_rowid='id'
 );
+
+CREATE INDEX idx_package_name ON package(name);
+CREATE INDEX idx_package_build_date ON package(build_date);
 
 CREATE TABLE package_relation (
     id INTEGER PRIMARY KEY,
@@ -51,9 +56,9 @@ CREATE TABLE files (
 CREATE TABLE news_item (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
-    link TEXT NOT NULL,
-    description TEXT,
-    author_name TEXT,
+    link TEXT NOT NULL UNIQUE,
+    description TEXT NOT NULL DEFAULT '',
+    author_name TEXT NOT NULL DEFAULT '',
     author_link TEXT,
     last_modified INTEGER NOT NULL
 );
@@ -74,7 +79,7 @@ CREATE TABLE release (
     torrent_url TEXT,
     magnet_uri TEXT
 );
-CREATE INDEX idx_release_date ON release(release_date);
+CREATE INDEX idx_release_available_date ON release(available, release_date);
 
 CREATE TABLE country (
     code TEXT PRIMARY KEY,

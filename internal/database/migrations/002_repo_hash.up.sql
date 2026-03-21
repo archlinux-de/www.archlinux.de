@@ -1,1 +1,0 @@
-ALTER TABLE repository ADD COLUMN sha256sum TEXT;
