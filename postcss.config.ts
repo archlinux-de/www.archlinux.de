@@ -6,9 +6,11 @@ export default {
         purgeCSSPlugin({
             content: ["**/*.templ", "**/*.ts"],
             skippedContentGlobs: ["node_modules/**", "tests/**", "tmp/**"],
-            // keep rules for classes only present in go:embed SVGs
-            safelist: { greedy: [/package-popularity/] },
             variables: true,
+            safelist: {
+                // keep rules for classes only present in go:embed SVGs
+                greedy: [/package-popularity/],
+            },
         }),
         cssnano({ preset: ["cssnano-preset-advanced"] }),
     ],

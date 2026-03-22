@@ -1,9 +1,11 @@
 import { writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath, URL } from "node:url";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { Plugin, UserConfig } from "vite";
 
 const isWatch = process.argv.includes("--watch");
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function notifyAir(): Plugin {
     return {
@@ -20,12 +22,7 @@ export default {
             scss: {
                 quietDeps: true,
                 silenceDeprecations: ["import"],
-                loadPaths: [
-                    resolve(
-                        fileURLToPath(new URL(".", import.meta.url)),
-                        "node_modules",
-                    ),
-                ],
+                loadPaths: [resolve(__dirname, "node_modules")],
             },
         },
     },

@@ -16,13 +16,14 @@ import (
 var embedMigrations embed.FS
 
 func New(path string) (*sql.DB, error) {
+	// Apply SQLite pragmas via DSN so they are set on every connection in the pool.
 	dsn := path +
 		"?_pragma=journal_mode(WAL)" +
 		"&_pragma=busy_timeout(5000)" +
 		"&_pragma=foreign_keys(ON)" +
 		"&_pragma=synchronous(NORMAL)" +
-		"&_pragma=cache_size(-65536)" +
-		"&_pragma=mmap_size(1073741824)" +
+		"&_pragma=cache_size(-65536)" + // 64 MB page cache
+		"&_pragma=mmap_size(1073741824)" + // 1 GB memory-mapped I/O
 		"&_pragma=temp_store(MEMORY)"
 
 	db, err := sql.Open("sqlite", dsn)
