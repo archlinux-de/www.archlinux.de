@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"archded/internal/config"
-	"archded/internal/countries"
 	"archded/internal/database"
 	"archded/internal/httperror"
 	"archded/internal/legacy"
@@ -73,11 +72,6 @@ func runCommand(cmd string, cfg config.Config) int {
 	case "update-releases":
 		if err := releases.Update(ctx, db); err != nil {
 			slog.Error("update-releases failed", "error", err)
-			return 1
-		}
-	case "update-countries":
-		if err := countries.Update(ctx, db); err != nil {
-			slog.Error("update-countries failed", "error", err)
 			return 1
 		}
 	case "update-package-popularities":

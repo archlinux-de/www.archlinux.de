@@ -22,6 +22,7 @@ type mirrorStatusResponse struct {
 type mirrorJSON struct {
 	URL            string   `json:"url"`
 	Protocol       string   `json:"protocol"`
+	Country        string   `json:"country"`
 	CountryCode    string   `json:"country_code"`
 	LastSync       *string  `json:"last_sync"`
 	Delay          *int     `json:"delay"`
@@ -50,13 +51,14 @@ func Update(ctx context.Context, db *sql.DB) error {
 	defer func() { _ = tx.Rollback() }()
 
 	stmt, err := tx.PrepareContext(ctx,
-		`INSERT INTO mirror (url, country_code, last_sync, delay, duration_avg, duration_stddev, score, completion_pct, ipv4, ipv6)
-		 VALUES (?, (SELECT code FROM country WHERE code = ?), ?, ?, ?, ?, ?, ?, ?, ?)
+		`INSERT INTO mirror (url, country_code, country_name, last_sync, delay, duration_avg, duration_stddev, score, completion_pct, ipv4, ipv6)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		 ON CONFLICT (url) DO UPDATE SET
-		   country_code = excluded.country_code, last_sync = excluded.last_sync,
-		   delay = excluded.delay, duration_avg = excluded.duration_avg,
-		   duration_stddev = excluded.duration_stddev, score = excluded.score,
-		   completion_pct = excluded.completion_pct, ipv4 = excluded.ipv4, ipv6 = excluded.ipv6`)
+		   country_code = excluded.country_code, country_name = excluded.country_name,
+		   last_sync = excluded.last_sync, delay = excluded.delay,
+		   duration_avg = excluded.duration_avg, duration_stddev = excluded.duration_stddev,
+		   score = excluded.score, completion_pct = excluded.completion_pct,
+		   ipv4 = excluded.ipv4, ipv6 = excluded.ipv6`)
 	if err != nil {
 		return err
 	}
@@ -77,13 +79,9 @@ func Update(ctx context.Context, db *sql.DB) error {
 			}
 		}
 
-		var countryCode *string
-		if m.CountryCode != "" {
-			countryCode = &m.CountryCode
-		}
-
 		if _, err := stmt.ExecContext(ctx,
-			m.URL, countryCode, lastSync, m.Delay,
+			m.URL, nilIfEmpty(m.CountryCode), nilIfEmpty(m.Country),
+			lastSync, m.Delay,
 			m.DurationAvg, m.DurationStddev, m.Score, m.CompletionPct,
 			m.IPv4, m.IPv6,
 		); err != nil {
@@ -139,4 +137,11 @@ func fetchMirrors(ctx context.Context) ([]mirrorJSON, error) {
 	}
 
 	return filtered, nil
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }

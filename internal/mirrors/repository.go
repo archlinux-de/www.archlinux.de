@@ -28,21 +28,19 @@ func (r *Repository) Search(ctx context.Context, search string, limit, offset in
 	var countQuery, dataQuery string
 	var countArgs, dataArgs []any
 
-	baseFrom := `FROM mirror m LEFT JOIN country c ON c.code = m.country_code`
+	baseSelect := `SELECT url, COALESCE(country_name, ''), COALESCE(duration_avg, 0), COALESCE(delay, 0), COALESCE(last_sync, 0), ipv4, ipv6 FROM mirror`
 
 	if search != "" {
 		searchArg := "%" + search + "%"
-		where := ` WHERE m.url LIKE ? OR c.name LIKE ?`
-		countQuery = `SELECT COUNT(*) ` + baseFrom + where
+		where := ` WHERE url LIKE ? OR country_name LIKE ?`
+		countQuery = `SELECT COUNT(*) FROM mirror` + where
 		countArgs = []any{searchArg, searchArg}
 
-		dataQuery = `SELECT m.url, COALESCE(c.name, ''), COALESCE(m.duration_avg, 0), COALESCE(m.delay, 0), COALESCE(m.last_sync, 0), m.ipv4, m.ipv6 ` +
-			baseFrom + where + ` ORDER BY m.score ASC LIMIT ? OFFSET ?`
+		dataQuery = baseSelect + where + ` ORDER BY score ASC LIMIT ? OFFSET ?`
 		dataArgs = []any{searchArg, searchArg, limit, offset}
 	} else {
-		countQuery = `SELECT COUNT(*) ` + baseFrom
-		dataQuery = `SELECT m.url, COALESCE(c.name, ''), COALESCE(m.duration_avg, 0), COALESCE(m.delay, 0), COALESCE(m.last_sync, 0), m.ipv4, m.ipv6 ` +
-			baseFrom + ` ORDER BY m.score ASC LIMIT ? OFFSET ?`
+		countQuery = `SELECT COUNT(*) FROM mirror`
+		dataQuery = baseSelect + ` ORDER BY score ASC LIMIT ? OFFSET ?`
 		dataArgs = []any{limit, offset}
 	}
 

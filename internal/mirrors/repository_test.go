@@ -17,17 +17,15 @@ func setupTestDB(t *testing.T) *sql.DB {
 	t.Cleanup(func() { _ = db.Close() })
 
 	for _, stmt := range []string{
-		`CREATE TABLE country (code TEXT PRIMARY KEY, name TEXT NOT NULL)`,
 		`CREATE TABLE mirror (
-			url TEXT PRIMARY KEY, country_code TEXT REFERENCES country(code),
+			url TEXT PRIMARY KEY, country_code TEXT, country_name TEXT,
 			last_sync INTEGER, delay INTEGER, duration_avg REAL, duration_stddev REAL,
 			score REAL, completion_pct REAL, ipv4 INTEGER NOT NULL DEFAULT 0,
 			ipv6 INTEGER NOT NULL DEFAULT 0)`,
-		`INSERT INTO country (code, name) VALUES ('DE', 'Germany'), ('US', 'United States')`,
-		`INSERT INTO mirror (url, country_code, last_sync, delay, duration_avg, score, ipv4, ipv6) VALUES
-			('https://mirror.de/archlinux/', 'DE', 1700000000, 100, 0.5, 1.0, 1, 1),
-			('https://mirror.us/archlinux/', 'US', 1700000000, 200, 1.0, 2.0, 1, 0),
-			('http://insecure.mirror/archlinux/', 'DE', 1700000000, 300, 2.0, 3.0, 1, 0)`,
+		`INSERT INTO mirror (url, country_code, country_name, last_sync, delay, duration_avg, score, ipv4, ipv6) VALUES
+			('https://mirror.de/archlinux/', 'DE', 'Germany', 1700000000, 100, 0.5, 1.0, 1, 1),
+			('https://mirror.us/archlinux/', 'US', 'United States', 1700000000, 200, 1.0, 2.0, 1, 0),
+			('http://insecure.mirror/archlinux/', 'DE', 'Germany', 1700000000, 300, 2.0, 3.0, 1, 0)`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatalf("setup: %v", err)

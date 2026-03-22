@@ -81,14 +81,10 @@ CREATE TABLE release (
 );
 CREATE INDEX idx_release_available_date ON release(available, release_date);
 
-CREATE TABLE country (
-    code TEXT PRIMARY KEY,
-    name TEXT NOT NULL
-);
-
 CREATE TABLE mirror (
     url TEXT PRIMARY KEY,
-    country_code TEXT REFERENCES country(code),
+    country_code TEXT,
+    country_name TEXT,
     last_sync INTEGER,
     delay INTEGER,
     duration_avg REAL,

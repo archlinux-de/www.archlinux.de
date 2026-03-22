@@ -96,7 +96,7 @@ update-pnpm:
 update: update-go update-pnpm
 
 # fetch all external data into the local database
-update-data: update-countries update-packages update-news update-mirrors update-releases update-package-popularities update-mirror-popularities
+update-data: update-packages update-news update-mirrors update-releases update-package-popularities update-mirror-popularities
 
 # fetch package data from Arch Linux repositories
 update-packages:
@@ -113,10 +113,6 @@ update-mirrors:
 # fetch release data from archlinux.org
 update-releases:
     go run . update-releases
-
-# fetch country data from restcountries.com
-update-countries:
-    go run . update-countries
 
 # fetch package popularity data from pkgstats.archlinux.de
 update-package-popularities:
