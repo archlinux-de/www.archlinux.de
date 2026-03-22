@@ -9,7 +9,6 @@ import (
 
 	"archded/internal/config"
 	"archded/internal/database"
-	"archded/internal/httperror"
 	"archded/internal/legacy"
 	"archded/internal/mirrors"
 	"archded/internal/news"
@@ -17,6 +16,7 @@ import (
 	"archded/internal/popularity"
 	"archded/internal/releases"
 	"archded/internal/ui"
+	"archded/internal/ui/httperror"
 	uilayout "archded/internal/ui/layout"
 	"archded/internal/web"
 )

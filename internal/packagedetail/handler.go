@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"archded/internal/httperror"
+	"archded/internal/ui/httperror"
 	"archded/internal/ui/layout"
 )
 
