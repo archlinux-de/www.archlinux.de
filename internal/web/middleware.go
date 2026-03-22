@@ -60,7 +60,7 @@ func CacheControl(maxAge time.Duration) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Method == http.MethodGet {
-				w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(int(maxAge.Seconds())))
+				w.Header().Set("Cache-Control", "public, max-age="+formatSeconds(maxAge))
 			}
 			next.ServeHTTP(w, r)
 		})
@@ -91,4 +91,8 @@ func (w noCacheWriter) Write(b []byte) (int, error) {
 
 func (w noCacheWriter) Unwrap() http.ResponseWriter {
 	return w.ResponseWriter
+}
+
+func formatSeconds(d time.Duration) string {
+	return strconv.Itoa(int(d.Seconds()))
 }
