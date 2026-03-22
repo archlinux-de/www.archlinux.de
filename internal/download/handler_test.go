@@ -7,8 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"archded/internal/mirrors"
-	"archded/internal/packages"
 	"archded/internal/releases"
 	"archded/internal/ui/layout"
 
@@ -24,36 +22,12 @@ func setupTestDB(t *testing.T) *sql.DB {
 	t.Cleanup(func() { _ = db.Close() })
 
 	for _, stmt := range []string{
-		`CREATE TABLE repository (
-			id INTEGER PRIMARY KEY, name TEXT NOT NULL, architecture TEXT NOT NULL,
-			testing INTEGER NOT NULL DEFAULT 0, UNIQUE(name, architecture))`,
-		`CREATE TABLE package (
-			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL,
-			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
-			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
-			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT,
-			UNIQUE(repository_id, name))`,
-		`CREATE TABLE country (code TEXT PRIMARY KEY, name TEXT NOT NULL)`,
-		`CREATE TABLE mirror (
-			url TEXT PRIMARY KEY, country_code TEXT REFERENCES country(code),
-			last_sync INTEGER, delay INTEGER, duration_avg REAL, duration_stddev REAL,
-			score REAL, completion_pct REAL, ipv4 INTEGER NOT NULL DEFAULT 0,
-			ipv6 INTEGER NOT NULL DEFAULT 0)`,
 		`CREATE TABLE release (
 			version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1,
 			info TEXT, created INTEGER, release_date INTEGER, kernel_version TEXT,
 			file_name TEXT, file_length INTEGER, sha1_sum TEXT, sha256_sum TEXT,
 			b2_sum TEXT, torrent_url TEXT, magnet_uri TEXT)`,
 
-		`INSERT INTO repository (id, name, architecture) VALUES (1, 'core', 'x86_64')`,
-		`INSERT INTO package (id, repository_id, name, base, version, build_date) VALUES
-			(1, 1, 'linux', 'linux', '6.6.7-1', 1700300000)`,
-		`INSERT INTO country (code, name) VALUES ('DE', 'Germany')`,
-		`INSERT INTO mirror (url, country_code, score, ipv4) VALUES
-			('https://mirror.example.com/archlinux/', 'DE', 1.0, 1)`,
 		`INSERT INTO release (version, available, info, release_date, kernel_version, file_name, file_length, created) VALUES
 			('2024.01.01', 1, 'January release', 1704067200, '6.6.7', 'archlinux-2024.01.01-x86_64.iso', 900000000, 1704067200),
 			('2023.06.01', 0, 'June release', 1685577600, '6.3.9', 'archlinux-2023.06.01-x86_64.iso', 800000000, 1685577600),
@@ -76,10 +50,8 @@ func newTestMux(t *testing.T) *http.ServeMux {
 	db := setupTestDB(t)
 	handler := NewHandler(
 		releases.NewRepository(db),
-		packages.NewRepository(db),
-		mirrors.NewRepository(db),
 		testManifest(),
-		"https://fallback.mirror.example.com/",
+		"https://geo.mirror.pkgbuild.com/",
 	)
 	mux := http.NewServeMux()
 	handler.RegisterRoutes(mux)
@@ -107,7 +79,7 @@ func TestISO_Available(t *testing.T) {
 		t.Errorf("expected 307, got %d", rr.Code)
 	}
 	loc := rr.Header().Get("Location")
-	if !strings.Contains(loc, "mirror.example.com") {
+	if !strings.HasPrefix(loc, "https://geo.mirror.pkgbuild.com/") {
 		t.Errorf("expected redirect to mirror, got %q", loc)
 	}
 	if !strings.Contains(loc, "iso/2024.01.01/archlinux-2024.01.01-x86_64.iso") {
@@ -231,95 +203,5 @@ func TestISO_SigFile(t *testing.T) {
 	loc := rr.Header().Get("Location")
 	if !strings.HasSuffix(loc, ".iso.sig") {
 		t.Errorf("expected .sig in redirect, got %q", loc)
-	}
-}
-
-func TestPkg_ZstExtension(t *testing.T) {
-	mux := newTestMux(t)
-
-	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/core/os/x86_64/linux-6.6.7-1-x86_64.pkg.tar.zst", nil))
-
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("expected 307, got %d", rr.Code)
-	}
-}
-
-func TestPkg_XzExtension(t *testing.T) {
-	mux := newTestMux(t)
-
-	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/core/os/x86_64/linux-6.6.7-1-x86_64.pkg.tar.xz", nil))
-
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("expected 307, got %d", rr.Code)
-	}
-}
-
-func TestFallbackToDefaultMirror(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { _ = db.Close() })
-
-	for _, stmt := range []string{
-		`CREATE TABLE repository (id INTEGER PRIMARY KEY, name TEXT NOT NULL, architecture TEXT NOT NULL, testing INTEGER NOT NULL DEFAULT 0, UNIQUE(name, architecture))`,
-		`CREATE TABLE package (id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL, name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', url TEXT, build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0, installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT, popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0, popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT, UNIQUE(repository_id, name))`,
-		`CREATE TABLE country (code TEXT PRIMARY KEY, name TEXT NOT NULL)`,
-		`CREATE TABLE mirror (url TEXT PRIMARY KEY, country_code TEXT, last_sync INTEGER, delay INTEGER, duration_avg REAL, duration_stddev REAL, score REAL, completion_pct REAL, ipv4 INTEGER NOT NULL DEFAULT 0, ipv6 INTEGER NOT NULL DEFAULT 0)`,
-		`CREATE TABLE release (version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1, info TEXT, created INTEGER, release_date INTEGER, kernel_version TEXT, file_name TEXT, file_length INTEGER, sha1_sum TEXT, sha256_sum TEXT, b2_sum TEXT, torrent_url TEXT, magnet_uri TEXT)`,
-		`INSERT INTO release (version, available, created) VALUES ('2024.01.01', 1, 1704067200)`,
-	} {
-		if _, err := db.Exec(stmt); err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	handler := NewHandler(
-		releases.NewRepository(db),
-		packages.NewRepository(db),
-		mirrors.NewRepository(db),
-		testManifest(),
-		"https://geo.mirror.pkgbuild.com/",
-	)
-	mux := http.NewServeMux()
-	handler.RegisterRoutes(mux)
-
-	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/2024.01.01/archlinux.iso", nil))
-
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("expected 307, got %d", rr.Code)
-	}
-	loc := rr.Header().Get("Location")
-	if !strings.HasPrefix(loc, "https://geo.mirror.pkgbuild.com/") {
-		t.Errorf("expected fallback to default mirror, got %q", loc)
-	}
-}
-
-func TestClientAddr(t *testing.T) {
-	tests := []struct {
-		name       string
-		remoteAddr string
-		realIP     string
-		want       string
-	}{
-		{"remote addr with port", "192.168.1.1:1234", "", "192.168.1.1"},
-		{"remote addr without port", "192.168.1.1", "", "192.168.1.1"},
-		{"X-Real-IP", "127.0.0.1:1234", "10.0.0.1", "10.0.0.1"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			req.RemoteAddr = tt.remoteAddr
-			if tt.realIP != "" {
-				req.Header.Set("X-Real-IP", tt.realIP)
-			}
-			got := clientAddr(req)
-			if got != tt.want {
-				t.Errorf("clientAddr() = %q, want %q", got, tt.want)
-			}
-		})
 	}
 }

@@ -1,10 +1,10 @@
 package news
 
 import (
+	"archded/internal/sanitize"
+	"archded/internal/ui/layout"
 	"fmt"
 	"net/url"
-	"time"
-	"archded/internal/sanitize"
 )
 
 templ NewsList(data newsData) {
@@ -35,7 +35,7 @@ templ NewsList(data newsData) {
 			<tbody>
 				for _, item := range data.Items {
 					<tr>
-						<td class="d-none d-md-table-cell">{ formatDate(item.LastModified) }</td>
+						<td class="d-none d-md-table-cell">{ layout.FormatDate(item.LastModified) }</td>
 						<td>
 							<a href={ templ.SafeURL(item.URL()) }>{ item.Title }</a>
 						</td>
@@ -74,7 +74,7 @@ templ NewsList(data newsData) {
 templ NewsDetail(item NewsItem) {
 	<h1 class="mb-4">{ item.Title }</h1>
 	<div class="mb-3 text-muted">
-		<span>{ formatDate(item.LastModified) }</span>
+		<span>{ layout.FormatDate(item.LastModified) }</span>
 		&ndash;
 		if item.AuthorLink != "" {
 			<a class="text-muted" href={ templ.SafeURL(sanitize.URL(item.AuthorLink)) } rel="nofollow noopener">{ item.AuthorName }</a>
@@ -87,13 +87,6 @@ templ NewsDetail(item NewsItem) {
 	</div>
 	<a href="/news" class="btn btn-outline-secondary btn-sm">zum Archiv</a>
 	<a class="btn btn-primary btn-sm" href={ templ.SafeURL(sanitize.URL(item.Link)) } rel="nofollow noopener">Kommentare</a>
-}
-
-func formatDate(unix int64) string {
-	if unix == 0 {
-		return ""
-	}
-	return time.Unix(unix, 0).Format("02.01.2006")
 }
 
 func newsPaginationURL(search string, offset int) string {

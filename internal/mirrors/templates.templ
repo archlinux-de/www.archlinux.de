@@ -1,10 +1,10 @@
 package mirrors
 
 import (
+	"archded/internal/sanitize"
+	"archded/internal/ui/layout"
 	"fmt"
 	"net/url"
-	"time"
-	"archded/internal/sanitize"
 )
 
 templ MirrorList(data mirrorsData) {
@@ -45,7 +45,7 @@ templ MirrorList(data mirrorsData) {
 						<td class="d-none d-md-table-cell">{ m.CountryName }</td>
 						<td class="d-none d-lg-table-cell">{ renderDuration(m.DurationAvg) }</td>
 						<td class="d-none d-lg-table-cell">{ renderDuration(float64(m.Delay)) }</td>
-						<td class="d-none d-sm-table-cell">{ formatDate(m.LastSync) }</td>
+						<td class="d-none d-sm-table-cell">{ layout.FormatDate(m.LastSync) }</td>
 						<td class="d-none d-xl-table-cell text-center">
 							if m.IPv4 {
 								<span class="text-success">✓</span>
@@ -90,13 +90,6 @@ func extractHost(rawURL string) string {
 		return u.Host
 	}
 	return rawURL
-}
-
-func formatDate(unix int64) string {
-	if unix == 0 {
-		return ""
-	}
-	return time.Unix(unix, 0).Format("02.01.2006")
 }
 
 func renderDuration(seconds float64) string {

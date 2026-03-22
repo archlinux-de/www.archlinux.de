@@ -1,12 +1,12 @@
 package packagedetail
 
 import (
+	"archded/internal/sanitize"
+	"archded/internal/ui/components"
+	"archded/internal/ui/layout"
 	"fmt"
 	"net/url"
 	"strings"
-	"time"
-	"archded/internal/sanitize"
-	"archded/internal/ui/components"
 )
 
 func packageDownloadURL(pkg PackageDetail) string {
@@ -76,7 +76,7 @@ templ PackageDetailPage(pkg PackageDetail) {
 					}
 					<tr>
 						<th>Erstellt am</th>
-						<td>{ formatDate(pkg.BuildDate) }</td>
+						<td>{ layout.FormatDate(pkg.BuildDate) }</td>
 					</tr>
 					<tr>
 						<th>Quelltext</th>
@@ -155,13 +155,6 @@ templ relationSection(title string, rels []Relation, arch string) {
 			}
 		</div>
 	}
-}
-
-func formatDate(unix int64) string {
-	if unix == 0 {
-		return ""
-	}
-	return time.Unix(unix, 0).Format("02.01.2006")
 }
 
 func formatBytes(b int64) string {

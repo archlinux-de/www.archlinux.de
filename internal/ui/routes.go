@@ -47,7 +47,7 @@ func RegisterRoutes(
 	news.NewHandler(newsRepo, manifest).RegisterRoutes(mux)
 	mirrors.NewHandler(mirRepo, manifest).RegisterRoutes(mux)
 	releases.NewHandler(relRepo, manifest).RegisterRoutes(mux)
-	download.NewHandler(relRepo, pkgRepo, mirRepo, manifest, defaultMirror).RegisterRoutes(mux)
+	download.NewHandler(relRepo, manifest, defaultMirror).RegisterRoutes(mux)
 	feeds.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
 	sitemap.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
 	opensearch.RegisterRoutes(mux)

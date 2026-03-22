@@ -1,145 +1,92 @@
 package download
 
 import (
-	"fmt"
-	"net/url"
-	"time"
 	"archded/internal/sanitize"
+	"archded/internal/ui/layout"
+	"fmt"
 )
 
 templ DownloadPage(data downloadData) {
 	if data.Release != nil {
-		<h1 class="mb-4">Arch Linux Downloads</h1>
+		<h1 class="mb-4">Arch Linux herunterladen</h1>
 		<div class="row">
-			<div class="col-12 col-lg-6">
-				<h2>Release Informationen</h2>
+			<div class="col-12 col-lg-6 mb-4">
+				<h2>Aktuelles Release</h2>
 				<p>
-					Das CD/USB-Image ist gleichzeitig Installations-Medium und Live-System, das zur Wartung oder
-					Reparatur benutzt werden kann. Die ISO-Datei kann sowohl auf CD gebrannt als auch mit Programmen wie
-					<a href="https://wiki.archlinux.de/title/Dd">dd</a> auf USB-Sticks kopiert
-					werden. Es kann nur für x86_64-Installationen verwendet werden.
+					Das ISO-Image dient zur Neuinstallation von Arch Linux oder als Live-System zur Reparatur bestehender Installationen.
+					Ein bestehendes System kann jederzeit mit <code>pacman -Syu</code> aktualisiert werden.
 				</p>
 				<p>
-					Der Download ist nur für Neuinstallationen notwendig! Ein bestehendes Arch Linux System kann immer
-					mit <code>pacman -Syu</code> aktuell gehalten werden!
+					<a class="btn btn-primary btn-lg" href={ templ.SafeURL(data.DownloadURL) } rel="nofollow noopener">
+						<span class="fw-bold">Download</span> Arch Linux { data.Release.Version }
+					</a>
 				</p>
-				<ul class="list-unstyled ms-4">
-					<li>
-						<strong>Aktuelles Release:</strong>&nbsp;<a href={ templ.SafeURL("/releases/" + data.Release.Version) }>{ data.Release.Version }</a>
-					</li>
-					<li>
-						<a href={ templ.SafeURL("/releases/" + data.Release.Version) }>Release-Informationen</a>
-					</li>
+				<p class="mb-4 text-body-secondary">
 					if data.Release.KernelVersion != "" {
-						<li><strong>Enthaltener Kernel:</strong>&nbsp;{ data.Release.KernelVersion }</li>
+						Kernel { data.Release.KernelVersion }
 					}
 					if data.Release.FileLength > 0 {
-						<li><strong>ISO Größe:</strong>&nbsp;{ formatFileSize(data.Release.FileLength) }</li>
+						&middot; { layout.FormatFileSize(data.Release.FileLength) }
 					}
+				</p>
+				<h2>Überprüfung</h2>
+				<p>Prüfsummen und Signatur herunterladen und mit dem ISO-Image abgleichen:</p>
+				<ul class="list-unstyled">
+					if data.Release.SHA256Sum != "" {
+						<li class="mb-3">
+							<a href={ templ.SafeURL(data.UpstreamISODir + "sha256sums.txt") }>sha256sums.txt</a>
+							<pre class="ms-4 mt-2 mb-0"><code>sha256sum -c sha256sums.txt</code></pre>
+						</li>
+					}
+					if data.Release.B2Sum != "" {
+						<li class="mb-3">
+							<a href={ templ.SafeURL(data.UpstreamISODir + "b2sums.txt") }>b2sums.txt</a>
+							<pre class="ms-4 mt-2 mb-0"><code>b2sum -c b2sums.txt</code></pre>
+						</li>
+					}
+					// TODO: get signer email from upstream API once available
+					<li class="mb-3">
+						<a href={ templ.SafeURL(data.UpstreamISODir + data.Release.FileName + ".sig") }>PGP-Signatur</a>
+						<pre class="ms-4 mt-2 mb-0"><code>{ "gpg --auto-key-locate clear,wkd \\\n  -v --locate-external-key \\\n  pierre@archlinux.org" }</code></pre>
+						<pre class="ms-4 mt-2 mb-0"><code>{ fmt.Sprintf("gpg --verify %s.sig", data.Release.FileName) }</code></pre>
+					</li>
+				</ul>
+				<p class="text-body-secondary">
+					Die Prüfsummen stellen sicher, dass das ISO-Image vollständig und unverändert heruntergeladen wurde.
+					Der erste GnuPG-Befehl importiert den Signatur-Schlüssel, der zweite überprüft damit die Echtheit des Images.
+					Mehr dazu im <a href="https://wiki.archlinux.de/title/GnuPG">Wiki-Artikel zu GnuPG</a>.
+				</p>
+			</div>
+			<div class="col-12 col-lg-6 mb-4">
+				<h4>Nächste Schritte</h4>
+				<ul class="list-unstyled ms-4 mb-4 link-list">
+					<li><a href="https://wiki.archlinux.de/title/Installation_von_einem_USB-Stick">ISO auf USB-Stick schreiben</a></li>
 					<li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
 				</ul>
-				<h2>Installation</h2>
-				<p>
-					Hilfe zur Erstellung der USB-Images und erste Schritte zum Aufsetzen des Basis-Systems findet man in
-					der <a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a>.
-				</p>
-				<h2>BitTorrent Download</h2>
-				<p><em>Ein web-seed-fähiger Client ist für schnelle Downloads zu empfehlen.</em></p>
-				<ul class="list-unstyled ms-4 link-list">
+				<h4>Alternativer Download</h4>
+				<ul class="list-unstyled ms-4 mb-4 link-list">
 					if data.Release.MagnetURI != "" {
-						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.MagnetURI)) } rel="nofollow noopener">Magnet link für { data.Release.Version }</a></li>
+						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.MagnetURI)) } rel="nofollow noopener">Magnet link</a></li>
 					}
 					if data.Release.TorrentURL != "" {
-						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.TorrentURL)) } rel="nofollow noopener">Torrent für { data.Release.Version }</a></li>
+						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.TorrentURL)) } rel="nofollow noopener">Torrent</a></li>
 					}
+					<li><a href="/mirrors">Mirror-Liste</a></li>
 				</ul>
-				<h2>Direkte HTTP-Downloads</h2>
-				<p>Nach dem Download sollten die Dateien stets überprüft werden.</p>
-				<h3>Prüfsummen</h3>
-				<table class="table table-sm table-borderless mb-4" aria-label="Prüfsummen">
-					<tbody>
-						if data.ISOSigPath != "" {
-							<tr>
-								<th>PGP</th>
-								<td class="ps-2">
-									<a href={ templ.SafeURL(data.DownloadURL + ".sig") } rel="nofollow noopener">PGP-Signatur</a>
-								</td>
-							</tr>
-						}
-						if data.Release.SHA1Sum != "" {
-							<tr>
-								<th>SHA1</th>
-								<td class="ps-2 text-break">{ data.Release.SHA1Sum }</td>
-							</tr>
-						}
-						if data.Release.SHA256Sum != "" {
-							<tr>
-								<th>SHA256</th>
-								<td class="ps-2 text-break">{ data.Release.SHA256Sum }</td>
-							</tr>
-						}
-						if data.Release.B2Sum != "" {
-							<tr>
-								<th>B2</th>
-								<td class="ps-2 text-break">{ data.Release.B2Sum }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
-			<div class="col-12 col-lg-6 ps-lg-5">
-				<a class="btn btn-primary btn-lg mb-4" href={ templ.SafeURL(data.DownloadURL) } rel="nofollow noopener">
-					<span class="fw-bold">Download</span> Arch Linux { data.Release.Version }
-				</a>
-				if len(data.Mirrors) > 0 {
-					<h3>Mirrors</h3>
-					<ul class="list-unstyled ms-4 link-list">
-						for _, m := range data.Mirrors {
-							<li>
-								<a href={ templ.SafeURL(sanitize.URL(m.URL + data.ISOPath)) } rel="nofollow noopener">{ extractHost(m.URL) }</a>
-							</li>
-						}
-					</ul>
-				}
-				<h3>Arch Linux Releases</h3>
-				<a class="btn btn-outline-secondary btn-sm" href="/releases/feed">Feed</a>
-				<a class="btn btn-secondary btn-sm" href="/releases">Archiv</a>
+				<h4>Alternative Installationsmethoden</h4>
+				<ul class="list-unstyled ms-4 mb-4 link-list">
+					<li><a href="https://archlinux.org/releng/netboot/">Netboot</a></li>
+					<li><a href="https://hub.docker.com/_/archlinux">Docker</a></li>
+					<li><a href="https://gitlab.archlinux.org/archlinux/arch-boxes/-/packages">VM-Images</a></li>
+				</ul>
+				<h4>Weiteres</h4>
+				<ul class="list-unstyled ms-4 link-list">
+					<li><a href={ templ.SafeURL("/releases/" + data.Release.Version) }>Release-Informationen { data.Release.Version }</a></li>
+					<li><a href="/releases">Alle Releases</a></li>
+					<li><a href="/releases/feed">Release-Feed</a></li>
+				</ul>
 			</div>
 		</div>
 	}
 }
 
-func formatFileSize(bytes int64) string {
-	if bytes <= 0 {
-		return ""
-	}
-	const (
-		kb = 1024
-		mb = 1024 * kb
-		gb = 1024 * mb
-	)
-	switch {
-	case bytes >= gb:
-		return fmt.Sprintf("%.1f GB", float64(bytes)/float64(gb))
-	case bytes >= mb:
-		return fmt.Sprintf("%.1f MB", float64(bytes)/float64(mb))
-	case bytes >= kb:
-		return fmt.Sprintf("%.1f KB", float64(bytes)/float64(kb))
-	default:
-		return fmt.Sprintf("%d B", bytes)
-	}
-}
-
-func formatDate(unix int64) string {
-	if unix == 0 {
-		return ""
-	}
-	return time.Unix(unix, 0).Format("02.01.2006")
-}
-
-func extractHost(rawURL string) string {
-	if u, err := url.Parse(rawURL); err == nil {
-		return u.Host
-	}
-	return rawURL
-}

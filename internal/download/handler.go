@@ -2,40 +2,29 @@ package download
 
 import (
 	"fmt"
-	"math/rand/v2"
-	"net"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
-	"archded/internal/mirrors"
-	"archded/internal/packages"
 	"archded/internal/releases"
 	"archded/internal/ui/layout"
 )
 
 type Handler struct {
-	releases      *releases.Repository
-	packages      *packages.Repository
-	mirrors       *mirrors.Repository
-	manifest      *layout.Manifest
-	defaultMirror string
+	releases *releases.Repository
+	manifest *layout.Manifest
+	mirror   string
 }
 
 func NewHandler(
 	relRepo *releases.Repository,
-	pkgRepo *packages.Repository,
-	mirRepo *mirrors.Repository,
 	manifest *layout.Manifest,
-	defaultMirror string,
+	mirror string,
 ) *Handler {
 	return &Handler{
-		releases:      relRepo,
-		packages:      pkgRepo,
-		mirrors:       mirRepo,
-		manifest:      manifest,
-		defaultMirror: defaultMirror,
+		releases: relRepo,
+		manifest: manifest,
+		mirror:   mirror,
 	}
 }
 
@@ -47,19 +36,12 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /download/{file...}", h.fallback)
 }
 
-const (
-	mirrorArchive     = "https://archive.archlinux.org/"
-	downloadMirrors   = 10
-	selectMirrorCount = 20
-	hashMultiplier    = 31
-)
+const mirrorArchive = "https://archive.archlinux.org/"
 
 type downloadData struct {
-	Release     *releases.Release
-	Mirrors     []mirrors.MirrorSummary
-	ISOPath     string
-	ISOSigPath  string
-	DownloadURL string
+	Release        *releases.Release
+	DownloadURL    string
+	UpstreamISODir string
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
@@ -71,20 +53,10 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mirrorList, err := h.mirrors.TopByScore(ctx, downloadMirrors)
-	if err != nil {
-		layout.ServerError(w, "query mirrors", err)
-		return
-	}
-
-	isoPath := fmt.Sprintf("iso/%s/%s", rel.Version, rel.FileName)
-
 	data := downloadData{
-		Release:     &rel,
-		Mirrors:     mirrorList,
-		ISOPath:     isoPath,
-		ISOSigPath:  isoPath + ".sig",
-		DownloadURL: fmt.Sprintf("/download/iso/%s/%s", rel.Version, rel.FileName),
+		Release:        &rel,
+		DownloadURL:    fmt.Sprintf("/download/iso/%s/%s", rel.Version, rel.FileName),
+		UpstreamISODir: fmt.Sprintf("https://archlinux.org/iso/%s/", rel.Version),
 	}
 
 	page := layout.Page{
@@ -134,13 +106,7 @@ func (h *Handler) iso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mirror := h.selectMirror(r, ra.Created)
-	if mirror == "" {
-		http.NotFound(w, r)
-		return
-	}
-
-	http.Redirect(w, r, mirror+"iso/"+version+"/"+file, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, h.mirror+"iso/"+version+"/"+file, http.StatusTemporaryRedirect)
 }
 
 func (h *Handler) isoDir(w http.ResponseWriter, r *http.Request) {
@@ -161,35 +127,15 @@ func (h *Handler) isoDir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mirror := h.selectMirror(r, ra.Created)
-	if mirror == "" {
-		http.NotFound(w, r)
-		return
-	}
-
-	http.Redirect(w, r, mirror+"iso/"+version+"/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, h.mirror+"iso/"+version+"/", http.StatusTemporaryRedirect)
 }
-
-var pkgNameRe = regexp.MustCompile(`^([^-]+.*)-[^-]+-[^-]+-.*$`)
 
 func (h *Handler) pkg(w http.ResponseWriter, r *http.Request) {
 	repo := r.PathValue("repository")
 	arch := r.PathValue("architecture")
 	file := r.PathValue("file")
 
-	var buildDate *int64
-	matches := pkgNameRe.FindStringSubmatch(file)
-	if matches != nil {
-		buildDate = h.packages.BuildDate(r.Context(), matches[1], repo, arch)
-	}
-
-	mirror := h.selectMirror(r, buildDate)
-	if mirror == "" {
-		http.NotFound(w, r)
-		return
-	}
-
-	http.Redirect(w, r, mirror+repo+"/os/"+arch+"/"+file, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, h.mirror+repo+"/os/"+arch+"/"+file, http.StatusTemporaryRedirect)
 }
 
 func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
@@ -200,37 +146,5 @@ func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mirror := h.selectMirror(r, nil)
-	if mirror == "" {
-		http.NotFound(w, r)
-		return
-	}
-
-	http.Redirect(w, r, mirror+file, http.StatusTemporaryRedirect)
-}
-
-func (h *Handler) selectMirror(r *http.Request, lastSync *int64) string {
-	urls, err := h.mirrors.SelectByCountry(r.Context(), "", lastSync, selectMirrorCount)
-	if err != nil || len(urls) == 0 {
-		return h.defaultMirror
-	}
-
-	clientIP := clientAddr(r)
-	seed := uint64(0)
-	for _, b := range []byte(clientIP) {
-		seed = seed*hashMultiplier + uint64(b)
-	}
-	rng := rand.New(rand.NewPCG(seed, 0)) //nolint:gosec // deterministic selection per client IP
-	return urls[rng.IntN(len(urls))]
-}
-
-func clientAddr(r *http.Request) string {
-	if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
-		return realIP
-	}
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		return r.RemoteAddr
-	}
-	return host
+	http.Redirect(w, r, h.mirror+file, http.StatusTemporaryRedirect)
 }

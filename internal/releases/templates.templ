@@ -1,10 +1,10 @@
 package releases
 
 import (
+	"archded/internal/sanitize"
+	"archded/internal/ui/layout"
 	"fmt"
 	"net/url"
-	"time"
-	"archded/internal/sanitize"
 )
 
 templ ReleaseList(data releasesData) {
@@ -39,9 +39,9 @@ templ ReleaseList(data releasesData) {
 						<td>
 							<a href={ templ.SafeURL("/releases/" + rel.Version) }>{ rel.Version }</a>
 						</td>
-						<td class="d-none d-md-table-cell">{ formatDate(rel.ReleaseDate) }</td>
+						<td class="d-none d-md-table-cell">{ layout.FormatDate(rel.ReleaseDate) }</td>
 						<td class="d-none d-xl-table-cell">{ rel.KernelVersion }</td>
-						<td class="d-none d-md-table-cell text-end">{ formatFileSize(rel.FileLength) }</td>
+						<td class="d-none d-md-table-cell text-end">{ layout.FormatFileSize(rel.FileLength) }</td>
 					</tr>
 				}
 			</tbody>
@@ -99,13 +99,13 @@ templ ReleaseDetail(rel Release) {
 					if rel.ReleaseDate > 0 {
 						<tr>
 							<th>Veröffentlichung</th>
-							<td>{ formatDate(rel.ReleaseDate) }</td>
+							<td>{ layout.FormatDate(rel.ReleaseDate) }</td>
 						</tr>
 					}
 					if rel.FileLength > 0 {
 						<tr>
 							<th>ISO Größe</th>
-							<td>{ formatFileSize(rel.FileLength) }</td>
+							<td>{ layout.FormatFileSize(rel.FileLength) }</td>
 						</tr>
 					}
 					if rel.SHA1Sum != "" {
@@ -157,34 +157,6 @@ templ ReleaseDetail(rel Release) {
 			<a class="btn btn-sm btn-outline-secondary" href="/releases">zum Release-Archiv</a>
 		</div>
 	</div>
-}
-
-func formatDate(unix int64) string {
-	if unix == 0 {
-		return ""
-	}
-	return time.Unix(unix, 0).Format("02.01.2006")
-}
-
-func formatFileSize(bytes int64) string {
-	if bytes <= 0 {
-		return ""
-	}
-	const (
-		kb = 1024
-		mb = 1024 * kb
-		gb = 1024 * mb
-	)
-	switch {
-	case bytes >= gb:
-		return fmt.Sprintf("%.1f GB", float64(bytes)/float64(gb))
-	case bytes >= mb:
-		return fmt.Sprintf("%.1f MB", float64(bytes)/float64(mb))
-	case bytes >= kb:
-		return fmt.Sprintf("%.1f KB", float64(bytes)/float64(kb))
-	default:
-		return fmt.Sprintf("%d B", bytes)
-	}
 }
 
 func releasesPaginationURL(search string, offset int) string {

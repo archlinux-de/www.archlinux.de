@@ -1,10 +1,10 @@
 package packages
 
 import (
+	"archded/internal/ui/components"
+	"archded/internal/ui/layout"
 	"fmt"
 	"net/url"
-	"time"
-	"archded/internal/ui/components"
 )
 
 templ PackageList(data packagesData) {
@@ -74,7 +74,7 @@ templ PackageList(data packagesData) {
 						</td>
 						<td class="text-break">{ pkg.Version }</td>
 						<td class="d-none d-sm-table-cell text-break">{ pkg.Description }</td>
-						<td class="d-none d-lg-table-cell">{ formatDate(pkg.BuildDate) }</td>
+						<td class="d-none d-lg-table-cell">{ layout.FormatDate(pkg.BuildDate) }</td>
 						<td class="d-none d-xl-table-cell">
 							@components.Popularity(pkg.Popularity)
 						</td>
@@ -101,13 +101,6 @@ templ PackageList(data packagesData) {
 			</div>
 		</div>
 	}
-}
-
-func formatDate(unix int64) string {
-	if unix == 0 {
-		return ""
-	}
-	return time.Unix(unix, 0).Format("02.01.2006")
 }
 
 func paginationURL(search, repo, arch string, offset int) string {
