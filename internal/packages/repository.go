@@ -7,14 +7,15 @@ import (
 )
 
 type PackageSummary struct {
-	Repository   string
-	Architecture string
-	Name         string
-	Version      string
-	Description  string
-	BuildDate    int64
-	PackagerName string
-	Popularity   float64
+	Repository    string
+	Architecture  string
+	Name          string
+	Version       string
+	Description   string
+	BuildDate     int64
+	PackagerName  string
+	PackagerEmail string
+	Popularity    float64
 }
 
 type Repository struct {
@@ -133,6 +134,30 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 	}
 
 	return pkgs, total, rows.Err()
+}
+
+func (r *Repository) Latest(ctx context.Context, limit int) ([]PackageSummary, error) {
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT p.name, p.version, p.description, p.build_date,
+		        COALESCE(p.packager_name, ''), COALESCE(p.packager_email, ''),
+		        r.name, r.architecture
+		 FROM package p
+		 JOIN repository r ON r.id = p.repository_id
+		 ORDER BY p.build_date DESC LIMIT ?`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var pkgs []PackageSummary
+	for rows.Next() {
+		var p PackageSummary
+		if err := rows.Scan(&p.Name, &p.Version, &p.Description, &p.BuildDate, &p.PackagerName, &p.PackagerEmail, &p.Repository, &p.Architecture); err != nil {
+			return nil, err
+		}
+		pkgs = append(pkgs, p)
+	}
+	return pkgs, rows.Err()
 }
 
 func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSummary, error) {
