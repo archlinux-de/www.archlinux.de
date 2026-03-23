@@ -65,14 +65,8 @@ func TestListRepositoryNames(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Should only list non-testing repos
-	for _, n := range names {
-		if n == "core-testing" {
-			t.Error("should not include testing repos")
-		}
-	}
-	if len(names) != 2 {
-		t.Errorf("expected 2 repo names, got %d", len(names))
+	if len(names) != 3 {
+		t.Errorf("expected 3 repo names, got %d", len(names))
 	}
 }
 

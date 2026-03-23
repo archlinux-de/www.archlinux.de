@@ -27,7 +27,7 @@ func NewRepository(db *sql.DB) *Repository {
 
 func (r *Repository) ListRepositoryNames(ctx context.Context) ([]string, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT DISTINCT name FROM repository WHERE testing = 0 ORDER BY name`)
+		`SELECT DISTINCT name FROM repository ORDER BY name`)
 	if err != nil {
 		return nil, err
 	}
