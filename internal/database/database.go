@@ -19,7 +19,7 @@ func New(path string) (*sql.DB, error) {
 	// Apply SQLite pragmas via DSN so they are set on every connection in the pool.
 	dsn := path +
 		"?_pragma=journal_mode(WAL)" +
-		"&_pragma=busy_timeout(5000)" +
+		"&_pragma=busy_timeout(30000)" +
 		"&_pragma=foreign_keys(ON)" +
 		"&_pragma=synchronous(NORMAL)" +
 		"&_pragma=cache_size(-65536)" + // 64 MB page cache
