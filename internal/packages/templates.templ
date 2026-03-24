@@ -59,9 +59,9 @@ templ PackageList(data packagesData) {
 				<tr>
 					<th class="d-none d-lg-table-cell text-nowrap">Repositorium</th>
 					<th class="d-none d-xl-table-cell text-nowrap">Architektur</th>
-					<th>Name</th>
-					<th class="text-nowrap">Version</th>
-					<th class="d-none d-sm-table-cell w-50">Beschreibung</th>
+					<th class="text-sm-nowrap">Name</th>
+					<th class="text-sm-nowrap">Version</th>
+					<th class="d-none d-sm-table-cell">Beschreibung</th>
 					<th class="d-none d-lg-table-cell text-nowrap">Datum</th>
 					<th class="d-none d-xl-table-cell text-nowrap">Beliebtheit</th>
 				</tr>
@@ -75,12 +75,12 @@ templ PackageList(data packagesData) {
 							</a>
 						</td>
 						<td class="d-none d-xl-table-cell text-nowrap">{ pkg.Architecture }</td>
-						<td class="text-break">
+						<td class="text-sm-nowrap text-break">
 							<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Architecture, pkg.Name)) }>
 								{ pkg.Name }
 							</a>
 						</td>
-						<td class="text-nowrap">{ pkg.Version }</td>
+						<td class="text-sm-nowrap text-break">{ pkg.Version }</td>
 						<td class="d-none d-sm-table-cell text-break">{ pkg.Description }</td>
 						<td class="d-none d-lg-table-cell text-nowrap">{ layout.FormatDate(pkg.BuildDate) }</td>
 						<td class="d-none d-xl-table-cell text-nowrap">

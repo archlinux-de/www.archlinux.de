@@ -13,6 +13,12 @@
     table-layout: fixed;
 }
 
+@include media-breakpoint-up(sm) {
+    .text-sm-nowrap {
+        white-space: nowrap !important;
+    }
+}
+
 .package-popularity .bi {
     width: 1em;
     height: 1em;
