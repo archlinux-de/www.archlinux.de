@@ -114,7 +114,9 @@ templ PackageDetailPage(pkg PackageDetail) {
 					<tr>
 						<th>Beliebtheit</th>
 						<td>
-							@components.Popularity(pkg.Popularity)
+							<a href={ templ.SafeURL("https://pkgstats.archlinux.de/packages/" + pkg.Name) }>
+								@components.Popularity(pkg.Popularity)
+							</a>
 						</td>
 					</tr>
 				</tbody>
