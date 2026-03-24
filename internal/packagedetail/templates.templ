@@ -221,6 +221,7 @@ templ PackageNotFoundPage(name string, suggestions []PackageSuggestion) {
 								<td>
 									<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", s.Repository, s.Architecture, s.Name)) }>{ s.Name }</a>
 								</td>
+								<td>{ s.Repository }</td>
 								<td>{ s.Description }</td>
 								<td class="d-none d-lg-table-cell">
 									@components.Popularity(s.Popularity)
@@ -257,6 +258,7 @@ templ PackageResolvePage(name string, packages []ResolvedPackage) {
 							<td>
 								<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Arch, p.Name)) }>{ p.Name }</a>
 							</td>
+							<td>{ p.Repository }</td>
 							<td>{ p.Description }</td>
 							<td class="d-none d-lg-table-cell">
 								@components.Popularity(p.Popularity)
