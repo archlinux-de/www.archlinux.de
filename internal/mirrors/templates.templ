@@ -20,7 +20,7 @@ templ MirrorList(data mirrorsData) {
 				aria-label="Mirror suchen"
 				value={ data.Search }
 			/>
-			<button class="btn btn-outline-primary" type="submit">Suchen</button>
+			<button class="btn btn-outline-primary d-none d-sm-inline-block" type="submit">Suchen</button>
 		</div>
 	</form>
 	if len(data.Mirrors) > 0 {

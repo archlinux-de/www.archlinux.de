@@ -20,7 +20,7 @@ templ ReleaseList(data releasesData) {
 				aria-label="Release suchen"
 				value={ data.Search }
 			/>
-			<button class="btn btn-outline-primary" type="submit">Suchen</button>
+			<button class="btn btn-outline-primary d-none d-sm-inline-block" type="submit">Suchen</button>
 		</div>
 	</form>
 	if len(data.Releases) > 0 {
@@ -137,9 +137,11 @@ templ ReleaseDetail(rel Release) {
 		</div>
 		<div class="col-12 col-xl-6">
 			if rel.ISOUrl() != "" {
-				<a class="btn btn-primary btn-lg mb-4" href={ templ.SafeURL(rel.ISOUrl()) } rel="nofollow noopener">
-					<span class="fw-bold">Download</span> Arch Linux { rel.Version }
-				</a>
+				<p class="text-center text-xl-start">
+					<a class="btn btn-primary btn-lg" href={ templ.SafeURL(rel.ISOUrl()) } rel="nofollow noopener">
+						<span class="fw-bold">Download</span> Arch Linux { rel.Version }
+					</a>
+				</p>
 			}
 			<ul class="list-unstyled ms-4 link-list">
 				if rel.MagnetURI != "" {

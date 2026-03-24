@@ -64,7 +64,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 					<form action="/packages" method="get">
 						<div class="input-group">
 							<input type="text" name="search" class="form-control" placeholder="Paketsuche..." aria-label="Paketsuche"/>
-							<button class="btn btn-primary" type="submit">Suchen</button>
+							<button class="btn btn-primary d-none d-sm-inline-block" type="submit">Suchen</button>
 						</div>
 					</form>
 				</div>
@@ -80,7 +80,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 										<td class="w-75">
 											<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Architecture, pkg.Name)) }>{ pkg.Name }</a>
 										</td>
-										<td class="text-end text-truncate" title={ pkg.Version }>{ pkg.Version }</td>
+										<td class="text-end text-break" title={ pkg.Version }>{ pkg.Version }</td>
 									</tr>
 								}
 							</tbody>

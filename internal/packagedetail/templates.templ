@@ -93,13 +93,13 @@ templ PackageDetailPage(pkg PackageDetail) {
 					</tr>
 					<tr>
 						<th>Paket</th>
-						<td>
+						<td class="text-break">
 							<a rel="nofollow noopener" href={ templ.SafeURL(packageDownloadURL(pkg)) }>{ pkg.FileName() }</a>
 						</td>
 					</tr>
 					<tr>
 						<th>PGP-Signatur</th>
-						<td>
+						<td class="text-break">
 							<a rel="nofollow noopener" href={ templ.SafeURL(packageDownloadURL(pkg) + ".sig") }>{ pkg.FileName() }.sig</a>
 						</td>
 					</tr>
@@ -213,7 +213,7 @@ templ PackageNotFoundPage(name string, suggestions []PackageSuggestion) {
 				Das Paket <strong>{ name }</strong> konnte leider nicht angezeigt werden.
 			</div>
 			if len(suggestions) > 0 {
-				<table class="table table-borderless caption-top">
+				<table class="table table-borderless table-responsive caption-top">
 					<caption>
 						Gefundene Vorschläge zu <strong>{ name }</strong>:
 					</caption>
@@ -224,7 +224,7 @@ templ PackageNotFoundPage(name string, suggestions []PackageSuggestion) {
 									<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", s.Repository, s.Architecture, s.Name)) }>{ s.Name }</a>
 								</td>
 								<td>{ s.Repository }</td>
-								<td>{ s.Description }</td>
+								<td class="text-break">{ s.Description }</td>
 								<td class="d-none d-lg-table-cell">
 									@components.Popularity(s.Popularity)
 								</td>
@@ -253,7 +253,7 @@ templ PackageResolvePage(name string, packages []ResolvedPackage) {
 			<div class="card-text">
 				Das Paket <strong>{ name }</strong> wurde in mehreren Repositorys gefunden:
 			</div>
-			<table class="table table-borderless mt-3 mb-0" aria-label="Gefundene Pakete">
+			<table class="table table-borderless table-responsive mt-3 mb-0" aria-label="Gefundene Pakete">
 				<tbody>
 					for _, p := range packages {
 						<tr>
@@ -261,7 +261,7 @@ templ PackageResolvePage(name string, packages []ResolvedPackage) {
 								<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Arch, p.Name)) }>{ p.Name }</a>
 							</td>
 							<td>{ p.Repository }</td>
-							<td>{ p.Description }</td>
+							<td class="text-break">{ p.Description }</td>
 							<td class="d-none d-lg-table-cell">
 								@components.Popularity(p.Popularity)
 							</td>

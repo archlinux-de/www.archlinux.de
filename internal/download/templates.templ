@@ -16,7 +16,7 @@ templ DownloadPage(data downloadData) {
 					Das ISO-Image dient zur Neuinstallation von Arch Linux oder als Live-System zur Reparatur bestehender Installationen.
 					Ein bestehendes System kann jederzeit mit <code>pacman -Syu</code> aktualisiert werden.
 				</p>
-				<p>
+				<p class="text-center text-lg-start">
 					<a class="btn btn-primary btn-lg" href={ templ.SafeURL(data.DownloadURL) } rel="nofollow noopener">
 						<span class="fw-bold">Download</span> Arch Linux { data.Release.Version }
 					</a>
@@ -35,20 +35,20 @@ templ DownloadPage(data downloadData) {
 					if data.Release.SHA256Sum != "" {
 						<li class="mb-3">
 							<a href={ templ.SafeURL(data.UpstreamISODir + "sha256sums.txt") }>sha256sums.txt</a>
-							<pre class="ms-4 mt-2 mb-0"><code>sha256sum -c sha256sums.txt</code></pre>
+							<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>sha256sum -c sha256sums.txt</code></pre>
 						</li>
 					}
 					if data.Release.B2Sum != "" {
 						<li class="mb-3">
 							<a href={ templ.SafeURL(data.UpstreamISODir + "b2sums.txt") }>b2sums.txt</a>
-							<pre class="ms-4 mt-2 mb-0"><code>b2sum -c b2sums.txt</code></pre>
+							<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>b2sum -c b2sums.txt</code></pre>
 						</li>
 					}
 					// TODO: get signer email from upstream API once available
 					<li class="mb-3">
 						<a href={ templ.SafeURL(data.UpstreamISODir + data.Release.FileName + ".sig") }>PGP-Signatur</a>
-						<pre class="ms-4 mt-2 mb-0"><code>{ "gpg --auto-key-locate clear,wkd \\\n  -v --locate-external-key \\\n  pierre@archlinux.org" }</code></pre>
-						<pre class="ms-4 mt-2 mb-0"><code>{ fmt.Sprintf("gpg --verify %s.sig", data.Release.FileName) }</code></pre>
+						<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>{ "gpg --auto-key-locate clear,wkd \\\n  -v --locate-external-key \\\n  pierre@archlinux.org" }</code></pre>
+						<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>{ fmt.Sprintf("gpg --verify %s.sig", data.Release.FileName) }</code></pre>
 					</li>
 				</ul>
 				<p class="text-body-secondary">
