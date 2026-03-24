@@ -49,7 +49,7 @@ templ PackageDetailPage(pkg PackageDetail) {
 					<tr>
 						<th>Repositorium</th>
 						<td>
-							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s", pkg.Repository)) }>{ pkg.Repository }</a>
+							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.Architecture)) }>{ pkg.Repository }</a>
 						</td>
 					</tr>
 					<tr>
