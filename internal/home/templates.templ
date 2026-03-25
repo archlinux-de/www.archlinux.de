@@ -63,7 +63,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 				<div class="card-body">
 					<form action="/packages" method="get">
 						<div class="input-group">
-							<input type="text" name="search" class="form-control" placeholder="Paketsuche..." aria-label="Paketsuche"/>
+							<input type="text" name="search" class="form-control" placeholder="Paketsuche..." autocomplete="off" aria-label="Paketsuche"/>
 							<button class="btn btn-primary d-none d-sm-inline-block" type="submit">Suchen</button>
 						</div>
 					</form>
