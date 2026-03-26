@@ -105,6 +105,64 @@ func TestHandlerIndex_EmptySearch(t *testing.T) {
 	}
 }
 
+func TestHandlerSuggest(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/suggest?term=lin", nil))
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+	if ct := rr.Header().Get("Content-Type"); ct != "application/json" {
+		t.Errorf("expected application/json, got %q", ct)
+	}
+	body := rr.Body.String()
+	if body != "[\"linux\"]\n" {
+		t.Errorf("expected [\"linux\"], got %q", body)
+	}
+}
+
+func TestHandlerSuggest_Empty(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/suggest", nil))
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+	if body := rr.Body.String(); body != "[]\n" {
+		t.Errorf("expected [], got %q", body)
+	}
+}
+
+func TestHandlerSuggest_NoMatch(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/suggest?term=zzzzz", nil))
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+	if body := rr.Body.String(); body != "[]\n" {
+		t.Errorf("expected [], got %q", body)
+	}
+}
+
 func TestPackagesData_Pagination(t *testing.T) {
 	d := packagesData{Pagination: layout.Pagination{Total: 100, Limit: 25, Offset: 0}}
 	if !d.HasNext() {

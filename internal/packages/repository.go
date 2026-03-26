@@ -223,6 +223,40 @@ func (r *Repository) AllStableRefs(ctx context.Context) ([]PackageRef, error) {
 	return refs, rows.Err()
 }
 
+func (r *Repository) Suggest(ctx context.Context, term string, limit int) ([]string, error) {
+	if term == "" {
+		return nil, nil
+	}
+
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT DISTINCT p.name
+		 FROM package p
+		 WHERE p.name LIKE ? ESCAPE '\'
+		 ORDER BY p.popularity_recent DESC
+		 LIMIT ?`, likePrefixQuery(term), limit)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var names []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		names = append(names, name)
+	}
+	return names, rows.Err()
+}
+
+func likePrefixQuery(term string) string {
+	term = strings.ReplaceAll(term, `\`, `\\`)
+	term = strings.ReplaceAll(term, `%`, `\%`)
+	term = strings.ReplaceAll(term, `_`, `\_`)
+	return term + "%"
+}
+
 // ftsQuery builds an FTS5 MATCH expression from a user search string.
 // Splits on hyphens, quotes each term, and adds a prefix wildcard to the last term.
 func ftsQuery(search string) string {

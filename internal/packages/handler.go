@@ -1,6 +1,7 @@
 package packages
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,7 @@ func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /packages/suggest", h.suggest)
 	mux.HandleFunc("GET /packages", h.index)
 }
 
@@ -30,6 +32,30 @@ type packagesData struct {
 	Architecture  string
 	Repositories  []string
 	Architectures []string
+}
+
+const (
+	suggestLimit   = 10
+	suggestTermMax = 255
+)
+
+func (h *Handler) suggest(w http.ResponseWriter, r *http.Request) {
+	term := r.URL.Query().Get("term")
+	if len(term) > suggestTermMax {
+		term = term[:suggestTermMax]
+	}
+
+	names, err := h.repo.Suggest(r.Context(), term, suggestLimit)
+	if err != nil {
+		http.Error(w, "suggest failed", http.StatusInternalServerError)
+		return
+	}
+	if names == nil {
+		names = []string{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(names)
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {

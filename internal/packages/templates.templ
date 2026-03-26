@@ -18,9 +18,11 @@ templ PackageList(data packagesData) {
 					type="search"
 					name="search"
 					autocomplete="off"
+					list="package-suggestions"
 					aria-label="Pakete suchen"
 					value={ data.Search }
 				/>
+				<datalist id="package-suggestions"></datalist>
 			</div>
 			<div class="col-12 col-sm-auto">
 				<select class="form-select" name="repository" aria-label="Repositorium">

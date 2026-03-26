@@ -222,21 +222,3 @@ func TestLegacyMiddleware(t *testing.T) {
 		})
 	}
 }
-
-func TestRegisterRoutes_PackagesSuggest(t *testing.T) {
-	mux := http.NewServeMux()
-	RegisterRoutes(mux)
-
-	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/suggest", nil))
-
-	if rr.Code != http.StatusOK {
-		t.Errorf("expected 200, got %d", rr.Code)
-	}
-	if ct := rr.Header().Get("Content-Type"); ct != "application/json" {
-		t.Errorf("expected application/json, got %q", ct)
-	}
-	if body := rr.Body.String(); body != "[]" {
-		t.Errorf("expected [], got %q", body)
-	}
-}

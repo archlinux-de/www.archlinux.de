@@ -13,7 +13,6 @@ func emptyJSONArray(w http.ResponseWriter, _ *http.Request) {
 }
 
 func RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /packages/suggest", emptyJSONArray)
 }
 
 type legacyRoute struct {

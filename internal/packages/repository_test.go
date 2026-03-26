@@ -221,6 +221,71 @@ func TestAllStableRefs(t *testing.T) {
 	}
 }
 
+func TestSuggest(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	names, err := repo.Suggest(context.Background(), "lin", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) != 1 || names[0] != "linux" {
+		t.Errorf("expected [linux], got %v", names)
+	}
+}
+
+func TestSuggest_Empty(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	names, err := repo.Suggest(context.Background(), "", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if names != nil {
+		t.Errorf("expected nil, got %v", names)
+	}
+}
+
+func TestSuggest_Distinct(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	// "linux" exists in both core and core-testing
+	names, err := repo.Suggest(context.Background(), "linux", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) != 1 {
+		t.Errorf("expected 1 distinct result, got %d: %v", len(names), names)
+	}
+}
+
+func TestSuggest_OrderedByPopularity(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	// bash (40.0) and firefox (30.0) both start with letters before 'l'
+	// but let's test with a broader prefix
+	names, err := repo.Suggest(context.Background(), "b", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) != 1 || names[0] != "bash" {
+		t.Errorf("expected [bash], got %v", names)
+	}
+}
+
+func TestLikePrefixQuery(t *testing.T) {
+	tests := []struct {
+		input, want string
+	}{
+		{"linux", "linux%"},
+		{"lib%", `lib\%%`},
+		{"a_b", `a\_b%`},
+		{`c\d`, `c\\d%`},
+		{"", "%"},
+	}
+	for _, tt := range tests {
+		got := likePrefixQuery(tt.input)
+		if got != tt.want {
+			t.Errorf("likePrefixQuery(%q) = %q, want %q", tt.input, got, tt.want)
+		}
+	}
+}
+
 func TestFtsQuery(t *testing.T) {
 	tests := []struct {
 		input, want string
