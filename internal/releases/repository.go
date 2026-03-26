@@ -6,19 +6,21 @@ import (
 )
 
 type Release struct {
-	Version       string
-	Available     bool
-	Info          string
-	ReleaseDate   int64
-	Created       int64
-	KernelVersion string
-	FileLength    int64
-	FileName      string
-	SHA1Sum       string
-	SHA256Sum     string
-	B2Sum         string
-	TorrentURL    string
-	MagnetURI     string
+	Version        string
+	Available      bool
+	Info           string
+	ReleaseDate    int64
+	Created        int64
+	KernelVersion  string
+	FileLength     int64
+	FileName       string
+	SHA1Sum        string
+	SHA256Sum      string
+	B2Sum          string
+	TorrentURL     string
+	MagnetURI      string
+	PGPFingerprint string
+	WKDEmail       string
 }
 
 type Repository struct {
@@ -77,11 +79,13 @@ func (r *Repository) FindByVersion(ctx context.Context, version string) (Release
 	err := r.db.QueryRowContext(ctx,
 		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''),
 		        COALESCE(file_length, 0), COALESCE(file_name, ''), COALESCE(sha1_sum, ''), COALESCE(sha256_sum, ''),
-		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, '')
+		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, ''),
+		        COALESCE(pgp_fingerprint, ''), COALESCE(wkd_email, '')
 		 FROM release WHERE version = ?`, version).Scan(
 		&rel.Version, &rel.Available, &rel.Info, &rel.ReleaseDate, &rel.KernelVersion,
 		&rel.FileLength, &rel.FileName, &rel.SHA1Sum, &rel.SHA256Sum,
 		&rel.B2Sum, &rel.TorrentURL, &rel.MagnetURI,
+		&rel.PGPFingerprint, &rel.WKDEmail,
 	)
 	return rel, err
 }
@@ -91,11 +95,13 @@ func (r *Repository) LatestAvailable(ctx context.Context) (Release, error) {
 	err := r.db.QueryRowContext(ctx,
 		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''),
 		        COALESCE(file_length, 0), COALESCE(file_name, ''), COALESCE(sha1_sum, ''), COALESCE(sha256_sum, ''),
-		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, '')
+		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, ''),
+		        COALESCE(pgp_fingerprint, ''), COALESCE(wkd_email, '')
 		 FROM release WHERE available = 1 ORDER BY release_date DESC LIMIT 1`).Scan(
 		&rel.Version, &rel.Available, &rel.Info, &rel.ReleaseDate, &rel.KernelVersion,
 		&rel.FileLength, &rel.FileName, &rel.SHA1Sum, &rel.SHA256Sum,
 		&rel.B2Sum, &rel.TorrentURL, &rel.MagnetURI,
+		&rel.PGPFingerprint, &rel.WKDEmail,
 	)
 	return rel, err
 }

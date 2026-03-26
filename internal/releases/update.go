@@ -21,19 +21,21 @@ type relengResponse struct {
 }
 
 type relengRelease struct {
-	Version       string         `json:"version"`
-	Available     bool           `json:"available"`
-	Info          string         `json:"info"`
-	Created       string         `json:"created"`
-	ReleaseDate   string         `json:"release_date"`
-	KernelVersion *string        `json:"kernel_version"`
-	ISOUrl        *string        `json:"iso_url"`
-	SHA1Sum       *string        `json:"sha1_sum"`
-	SHA256Sum     *string        `json:"sha256_sum"`
-	B2Sum         *string        `json:"b2_sum"`
-	TorrentURL    *string        `json:"torrent_url"`
-	MagnetURI     *string        `json:"magnet_uri"`
-	Torrent       *relengTorrent `json:"torrent"`
+	Version        string         `json:"version"`
+	Available      bool           `json:"available"`
+	Info           string         `json:"info"`
+	Created        string         `json:"created"`
+	ReleaseDate    string         `json:"release_date"`
+	KernelVersion  *string        `json:"kernel_version"`
+	ISOUrl         *string        `json:"iso_url"`
+	SHA1Sum        *string        `json:"sha1_sum"`
+	SHA256Sum      *string        `json:"sha256_sum"`
+	B2Sum          *string        `json:"b2_sum"`
+	TorrentURL     *string        `json:"torrent_url"`
+	MagnetURI      *string        `json:"magnet_uri"`
+	PGPFingerprint *string        `json:"pgp_fingerprint"`
+	WKDEmail       *string        `json:"wkd_email"`
+	Torrent        *relengTorrent `json:"torrent"`
 }
 
 type relengTorrent struct {
@@ -42,11 +44,13 @@ type relengTorrent struct {
 }
 
 var (
-	versionRe       = regexp.MustCompile(`^[0-9]+[\.\-\w]+$`)
-	kernelVersionRe = regexp.MustCompile(`^[\d\.]{5,10}$`)
-	sha1Re          = regexp.MustCompile(`^[0-9a-f]{40}$`)
-	sha256Re        = regexp.MustCompile(`^[0-9a-f]{64}$`)
-	b2Re            = regexp.MustCompile(`^[0-9a-f]{128}$`)
+	versionRe        = regexp.MustCompile(`^[0-9]+[\.\-\w]+$`)
+	kernelVersionRe  = regexp.MustCompile(`^[\d\.]{5,10}$`)
+	sha1Re           = regexp.MustCompile(`^[0-9a-f]{40}$`)
+	sha256Re         = regexp.MustCompile(`^[0-9a-f]{64}$`)
+	b2Re             = regexp.MustCompile(`^[0-9a-f]{128}$`)
+	pgpFingerprintRe = regexp.MustCompile(`^[0-9A-F]{40}$`)
+	emailRe          = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 )
 
 func Update(ctx context.Context, db *sql.DB) error {
@@ -64,14 +68,15 @@ func Update(ctx context.Context, db *sql.DB) error {
 	defer func() { _ = tx.Rollback() }()
 
 	stmt, err := tx.PrepareContext(ctx,
-		`INSERT INTO release (version, available, info, created, release_date, kernel_version, file_name, file_length, sha1_sum, sha256_sum, b2_sum, torrent_url, magnet_uri)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`INSERT INTO release (version, available, info, created, release_date, kernel_version, file_name, file_length, sha1_sum, sha256_sum, b2_sum, torrent_url, magnet_uri, pgp_fingerprint, wkd_email)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		 ON CONFLICT (version) DO UPDATE SET
 		   available = excluded.available, info = excluded.info, created = excluded.created,
 		   release_date = excluded.release_date, kernel_version = excluded.kernel_version,
 		   file_name = excluded.file_name, file_length = excluded.file_length,
 		   sha1_sum = excluded.sha1_sum, sha256_sum = excluded.sha256_sum, b2_sum = excluded.b2_sum,
-		   torrent_url = excluded.torrent_url, magnet_uri = excluded.magnet_uri`)
+		   torrent_url = excluded.torrent_url, magnet_uri = excluded.magnet_uri,
+		   pgp_fingerprint = excluded.pgp_fingerprint, wkd_email = excluded.wkd_email`)
 	if err != nil {
 		return err
 	}
@@ -112,12 +117,15 @@ func Update(ctx context.Context, db *sql.DB) error {
 		sha1Sum := matchOrNil(r.SHA1Sum, sha1Re)
 		sha256Sum := matchOrNil(r.SHA256Sum, sha256Re)
 		b2Sum := matchOrNil(r.B2Sum, b2Re)
+		pgpFingerprint := matchOrNil(r.PGPFingerprint, pgpFingerprintRe)
+		wkdEmail := matchOrNil(r.WKDEmail, emailRe)
 
 		if _, err := stmt.ExecContext(ctx,
 			r.Version, r.Available, info, created, releaseDate,
 			kernelVersion, fileName, fileLength,
 			sha1Sum, sha256Sum, b2Sum,
 			torrentURL, r.MagnetURI,
+			pgpFingerprint, wkdEmail,
 		); err != nil {
 			return err
 		}

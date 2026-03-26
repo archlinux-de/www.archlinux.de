@@ -132,6 +132,18 @@ templ ReleaseDetail(rel Release) {
 							<td><a href={ templ.SafeURL(rel.ISOSigUrl()) } rel="nofollow noopener">PGP-Signatur</a></td>
 						</tr>
 					}
+					if rel.PGPFingerprint != "" {
+						<tr>
+							<th>PGP-Fingerprint</th>
+							<td class="text-break">{ rel.PGPFingerprint }</td>
+						</tr>
+					}
+					if rel.WKDEmail != "" {
+						<tr>
+							<th>PGP-Signer</th>
+							<td>{ rel.WKDEmail }</td>
+						</tr>
+					}
 				</tbody>
 			</table>
 		</div>

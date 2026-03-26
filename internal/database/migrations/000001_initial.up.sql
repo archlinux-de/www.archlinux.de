@@ -77,7 +77,9 @@ CREATE TABLE release (
     sha256_sum TEXT,
     b2_sum TEXT,
     torrent_url TEXT,
-    magnet_uri TEXT
+    magnet_uri TEXT,
+    pgp_fingerprint TEXT,
+    wkd_email TEXT
 );
 CREATE INDEX idx_release_available_date ON release(available, release_date);
 

@@ -44,10 +44,11 @@ templ DownloadPage(data downloadData) {
 							<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>b2sum -c b2sums.txt</code></pre>
 						</li>
 					}
-					// TODO: get signer email from upstream API once available
 					<li class="mb-3">
 						<a href={ templ.SafeURL(data.UpstreamISODir + data.Release.FileName + ".sig") }>PGP-Signatur</a>
-						<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>{ "gpg --auto-key-locate clear,wkd \\\n  -v --locate-external-key \\\n  pierre@archlinux.org" }</code></pre>
+						if data.Release.WKDEmail != "" {
+							<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>{ fmt.Sprintf("gpg --auto-key-locate clear,wkd \\\n  -v --locate-external-key \\\n  %s", data.Release.WKDEmail) }</code></pre>
+						}
 						<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>{ fmt.Sprintf("gpg --verify %s.sig", data.Release.FileName) }</code></pre>
 					</li>
 				</ul>

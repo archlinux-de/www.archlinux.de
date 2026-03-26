@@ -26,7 +26,8 @@ func setupTestDB(t *testing.T) *sql.DB {
 			version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1,
 			info TEXT, created INTEGER, release_date INTEGER, kernel_version TEXT,
 			file_name TEXT, file_length INTEGER, sha1_sum TEXT, sha256_sum TEXT,
-			b2_sum TEXT, torrent_url TEXT, magnet_uri TEXT)`,
+			b2_sum TEXT, torrent_url TEXT, magnet_uri TEXT,
+			pgp_fingerprint TEXT, wkd_email TEXT)`,
 
 		`INSERT INTO release (version, available, info, release_date, kernel_version, file_name, file_length, created) VALUES
 			('2024.01.01', 1, 'January release', 1704067200, '6.6.7', 'archlinux-2024.01.01-x86_64.iso', 900000000, 1704067200),
