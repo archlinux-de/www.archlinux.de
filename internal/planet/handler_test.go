@@ -42,7 +42,7 @@ func insertTestData(t *testing.T) *sql.DB {
 
 func TestAtomFeed_Structure(t *testing.T) {
 	db := insertTestData(t)
-	h := NewHandler(NewRepository(db))
+	h := NewHandler(NewRepository(db), nil)
 	mux := http.NewServeMux()
 	h.RegisterRoutes(mux)
 
@@ -128,7 +128,7 @@ type testRSSItem struct {
 
 func TestRSSFeed_Structure(t *testing.T) {
 	db := insertTestData(t)
-	h := NewHandler(NewRepository(db))
+	h := NewHandler(NewRepository(db), nil)
 	mux := http.NewServeMux()
 	h.RegisterRoutes(mux)
 
@@ -193,7 +193,7 @@ func TestRSSFeed_Structure(t *testing.T) {
 
 func TestFeeds_EmptyDB(t *testing.T) {
 	db := setupTestDB(t)
-	h := NewHandler(NewRepository(db))
+	h := NewHandler(NewRepository(db), nil)
 	mux := http.NewServeMux()
 	h.RegisterRoutes(mux)
 

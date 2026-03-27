@@ -11,16 +11,35 @@ import (
 const planetFeedItems = 30
 
 type Handler struct {
-	repo *Repository
+	repo     *Repository
+	manifest *layout.Manifest
 }
 
-func NewHandler(repo *Repository) *Handler {
-	return &Handler{repo: repo}
+func NewHandler(repo *Repository, manifest *layout.Manifest) *Handler {
+	return &Handler{repo: repo, manifest: manifest}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /planet", h.index)
 	mux.HandleFunc("GET /planet/atom.xml", h.atomFeed)
 	mux.HandleFunc("GET /planet/rss.xml", h.rssFeed)
+}
+
+func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
+	items, err := h.repo.LatestItems(r.Context(), planetFeedItems)
+	if err != nil {
+		layout.ServerError(w, "list planet items", err)
+		return
+	}
+
+	page := layout.Page{
+		Title:       "Planet",
+		Description: "Arch Linux Planet — Blogbeiträge aus der deutschsprachigen Arch-Linux-Community",
+		Path:        "/planet",
+		Manifest:    h.manifest,
+	}
+
+	layout.Render(w, r, page, PlanetIndex(items))
 }
 
 // Atom output

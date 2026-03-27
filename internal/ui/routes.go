@@ -50,7 +50,7 @@ func RegisterRoutes(
 	releases.NewHandler(relRepo, manifest).RegisterRoutes(mux)
 	download.NewHandler(relRepo, manifest, defaultMirror).RegisterRoutes(mux)
 	feeds.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
-	planet.NewHandler(planet.NewRepository(db)).RegisterRoutes(mux)
+	planet.NewHandler(planet.NewRepository(db), manifest).RegisterRoutes(mux)
 	sitemap.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
 	opensearch.RegisterRoutes(mux)
 	legacy.RegisterRoutes(mux)

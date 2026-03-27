@@ -1,0 +1,47 @@
+package planet
+
+import (
+	"archded/internal/sanitize"
+	"archded/internal/ui/layout"
+)
+
+templ PlanetIndex(items []Item) {
+	<h1 class="mb-4">Arch Linux Planet</h1>
+	<p class="mb-3">Blogbeiträge aus der deutschsprachigen Arch-Linux-Community.</p>
+	if len(items) > 0 {
+		<table class="table table-striped table-responsive table-sm table-borderless" aria-label="Planet">
+			<thead>
+				<tr>
+					<th class="d-none d-md-table-cell">Veröffentlichung</th>
+					<th>Titel</th>
+					<th class="d-none d-xl-table-cell">Autor</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, item := range items {
+					<tr>
+						<td class="d-none d-md-table-cell">{ layout.FormatDate(item.LastModified) }</td>
+						<td class="text-break">
+							<a href={ templ.SafeURL(sanitize.URL(item.Link)) } rel="nofollow noopener">{ item.Title }</a>
+						</td>
+						<td class="d-none d-xl-table-cell">
+							if item.AuthorURI != "" {
+								<a href={ templ.SafeURL(sanitize.URL(item.AuthorURI)) } rel="nofollow noopener">{ item.AuthorName }</a>
+							} else if item.FeedLink != "" {
+								<a href={ templ.SafeURL(sanitize.URL(item.FeedLink)) } rel="nofollow noopener">{ item.AuthorName }</a>
+							} else {
+								{ item.AuthorName }
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="py-2">
+			<a class="btn btn-outline-secondary btn-sm" href="/planet/atom.xml">Atom-Feed</a>
+			<a class="btn btn-outline-secondary btn-sm" href="/planet/rss.xml">RSS-Feed</a>
+		</div>
+	} else {
+		<div class="alert alert-warning">Keine Beiträge vorhanden</div>
+	}
+}

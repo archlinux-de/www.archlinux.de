@@ -109,6 +109,7 @@ func TestParseRSSFeed(t *testing.T) {
   <channel>
     <title>Test RSS Blog</title>
     <link>https://example.com</link>
+    <atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>An RSS blog</description>
     <item>
       <title>RSS Post</title>

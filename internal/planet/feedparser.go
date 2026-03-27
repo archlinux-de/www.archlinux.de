@@ -149,10 +149,15 @@ func parseAtomDate(updated, published string) time.Time {
 type rssFeedParsed struct {
 	Channel struct {
 		Title       string          `xml:"title"`
-		Link        string          `xml:"link"`
+		Links       []rssLinkParsed `xml:"link"`
 		Description string          `xml:"description"`
 		Items       []rssItemParsed `xml:"item"`
 	} `xml:"channel"`
+}
+
+type rssLinkParsed struct {
+	Value string `xml:",chardata"`
+	Href  string `xml:"href,attr"`
 }
 
 type rssItemParsed struct {
@@ -175,7 +180,7 @@ func parseRSS(data []byte) (ParsedFeed, error) {
 	feed := ParsedFeed{
 		Title:       ch.Title,
 		Description: ch.Description,
-		Link:        ch.Link,
+		Link:        rssTextLink(ch.Links),
 	}
 
 	for _, item := range ch.Items {
@@ -204,6 +209,17 @@ func parseRSS(data []byte) (ParsedFeed, error) {
 	}
 
 	return feed, nil
+}
+
+// rssTextLink returns the first RSS <link> with text content,
+// skipping <atom:link> elements which only have attributes.
+func rssTextLink(links []rssLinkParsed) string {
+	for _, l := range links {
+		if v := strings.TrimSpace(l.Value); v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 // extractRSSAuthorName handles the "email (Name)" format common in RSS
