@@ -13,6 +13,7 @@ import (
 	"archded/internal/mirrors"
 	"archded/internal/news"
 	"archded/internal/packages"
+	"archded/internal/planet"
 	"archded/internal/popularity"
 	"archded/internal/releases"
 	"archded/internal/ui"
@@ -82,6 +83,11 @@ func runCommand(cmd string, cfg config.Config) int {
 	case "update-mirror-popularities":
 		if err := popularity.UpdateMirrors(ctx, db); err != nil {
 			slog.Error("update-mirror-popularities failed", "error", err)
+			return 1
+		}
+	case "update-planet":
+		if err := planet.Update(ctx, db); err != nil {
+			slog.Error("update-planet failed", "error", err)
 			return 1
 		}
 	default:

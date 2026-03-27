@@ -17,6 +17,7 @@ import (
 	"archded/internal/opensearch"
 	"archded/internal/packagedetail"
 	"archded/internal/packages"
+	"archded/internal/planet"
 	"archded/internal/releases"
 	"archded/internal/sitemap"
 	"archded/internal/ui/layout"
@@ -49,6 +50,7 @@ func RegisterRoutes(
 	releases.NewHandler(relRepo, manifest).RegisterRoutes(mux)
 	download.NewHandler(relRepo, manifest, defaultMirror).RegisterRoutes(mux)
 	feeds.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
+	planet.NewHandler(planet.NewRepository(db)).RegisterRoutes(mux)
 	sitemap.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
 	opensearch.RegisterRoutes(mux)
 	legacy.RegisterRoutes(mux)
