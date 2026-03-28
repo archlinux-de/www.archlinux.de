@@ -213,6 +213,8 @@ func TestLegacyMiddleware(t *testing.T) {
 		{"api package detail", "/api/packages/extra/x86_64/linux", http.StatusGone, ""},
 		{"community package", "/packages/community/x86_64/remmina", http.StatusMovedPermanently, "/packages/extra/x86_64/remmina"},
 		{"community-testing package", "/packages/community-testing/x86_64/remmina", http.StatusMovedPermanently, "/packages/extra-testing/x86_64/remmina"},
+		{"download community-testing", "/download/community-testing/os/x86_64/pkg.tar.zst", http.StatusMovedPermanently, "/download/extra-testing/os/x86_64/pkg.tar.zst"},
+		{"download community", "/download/community/os/x86_64/pkg.tar.zst", http.StatusMovedPermanently, "/download/extra/os/x86_64/pkg.tar.zst"},
 		{"style favicon", "/style/favicon.ico", http.StatusMovedPermanently, "/favicon.ico"},
 		{"unrelated path passes through", "/packages", http.StatusOK, ""},
 	}
