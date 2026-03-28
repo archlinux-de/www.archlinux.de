@@ -4,16 +4,11 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	"strconv"
 
 	"archded/internal/ui/layout"
 )
 
-const (
-	defaultLimit = 25
-	maxSearchLen = 255
-	maxOffset    = 10000
-)
+const defaultLimit = 25
 
 type Handler struct {
 	repo     *Repository
@@ -66,16 +61,9 @@ func (h *Handler) suggest(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
-	search := r.URL.Query().Get("search")
-	if len(search) > maxSearchLen {
-		search = search[:maxSearchLen]
-	}
+	search, offset := layout.ParseSearchParams(r)
 	repo := r.URL.Query().Get("repository")
 	arch := r.URL.Query().Get("architecture")
-	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
-	if offset < 0 || offset > maxOffset {
-		offset = 0
-	}
 
 	ctx := r.Context()
 

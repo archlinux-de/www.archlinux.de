@@ -2,16 +2,11 @@ package mirrors
 
 import (
 	"net/http"
-	"strconv"
 
 	"archded/internal/ui/layout"
 )
 
-const (
-	defaultLimit = 25
-	maxSearchLen = 255
-	maxOffset    = 10000
-)
+const defaultLimit = 25
 
 type Handler struct {
 	repo     *Repository
@@ -33,14 +28,7 @@ type mirrorsData struct {
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
-	search := r.URL.Query().Get("search")
-	if len(search) > maxSearchLen {
-		search = search[:maxSearchLen]
-	}
-	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
-	if offset < 0 || offset > maxOffset {
-		offset = 0
-	}
+	search, offset := layout.ParseSearchParams(r)
 
 	items, total, err := h.repo.Search(r.Context(), search, defaultLimit, offset)
 	if err != nil {
