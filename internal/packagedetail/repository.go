@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"log/slog"
 	"strings"
 
 	"archded/internal/vercmp"
@@ -89,10 +90,14 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 
 	pkg.Testing = testing != 0
 	if licensesJSON != "" {
-		_ = json.Unmarshal([]byte(licensesJSON), &pkg.Licenses)
+		if err := json.Unmarshal([]byte(licensesJSON), &pkg.Licenses); err != nil {
+			slog.Warn("unmarshal licenses", "package", pkg.Name, "error", err)
+		}
 	}
 	if groupsJSON != "" {
-		_ = json.Unmarshal([]byte(groupsJSON), &pkg.Groups)
+		if err := json.Unmarshal([]byte(groupsJSON), &pkg.Groups); err != nil {
+			slog.Warn("unmarshal groups", "package", pkg.Name, "error", err)
+		}
 	}
 
 	pkg.Relations = r.loadRelations(ctx, pkgID)
