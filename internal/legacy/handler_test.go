@@ -87,6 +87,7 @@ func TestHandleLegacyQuery_ExternalRedirects(t *testing.T) {
 		{"ArchitectureDifferences", "https://www.archlinux.org/"},
 		{"FunStatistics", "https://pkgstats.archlinux.de/"},
 		{"Statistics", "https://pkgstats.archlinux.de/"},
+		{"UserStatistics", "https://pkgstats.archlinux.de/"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.page, func(t *testing.T) {

@@ -108,6 +108,7 @@ var externalRedirects = map[string]string{
 	"ModuleStatistics":        "https://pkgstats.archlinux.de/module",
 	"PackageStatistics":       "https://pkgstats.archlinux.de/package",
 	"Statistics":              "https://pkgstats.archlinux.de/",
+	"UserStatistics":          "https://pkgstats.archlinux.de/",
 }
 
 var internalRedirects = map[string]string{
