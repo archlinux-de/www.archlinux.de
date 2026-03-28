@@ -52,7 +52,8 @@ func runCommand(cmd string, cfg config.Config) int {
 	}
 	defer func() { _ = db.Close() }()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
 
 	switch cmd {
 	case "update-packages":
