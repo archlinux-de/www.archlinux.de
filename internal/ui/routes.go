@@ -34,7 +34,7 @@ func RegisterRoutes(
 	db *sql.DB,
 	defaultMirror string,
 	assets, static, root fs.FS,
-) {
+) error {
 	newsRepo := news.NewRepository(db)
 	pkgRepo := packages.NewRepository(db)
 	pkgDetailRepo := packagedetail.NewRepository(db)
@@ -54,12 +54,17 @@ func RegisterRoutes(
 	sitemap.NewHandler(newsRepo, pkgRepo, relRepo).RegisterRoutes(mux)
 	opensearch.RegisterRoutes(mux)
 	legacy.RegisterRoutes(mux)
-	handleAssets(mux, assets)
-	handleStatic(mux, static)
+	if err := handleAssets(mux, assets); err != nil {
+		return fmt.Errorf("setup assets: %w", err)
+	}
+	if err := handleStatic(mux, static); err != nil {
+		return fmt.Errorf("setup static: %w", err)
+	}
 	handleFavicon(mux, root)
 	handleManifest(mux, root)
 	handleRobots(mux, root)
 	handleServiceWorker(mux, root)
+	return nil
 }
 
 func handleFavicon(mux *http.ServeMux, root fs.FS) {
@@ -87,22 +92,24 @@ func handleRobots(mux *http.ServeMux, root fs.FS) {
 	}), staticCacheMaxAge))
 }
 
-func handleAssets(mux *http.ServeMux, assets fs.FS) {
+func handleAssets(mux *http.ServeMux, assets fs.FS) error {
 	sub, err := fs.Sub(assets, "dist/assets")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	fileServer := http.FileServer(http.FS(sub))
 	mux.Handle("GET /assets/", http.StripPrefix("/assets/", cacheHandler(fileServer, assetsCacheMaxAge, "immutable")))
+	return nil
 }
 
-func handleStatic(mux *http.ServeMux, static fs.FS) {
+func handleStatic(mux *http.ServeMux, static fs.FS) error {
 	sub, err := fs.Sub(static, "static")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	fileServer := http.FileServer(http.FS(sub))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", cacheHandler(fileServer, staticCacheMaxAge)))
+	return nil
 }
 
 func cacheHandler(next http.Handler, maxAge int, directives ...string) http.Handler {

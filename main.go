@@ -115,7 +115,9 @@ func run(cfg config.Config) error {
 
 	mux := http.NewServeMux()
 
-	ui.RegisterRoutes(mux, manifest, db, cfg.DefaultMirror, embedAssets, embedStatic, embedRoot)
+	if err := ui.RegisterRoutes(mux, manifest, db, cfg.DefaultMirror, embedAssets, embedStatic, embedRoot); err != nil {
+		return err
+	}
 
 	var cacheMiddleware web.Middleware
 	if isDevelopment {
