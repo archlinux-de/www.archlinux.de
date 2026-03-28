@@ -7,6 +7,42 @@ import (
 	"time"
 )
 
+func TestRedirectTrailingSlash(t *testing.T) {
+	inner := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	handler := RedirectTrailingSlash()(inner)
+
+	tests := []struct {
+		name       string
+		path       string
+		wantStatus int
+		wantTarget string
+	}{
+		{"root unchanged", "/", http.StatusOK, ""},
+		{"no slash unchanged", "/news/feed", http.StatusOK, ""},
+		{"trailing slash redirects", "/news/feed/", http.StatusMovedPermanently, "/news/feed"},
+		{"trailing slash with query", "/download/?foo=bar", http.StatusMovedPermanently, "/download?foo=bar"},
+		{"multiple trailing slashes", "/planet//", http.StatusMovedPermanently, "/planet"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			rr.Body = nil
+			handler.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, tt.path, nil))
+
+			if rr.Code != tt.wantStatus {
+				t.Errorf("status = %d, want %d", rr.Code, tt.wantStatus)
+			}
+			if tt.wantTarget != "" {
+				if loc := rr.Header().Get("Location"); loc != tt.wantTarget {
+					t.Errorf("Location = %q, want %q", loc, tt.wantTarget)
+				}
+			}
+		})
+	}
+}
+
 func TestChain(t *testing.T) {
 	var order []string
 	a := func(next http.Handler) http.Handler {

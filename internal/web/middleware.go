@@ -18,6 +18,22 @@ func Chain(h http.Handler, middlewares ...Middleware) http.Handler {
 	return h
 }
 
+func RedirectTrailingSlash() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path != "/" && strings.HasSuffix(r.URL.Path, "/") {
+				target := strings.TrimRight(r.URL.Path, "/")
+				if r.URL.RawQuery != "" {
+					target += "?" + r.URL.RawQuery
+				}
+				http.Redirect(w, r, target, http.StatusMovedPermanently)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 func Recovery() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

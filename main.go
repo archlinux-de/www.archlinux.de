@@ -133,6 +133,7 @@ func run(cfg config.Config) error {
 		httperror.Middleware(manifest),
 		cacheMiddleware,
 		legacy.LegacyMiddleware,
+		web.RedirectTrailingSlash(),
 	)
 
 	server := web.NewServer(":"+cfg.Port, handler)
