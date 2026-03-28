@@ -18,13 +18,15 @@ class PackageInverseDeps extends HTMLElement {
         button.textContent = "Inverse Abhängigkeiten anzeigen";
         this.appendChild(button);
 
-        button.addEventListener(
-            "click",
-            async () => {
-                button.textContent = "Laden…";
-                button.disabled = true;
+        button.addEventListener("click", async () => {
+            button.textContent = "Laden…";
+            button.disabled = true;
 
+            try {
                 const response = await fetch(src);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
                 const data: Record<string, string[]> = await response.json();
 
                 button.remove();
@@ -63,9 +65,11 @@ class PackageInverseDeps extends HTMLElement {
                 }
 
                 this.appendChild(fragment);
-            },
-            { once: true },
-        );
+            } catch {
+                button.textContent = "Fehler beim Laden";
+                button.disabled = false;
+            }
+        });
     }
 }
 

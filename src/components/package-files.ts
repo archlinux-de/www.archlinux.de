@@ -10,13 +10,18 @@ class PackageFiles extends HTMLElement {
         button.textContent = "Dateien anzeigen";
         this.appendChild(button);
 
-        button.addEventListener(
-            "click",
-            async () => {
-                button.remove();
+        button.addEventListener("click", async () => {
+            button.textContent = "Laden…";
+            button.disabled = true;
 
+            try {
                 const response = await fetch(src);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
                 const files: string[] = await response.json();
+
+                button.remove();
 
                 const ul = document.createElement("ul");
                 ul.className = "list-unstyled ms-4 overflow-auto";
@@ -31,9 +36,11 @@ class PackageFiles extends HTMLElement {
                 }
 
                 this.appendChild(ul);
-            },
-            { once: true },
-        );
+            } catch {
+                button.textContent = "Fehler beim Laden";
+                button.disabled = false;
+            }
+        });
     }
 }
 
