@@ -3,6 +3,7 @@ package download
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
@@ -141,7 +142,8 @@ func (h *Handler) pkg(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 	file := r.PathValue("file")
 
-	if strings.Contains(file, "..") {
+	clean := path.Clean(file)
+	if clean != file || strings.HasPrefix(clean, "..") {
 		http.NotFound(w, r)
 		return
 	}
