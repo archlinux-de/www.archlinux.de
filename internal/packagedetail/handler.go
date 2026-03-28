@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -130,7 +131,9 @@ func (h *Handler) inverseDeps(w http.ResponseWriter, r *http.Request) {
 	rels := h.repo.LoadInverseRelations(r.Context(), pkgName, arch)
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(rels)
+	if err := json.NewEncoder(w).Encode(rels); err != nil {
+		slog.Error("encode inverse deps", "error", err)
+	}
 }
 
 func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
@@ -141,5 +144,7 @@ func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
 	files := h.repo.LoadFiles(r.Context(), repoName, arch, pkgName)
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(files)
+	if err := json.NewEncoder(w).Encode(files); err != nil {
+		slog.Error("encode package files", "error", err)
+	}
 }

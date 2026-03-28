@@ -2,6 +2,7 @@ package packages
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -59,7 +60,9 @@ func (h *Handler) suggest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(names)
+	if err := json.NewEncoder(w).Encode(names); err != nil {
+		slog.Error("encode suggestions", "error", err)
+	}
 }
 
 func (h *Handler) index(w http.ResponseWriter, r *http.Request) {

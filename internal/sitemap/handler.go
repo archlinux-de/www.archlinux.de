@@ -2,6 +2,7 @@ package sitemap
 
 import (
 	"encoding/xml"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -84,8 +85,10 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	_ = enc.Encode(urlSet{
+	if err := enc.Encode(urlSet{
 		XMLNS: "http://www.sitemaps.org/schemas/sitemap/0.9",
 		URLs:  urls,
-	})
+	}); err != nil {
+		slog.Error("encode sitemap", "error", err)
+	}
 }

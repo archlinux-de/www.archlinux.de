@@ -2,6 +2,7 @@ package planet
 
 import (
 	"encoding/xml"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -148,7 +149,9 @@ func (h *Handler) atomFeed(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "    ")
-	_ = enc.Encode(feed)
+	if err := enc.Encode(feed); err != nil {
+		slog.Error("encode planet atom feed", "error", err)
+	}
 }
 
 func formatAtomTime(unix int64) string {
@@ -241,7 +244,9 @@ func (h *Handler) rssFeed(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "    ")
-	_ = enc.Encode(feed)
+	if err := enc.Encode(feed); err != nil {
+		slog.Error("encode planet rss feed", "error", err)
+	}
 }
 
 func formatRSSTime(unix int64) string {

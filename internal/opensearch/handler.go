@@ -2,6 +2,7 @@ package opensearch
 
 import (
 	"encoding/xml"
+	"log/slog"
 	"net/http"
 
 	"archded/internal/ui/layout"
@@ -48,5 +49,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	_ = enc.Encode(desc)
+	if err := enc.Encode(desc); err != nil {
+		slog.Error("encode opensearch description", "error", err)
+	}
 }

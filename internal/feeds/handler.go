@@ -3,6 +3,7 @@ package feeds
 import (
 	"encoding/xml"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -76,7 +77,9 @@ func writeAtom(w http.ResponseWriter, feed atomFeed) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	_ = enc.Encode(feed)
+	if err := enc.Encode(feed); err != nil {
+		slog.Error("encode atom feed", "error", err)
+	}
 }
 
 func formatTime(unix int64) string {
