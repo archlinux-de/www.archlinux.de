@@ -144,7 +144,7 @@ func setupLogger(isDevelopment bool) *slog.Logger {
 		})
 	} else {
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelInfo,
+			Level: slog.LevelWarn,
 		})
 	}
 	return slog.New(handler)
