@@ -89,7 +89,11 @@ func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {
 	version := r.URL.Query().Get("v")
 	constraint := r.URL.Query().Get("c")
 
-	results := h.repo.Resolve(r.Context(), arch, name, version, constraint)
+	results, err := h.repo.Resolve(r.Context(), arch, name, version, constraint)
+	if err != nil {
+		layout.ServerError(w, "resolve package", err)
+		return
+	}
 	if len(results) == 0 {
 		h.notFound(w, r, name)
 		return
@@ -110,7 +114,10 @@ func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {
 const suggestLimit = 5
 
 func (h *Handler) notFound(w http.ResponseWriter, r *http.Request, name string) {
-	suggestions := h.repo.Suggest(r.Context(), name, suggestLimit)
+	suggestions, err := h.repo.Suggest(r.Context(), name, suggestLimit)
+	if err != nil {
+		slog.Error("suggest packages", "error", err)
+	}
 
 	page := layout.Page{
 		Title:    name,
@@ -128,7 +135,11 @@ func (h *Handler) inverseDeps(w http.ResponseWriter, r *http.Request) {
 	arch := r.PathValue("arch")
 	pkgName := r.PathValue("name")
 
-	rels := h.repo.LoadInverseRelations(r.Context(), pkgName, arch)
+	rels, err := h.repo.LoadInverseRelations(r.Context(), pkgName, arch)
+	if err != nil {
+		layout.ServerError(w, "load inverse relations", err)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(rels); err != nil {
@@ -141,7 +152,11 @@ func (h *Handler) files(w http.ResponseWriter, r *http.Request) {
 	arch := r.PathValue("arch")
 	pkgName := r.PathValue("name")
 
-	files := h.repo.LoadFiles(r.Context(), repoName, arch, pkgName)
+	files, err := h.repo.LoadFiles(r.Context(), repoName, arch, pkgName)
+	if err != nil {
+		layout.ServerError(w, "load package files", err)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(files); err != nil {

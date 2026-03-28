@@ -190,7 +190,10 @@ func TestLatestStable(t *testing.T) {
 
 func TestBuildDate(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
-	bd := repo.BuildDate(context.Background(), "bash", "core", "x86_64")
+	bd, err := repo.BuildDate(context.Background(), "bash", "core", "x86_64")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if bd == nil {
 		t.Fatal("expected non-nil build date")
 	}
@@ -201,7 +204,10 @@ func TestBuildDate(t *testing.T) {
 
 func TestBuildDate_NotFound(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
-	bd := repo.BuildDate(context.Background(), "nonexistent", "core", "x86_64")
+	bd, err := repo.BuildDate(context.Background(), "nonexistent", "core", "x86_64")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if bd != nil {
 		t.Errorf("expected nil for missing package, got %d", *bd)
 	}

@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -101,41 +103,46 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 		}
 	}
 
-	pkg.Relations = r.loadRelations(ctx, pkgID)
+	rels, err := r.loadRelations(ctx, pkgID)
+	if err != nil {
+		return PackageDetail{}, fmt.Errorf("load relations: %w", err)
+	}
+	pkg.Relations = rels
 
 	return pkg, nil
 }
 
-func (r *Repository) packageID(ctx context.Context, repo, arch, name string) int64 {
+func (r *Repository) packageID(ctx context.Context, repo, arch, name string) (int64, error) {
 	var id int64
-	_ = r.db.QueryRowContext(ctx,
+	err := r.db.QueryRowContext(ctx,
 		`SELECT p.id FROM package p JOIN repository r ON r.id = p.repository_id
 		 WHERE r.name = ? AND r.architecture = ? AND p.name = ?`,
 		repo, arch, name).Scan(&id)
-	return id
+	return id, err
 }
 
-func (r *Repository) loadRelations(ctx context.Context, pkgID int64) map[string][]Relation {
+func (r *Repository) loadRelations(ctx context.Context, pkgID int64) (map[string][]Relation, error) {
 	rels := make(map[string][]Relation)
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT type, target_name, target_version, version_constraint
 		 FROM package_relation WHERE package_id = ? ORDER BY type, target_name`, pkgID)
 	if err != nil {
-		return rels
+		return nil, err
 	}
 	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var rel Relation
 		var relType string
-		if err := rows.Scan(&relType, &rel.TargetName, &rel.TargetVersion, &rel.VersionConstraint); err == nil {
-			rels[relType] = append(rels[relType], rel)
+		if err := rows.Scan(&relType, &rel.TargetName, &rel.TargetVersion, &rel.VersionConstraint); err != nil {
+			return nil, err
 		}
+		rels[relType] = append(rels[relType], rel)
 	}
-	return rels
+	return rels, rows.Err()
 }
 
-func (r *Repository) LoadInverseRelations(ctx context.Context, name, arch string) map[string][]string {
+func (r *Repository) LoadInverseRelations(ctx context.Context, name, arch string) (map[string][]string, error) {
 	rels := make(map[string][]string)
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT pr.type, p.name
@@ -145,24 +152,25 @@ func (r *Repository) LoadInverseRelations(ctx context.Context, name, arch string
 		 WHERE pr.target_name = ? AND r.architecture = ?
 		 ORDER BY pr.type, p.popularity_recent DESC, p.name`, name, arch)
 	if err != nil {
-		return rels
+		return nil, err
 	}
 	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var relType, pkgName string
-		if err := rows.Scan(&relType, &pkgName); err == nil {
-			rels[relType] = append(rels[relType], pkgName)
+		if err := rows.Scan(&relType, &pkgName); err != nil {
+			return nil, err
 		}
+		rels[relType] = append(rels[relType], pkgName)
 	}
-	return rels
+	return rels, rows.Err()
 }
 
 // Resolve finds packages matching a name by direct name match, then by
 // provides. Results are ordered like pacman: testing repos first when
 // testing is true (matching pacman.conf where testing repos precede
 // their non-testing counterparts).
-func (r *Repository) Resolve(ctx context.Context, arch, name, version, constraint string) []ResolvedPackage {
+func (r *Repository) Resolve(ctx context.Context, arch, name, version, constraint string) ([]ResolvedPackage, error) {
 	// 1. Direct name match
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT p.name, r.name, r.architecture, p.description, p.popularity_recent FROM package p
@@ -170,19 +178,23 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 		 WHERE p.name = ? AND r.architecture = ?
 		 ORDER BY r.testing ASC, p.popularity_recent DESC`, name, arch)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer func() { _ = rows.Close() }()
 
 	var results []ResolvedPackage
 	for rows.Next() {
 		var rp ResolvedPackage
-		if err := rows.Scan(&rp.Name, &rp.Repository, &rp.Arch, &rp.Description, &rp.Popularity); err == nil {
-			results = append(results, rp)
+		if err := rows.Scan(&rp.Name, &rp.Repository, &rp.Arch, &rp.Description, &rp.Popularity); err != nil {
+			return nil, err
 		}
+		results = append(results, rp)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	if len(results) > 0 {
-		return results
+		return results, nil
 	}
 
 	// 2. Provider fallback — fetch all providers, filter by version in Go
@@ -193,20 +205,21 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 		 ORDER BY r.testing ASC, p.popularity_recent DESC, p.name`
 	rows2, err := r.db.QueryContext(ctx, query, name, arch)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer func() { _ = rows2.Close() }()
 
 	for rows2.Next() {
 		var rp ResolvedPackage
 		var providedVersion string
-		if err := rows2.Scan(&rp.Name, &rp.Repository, &rp.Arch, &rp.Description, &rp.Popularity, &providedVersion); err == nil {
-			if satisfies(providedVersion, version, constraint) {
-				results = append(results, rp)
-			}
+		if err := rows2.Scan(&rp.Name, &rp.Repository, &rp.Arch, &rp.Description, &rp.Popularity, &providedVersion); err != nil {
+			return nil, err
+		}
+		if satisfies(providedVersion, version, constraint) {
+			results = append(results, rp)
 		}
 	}
-	return results
+	return results, rows2.Err()
 }
 
 func satisfies(provided, requested, constraint string) bool {
@@ -241,7 +254,7 @@ type PackageSuggestion struct {
 	Popularity   float64
 }
 
-func (r *Repository) Suggest(ctx context.Context, name string, limit int) []PackageSuggestion {
+func (r *Repository) Suggest(ctx context.Context, name string, limit int) ([]PackageSuggestion, error) {
 	ftsSearch := search.FTSQuery(name)
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT r.name, r.architecture, p.name, p.description, p.popularity_recent
@@ -252,34 +265,44 @@ func (r *Repository) Suggest(ctx context.Context, name string, limit int) []Pack
 		 ORDER BY rank, p.popularity_recent DESC
 		 LIMIT ?`, ftsSearch, limit)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer func() { _ = rows.Close() }()
 
 	var suggestions []PackageSuggestion
 	for rows.Next() {
 		var s PackageSuggestion
-		if err := rows.Scan(&s.Repository, &s.Architecture, &s.Name, &s.Description, &s.Popularity); err == nil {
-			suggestions = append(suggestions, s)
+		if err := rows.Scan(&s.Repository, &s.Architecture, &s.Name, &s.Description, &s.Popularity); err != nil {
+			return nil, err
 		}
+		suggestions = append(suggestions, s)
 	}
-	return suggestions
+	return suggestions, rows.Err()
 }
 
-func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []string {
-	pkgID := r.packageID(ctx, repo, arch, name)
-	if pkgID == 0 {
-		return nil
+func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) ([]string, error) {
+	pkgID, err := r.packageID(ctx, repo, arch, name)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
 	}
 	return r.loadFiles(ctx, pkgID)
 }
 
-func (r *Repository) loadFiles(ctx context.Context, pkgID int64) []string {
+func (r *Repository) loadFiles(ctx context.Context, pkgID int64) ([]string, error) {
 	var fileList string
-	_ = r.db.QueryRowContext(ctx,
+	err := r.db.QueryRowContext(ctx,
 		`SELECT file_list FROM files WHERE package_id = ?`, pkgID).Scan(&fileList)
-	if fileList != "" {
-		return strings.Split(fileList, "\n")
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
 	}
-	return nil
+	if err != nil {
+		return nil, err
+	}
+	if fileList != "" {
+		return strings.Split(fileList, "\n"), nil
+	}
+	return nil, nil
 }

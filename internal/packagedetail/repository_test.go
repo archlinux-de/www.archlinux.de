@@ -79,7 +79,10 @@ func TestResolve_DirectNameMatch(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
 	ctx := context.Background()
 
-	results := repo.Resolve(ctx, "x86_64", "bash", "", "")
+	results, err := repo.Resolve(ctx, "x86_64", "bash", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(results))
 	}
@@ -93,7 +96,10 @@ func TestResolve_DirectNameMultipleRepos(t *testing.T) {
 	ctx := context.Background()
 
 	// firefox exists in extra and extra-testing
-	results := repo.Resolve(ctx, "x86_64", "firefox", "", "")
+	results, err := repo.Resolve(ctx, "x86_64", "firefox", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 2 {
 		t.Fatalf("expected 2 results, got %d", len(results))
 	}
@@ -111,7 +117,10 @@ func TestResolve_ProviderNoVersion(t *testing.T) {
 	ctx := context.Background()
 
 	// python3 is provided by python (unversioned)
-	results := repo.Resolve(ctx, "x86_64", "python3", "", "")
+	results, err := repo.Resolve(ctx, "x86_64", "python3", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(results))
 	}
@@ -125,7 +134,10 @@ func TestResolve_ProviderExactVersion(t *testing.T) {
 	ctx := context.Background()
 
 	// java-environment=21 should match jdk21-openjdk
-	results := repo.Resolve(ctx, "x86_64", "java-environment", "21", "EQ")
+	results, err := repo.Resolve(ctx, "x86_64", "java-environment", "21", "EQ")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(results))
 	}
@@ -139,7 +151,10 @@ func TestResolve_ProviderGE(t *testing.T) {
 	ctx := context.Background()
 
 	// java-environment>=20 should match jdk21 (21) and jdk-openjdk (22)
-	results := repo.Resolve(ctx, "x86_64", "java-environment", "20", "GE")
+	results, err := repo.Resolve(ctx, "x86_64", "java-environment", "20", "GE")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 2 {
 		t.Fatalf("expected 2 results, got %d", len(results))
 	}
@@ -157,7 +172,10 @@ func TestResolve_ProviderLT(t *testing.T) {
 	ctx := context.Background()
 
 	// java-environment<20 should match jdk17-openjdk (17)
-	results := repo.Resolve(ctx, "x86_64", "java-environment", "20", "LT")
+	results, err := repo.Resolve(ctx, "x86_64", "java-environment", "20", "LT")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(results))
 	}
@@ -171,7 +189,10 @@ func TestResolve_ProviderVersionedRequestUnversionedProvide(t *testing.T) {
 	ctx := context.Background()
 
 	// python3>=3.10 — python provides python3 without a version, so it shouldn't match
-	results := repo.Resolve(ctx, "x86_64", "python3", "3.10", "GE")
+	results, err := repo.Resolve(ctx, "x86_64", "python3", "3.10", "GE")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 0 {
 		t.Fatalf("expected 0 results (unversioned provide can't satisfy versioned request), got %d", len(results))
 	}
@@ -181,7 +202,10 @@ func TestResolve_NotFound(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
 	ctx := context.Background()
 
-	results := repo.Resolve(ctx, "x86_64", "nonexistent", "", "")
+	results, err := repo.Resolve(ctx, "x86_64", "nonexistent", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 0 {
 		t.Fatalf("expected 0 results, got %d", len(results))
 	}
@@ -191,7 +215,10 @@ func TestResolve_WrongArch(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
 	ctx := context.Background()
 
-	results := repo.Resolve(ctx, "aarch64", "bash", "", "")
+	results, err := repo.Resolve(ctx, "aarch64", "bash", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 0 {
 		t.Fatalf("expected 0 results for wrong arch, got %d", len(results))
 	}
@@ -202,7 +229,10 @@ func TestResolve_DirectMatchSkipsProviders(t *testing.T) {
 	ctx := context.Background()
 
 	// python2 provides "python" but a direct name match for "python" should return the python package
-	results := repo.Resolve(ctx, "x86_64", "python", "", "")
+	results, err := repo.Resolve(ctx, "x86_64", "python", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(results) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(results))
 	}

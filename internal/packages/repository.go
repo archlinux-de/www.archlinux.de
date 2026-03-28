@@ -3,6 +3,7 @@ package packages
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strings"
 
 	fts "archded/internal/search"
@@ -186,14 +187,17 @@ func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSumm
 	return pkgs, rows.Err()
 }
 
-func (r *Repository) BuildDate(ctx context.Context, name, repo, arch string) *int64 {
+func (r *Repository) BuildDate(ctx context.Context, name, repo, arch string) (*int64, error) {
 	var buildDate *int64
-	_ = r.db.QueryRowContext(ctx,
+	err := r.db.QueryRowContext(ctx,
 		`SELECT p.build_date FROM package p
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE p.name = ? AND r.name = ? AND r.architecture = ?`,
 		name, repo, arch).Scan(&buildDate)
-	return buildDate
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	return buildDate, err
 }
 
 type PackageRef struct {
