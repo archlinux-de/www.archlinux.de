@@ -28,16 +28,16 @@ func setupTestDB(t *testing.T) *sql.DB {
 		`CREATE TABLE package (
 			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL,
 			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
+			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
 			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
+			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '', packager_email TEXT NOT NULL DEFAULT '',
 			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT,
+			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '', groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '',
 			UNIQUE(repository_id, name))`,
 		`CREATE TABLE news_item (
 			id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE,
 			description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '',
-			author_link TEXT, last_modified INTEGER NOT NULL)`,
+			author_link TEXT NOT NULL DEFAULT '', last_modified INTEGER NOT NULL)`,
 		`INSERT INTO repository (id, name, architecture) VALUES (1, 'core', 'x86_64')`,
 		`INSERT INTO package (id, repository_id, name, base, version, description, build_date, packager_name) VALUES
 			(1, 1, 'linux', 'linux', '6.6.7-1', 'The Linux kernel', 1700300000, 'Jan')`,
@@ -80,8 +80,8 @@ func TestIndex_EmptyDB(t *testing.T) {
 
 	for _, stmt := range []string{
 		`CREATE TABLE repository (id INTEGER PRIMARY KEY, name TEXT NOT NULL, architecture TEXT NOT NULL, testing INTEGER NOT NULL DEFAULT 0, UNIQUE(name, architecture))`,
-		`CREATE TABLE package (id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL, name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', url TEXT, build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0, installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT, popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0, popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT, UNIQUE(repository_id, name))`,
-		`CREATE TABLE news_item (id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE, description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '', author_link TEXT, last_modified INTEGER NOT NULL)`,
+		`CREATE TABLE package (id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL, name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '', build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0, installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '', packager_email TEXT NOT NULL DEFAULT '', popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0, popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '', groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '', UNIQUE(repository_id, name))`,
+		`CREATE TABLE news_item (id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE, description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '', author_link TEXT NOT NULL DEFAULT '', last_modified INTEGER NOT NULL)`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatal(err)

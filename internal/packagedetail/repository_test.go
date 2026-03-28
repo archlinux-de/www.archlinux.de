@@ -23,16 +23,18 @@ func setupTestDB(t *testing.T) *sql.DB {
 		`CREATE TABLE package (
 			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL REFERENCES repository(id),
 			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
+			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
 			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
+			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '',
+			packager_email TEXT NOT NULL DEFAULT '',
 			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT,
+			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '',
+			groups TEXT NOT NULL DEFAULT '',
 			UNIQUE(repository_id, name))`,
 		`CREATE TABLE package_relation (
 			id INTEGER PRIMARY KEY, package_id INTEGER NOT NULL REFERENCES package(id),
 			type TEXT NOT NULL, target_name TEXT NOT NULL,
-			target_version TEXT, version_constraint TEXT)`,
+			target_version TEXT NOT NULL DEFAULT '', version_constraint TEXT NOT NULL DEFAULT '')`,
 
 		// Repos
 		`INSERT INTO repository (id, name, architecture, testing) VALUES

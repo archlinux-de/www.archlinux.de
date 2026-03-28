@@ -3,7 +3,7 @@ CREATE TABLE repository (
     name TEXT NOT NULL,
     architecture TEXT NOT NULL,
     testing INTEGER NOT NULL DEFAULT 0,
-    sha256sum TEXT,
+    sha256sum TEXT NOT NULL DEFAULT '',
     UNIQUE(name, architecture)
 );
 
@@ -14,18 +14,18 @@ CREATE TABLE package (
     base TEXT NOT NULL,
     version TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
-    url TEXT,
+    url TEXT NOT NULL DEFAULT '',
     build_date INTEGER NOT NULL DEFAULT 0,
     compressed_size INTEGER NOT NULL DEFAULT 0,
     installed_size INTEGER NOT NULL DEFAULT 0,
-    packager_name TEXT,
-    packager_email TEXT,
+    packager_name TEXT NOT NULL DEFAULT '',
+    packager_email TEXT NOT NULL DEFAULT '',
     popularity_recent REAL NOT NULL DEFAULT 0,
     popularity_count INTEGER NOT NULL DEFAULT 0,
     popularity_samples INTEGER NOT NULL DEFAULT 0,
-    licenses TEXT,
-    groups TEXT,
-    provides TEXT,
+    licenses TEXT NOT NULL DEFAULT '',
+    groups TEXT NOT NULL DEFAULT '',
+    provides TEXT NOT NULL DEFAULT '',
     UNIQUE(repository_id, name)
 );
 
@@ -42,8 +42,8 @@ CREATE TABLE package_relation (
     package_id INTEGER NOT NULL REFERENCES package(id) ON DELETE CASCADE,
     type TEXT NOT NULL,
     target_name TEXT NOT NULL,
-    target_version TEXT,
-    version_constraint TEXT
+    target_version TEXT NOT NULL DEFAULT '',
+    version_constraint TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX idx_package_relation_package ON package_relation(package_id);
 CREATE INDEX idx_package_relation_target ON package_relation(target_name);
@@ -59,7 +59,7 @@ CREATE TABLE news_item (
     link TEXT NOT NULL UNIQUE,
     description TEXT NOT NULL DEFAULT '',
     author_name TEXT NOT NULL DEFAULT '',
-    author_link TEXT,
+    author_link TEXT NOT NULL DEFAULT '',
     last_modified INTEGER NOT NULL
 );
 CREATE INDEX idx_news_last_modified ON news_item(last_modified);
@@ -67,37 +67,37 @@ CREATE INDEX idx_news_last_modified ON news_item(last_modified);
 CREATE TABLE release (
     version TEXT PRIMARY KEY,
     available INTEGER NOT NULL DEFAULT 1,
-    info TEXT,
-    created INTEGER,
-    release_date INTEGER,
-    kernel_version TEXT,
-    file_name TEXT,
-    file_length INTEGER,
-    sha1_sum TEXT,
-    sha256_sum TEXT,
-    b2_sum TEXT,
-    torrent_url TEXT,
-    magnet_uri TEXT,
-    pgp_fingerprint TEXT,
-    wkd_email TEXT
+    info TEXT NOT NULL DEFAULT '',
+    created INTEGER NOT NULL DEFAULT 0,
+    release_date INTEGER NOT NULL DEFAULT 0,
+    kernel_version TEXT NOT NULL DEFAULT '',
+    file_name TEXT NOT NULL DEFAULT '',
+    file_length INTEGER NOT NULL DEFAULT 0,
+    sha1_sum TEXT NOT NULL DEFAULT '',
+    sha256_sum TEXT NOT NULL DEFAULT '',
+    b2_sum TEXT NOT NULL DEFAULT '',
+    torrent_url TEXT NOT NULL DEFAULT '',
+    magnet_uri TEXT NOT NULL DEFAULT '',
+    pgp_fingerprint TEXT NOT NULL DEFAULT '',
+    wkd_email TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX idx_release_available_date ON release(available, release_date);
 
 CREATE TABLE mirror (
     url TEXT PRIMARY KEY,
-    country_code TEXT,
-    country_name TEXT,
-    last_sync INTEGER,
-    delay INTEGER,
-    duration_avg REAL,
-    duration_stddev REAL,
-    score REAL,
-    completion_pct REAL,
+    country_code TEXT NOT NULL DEFAULT '',
+    country_name TEXT NOT NULL DEFAULT '',
+    last_sync INTEGER NOT NULL DEFAULT 0,
+    delay INTEGER NOT NULL DEFAULT 0,
+    duration_avg REAL NOT NULL DEFAULT 0,
+    duration_stddev REAL NOT NULL DEFAULT 0,
+    score REAL NOT NULL DEFAULT 0,
+    completion_pct REAL NOT NULL DEFAULT 0,
     ipv4 INTEGER NOT NULL DEFAULT 0,
     ipv6 INTEGER NOT NULL DEFAULT 0,
-    popularity_recent REAL DEFAULT 0,
-    popularity_count INTEGER DEFAULT 0,
-    popularity_samples INTEGER DEFAULT 0
+    popularity_recent REAL NOT NULL DEFAULT 0,
+    popularity_count INTEGER NOT NULL DEFAULT 0,
+    popularity_samples INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX idx_mirror_last_sync ON mirror(last_sync);
 

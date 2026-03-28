@@ -89,42 +89,39 @@ func Update(ctx context.Context, db *sql.DB) error {
 			continue
 		}
 
-		var created, releaseDate *int64
+		var created, releaseDate int64
 		if t, err := time.Parse(time.RFC3339Nano, r.Created); err == nil {
-			unix := t.Unix()
-			created = &unix
+			created = t.Unix()
 		}
 		if t, err := time.Parse("2006-01-02", r.ReleaseDate); err == nil {
-			unix := t.Unix()
-			releaseDate = &unix
+			releaseDate = t.Unix()
 		}
 
-		var fileName *string
-		var fileLength *int64
+		var fileName string
+		var fileLength int64
 		if r.Torrent != nil {
-			fileName = &r.Torrent.FileName
-			fileLength = &r.Torrent.FileLength
+			fileName = r.Torrent.FileName
+			fileLength = r.Torrent.FileLength
 		}
 
-		var torrentURL *string
+		var torrentURL string
 		if r.TorrentURL != nil && *r.TorrentURL != "" {
-			full := "https://archlinux.org" + *r.TorrentURL
-			torrentURL = &full
+			torrentURL = "https://archlinux.org" + *r.TorrentURL
 		}
 
 		info := sanitize.HTML(r.Info)
-		kernelVersion := matchOrNil(r.KernelVersion, kernelVersionRe)
-		sha1Sum := matchOrNil(r.SHA1Sum, sha1Re)
-		sha256Sum := matchOrNil(r.SHA256Sum, sha256Re)
-		b2Sum := matchOrNil(r.B2Sum, b2Re)
-		pgpFingerprint := matchOrNil(r.PGPFingerprint, pgpFingerprintRe)
-		wkdEmail := matchOrNil(r.WKDEmail, emailRe)
+		kernelVersion := matchOrEmpty(r.KernelVersion, kernelVersionRe)
+		sha1Sum := matchOrEmpty(r.SHA1Sum, sha1Re)
+		sha256Sum := matchOrEmpty(r.SHA256Sum, sha256Re)
+		b2Sum := matchOrEmpty(r.B2Sum, b2Re)
+		pgpFingerprint := matchOrEmpty(r.PGPFingerprint, pgpFingerprintRe)
+		wkdEmail := matchOrEmpty(r.WKDEmail, emailRe)
 
 		if _, err := stmt.ExecContext(ctx,
 			r.Version, r.Available, info, created, releaseDate,
 			kernelVersion, fileName, fileLength,
 			sha1Sum, sha256Sum, b2Sum,
-			torrentURL, r.MagnetURI,
+			torrentURL, derefOrEmpty(r.MagnetURI),
 			pgpFingerprint, wkdEmail,
 		); err != nil {
 			return err
@@ -145,11 +142,18 @@ func Update(ctx context.Context, db *sql.DB) error {
 	return tx.Commit()
 }
 
-func matchOrNil(s *string, re *regexp.Regexp) *string {
+func matchOrEmpty(s *string, re *regexp.Regexp) string {
 	if s != nil && re.MatchString(*s) {
-		return s
+		return *s
 	}
-	return nil
+	return ""
+}
+
+func derefOrEmpty(s *string) string {
+	if s != nil {
+		return *s
+	}
+	return ""
 }
 
 func fetchReleases(ctx context.Context) ([]relengRelease, error) {

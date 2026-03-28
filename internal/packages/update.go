@@ -134,12 +134,12 @@ func fetchRepository(ctx context.Context, db *sql.DB, mirror string, repo repoCo
 
 	newHash := sha256hex(data)
 
-	var storedHash sql.NullString
+	var storedHash string
 	_ = db.QueryRowContext(ctx,
 		`SELECT sha256sum FROM repository WHERE name = ? AND architecture = ?`,
 		repo.Name, repo.Architecture).Scan(&storedHash)
 
-	if storedHash.Valid && storedHash.String == newHash {
+	if storedHash != "" && storedHash == newHash {
 		slog.Info("repository unchanged, skipping", "repo", repo.Name)
 		return fetchedRepo{repo: repo}, nil
 	}
@@ -219,9 +219,9 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 	upsertedIDs := make(map[int64]struct{}, len(packages))
 
 	for _, pkg := range packages {
-		var pkgURL *string
+		var pkgURL string
 		if pkg.URL != "" && sanitize.IsValidURL(pkg.URL, "http", "https") {
-			pkgURL = &pkg.URL
+			pkgURL = pkg.URL
 		}
 
 		var provides []string
@@ -235,9 +235,9 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 		if err := upsertPkg.QueryRowContext(ctx,
 			repoID, pkg.Name, pkg.Base, pkg.Version, pkg.Description, pkgURL,
 			pkg.BuildDate, pkg.CompressedSize, pkg.InstalledSize,
-			pkg.PackagerName, nullString(pkg.PackagerEmail),
+			pkg.PackagerName, pkg.PackagerEmail,
 			pacmandb.LicensesJSON(pkg.Licenses), pacmandb.GroupsJSON(pkg.Groups),
-			nullString(strings.Join(provides, " ")),
+			strings.Join(provides, " "),
 		).Scan(&pkgID); err != nil {
 			return fmt.Errorf("upsert package %s: %w", pkg.Name, err)
 		}
@@ -247,7 +247,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 		for _, rel := range pkg.Relations {
 			if _, err := insertRel.ExecContext(ctx,
 				pkgID, rel.Type, rel.TargetName,
-				nullString(rel.TargetVersion), nullString(rel.VersionConstraint),
+				rel.TargetVersion, rel.VersionConstraint,
 			); err != nil {
 				return fmt.Errorf("insert relation %s->%s: %w", pkg.Name, rel.TargetName, err)
 			}
@@ -297,11 +297,4 @@ func deleteStalePackages(ctx context.Context, tx *sql.Tx, repoID int64, keepIDs 
 func sha256hex(data []byte) string {
 	h := sha256.Sum256(data)
 	return hex.EncodeToString(h[:])
-}
-
-func nullString(s string) any {
-	if s == "" {
-		return nil
-	}
-	return s
 }

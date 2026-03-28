@@ -127,7 +127,7 @@ func TestPackagesFeed_Structure(t *testing.T) {
 		`INSERT INTO package (id, repository_id, name, base, version, description, build_date, packager_name, packager_email) VALUES
 			(1, 1, 'linux', 'linux', '6.6.7-1', 'The Linux kernel', 1700300000, 'Jan Steffens', 'jan@archlinux.org'),
 			(2, 2, 'mesa', 'mesa', '24.0.0-1', 'Open source graphics', 1700400000, 'Laurent Carlier', 'lc@archlinux.org'),
-			(3, 1, 'bash', 'bash', '5.2-1', 'The GNU Bourne Again shell', 1700200000, 'Allan', NULL)`,
+			(3, 1, 'bash', 'bash', '5.2-1', 'The GNU Bourne Again shell', 1700200000, 'Allan', '')`,
 	)
 	feed := getFeed(t, mux, "/packages/feed")
 

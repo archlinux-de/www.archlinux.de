@@ -36,13 +36,13 @@ func (r *Repository) Search(ctx context.Context, search string, limit, offset in
 		countQuery = `SELECT COUNT(*) FROM news_item WHERE title LIKE ? OR description LIKE ?`
 		countArgs = []any{searchArg, searchArg}
 
-		dataQuery = `SELECT id, title, link, description, author_name, COALESCE(author_link, ''), last_modified
+		dataQuery = `SELECT id, title, link, description, author_name, author_link, last_modified
 			FROM news_item WHERE title LIKE ? OR description LIKE ?
 			ORDER BY last_modified DESC LIMIT ? OFFSET ?`
 		dataArgs = []any{searchArg, searchArg, limit, offset}
 	} else {
 		countQuery = `SELECT COUNT(*) FROM news_item`
-		dataQuery = `SELECT id, title, link, description, author_name, COALESCE(author_link, ''), last_modified
+		dataQuery = `SELECT id, title, link, description, author_name, author_link, last_modified
 			FROM news_item ORDER BY last_modified DESC LIMIT ? OFFSET ?`
 		dataArgs = []any{limit, offset}
 	}
@@ -73,7 +73,7 @@ func (r *Repository) Search(ctx context.Context, search string, limit, offset in
 func (r *Repository) FindByID(ctx context.Context, id int) (NewsItem, error) {
 	var item NewsItem
 	err := r.db.QueryRowContext(ctx,
-		`SELECT id, title, link, description, author_name, COALESCE(author_link, ''), last_modified
+		`SELECT id, title, link, description, author_name, author_link, last_modified
 		 FROM news_item WHERE id = ?`, id).Scan(
 		&item.ID, &item.Title, &item.Link, &item.Description,
 		&item.AuthorName, &item.AuthorLink, &item.LastModified,
@@ -83,7 +83,7 @@ func (r *Repository) FindByID(ctx context.Context, id int) (NewsItem, error) {
 
 func (r *Repository) Latest(ctx context.Context, limit int) ([]NewsItem, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT id, title, link, description, author_name, COALESCE(author_link, ''), last_modified
+		`SELECT id, title, link, description, author_name, author_link, last_modified
 		 FROM news_item ORDER BY last_modified DESC LIMIT ?`, limit)
 	if err != nil {
 		return nil, err

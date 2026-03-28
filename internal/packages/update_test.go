@@ -21,16 +21,18 @@ func setupSyncDB(t *testing.T) *sql.DB {
 	for _, stmt := range []string{
 		`CREATE TABLE repository (
 			id INTEGER PRIMARY KEY, name TEXT NOT NULL, architecture TEXT NOT NULL,
-			testing INTEGER NOT NULL DEFAULT 0, sha256sum TEXT,
+			testing INTEGER NOT NULL DEFAULT 0, sha256sum TEXT NOT NULL DEFAULT '',
 			UNIQUE(name, architecture))`,
 		`CREATE TABLE package (
 			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL REFERENCES repository(id),
 			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
+			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
 			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
+			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '',
+			packager_email TEXT NOT NULL DEFAULT '',
 			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT,
+			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '',
+			groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '',
 			UNIQUE(repository_id, name))`,
 		`CREATE VIRTUAL TABLE package_fts USING fts5(
 			name, base, description, groups, provides,
@@ -39,7 +41,7 @@ func setupSyncDB(t *testing.T) *sql.DB {
 			id INTEGER PRIMARY KEY,
 			package_id INTEGER NOT NULL REFERENCES package(id) ON DELETE CASCADE,
 			type TEXT NOT NULL, target_name TEXT NOT NULL,
-			target_version TEXT, version_constraint TEXT)`,
+			target_version TEXT NOT NULL DEFAULT '', version_constraint TEXT NOT NULL DEFAULT '')`,
 		`CREATE TABLE files (
 			package_id INTEGER PRIMARY KEY REFERENCES package(id) ON DELETE CASCADE,
 			file_list TEXT NOT NULL)`,

@@ -29,21 +29,24 @@ func setupTestDB(t *testing.T) *sql.DB {
 		`CREATE TABLE package (
 			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL,
 			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
+			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
 			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
+			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '', packager_email TEXT NOT NULL DEFAULT '',
 			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT,
+			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '', groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '',
 			UNIQUE(repository_id, name))`,
 		`CREATE TABLE news_item (
 			id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE,
 			description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '',
-			author_link TEXT, last_modified INTEGER NOT NULL)`,
+			author_link TEXT NOT NULL DEFAULT '', last_modified INTEGER NOT NULL)`,
 		`CREATE TABLE release (
 			version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1,
-			info TEXT, created INTEGER, release_date INTEGER, kernel_version TEXT,
-			file_name TEXT, file_length INTEGER, sha1_sum TEXT, sha256_sum TEXT,
-			b2_sum TEXT, torrent_url TEXT, magnet_uri TEXT)`,
+			info TEXT NOT NULL DEFAULT '', created INTEGER NOT NULL DEFAULT 0,
+			release_date INTEGER NOT NULL DEFAULT 0, kernel_version TEXT NOT NULL DEFAULT '',
+			file_name TEXT NOT NULL DEFAULT '', file_length INTEGER NOT NULL DEFAULT 0,
+			sha1_sum TEXT NOT NULL DEFAULT '', sha256_sum TEXT NOT NULL DEFAULT '',
+			b2_sum TEXT NOT NULL DEFAULT '', torrent_url TEXT NOT NULL DEFAULT '',
+			magnet_uri TEXT NOT NULL DEFAULT '')`,
 
 		`INSERT INTO repository (id, name, architecture) VALUES (1, 'core', 'x86_64')`,
 		`INSERT INTO package (id, repository_id, name, base, version, build_date) VALUES
@@ -104,9 +107,9 @@ func TestSitemap_EmptyDB(t *testing.T) {
 
 	for _, stmt := range []string{
 		`CREATE TABLE repository (id INTEGER PRIMARY KEY, name TEXT NOT NULL, architecture TEXT NOT NULL, testing INTEGER NOT NULL DEFAULT 0, UNIQUE(name, architecture))`,
-		`CREATE TABLE package (id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL, name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', url TEXT, build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0, installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT, popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0, popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT, UNIQUE(repository_id, name))`,
-		`CREATE TABLE news_item (id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE, description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '', author_link TEXT, last_modified INTEGER NOT NULL)`,
-		`CREATE TABLE release (version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1, info TEXT, created INTEGER, release_date INTEGER, kernel_version TEXT, file_name TEXT, file_length INTEGER, sha1_sum TEXT, sha256_sum TEXT, b2_sum TEXT, torrent_url TEXT, magnet_uri TEXT)`,
+		`CREATE TABLE package (id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL, name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '', build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0, installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '', packager_email TEXT NOT NULL DEFAULT '', popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0, popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '', groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '', UNIQUE(repository_id, name))`,
+		`CREATE TABLE news_item (id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE, description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '', author_link TEXT NOT NULL DEFAULT '', last_modified INTEGER NOT NULL)`,
+		`CREATE TABLE release (version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1, info TEXT NOT NULL DEFAULT '', created INTEGER NOT NULL DEFAULT 0, release_date INTEGER NOT NULL DEFAULT 0, kernel_version TEXT NOT NULL DEFAULT '', file_name TEXT NOT NULL DEFAULT '', file_length INTEGER NOT NULL DEFAULT 0, sha1_sum TEXT NOT NULL DEFAULT '', sha256_sum TEXT NOT NULL DEFAULT '', b2_sum TEXT NOT NULL DEFAULT '', torrent_url TEXT NOT NULL DEFAULT '', magnet_uri TEXT NOT NULL DEFAULT '')`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatal(err)

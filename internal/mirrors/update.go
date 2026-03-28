@@ -71,18 +71,17 @@ func Update(ctx context.Context, db *sql.DB) error {
 			continue
 		}
 
-		var lastSync *int64
+		var lastSync int64
 		if m.LastSync != nil {
 			if t, err := time.Parse(time.RFC3339, *m.LastSync); err == nil {
-				unix := t.Unix()
-				lastSync = &unix
+				lastSync = t.Unix()
 			}
 		}
 
 		if _, err := stmt.ExecContext(ctx,
-			m.URL, nilIfEmpty(m.CountryCode), nilIfEmpty(m.Country),
-			lastSync, m.Delay,
-			m.DurationAvg, m.DurationStddev, m.Score, m.CompletionPct,
+			m.URL, m.CountryCode, m.Country,
+			lastSync, derefOrZero(m.Delay),
+			derefOrZero(m.DurationAvg), derefOrZero(m.DurationStddev), derefOrZero(m.Score), derefOrZero(m.CompletionPct),
 			m.IPv4, m.IPv6,
 		); err != nil {
 			return err
@@ -139,9 +138,10 @@ func fetchMirrors(ctx context.Context) ([]mirrorJSON, error) {
 	return filtered, nil
 }
 
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
+func derefOrZero[T any](p *T) T {
+	if p != nil {
+		return *p
 	}
-	return &s
+	var zero T
+	return zero
 }

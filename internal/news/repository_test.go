@@ -20,11 +20,11 @@ func setupTestDB(t *testing.T) *sql.DB {
 		`CREATE TABLE news_item (
 			id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE,
 			description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '',
-			author_link TEXT, last_modified INTEGER NOT NULL)`,
+			author_link TEXT NOT NULL DEFAULT '', last_modified INTEGER NOT NULL)`,
 		`INSERT INTO news_item (id, title, link, description, author_name, author_link, last_modified) VALUES
 			(1, 'First News', 'https://example.com/1', '<p>First</p>', 'Alice', 'https://alice.example.com', 1700000000),
-			(2, 'Second News', 'https://example.com/2', '<p>Second</p>', 'Bob', NULL, 1700100000),
-			(3, 'Special: Arch Update', 'https://example.com/3', '<p>Update</p>', 'Alice', NULL, 1700200000)`,
+			(2, 'Second News', 'https://example.com/2', '<p>Second</p>', 'Bob', '', 1700100000),
+			(3, 'Special: Arch Update', 'https://example.com/3', '<p>Update</p>', 'Alice', '', 1700200000)`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatalf("setup: %v", err)
@@ -96,7 +96,7 @@ func TestSearch_EmptyDB(t *testing.T) {
 	_, _ = db.Exec(`CREATE TABLE news_item (
 		id INTEGER PRIMARY KEY, title TEXT NOT NULL, link TEXT NOT NULL UNIQUE,
 		description TEXT NOT NULL DEFAULT '', author_name TEXT NOT NULL DEFAULT '',
-		author_link TEXT, last_modified INTEGER NOT NULL)`)
+		author_link TEXT NOT NULL DEFAULT '', last_modified INTEGER NOT NULL)`)
 
 	repo := NewRepository(db)
 	items, total, err := repo.Search(context.Background(), "", 10, 0)
@@ -130,14 +130,14 @@ func TestFindByID_NotFound(t *testing.T) {
 	}
 }
 
-func TestFindByID_NullAuthorLink(t *testing.T) {
+func TestFindByID_EmptyAuthorLink(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
 	item, err := repo.FindByID(context.Background(), 2)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if item.AuthorLink != "" {
-		t.Errorf("expected empty author link for NULL, got %q", item.AuthorLink)
+		t.Errorf("expected empty author link, got %q", item.AuthorLink)
 	}
 }
 

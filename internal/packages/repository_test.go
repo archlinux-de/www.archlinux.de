@@ -23,11 +23,13 @@ func setupTestDB(t *testing.T) *sql.DB {
 		`CREATE TABLE package (
 			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL REFERENCES repository(id),
 			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
+			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
 			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
+			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '',
+			packager_email TEXT NOT NULL DEFAULT '',
 			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT,
+			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '',
+			groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '',
 			UNIQUE(repository_id, name))`,
 		`CREATE VIRTUAL TABLE package_fts USING fts5(
 			name, base, description, groups, provides,
@@ -50,7 +52,7 @@ func setupTestDB(t *testing.T) *sql.DB {
 
 		// Populate FTS
 		`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
-			SELECT id, name, base, description, COALESCE(groups, ''), COALESCE(provides, '') FROM package`,
+			SELECT id, name, base, description, groups, provides FROM package`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatalf("setup: %s...: %v", stmt[:40], err)

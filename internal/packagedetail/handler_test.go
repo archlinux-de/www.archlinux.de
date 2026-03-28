@@ -33,11 +33,13 @@ func setupHandlerDB(t *testing.T) *sql.DB {
 		`CREATE TABLE package (
 			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL REFERENCES repository(id),
 			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT,
+			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
 			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT, packager_email TEXT,
+			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '',
+			packager_email TEXT NOT NULL DEFAULT '',
 			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT, groups TEXT, provides TEXT,
+			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '',
+			groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '',
 			UNIQUE(repository_id, name))`,
 		`CREATE VIRTUAL TABLE package_fts USING fts5(
 			name, base, description, groups, provides,
@@ -45,7 +47,7 @@ func setupHandlerDB(t *testing.T) *sql.DB {
 		`CREATE TABLE package_relation (
 			id INTEGER PRIMARY KEY, package_id INTEGER NOT NULL REFERENCES package(id),
 			type TEXT NOT NULL, target_name TEXT NOT NULL,
-			target_version TEXT, version_constraint TEXT)`,
+			target_version TEXT NOT NULL DEFAULT '', version_constraint TEXT NOT NULL DEFAULT '')`,
 		`CREATE INDEX idx_package_relation_target ON package_relation(target_name)`,
 		`CREATE TABLE files (package_id INTEGER PRIMARY KEY REFERENCES package(id), file_list TEXT NOT NULL)`,
 
@@ -57,7 +59,7 @@ func setupHandlerDB(t *testing.T) *sql.DB {
 		`INSERT INTO package (id, repository_id, name, base, version, description, build_date, popularity_recent, licenses) VALUES
 			(1, 1, 'bash', 'bash', '5.2-1', 'GNU Bourne Again shell', 1700100000, 40.0, '["GPL"]'),
 			(2, 2, 'firefox', 'firefox', '125.0-1', 'Web browser', 1700200000, 30.0, '["MPL-2.0"]'),
-			(3, 3, 'bash', 'bash', '5.3-rc1', 'GNU Bourne Again shell (testing)', 1700300000, 0.0, NULL)`,
+			(3, 3, 'bash', 'bash', '5.3-rc1', 'GNU Bourne Again shell (testing)', 1700300000, 0.0, '')`,
 		`INSERT INTO package_relation (package_id, type, target_name) VALUES
 			(1, 'depends', 'glibc'),
 			(2, 'depends', 'glibc'),
@@ -68,7 +70,7 @@ usr/share/bash/bash_completion')`,
 
 		// Populate FTS
 		`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
-			SELECT id, name, base, description, COALESCE(groups, ''), COALESCE(provides, '') FROM package`,
+			SELECT id, name, base, description, groups, provides FROM package`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatalf("setup: %v", err)

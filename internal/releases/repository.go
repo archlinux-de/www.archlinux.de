@@ -41,12 +41,12 @@ func (r *Repository) Search(ctx context.Context, search string, limit, offset in
 		countQuery = `SELECT COUNT(*) FROM release` + where
 		countArgs = []any{searchArg, searchArg, searchArg}
 
-		dataQuery = `SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''), COALESCE(file_length, 0), COALESCE(file_name, '')
+		dataQuery = `SELECT version, available, info, release_date, kernel_version, file_length, file_name
 			FROM release` + where + ` ORDER BY release_date DESC LIMIT ? OFFSET ?`
 		dataArgs = []any{searchArg, searchArg, searchArg, limit, offset}
 	} else {
 		countQuery = `SELECT COUNT(*) FROM release`
-		dataQuery = `SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''), COALESCE(file_length, 0), COALESCE(file_name, '')
+		dataQuery = `SELECT version, available, info, release_date, kernel_version, file_length, file_name
 			FROM release ORDER BY release_date DESC LIMIT ? OFFSET ?`
 		dataArgs = []any{limit, offset}
 	}
@@ -77,10 +77,10 @@ func (r *Repository) Search(ctx context.Context, search string, limit, offset in
 func (r *Repository) FindByVersion(ctx context.Context, version string) (Release, error) {
 	var rel Release
 	err := r.db.QueryRowContext(ctx,
-		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''),
-		        COALESCE(file_length, 0), COALESCE(file_name, ''), COALESCE(sha1_sum, ''), COALESCE(sha256_sum, ''),
-		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, ''),
-		        COALESCE(pgp_fingerprint, ''), COALESCE(wkd_email, '')
+		`SELECT version, available, info, release_date, kernel_version,
+		        file_length, file_name, sha1_sum, sha256_sum,
+		        b2_sum, torrent_url, magnet_uri,
+		        pgp_fingerprint, wkd_email
 		 FROM release WHERE version = ?`, version).Scan(
 		&rel.Version, &rel.Available, &rel.Info, &rel.ReleaseDate, &rel.KernelVersion,
 		&rel.FileLength, &rel.FileName, &rel.SHA1Sum, &rel.SHA256Sum,
@@ -93,10 +93,10 @@ func (r *Repository) FindByVersion(ctx context.Context, version string) (Release
 func (r *Repository) LatestAvailable(ctx context.Context) (Release, error) {
 	var rel Release
 	err := r.db.QueryRowContext(ctx,
-		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''),
-		        COALESCE(file_length, 0), COALESCE(file_name, ''), COALESCE(sha1_sum, ''), COALESCE(sha256_sum, ''),
-		        COALESCE(b2_sum, ''), COALESCE(torrent_url, ''), COALESCE(magnet_uri, ''),
-		        COALESCE(pgp_fingerprint, ''), COALESCE(wkd_email, '')
+		`SELECT version, available, info, release_date, kernel_version,
+		        file_length, file_name, sha1_sum, sha256_sum,
+		        b2_sum, torrent_url, magnet_uri,
+		        pgp_fingerprint, wkd_email
 		 FROM release WHERE available = 1 ORDER BY release_date DESC LIMIT 1`).Scan(
 		&rel.Version, &rel.Available, &rel.Info, &rel.ReleaseDate, &rel.KernelVersion,
 		&rel.FileLength, &rel.FileName, &rel.SHA1Sum, &rel.SHA256Sum,
@@ -108,8 +108,8 @@ func (r *Repository) LatestAvailable(ctx context.Context) (Release, error) {
 
 func (r *Repository) AllAvailable(ctx context.Context) ([]Release, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT version, available, COALESCE(info, ''), COALESCE(release_date, 0), COALESCE(kernel_version, ''),
-		        COALESCE(file_length, 0), COALESCE(file_name, '')
+		`SELECT version, available, info, release_date, kernel_version,
+		        file_length, file_name
 		 FROM release WHERE available = 1 ORDER BY release_date DESC`)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func (r *Repository) AllAvailable(ctx context.Context) ([]Release, error) {
 
 type ReleaseAvailability struct {
 	Available bool
-	Created   *int64
+	Created   int64
 }
 
 func (r *Repository) Availability(ctx context.Context, version string) (ReleaseAvailability, error) {
@@ -145,7 +145,7 @@ type ReleaseRef struct {
 }
 
 func (r *Repository) AllRefs(ctx context.Context) ([]ReleaseRef, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT version, COALESCE(created, 0) FROM release`)
+	rows, err := r.db.QueryContext(ctx, `SELECT version, created FROM release`)
 	if err != nil {
 		return nil, err
 	}

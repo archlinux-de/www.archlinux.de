@@ -59,15 +59,15 @@ func NewRepository(db *sql.DB) *Repository {
 
 func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name string) (PackageDetail, error) {
 	var pkg PackageDetail
-	var licensesJSON, groupsJSON sql.NullString
+	var licensesJSON, groupsJSON string
 	var testing int
 
 	var pkgID int64
 	err := r.db.QueryRowContext(ctx,
-		`SELECT p.id, p.name, p.base, p.version, p.description, COALESCE(p.url, ''),
+		`SELECT p.id, p.name, p.base, p.version, p.description, p.url,
 			r.name, r.architecture, r.testing,
 			p.build_date, p.compressed_size, p.installed_size,
-			COALESCE(p.packager_name, ''), COALESCE(p.packager_email, ''),
+			p.packager_name, p.packager_email,
 			p.popularity_recent, p.popularity_count, p.popularity_samples,
 			p.licenses, p.groups
 		FROM package p
@@ -88,11 +88,11 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 	}
 
 	pkg.Testing = testing != 0
-	if licensesJSON.Valid {
-		_ = json.Unmarshal([]byte(licensesJSON.String), &pkg.Licenses)
+	if licensesJSON != "" {
+		_ = json.Unmarshal([]byte(licensesJSON), &pkg.Licenses)
 	}
-	if groupsJSON.Valid {
-		_ = json.Unmarshal([]byte(groupsJSON.String), &pkg.Groups)
+	if groupsJSON != "" {
+		_ = json.Unmarshal([]byte(groupsJSON), &pkg.Groups)
 	}
 
 	pkg.Relations = r.loadRelations(ctx, pkgID)
@@ -112,7 +112,7 @@ func (r *Repository) packageID(ctx context.Context, repo, arch, name string) int
 func (r *Repository) loadRelations(ctx context.Context, pkgID int64) map[string][]Relation {
 	rels := make(map[string][]Relation)
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT type, target_name, COALESCE(target_version, ''), COALESCE(version_constraint, '')
+		`SELECT type, target_name, target_version, version_constraint
 		 FROM package_relation WHERE package_id = ? ORDER BY type, target_name`, pkgID)
 	if err != nil {
 		return rels
@@ -180,7 +180,7 @@ func (r *Repository) Resolve(ctx context.Context, arch, name, version, constrain
 	}
 
 	// 2. Provider fallback — fetch all providers, filter by version in Go
-	query := `SELECT DISTINCT p.name, r.name, r.architecture, p.description, p.popularity_recent, COALESCE(pr.target_version, '') FROM package_relation pr
+	query := `SELECT DISTINCT p.name, r.name, r.architecture, p.description, p.popularity_recent, pr.target_version FROM package_relation pr
 		 JOIN package p ON p.id = pr.package_id
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE pr.type = 'provides' AND pr.target_name = ? AND r.architecture = ?
@@ -288,11 +288,11 @@ func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []s
 }
 
 func (r *Repository) loadFiles(ctx context.Context, pkgID int64) []string {
-	var fileList sql.NullString
+	var fileList string
 	_ = r.db.QueryRowContext(ctx,
 		`SELECT file_list FROM files WHERE package_id = ?`, pkgID).Scan(&fileList)
-	if fileList.Valid && fileList.String != "" {
-		return strings.Split(fileList.String, "\n")
+	if fileList != "" {
+		return strings.Split(fileList, "\n")
 	}
 	return nil
 }

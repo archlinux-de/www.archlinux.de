@@ -28,7 +28,7 @@ func (r *Repository) Search(ctx context.Context, search string, limit, offset in
 	var countQuery, dataQuery string
 	var countArgs, dataArgs []any
 
-	baseSelect := `SELECT url, COALESCE(country_name, ''), COALESCE(duration_avg, 0), COALESCE(delay, 0), COALESCE(last_sync, 0), ipv4, ipv6 FROM mirror`
+	baseSelect := `SELECT url, country_name, duration_avg, delay, last_sync, ipv4, ipv6 FROM mirror`
 
 	if search != "" {
 		searchArg := "%" + search + "%"

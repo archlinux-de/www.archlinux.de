@@ -139,7 +139,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 func (r *Repository) Latest(ctx context.Context, limit int) ([]PackageSummary, error) {
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT p.name, p.version, p.description, p.build_date,
-		        COALESCE(p.packager_name, ''), COALESCE(p.packager_email, ''),
+		        p.packager_name, p.packager_email,
 		        r.name, r.architecture
 		 FROM package p
 		 JOIN repository r ON r.id = p.repository_id
@@ -163,7 +163,7 @@ func (r *Repository) Latest(ctx context.Context, limit int) ([]PackageSummary, e
 func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSummary, error) {
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT p.name, p.version, p.description, p.build_date,
-		        COALESCE(p.packager_name, ''), r.name, r.architecture
+		        p.packager_name, r.name, r.architecture
 		 FROM package p
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE r.testing = 0
