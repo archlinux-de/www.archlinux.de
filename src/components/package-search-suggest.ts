@@ -1,75 +1,82 @@
-const DEBOUNCE_MS = 200;
-const MIN_QUERY_LENGTH = 2;
+if (matchMedia("(pointer: coarse)").matches) {
+    // datalist is broken on mobile browsers — skip suggestions
+} else {
+    const DEBOUNCE_MS = 200;
+    const MIN_QUERY_LENGTH = 2;
 
-const input = document.querySelector<HTMLInputElement>(
-    'input[list="package-suggestions"]',
-);
-const datalist = document.getElementById("package-suggestions");
+    const input = document.querySelector<HTMLInputElement>("[data-suggest]");
 
-if (input && datalist) {
-    let controller: AbortController | null = null;
-    let timer: ReturnType<typeof setTimeout>;
-    let previousValue = input.value;
+    if (input) {
+        const datalist = document.createElement("datalist");
+        datalist.id = "package-suggestions";
+        input.after(datalist);
+        input.setAttribute("list", "package-suggestions");
 
-    const isSuggestion = (query: string): boolean =>
-        datalist.querySelector(`option[value="${CSS.escape(query)}"]`) !== null;
+        let controller: AbortController | null = null;
+        let timer: ReturnType<typeof setTimeout>;
+        let previousValue = input.value;
 
-    const isSelection = (query: string): boolean => {
-        const lengthDiff = query.length - previousValue.length;
-        return lengthDiff > 1 && isSuggestion(query);
-    };
+        const isSuggestion = (query: string): boolean =>
+            datalist.querySelector(`option[value="${CSS.escape(query)}"]`) !==
+            null;
 
-    const fetchSuggestions = async (
-        query: string,
-        signal: AbortSignal,
-    ): Promise<string[]> => {
-        const res = await fetch(
-            `/packages/suggest?term=${encodeURIComponent(query)}`,
-            { signal },
-        );
-        return res.json();
-    };
+        const isSelection = (query: string): boolean => {
+            const lengthDiff = query.length - previousValue.length;
+            return lengthDiff > 1 && isSuggestion(query);
+        };
 
-    const updateDatalist = (names: string[]): void => {
-        datalist.replaceChildren(
-            ...names.map((name) => {
-                const option = document.createElement("option");
-                option.value = name;
-                return option;
-            }),
-        );
-    };
+        const fetchSuggestions = async (
+            query: string,
+            signal: AbortSignal,
+        ): Promise<string[]> => {
+            const res = await fetch(
+                `/packages/suggest?term=${encodeURIComponent(query)}`,
+                { signal },
+            );
+            return res.json();
+        };
 
-    input.addEventListener("input", () => {
-        clearTimeout(timer);
-        const query = input.value.trim();
+        const updateDatalist = (names: string[]): void => {
+            datalist.replaceChildren(
+                ...names.map((name) => {
+                    const option = document.createElement("option");
+                    option.value = name;
+                    return option;
+                }),
+            );
+        };
 
-        if (isSelection(query)) {
-            input.form?.submit();
-            return;
-        }
+        input.addEventListener("input", () => {
+            clearTimeout(timer);
+            const query = input.value.trim();
 
-        previousValue = query;
-
-        if (query.length < MIN_QUERY_LENGTH) {
-            updateDatalist([]);
-            return;
-        }
-
-        timer = setTimeout(async () => {
-            controller?.abort();
-            controller = new AbortController();
-
-            try {
-                updateDatalist(
-                    await fetchSuggestions(query, controller.signal),
-                );
-            } catch (e) {
-                if (e instanceof DOMException && e.name === "AbortError") {
-                    return;
-                }
-                throw e;
+            if (isSelection(query)) {
+                input.form?.submit();
+                return;
             }
-        }, DEBOUNCE_MS);
-    });
+
+            previousValue = query;
+
+            if (query.length < MIN_QUERY_LENGTH) {
+                updateDatalist([]);
+                return;
+            }
+
+            timer = setTimeout(async () => {
+                controller?.abort();
+                controller = new AbortController();
+
+                try {
+                    updateDatalist(
+                        await fetchSuggestions(query, controller.signal),
+                    );
+                } catch (e) {
+                    if (e instanceof DOMException && e.name === "AbortError") {
+                        return;
+                    }
+                    throw e;
+                }
+            }, DEBOUNCE_MS);
+        });
+    }
 }
