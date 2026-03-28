@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -57,6 +58,9 @@ func Update(ctx context.Context, db *sql.DB) error {
 	releases, err := fetchReleases(ctx)
 	if err != nil {
 		return fmt.Errorf("fetch releases: %w", err)
+	}
+	if len(releases) == 0 {
+		return errors.New("fetch releases: empty response, aborting to prevent data loss")
 	}
 
 	slog.Info("fetched releases", "count", len(releases))

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -40,6 +41,9 @@ func Update(ctx context.Context, db *sql.DB) error {
 	mirrors, err := fetchMirrors(ctx)
 	if err != nil {
 		return fmt.Errorf("fetch mirrors: %w", err)
+	}
+	if len(mirrors) == 0 {
+		return errors.New("fetch mirrors: empty response, aborting to prevent data loss")
 	}
 
 	slog.Info("fetched mirrors", "count", len(mirrors))
