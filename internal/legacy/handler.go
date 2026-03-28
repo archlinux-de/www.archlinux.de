@@ -23,6 +23,8 @@ type legacyRoute struct {
 
 var legacyRoutes = []legacyRoute{
 	{regexp.MustCompile(`^/img/(archicon|archlogo)(?:\.[a-f0-9]+)?\.svg$`), "/static/{1}.svg"},
+	{regexp.MustCompile(`^/packages/community-testing/(.+)$`), "/packages/extra-testing/{1}"},
+	{regexp.MustCompile(`^/packages/community/(.+)$`), "/packages/extra/{1}"},
 	{regexp.MustCompile(`^/statistics$`), "https://pkgstats.archlinux.de/"},
 	{regexp.MustCompile(`^/statistics/(.+)$`), "https://pkgstats.archlinux.de/{1}"},
 	{regexp.MustCompile(`^/js/`), ""},

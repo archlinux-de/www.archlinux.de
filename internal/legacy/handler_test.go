@@ -211,6 +211,8 @@ func TestLegacyMiddleware(t *testing.T) {
 		{"api packages", "/api/packages", http.StatusGone, ""},
 		{"api news", "/api/news/1", http.StatusGone, ""},
 		{"api package detail", "/api/packages/extra/x86_64/linux", http.StatusGone, ""},
+		{"community package", "/packages/community/x86_64/remmina", http.StatusMovedPermanently, "/packages/extra/x86_64/remmina"},
+		{"community-testing package", "/packages/community-testing/x86_64/remmina", http.StatusMovedPermanently, "/packages/extra-testing/x86_64/remmina"},
 		{"unrelated path passes through", "/packages", http.StatusOK, ""},
 	}
 
