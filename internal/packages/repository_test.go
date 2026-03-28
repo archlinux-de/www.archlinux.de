@@ -5,38 +5,18 @@ import (
 	"database/sql"
 	"testing"
 
-	_ "modernc.org/sqlite"
+	"archded/internal/database"
 )
 
 func setupTestDB(t *testing.T) *sql.DB {
 	t.Helper()
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := database.New(":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = db.Close() })
 
 	for _, stmt := range []string{
-		`CREATE TABLE repository (
-			id INTEGER PRIMARY KEY, name TEXT NOT NULL, architecture TEXT NOT NULL,
-			testing INTEGER NOT NULL DEFAULT 0, UNIQUE(name, architecture))`,
-		`CREATE TABLE package (
-			id INTEGER PRIMARY KEY, repository_id INTEGER NOT NULL REFERENCES repository(id),
-			name TEXT NOT NULL, base TEXT NOT NULL, version TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
-			build_date INTEGER NOT NULL DEFAULT 0, compressed_size INTEGER NOT NULL DEFAULT 0,
-			installed_size INTEGER NOT NULL DEFAULT 0, packager_name TEXT NOT NULL DEFAULT '',
-			packager_email TEXT NOT NULL DEFAULT '',
-			popularity_recent REAL NOT NULL DEFAULT 0, popularity_count INTEGER NOT NULL DEFAULT 0,
-			popularity_samples INTEGER NOT NULL DEFAULT 0, licenses TEXT NOT NULL DEFAULT '',
-			groups TEXT NOT NULL DEFAULT '', provides TEXT NOT NULL DEFAULT '',
-			UNIQUE(repository_id, name))`,
-		`CREATE VIRTUAL TABLE package_fts USING fts5(
-			name, base, description, groups, provides,
-			content='package', content_rowid='id')`,
-		`CREATE INDEX idx_package_name ON package(name)`,
-		`CREATE INDEX idx_package_build_date ON package(build_date)`,
-
 		// Repos
 		`INSERT INTO repository (id, name, architecture, testing) VALUES
 			(1, 'core', 'x86_64', 0),

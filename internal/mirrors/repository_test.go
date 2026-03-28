@@ -5,25 +5,18 @@ import (
 	"database/sql"
 	"testing"
 
-	_ "modernc.org/sqlite"
+	"archded/internal/database"
 )
 
 func setupTestDB(t *testing.T) *sql.DB {
 	t.Helper()
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := database.New(":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = db.Close() })
 
 	for _, stmt := range []string{
-		`CREATE TABLE mirror (
-			url TEXT PRIMARY KEY, country_code TEXT NOT NULL DEFAULT '',
-			country_name TEXT NOT NULL DEFAULT '', last_sync INTEGER NOT NULL DEFAULT 0,
-			delay INTEGER NOT NULL DEFAULT 0, duration_avg REAL NOT NULL DEFAULT 0,
-			duration_stddev REAL NOT NULL DEFAULT 0, score REAL NOT NULL DEFAULT 0,
-			completion_pct REAL NOT NULL DEFAULT 0, ipv4 INTEGER NOT NULL DEFAULT 0,
-			ipv6 INTEGER NOT NULL DEFAULT 0)`,
 		`INSERT INTO mirror (url, country_code, country_name, last_sync, delay, duration_avg, score, ipv4, ipv6) VALUES
 			('https://mirror.de/archlinux/', 'DE', 'Germany', 1700000000, 100, 0.5, 1.0, 1, 1),
 			('https://mirror.us/archlinux/', 'US', 'United States', 1700000000, 200, 1.0, 2.0, 1, 0),

@@ -7,31 +7,20 @@ import (
 	"strings"
 	"testing"
 
+	"archded/internal/database"
 	"archded/internal/releases"
 	"archded/internal/ui/layout"
-
-	_ "modernc.org/sqlite"
 )
 
 func setupTestDB(t *testing.T) *sql.DB {
 	t.Helper()
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := database.New(":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = db.Close() })
 
 	for _, stmt := range []string{
-		`CREATE TABLE release (
-			version TEXT PRIMARY KEY, available INTEGER NOT NULL DEFAULT 1,
-			info TEXT NOT NULL DEFAULT '', created INTEGER NOT NULL DEFAULT 0,
-			release_date INTEGER NOT NULL DEFAULT 0, kernel_version TEXT NOT NULL DEFAULT '',
-			file_name TEXT NOT NULL DEFAULT '', file_length INTEGER NOT NULL DEFAULT 0,
-			sha1_sum TEXT NOT NULL DEFAULT '', sha256_sum TEXT NOT NULL DEFAULT '',
-			b2_sum TEXT NOT NULL DEFAULT '', torrent_url TEXT NOT NULL DEFAULT '',
-			magnet_uri TEXT NOT NULL DEFAULT '', pgp_fingerprint TEXT NOT NULL DEFAULT '',
-			wkd_email TEXT NOT NULL DEFAULT '')`,
-
 		`INSERT INTO release (version, available, info, release_date, kernel_version, file_name, file_length, created) VALUES
 			('2024.01.01', 1, 'January release', 1704067200, '6.6.7', 'archlinux-2024.01.01-x86_64.iso', 900000000, 1704067200),
 			('2023.06.01', 0, 'June release', 1685577600, '6.3.9', 'archlinux-2023.06.01-x86_64.iso', 800000000, 1685577600),
