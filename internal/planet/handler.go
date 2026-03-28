@@ -93,7 +93,7 @@ type planetAtomEntry struct {
 func (h *Handler) atomFeed(w http.ResponseWriter, r *http.Request) {
 	items, err := h.repo.LatestItems(r.Context(), planetFeedItems)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		layout.ServerError(w, "planet atom feed", err)
 		return
 	}
 
@@ -202,7 +202,7 @@ type planetRSSSource struct {
 func (h *Handler) rssFeed(w http.ResponseWriter, r *http.Request) {
 	items, err := h.repo.LatestItems(r.Context(), planetFeedItems)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		layout.ServerError(w, "planet rss feed", err)
 		return
 	}
 

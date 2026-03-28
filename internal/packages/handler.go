@@ -47,7 +47,7 @@ func (h *Handler) suggest(w http.ResponseWriter, r *http.Request) {
 
 	names, err := h.repo.Suggest(r.Context(), term, suggestLimit)
 	if err != nil {
-		http.Error(w, "suggest failed", http.StatusInternalServerError)
+		layout.ServerError(w, "suggest packages", err)
 		return
 	}
 	if names == nil {

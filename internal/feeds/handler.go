@@ -89,7 +89,7 @@ func formatTime(unix int64) string {
 func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 	items, err := h.news.Latest(r.Context(), feedItems)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		layout.ServerError(w, "news feed", err)
 		return
 	}
 
@@ -135,7 +135,7 @@ func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
 	pkgs, err := h.packages.Latest(r.Context(), feedItems)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		layout.ServerError(w, "packages feed", err)
 		return
 	}
 
@@ -184,7 +184,7 @@ func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) releasesFeed(w http.ResponseWriter, r *http.Request) {
 	rels, err := h.releases.AllAvailable(r.Context())
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		layout.ServerError(w, "releases feed", err)
 		return
 	}
 
