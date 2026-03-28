@@ -3,6 +3,7 @@ package legacy
 import (
 	"net/http"
 	"net/url"
+	"path"
 	"regexp"
 	"strings"
 )
@@ -125,7 +126,8 @@ func resolveTarget(page string, values url.Values) string {
 	switch page {
 	case "GetFileFromMirror":
 		file := values.Get("file")
-		if file != "" && !strings.Contains(file, "..") {
+		clean := path.Clean(file)
+		if clean != "" && clean == file && !strings.HasPrefix(clean, "/") && !strings.HasPrefix(clean, "..") {
 			return "/download/" + file
 		}
 		return "/download"

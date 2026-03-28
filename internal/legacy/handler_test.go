@@ -145,6 +145,24 @@ func TestHandleLegacyQuery_GetFileFromMirror(t *testing.T) {
 	}
 }
 
+func TestHandleLegacyQuery_GetFileFromMirrorTraversal(t *testing.T) {
+	for _, file := range []string{
+		"../../etc/passwd",
+		"//evil.com/file",
+		"/etc/passwd",
+		"foo/../../../etc/passwd",
+	} {
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/?page=GetFileFromMirror&file="+file, nil)
+		if !HandleLegacyQuery(rr, req) {
+			t.Fatalf("file=%q: expected true", file)
+		}
+		if loc := rr.Header().Get("Location"); loc != "/download" {
+			t.Errorf("file=%q: expected /download, got %q", file, loc)
+		}
+	}
+}
+
 func TestHandleLegacyQuery_GetFileFromMirrorNoFile(t *testing.T) {
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/?page=GetFileFromMirror", nil)
