@@ -36,7 +36,7 @@ func URL(raw string) string {
 	if err != nil || !allowedSchemes[u.Scheme] {
 		return "#"
 	}
-	return raw
+	return u.String()
 }
 
 func IsValidURL(raw string, schemes ...string) bool {

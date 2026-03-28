@@ -44,7 +44,7 @@ func TestURL(t *testing.T) {
 		{"data uri", "data:text/html,<script>alert(1)</script>", "#"},
 		{"ftp", "ftp://example.com/file", "#"},
 		{"empty", "", "#"},
-		{"whitespace", "  https://example.com  ", "  https://example.com  "},
+		{"whitespace", "  https://example.com  ", "https://example.com"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
