@@ -25,6 +25,7 @@ func FormatSize(b int64) string {
 	}
 }
 
+// FormatFileSize formats a byte count using binary units (1024-based) with German decimal separator.
 func FormatFileSize(bytes int64) string {
 	if bytes <= 0 {
 		return ""
