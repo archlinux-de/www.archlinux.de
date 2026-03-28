@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"archded/internal/search"
 	"archded/internal/vercmp"
 )
 
@@ -241,7 +242,7 @@ type PackageSuggestion struct {
 }
 
 func (r *Repository) Suggest(ctx context.Context, name string, limit int) []PackageSuggestion {
-	ftsSearch := ftsQuery(name)
+	ftsSearch := search.FTSQuery(name)
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT r.name, r.architecture, p.name, p.description, p.popularity_recent
 		 FROM package p
@@ -263,25 +264,6 @@ func (r *Repository) Suggest(ctx context.Context, name string, limit int) []Pack
 		}
 	}
 	return suggestions
-}
-
-func ftsQuery(search string) string {
-	search = strings.ReplaceAll(search, `"`, `""`)
-	terms := strings.Fields(strings.ReplaceAll(search, "-", " "))
-	if len(terms) == 0 {
-		return `""`
-	}
-	var b strings.Builder
-	for i, t := range terms {
-		if i > 0 {
-			b.WriteByte(' ')
-		}
-		b.WriteByte('"')
-		b.WriteString(t)
-		b.WriteByte('"')
-	}
-	b.WriteByte('*')
-	return b.String()
 }
 
 func (r *Repository) LoadFiles(ctx context.Context, repo, arch, name string) []string {

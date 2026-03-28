@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+
+	fts "archded/internal/search"
 )
 
 type PackageSummary struct {
@@ -69,7 +71,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 	var countArgs, dataArgs []any
 
 	if search != "" {
-		ftsSearch := ftsQuery(search)
+		ftsSearch := fts.FTSQuery(search)
 		baseWhere := `FROM package p
 			JOIN package_fts fts ON fts.rowid = p.id
 			JOIN repository r ON r.id = p.repository_id
@@ -255,25 +257,4 @@ func likePrefixQuery(term string) string {
 	term = strings.ReplaceAll(term, `%`, `\%`)
 	term = strings.ReplaceAll(term, `_`, `\_`)
 	return term + "%"
-}
-
-// ftsQuery builds an FTS5 MATCH expression from a user search string.
-// Splits on hyphens, quotes each term, and adds a prefix wildcard to the last term.
-func ftsQuery(search string) string {
-	search = strings.ReplaceAll(search, `"`, `""`)
-	terms := strings.Fields(strings.ReplaceAll(search, "-", " "))
-	if len(terms) == 0 {
-		return `""`
-	}
-	var b strings.Builder
-	for i, t := range terms {
-		if i > 0 {
-			b.WriteByte(' ')
-		}
-		b.WriteByte('"')
-		b.WriteString(t)
-		b.WriteByte('"')
-	}
-	b.WriteByte('*')
-	return b.String()
 }

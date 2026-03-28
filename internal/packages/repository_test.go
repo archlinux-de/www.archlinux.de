@@ -287,21 +287,3 @@ func TestLikePrefixQuery(t *testing.T) {
 		}
 	}
 }
-
-func TestFtsQuery(t *testing.T) {
-	tests := []struct {
-		input, want string
-	}{
-		{"linux", `"linux"*`},
-		{"lib-json", `"lib" "json"*`},
-		{`pkg"name`, `"pkg""name"*`},
-		{"", `""`},
-		{"  ", `""`},
-	}
-	for _, tt := range tests {
-		got := ftsQuery(tt.input)
-		if got != tt.want {
-			t.Errorf("ftsQuery(%q) = %q, want %q", tt.input, got, tt.want)
-		}
-	}
-}
