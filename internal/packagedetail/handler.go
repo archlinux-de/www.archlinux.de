@@ -1,6 +1,7 @@
 package packagedetail
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -116,6 +117,9 @@ const suggestLimit = 5
 func (h *Handler) notFound(w http.ResponseWriter, r *http.Request, name string) {
 	suggestions, err := h.repo.Suggest(r.Context(), name, suggestLimit)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return
+		}
 		slog.Error("suggest packages", "error", err)
 	}
 

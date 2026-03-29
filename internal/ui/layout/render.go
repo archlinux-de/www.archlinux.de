@@ -1,6 +1,8 @@
 package layout
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -22,11 +24,16 @@ func Render(w http.ResponseWriter, r *http.Request, page Page, content templ.Com
 	}
 
 	if err := Base(page, content).Render(r.Context(), w); err != nil {
-		slog.Error("failed to render page", "error", err)
+		if !errors.Is(err, context.Canceled) {
+			slog.Error("failed to render page", "error", err)
+		}
 	}
 }
 
 func ServerError(w http.ResponseWriter, msg string, err error) {
+	if errors.Is(err, context.Canceled) {
+		return
+	}
 	slog.Error(msg, "error", err)
 	http.Error(w, "internal server error", http.StatusInternalServerError)
 }

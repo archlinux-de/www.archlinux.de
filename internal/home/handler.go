@@ -1,6 +1,8 @@
 package home
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 
@@ -36,11 +38,17 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 	latestNews, err := h.newsRepo.Latest(r.Context(), latestNewsCount)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return
+		}
 		slog.Error("failed to fetch latest news", "error", err)
 	}
 
 	recentPkgs, err := h.pkgRepo.LatestStable(r.Context(), recentPackagesCount)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return
+		}
 		slog.Error("failed to fetch recent packages", "error", err)
 	}
 
