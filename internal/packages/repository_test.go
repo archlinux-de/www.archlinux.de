@@ -78,6 +78,22 @@ func TestSearch_NoFilter(t *testing.T) {
 	}
 }
 
+func TestSearch_TestingFlag(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	pkgs, _, err := repo.Search(context.Background(), "", "", "", 10, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range pkgs {
+		if p.Repository == "core-testing" && !p.Testing {
+			t.Errorf("package %q in core-testing should have Testing=true", p.Name)
+		}
+		if p.Repository != "core-testing" && p.Testing {
+			t.Errorf("package %q in %s should have Testing=false", p.Name, p.Repository)
+		}
+	}
+}
+
 func TestSearch_ByRepo(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
 	pkgs, total, err := repo.Search(context.Background(), "", "core", "", 10, 0)

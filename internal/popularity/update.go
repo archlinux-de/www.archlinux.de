@@ -25,8 +25,10 @@ type popularityItem struct {
 
 func UpdatePackages(ctx context.Context, db *sql.DB) error {
 	return updatePopularities(ctx, db, packageStatsURL, "packagePopularities",
-		`UPDATE package SET popularity_recent = 0, popularity_count = 0, popularity_samples = 0`,
-		`UPDATE package SET popularity_recent = ?, popularity_count = ?, popularity_samples = ? WHERE name = ?`,
+		`UPDATE package SET popularity_recent = 0, popularity_count = 0, popularity_samples = 0
+		 WHERE repository_id IN (SELECT id FROM repository WHERE testing = 0)`,
+		`UPDATE package SET popularity_recent = ?, popularity_count = ?, popularity_samples = ?
+		 WHERE name = ? AND repository_id IN (SELECT id FROM repository WHERE testing = 0)`,
 	)
 }
 

@@ -19,6 +19,7 @@ type PackageSummary struct {
 	PackagerName  string
 	PackagerEmail string
 	Popularity    float64
+	Testing       bool
 }
 
 type Repository struct {
@@ -92,7 +93,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
-		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent
+		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
 			` + baseWhere + ` ORDER BY (p.name = ?) DESC, bm25(package_fts, 10, 5, 1, 1, 3) - ln(1 + p.popularity_recent), p.build_date DESC LIMIT ? OFFSET ?`
 		dataArgs = append(dataArgs, search, limit, offset)
 	} else {
@@ -111,7 +112,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
-		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent
+		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
 			` + baseWhere + ` ORDER BY p.build_date DESC LIMIT ? OFFSET ?`
 		dataArgs = append(dataArgs, limit, offset)
 	}
@@ -130,9 +131,11 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 	var pkgs []PackageSummary
 	for rows.Next() {
 		var p PackageSummary
-		if err := rows.Scan(&p.Repository, &p.Architecture, &p.Name, &p.Version, &p.Description, &p.BuildDate, &p.Popularity); err != nil {
+		var testing int
+		if err := rows.Scan(&p.Repository, &p.Architecture, &p.Name, &p.Version, &p.Description, &p.BuildDate, &p.Popularity, &testing); err != nil {
 			return nil, 0, err
 		}
+		p.Testing = testing != 0
 		pkgs = append(pkgs, p)
 	}
 

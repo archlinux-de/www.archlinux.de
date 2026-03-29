@@ -85,7 +85,9 @@ templ PackageList(data packagesData) {
 						<td class="d-none d-sm-table-cell text-break">{ pkg.Description }</td>
 						<td class="d-none d-lg-table-cell text-nowrap">{ layout.FormatDate(pkg.BuildDate) }</td>
 						<td class="d-none d-xl-table-cell text-nowrap">
-							@components.Popularity(pkg.Popularity)
+							if !pkg.Testing {
+								@components.Popularity(pkg.Popularity)
+							}
 						</td>
 					</tr>
 				}
