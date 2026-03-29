@@ -59,12 +59,12 @@ templ DownloadPage(data downloadData) {
 				</p>
 			</div>
 			<div class="col-12 col-lg-6 mb-4">
-				<h4>Nächste Schritte</h4>
+				<h3 class="h4">Nächste Schritte</h3>
 				<ul class="list-unstyled ms-4 mb-4 link-list">
 					<li><a href="https://wiki.archlinux.de/title/Installation_von_einem_USB-Stick">ISO auf USB-Stick schreiben</a></li>
 					<li><a href="https://wiki.archlinux.de/title/Arch_Install_Scripts">Installations-Anleitung</a></li>
 				</ul>
-				<h4>Alternativer Download</h4>
+				<h3 class="h4">Alternativer Download</h3>
 				<ul class="list-unstyled ms-4 mb-4 link-list">
 					if data.Release.MagnetURI != "" {
 						<li><a href={ templ.SafeURL(sanitize.URL(data.Release.MagnetURI)) } rel="nofollow noopener">Magnet link</a></li>
@@ -74,13 +74,13 @@ templ DownloadPage(data downloadData) {
 					}
 					<li><a href="/mirrors">Mirror-Liste</a></li>
 				</ul>
-				<h4>Alternative Installationsmethoden</h4>
+				<h3 class="h4">Alternative Installationsmethoden</h3>
 				<ul class="list-unstyled ms-4 mb-4 link-list">
 					<li><a href="https://archlinux.org/releng/netboot/">Netboot</a></li>
 					<li><a href="https://hub.docker.com/_/archlinux">Docker</a></li>
 					<li><a href="https://gitlab.archlinux.org/archlinux/arch-boxes/-/packages">VM-Images</a></li>
 				</ul>
-				<h4>Weiteres</h4>
+				<h3 class="h4">Weiteres</h3>
 				<ul class="list-unstyled ms-4 link-list">
 					<li><a href={ templ.SafeURL("/releases/" + data.Release.Version) }>Release-Informationen { data.Release.Version }</a></li>
 					<li><a href="/releases">Alle Releases</a></li>

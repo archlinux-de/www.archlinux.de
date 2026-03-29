@@ -2,7 +2,7 @@ package httperror
 
 templ NotFoundContent(path string) {
 	<div class="alert alert-danger" role="alert">
-		<h4 class="alert-heading">Datei nicht gefunden</h4>
+		<h1 class="alert-heading h4">Datei nicht gefunden</h1>
 		<p>Die angeforderte Datei <strong>{ path }</strong> wurde nicht gefunden.</p>
 		<hr/>
 		<p class="mb-0">Kontaktiere uns, falls das Problem weiterhin besteht.</p>
@@ -11,7 +11,7 @@ templ NotFoundContent(path string) {
 
 templ ErrorContent(title string) {
 	<div class="alert alert-danger" role="alert">
-		<h4 class="alert-heading">{ title }</h4>
+		<h1 class="alert-heading h4">{ title }</h1>
 		<p>Ein unerwarteter Fehler ist aufgetreten.</p>
 		<hr/>
 		<p class="mb-0">Kontaktiere uns, falls das Problem weiterhin besteht.</p>
