@@ -98,7 +98,7 @@ update-pnpm:
 update: update-go update-pnpm
 
 # fetch all external data into the local database
-update-data: update-packages update-news update-mirrors update-releases update-package-popularities update-mirror-popularities update-planet
+update-data: update-packages update-news update-mirrors update-releases update-package-popularities update-mirror-popularities
 
 # fetch package data from Arch Linux repositories
 update-packages:
@@ -123,10 +123,6 @@ update-package-popularities:
 # fetch mirror popularity data from pkgstats.archlinux.de
 update-mirror-popularities:
     go run . update-mirror-popularities
-
-# fetch planet feed data from community blogs
-update-planet:
-    go run . update-planet
 
 # generate test coverage report
 coverage:

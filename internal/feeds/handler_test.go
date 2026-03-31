@@ -229,6 +229,69 @@ func TestReleasesFeed_Structure(t *testing.T) {
 	}
 }
 
+func TestPlanetAtomFeed_Structure(t *testing.T) {
+	mux := newTestHandler(t,
+		`INSERT INTO news_item (id, title, link, description, author_name, author_link, last_modified) VALUES
+			(1, 'Test News', 'https://archlinux.org/news/1', '<p>Content</p>', 'Admin', 'https://archlinux.org', 1700000000)`,
+	)
+	feed := getFeed(t, mux, "/planet/atom.xml")
+
+	if feed.Title != "Arch Linux Planet" {
+		t.Errorf("title = %q", feed.Title)
+	}
+	if len(feed.Entries) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(feed.Entries))
+	}
+	if feed.Entries[0].Title != "Test News" {
+		t.Errorf("entry title = %q", feed.Entries[0].Title)
+	}
+}
+
+func TestPlanetRSSFeed_Structure(t *testing.T) {
+	mux := newTestHandler(t,
+		`INSERT INTO news_item (id, title, link, description, author_name, author_link, last_modified) VALUES
+			(1, 'Test News', 'https://archlinux.org/news/1', '<p>Content</p>', 'Admin', 'https://archlinux.org', 1700000000)`,
+	)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/planet/rss.xml", nil))
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("status = %d", rr.Code)
+	}
+	if ct := rr.Header().Get("Content-Type"); ct != "application/rss+xml; charset=UTF-8" {
+		t.Errorf("content-type = %q", ct)
+	}
+
+	var feed rssFeed
+	if err := xml.Unmarshal(rr.Body.Bytes(), &feed); err != nil {
+		t.Fatalf("xml parse: %v", err)
+	}
+	if feed.Channel.Title != "Arch Linux Planet" {
+		t.Errorf("title = %q", feed.Channel.Title)
+	}
+	if len(feed.Channel.Items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(feed.Channel.Items))
+	}
+	if feed.Channel.Items[0].Title != "Test News" {
+		t.Errorf("item title = %q", feed.Channel.Items[0].Title)
+	}
+}
+
+func TestPlanetRedirect(t *testing.T) {
+	mux := newTestHandler(t)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/planet", nil))
+
+	if rr.Code != http.StatusMovedPermanently {
+		t.Fatalf("status = %d, want 301", rr.Code)
+	}
+	if loc := rr.Header().Get("Location"); loc != "/news" {
+		t.Errorf("location = %q, want /news", loc)
+	}
+}
+
 func TestFeeds_EmptyDB(t *testing.T) {
 	mux := newTestHandler(t)
 
@@ -240,5 +303,14 @@ func TestFeeds_EmptyDB(t *testing.T) {
 		if feed.Icon == "" {
 			t.Errorf("%s: missing icon on empty feed", path)
 		}
+	}
+
+	// Planet feeds should also work with empty DB
+	getFeed(t, mux, "/planet/atom.xml")
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/planet/rss.xml", nil))
+	if rr.Code != http.StatusOK {
+		t.Errorf("/planet/rss.xml: status = %d", rr.Code)
 	}
 }

@@ -2,7 +2,6 @@ package feeds
 
 import (
 	"encoding/xml"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -10,7 +9,6 @@ import (
 	"archded/internal/news"
 	"archded/internal/packages"
 	"archded/internal/releases"
-	"archded/internal/ui/layout"
 )
 
 const feedItems = 25
@@ -29,6 +27,11 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /news/feed", h.newsFeed)
 	mux.HandleFunc("GET /packages/feed", h.packagesFeed)
 	mux.HandleFunc("GET /releases/feed", h.releasesFeed)
+	mux.HandleFunc("GET /planet/atom.xml", h.planetAtomFeed)
+	mux.HandleFunc("GET /planet/rss.xml", h.planetRSSFeed)
+	mux.HandleFunc("GET /planet", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/news", http.StatusMovedPermanently)
+	})
 }
 
 type atomFeed struct {
@@ -84,148 +87,4 @@ func writeAtom(w http.ResponseWriter, feed atomFeed) {
 
 func formatTime(unix int64) string {
 	return time.Unix(unix, 0).UTC().Format(time.RFC3339)
-}
-
-func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
-	items, err := h.news.Latest(r.Context(), feedItems)
-	if err != nil {
-		layout.ServerError(w, "news feed", err)
-		return
-	}
-
-	baseURL := layout.GetBaseURL(r)
-
-	feed := atomFeed{
-		XMLNS: "http://www.w3.org/2005/Atom",
-		ID:    baseURL + "/news/feed",
-		Title: "Aktuelle Arch Linux Neuigkeiten",
-		Links: []atomLink{
-			{Href: baseURL + "/news", Rel: "alternate"},
-			{Href: baseURL + "/news/feed", Rel: "self"},
-		},
-		Icon: baseURL + "/img/archicon.svg",
-		Logo: baseURL + "/img/archlogo.svg",
-	}
-
-	for _, item := range items {
-		entry := atomEntry{
-			ID:      fmt.Sprintf("%s/news/%d", baseURL, item.ID),
-			Title:   item.Title,
-			Updated: formatTime(item.LastModified),
-			Link:    atomLink{Href: baseURL + item.URL(), Rel: "alternate"},
-		}
-		if item.AuthorName != "" {
-			entry.Author = &atomAuthor{Name: item.AuthorName, URI: item.AuthorLink}
-		}
-		if item.Description != "" {
-			entry.Content = &atomContent{Type: "html", Content: item.Description}
-		}
-		feed.Entries = append(feed.Entries, entry)
-	}
-
-	if len(feed.Entries) > 0 {
-		feed.Updated = feed.Entries[0].Updated
-	} else {
-		feed.Updated = formatTime(time.Now().Unix())
-	}
-
-	writeAtom(w, feed)
-}
-
-func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
-	pkgs, err := h.packages.Latest(r.Context(), feedItems)
-	if err != nil {
-		layout.ServerError(w, "packages feed", err)
-		return
-	}
-
-	baseURL := layout.GetBaseURL(r)
-
-	feed := atomFeed{
-		XMLNS: "http://www.w3.org/2005/Atom",
-		ID:    baseURL + "/packages/feed",
-		Title: "Aktuelle Arch Linux Pakete",
-		Links: []atomLink{
-			{Href: baseURL + "/packages", Rel: "alternate"},
-			{Href: baseURL + "/packages/feed", Rel: "self"},
-		},
-		Icon: baseURL + "/img/archicon.svg",
-		Logo: baseURL + "/img/archlogo.svg",
-	}
-
-	for _, p := range pkgs {
-		entryURL := baseURL + fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Architecture, p.Name)
-		entry := atomEntry{
-			ID:      entryURL,
-			Title:   p.Name + " " + p.Version,
-			Updated: formatTime(p.BuildDate),
-			Link:    atomLink{Href: entryURL, Rel: "alternate"},
-			Summary: p.Description,
-		}
-		if p.PackagerName != "" {
-			author := &atomAuthor{Name: p.PackagerName}
-			if p.PackagerEmail != "" {
-				author.Email = p.PackagerEmail
-			}
-			entry.Author = author
-		}
-		feed.Entries = append(feed.Entries, entry)
-	}
-
-	if len(feed.Entries) > 0 {
-		feed.Updated = feed.Entries[0].Updated
-	} else {
-		feed.Updated = formatTime(time.Now().Unix())
-	}
-
-	writeAtom(w, feed)
-}
-
-func (h *Handler) releasesFeed(w http.ResponseWriter, r *http.Request) {
-	rels, err := h.releases.AllAvailable(r.Context())
-	if err != nil {
-		layout.ServerError(w, "releases feed", err)
-		return
-	}
-
-	baseURL := layout.GetBaseURL(r)
-
-	feed := atomFeed{
-		XMLNS: "http://www.w3.org/2005/Atom",
-		ID:    baseURL + "/releases/feed",
-		Title: "Arch Linux Releases",
-		Links: []atomLink{
-			{Href: baseURL + "/releases", Rel: "alternate"},
-			{Href: baseURL + "/releases/feed", Rel: "self"},
-		},
-		Icon: baseURL + "/img/archicon.svg",
-		Logo: baseURL + "/img/archlogo.svg",
-	}
-
-	for _, rel := range rels {
-		entryURL := baseURL + "/releases/" + rel.Version
-		entry := atomEntry{
-			ID:      entryURL,
-			Title:   rel.Version,
-			Updated: formatTime(rel.ReleaseDate),
-			Link:    atomLink{Href: entryURL, Rel: "alternate"},
-			Author:  &atomAuthor{Name: "Arch Linux"},
-			Summary: "Arch Linux ISO image Version " + rel.Version,
-		}
-		if rel.FileName != "" {
-			entry.Content = &atomContent{
-				Src:  baseURL + "/download/iso/" + rel.Version + "/" + rel.FileName,
-				Type: "application/x-iso9660-image",
-			}
-		}
-		feed.Entries = append(feed.Entries, entry)
-	}
-
-	if len(feed.Entries) > 0 {
-		feed.Updated = feed.Entries[0].Updated
-	} else {
-		feed.Updated = formatTime(time.Now().Unix())
-	}
-
-	writeAtom(w, feed)
 }
