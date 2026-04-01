@@ -31,7 +31,7 @@ internal/
 
 ## Database
 
-Single SQLite file. Migrations are embedded SQL files run automatically on startup via `golang-migrate`. Schema is still evolving — `000001_initial.up.sql` is modified directly instead of adding new migrations.
+Single SQLite file. Migrations are numbered sequential SQL files run automatically on startup via `golang-migrate`. When adding a new migration, use the next number after the highest existing one.
 
 Key indexes: FTS5 virtual table for package search (name, base, description, groups, provides), plus standard B-tree indexes on foreign keys and lookup columns.
 

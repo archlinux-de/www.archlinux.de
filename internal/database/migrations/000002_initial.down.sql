@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS planet_item;
-DROP TABLE IF EXISTS planet_feed;
 DROP TABLE IF EXISTS mirror;
 DROP TABLE IF EXISTS country;
 DROP TABLE IF EXISTS release;
