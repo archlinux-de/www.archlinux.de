@@ -133,6 +133,7 @@ func fetchNews(ctx context.Context) ([]newsItem, error) {
 			return nil, err
 		}
 		req.Header.Set("Accept", "application/json")
+		req.Header.Set("User-Agent", "archded/1.0 (+https://www.archlinux.de)")
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {

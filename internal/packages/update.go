@@ -117,6 +117,7 @@ func fetchRepository(ctx context.Context, db *sql.DB, mirror string, repo repoCo
 	if err != nil {
 		return fetchedRepo{}, fmt.Errorf("create request %s: %w", url, err)
 	}
+	req.Header.Set("User-Agent", "archded/1.0 (+https://www.archlinux.de)")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fetchedRepo{}, fmt.Errorf("download %s: %w", url, err)
