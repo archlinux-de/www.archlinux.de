@@ -33,6 +33,8 @@ internal/
 
 Single SQLite file. Migrations are numbered sequential SQL files run automatically on startup via `golang-migrate`. When adding a new migration, use the next number after the highest existing one.
 
+To keep migration count low, older migrations can be squashed into the latest one after it has been deployed to production. Move the full current schema into the highest-numbered migration and delete all prior migration files. This works because production is already past the old versions, and fresh databases will start from the single remaining migration.
+
 Key indexes: FTS5 virtual table for package search (name, base, description, groups, provides), plus standard B-tree indexes on foreign keys and lookup columns.
 
 ## Data Updates
@@ -41,7 +43,7 @@ Six CLI subcommands fetch data from external sources, invoked by external system
 
 | Command | Source | Notes |
 |---------|--------|-------|
-| `update-packages` | Arch mirror `.files` DBs | 6 repos concurrent, SHA256 change detection, FTS rebuild after |
+| `update-packages` | Arch mirror `.files` DBs | 6 repos concurrent, ETag change detection, FTS rebuild after |
 | `update-news` | forum.archlinux.de Flarum API | Paginated, HTML sanitized |
 | `update-mirrors` | archlinux.org/mirrors/status/json/ | Filtered by active/HTTPS/completion |
 | `update-releases` | archlinux.org/releng/releases/json/ | ISO URLs, checksums, torrent info |

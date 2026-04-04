@@ -3,7 +3,7 @@ CREATE TABLE repository (
     name TEXT NOT NULL,
     architecture TEXT NOT NULL,
     testing INTEGER NOT NULL DEFAULT 0,
-    sha256sum TEXT NOT NULL DEFAULT '',
+    etag TEXT NOT NULL DEFAULT '',
     UNIQUE(name, architecture)
 );
 
