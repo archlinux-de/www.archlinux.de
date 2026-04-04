@@ -1,0 +1,2 @@
+ALTER TABLE repository ADD COLUMN sha256sum TEXT NOT NULL DEFAULT '';
+ALTER TABLE repository DROP COLUMN etag;

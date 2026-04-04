@@ -3,9 +3,7 @@ package packages
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"fmt"
 	"io"
 	"log/slog"
@@ -34,7 +32,7 @@ var repositories = []repoConfig{
 
 type fetchedRepo struct {
 	repo     repoConfig
-	hash     string
+	etag     string
 	packages []pacmandb.Package
 }
 
@@ -46,6 +44,7 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 	}
 
 	// Fetch and parse all repositories concurrently
+	client := &http.Client{}
 	fetched := make([]fetchedRepo, len(repositories))
 	var mu sync.Mutex
 	var firstErr error
@@ -55,7 +54,7 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			f, err := fetchRepository(ctx, db, mirror, repo)
+			f, err := fetchRepository(ctx, db, client, mirror, repo)
 			if err != nil {
 				mu.Lock()
 				if firstErr == nil {
@@ -84,9 +83,9 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 			return err
 		}
 		if _, err := db.ExecContext(ctx,
-			`UPDATE repository SET sha256sum = ? WHERE name = ? AND architecture = ?`,
-			f.hash, f.repo.Name, f.repo.Architecture); err != nil {
-			return fmt.Errorf("update hash %s: %w", f.repo.Name, err)
+			`UPDATE repository SET etag = ? WHERE name = ? AND architecture = ?`,
+			f.etag, f.repo.Name, f.repo.Architecture); err != nil {
+			return fmt.Errorf("update etag %s: %w", f.repo.Name, err)
 		}
 	}
 
@@ -108,42 +107,46 @@ func ensureRepository(ctx context.Context, db *sql.DB, repo repoConfig) error {
 	return err
 }
 
-func fetchRepository(ctx context.Context, db *sql.DB, mirror string, repo repoConfig) (fetchedRepo, error) {
+func fetchRepository(ctx context.Context, db *sql.DB, client *http.Client, mirror string, repo repoConfig) (fetchedRepo, error) {
 	url := fmt.Sprintf("%s%s/os/%s/%s.files", mirror, repo.Name, repo.Architecture, repo.Name)
 
-	slog.Info("downloading repository", "repo", repo.Name, "arch", repo.Architecture)
+	var storedEtag string
+	_ = db.QueryRowContext(ctx,
+		`SELECT etag FROM repository WHERE name = ? AND architecture = ?`,
+		repo.Name, repo.Architecture).Scan(&storedEtag)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return fetchedRepo{}, fmt.Errorf("create request %s: %w", url, err)
 	}
 	req.Header.Set("User-Agent", "archded/1.0 (+https://www.archlinux.de)")
-	resp, err := http.DefaultClient.Do(req)
+	if storedEtag != "" {
+		req.Header.Set("If-None-Match", storedEtag)
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return fetchedRepo{}, fmt.Errorf("download %s: %w", url, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
+	if resp.StatusCode == http.StatusNotModified {
+		slog.Info("repository unchanged", "repo", repo.Name)
+		return fetchedRepo{repo: repo}, nil
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return fetchedRepo{}, fmt.Errorf("download %s: status %d", url, resp.StatusCode)
 	}
+
+	slog.Info("downloading repository", "repo", repo.Name, "arch", repo.Architecture)
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fetchedRepo{}, fmt.Errorf("read %s: %w", url, err)
 	}
 
-	newHash := sha256hex(data)
-
-	var storedHash string
-	_ = db.QueryRowContext(ctx,
-		`SELECT sha256sum FROM repository WHERE name = ? AND architecture = ?`,
-		repo.Name, repo.Architecture).Scan(&storedHash)
-
-	if storedHash != "" && storedHash == newHash {
-		slog.Info("repository unchanged, skipping", "repo", repo.Name)
-		return fetchedRepo{repo: repo}, nil
-	}
+	newEtag := resp.Header.Get("ETag")
 
 	packages, err := pacmandb.Parse(bytes.NewReader(data))
 	if err != nil {
@@ -152,7 +155,7 @@ func fetchRepository(ctx context.Context, db *sql.DB, mirror string, repo repoCo
 
 	slog.Info("parsed packages", "repo", repo.Name, "count", len(packages))
 
-	return fetchedRepo{repo: repo, hash: newHash, packages: packages}, nil
+	return fetchedRepo{repo: repo, etag: newEtag, packages: packages}, nil
 }
 
 func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []pacmandb.Package) error {
@@ -293,9 +296,4 @@ func deleteStalePackages(ctx context.Context, tx *sql.Tx, repoID int64, keepIDs 
 		}
 	}
 	return nil
-}
-
-func sha256hex(data []byte) string {
-	h := sha256.Sum256(data)
-	return hex.EncodeToString(h[:])
 }

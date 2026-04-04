@@ -1,8 +1,13 @@
 package packages
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
 	"database/sql"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"archded/internal/database"
@@ -297,6 +302,138 @@ func TestSyncConsistentWithUpstream(t *testing.T) {
 	// Verify new package is in FTS
 	if err := db.QueryRow(`SELECT name FROM package_fts WHERE package_fts MATCH '"new-pkg"'`).Scan(&ftsName); err != nil {
 		t.Fatalf("new-pkg not found in FTS: %v", err)
+	}
+}
+
+func makeTestArchive(t *testing.T, files map[string]string) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gz)
+	for name, content := range files {
+		if err := tw.WriteHeader(&tar.Header{Name: name, Size: int64(len(content)), Mode: 0o644}); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(content)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gz.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf.Bytes()
+}
+
+func TestFetchRepositoryUsesETag(t *testing.T) {
+	db := setupSyncDB(t)
+	ctx := context.Background()
+
+	archive := makeTestArchive(t, map[string]string{
+		"bash-5.2-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.2-1\n\n%DESC%\nshell\n\n%BUILDDATE%\n1000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
+	})
+
+	requestCount := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestCount++
+		if r.Header.Get("If-None-Match") == `"v1"` {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("ETag", `"v1"`)
+		_, _ = w.Write(archive)
+	}))
+	defer srv.Close()
+
+	repo := repoConfig{Name: "core", Architecture: "x86_64"}
+
+	// First fetch: no stored ETag, should download and parse
+	f, err := fetchRepository(ctx, db, srv.Client(), srv.URL+"/", repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(f.packages) != 1 {
+		t.Fatalf("first fetch: expected 1 package, got %d", len(f.packages))
+	}
+	if f.etag != `"v1"` {
+		t.Errorf("first fetch: etag = %q, want %q", f.etag, `"v1"`)
+	}
+
+	// Store ETag in DB (as Update() would)
+	if _, err := db.Exec(`UPDATE repository SET etag = ? WHERE name = 'core'`, f.etag); err != nil {
+		t.Fatal(err)
+	}
+
+	// Second fetch: stored ETag matches, should get 304
+	f, err = fetchRepository(ctx, db, srv.Client(), srv.URL+"/", repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if f.packages != nil {
+		t.Error("second fetch: expected nil packages on 304")
+	}
+	if requestCount != 2 {
+		t.Errorf("expected 2 requests, got %d", requestCount)
+	}
+}
+
+func TestFetchRepositoryHandlesChangedContent(t *testing.T) {
+	db := setupSyncDB(t)
+	ctx := context.Background()
+
+	archiveV1 := makeTestArchive(t, map[string]string{
+		"bash-5.2-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.2-1\n\n%DESC%\nshell\n\n%BUILDDATE%\n1000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
+	})
+	archiveV2 := makeTestArchive(t, map[string]string{
+		"bash-5.3-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.3-1\n\n%DESC%\nshell\n\n%BUILDDATE%\n2000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
+	})
+
+	currentEtag := `"v1"`
+	currentArchive := archiveV1
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("If-None-Match") == currentEtag {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("ETag", currentEtag)
+		_, _ = w.Write(currentArchive)
+	}))
+	defer srv.Close()
+
+	repo := repoConfig{Name: "core", Architecture: "x86_64"}
+
+	// First fetch
+	f, err := fetchRepository(ctx, db, srv.Client(), srv.URL+"/", repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if f.packages[0].Version != "5.2-1" {
+		t.Errorf("v1: version = %q", f.packages[0].Version)
+	}
+	if _, err := db.Exec(`UPDATE repository SET etag = ? WHERE name = 'core'`, f.etag); err != nil {
+		t.Fatal(err)
+	}
+
+	// Update upstream
+	currentEtag = `"v2"`
+	currentArchive = archiveV2
+
+	// Fetch again: old ETag doesn't match, should get new content
+	f, err = fetchRepository(ctx, db, srv.Client(), srv.URL+"/", repo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(f.packages) != 1 {
+		t.Fatalf("v2: expected 1 package, got %d", len(f.packages))
+	}
+	if f.packages[0].Version != "5.3-1" {
+		t.Errorf("v2: version = %q", f.packages[0].Version)
+	}
+	if f.etag != `"v2"` {
+		t.Errorf("v2: etag = %q", f.etag)
 	}
 }
 
