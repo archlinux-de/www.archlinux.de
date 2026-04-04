@@ -38,22 +38,26 @@ type Relation struct {
 	VersionConstraint string
 }
 
-// Parse reads a gzip-compressed tar archive (.files) and returns parsed packages.
-func Parse(r io.Reader) ([]Package, error) {
+// Parse reads a gzip-compressed tar archive (.files) and calls fn for each package.
+// Packages are emitted as they are parsed, keeping memory usage constant.
+func Parse(r io.Reader, fn func(Package) error) error {
 	gz, err := gzip.NewReader(r)
 	if err != nil {
-		return nil, fmt.Errorf("gzip: %w", err)
+		return fmt.Errorf("gzip: %w", err)
 	}
 	defer func() { _ = gz.Close() }()
 
 	tr := tar.NewReader(gz)
 
-	// Collect desc and files content per package directory
-	type entry struct {
-		desc  string
-		files string
+	var curDir, desc, files string
+
+	emit := func() error {
+		if desc == "" {
+			return nil
+		}
+		fields := parseDesc(desc + "\n" + files)
+		return fn(buildPackage(fields))
 	}
-	entries := make(map[string]*entry)
 
 	for {
 		hdr, err := tr.Next()
@@ -61,7 +65,7 @@ func Parse(r io.Reader) ([]Package, error) {
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("tar: %w", err)
+			return fmt.Errorf("tar: %w", err)
 		}
 
 		dir := path.Dir(hdr.Name)
@@ -71,35 +75,28 @@ func Parse(r io.Reader) ([]Package, error) {
 			continue
 		}
 
+		if dir != curDir && curDir != "" {
+			if err := emit(); err != nil {
+				return err
+			}
+			desc = ""
+			files = ""
+		}
+		curDir = dir
+
 		data, err := io.ReadAll(tr)
 		if err != nil {
-			return nil, fmt.Errorf("read %s: %w", hdr.Name, err)
-		}
-
-		e, ok := entries[dir]
-		if !ok {
-			e = &entry{}
-			entries[dir] = e
+			return fmt.Errorf("read %s: %w", hdr.Name, err)
 		}
 
 		if base == "desc" {
-			e.desc = string(data)
+			desc = string(data)
 		} else {
-			e.files = string(data)
+			files = string(data)
 		}
 	}
 
-	packages := make([]Package, 0, len(entries))
-	for _, e := range entries {
-		if e.desc == "" {
-			continue
-		}
-		fields := parseDesc(e.desc + "\n" + e.files)
-		pkg := buildPackage(fields)
-		packages = append(packages, pkg)
-	}
-
-	return packages, nil
+	return emit()
 }
 
 // parseDesc parses the %FIELD%\nvalue\n\n format into a map.

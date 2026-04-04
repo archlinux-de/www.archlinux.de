@@ -6,8 +6,10 @@ import (
 	"compress/gzip"
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"archded/internal/database"
@@ -30,6 +32,98 @@ func setupSyncDB(t *testing.T) *sql.DB {
 
 var coreRepo = repoConfig{Name: "core", Architecture: "x86_64"}
 
+// packagesToArchive creates a gzip-compressed tar archive from package structs,
+// matching the pacman .files database format for use in tests.
+func packagesToArchive(t *testing.T, packages []pacmandb.Package) *bytes.Reader {
+	t.Helper()
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gz)
+
+	for _, pkg := range packages {
+		dir := fmt.Sprintf("%s-%s", pkg.Name, pkg.Version)
+
+		var desc strings.Builder
+		fmt.Fprintf(&desc, "%%NAME%%\n%s\n\n", pkg.Name)
+		if pkg.Base != "" {
+			fmt.Fprintf(&desc, "%%BASE%%\n%s\n\n", pkg.Base)
+		}
+		fmt.Fprintf(&desc, "%%VERSION%%\n%s\n\n", pkg.Version)
+		if pkg.Description != "" {
+			fmt.Fprintf(&desc, "%%DESC%%\n%s\n\n", pkg.Description)
+		}
+		if pkg.URL != "" {
+			fmt.Fprintf(&desc, "%%URL%%\n%s\n\n", pkg.URL)
+		}
+		fmt.Fprintf(&desc, "%%BUILDDATE%%\n%d\n\n", pkg.BuildDate)
+		fmt.Fprintf(&desc, "%%CSIZE%%\n%d\n\n", pkg.CompressedSize)
+		fmt.Fprintf(&desc, "%%ISIZE%%\n%d\n\n", pkg.InstalledSize)
+		if pkg.PackagerName != "" {
+			if pkg.PackagerEmail != "" {
+				fmt.Fprintf(&desc, "%%PACKAGER%%\n%s <%s>\n\n", pkg.PackagerName, pkg.PackagerEmail)
+			} else {
+				fmt.Fprintf(&desc, "%%PACKAGER%%\n%s\n\n", pkg.PackagerName)
+			}
+		}
+		for _, l := range pkg.Licenses {
+			fmt.Fprintf(&desc, "%%LICENSE%%\n%s\n\n", l)
+		}
+		if len(pkg.Groups) > 0 {
+			desc.WriteString("%GROUPS%\n")
+			for _, g := range pkg.Groups {
+				fmt.Fprintf(&desc, "%s\n", g)
+			}
+			desc.WriteString("\n")
+		}
+		for _, relType := range []string{"depends", "optdepends", "makedepends", "checkdepends", "conflicts", "replaces", "provides"} {
+			var rels []string
+			for _, r := range pkg.Relations {
+				if r.Type == relType {
+					s := r.TargetName
+					if r.VersionConstraint != "" {
+						op := map[string]string{"EQ": "=", "GE": ">=", "GT": ">", "LE": "<=", "LT": "<"}[r.VersionConstraint]
+						s += op + r.TargetVersion
+					}
+					rels = append(rels, s)
+				}
+			}
+			if len(rels) > 0 {
+				fmt.Fprintf(&desc, "%%%s%%\n", strings.ToUpper(relType))
+				for _, r := range rels {
+					fmt.Fprintf(&desc, "%s\n", r)
+				}
+				desc.WriteString("\n")
+			}
+		}
+
+		descBytes := desc.String()
+		if err := tw.WriteHeader(&tar.Header{Name: dir + "/desc", Size: int64(len(descBytes)), Mode: 0o644}); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(descBytes)); err != nil {
+			t.Fatal(err)
+		}
+
+		if len(pkg.Files) > 0 {
+			filesContent := "%FILES%\n" + strings.Join(pkg.Files, "\n") + "\n\n"
+			if err := tw.WriteHeader(&tar.Header{Name: dir + "/files", Size: int64(len(filesContent)), Mode: 0o644}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := tw.Write([]byte(filesContent)); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gz.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return bytes.NewReader(buf.Bytes())
+}
+
 func TestSyncPreservesPopularity(t *testing.T) {
 	db := setupSyncDB(t)
 	ctx := context.Background()
@@ -38,7 +132,7 @@ func TestSyncPreservesPopularity(t *testing.T) {
 		{Name: "linux", Base: "linux", Version: "6.6.7-1", Description: "The Linux kernel"},
 		{Name: "bash", Base: "bash", Version: "5.2-1", Description: "GNU Bourne Again shell"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, initial); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, initial)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -55,7 +149,7 @@ func TestSyncPreservesPopularity(t *testing.T) {
 		{Name: "linux", Base: "linux", Version: "6.6.8-1", Description: "The Linux kernel"},
 		{Name: "bash", Base: "bash", Version: "5.2-1", Description: "GNU Bourne Again shell"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, updated); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, updated)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -84,7 +178,7 @@ func TestSyncRemovesStalePackages(t *testing.T) {
 		{Name: "bash", Base: "bash", Version: "5.2-1"},
 		{Name: "removed-pkg", Base: "removed-pkg", Version: "1.0-1"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, initial); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, initial)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -93,7 +187,7 @@ func TestSyncRemovesStalePackages(t *testing.T) {
 		{Name: "linux", Base: "linux", Version: "6.6.7-1"},
 		{Name: "bash", Base: "bash", Version: "5.2-1"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, updated); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, updated)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -118,7 +212,7 @@ func TestSyncAddsNewPackagesWithZeroPopularity(t *testing.T) {
 	initial := []pacmandb.Package{
 		{Name: "linux", Base: "linux", Version: "6.6.7-1"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, initial); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, initial)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -127,7 +221,7 @@ func TestSyncAddsNewPackagesWithZeroPopularity(t *testing.T) {
 		{Name: "linux", Base: "linux", Version: "6.6.7-1"},
 		{Name: "new-pkg", Base: "new-pkg", Version: "1.0-1"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, updated); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, updated)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -162,7 +256,7 @@ func TestSyncConsistentWithUpstream(t *testing.T) {
 		{Name: "bash", Base: "bash", Version: "5.2-1"},
 		{Name: "to-be-removed", Base: "to-be-removed", Version: "1.0-1"},
 	}
-	if err := syncPackages(ctx, db, coreRepo, v1); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, v1)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -190,7 +284,7 @@ func TestSyncConsistentWithUpstream(t *testing.T) {
 			Relations: []pacmandb.Relation{{Type: "depends", TargetName: "glibc"}},
 		},
 	}
-	if err := syncPackages(ctx, db, coreRepo, v2); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, v2)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -349,17 +443,18 @@ func TestFetchRepositoryUsesETag(t *testing.T) {
 
 	repo := repoConfig{Name: "core", Architecture: "x86_64"}
 
-	// First fetch: no stored ETag, should download and parse
+	// First fetch: no stored ETag, should download
 	f, err := fetchRepository(ctx, db, srv.Client(), srv.URL+"/", repo)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(f.packages) != 1 {
-		t.Fatalf("first fetch: expected 1 package, got %d", len(f.packages))
+	if !f.changed {
+		t.Fatal("first fetch: expected changed=true")
 	}
 	if f.etag != `"v1"` {
 		t.Errorf("first fetch: etag = %q, want %q", f.etag, `"v1"`)
 	}
+	_ = f.body.Close()
 
 	// Store ETag in DB (as Update() would)
 	if _, err := db.Exec(`UPDATE repository SET etag = ? WHERE name = 'core'`, f.etag); err != nil {
@@ -371,8 +466,9 @@ func TestFetchRepositoryUsesETag(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if f.packages != nil {
-		t.Error("second fetch: expected nil packages on 304")
+	if f.changed {
+		_ = f.body.Close()
+		t.Error("second fetch: expected changed=false on 304")
 	}
 	if requestCount != 2 {
 		t.Errorf("expected 2 requests, got %d", requestCount)
@@ -410,11 +506,24 @@ func TestFetchRepositoryHandlesChangedContent(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if f.packages[0].Version != "5.2-1" {
-		t.Errorf("v1: version = %q", f.packages[0].Version)
+	if !f.changed {
+		t.Fatal("v1: expected changed")
 	}
+	// Stream through syncPackages to verify end-to-end
+	if err := syncPackages(ctx, db, repo, f.body); err != nil {
+		t.Fatal(err)
+	}
+	_ = f.body.Close()
 	if _, err := db.Exec(`UPDATE repository SET etag = ? WHERE name = 'core'`, f.etag); err != nil {
 		t.Fatal(err)
+	}
+
+	var version string
+	if err := db.QueryRow(`SELECT version FROM package WHERE name = 'bash'`).Scan(&version); err != nil {
+		t.Fatal(err)
+	}
+	if version != "5.2-1" {
+		t.Errorf("v1: version = %q", version)
 	}
 
 	// Update upstream
@@ -426,11 +535,19 @@ func TestFetchRepositoryHandlesChangedContent(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(f.packages) != 1 {
-		t.Fatalf("v2: expected 1 package, got %d", len(f.packages))
+	if !f.changed {
+		t.Fatal("v2: expected changed")
 	}
-	if f.packages[0].Version != "5.3-1" {
-		t.Errorf("v2: version = %q", f.packages[0].Version)
+	if err := syncPackages(ctx, db, repo, f.body); err != nil {
+		t.Fatal(err)
+	}
+	_ = f.body.Close()
+
+	if err := db.QueryRow(`SELECT version FROM package WHERE name = 'bash'`).Scan(&version); err != nil {
+		t.Fatal(err)
+	}
+	if version != "5.3-1" {
+		t.Errorf("v2: version = %q", version)
 	}
 	if f.etag != `"v2"` {
 		t.Errorf("v2: etag = %q", f.etag)
@@ -451,7 +568,7 @@ func TestSyncPreservesRelationsAndFiles(t *testing.T) {
 			Files: []string{"/boot/vmlinuz-linux", "/usr/lib/modules/6.6.7"},
 		},
 	}
-	if err := syncPackages(ctx, db, coreRepo, packages); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, packages)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -467,7 +584,7 @@ func TestSyncPreservesRelationsAndFiles(t *testing.T) {
 			Files: []string{"/boot/vmlinuz-linux", "/usr/lib/modules/6.6.8"},
 		},
 	}
-	if err := syncPackages(ctx, db, coreRepo, updated); err != nil {
+	if err := syncPackages(ctx, db, coreRepo, packagesToArchive(t, updated)); err != nil {
 		t.Fatal(err)
 	}
 

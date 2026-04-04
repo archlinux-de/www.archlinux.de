@@ -1,7 +1,6 @@
 package packages
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"fmt"
@@ -31,9 +30,10 @@ var repositories = []repoConfig{
 }
 
 type fetchedRepo struct {
-	repo     repoConfig
-	etag     string
-	packages []pacmandb.Package
+	repo    repoConfig
+	etag    string
+	changed bool
+	body    io.ReadCloser
 }
 
 func Update(ctx context.Context, db *sql.DB, mirror string) error {
@@ -43,7 +43,7 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 		}
 	}
 
-	// Fetch and parse all repositories concurrently
+	// Check all repositories concurrently (ETag-based, no body read yet)
 	client := &http.Client{}
 	fetched := make([]fetchedRepo, len(repositories))
 	var mu sync.Mutex
@@ -69,19 +69,33 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 	wg.Wait()
 
 	if firstErr != nil {
+		// Close any open response bodies on error
+		for _, f := range fetched {
+			if f.body != nil {
+				_ = f.body.Close()
+			}
+		}
 		return firstErr
 	}
 
-	// Write to DB sequentially, rebuild FTS once at the end
+	// Stream parse + DB write sequentially for changed repos
 	changed := false
 	for _, f := range fetched {
-		if f.packages == nil {
+		if !f.changed {
 			continue
 		}
 		changed = true
-		if err := syncPackages(ctx, db, f.repo, f.packages); err != nil {
+		if err := syncPackages(ctx, db, f.repo, f.body); err != nil {
+			// Close remaining bodies
+			_ = f.body.Close()
+			for _, f2 := range fetched {
+				if f2.body != nil && f2.body != f.body {
+					_ = f2.body.Close()
+				}
+			}
 			return err
 		}
+		_ = f.body.Close()
 		if _, err := db.ExecContext(ctx,
 			`UPDATE repository SET etag = ? WHERE name = ? AND architecture = ?`,
 			f.etag, f.repo.Name, f.repo.Architecture); err != nil {
@@ -128,37 +142,29 @@ func fetchRepository(ctx context.Context, db *sql.DB, client *http.Client, mirro
 	if err != nil {
 		return fetchedRepo{}, fmt.Errorf("download %s: %w", url, err)
 	}
-	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotModified {
+		_ = resp.Body.Close()
 		slog.Info("repository unchanged", "repo", repo.Name)
 		return fetchedRepo{repo: repo}, nil
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		_ = resp.Body.Close()
 		return fetchedRepo{}, fmt.Errorf("download %s: status %d", url, resp.StatusCode)
 	}
 
 	slog.Info("downloading repository", "repo", repo.Name, "arch", repo.Architecture)
 
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fetchedRepo{}, fmt.Errorf("read %s: %w", url, err)
-	}
-
-	newEtag := resp.Header.Get("ETag")
-
-	packages, err := pacmandb.Parse(bytes.NewReader(data))
-	if err != nil {
-		return fetchedRepo{}, fmt.Errorf("parse %s: %w", repo.Name, err)
-	}
-
-	slog.Info("parsed packages", "repo", repo.Name, "count", len(packages))
-
-	return fetchedRepo{repo: repo, etag: newEtag, packages: packages}, nil
+	return fetchedRepo{
+		repo:    repo,
+		etag:    resp.Header.Get("ETag"),
+		changed: true,
+		body:    resp.Body,
+	}, nil
 }
 
-func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []pacmandb.Package) error {
+func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, r io.Reader) error {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -220,9 +226,10 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 	}
 	defer func() { _ = insertFiles.Close() }()
 
-	upsertedIDs := make(map[int64]struct{}, len(packages))
+	upsertedIDs := make(map[int64]struct{})
+	count := 0
 
-	for _, pkg := range packages {
+	if err := pacmandb.Parse(r, func(pkg pacmandb.Package) error {
 		var pkgURL string
 		if pkg.URL != "" && sanitize.IsValidURL(pkg.URL, "http", "https") {
 			pkgURL = pkg.URL
@@ -247,6 +254,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 		}
 
 		upsertedIDs[pkgID] = struct{}{}
+		count++
 
 		for _, rel := range pkg.Relations {
 			if _, err := insertRel.ExecContext(ctx,
@@ -262,7 +270,13 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, packages []p
 				return fmt.Errorf("insert files for %s: %w", pkg.Name, err)
 			}
 		}
+
+		return nil
+	}); err != nil {
+		return fmt.Errorf("parse %s: %w", repo.Name, err)
 	}
+
+	slog.Info("parsed packages", "repo", repo.Name, "count", count)
 
 	if err := deleteStalePackages(ctx, tx, repoID, upsertedIDs); err != nil {
 		return err

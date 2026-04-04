@@ -38,6 +38,18 @@ func makeTestArchive(t *testing.T, files map[string]string) *bytes.Buffer {
 	return &buf
 }
 
+func parseAll(t *testing.T, archive *bytes.Buffer) []Package {
+	t.Helper()
+	var packages []Package
+	if err := Parse(archive, func(pkg Package) error {
+		packages = append(packages, pkg)
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	return packages
+}
+
 func TestParseBasicPackage(t *testing.T) {
 	desc := `%NAME%
 bash
@@ -105,10 +117,7 @@ usr/bin/sh
 		"bash-5.2.037-1/files": filesContent,
 	})
 
-	packages, err := Parse(archive)
-	if err != nil {
-		t.Fatal(err)
-	}
+	packages := parseAll(t, archive)
 
 	if len(packages) != 1 {
 		t.Fatalf("expected 1 package, got %d", len(packages))
@@ -214,10 +223,7 @@ qux
 		"testpkg-1.0-1/desc": desc,
 	})
 
-	packages, err := Parse(archive)
-	if err != nil {
-		t.Fatal(err)
-	}
+	packages := parseAll(t, archive)
 	if len(packages) != 1 {
 		t.Fatalf("expected 1 package, got %d", len(packages))
 	}
