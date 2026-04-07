@@ -11,13 +11,13 @@
     "devDependencies": {
         "@biomejs/biome": "^2.4.10",
         "@fullhuman/postcss-purgecss": "^8.0.0",
-        "@types/node": "^25.5.0",
+        "@types/node": "^25.5.2",
         "cssnano": "^7.1.4",
         "cssnano-preset-advanced": "^7.0.12",
-        "sass": "^1.98.0",
+        "sass": "^1.99.0",
         "tsx": "^4.21.0",
         "typescript": "^6.0.2",
-        "vite": "^8.0.3"
+        "vite": "^8.0.5"
     },
     "dependencies": {
         "bootstrap": "^5.3.8",
