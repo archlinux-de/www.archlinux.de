@@ -3,6 +3,7 @@ package packages
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"archded/internal/ui/layout"
@@ -160,6 +161,54 @@ func TestHandlerSuggest_NoMatch(t *testing.T) {
 	}
 	if body := rr.Body.String(); body != "[]\n" {
 		t.Errorf("expected [], got %q", body)
+	}
+}
+
+func TestHandlerIndex_NoIndexOnSearch(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages?search=linux", nil))
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `<meta name="robots" content="noindex">`) {
+		t.Error("expected noindex on search results")
+	}
+}
+
+func TestHandlerIndex_NoIndexOnPagination(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages?offset=25", nil))
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `<meta name="robots" content="noindex">`) {
+		t.Error("expected noindex on paginated results")
+	}
+}
+
+func TestHandlerIndex_NoIndexOnRepoFilter(t *testing.T) {
+	repo := NewRepository(setupTestDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages?repository=core", nil))
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `<meta name="robots" content="noindex">`) {
+		t.Error("expected noindex on filtered results")
 	}
 }
 

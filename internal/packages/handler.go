@@ -98,12 +98,17 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Architectures: archs,
 	}
 
+	title := "Paket-Suche"
+	if search != "" {
+		title = search
+	}
+
 	page := layout.Page{
-		Title:       "Paket-Suche",
+		Title:       title,
 		Description: "Übersicht und Suche von Arch Linux-Paketen",
 		Path:        "/packages",
 		Manifest:    h.manifest,
-		NoIndex:     total == 0,
+		NoIndex:     total == 0 || search != "" || offset > 0 || repo != "" || arch != "",
 	}
 
 	layout.Render(w, r, page, PackageList(data))
