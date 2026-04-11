@@ -56,7 +56,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Description: "Neuigkeiten und Mitteilungen zu Arch Linux",
 		Path:        "/news",
 		Manifest:    h.manifest,
-		NoIndex:     total == 0,
+		NoIndex:     total == 0 || search != "" || offset > 0,
 	}
 
 	layout.Render(w, r, page, NewsList(data))

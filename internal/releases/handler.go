@@ -69,7 +69,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Description: "Arch Linux Release-Archiv",
 		Path:        "/releases",
 		Manifest:    h.manifest,
-		NoIndex:     total == 0,
+		NoIndex:     total == 0 || search != "" || offset > 0,
 	}
 
 	layout.Render(w, r, page, ReleaseList(data))

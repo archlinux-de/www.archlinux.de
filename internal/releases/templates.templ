@@ -57,10 +57,10 @@ templ ReleaseList(data releasesData) {
 			</div>
 			<div class="col-12 col-sm-6 text-end">
 				if data.HasPrevious() {
-					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(releasesPaginationURL(data.Search, data.PrevOffset())) }>neuer</a>
+					<a class="btn btn-sm btn-outline-primary" rel="nofollow" href={ templ.SafeURL(releasesPaginationURL(data.Search, data.PrevOffset())) }>neuer</a>
 				}
 				if data.HasNext() {
-					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(releasesPaginationURL(data.Search, data.NextOffset())) }>älter</a>
+					<a class="btn btn-sm btn-outline-primary" rel="nofollow" href={ templ.SafeURL(releasesPaginationURL(data.Search, data.NextOffset())) }>älter</a>
 				}
 			</div>
 		</div>

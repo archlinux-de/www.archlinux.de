@@ -1,52 +1,9 @@
-User-agent: Googlebot
-Allow: /
-Disallow: /download/*
-
-User-agent: bingbot
-Allow: /
-Disallow: /download/*
-
-User-agent: DuckDuckBot
-Allow: /
-Disallow: /download/*
-
-User-agent: Applebot
-Allow: /
-Disallow: /download/*
-
-User-agent: Qwantbot
-Allow: /
-Disallow: /download/*
-
-User-agent: MojeekBot
-Allow: /
-Disallow: /download/*
-
-User-agent: BraveBot
-Allow: /
-Disallow: /download/*
-
-User-agent: search.marginalia.nu
-Allow: /
-Disallow: /download/*
-
-User-agent: StractBot
-Allow: /
-Disallow: /download/*
-
-User-agent: SeekportBot
-Allow: /
-Disallow: /download/*
-
-User-agent: SeznamBot
-Allow: /
-Disallow: /download/*
-
-User-agent: yacybot
-Allow: /
-Disallow: /download/*
-
 User-agent: *
-Disallow: /
+Disallow: /packages?*
+Disallow: /news?*
+Disallow: /mirrors?*
+Disallow: /releases?*
+Disallow: /download/*
+Allow: /
 
 Sitemap: https://www.archlinux.de/sitemap.xml

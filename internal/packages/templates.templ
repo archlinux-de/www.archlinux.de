@@ -71,7 +71,7 @@ templ PackageList(data packagesData) {
 				for _, pkg := range data.Packages {
 					<tr>
 						<td class="d-none d-lg-table-cell text-nowrap">
-							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.Architecture)) }>
+							<a rel="nofollow" href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.Architecture)) }>
 								{ pkg.Repository }
 							</a>
 						</td>
@@ -104,10 +104,10 @@ templ PackageList(data packagesData) {
 			</div>
 			<div class="col-12 col-sm-6 text-end">
 				if data.HasPrevious() {
-					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.Architecture, data.PrevOffset())) }>neuer</a>
+					<a class="btn btn-sm btn-outline-primary" rel="nofollow" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.Architecture, data.PrevOffset())) }>neuer</a>
 				}
 				if data.HasNext() {
-					<a class="btn btn-sm btn-outline-primary" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.Architecture, data.NextOffset())) }>älter</a>
+					<a class="btn btn-sm btn-outline-primary" rel="nofollow" href={ templ.SafeURL(paginationURL(data.Search, data.Repository, data.Architecture, data.NextOffset())) }>älter</a>
 				}
 			</div>
 		</div>

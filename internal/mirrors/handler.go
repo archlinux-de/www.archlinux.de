@@ -47,7 +47,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Description: "Paket-Mirror Arch Linux",
 		Path:        "/mirrors",
 		Manifest:    h.manifest,
-		NoIndex:     total == 0,
+		NoIndex:     total == 0 || search != "" || offset > 0,
 	}
 
 	layout.Render(w, r, page, MirrorList(data))
