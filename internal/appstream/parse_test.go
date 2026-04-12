@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestParseComponentsXML_KeywordsOnly(t *testing.T) {
+func TestParseComponentsXML_KeywordsAndCategories(t *testing.T) {
 	const xml = `<?xml version="1.0"?>
 <components>
 <component type="desktop-application">
@@ -14,7 +14,7 @@ func TestParseComponentsXML_KeywordsOnly(t *testing.T) {
   <name>Firefox</name>
   <summary>Web browser</summary>
   <description><p>Free software web browser.</p></description>
-  <categories><category>WebBrowser</category></categories>
+  <categories><category>Network</category><category>WebBrowser</category></categories>
   <keywords><keyword>internet</keyword><keyword>www</keyword></keywords>
 </component>
 <component type="desktop-application">
@@ -24,23 +24,29 @@ func TestParseComponentsXML_KeywordsOnly(t *testing.T) {
 </component>
 </components>`
 
-	acc := make(map[string][]string)
-	err := ParseComponentsXML(strings.NewReader(xml), func(name string, parts []string) error {
-		acc[name] = append(acc[name], parts...)
+	accKW := make(map[string][]string)
+	accCat := make(map[string][]string)
+	err := ParseComponentsXML(strings.NewReader(xml), func(name string, terms IndexTerms) error {
+		accKW[name] = append(accKW[name], terms.Keywords...)
+		accCat[name] = append(accCat[name], terms.Categories...)
 		return nil
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := dedupeWords(acc["firefox"])
-	if got == "" {
+	gotKW := dedupeWords(accKW["firefox"])
+	gotCat := dedupeWords(accCat["firefox"])
+	if gotKW == "" {
 		t.Fatal("expected merged keywords for firefox")
 	}
-	if !strings.Contains(got, "internet") || !strings.Contains(got, "www") || !strings.Contains(got, "mozilla") {
-		t.Errorf("expected AppStream <keyword> terms only, got %q", got)
+	if !strings.Contains(gotKW, "internet") || !strings.Contains(gotKW, "www") || !strings.Contains(gotKW, "mozilla") {
+		t.Errorf("expected keyword terms, got %q", gotKW)
 	}
-	if strings.Contains(strings.ToLower(got), "browser") || strings.Contains(got, "WebBrowser") {
-		t.Errorf("did not expect description/name/category text in keywords, got %q", got)
+	if strings.Contains(strings.ToLower(gotKW), "browser") {
+		t.Errorf("did not expect description text in keywords, got %q", gotKW)
+	}
+	if !strings.Contains(gotCat, "Network") || !strings.Contains(gotCat, "WebBrowser") {
+		t.Errorf("expected category terms, got %q", gotCat)
 	}
 }
 
@@ -68,8 +74,8 @@ func TestParseComponentsXML_KeywordLangFilter(t *testing.T) {
 </component>
 </components>`
 	acc := make(map[string][]string)
-	err := ParseComponentsXML(strings.NewReader(xml), func(name string, parts []string) error {
-		acc[name] = append(acc[name], parts...)
+	err := ParseComponentsXML(strings.NewReader(xml), func(name string, terms IndexTerms) error {
+		acc[name] = append(acc[name], terms.Keywords...)
 		return nil
 	})
 	if err != nil {
@@ -83,6 +89,33 @@ func TestParseComponentsXML_KeywordLangFilter(t *testing.T) {
 	}
 	if strings.Contains(got, "francais") {
 		t.Errorf("did not want fr keyword, got %q", got)
+	}
+}
+
+func TestParseComponentsXML_CategoriesLangFilter(t *testing.T) {
+	const xml = `<?xml version="1.0"?>
+<components>
+<component>
+  <pkgname>demo</pkgname>
+  <categories><category>NeutralCat</category></categories>
+  <categories xml:lang="de"><category>DeutschCat</category></categories>
+  <categories xml:lang="fr"><category>FrCat</category></categories>
+</component>
+</components>`
+	acc := make(map[string][]string)
+	err := ParseComponentsXML(strings.NewReader(xml), func(name string, terms IndexTerms) error {
+		acc[name] = append(acc[name], terms.Categories...)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := dedupeWords(acc["demo"])
+	if !strings.Contains(got, "NeutralCat") || !strings.Contains(got, "DeutschCat") {
+		t.Errorf("want neutral+de categories, got %q", got)
+	}
+	if strings.Contains(got, "FrCat") {
+		t.Errorf("did not want fr category, got %q", got)
 	}
 }
 
