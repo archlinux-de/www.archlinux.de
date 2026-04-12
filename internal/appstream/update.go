@@ -14,10 +14,9 @@ import (
 	"time"
 )
 
-// DefaultSourcesBase is the directory listing published by Arch that contains
-// versioned snapshots (e.g. …/20260326/{core,extra,multilib}/Components-x86_64.xml.gz).
-const DefaultSourcesBase = "https://sources.archlinux.org/other/packages/archlinux-appstream-data/"
-
+// archlinuxPackageJSON is the official package metadata used to resolve the
+// appstream-data snapshot directory name (pkgver). The XML base URL is passed
+// into Update as sourcesBase (from config.APPSTREAM_SOURCES_BASE / CLI).
 const archlinuxPackageJSON = "https://archlinux.org/packages/extra/any/archlinux-appstream-data/json/"
 
 const (
@@ -62,8 +61,8 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 }
 
 // Update downloads AppStream component XML for core, extra, and multilib from
-// sourcesBase, merges keywords and categories by package name, writes both columns,
-// and rebuilds the FTS index.
+// sourcesBase (e.g. config.AppStreamSourcesBase), merges keywords and categories
+// by package name, writes both columns, and rebuilds the FTS index.
 func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase string) error {
 	if client == nil {
 		client = &http.Client{Timeout: httpClientTimeoutUpdate}
