@@ -6,18 +6,20 @@ import (
 )
 
 type Config struct {
-	Database       string
-	Port           string
-	PackagesMirror string
-	DefaultMirror  string
+	Database             string
+	Port                 string
+	PackagesMirror       string
+	DefaultMirror        string
+	AppStreamSourcesBase string
 }
 
 func Load() (Config, error) {
 	cfg := Config{
-		Database:       getEnv("DATABASE", ""),
-		Port:           getEnv("PORT", "8080"),
-		PackagesMirror: getEnv("PACKAGES_MIRROR", "https://geo.mirror.pkgbuild.com/"),
-		DefaultMirror:  getEnv("DEFAULT_MIRROR", "https://geo.mirror.pkgbuild.com/"),
+		Database:             getEnv("DATABASE", ""),
+		Port:                 getEnv("PORT", "8080"),
+		PackagesMirror:       getEnv("PACKAGES_MIRROR", "https://geo.mirror.pkgbuild.com/"),
+		DefaultMirror:        getEnv("DEFAULT_MIRROR", "https://geo.mirror.pkgbuild.com/"),
+		AppStreamSourcesBase: getEnv("APPSTREAM_SOURCES_BASE", "https://sources.archlinux.org/other/packages/archlinux-appstream-data/"),
 	}
 
 	if cfg.Database == "" {

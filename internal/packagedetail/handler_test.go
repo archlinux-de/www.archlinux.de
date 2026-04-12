@@ -44,8 +44,8 @@ func setupHandlerDB(t *testing.T) *sql.DB {
 usr/share/bash/bash_completion')`,
 
 		// Populate FTS
-		`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
-			SELECT id, name, base, description, groups, provides FROM package`,
+		`INSERT INTO package_fts (rowid, name, base, description, groups, provides, keywords)
+			SELECT id, name, base, description, groups, provides, keywords FROM package`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatalf("setup: %v", err)

@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"archded/internal/appstream"
 	"archded/internal/config"
 	"archded/internal/database"
 	"archded/internal/legacy"
@@ -83,6 +84,11 @@ func runCommand(cmd string, cfg config.Config) int {
 	case "update-mirror-popularities":
 		if err := popularity.UpdateMirrors(ctx, db); err != nil {
 			slog.Error("update-mirror-popularities failed", "error", err)
+			return 1
+		}
+	case "update-appstream":
+		if err := appstream.Update(ctx, db, nil, cfg.AppStreamSourcesBase); err != nil {
+			slog.Error("update-appstream failed", "error", err)
 			return 1
 		}
 	default:
