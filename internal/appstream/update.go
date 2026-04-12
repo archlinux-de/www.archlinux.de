@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -19,6 +20,11 @@ const DefaultSourcesBase = "https://sources.archlinux.org/other/packages/archlin
 
 const archlinuxPackageJSON = "https://archlinux.org/packages/extra/any/archlinux-appstream-data/json/"
 
+const (
+	httpClientTimeoutRelease = 2 * time.Minute
+	httpClientTimeoutUpdate  = 15 * time.Minute
+)
+
 var componentRepos = []string{"core", "extra", "multilib"}
 
 type pkgJSON struct {
@@ -29,7 +35,7 @@ type pkgJSON struct {
 // the current extra/any archlinux-appstream-data package in the official repos.
 func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 	if client == nil {
-		client = &http.Client{Timeout: 2 * time.Minute}
+		client = &http.Client{Timeout: httpClientTimeoutRelease}
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, archlinuxPackageJSON, nil)
 	if err != nil {
@@ -50,7 +56,7 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 		return "", fmt.Errorf("decode package json: %w", err)
 	}
 	if p.Pkgver == "" {
-		return "", fmt.Errorf("empty pkgver in package json")
+		return "", errors.New("empty pkgver in package json")
 	}
 	return p.Pkgver, nil
 }
@@ -60,7 +66,7 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 // and rebuilds the FTS index.
 func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase string) error {
 	if client == nil {
-		client = &http.Client{Timeout: 15 * time.Minute}
+		client = &http.Client{Timeout: httpClientTimeoutUpdate}
 	}
 	sourcesBase = strings.TrimSuffix(sourcesBase, "/") + "/"
 
