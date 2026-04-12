@@ -27,7 +27,16 @@ func init() {
 		"was", "we", "were", "what", "when", "where", "which", "while", "who", "whom", "why", "will", "with", "would",
 		"you", "your", "yours", "yourself", "yourselves",
 		// German
-		"als", "am", "an", "auch", "auf", "aus", "bei", "bin", "bis", "bist", "da", "das", "dass", "dein", "deine", "dem", "den", "der", "des", "dich", "die", "dir", "doch", "du", "durch", "ein", "eine", "einem", "einen", "einer", "eines", "er", "es", "euch", "euer", "eure", "für", "hab", "habe", "haben", "hast", "hat", "hatte", "hatten", "hattest", "hattet", "hier", "ich", "ihm", "ihn", "ihr", "ihre", "ihrem", "ihren", "ihrer", "ihres", "im", "in", "ist", "ja", "jede", "jedem", "jeden", "jeder", "jedes", "kann", "kannst", "können", "könnt", "machen", "man", "mein", "meine", "mich", "mir", "mit", "muss", "musst", "nach", "nicht", "noch", "nun", "nur", "ob", "oder", "ohne", "seid", "sein", "seine", "seinem", "seinen", "seiner", "seines", "sich", "sie", "sind", "so", "soll", "sollen", "sollst", "sollt", "sonst", "sowie", "um", "und", "uns", "unser", "unsere", "unter", "vom", "von", "vor", "war", "waren", "warst", "wart", "was", "weg", "weil", "weiter", "welche", "welchem", "welchen", "welcher", "welches", "wenn", "wer", "werde", "werden", "werdet", "wie", "wieder", "will", "wir", "wird", "wirst", "wo", "wohin", "wollen", "wollt", "würde", "würden", "zu", "zum", "zur", "über",
+		"als", "am", "an", "auch", "auf", "aus", "bei", "bin", "bis", "bist", "da", "das", "dass", "dein", "deine",
+		"dem", "den", "der", "des", "dich", "die", "dir", "doch", "du", "durch", "ein", "eine", "einem", "einen", "einer",
+		"eines", "er", "es", "euch", "euer", "eure", "für", "hab", "habe", "haben", "hast", "hat", "hatte", "hatten", "hattest",
+		"hattet", "hier", "ich", "ihm", "ihn", "ihr", "ihre", "ihrem", "ihren", "ihrer", "ihres", "im", "in", "ist", "ja", "jede",
+		"jedem", "jeden", "jeder", "jedes", "kann", "kannst", "können", "könnt", "machen", "man", "mein", "meine", "mich", "mir",
+		"mit", "muss", "musst", "nach", "nicht", "noch", "nun", "nur", "ob", "oder", "ohne", "seid", "sein", "seine", "seinem",
+		"seinen", "seiner", "seines", "sich", "sie", "sind", "so", "soll", "sollen", "sollst", "sollt", "sonst", "sowie", "um",
+		"und", "uns", "unser", "unsere", "unter", "vom", "von", "vor", "war", "waren", "warst", "wart", "was", "weg", "weil",
+		"weiter", "welche", "welchem", "welchen", "welcher", "welches", "wenn", "wer", "werde", "werden", "werdet", "wie",
+		"wieder", "will", "wir", "wird", "wirst", "wo", "wohin", "wollen", "wollt", "würde", "würden", "zu", "zum", "zur", "über",
 	}
 	stopword = make(map[string]struct{}, len(words))
 	for _, w := range words {

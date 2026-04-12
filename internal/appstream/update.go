@@ -61,7 +61,7 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 }
 
 // Update downloads AppStream component XML for core, extra, and multilib from
-// sourcesBase (e.g. config.AppStreamSourcesBase), merges keywords and categories
+// sourcesBase (see config.go), merges keywords and categories
 // by package name, writes both columns, and rebuilds the FTS index.
 func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase string) error {
 	if client == nil {

@@ -19,7 +19,6 @@ func Load() (Config, error) {
 		Port:           getEnv("PORT", "8080"),
 		PackagesMirror: getEnv("PACKAGES_MIRROR", "https://geo.mirror.pkgbuild.com/"),
 		DefaultMirror:  getEnv("DEFAULT_MIRROR", "https://geo.mirror.pkgbuild.com/"),
-		// Arch appstream-data snapshot root (override for tests or mirrors).
 		AppStreamSourcesBase: getEnv("APPSTREAM_SOURCES_BASE", "https://sources.archlinux.org/other/packages/archlinux-appstream-data/"),
 	}
 
