@@ -98,11 +98,15 @@ update-pnpm:
 update: update-go update-pnpm
 
 # fetch all external data into the local database
-update-data: update-packages update-news update-mirrors update-releases update-package-popularities update-mirror-popularities
+update-data: update-packages update-appstream update-news update-mirrors update-releases update-package-popularities update-mirror-popularities
 
 # fetch package data from Arch Linux repositories
 update-packages:
     go run . update-packages
+
+# fetch AppStream component metadata (keywords for package search)
+update-appstream:
+    go run . update-appstream
 
 # fetch news from archlinux.org
 update-news:
