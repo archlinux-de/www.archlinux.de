@@ -88,7 +88,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	if err := enc.Encode(urlSet{
 		XMLNS: "http://www.sitemaps.org/schemas/sitemap/0.9",
 		URLs:  urls,
-	}); err != nil {
+	}); err != nil && !layout.IsClientDisconnect(err) {
 		slog.Error("encode sitemap", "error", err)
 	}
 }

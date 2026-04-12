@@ -5,9 +5,16 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"syscall"
 
 	"github.com/a-h/templ"
 )
+
+func IsClientDisconnect(err error) bool {
+	return errors.Is(err, context.Canceled) ||
+		errors.Is(err, syscall.EPIPE) ||
+		errors.Is(err, syscall.ECONNRESET)
+}
 
 func Render(w http.ResponseWriter, r *http.Request, page Page, content templ.Component) {
 	if !page.NoIndex {
@@ -24,14 +31,14 @@ func Render(w http.ResponseWriter, r *http.Request, page Page, content templ.Com
 	}
 
 	if err := Base(page, content).Render(r.Context(), w); err != nil {
-		if !errors.Is(err, context.Canceled) {
+		if !IsClientDisconnect(err) {
 			slog.Error("failed to render page", "error", err)
 		}
 	}
 }
 
 func ServerError(w http.ResponseWriter, msg string, err error) {
-	if errors.Is(err, context.Canceled) {
+	if IsClientDisconnect(err) {
 		return
 	}
 	slog.Error(msg, "error", err)

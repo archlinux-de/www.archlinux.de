@@ -9,6 +9,7 @@ import (
 	"archded/internal/news"
 	"archded/internal/packages"
 	"archded/internal/releases"
+	"archded/internal/ui/layout"
 )
 
 const feedItems = 25
@@ -80,7 +81,7 @@ func writeAtom(w http.ResponseWriter, feed atomFeed) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	if err := enc.Encode(feed); err != nil {
+	if err := enc.Encode(feed); err != nil && !layout.IsClientDisconnect(err) {
 		slog.Error("encode atom feed", "error", err)
 	}
 }

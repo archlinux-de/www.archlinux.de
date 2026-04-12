@@ -131,7 +131,7 @@ func (h *Handler) planetRSSFeed(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(xml.Header))
 	enc := xml.NewEncoder(w)
 	enc.Indent("", "  ")
-	if err := enc.Encode(feed); err != nil {
+	if err := enc.Encode(feed); err != nil && !layout.IsClientDisconnect(err) {
 		slog.Error("encode planet rss feed", "error", err)
 	}
 }
