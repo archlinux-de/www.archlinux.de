@@ -2,11 +2,12 @@
 // https://sources.archlinux.org/other/packages/archlinux-appstream-data/) and
 // builds per-pkgname search text for SQLite FTS.
 //
-// Parsing model: encoding/xml streams tokens (start/end/CharData); we keep one
-// open component in docParser.cur. stack + muteLeaf track the path so
-// text is attributed to the right element; name/summary with xml:lang outside
-// en/de are skipped. flush runs at </component> (and before the next <component>)
-// to emit (pkgname, parts); the caller merges duplicate pkgnames.
+// Parsing model: encoding/xml streams tokens; we keep one open <component> in
+// docParser.cur. Only <pkgname> and <keywords>/<keyword> text are read; other
+// elements (name, summary, description, categories) are ignored for indexing.
+// AppStream puts xml:lang on <keywords> blocks (not each <keyword>). Only blocks
+// with no lang or en/de are indexed; per-<keyword> xml:lang is also respected when present.
+// flush runs at </component> (and before the next <component>) to emit (pkgname, parts).
 package appstream
 
 import (
@@ -22,8 +23,8 @@ const (
 )
 
 // ParseComponentsXML streams the decoder and calls fn once per completed
-// <component> (same pkgname may appear many times). fn receives raw text
-// fragments in parts; dedupeWords runs in the caller after merge.
+// <component> (same pkgname may appear many times). parts contains only
+// <keyword> text; dedupeWords runs in the caller after merge.
 func ParseComponentsXML(r io.Reader, fn func(pkgname string, parts []string) error) error {
 	d := xml.NewDecoder(r)
 	d.Strict = false
@@ -52,18 +53,18 @@ func ParseComponentsXML(r io.Reader, fn func(pkgname string, parts []string) err
 }
 
 // docParser holds decoder state between tokens.
-// stack/muteLeaf are parallel: element names and whether that leaf skips CharData (non-en/de name/summary).
-// inKeywords/inKeyword/inCats/inDesc gate text from nested sections. cur is the open <component> or nil.
+// keywordsBlockSkip drops a whole <keywords xml:lang="…"> block when not en/de/neutral.
+// keywordSkip does the same for a single <keyword> when it carries xml:lang.
+// cur is the open <component> or nil.
 type docParser struct {
-	fn         func(string, []string) error
-	dec        *xml.Decoder
-	stack      []string
-	muteLeaf   []bool
-	inKeywords bool
-	inKeyword  bool
-	inCats     bool
-	inDesc     int
-	cur        *component
+	fn                func(string, []string) error
+	dec               *xml.Decoder
+	stack             []string
+	inKeywords        bool
+	keywordsBlockSkip bool
+	inKeyword         bool
+	keywordSkip       bool
+	cur               *component
 }
 
 // flush emits cur via fn and clears it. EOF calls flush for the last component.
@@ -80,23 +81,10 @@ func (p *docParser) flush() error {
 	return p.fn(name, parts)
 }
 
-// startElement pushes stack/muteLeaf; on <component> flushes the previous component then starts a new cur.
+// startElement pushes stack; on <component> flushes the previous component then starts a new cur.
 func (p *docParser) startElement(t xml.StartElement) error {
 	local := t.Name.Local
 	p.stack = append(p.stack, local)
-	muted := false
-	if local == "name" || local == "summary" {
-		for _, a := range t.Attr {
-			if a.Name.Local != "lang" || a.Value == "" {
-				continue
-			}
-			if a.Value != "en" && a.Value != "de" {
-				muted = true
-				break
-			}
-		}
-	}
-	p.muteLeaf = append(p.muteLeaf, muted)
 
 	switch local {
 	case "component":
@@ -106,28 +94,23 @@ func (p *docParser) startElement(t xml.StartElement) error {
 		p.cur = &component{}
 	case "keywords":
 		p.inKeywords = true
+		p.keywordsBlockSkip = !keywordLangAccepted(t.Attr)
 	case elKeyword:
 		if p.inKeywords {
 			p.inKeyword = true
+			p.keywordSkip = !keywordLangAccepted(t.Attr)
 		}
-	case "categories":
-		p.inCats = true
-	case "description":
-		p.inDesc++
 	}
 	return nil
 }
 
-// endElement pops stack/muteLeaf; on </component> flushes the finished component.
+// endElement pops stack; on </component> flushes the finished component.
 func (p *docParser) endElement(t xml.EndElement) error {
 	local := t.Name.Local
 	if len(p.stack) == 0 {
 		return nil
 	}
 	p.stack = p.stack[:len(p.stack)-1]
-	if len(p.muteLeaf) > 0 {
-		p.muteLeaf = p.muteLeaf[:len(p.muteLeaf)-1]
-	}
 
 	switch local {
 	case "component":
@@ -135,25 +118,17 @@ func (p *docParser) endElement(t xml.EndElement) error {
 	case "keywords":
 		p.inKeywords = false
 		p.inKeyword = false
+		p.keywordsBlockSkip = false
 	case elKeyword:
 		p.inKeyword = false
-	case "categories":
-		p.inCats = false
-	case "description":
-		if p.inDesc > 0 {
-			p.inDesc--
-		}
+		p.keywordSkip = false
 	}
 	return nil
 }
 
-// charData routes text to pkgname or parts by parent element name (stack tip).
+// charData collects pkgname and <keyword> text only.
 func (p *docParser) charData(t xml.CharData) {
 	if p.cur == nil {
-		return
-	}
-	muted := len(p.muteLeaf) > 0 && p.muteLeaf[len(p.muteLeaf)-1]
-	if muted {
 		return
 	}
 	text := strings.TrimSpace(string(t))
@@ -169,21 +144,27 @@ func (p *docParser) charData(t xml.CharData) {
 	switch parent {
 	case "pkgname":
 		p.cur.pkgname += text
-	case "name", "summary":
-		p.cur.parts = append(p.cur.parts, text)
-	case "category":
-		if p.inCats {
-			p.cur.parts = append(p.cur.parts, text)
-		}
 	case elKeyword:
-		if p.inKeyword {
-			p.cur.parts = append(p.cur.parts, text)
-		}
-	case "p":
-		if p.inDesc > 0 {
+		if p.inKeyword && !p.keywordsBlockSkip && !p.keywordSkip {
 			p.cur.parts = append(p.cur.parts, text)
 		}
 	}
+}
+
+// keywordLangAccepted is used for both <keywords> and <keyword> start tags: true if
+// there is no xml:lang, or it is en/de (including BCP47 prefixes like de-DE).
+func keywordLangAccepted(attrs []xml.Attr) bool {
+	for _, a := range attrs {
+		if a.Name.Local != "lang" || a.Value == "" {
+			continue
+		}
+		v := strings.ToLower(strings.TrimSpace(a.Value))
+		if i := strings.IndexByte(v, '-'); i > 0 {
+			v = v[:i]
+		}
+		return v == "en" || v == "de"
+	}
+	return true
 }
 
 // component is one AppStream <component> being accumulated until flush.
