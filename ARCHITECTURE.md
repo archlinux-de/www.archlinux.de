@@ -52,7 +52,7 @@ Six CLI subcommands fetch data from external sources, invoked by external system
 
 ## Search
 
-FTS5 indexes: name, base, description, groups, provides, keywords (AppStream `<keyword>` inside `<keywords>` blocks whose `xml:lang` is absent or en/de). Hyphenated queries are split into individual terms for tokenizer compatibility.
+FTS5 indexes: name, base, description, groups, provides, keywords, categories (AppStream `<keyword>` / `<category>` inside blocks whose `xml:lang` is absent or en/de). Hyphenated queries are split into individual terms for tokenizer compatibility.
 
 Ranking: exact name match first, then `bm25` with higher weights on name/description than on keywords (so long keyword blobs do not bury short pacman descriptions), minus `ln(1+popularity)`.
 

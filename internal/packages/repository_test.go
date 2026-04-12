@@ -31,8 +31,8 @@ func setupTestDB(t *testing.T) *sql.DB {
 			(4, 3, 'linux', 'linux', '6.7-rc1', 'The Linux kernel (testing)', 1700400000, 'Jan', 0.0)`,
 
 		// Populate FTS
-		`INSERT INTO package_fts (rowid, name, base, description, groups, provides, keywords)
-			SELECT id, name, base, description, groups, provides, keywords FROM package`,
+		`INSERT INTO package_fts (rowid, name, base, description, groups, provides, keywords, categories)
+			SELECT id, name, base, description, groups, provides, keywords, categories FROM package`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatalf("setup: %s...: %v", stmt[:40], err)

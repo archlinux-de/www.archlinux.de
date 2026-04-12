@@ -10,10 +10,9 @@ import (
 	fts "archded/internal/search"
 )
 
-// bm25Weights are per FTS5 column: name, base, description, groups, provides, keywords.
-// Long AppStream keyword fields increase BM25 document length; description (short pacman
-// text) must stay heavily weighted so queries like "browser" still rank packages that
-// only match strongly there.
+// bm25Weights are per FTS5 column: name, base, description, groups, provides, keywords, categories.
+// Long AppStream fields increase BM25 document length; description (short pacman text) must
+// stay heavily weighted so queries like "browser" still rank packages that only match there.
 const (
 	bm25Name        = 12
 	bm25Base        = 5
@@ -21,6 +20,7 @@ const (
 	bm25Groups      = 1
 	bm25Provides    = 3
 	bm25Keywords    = 0.5
+	bm25Categories  = 0.5
 )
 
 type PackageSummary struct {
@@ -108,8 +108,8 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
 		bm25 := fmt.Sprintf(
-			"bm25(package_fts, %d, %d, %d, %d, %d, %g)",
-			bm25Name, bm25Base, bm25Description, bm25Groups, bm25Provides, bm25Keywords,
+			"bm25(package_fts, %d, %d, %d, %d, %d, %g, %g)",
+			bm25Name, bm25Base, bm25Description, bm25Groups, bm25Provides, bm25Keywords, bm25Categories,
 		)
 		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
 			` + baseWhere + ` ORDER BY (p.name = ?) DESC, ` + bm25 + ` - ln(1 + p.popularity_recent), p.build_date DESC LIMIT ? OFFSET ?`

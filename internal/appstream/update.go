@@ -62,7 +62,7 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 }
 
 // Update downloads AppStream component XML for core, extra, and multilib from
-// sourcesBase, merges keywords by package name, writes the keywords column,
+// sourcesBase, merges keywords and categories by package name, writes both columns,
 // and rebuilds the FTS index.
 func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase string) error {
 	if client == nil {
@@ -76,12 +76,14 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 	}
 	slog.Info("appstream snapshot", "version", version)
 
-	acc := make(map[string][]string)
+	accKW := make(map[string][]string)
+	accCat := make(map[string][]string)
 	for _, repo := range componentRepos {
 		var components int
-		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, parts []string) error {
+		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, terms IndexTerms) error {
 			components++
-			acc[name] = append(acc[name], parts...)
+			accKW[name] = append(accKW[name], terms.Keywords...)
+			accCat[name] = append(accCat[name], terms.Categories...)
 			return nil
 		})
 		if err != nil {
@@ -90,9 +92,12 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 		slog.Info("appstream components parsed", "repo", repo, "components", components)
 	}
 
-	merged := make(map[string]string, len(acc))
-	for name, parts := range acc {
-		merged[name] = dedupeWords(parts)
+	names := make(map[string]struct{})
+	for k := range accKW {
+		names[k] = struct{}{}
+	}
+	for k := range accCat {
+		names[k] = struct{}{}
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
@@ -101,24 +106,26 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	if _, err := tx.ExecContext(ctx, `UPDATE package SET keywords = ''`); err != nil {
-		return fmt.Errorf("clear keywords: %w", err)
+	if _, err := tx.ExecContext(ctx, `UPDATE package SET keywords = '', categories = ''`); err != nil {
+		return fmt.Errorf("clear appstream columns: %w", err)
 	}
 
-	stmt, err := tx.PrepareContext(ctx, `UPDATE package SET keywords = ? WHERE name = ?`)
+	stmt, err := tx.PrepareContext(ctx, `UPDATE package SET keywords = ?, categories = ? WHERE name = ?`)
 	if err != nil {
-		return fmt.Errorf("prepare keyword update: %w", err)
+		return fmt.Errorf("prepare appstream update: %w", err)
 	}
 	defer func() { _ = stmt.Close() }()
 
 	var updated int64
-	for name, kw := range merged {
-		if kw == "" {
+	for name := range names {
+		kw := dedupeWords(accKW[name])
+		cat := dedupeWords(accCat[name])
+		if kw == "" && cat == "" {
 			continue
 		}
-		res, err := stmt.ExecContext(ctx, kw, name)
+		res, err := stmt.ExecContext(ctx, kw, cat, name)
 		if err != nil {
-			return fmt.Errorf("update keywords for %q: %w", name, err)
+			return fmt.Errorf("update appstream fields for %q: %w", name, err)
 		}
 		n, err := res.RowsAffected()
 		if err != nil {
@@ -131,7 +138,7 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 		return err
 	}
 
-	slog.Info("appstream keywords applied", "distinct_names", len(merged), "package_rows", updated)
+	slog.Info("appstream fields applied", "distinct_names", len(names), "package_rows", updated)
 
 	if _, err := db.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
 		return fmt.Errorf("rebuild fts: %w", err)
@@ -140,7 +147,7 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 	return nil
 }
 
-func fetchRepoComponents(ctx context.Context, client *http.Client, base, version, repo string, fn func(string, []string) error) error {
+func fetchRepoComponents(ctx context.Context, client *http.Client, base, version, repo string, fn func(string, IndexTerms) error) error {
 	u := fmt.Sprintf("%s%s/%s/Components-x86_64.xml.gz", base, version, repo)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
