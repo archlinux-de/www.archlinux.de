@@ -1,6 +1,12 @@
 // Package appstream parses Arch Linux AppStream component XML (from
 // https://sources.archlinux.org/other/packages/archlinux-appstream-data/) and
 // builds per-pkgname search text for SQLite FTS.
+//
+// Parsing model: encoding/xml streams tokens (start/end/CharData); we keep one
+// open component in docParser.cur. stack + muteLeaf track the path so
+// text is attributed to the right element; name/summary with xml:lang outside
+// en/de are skipped. flush runs at </component> (and before the next <component>)
+// to emit (pkgname, parts); the caller merges duplicate pkgnames.
 package appstream
 
 import (
@@ -15,11 +21,9 @@ const (
 	elKeyword = "keyword"
 )
 
-// ParseComponentsXML reads a Components-*.xml stream and calls fn for each
-// <component>, as soon as the element is complete. Multiple components with the
-// same <pkgname> produce multiple invocations; the caller merges by name. This
-// matches the streaming style of pacmandb.Parse: only one component is held in
-// memory at a time.
+// ParseComponentsXML streams the decoder and calls fn once per completed
+// <component> (same pkgname may appear many times). fn receives raw text
+// fragments in parts; dedupeWords runs in the caller after merge.
 func ParseComponentsXML(r io.Reader, fn func(pkgname string, parts []string) error) error {
 	d := xml.NewDecoder(r)
 	d.Strict = false
@@ -47,6 +51,9 @@ func ParseComponentsXML(r io.Reader, fn func(pkgname string, parts []string) err
 	}
 }
 
+// docParser holds decoder state between tokens.
+// stack/muteLeaf are parallel: element names and whether that leaf skips CharData (non-en/de name/summary).
+// inKeywords/inKeyword/inCats/inDesc gate text from nested sections. cur is the open <component> or nil.
 type docParser struct {
 	fn         func(string, []string) error
 	dec        *xml.Decoder
@@ -59,6 +66,7 @@ type docParser struct {
 	cur        *component
 }
 
+// flush emits cur via fn and clears it. EOF calls flush for the last component.
 func (p *docParser) flush() error {
 	if p.cur == nil {
 		return nil
@@ -72,6 +80,7 @@ func (p *docParser) flush() error {
 	return p.fn(name, parts)
 }
 
+// startElement pushes stack/muteLeaf; on <component> flushes the previous component then starts a new cur.
 func (p *docParser) startElement(t xml.StartElement) error {
 	local := t.Name.Local
 	p.stack = append(p.stack, local)
@@ -109,6 +118,7 @@ func (p *docParser) startElement(t xml.StartElement) error {
 	return nil
 }
 
+// endElement pops stack/muteLeaf; on </component> flushes the finished component.
 func (p *docParser) endElement(t xml.EndElement) error {
 	local := t.Name.Local
 	if len(p.stack) == 0 {
@@ -137,6 +147,7 @@ func (p *docParser) endElement(t xml.EndElement) error {
 	return nil
 }
 
+// charData routes text to pkgname or parts by parent element name (stack tip).
 func (p *docParser) charData(t xml.CharData) {
 	if p.cur == nil {
 		return
@@ -175,11 +186,13 @@ func (p *docParser) charData(t xml.CharData) {
 	}
 }
 
+// component is one AppStream <component> being accumulated until flush.
 type component struct {
 	pkgname string
 	parts   []string
 }
 
+// dedupeWords joins fragments and drops duplicate tokens (case-insensitive) for FTS.
 func dedupeWords(parts []string) string {
 	seen := make(map[string]struct{})
 	var b strings.Builder
