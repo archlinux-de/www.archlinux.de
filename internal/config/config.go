@@ -15,10 +15,10 @@ type Config struct {
 
 func Load() (Config, error) {
 	cfg := Config{
-		Database:       getEnv("DATABASE", ""),
-		Port:           getEnv("PORT", "8080"),
-		PackagesMirror: getEnv("PACKAGES_MIRROR", "https://geo.mirror.pkgbuild.com/"),
-		DefaultMirror:  getEnv("DEFAULT_MIRROR", "https://geo.mirror.pkgbuild.com/"),
+		Database:             getEnv("DATABASE", ""),
+		Port:                 getEnv("PORT", "8080"),
+		PackagesMirror:       getEnv("PACKAGES_MIRROR", "https://geo.mirror.pkgbuild.com/"),
+		DefaultMirror:        getEnv("DEFAULT_MIRROR", "https://geo.mirror.pkgbuild.com/"),
 		AppStreamSourcesBase: getEnv("APPSTREAM_SOURCES_BASE", "https://sources.archlinux.org/other/packages/archlinux-appstream-data/"),
 	}
 
