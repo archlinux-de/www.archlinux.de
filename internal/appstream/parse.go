@@ -192,13 +192,17 @@ type component struct {
 	parts   []string
 }
 
-// dedupeWords joins fragments and drops duplicate tokens (case-insensitive) for FTS.
+// dedupeWords joins fragments, removes English/German stop words, and deduplicates
+// tokens (case-insensitive) for FTS.
 func dedupeWords(parts []string) string {
 	seen := make(map[string]struct{})
 	var b strings.Builder
 	for _, part := range parts {
 		for _, w := range strings.Fields(part) {
 			key := strings.ToLower(w)
+			if _, ok := stopword[key]; ok {
+				continue
+			}
 			if _, ok := seen[key]; ok {
 				continue
 			}
