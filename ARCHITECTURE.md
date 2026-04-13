@@ -39,11 +39,12 @@ Key indexes: FTS5 virtual table for package search (name, base, description, gro
 
 ## Data Updates
 
-Six CLI subcommands fetch data from external sources, invoked by external systemd timers:
+Seven CLI subcommands fetch data from external sources, invoked by external systemd timers:
 
 | Command | Source | Notes |
 |---------|--------|-------|
 | `update-packages` | Arch mirror `.files` DBs | 6 repos concurrent, ETag change detection, FTS rebuild after |
+| `update-appstream` | sources.archlinux.org `archlinux-appstream-data` | core/extra/multilib Components-x86_64.xml.gz, FTS rebuild after |
 | `update-news` | forum.archlinux.de Flarum API | Paginated, HTML sanitized |
 | `update-mirrors` | archlinux.org/mirrors/status/json/ | Filtered by active/HTTPS/completion |
 | `update-releases` | archlinux.org/releng/releases/json/ | ISO URLs, checksums, torrent info |
