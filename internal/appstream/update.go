@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -155,5 +154,5 @@ func fetchRepoComponents(ctx context.Context, client *http.Client, base, version
 	}
 	defer func() { _ = gz.Close() }()
 
-	return ParseComponentsXML(io.Reader(gz), fn)
+	return ParseComponentsXML(gz, fn)
 }
