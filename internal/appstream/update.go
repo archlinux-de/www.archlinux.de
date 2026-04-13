@@ -7,11 +7,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // archlinuxPackageJSON is the official package metadata used to resolve the
@@ -19,23 +17,15 @@ import (
 // into Update as sourcesBase (from config.APPSTREAM_SOURCES_BASE / CLI).
 const archlinuxPackageJSON = "https://archlinux.org/packages/extra/any/archlinux-appstream-data/json/"
 
-const (
-	httpClientTimeoutRelease = 2 * time.Minute
-	httpClientTimeoutUpdate  = 15 * time.Minute
-)
-
 var componentRepos = []string{"core", "extra", "multilib"}
 
 type pkgJSON struct {
 	Pkgver string `json:"pkgver"`
 }
 
-// LatestRelease returns the snapshot directory name (e.g. "20260326") matching
+// latestRelease returns the snapshot directory name (e.g. "20260326") matching
 // the current extra/any archlinux-appstream-data package in the official repos.
-func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
-	if client == nil {
-		client = &http.Client{Timeout: httpClientTimeoutRelease}
-	}
+func latestRelease(ctx context.Context, client *http.Client) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, archlinuxPackageJSON, nil)
 	if err != nil {
 		return "", err
@@ -63,40 +53,35 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 // Update downloads AppStream component XML for core, extra, and multilib from
 // sourcesBase (see config.go), merges keywords and categories
 // by package name, writes both columns, and rebuilds the FTS index.
-func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase string) error {
-	if client == nil {
-		client = &http.Client{Timeout: httpClientTimeoutUpdate}
-	}
+func Update(ctx context.Context, db *sql.DB, sourcesBase string) error {
+	client := &http.Client{}
 	sourcesBase = strings.TrimSuffix(sourcesBase, "/") + "/"
 
-	version, err := LatestRelease(ctx, client)
+	version, err := latestRelease(ctx, client)
 	if err != nil {
 		return err
 	}
 	slog.Info("appstream snapshot", "version", version)
 
-	accKW := make(map[string][]string)
-	accCat := make(map[string][]string)
+	type terms struct{ kw, cat []string }
+	acc := make(map[string]*terms)
 	for _, repo := range componentRepos {
 		var components int
-		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, terms IndexTerms) error {
+		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, t IndexTerms) error {
 			components++
-			accKW[name] = append(accKW[name], terms.Keywords...)
-			accCat[name] = append(accCat[name], terms.Categories...)
+			e, ok := acc[name]
+			if !ok {
+				e = &terms{}
+				acc[name] = e
+			}
+			e.kw = append(e.kw, t.Keywords...)
+			e.cat = append(e.cat, t.Categories...)
 			return nil
 		})
 		if err != nil {
 			return fmt.Errorf("repo %s: %w", repo, err)
 		}
 		slog.Info("appstream components parsed", "repo", repo, "components", components)
-	}
-
-	names := make(map[string]struct{})
-	for k := range accKW {
-		names[k] = struct{}{}
-	}
-	for k := range accCat {
-		names[k] = struct{}{}
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
@@ -116,9 +101,9 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 	defer func() { _ = stmt.Close() }()
 
 	var updated int64
-	for name := range names {
-		kw := dedupeWords(accKW[name])
-		cat := dedupeWords(accCat[name])
+	for name, e := range acc {
+		kw := dedupeWords(e.kw)
+		cat := dedupeWords(e.cat)
 		if kw == "" && cat == "" {
 			continue
 		}
@@ -137,7 +122,7 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 		return err
 	}
 
-	slog.Info("appstream fields applied", "distinct_names", len(names), "package_rows", updated)
+	slog.Info("appstream fields applied", "distinct_names", len(acc), "package_rows", updated)
 
 	if _, err := db.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
 		return fmt.Errorf("rebuild fts: %w", err)
@@ -169,5 +154,5 @@ func fetchRepoComponents(ctx context.Context, client *http.Client, base, version
 	}
 	defer func() { _ = gz.Close() }()
 
-	return ParseComponentsXML(io.Reader(gz), fn)
+	return ParseComponentsXML(gz, fn)
 }
