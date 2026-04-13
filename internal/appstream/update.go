@@ -75,28 +75,25 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 	}
 	slog.Info("appstream snapshot", "version", version)
 
-	accKW := make(map[string][]string)
-	accCat := make(map[string][]string)
+	type terms struct{ kw, cat []string }
+	acc := make(map[string]*terms)
 	for _, repo := range componentRepos {
 		var components int
-		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, terms IndexTerms) error {
+		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, t IndexTerms) error {
 			components++
-			accKW[name] = append(accKW[name], terms.Keywords...)
-			accCat[name] = append(accCat[name], terms.Categories...)
+			e, ok := acc[name]
+			if !ok {
+				e = &terms{}
+				acc[name] = e
+			}
+			e.kw = append(e.kw, t.Keywords...)
+			e.cat = append(e.cat, t.Categories...)
 			return nil
 		})
 		if err != nil {
 			return fmt.Errorf("repo %s: %w", repo, err)
 		}
 		slog.Info("appstream components parsed", "repo", repo, "components", components)
-	}
-
-	names := make(map[string]struct{})
-	for k := range accKW {
-		names[k] = struct{}{}
-	}
-	for k := range accCat {
-		names[k] = struct{}{}
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
@@ -116,9 +113,9 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 	defer func() { _ = stmt.Close() }()
 
 	var updated int64
-	for name := range names {
-		kw := dedupeWords(accKW[name])
-		cat := dedupeWords(accCat[name])
+	for name, e := range acc {
+		kw := dedupeWords(e.kw)
+		cat := dedupeWords(e.cat)
 		if kw == "" && cat == "" {
 			continue
 		}
@@ -137,7 +134,7 @@ func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase st
 		return err
 	}
 
-	slog.Info("appstream fields applied", "distinct_names", len(names), "package_rows", updated)
+	slog.Info("appstream fields applied", "distinct_names", len(acc), "package_rows", updated)
 
 	if _, err := db.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
 		return fmt.Errorf("rebuild fts: %w", err)
