@@ -87,7 +87,7 @@ func runCommand(cmd string, cfg config.Config) int {
 			return 1
 		}
 	case "update-appstream":
-		if err := appstream.Update(ctx, db, nil, cfg.AppStreamSourcesBase); err != nil {
+		if err := appstream.Update(ctx, db, cfg.AppStreamSourcesBase); err != nil {
 			slog.Error("update-appstream failed", "error", err)
 			return 1
 		}
