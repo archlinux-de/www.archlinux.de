@@ -4,8 +4,9 @@
 //
 // Parsing model: encoding/xml streams tokens; we keep one open <component> in
 // docParser.cur. We read <pkgname>, <keywords>/<keyword>, and <categories>/<category>.
-// AppStream puts xml:lang on parent blocks; only neutral or en/de blocks are indexed.
-// flush runs at </component> (and before the next <component>) to emit pkgname + terms.
+// AppStream puts xml:lang on parent blocks; only neutral or en/de blocks are indexed —
+// rejected blocks are skipped wholesale via xml.Decoder.Skip. flush runs at </component>
+// (and before the next <component>) to emit pkgname + terms.
 package appstream
 
 import (
@@ -13,12 +14,6 @@ import (
 	"errors"
 	"io"
 	"strings"
-)
-
-// XML element names referenced more than once in the decoder.
-const (
-	elKeyword  = "keyword"
-	elCategory = "category"
 )
 
 // IndexTerms holds text extracted from one <component> for FTS (merged by pkgname in update.go).
@@ -45,29 +40,24 @@ func ParseComponentsXML(r io.Reader, fn func(pkgname string, terms IndexTerms) e
 				return err
 			}
 		case xml.EndElement:
-			if err := p.endElement(t); err != nil {
-				return err
-			}
+			p.endElement(t)
 		case xml.CharData:
 			p.charData(t)
 		}
 	}
 }
 
-// docParser holds decoder state between tokens.
+// docParser holds decoder state between tokens. Rejected <keywords>/<categories>
+// blocks are skipped by the decoder so we never see their children — no skip flags needed.
 type docParser struct {
-	fn                  func(string, IndexTerms) error
-	dec                 *xml.Decoder
-	stack               []string
-	inKeywords          bool
-	keywordsBlockSkip   bool
-	inKeyword           bool
-	keywordSkip         bool
-	inCategories        bool
-	categoriesBlockSkip bool
-	inCategory          bool
-	categorySkip        bool
-	cur                 *component
+	fn           func(string, IndexTerms) error
+	dec          *xml.Decoder
+	cur          *component
+	inPkgname    bool
+	inKeywords   bool
+	inKeyword    bool
+	inCategories bool
+	inCategory   bool
 }
 
 // flush emits cur via fn and clears it. EOF calls flush for the last component.
@@ -84,92 +74,86 @@ func (p *docParser) flush() error {
 	return p.fn(name, terms)
 }
 
-// startElement pushes stack; on <component> flushes the previous component then starts a new cur.
 func (p *docParser) startElement(t xml.StartElement) error {
-	local := t.Name.Local
-	p.stack = append(p.stack, local)
-
-	switch local {
+	switch t.Name.Local {
 	case "component":
 		if err := p.flush(); err != nil {
 			return err
 		}
 		p.cur = &component{}
+	case "pkgname":
+		if p.cur != nil {
+			p.inPkgname = true
+		}
 	case "keywords":
+		if !keywordLangAccepted(t.Attr) {
+			return p.dec.Skip()
+		}
 		p.inKeywords = true
-		p.keywordsBlockSkip = !keywordLangAccepted(t.Attr)
-	case elKeyword:
-		if p.inKeywords {
-			p.inKeyword = true
-			p.keywordSkip = !keywordLangAccepted(t.Attr)
+	case "keyword":
+		if !p.inKeywords {
+			return nil
 		}
+		if !keywordLangAccepted(t.Attr) {
+			return p.dec.Skip()
+		}
+		p.inKeyword = true
 	case "categories":
-		p.inCategories = true
-		p.categoriesBlockSkip = !keywordLangAccepted(t.Attr)
-	case elCategory:
-		if p.inCategories {
-			p.inCategory = true
-			p.categorySkip = !keywordLangAccepted(t.Attr)
+		if !keywordLangAccepted(t.Attr) {
+			return p.dec.Skip()
 		}
+		p.inCategories = true
+	case "category":
+		if !p.inCategories {
+			return nil
+		}
+		if !keywordLangAccepted(t.Attr) {
+			return p.dec.Skip()
+		}
+		p.inCategory = true
 	}
 	return nil
 }
 
-// endElement pops stack; on </component> flushes the finished component.
-func (p *docParser) endElement(t xml.EndElement) error {
-	local := t.Name.Local
-	if len(p.stack) == 0 {
-		return nil
-	}
-	p.stack = p.stack[:len(p.stack)-1]
-
-	switch local {
+func (p *docParser) endElement(t xml.EndElement) {
+	switch t.Name.Local {
 	case "component":
-		return p.flush()
+		_ = p.flush()
+	case "pkgname":
+		p.inPkgname = false
 	case "keywords":
 		p.inKeywords = false
+	case "keyword":
 		p.inKeyword = false
-		p.keywordsBlockSkip = false
-	case elKeyword:
-		p.inKeyword = false
-		p.keywordSkip = false
 	case "categories":
 		p.inCategories = false
+	case "category":
 		p.inCategory = false
-		p.categoriesBlockSkip = false
-	case elCategory:
-		p.inCategory = false
-		p.categorySkip = false
 	}
-	return nil
 }
 
-// charData collects pkgname, <keyword>, and <category> text.
 func (p *docParser) charData(t xml.CharData) {
 	if p.cur == nil {
 		return
 	}
-	text := strings.TrimSpace(string(t))
-	if text == "" {
+	var dst *[]string
+	switch {
+	case p.inPkgname:
+		text := strings.TrimSpace(string(t))
+		if text != "" {
+			p.cur.pkgname += text
+		}
+		return
+	case p.inKeyword:
+		dst = &p.cur.keywords
+	case p.inCategory:
+		dst = &p.cur.categories
+	default:
 		return
 	}
-
-	parent := ""
-	if len(p.stack) > 0 {
-		parent = p.stack[len(p.stack)-1]
-	}
-
-	switch parent {
-	case "pkgname":
-		p.cur.pkgname += text
-	case elKeyword:
-		if p.inKeyword && !p.keywordsBlockSkip && !p.keywordSkip {
-			p.cur.keywords = append(p.cur.keywords, text)
-		}
-	case elCategory:
-		if p.inCategory && !p.categoriesBlockSkip && !p.categorySkip {
-			p.cur.categories = append(p.cur.categories, text)
-		}
+	text := strings.TrimSpace(string(t))
+	if text != "" {
+		*dst = append(*dst, text)
 	}
 }
 
