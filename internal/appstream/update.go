@@ -19,6 +19,12 @@ const archlinuxPackageJSON = "https://archlinux.org/packages/extra/any/archlinux
 
 var componentRepos = []string{"core", "extra", "multilib"}
 
+// pkgTerms holds merged keyword/category text for one pkgname across all repos.
+type pkgTerms struct {
+	keywords   []string
+	categories []string
+}
+
 type pkgJSON struct {
 	Pkgver string `json:"pkgver"`
 }
@@ -63,19 +69,18 @@ func Update(ctx context.Context, db *sql.DB, sourcesBase string) error {
 	}
 	slog.Info("appstream snapshot", "version", version)
 
-	type terms struct{ kw, cat []string }
-	acc := make(map[string]*terms)
+	acc := make(map[string]*pkgTerms)
 	for _, repo := range componentRepos {
 		var components int
 		err := fetchRepoComponents(ctx, client, sourcesBase, version, repo, func(name string, t IndexTerms) error {
 			components++
 			e, ok := acc[name]
 			if !ok {
-				e = &terms{}
+				e = &pkgTerms{}
 				acc[name] = e
 			}
-			e.kw = append(e.kw, t.Keywords...)
-			e.cat = append(e.cat, t.Categories...)
+			e.keywords = append(e.keywords, t.Keywords...)
+			e.categories = append(e.categories, t.Categories...)
 			return nil
 		})
 		if err != nil {
@@ -84,51 +89,60 @@ func Update(ctx context.Context, db *sql.DB, sourcesBase string) error {
 		slog.Info("appstream components parsed", "repo", repo, "components", components)
 	}
 
-	tx, err := db.BeginTx(ctx, nil)
+	updated, err := applyTerms(ctx, db, acc)
 	if err != nil {
 		return err
+	}
+	slog.Info("appstream fields applied", "distinct_names", len(acc), "package_rows", updated)
+	return nil
+}
+
+// applyTerms clears AppStream columns on every package row, writes the dedup'd
+// terms for each pkgname in a single transaction, and rebuilds the FTS index.
+// Returns the number of package rows updated.
+func applyTerms(ctx context.Context, db *sql.DB, acc map[string]*pkgTerms) (int64, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
 	}
 	defer func() { _ = tx.Rollback() }()
 
 	if _, err := tx.ExecContext(ctx, `UPDATE package SET keywords = '', categories = ''`); err != nil {
-		return fmt.Errorf("clear appstream columns: %w", err)
+		return 0, fmt.Errorf("clear appstream columns: %w", err)
 	}
 
 	stmt, err := tx.PrepareContext(ctx, `UPDATE package SET keywords = ?, categories = ? WHERE name = ?`)
 	if err != nil {
-		return fmt.Errorf("prepare appstream update: %w", err)
+		return 0, fmt.Errorf("prepare appstream update: %w", err)
 	}
 	defer func() { _ = stmt.Close() }()
 
 	var updated int64
 	for name, e := range acc {
-		kw := dedupeWords(e.kw)
-		cat := dedupeWords(e.cat)
+		kw := dedupeWords(e.keywords)
+		cat := dedupeWords(e.categories)
 		if kw == "" && cat == "" {
 			continue
 		}
 		res, err := stmt.ExecContext(ctx, kw, cat, name)
 		if err != nil {
-			return fmt.Errorf("update appstream fields for %q: %w", name, err)
+			return 0, fmt.Errorf("update appstream fields for %q: %w", name, err)
 		}
 		n, err := res.RowsAffected()
 		if err != nil {
-			return err
+			return 0, err
 		}
 		updated += n
 	}
 
 	if err := tx.Commit(); err != nil {
-		return err
+		return 0, err
 	}
-
-	slog.Info("appstream fields applied", "distinct_names", len(acc), "package_rows", updated)
 
 	if _, err := db.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
-		return fmt.Errorf("rebuild fts: %w", err)
+		return updated, fmt.Errorf("rebuild fts: %w", err)
 	}
-
-	return nil
+	return updated, nil
 }
 
 func fetchRepoComponents(ctx context.Context, client *http.Client, base, version, repo string, fn func(string, IndexTerms) error) error {
