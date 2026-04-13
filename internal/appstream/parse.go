@@ -30,9 +30,7 @@ type IndexTerms struct {
 // ParseComponentsXML streams the decoder and calls fn once per completed
 // <component> (same pkgname may appear many times). dedupeWords runs in the caller after merge.
 func ParseComponentsXML(r io.Reader, fn func(pkgname string, terms IndexTerms) error) error {
-	d := xml.NewDecoder(r)
-	d.Strict = false
-	p := &docParser{fn: fn, dec: d}
+	p := &docParser{fn: fn, dec: xml.NewDecoder(r)}
 	for {
 		tok, err := p.dec.Token()
 		if errors.Is(err, io.EOF) {
@@ -78,10 +76,7 @@ func (p *docParser) flush() error {
 		return nil
 	}
 	name := strings.TrimSpace(p.cur.pkgname)
-	terms := IndexTerms{
-		Keywords:   append([]string(nil), p.cur.keywords...),
-		Categories: append([]string(nil), p.cur.categories...),
-	}
+	terms := IndexTerms{Keywords: p.cur.keywords, Categories: p.cur.categories}
 	p.cur = nil
 	if name == "" {
 		return nil
