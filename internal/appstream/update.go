@@ -11,7 +11,6 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // archlinuxPackageJSON is the official package metadata used to resolve the
@@ -19,23 +18,15 @@ import (
 // into Update as sourcesBase (from config.APPSTREAM_SOURCES_BASE / CLI).
 const archlinuxPackageJSON = "https://archlinux.org/packages/extra/any/archlinux-appstream-data/json/"
 
-const (
-	httpClientTimeoutRelease = 2 * time.Minute
-	httpClientTimeoutUpdate  = 15 * time.Minute
-)
-
 var componentRepos = []string{"core", "extra", "multilib"}
 
 type pkgJSON struct {
 	Pkgver string `json:"pkgver"`
 }
 
-// LatestRelease returns the snapshot directory name (e.g. "20260326") matching
+// latestRelease returns the snapshot directory name (e.g. "20260326") matching
 // the current extra/any archlinux-appstream-data package in the official repos.
-func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
-	if client == nil {
-		client = &http.Client{Timeout: httpClientTimeoutRelease}
-	}
+func latestRelease(ctx context.Context, client *http.Client) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, archlinuxPackageJSON, nil)
 	if err != nil {
 		return "", err
@@ -63,13 +54,11 @@ func LatestRelease(ctx context.Context, client *http.Client) (string, error) {
 // Update downloads AppStream component XML for core, extra, and multilib from
 // sourcesBase (see config.go), merges keywords and categories
 // by package name, writes both columns, and rebuilds the FTS index.
-func Update(ctx context.Context, db *sql.DB, client *http.Client, sourcesBase string) error {
-	if client == nil {
-		client = &http.Client{Timeout: httpClientTimeoutUpdate}
-	}
+func Update(ctx context.Context, db *sql.DB, sourcesBase string) error {
+	client := &http.Client{}
 	sourcesBase = strings.TrimSuffix(sourcesBase, "/") + "/"
 
-	version, err := LatestRelease(ctx, client)
+	version, err := latestRelease(ctx, client)
 	if err != nil {
 		return err
 	}
