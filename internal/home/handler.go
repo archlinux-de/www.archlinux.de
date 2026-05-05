@@ -60,7 +60,8 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 		Manifest:    h.manifest,
 		JsonLD: map[string]any{
 			"website": map[string]any{
-				"@context":      "https://schema.org",
+				"@context": "https://schema.org",
+				//nolint:goconst // @type is standard JSON-LD
 				"@type":         "WebSite",
 				"name":          "archlinux.de",
 				"alternateName": "Arch Linux Deutschland",
@@ -73,5 +74,6 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
+
 	layout.Render(w, r, page, Index(latestNews, recentPkgs))
 }

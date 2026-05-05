@@ -48,7 +48,8 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	var jsonLD map[string]any
 	if !pkg.Testing {
 		app := map[string]any{
-			"@context":        "https://schema.org",
+			"@context": "https://schema.org",
+			//nolint:goconst // @type is standard JSON-LD
 			"@type":           "SoftwareApplication",
 			"name":            pkg.Name,
 			"operatingSystem": "Arch Linux",

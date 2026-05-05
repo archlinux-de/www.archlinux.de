@@ -16,6 +16,7 @@ func (h *Handler) releasesFeed(w http.ResponseWriter, r *http.Request) {
 
 	baseURL := layout.GetBaseURL(r)
 
+	//nolint:goconst // literals are clearer for Atom feeds
 	feed := atomFeed{
 		XMLNS: "http://www.w3.org/2005/Atom",
 		ID:    baseURL + "/releases/feed",

@@ -17,6 +17,7 @@ func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 
 	baseURL := layout.GetBaseURL(r)
 
+	//nolint:goconst // literals are clearer for Atom feeds
 	feed := atomFeed{
 		XMLNS: "http://www.w3.org/2005/Atom",
 		ID:    baseURL + "/news/feed",
@@ -40,6 +41,7 @@ func (h *Handler) newsFeed(w http.ResponseWriter, r *http.Request) {
 			entry.Author = &atomAuthor{Name: item.AuthorName, URI: item.AuthorLink}
 		}
 		if item.Description != "" {
+			//nolint:goconst // literal is clearer
 			entry.Content = &atomContent{Type: "html", Content: item.Description}
 		}
 		feed.Entries = append(feed.Entries, entry)

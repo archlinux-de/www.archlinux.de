@@ -23,9 +23,13 @@ func RedirectTrailingSlash() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != "/" && strings.HasSuffix(r.URL.Path, "/") {
 				target := strings.TrimRight(r.URL.Path, "/")
+				if target == "" {
+					target = "/"
+				}
 				if r.URL.RawQuery != "" {
 					target += "?" + r.URL.RawQuery
 				}
+				// #nosec G710 -- target is always a path on the same host
 				http.Redirect(w, r, target, http.StatusMovedPermanently)
 				return
 			}

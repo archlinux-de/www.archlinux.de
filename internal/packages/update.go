@@ -21,8 +21,8 @@ type repoConfig struct {
 }
 
 var repositories = []repoConfig{
-	{"core", "x86_64", false},
-	{"core-testing", "x86_64", true},
+	{"core", "x86_64", false},        //nolint:goconst
+	{"core-testing", "x86_64", true}, //nolint:goconst
 	{"extra", "x86_64", false},
 	{"extra-testing", "x86_64", true},
 	{"multilib", "x86_64", false},
@@ -237,6 +237,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, r io.Reader)
 
 		var provides []string
 		for _, rel := range pkg.Relations {
+			//nolint:goconst // literal is clearer
 			if rel.Type == "provides" {
 				provides = append(provides, rel.TargetName)
 			}

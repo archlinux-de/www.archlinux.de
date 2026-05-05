@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+const (
+	pkgstatsURL = "https://pkgstats.archlinux.de/"
+)
+
 func emptyJSONArray(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write([]byte("[]"))
@@ -28,8 +32,8 @@ var legacyRoutes = []legacyRoute{
 	{regexp.MustCompile(`^/download/community-testing/(.+)$`), "/download/extra-testing/{1}"},
 	{regexp.MustCompile(`^/download/community/(.+)$`), "/download/extra/{1}"},
 	{regexp.MustCompile(`^/style/favicon\.ico$`), "/favicon.ico"},
-	{regexp.MustCompile(`^/statistics$`), "https://pkgstats.archlinux.de/"},
-	{regexp.MustCompile(`^/statistics/(.+)$`), "https://pkgstats.archlinux.de/{1}"},
+	{regexp.MustCompile(`^/statistics$`), pkgstatsURL},
+	{regexp.MustCompile(`^/statistics/(.+)$`), pkgstatsURL + "{1}"},
 	{regexp.MustCompile(`^/js/`), ""},
 	{regexp.MustCompile(`^/css/`), ""},
 	{regexp.MustCompile(`^/workbox-[a-f0-9]+\.js$`), ""},
@@ -57,6 +61,7 @@ func LegacyMiddleware(next http.Handler) http.Handler {
 				target = strings.ReplaceAll(target, "{"+string(rune('0'+i))+"}", matches[i])
 			}
 
+			// #nosec G710 -- target is from predefined legacyRoutes
 			http.Redirect(w, r, target, http.StatusMovedPermanently)
 			return
 		}
@@ -96,6 +101,7 @@ func HandleLegacyQuery(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 
+	// #nosec G710 -- target is from resolveTarget which uses internal/external maps
 	http.Redirect(w, r, target, http.StatusMovedPermanently)
 	return true
 }
@@ -104,13 +110,14 @@ var externalRedirects = map[string]string{
 	"ArchitectureDifferences": "https://www.archlinux.org/packages/differences/",
 	"MirrorProblems":          "https://www.archlinux.org/mirrors/status/#outofsync",
 	"MirrorStatusJSON":        "https://www.archlinux.org/mirrors/status/json/",
-	"FunStatistics":           "https://pkgstats.archlinux.de/fun",
-	"ModuleStatistics":        "https://pkgstats.archlinux.de/module",
-	"PackageStatistics":       "https://pkgstats.archlinux.de/package",
-	"Statistics":              "https://pkgstats.archlinux.de/",
-	"UserStatistics":          "https://pkgstats.archlinux.de/",
+	"FunStatistics":           pkgstatsURL + "fun",
+	"ModuleStatistics":        pkgstatsURL + "module",
+	"PackageStatistics":       pkgstatsURL + "package",
+	"Statistics":              pkgstatsURL,
+	"UserStatistics":          pkgstatsURL,
 }
 
+//nolint:goconst // literals are clearer for routes
 var internalRedirects = map[string]string{
 	"GetRecentNews":     "/news/feed",
 	"GetRecentPackages": "/packages/feed",
@@ -136,6 +143,7 @@ func resolveTarget(page string, values url.Values) string {
 		if clean != "" && clean == file && !strings.HasPrefix(clean, "/") && !strings.HasPrefix(clean, "..") {
 			return "/download/" + file
 		}
+		//nolint:goconst // literal is clearer
 		return "/download"
 
 	case "PackageDetails":

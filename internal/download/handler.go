@@ -103,10 +103,12 @@ func (h *Handler) iso(w http.ResponseWriter, r *http.Request) {
 		if mapped, ok := versionDirMap[version]; ok {
 			dirVersion = mapped
 		}
+		// #nosec G710 -- mirrorArchive is a constant
 		http.Redirect(w, r, mirrorArchive+"iso/"+dirVersion+"/"+file, http.StatusMovedPermanently)
 		return
 	}
 
+	// #nosec G710 -- h.mirror is from trusted configuration
 	http.Redirect(w, r, h.mirror+"iso/"+version+"/"+file, http.StatusTemporaryRedirect)
 }
 
@@ -124,10 +126,12 @@ func (h *Handler) isoDir(w http.ResponseWriter, r *http.Request) {
 		if mapped, ok := versionDirMap[version]; ok {
 			dirVersion = mapped
 		}
+		// #nosec G710 -- mirrorArchive is a constant
 		http.Redirect(w, r, mirrorArchive+"iso/"+dirVersion+"/", http.StatusMovedPermanently)
 		return
 	}
 
+	// #nosec G710 -- h.mirror is from trusted configuration
 	http.Redirect(w, r, h.mirror+"iso/"+version+"/", http.StatusTemporaryRedirect)
 }
 
@@ -136,6 +140,7 @@ func (h *Handler) pkg(w http.ResponseWriter, r *http.Request) {
 	arch := r.PathValue("architecture")
 	file := r.PathValue("file")
 
+	// #nosec G710 -- h.mirror is from trusted configuration
 	http.Redirect(w, r, h.mirror+repo+"/os/"+arch+"/"+file, http.StatusTemporaryRedirect)
 }
 
@@ -148,5 +153,6 @@ func (h *Handler) fallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #nosec G710 -- h.mirror is from trusted configuration
 	http.Redirect(w, r, h.mirror+file, http.StatusTemporaryRedirect)
 }
