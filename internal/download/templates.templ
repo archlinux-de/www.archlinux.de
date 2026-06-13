@@ -45,7 +45,7 @@ templ DownloadPage(data downloadData) {
 						</li>
 					}
 					<li class="mb-3">
-						<a href={ templ.SafeURL(data.UpstreamISODir + data.Release.FileName + ".sig") }>PGP-Signatur</a>
+						<a href={ templ.SafeURL(data.UpstreamISODir + data.Release.FileName + ".sig") }>{ data.Release.FileName }.sig</a>
 						if data.Release.WKDEmail != "" {
 							<pre class="ms-4 mt-2 mb-0 overflow-auto"><code>{ fmt.Sprintf("gpg --auto-key-locate clear,wkd \\\n  -v --locate-external-key \\\n  %s", data.Release.WKDEmail) }</code></pre>
 						}

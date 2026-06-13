@@ -129,7 +129,7 @@ templ ReleaseDetail(rel Release) {
 					if rel.ISOSigUrl() != "" {
 						<tr>
 							<th>PGP</th>
-							<td><a href={ templ.SafeURL(rel.ISOSigUrl()) } rel="nofollow noopener">PGP-Signatur</a></td>
+							<td><a href={ templ.SafeURL(rel.ISOSigUrl()) } rel="nofollow noopener">{ rel.FileName }.sig</a></td>
 						</tr>
 					}
 					if rel.PGPFingerprint != "" {
