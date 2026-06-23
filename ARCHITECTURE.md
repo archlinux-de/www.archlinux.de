@@ -39,11 +39,12 @@ Key indexes: FTS5 virtual table for package search (name, base, description, gro
 
 ## Data Updates
 
-Six CLI subcommands fetch data from external sources, invoked by external systemd timers:
+Seven CLI subcommands fetch data from external sources, invoked by external systemd timers:
 
 | Command | Source | Notes |
 |---------|--------|-------|
 | `update-packages` | Arch mirror `.files` DBs | 6 repos concurrent, ETag change detection, FTS rebuild after |
+| `update-appstream` | sources.archlinux.org `archlinux-appstream-data` | core/extra/multilib only (not testing — upstream doesn't publish it), FTS rebuild after |
 | `update-news` | forum.archlinux.de Flarum API | Paginated, HTML sanitized |
 | `update-mirrors` | archlinux.org/mirrors/status/json/ | Filtered by active/HTTPS/completion |
 | `update-releases` | archlinux.org/releng/releases/json/ | ISO URLs, checksums, torrent info |
@@ -52,9 +53,9 @@ Six CLI subcommands fetch data from external sources, invoked by external system
 
 ## Search
 
-FTS5 indexes: name, base, description, groups, provides (denormalized from package relations). Hyphenated queries are split into individual terms for tokenizer compatibility.
+FTS5 indexes: name, base, description, groups, provides, keywords, categories (AppStream `<keyword>` / `<category>` inside blocks whose `xml:lang` is absent or en/de). Hyphenated queries are split into individual terms for tokenizer compatibility.
 
-Ranking: exact name match first, then `bm25(10,5,1,1,3) - ln(1+popularity)` — name-weighted with log-scaled popularity boost.
+Ranking: exact name match first, then `bm25` with higher weights on name/description than on keywords (so long keyword blobs do not bury short pacman descriptions), minus `ln(1+popularity)`.
 
 ## Middleware Stack
 
