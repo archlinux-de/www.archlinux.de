@@ -111,7 +111,8 @@ func applyTerms(ctx context.Context, db *sql.DB, acc map[string]*pkgTerms) (int6
 		return 0, fmt.Errorf("clear appstream columns: %w", err)
 	}
 
-	stmt, err := tx.PrepareContext(ctx, `UPDATE package SET keywords = ?, categories = ? WHERE name = ?`)
+	stmt, err := tx.PrepareContext(ctx, `UPDATE package SET keywords = ?, categories = ?
+		WHERE name = ? AND repository_id IN (SELECT id FROM repository WHERE testing = 0)`)
 	if err != nil {
 		return 0, fmt.Errorf("prepare appstream update: %w", err)
 	}
@@ -135,12 +136,12 @@ func applyTerms(ctx context.Context, db *sql.DB, acc map[string]*pkgTerms) (int6
 		updated += n
 	}
 
-	if err := tx.Commit(); err != nil {
-		return 0, err
+	if _, err := tx.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
+		return 0, fmt.Errorf("rebuild fts: %w", err)
 	}
 
-	if _, err := db.ExecContext(ctx, `INSERT INTO package_fts(package_fts) VALUES('rebuild')`); err != nil {
-		return updated, fmt.Errorf("rebuild fts: %w", err)
+	if err := tx.Commit(); err != nil {
+		return 0, err
 	}
 	return updated, nil
 }

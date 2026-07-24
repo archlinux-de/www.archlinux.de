@@ -2,6 +2,7 @@ package appstream
 
 import (
 	"encoding/xml"
+	"errors"
 	"strings"
 	"testing"
 )
@@ -116,6 +117,15 @@ func TestParseComponentsXML_CategoriesLangFilter(t *testing.T) {
 	}
 	if strings.Contains(got, "FrCat") {
 		t.Errorf("did not want fr category, got %q", got)
+	}
+}
+
+func TestParseComponentsXML_PropagatesCallbackError(t *testing.T) {
+	wantErr := errors.New("callback failed")
+	err := ParseComponentsXML(strings.NewReader(`<components><component><pkgname>demo</pkgname></component></components>`),
+		func(string, IndexTerms) error { return wantErr })
+	if !errors.Is(err, wantErr) {
+		t.Fatalf("ParseComponentsXML() error = %v, want %v", err, wantErr)
 	}
 }
 

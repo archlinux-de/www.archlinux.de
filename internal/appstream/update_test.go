@@ -140,6 +140,67 @@ func TestApplyTerms_ClearsStalePriorData(t *testing.T) {
 	}
 }
 
+func TestApplyTerms_DoesNotApplyStableTermsToTestingPackages(t *testing.T) {
+	db := setupPackageDB(t)
+	ctx := context.Background()
+
+	for _, stmt := range []string{
+		`INSERT INTO repository (id, name, architecture, testing) VALUES (2, 'extra-testing', 'x86_64', 1)`,
+		`INSERT INTO package (id, repository_id, name, base, version, description)
+			VALUES (4, 2, 'firefox', 'firefox', '121.0-1', 'Testing web browser')`,
+	} {
+		if _, err := db.Exec(stmt); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	acc := map[string]*pkgTerms{
+		"firefox": {keywords: []string{"internet"}, categories: []string{"WebBrowser"}},
+	}
+	updated, err := applyTerms(ctx, db, acc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if updated != 1 {
+		t.Errorf("updated = %d, want only the stable package row", updated)
+	}
+
+	rows, err := db.Query(`SELECT r.testing, p.keywords, p.categories
+		FROM package p JOIN repository r ON r.id = p.repository_id WHERE p.name = 'firefox' ORDER BY r.testing`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	want := []struct {
+		testing    bool
+		keywords   string
+		categories string
+	}{{false, "internet", "WebBrowser"}, {true, "", ""}}
+	rowCount := 0
+	for rows.Next() {
+		if rowCount >= len(want) {
+			t.Fatal("unexpected extra package row")
+		}
+		var testing bool
+		var keywords, categories string
+		if err := rows.Scan(&testing, &keywords, &categories); err != nil {
+			t.Fatal(err)
+		}
+		if testing != want[rowCount].testing || keywords != want[rowCount].keywords || categories != want[rowCount].categories {
+			t.Errorf("row %d = (%t, %q, %q), want (%t, %q, %q)", rowCount, testing, keywords, categories,
+				want[rowCount].testing, want[rowCount].keywords, want[rowCount].categories)
+		}
+		rowCount++
+	}
+	if err := rows.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if rowCount != len(want) {
+		t.Errorf("rows = %d, want %d", rowCount, len(want))
+	}
+}
+
 func TestApplyTerms_DedupesAndStripsStopwords(t *testing.T) {
 	db := setupPackageDB(t)
 	ctx := context.Background()
@@ -182,5 +243,32 @@ func TestApplyTerms_SkipsEmptyAfterDedupe(t *testing.T) {
 	}
 	if updated != 0 {
 		t.Errorf("updated = %d, want 0 (all-stopword input)", updated)
+	}
+}
+
+func TestApplyTerms_RollsBackWhenFTSRebuildFails(t *testing.T) {
+	db := setupPackageDB(t)
+	ctx := context.Background()
+
+	if _, err := db.Exec(`UPDATE package SET keywords = 'existing' WHERE name = 'firefox'`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(`DROP TABLE package_fts`); err != nil {
+		t.Fatal(err)
+	}
+
+	acc := map[string]*pkgTerms{
+		"firefox": {keywords: []string{"replacement"}},
+	}
+	if _, err := applyTerms(ctx, db, acc); err == nil {
+		t.Fatal("applyTerms() error = nil, want FTS rebuild error")
+	}
+
+	var keywords string
+	if err := db.QueryRow(`SELECT keywords FROM package WHERE name = 'firefox'`).Scan(&keywords); err != nil {
+		t.Fatal(err)
+	}
+	if keywords != "existing" {
+		t.Errorf("keywords = %q, want transaction rollback to preserve existing value", keywords)
 	}
 }

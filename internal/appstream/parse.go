@@ -40,7 +40,9 @@ func ParseComponentsXML(r io.Reader, fn func(pkgname string, terms IndexTerms) e
 				return err
 			}
 		case xml.EndElement:
-			p.endElement(t)
+			if err := p.endElement(t); err != nil {
+				return err
+			}
 		case xml.CharData:
 			p.charData(t)
 		}
@@ -115,10 +117,10 @@ func (p *docParser) startElement(t xml.StartElement) error {
 	return nil
 }
 
-func (p *docParser) endElement(t xml.EndElement) {
+func (p *docParser) endElement(t xml.EndElement) error {
 	switch t.Name.Local {
 	case "component":
-		_ = p.flush()
+		return p.flush()
 	case "pkgname":
 		p.inPkgname = false
 	case "keywords":
@@ -130,6 +132,7 @@ func (p *docParser) endElement(t xml.EndElement) {
 	case "category":
 		p.inCategory = false
 	}
+	return nil
 }
 
 func (p *docParser) charData(t xml.CharData) {
