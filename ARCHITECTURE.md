@@ -37,6 +37,12 @@ To keep migration count low, older migrations can be squashed into the latest on
 
 Key indexes: FTS5 virtual table for package search (name, base, description, groups, provides), plus standard B-tree indexes on foreign keys and lookup columns.
 
+### Package Architectures
+
+Repository architecture identifies the repository path and lookup scope (for example `x86_64`, `i686`, or `aarch64`). Package architecture is metadata from pacman's `%ARCH%` field: CPU-specific packages use the repository architecture, while architecture-independent packages use `any`.
+
+Use the repository architecture for repository paths, package-detail routes, and dependency lookups. Use the package architecture for display and package filenames; an `any` package is still downloaded from its repository architecture path.
+
 ## Data Updates
 
 Six CLI subcommands fetch data from external sources, invoked by external systemd timers:
