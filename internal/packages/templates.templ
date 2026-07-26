@@ -71,13 +71,13 @@ templ PackageList(data packagesData) {
 				for _, pkg := range data.Packages {
 					<tr>
 						<td class="d-none d-lg-table-cell text-nowrap">
-							<a rel="nofollow" href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.Architecture)) }>
+							<a rel="nofollow" href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.RepositoryArchitecture)) }>
 								{ pkg.Repository }
 							</a>
 						</td>
 						<td class="d-none d-xl-table-cell text-nowrap">{ pkg.Architecture }</td>
 						<td class="text-sm-nowrap text-break">
-							<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Architecture, pkg.Name)) }>
+							<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.RepositoryArchitecture, pkg.Name)) }>
 								{ pkg.Name }
 							</a>
 						</td>

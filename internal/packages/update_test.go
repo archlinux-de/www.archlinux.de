@@ -49,6 +49,11 @@ func packagesToArchive(t *testing.T, packages []pacmandb.Package) *bytes.Reader 
 			fmt.Fprintf(&desc, "%%BASE%%\n%s\n\n", pkg.Base)
 		}
 		fmt.Fprintf(&desc, "%%VERSION%%\n%s\n\n", pkg.Version)
+		architecture := pkg.Architecture
+		if architecture == "" {
+			architecture = coreRepo.Architecture
+		}
+		fmt.Fprintf(&desc, "%%ARCH%%\n%s\n\n", architecture)
 		if pkg.Description != "" {
 			fmt.Fprintf(&desc, "%%DESC%%\n%s\n\n", pkg.Description)
 		}
@@ -426,7 +431,7 @@ func TestFetchRepositoryUsesETag(t *testing.T) {
 	ctx := context.Background()
 
 	archive := makeTestArchive(t, map[string]string{
-		"bash-5.2-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.2-1\n\n%DESC%\nshell\n\n%BUILDDATE%\n1000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
+		"bash-5.2-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.2-1\n\n%ARCH%\nx86_64\n\n%DESC%\nshell\n\n%BUILDDATE%\n1000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
 	})
 
 	requestCount := 0
@@ -480,10 +485,10 @@ func TestFetchRepositoryHandlesChangedContent(t *testing.T) {
 	ctx := context.Background()
 
 	archiveV1 := makeTestArchive(t, map[string]string{
-		"bash-5.2-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.2-1\n\n%DESC%\nshell\n\n%BUILDDATE%\n1000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
+		"bash-5.2-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.2-1\n\n%ARCH%\nx86_64\n\n%DESC%\nshell\n\n%BUILDDATE%\n1000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
 	})
 	archiveV2 := makeTestArchive(t, map[string]string{
-		"bash-5.3-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.3-1\n\n%DESC%\nshell\n\n%BUILDDATE%\n2000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
+		"bash-5.3-1/desc": "%NAME%\nbash\n\n%VERSION%\n5.3-1\n\n%ARCH%\nx86_64\n\n%DESC%\nshell\n\n%BUILDDATE%\n2000\n\n%CSIZE%\n100\n\n%ISIZE%\n200\n\n%PACKAGER%\nTest\n\n",
 	})
 
 	currentEtag := `"v1"`

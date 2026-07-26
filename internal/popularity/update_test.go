@@ -18,9 +18,9 @@ func TestUpdatePackagesSkipsTesting(t *testing.T) {
 		`INSERT INTO repository (id, name, architecture, testing) VALUES
 			(1, 'core', 'x86_64', 0),
 			(2, 'core-testing', 'x86_64', 1)`,
-		`INSERT INTO package (id, repository_id, name, base, version) VALUES
-			(1, 1, 'linux', 'linux', '6.6.7-1'),
-			(2, 2, 'linux', 'linux', '6.7-rc1')`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture) VALUES
+			(1, 1, 'linux', 'linux', '6.6.7-1', 'x86_64'),
+			(2, 2, 'linux', 'linux', '6.7-rc1', 'x86_64')`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatal(err)

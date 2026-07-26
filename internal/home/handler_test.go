@@ -22,8 +22,8 @@ func setupTestDB(t *testing.T) *sql.DB {
 
 	for _, stmt := range []string{
 		`INSERT INTO repository (id, name, architecture) VALUES (1, 'core', 'x86_64')`,
-		`INSERT INTO package (id, repository_id, name, base, version, description, build_date, packager_name) VALUES
-			(1, 1, 'linux', 'linux', '6.6.7-1', 'The Linux kernel', 1700300000, 'Jan')`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture, description, build_date, packager_name) VALUES
+			(1, 1, 'linux', 'linux', '6.6.7-1', 'x86_64', 'The Linux kernel', 1700300000, 'Jan')`,
 		`INSERT INTO news_item (id, title, link, description, author_name, last_modified) VALUES
 			(1, 'Test News', 'https://example.com/1', '<p>Content</p>', 'Alice', 1700000000)`,
 	} {

@@ -31,7 +31,7 @@ func (h *Handler) packagesFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, p := range pkgs {
-		entryURL := baseURL + fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.Architecture, p.Name)
+		entryURL := baseURL + fmt.Sprintf("/packages/%s/%s/%s", p.Repository, p.RepositoryArchitecture, p.Name)
 		entry := atomEntry{
 			ID:      entryURL,
 			Title:   p.Name + " " + p.Version,

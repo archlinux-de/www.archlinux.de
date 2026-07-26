@@ -18,6 +18,7 @@ type Package struct {
 	Name           string
 	Base           string
 	Version        string
+	Architecture   string
 	Description    string
 	URL            string
 	BuildDate      int64
@@ -125,11 +126,12 @@ func parseDesc(data string) map[string][]string {
 
 func buildPackage(fields map[string][]string) Package {
 	pkg := Package{
-		Name:        first(fields["NAME"]),
-		Base:        first(fields["BASE"]),
-		Version:     first(fields["VERSION"]),
-		Description: first(fields["DESC"]),
-		URL:         first(fields["URL"]),
+		Name:         first(fields["NAME"]),
+		Base:         first(fields["BASE"]),
+		Version:      first(fields["VERSION"]),
+		Architecture: first(fields["ARCH"]),
+		Description:  first(fields["DESC"]),
+		URL:          first(fields["URL"]),
 	}
 
 	if pkg.Base == "" {

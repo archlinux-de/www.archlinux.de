@@ -24,15 +24,15 @@ func setupTestDB(t *testing.T) *sql.DB {
 			(3, 'extra-testing', 'x86_64', 1)`,
 
 		// Packages
-		`INSERT INTO package (id, repository_id, name, base, version) VALUES
-			(1, 1, 'bash', 'bash', '5.2-1'),
-			(2, 2, 'firefox', 'firefox', '125.0-1'),
-			(3, 3, 'firefox', 'firefox', '126.0-1'),
-			(4, 2, 'jdk21-openjdk', 'java21-openjdk', '21.0.3-1'),
-			(5, 2, 'jdk17-openjdk', 'java17-openjdk', '17.0.11-1'),
-			(6, 2, 'jdk-openjdk', 'java-openjdk', '22.0.1-1'),
-			(7, 2, 'python', 'python', '3.12.3-1'),
-			(8, 2, 'python2', 'python2', '2.7.18-1')`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture) VALUES
+			(1, 1, 'bash', 'bash', '5.2-1', 'x86_64'),
+			(2, 2, 'firefox', 'firefox', '125.0-1', 'x86_64'),
+			(3, 3, 'firefox', 'firefox', '126.0-1', 'x86_64'),
+			(4, 2, 'jdk21-openjdk', 'java21-openjdk', '21.0.3-1', 'x86_64'),
+			(5, 2, 'jdk17-openjdk', 'java17-openjdk', '17.0.11-1', 'x86_64'),
+			(6, 2, 'jdk-openjdk', 'java-openjdk', '22.0.1-1', 'x86_64'),
+			(7, 2, 'python', 'python', '3.12.3-1', 'x86_64'),
+			(8, 2, 'python2', 'python2', '2.7.18-1', 'x86_64')`,
 
 		// Provides: java-environment with versioned provides
 		`INSERT INTO package_relation (package_id, type, target_name, target_version, version_constraint) VALUES

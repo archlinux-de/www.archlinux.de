@@ -60,6 +60,9 @@ bash
 %VERSION%
 5.2.037-1
 
+%ARCH%
+x86_64
+
 %DESC%
 The GNU Bourne Again shell
 
@@ -133,6 +136,9 @@ usr/bin/sh
 	}
 	if pkg.Version != "5.2.037-1" {
 		t.Errorf("Version = %q, want %q", pkg.Version, "5.2.037-1")
+	}
+	if pkg.Architecture != "x86_64" {
+		t.Errorf("Architecture = %q, want %q", pkg.Architecture, "x86_64")
 	}
 	if pkg.Description != "The GNU Bourne Again shell" {
 		t.Errorf("Description = %q", pkg.Description)

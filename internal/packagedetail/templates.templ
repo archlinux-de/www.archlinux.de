@@ -10,7 +10,7 @@ import (
 )
 
 func packageDownloadURL(pkg PackageDetail) string {
-	return "/download/" + pkg.Repository + "/os/" + pkg.Architecture + "/" + pkg.FileName()
+	return "/download/" + pkg.Repository + "/os/" + pkg.RepositoryArchitecture + "/" + pkg.FileName()
 }
 
 templ PackageDetailPage(pkg PackageDetail) {
@@ -49,7 +49,7 @@ templ PackageDetailPage(pkg PackageDetail) {
 					<tr>
 						<th>Repositorium</th>
 						<td>
-							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.Architecture)) }>{ pkg.Repository }</a>
+							<a href={ templ.SafeURL(fmt.Sprintf("/packages?repository=%s&architecture=%s", pkg.Repository, pkg.RepositoryArchitecture)) }>{ pkg.Repository }</a>
 						</td>
 					</tr>
 					<tr>
@@ -126,22 +126,22 @@ templ PackageDetailPage(pkg PackageDetail) {
 		</div>
 		<div class="col-12 col-xl-6">
 			<h2 class="mb-3 mt-5 mt-xl-0">Abhängigkeiten</h2>
-			@relationSection("Benötigt", pkg.Relations["depends"], pkg.Architecture)
-			@relationSection("Optional", pkg.Relations["optdepends"], pkg.Architecture)
-			@relationSection("Stellt bereit", pkg.Relations["provides"], pkg.Architecture)
-			@relationSection("Ersetzt", pkg.Relations["replaces"], pkg.Architecture)
-			@relationSection("Konflikte", pkg.Relations["conflicts"], pkg.Architecture)
-			@relationSection("Build-Abhängigkeiten", pkg.Relations["makedepends"], pkg.Architecture)
-			@relationSection("Test-Abhängigkeiten", pkg.Relations["checkdepends"], pkg.Architecture)
+			@relationSection("Benötigt", pkg.Relations["depends"], pkg.RepositoryArchitecture)
+			@relationSection("Optional", pkg.Relations["optdepends"], pkg.RepositoryArchitecture)
+			@relationSection("Stellt bereit", pkg.Relations["provides"], pkg.RepositoryArchitecture)
+			@relationSection("Ersetzt", pkg.Relations["replaces"], pkg.RepositoryArchitecture)
+			@relationSection("Konflikte", pkg.Relations["conflicts"], pkg.RepositoryArchitecture)
+			@relationSection("Build-Abhängigkeiten", pkg.Relations["makedepends"], pkg.RepositoryArchitecture)
+			@relationSection("Test-Abhängigkeiten", pkg.Relations["checkdepends"], pkg.RepositoryArchitecture)
 			<h2 class="mb-3 mt-5">Verwendet von</h2>
 			<package-inverse-deps
-				src={ fmt.Sprintf("/packages/%s/%s/%s/inverse-dependencies", pkg.Repository, pkg.Architecture, pkg.Name) }
-				arch={ pkg.Architecture }
+				src={ fmt.Sprintf("/packages/%s/%s/%s/inverse-dependencies", pkg.Repository, pkg.RepositoryArchitecture, pkg.Name) }
+				arch={ pkg.RepositoryArchitecture }
 			></package-inverse-deps>
 		</div>
 		<div class="col-12">
 			<h2 class="mb-3 mt-5 mt-xl-0">Dateien</h2>
-			<package-files src={ fmt.Sprintf("/packages/%s/%s/%s/files", pkg.Repository, pkg.Architecture, pkg.Name) }></package-files>
+			<package-files src={ fmt.Sprintf("/packages/%s/%s/%s/files", pkg.Repository, pkg.RepositoryArchitecture, pkg.Name) }></package-files>
 		</div>
 	</div>
 }

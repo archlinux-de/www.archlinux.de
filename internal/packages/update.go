@@ -197,10 +197,10 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, r io.Reader)
 	// Upsert packages, preserving popularity columns
 	upsertPkg, err := tx.PrepareContext(ctx,
 		`INSERT INTO package (repository_id, name, base, version, description, url, build_date,
-		 compressed_size, installed_size, packager_name, packager_email, licenses, groups, provides)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-		 ON CONFLICT (repository_id, name) DO UPDATE SET
-		   base = excluded.base, version = excluded.version, description = excluded.description,
+			 architecture, compressed_size, installed_size, packager_name, packager_email, licenses, groups, provides)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			 ON CONFLICT (repository_id, name) DO UPDATE SET
+			   base = excluded.base, version = excluded.version, architecture = excluded.architecture, description = excluded.description,
 		   url = excluded.url, build_date = excluded.build_date,
 		   compressed_size = excluded.compressed_size, installed_size = excluded.installed_size,
 		   packager_name = excluded.packager_name, packager_email = excluded.packager_email,
@@ -230,6 +230,10 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, r io.Reader)
 	count := 0
 
 	if err := pacmandb.Parse(r, func(pkg pacmandb.Package) error {
+		if pkg.Architecture == "" {
+			return fmt.Errorf("package %s has no architecture", pkg.Name)
+		}
+
 		var pkgURL string
 		if pkg.URL != "" && sanitize.IsValidURL(pkg.URL, "http", "https") {
 			pkgURL = pkg.URL
@@ -246,7 +250,7 @@ func syncPackages(ctx context.Context, db *sql.DB, repo repoConfig, r io.Reader)
 		var pkgID int64
 		if err := upsertPkg.QueryRowContext(ctx,
 			repoID, pkg.Name, pkg.Base, pkg.Version, pkg.Description, pkgURL,
-			pkg.BuildDate, pkg.CompressedSize, pkg.InstalledSize,
+			pkg.BuildDate, pkg.Architecture, pkg.CompressedSize, pkg.InstalledSize,
 			pkg.PackagerName, pkg.PackagerEmail,
 			pacmandb.LicensesJSON(pkg.Licenses), pacmandb.GroupsJSON(pkg.Groups),
 			strings.Join(provides, " "),

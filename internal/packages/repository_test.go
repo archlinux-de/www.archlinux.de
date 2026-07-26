@@ -24,11 +24,11 @@ func setupTestDB(t *testing.T) *sql.DB {
 			(3, 'core-testing', 'x86_64', 1)`,
 
 		// Packages
-		`INSERT INTO package (id, repository_id, name, base, version, description, build_date, packager_name, popularity_recent) VALUES
-			(1, 1, 'linux', 'linux', '6.6.7-1', 'The Linux kernel', 1700300000, 'Jan', 50.0),
-			(2, 2, 'firefox', 'firefox', '125.0-1', 'Web browser', 1700200000, 'Bob', 30.0),
-			(3, 1, 'bash', 'bash', '5.2-1', 'GNU Bourne Again shell', 1700100000, 'Alice', 40.0),
-			(4, 3, 'linux', 'linux', '6.7-rc1', 'The Linux kernel (testing)', 1700400000, 'Jan', 0.0)`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture, description, build_date, packager_name, popularity_recent) VALUES
+			(1, 1, 'linux', 'linux', '6.6.7-1', 'x86_64', 'The Linux kernel', 1700300000, 'Jan', 50.0),
+			(2, 2, 'firefox', 'firefox', '125.0-1', 'x86_64', 'Web browser', 1700200000, 'Bob', 30.0),
+			(3, 1, 'bash', 'bash', '5.2-1', 'x86_64', 'GNU Bourne Again shell', 1700100000, 'Alice', 40.0),
+			(4, 3, 'linux', 'linux', '6.7-rc1', 'x86_64', 'The Linux kernel (testing)', 1700400000, 'Jan', 0.0)`,
 
 		// Populate FTS
 		`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
@@ -107,6 +107,34 @@ func TestSearch_ByRepo(t *testing.T) {
 		if p.Repository != "core" {
 			t.Errorf("expected core, got %q", p.Repository)
 		}
+	}
+}
+
+func TestSearch_UsesPackageArchitecture(t *testing.T) {
+	db := setupTestDB(t)
+	if _, err := db.Exec(`INSERT INTO package
+		(id, repository_id, name, base, version, architecture, description)
+		VALUES (5, 2, 'archiso', 'archiso', '78-1', 'any', 'Arch Linux live ISO tools')`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
+		SELECT id, name, base, description, groups, provides FROM package WHERE id = 5`); err != nil {
+		t.Fatal(err)
+	}
+
+	repo := NewRepository(db)
+	pkgs, total, err := repo.Search(context.Background(), "archiso", "", "", 10, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if total != 1 || len(pkgs) != 1 {
+		t.Fatalf("expected one result, got total=%d len=%d", total, len(pkgs))
+	}
+	if pkgs[0].Architecture != "any" {
+		t.Errorf("architecture = %q, want any", pkgs[0].Architecture)
+	}
+	if pkgs[0].RepositoryArchitecture != "x86_64" {
+		t.Errorf("repository architecture = %q, want x86_64", pkgs[0].RepositoryArchitecture)
 	}
 }
 

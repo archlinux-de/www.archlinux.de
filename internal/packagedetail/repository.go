@@ -14,25 +14,26 @@ import (
 )
 
 type PackageDetail struct {
-	Name              string
-	Base              string
-	Version           string
-	Description       string
-	URL               string
-	Repository        string
-	Architecture      string
-	Testing           bool
-	BuildDate         int64
-	CompressedSize    int64
-	InstalledSize     int64
-	PackagerName      string
-	PackagerEmail     string
-	Licenses          []string
-	Groups            []string
-	Popularity        float64
-	PopularityCount   int
-	PopularitySamples int
-	Relations         map[string][]Relation
+	Name                   string
+	Base                   string
+	Version                string
+	Description            string
+	URL                    string
+	Repository             string
+	Architecture           string
+	RepositoryArchitecture string
+	Testing                bool
+	BuildDate              int64
+	CompressedSize         int64
+	InstalledSize          int64
+	PackagerName           string
+	PackagerEmail          string
+	Licenses               []string
+	Groups                 []string
+	Popularity             float64
+	PopularityCount        int
+	PopularitySamples      int
+	Relations              map[string][]Relation
 }
 
 func (p PackageDetail) FileName() string {
@@ -69,7 +70,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 	var pkgID int64
 	err := r.db.QueryRowContext(ctx,
 		`SELECT p.id, p.name, p.base, p.version, p.description, p.url,
-			r.name, r.architecture, r.testing,
+			r.name, r.architecture, p.architecture, r.testing,
 			p.build_date, p.compressed_size, p.installed_size,
 			p.packager_name, p.packager_email,
 			p.popularity_recent, p.popularity_count, p.popularity_samples,
@@ -81,7 +82,7 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 	).Scan(
 		&pkgID,
 		&pkg.Name, &pkg.Base, &pkg.Version, &pkg.Description, &pkg.URL,
-		&pkg.Repository, &pkg.Architecture, &testing,
+		&pkg.Repository, &pkg.RepositoryArchitecture, &pkg.Architecture, &testing,
 		&pkg.BuildDate, &pkg.CompressedSize, &pkg.InstalledSize,
 		&pkg.PackagerName, &pkg.PackagerEmail,
 		&pkg.Popularity, &pkg.PopularityCount, &pkg.PopularitySamples,

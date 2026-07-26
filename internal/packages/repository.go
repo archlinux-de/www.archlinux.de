@@ -10,16 +10,17 @@ import (
 )
 
 type PackageSummary struct {
-	Repository    string
-	Architecture  string
-	Name          string
-	Version       string
-	Description   string
-	BuildDate     int64
-	PackagerName  string
-	PackagerEmail string
-	Popularity    float64
-	Testing       bool
+	Repository             string
+	RepositoryArchitecture string
+	Architecture           string
+	Name                   string
+	Version                string
+	Description            string
+	BuildDate              int64
+	PackagerName           string
+	PackagerEmail          string
+	Popularity             float64
+	Testing                bool
 }
 
 type Repository struct {
@@ -93,7 +94,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
-		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
+		dataQuery = `SELECT r.name, r.architecture, p.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
 			` + baseWhere + ` ORDER BY (p.name = ?) DESC, bm25(package_fts, 10, 5, 1, 1, 3) - ln(1 + p.popularity_recent), p.build_date DESC LIMIT ? OFFSET ?`
 		dataArgs = append(dataArgs, search, limit, offset)
 	} else {
@@ -112,7 +113,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 		}
 
 		countQuery = `SELECT COUNT(*) ` + baseWhere
-		dataQuery = `SELECT r.name, r.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
+		dataQuery = `SELECT r.name, r.architecture, p.architecture, p.name, p.version, p.description, p.build_date, p.popularity_recent, r.testing
 			` + baseWhere + ` ORDER BY p.build_date DESC LIMIT ? OFFSET ?`
 		dataArgs = append(dataArgs, limit, offset)
 	}
@@ -132,7 +133,7 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 	for rows.Next() {
 		var p PackageSummary
 		var testing int
-		if err := rows.Scan(&p.Repository, &p.Architecture, &p.Name, &p.Version, &p.Description, &p.BuildDate, &p.Popularity, &testing); err != nil {
+		if err := rows.Scan(&p.Repository, &p.RepositoryArchitecture, &p.Architecture, &p.Name, &p.Version, &p.Description, &p.BuildDate, &p.Popularity, &testing); err != nil {
 			return nil, 0, err
 		}
 		p.Testing = testing != 0
@@ -146,7 +147,7 @@ func (r *Repository) Latest(ctx context.Context, limit int) ([]PackageSummary, e
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT p.name, p.version, p.description, p.build_date,
 		        p.packager_name, p.packager_email,
-		        r.name, r.architecture
+		        r.name, r.architecture, p.architecture
 		 FROM package p
 		 JOIN repository r ON r.id = p.repository_id
 		 ORDER BY p.build_date DESC LIMIT ?`, limit)
@@ -158,7 +159,7 @@ func (r *Repository) Latest(ctx context.Context, limit int) ([]PackageSummary, e
 	var pkgs []PackageSummary
 	for rows.Next() {
 		var p PackageSummary
-		if err := rows.Scan(&p.Name, &p.Version, &p.Description, &p.BuildDate, &p.PackagerName, &p.PackagerEmail, &p.Repository, &p.Architecture); err != nil {
+		if err := rows.Scan(&p.Name, &p.Version, &p.Description, &p.BuildDate, &p.PackagerName, &p.PackagerEmail, &p.Repository, &p.RepositoryArchitecture, &p.Architecture); err != nil {
 			return nil, err
 		}
 		pkgs = append(pkgs, p)
@@ -169,7 +170,7 @@ func (r *Repository) Latest(ctx context.Context, limit int) ([]PackageSummary, e
 func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSummary, error) {
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT p.name, p.version, p.description, p.build_date,
-		        p.packager_name, r.name, r.architecture
+		        p.packager_name, r.name, r.architecture, p.architecture
 		 FROM package p
 		 JOIN repository r ON r.id = p.repository_id
 		 WHERE r.testing = 0
@@ -182,7 +183,7 @@ func (r *Repository) LatestStable(ctx context.Context, limit int) ([]PackageSumm
 	var pkgs []PackageSummary
 	for rows.Next() {
 		var p PackageSummary
-		if err := rows.Scan(&p.Name, &p.Version, &p.Description, &p.BuildDate, &p.PackagerName, &p.Repository, &p.Architecture); err != nil {
+		if err := rows.Scan(&p.Name, &p.Version, &p.Description, &p.BuildDate, &p.PackagerName, &p.Repository, &p.RepositoryArchitecture, &p.Architecture); err != nil {
 			return nil, err
 		}
 		pkgs = append(pkgs, p)

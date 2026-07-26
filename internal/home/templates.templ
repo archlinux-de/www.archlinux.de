@@ -78,7 +78,7 @@ templ Index(latestNews []news.NewsItem, recentPkgs []packages.PackageSummary) {
 								for _, pkg := range recentPkgs {
 									<tr>
 										<td class="w-75">
-											<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Architecture, pkg.Name)) }>{ pkg.Name }</a>
+											<a href={ templ.SafeURL(fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.RepositoryArchitecture, pkg.Name)) }>{ pkg.Name }</a>
 										</td>
 										<td class="text-end text-break" title={ pkg.Version }>{ pkg.Version }</td>
 									</tr>

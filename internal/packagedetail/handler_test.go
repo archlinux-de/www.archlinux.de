@@ -31,10 +31,11 @@ func setupHandlerDB(t *testing.T) *sql.DB {
 			(1, 'core', 'x86_64', 0),
 			(2, 'extra', 'x86_64', 0),
 			(3, 'core-testing', 'x86_64', 1)`,
-		`INSERT INTO package (id, repository_id, name, base, version, description, build_date, popularity_recent, licenses) VALUES
-			(1, 1, 'bash', 'bash', '5.2-1', 'GNU Bourne Again shell', 1700100000, 40.0, '["GPL"]'),
-			(2, 2, 'firefox', 'firefox', '125.0-1', 'Web browser', 1700200000, 30.0, '["MPL-2.0"]'),
-			(3, 3, 'bash', 'bash', '5.3-rc1', 'GNU Bourne Again shell (testing)', 1700300000, 0.0, '')`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture, description, build_date, popularity_recent, licenses) VALUES
+			(1, 1, 'bash', 'bash', '5.2-1', 'x86_64', 'GNU Bourne Again shell', 1700100000, 40.0, '["GPL"]'),
+			(2, 2, 'firefox', 'firefox', '125.0-1', 'x86_64', 'Web browser', 1700200000, 30.0, '["MPL-2.0"]'),
+			(3, 3, 'bash', 'bash', '5.3-rc1', 'x86_64', 'GNU Bourne Again shell (testing)', 1700300000, 0.0, ''),
+			(4, 2, 'archiso', 'archiso', '78-1', 'any', 'Tools for creating Arch Linux live and install iso images', 1700400000, 0.0, '["GPL-3.0-or-later"]')`,
 		`INSERT INTO package_relation (package_id, type, target_name) VALUES
 			(1, 'depends', 'glibc'),
 			(2, 'depends', 'glibc'),
@@ -66,6 +67,27 @@ func TestShow(t *testing.T) {
 
 	if rr.Code != http.StatusOK {
 		t.Errorf("expected 200, got %d", rr.Code)
+	}
+}
+
+func TestShow_UsesPackageArchitectureForDetailsAndDownload(t *testing.T) {
+	repo := NewRepository(setupHandlerDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/extra/x86_64/archiso", nil))
+
+	body := rr.Body.String()
+	for _, want := range []string{
+		">any<",
+		"/download/extra/os/x86_64/archiso-78-1-any.pkg.tar.zst",
+		"/download/extra/os/x86_64/archiso-78-1-any.pkg.tar.zst.sig",
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("expected response to contain %q", want)
+		}
 	}
 }
 
