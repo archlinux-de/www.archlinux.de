@@ -50,15 +50,15 @@ func TestPackageArchitectureMigration(t *testing.T) {
 	assertPackageDataPreserved(t, db)
 
 	var notNull int
-	var defaultValue string
+	var defaultValue sql.NullString
 	if err := db.QueryRow(`SELECT "notnull", dflt_value FROM pragma_table_info('package') WHERE name = 'architecture'`).Scan(&notNull, &defaultValue); err != nil {
 		t.Fatal(err)
 	}
 	if notNull != 1 {
 		t.Error("architecture column is nullable")
 	}
-	if defaultValue != "'x86_64'" {
-		t.Errorf("architecture default = %q, want 'x86_64'", defaultValue)
+	if defaultValue.Valid {
+		t.Errorf("architecture default = %q, want no default", defaultValue.String)
 	}
 	var etag string
 	if err := db.QueryRow(`SELECT etag FROM repository WHERE id = 1`).Scan(&etag); err != nil {
@@ -68,7 +68,7 @@ func TestPackageArchitectureMigration(t *testing.T) {
 		t.Errorf("repository etag = %q, want empty to force refresh", etag)
 	}
 
-	down, err := embedMigrations.ReadFile("migrations/000004_package_architecture.down.sql")
+	down, err := embedMigrations.ReadFile("migrations/000005_package_architecture_no_default.down.sql")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,12 +84,11 @@ func TestPackageArchitectureMigration(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var architectureColumns int
-	if err := db.QueryRow(`SELECT count(*) FROM pragma_table_info('package') WHERE name = 'architecture'`).Scan(&architectureColumns); err != nil {
+	if err := db.QueryRow(`SELECT "notnull", dflt_value FROM pragma_table_info('package') WHERE name = 'architecture'`).Scan(&notNull, &defaultValue); err != nil {
 		t.Fatal(err)
 	}
-	if architectureColumns != 0 {
-		t.Error("down migration retained architecture column")
+	if notNull != 1 || !defaultValue.Valid || defaultValue.String != "'x86_64'" {
+		t.Errorf("down migration schema = notnull:%d default:%q, want NOT NULL DEFAULT 'x86_64'", notNull, defaultValue.String)
 	}
 	assertPackageDataPreserved(t, db)
 }
