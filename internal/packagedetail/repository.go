@@ -281,6 +281,18 @@ type PackageSuggestion struct {
 
 func (r *Repository) Suggest(ctx context.Context, name string, limit int) ([]PackageSuggestion, error) {
 	ftsSearch := search.FTSQuery(name)
+	suggestions, err := r.suggest(ctx, ftsSearch, limit)
+	if err != nil || len(suggestions) > 0 {
+		return suggestions, err
+	}
+
+	if fallback := search.FallbackFTSQuery(name); fallback != "" {
+		return r.suggest(ctx, fallback, limit)
+	}
+	return nil, nil
+}
+
+func (r *Repository) suggest(ctx context.Context, ftsSearch string, limit int) ([]PackageSuggestion, error) {
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT r.name, r.architecture, p.name, p.description, p.popularity_recent
 		 FROM package p

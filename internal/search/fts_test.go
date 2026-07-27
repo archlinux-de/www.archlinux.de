@@ -19,3 +19,20 @@ func TestFTSQuery(t *testing.T) {
 		}
 	}
 }
+
+func TestFallbackFTSQuery(t *testing.T) {
+	tests := []struct {
+		input, want string
+	}{
+		{"php-git", `"php"*`},
+		{"php", ""},
+		{"-php", ""},
+		{"php-", ""},
+	}
+	for _, tt := range tests {
+		got := FallbackFTSQuery(tt.input)
+		if got != tt.want {
+			t.Errorf("FallbackFTSQuery(%q) = %q, want %q", tt.input, got, tt.want)
+		}
+	}
+}

@@ -195,6 +195,35 @@ func TestResolveHandler_NotFound(t *testing.T) {
 	}
 }
 
+func TestShow_NotFoundSuggestsHyphenatedFallback(t *testing.T) {
+	db := setupHandlerDB(t)
+	if _, err := db.Exec(`INSERT INTO package
+		(id, repository_id, name, base, version, architecture, description)
+		VALUES (5, 2, 'php83', 'php83', '8.3-1', 'x86_64', 'PHP scripting language')`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
+		SELECT id, name, base, description, groups, provides FROM package WHERE id = 5`); err != nil {
+		t.Fatal(err)
+	}
+
+	repo := NewRepository(db)
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/extra/x86_64/php-git", nil))
+
+	if rr.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d", rr.Code)
+	}
+	if !strings.Contains(rr.Body.String(), "php83") {
+		t.Error("expected php83 fallback suggestion")
+	}
+}
+
 func TestFiles(t *testing.T) {
 	repo := NewRepository(setupHandlerDB(t))
 	handler := NewHandler(repo, testManifest())

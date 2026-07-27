@@ -122,6 +122,15 @@ func (r *Repository) Search(ctx context.Context, search, repo, arch string, limi
 	if err := r.db.QueryRowContext(ctx, countQuery, countArgs...).Scan(&total); err != nil {
 		return nil, 0, err
 	}
+	if total == 0 && search != "" {
+		if fallback := fts.FallbackFTSQuery(search); fallback != "" {
+			countArgs[0] = fallback
+			dataArgs[0] = fallback
+			if err := r.db.QueryRowContext(ctx, countQuery, countArgs...).Scan(&total); err != nil {
+				return nil, 0, err
+			}
+		}
+	}
 
 	rows, err := r.db.QueryContext(ctx, dataQuery, dataArgs...)
 	if err != nil {

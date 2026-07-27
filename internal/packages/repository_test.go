@@ -169,6 +169,28 @@ func TestSearch_FTSHyphenated(t *testing.T) {
 	}
 }
 
+func TestSearch_FTSHyphenatedFallback(t *testing.T) {
+	db := setupTestDB(t)
+	if _, err := db.Exec(`INSERT INTO package
+		(id, repository_id, name, base, version, architecture, description)
+		VALUES (5, 2, 'php83', 'php83', '8.3-1', 'x86_64', 'PHP scripting language')`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(`INSERT INTO package_fts (rowid, name, base, description, groups, provides)
+		SELECT id, name, base, description, groups, provides FROM package WHERE id = 5`); err != nil {
+		t.Fatal(err)
+	}
+
+	repo := NewRepository(db)
+	pkgs, total, err := repo.Search(context.Background(), "php-git", "", "", 10, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if total != 1 || len(pkgs) != 1 || pkgs[0].Name != "php83" {
+		t.Errorf("expected [php83], got total=%d packages=%v", total, pkgs)
+	}
+}
+
 func TestSearch_Pagination(t *testing.T) {
 	repo := NewRepository(setupTestDB(t))
 	pkgs, total, err := repo.Search(context.Background(), "", "", "", 2, 0)

@@ -22,3 +22,17 @@ func FTSQuery(search string) string {
 	b.WriteByte('*')
 	return b.String()
 }
+
+// FallbackFTSQuery returns a prefix query for the first part of a hyphenated
+// package-like search. It is intended for use only after FTSQuery finds no results.
+func FallbackFTSQuery(search string) string {
+	if !strings.Contains(search, "-") {
+		return ""
+	}
+
+	terms := strings.Fields(strings.ReplaceAll(search, "-", " "))
+	if len(terms) < 2 {
+		return ""
+	}
+	return FTSQuery(terms[0])
+}
