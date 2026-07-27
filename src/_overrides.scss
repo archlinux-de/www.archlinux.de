@@ -15,6 +15,7 @@
 
 @include media-breakpoint-up(sm) {
     .text-sm-nowrap {
+        // biome-ignore lint/complexity/noImportantStyles: Match Bootstrap utility precedence.
         white-space: nowrap !important;
     }
 }
