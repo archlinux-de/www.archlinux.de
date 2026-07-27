@@ -113,6 +113,30 @@ func (r *Repository) FindByRepoArchName(ctx context.Context, repo, arch, name st
 	return pkg, nil
 }
 
+// FindAnyByRepoName finds architecture-independent packages in a repository.
+func (r *Repository) FindAnyByRepoName(ctx context.Context, repo, name string) ([]ResolvedPackage, error) {
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT p.name, r.name, r.architecture, p.description, p.popularity_recent
+		 FROM package p
+		 JOIN repository r ON r.id = p.repository_id
+		 WHERE r.name = ? AND p.architecture = 'any' AND p.name = ?
+		 ORDER BY r.architecture`, repo, name)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var packages []ResolvedPackage
+	for rows.Next() {
+		var pkg ResolvedPackage
+		if err := rows.Scan(&pkg.Name, &pkg.Repository, &pkg.Arch, &pkg.Description, &pkg.Popularity); err != nil {
+			return nil, err
+		}
+		packages = append(packages, pkg)
+	}
+	return packages, rows.Err()
+}
+
 func (r *Repository) packageID(ctx context.Context, repo, arch, name string) (int64, error) {
 	var id int64
 	err := r.db.QueryRowContext(ctx,

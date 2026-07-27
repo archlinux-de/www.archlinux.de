@@ -37,6 +37,10 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 
 	pkg, err := h.repo.FindByRepoArchName(r.Context(), repoName, arch, pkgName)
 	if errors.Is(err, sql.ErrNoRows) {
+		if arch == "any" {
+			h.redirectAnyPackage(w, r, repoName, pkgName)
+			return
+		}
 		h.notFound(w, r, pkgName)
 		return
 	}
@@ -83,6 +87,20 @@ func (h *Handler) show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	layout.Render(w, r, page, PackageDetailPage(pkg))
+}
+
+func (h *Handler) redirectAnyPackage(w http.ResponseWriter, r *http.Request, repo, name string) {
+	packages, err := h.repo.FindAnyByRepoName(r.Context(), repo, name)
+	if err != nil {
+		layout.ServerError(w, "find package", err)
+		return
+	}
+	if len(packages) == 1 {
+		pkg := packages[0]
+		http.Redirect(w, r, fmt.Sprintf("/packages/%s/%s/%s", pkg.Repository, pkg.Arch, pkg.Name), http.StatusPermanentRedirect)
+		return
+	}
+	h.notFound(w, r, name)
 }
 
 func (h *Handler) resolve(w http.ResponseWriter, r *http.Request) {

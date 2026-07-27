@@ -91,6 +91,45 @@ func TestShow_UsesPackageArchitectureForDetailsAndDownload(t *testing.T) {
 	}
 }
 
+func TestShow_AnyArchitectureRedirectsToRepositoryArchitecture(t *testing.T) {
+	repo := NewRepository(setupHandlerDB(t))
+	handler := NewHandler(repo, testManifest())
+
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/extra/any/archiso", nil))
+
+	if rr.Code != http.StatusPermanentRedirect {
+		t.Errorf("expected 308, got %d", rr.Code)
+	}
+	if loc := rr.Header().Get("Location"); loc != "/packages/extra/x86_64/archiso" {
+		t.Errorf("expected redirect to /packages/extra/x86_64/archiso, got %q", loc)
+	}
+}
+
+func TestShow_AnyArchitectureDoesNotRedirectWhenAmbiguous(t *testing.T) {
+	db := setupHandlerDB(t)
+	if _, err := db.Exec(`INSERT INTO repository (id, name, architecture, testing) VALUES (4, 'extra', 'aarch64', 0)`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(`INSERT INTO package (id, repository_id, name, base, version, architecture, description) VALUES (5, 4, 'archiso', 'archiso', '78-1', 'any', 'Tools for creating Arch Linux live and install iso images')`); err != nil {
+		t.Fatal(err)
+	}
+
+	handler := NewHandler(NewRepository(db), testManifest())
+	mux := http.NewServeMux()
+	handler.RegisterRoutes(mux)
+
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/packages/extra/any/archiso", nil))
+
+	if rr.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d", rr.Code)
+	}
+}
+
 func TestShow_NotFound(t *testing.T) {
 	repo := NewRepository(setupHandlerDB(t))
 	handler := NewHandler(repo, testManifest())
