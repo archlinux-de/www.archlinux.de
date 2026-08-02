@@ -32,7 +32,7 @@ func NewHandler(
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /download", h.index)
 	mux.HandleFunc("GET /download/iso/{version}/{file}", h.iso)
-	mux.HandleFunc("GET /download/iso/{version}/{$}", h.isoDir)
+	mux.HandleFunc("GET /download/iso/{version}", h.isoDir)
 	mux.HandleFunc("GET /download/{repository}/os/{architecture}/{file}", h.pkg)
 	mux.HandleFunc("GET /download/{file...}", h.fallback)
 }

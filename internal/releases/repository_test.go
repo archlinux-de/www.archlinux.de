@@ -181,6 +181,13 @@ func TestISOUrl_Empty(t *testing.T) {
 	}
 }
 
+func TestDirectoryURL(t *testing.T) {
+	r := Release{Version: "2024.01.01"}
+	if u := r.DirectoryURL(); u != "/download/iso/2024.01.01" {
+		t.Errorf("unexpected directory URL: %q", u)
+	}
+}
+
 func TestISOSigUrl_Old(t *testing.T) {
 	r := Release{Version: "2012.07.01", FileName: "archlinux.iso", ReleaseDate: 1341100000}
 	if u := r.ISOSigUrl(); u != "" {

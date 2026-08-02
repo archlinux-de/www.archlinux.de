@@ -10,6 +10,7 @@ import (
 	"archded/internal/database"
 	"archded/internal/releases"
 	"archded/internal/ui/layout"
+	"archded/internal/web"
 )
 
 func setupTestDB(t *testing.T) *sql.DB {
@@ -110,10 +111,24 @@ func TestISODir_Available(t *testing.T) {
 	mux := newTestMux(t)
 
 	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/2024.01.01/", nil))
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/2024.01.01", nil))
 
 	if rr.Code != http.StatusTemporaryRedirect {
 		t.Errorf("expected 307, got %d", rr.Code)
+	}
+}
+
+func TestISODir_AvailableWithTrailingSlashMiddleware(t *testing.T) {
+	handler := web.RedirectTrailingSlash()(newTestMux(t))
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/2024.01.01", nil))
+
+	if rr.Code != http.StatusTemporaryRedirect {
+		t.Errorf("status = %d, want %d; redirects to %q", rr.Code, http.StatusTemporaryRedirect, rr.Header().Get("Location"))
+	}
+	if loc := rr.Header().Get("Location"); !strings.HasPrefix(loc, "https://geo.mirror.pkgbuild.com/") {
+		t.Errorf("Location = %q, want mirror redirect", loc)
 	}
 }
 
@@ -121,7 +136,7 @@ func TestISODir_Unavailable(t *testing.T) {
 	mux := newTestMux(t)
 
 	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/2023.06.01/", nil))
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/2023.06.01", nil))
 
 	if rr.Code != http.StatusMovedPermanently {
 		t.Errorf("expected 301 to archive, got %d", rr.Code)
@@ -173,7 +188,7 @@ func TestISODir_VersionDirMap(t *testing.T) {
 	mux := newTestMux(t)
 
 	rr := httptest.NewRecorder()
-	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/0.7.1/", nil))
+	mux.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/download/iso/0.7.1", nil))
 
 	if rr.Code != http.StatusMovedPermanently {
 		t.Errorf("expected 301 to archive, got %d", rr.Code)

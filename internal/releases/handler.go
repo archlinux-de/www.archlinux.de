@@ -40,7 +40,7 @@ func (r Release) ISOSigUrl() string {
 }
 
 func (r Release) DirectoryURL() string {
-	return fmt.Sprintf("/download/iso/%s/", r.Version)
+	return "/download/iso/" + r.Version
 }
 
 type releasesData struct {
