@@ -246,6 +246,62 @@ func TestApplyTerms_SkipsEmptyTerms(t *testing.T) {
 	}
 }
 
+func TestValidateTerms(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name    string
+		setup   func(t *testing.T, db *sql.DB)
+		acc     map[string]*pkgTerms
+		wantErr bool
+	}{
+		{
+			name:    "empty components",
+			acc:     map[string]*pkgTerms{},
+			wantErr: true,
+		},
+		{
+			name:    "empty terms",
+			acc:     map[string]*pkgTerms{"firefox": {}},
+			wantErr: true,
+		},
+		{
+			name:    "unmatched terms",
+			acc:     map[string]*pkgTerms{"missing": {keywords: []string{"term"}}},
+			wantErr: true,
+		},
+		{
+			name: "sharp reduction",
+			setup: func(t *testing.T, db *sql.DB) {
+				t.Helper()
+				if _, err := db.Exec(`UPDATE package SET keywords = 'existing'`); err != nil {
+					t.Fatal(err)
+				}
+			},
+			acc:     map[string]*pkgTerms{"firefox": {keywords: []string{"replacement"}}},
+			wantErr: true,
+		},
+		{
+			name:    "retains enough terms",
+			acc:     map[string]*pkgTerms{"firefox": {keywords: []string{"replacement"}}},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db := setupPackageDB(t)
+			if tt.setup != nil {
+				tt.setup(t, db)
+			}
+			err := validateTerms(ctx, db, tt.acc)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("validateTerms() error = %v, wantErr %t", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestApplyTerms_RollsBackWhenFTSRebuildFails(t *testing.T) {
 	db := setupPackageDB(t)
 	ctx := context.Background()

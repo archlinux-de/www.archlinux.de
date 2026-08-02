@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // archlinuxPackageJSON is the official package metadata used to resolve the
@@ -18,6 +19,11 @@ import (
 const archlinuxPackageJSON = "https://archlinux.org/packages/extra/any/archlinux-appstream-data/json/"
 
 var componentRepos = []string{"core", "extra", "multilib"}
+
+const (
+	appstreamHTTPTimeout      = 2 * time.Minute
+	minimumRetainedTermsRatio = 0.5
+)
 
 // pkgTerms holds merged keyword/category text for one pkgname across all repos.
 type pkgTerms struct {
@@ -60,7 +66,7 @@ func latestRelease(ctx context.Context, client *http.Client) (string, error) {
 // sourcesBase (see config.go), merges keywords and categories
 // by package name, writes both columns, and rebuilds the FTS index.
 func Update(ctx context.Context, db *sql.DB, sourcesBase string) error {
-	client := &http.Client{}
+	client := &http.Client{Timeout: appstreamHTTPTimeout}
 	sourcesBase = strings.TrimSuffix(sourcesBase, "/") + "/"
 
 	version, err := latestRelease(ctx, client)
@@ -89,11 +95,68 @@ func Update(ctx context.Context, db *sql.DB, sourcesBase string) error {
 		slog.Info("appstream components parsed", "repo", repo, "components", components)
 	}
 
+	if err := validateTerms(ctx, db, acc); err != nil {
+		return err
+	}
+
 	updated, err := applyTerms(ctx, db, acc)
 	if err != nil {
 		return err
 	}
 	slog.Info("appstream fields applied", "distinct_names", len(acc), "package_rows", updated)
+	return nil
+}
+
+// validateTerms rejects incomplete snapshots before they can replace existing
+// search data. A later scheduled update can retry safely.
+func validateTerms(ctx context.Context, db *sql.DB, acc map[string]*pkgTerms) error {
+	if len(acc) == 0 {
+		return errors.New("no AppStream components parsed")
+	}
+
+	indexedNames := make(map[string]struct{}, len(acc))
+	for name, terms := range acc {
+		if dedupeWords(terms.keywords) != "" || dedupeWords(terms.categories) != "" {
+			indexedNames[name] = struct{}{}
+		}
+	}
+	if len(indexedNames) == 0 {
+		return errors.New("no indexable AppStream terms parsed")
+	}
+
+	rows, err := db.QueryContext(ctx, `SELECT p.name FROM package p
+		JOIN repository r ON r.id = p.repository_id
+		WHERE r.testing = 0`)
+	if err != nil {
+		return fmt.Errorf("list stable packages: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var indexed, existing int
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return fmt.Errorf("scan stable package: %w", err)
+		}
+		if _, ok := indexedNames[name]; ok {
+			indexed++
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("list stable packages: %w", err)
+	}
+	if err := db.QueryRowContext(ctx, `SELECT count(*) FROM package p
+		JOIN repository r ON r.id = p.repository_id
+		WHERE r.testing = 0 AND (p.keywords <> '' OR p.categories <> '')`).Scan(&existing); err != nil {
+		return fmt.Errorf("count existing AppStream terms: %w", err)
+	}
+	if indexed == 0 {
+		return errors.New("no AppStream terms match stable packages")
+	}
+	if existing > 0 && float64(indexed) < float64(existing)*minimumRetainedTermsRatio {
+		return fmt.Errorf("refusing incomplete AppStream snapshot: %d indexed packages, %d existing", indexed, existing)
+	}
+
 	return nil
 }
 
