@@ -96,6 +96,7 @@ func handleAssets(mux *http.ServeMux, assets fs.FS) error {
 		return err
 	}
 	fileServer := http.FileServer(http.FS(sub))
+	mux.HandleFunc("GET /assets", http.NotFound)
 	mux.Handle("GET /assets/", http.StripPrefix("/assets/", cacheHandler(fileServer, assetsCacheMaxAge, "immutable")))
 	return nil
 }
@@ -106,6 +107,7 @@ func handleStatic(mux *http.ServeMux, static fs.FS) error {
 		return err
 	}
 	fileServer := http.FileServer(http.FS(sub))
+	mux.HandleFunc("GET /static", http.NotFound)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", cacheHandler(fileServer, staticCacheMaxAge)))
 	return nil
 }
