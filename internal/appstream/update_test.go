@@ -18,10 +18,10 @@ func setupPackageDB(t *testing.T) *sql.DB {
 
 	for _, stmt := range []string{
 		`INSERT INTO repository (id, name, architecture, testing) VALUES (1, 'extra', 'x86_64', 0)`,
-		`INSERT INTO package (id, repository_id, name, base, version, description) VALUES
-			(1, 1, 'firefox', 'firefox', '120.0-1', 'Standalone web browser'),
-			(2, 1, 'konsole', 'konsole', '23.08-1', 'KDE terminal emulator'),
-			(3, 1, 'linux', 'linux', '6.7-1', 'The Linux kernel')`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture, description) VALUES
+			(1, 1, 'firefox', 'firefox', '120.0-1', 'x86_64', 'Standalone web browser'),
+			(2, 1, 'konsole', 'konsole', '23.08-1', 'x86_64', 'KDE terminal emulator'),
+			(3, 1, 'linux', 'linux', '6.7-1', 'x86_64', 'The Linux kernel')`,
 		`INSERT INTO package_fts (rowid, name, base, description, groups, provides, keywords, categories)
 			SELECT id, name, base, description, groups, provides, keywords, categories FROM package`,
 	} {
@@ -146,8 +146,8 @@ func TestApplyTerms_DoesNotApplyStableTermsToTestingPackages(t *testing.T) {
 
 	for _, stmt := range []string{
 		`INSERT INTO repository (id, name, architecture, testing) VALUES (2, 'extra-testing', 'x86_64', 1)`,
-		`INSERT INTO package (id, repository_id, name, base, version, description)
-			VALUES (4, 2, 'firefox', 'firefox', '121.0-1', 'Testing web browser')`,
+		`INSERT INTO package (id, repository_id, name, base, version, architecture, description)
+			VALUES (4, 2, 'firefox', 'firefox', '121.0-1', 'x86_64', 'Testing web browser')`,
 	} {
 		if _, err := db.Exec(stmt); err != nil {
 			t.Fatal(err)
