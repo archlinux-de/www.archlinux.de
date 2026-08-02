@@ -1,3 +1,6 @@
+ALTER TABLE package DROP COLUMN categories;
+ALTER TABLE package DROP COLUMN keywords;
+
 DROP TABLE package_fts;
 
 CREATE VIRTUAL TABLE package_fts USING fts5(
@@ -6,5 +9,3 @@ CREATE VIRTUAL TABLE package_fts USING fts5(
 );
 
 INSERT INTO package_fts(package_fts) VALUES('rebuild');
-
-ALTER TABLE package DROP COLUMN keywords;

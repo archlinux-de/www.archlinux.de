@@ -1,3 +1,4 @@
+ALTER TABLE package ADD COLUMN keywords TEXT NOT NULL DEFAULT '';
 ALTER TABLE package ADD COLUMN categories TEXT NOT NULL DEFAULT '';
 
 DROP TABLE package_fts;
