@@ -1,11 +1,8 @@
-ALTER TABLE package DROP COLUMN categories;
-ALTER TABLE package DROP COLUMN keywords;
-
-DROP TABLE package_fts;
-
-CREATE VIRTUAL TABLE package_fts USING fts5(
-    name, base, description, groups, provides,
-    content='package', content_rowid='id'
-);
-
-INSERT INTO package_fts(package_fts) VALUES('rebuild');
+DROP TABLE IF EXISTS mirror;
+DROP TABLE IF EXISTS release;
+DROP TABLE IF EXISTS news_item;
+DROP TABLE IF EXISTS files;
+DROP TABLE IF EXISTS package_relation;
+DROP TABLE IF EXISTS package_fts;
+DROP TABLE IF EXISTS package;
+DROP TABLE IF EXISTS repository;
