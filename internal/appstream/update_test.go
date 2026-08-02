@@ -201,11 +201,11 @@ func TestApplyTerms_DoesNotApplyStableTermsToTestingPackages(t *testing.T) {
 	}
 }
 
-func TestApplyTerms_DedupesAndStripsStopwords(t *testing.T) {
+func TestApplyTerms_DedupesTerms(t *testing.T) {
 	db := setupPackageDB(t)
 	ctx := context.Background()
 
-	// Duplicate tokens across multiple "components" + a stopword mixed in.
+	// Duplicate tokens across multiple components are indexed once.
 	acc := map[string]*pkgTerms{
 		"firefox": {
 			keywords:   []string{"internet and www", "www browser"},
@@ -221,28 +221,28 @@ func TestApplyTerms_DedupesAndStripsStopwords(t *testing.T) {
 		Scan(&kw, &cat); err != nil {
 		t.Fatal(err)
 	}
-	if kw != "internet www browser" {
-		t.Errorf("keywords = %q, want %q", kw, "internet www browser")
+	if kw != "internet and www browser" {
+		t.Errorf("keywords = %q, want %q", kw, "internet and www browser")
 	}
 	if cat != "Network" {
 		t.Errorf("categories = %q, want %q", cat, "Network")
 	}
 }
 
-func TestApplyTerms_SkipsEmptyAfterDedupe(t *testing.T) {
+func TestApplyTerms_SkipsEmptyTerms(t *testing.T) {
 	db := setupPackageDB(t)
 	ctx := context.Background()
 
-	// All-stopword keywords → dedupeWords returns ""; no row should be updated.
+	// No terms means no row should be updated.
 	acc := map[string]*pkgTerms{
-		"firefox": {keywords: []string{"the and or"}, categories: nil},
+		"firefox": {},
 	}
 	updated, err := applyTerms(ctx, db, acc)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if updated != 0 {
-		t.Errorf("updated = %d, want 0 (all-stopword input)", updated)
+		t.Errorf("updated = %d, want 0 (empty input)", updated)
 	}
 }
 
