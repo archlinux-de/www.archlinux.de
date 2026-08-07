@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"archded/internal/aur"
 	"archded/internal/download"
 	"archded/internal/feeds"
 	"archded/internal/home"
@@ -41,6 +42,7 @@ func RegisterRoutes(
 	mirRepo := mirrors.NewRepository(db)
 
 	home.NewHandler(newsRepo, pkgRepo, manifest).RegisterRoutes(mux)
+	aur.NewHandler(manifest).RegisterRoutes(mux)
 	legal.NewHandler(manifest).RegisterRoutes(mux)
 	packages.NewHandler(pkgRepo, manifest).RegisterRoutes(mux)
 	packagedetail.NewHandler(pkgDetailRepo, manifest).RegisterRoutes(mux)

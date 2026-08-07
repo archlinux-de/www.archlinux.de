@@ -1,0 +1,53 @@
+package aur
+
+templ AURPage(target, packageSearchURL string) {
+	<div class="row">
+		<div class="col-12 col-lg-8">
+			<h1 class="mb-3">AUR: Sicherheitshinweise</h1>
+			<p class="lead">
+				Das Arch User Repository (AUR) ist eine offene Sammlung von Paketbau-Anleitungen aus der Gemeinschaft.
+				Es ist kein offizielles Arch-Paketrepository.
+			</p>
+			<p>Ein <code>PKGBUILD</code> enthält Anweisungen zum Herunterladen, Bauen und Installieren eines Pakets. Beim Bauen können diese Anweisungen Befehle auf Deinem System ausführen.</p>
+			<div class="alert alert-warning border-warning" role="alert">
+				<h2 class="alert-heading h4">AUR-Pakete können schädlich sein</h2>
+				<p class="mb-0">
+					Jeder kann Paketbau-Anleitungen im AUR veröffentlichen. Sie werden vor der Veröffentlichung nicht geprüft;
+					schädliche Pakete können daher erst nach einer Meldung entfernt werden. Prüfe jedes Paket und jede
+					Aktualisierung, bevor Du sie baust oder installierst.
+				</p>
+			</div>
+			<h2 class="h3 mt-4">Vor dem Installieren</h2>
+			<ul>
+				<li>Suche zuerst in den <a href={ packageSearchURL }>offiziellen Paketquellen</a>.</li>
+				<li>Lies die Kommentare zum Paket im AUR.</li>
+				<li>Baue Pakete niemals als <code>root</code>.</li>
+				<li>Prüfe <code>PKGBUILD</code>, Installationsdateien, weitere Skripte und Änderungen seit der letzten Version, bevor Du etwas ausführst.</li>
+				<li>Vergleiche die in <code>url=</code> und <code>source=</code> angegebenen Quellen mit den Originalquellen des Projekts.</li>
+				<li>Prüfe auch alle zusätzlichen Abhängigkeiten aus dem AUR.</li>
+				<li>Wenn Du die Dateien nicht beurteilen kannst, baue und installiere das Paket nicht.</li>
+			</ul>
+			<p>Weitere Informationen findest Du in den <a href="https://wiki.archlinux.de/title/AUR_Sicherheitshinweise">AUR-Sicherheitshinweisen im Wiki</a>.</p>
+			<h2 class="h3 mt-4">Automatische Werkzeuge</h2>
+			<p>
+				Werkzeuge, die AUR-Pakete suchen, herunterladen, bauen oder aktualisieren, machen diese nicht
+				vertrauenswürdig. Sie können Prüfungen erleichtern oder überspringen, ersetzen aber nicht Deine eigene
+				Prüfung. Führe keine unbeaufsichtigten AUR-Aktualisierungen aus.
+			</p>
+			<form method="post" action="/aur/acknowledge">
+				if target != "" {
+					<input type="hidden" name="target" value={ target }/>
+				}
+				<div class="form-check mt-4">
+					<input class="form-check-input" type="checkbox" name="skip-warning" value="true" id="skip-aur-warning" aria-describedby="skip-aur-warning-help"/>
+					<label class="form-check-label" for="skip-aur-warning">Hinweise künftig überspringen</label>
+					<div class="form-text" id="skip-aur-warning-help">Die Auswahl wird nur in diesem Browser gespeichert.</div>
+				</div>
+				<div class="d-flex flex-wrap gap-2 mt-3 mb-4">
+					<a class="btn btn-outline-primary" href={ packageSearchURL }>Pakete suchen</a>
+					<button class="btn btn-primary" type="submit">Zum AUR</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}

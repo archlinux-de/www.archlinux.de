@@ -63,7 +63,8 @@ func SecureHeaders() Middleware {
 		"img-src 'self' data:",
 		"object-src 'none'",
 		"base-uri 'self'",
-		"form-action 'self'",
+		// Allows the /aur acknowledgement form to redirect to the AUR.
+		"form-action 'self' https://aur.archlinux.org",
 		"frame-ancestors 'none'",
 	}, "; ")
 	return func(next http.Handler) http.Handler {

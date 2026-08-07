@@ -65,7 +65,7 @@ func TestSitemap(t *testing.T) {
 		t.Error("expected release URL in sitemap")
 	}
 	// Static pages
-	for _, path := range []string{"/packages", "/news", "/mirrors", "/releases", "/download"} {
+	for _, path := range []string{"/aur", "/packages", "/news", "/mirrors", "/releases", "/download"} {
 		if !strings.Contains(body, path) {
 			t.Errorf("expected %q in sitemap", path)
 		}

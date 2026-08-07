@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
@@ -105,8 +106,12 @@ func TestSecureHeaders(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/", nil))
 
-	if csp := rr.Header().Get("Content-Security-Policy"); csp == "" {
+	csp := rr.Header().Get("Content-Security-Policy")
+	if csp == "" {
 		t.Error("expected Content-Security-Policy header")
+	}
+	if !strings.Contains(csp, "form-action 'self' https://aur.archlinux.org") {
+		t.Errorf("unexpected form-action policy: %q", csp)
 	}
 	if rr.Header().Get("X-Content-Type-Options") != "nosniff" {
 		t.Error("expected X-Content-Type-Options: nosniff")

@@ -43,6 +43,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 
 	urls := []siteURL{
 		{Loc: baseURL + "/"},
+		{Loc: baseURL + "/aur"},
 		{Loc: baseURL + "/packages"},
 		{Loc: baseURL + "/news"},
 		{Loc: baseURL + "/mirrors"},
