@@ -53,5 +53,6 @@ formatters:
     - gofumpt
   settings:
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
       module-path: archded
