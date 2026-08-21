@@ -1,12 +1,12 @@
 module archded
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/a-h/templ v0.3.1020
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/microcosm-cc/bluemonday v1.0.27
-	modernc.org/sqlite v1.56.0
+	modernc.org/sqlite v1.57.0
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 	github.com/natefinch/atomic v1.0.1 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/stretchr/testify v1.11.1 // indirect
+	github.com/stretchr/testify v1.12.1 // indirect
 	github.com/xyproto/randomstring v1.2.0 // indirect
 	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
@@ -36,7 +36,7 @@ require (
 	golang.org/x/tools v0.49.0 // indirect
 	modernc.org/libc v1.75.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.12.0 // indirect
+	modernc.org/memory v1.12.1 // indirect
 )
 
 tool github.com/a-h/templ/cmd/templ

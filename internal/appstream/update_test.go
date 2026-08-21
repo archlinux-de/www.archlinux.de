@@ -87,7 +87,8 @@ func TestApplyTerms_WritesAndRebuildsFTS(t *testing.T) {
 	// FTS must match on the new keyword/category content.
 	var name string
 	if err := db.QueryRow(
-		`SELECT name FROM package_fts WHERE package_fts MATCH 'WebBrowser'`).Scan(&name); err != nil {
+		`SELECT name FROM package_fts WHERE package_fts MATCH 'WebBrowser'`,
+	).Scan(&name); err != nil {
 		t.Fatalf("expected firefox via category match: %v", err)
 	}
 	if name != "firefox" {
@@ -95,7 +96,8 @@ func TestApplyTerms_WritesAndRebuildsFTS(t *testing.T) {
 	}
 
 	if err := db.QueryRow(
-		`SELECT name FROM package_fts WHERE package_fts MATCH 'TerminalEmulator'`).Scan(&name); err != nil {
+		`SELECT name FROM package_fts WHERE package_fts MATCH 'TerminalEmulator'`,
+	).Scan(&name); err != nil {
 		t.Fatalf("expected konsole via category match: %v", err)
 	}
 	if name != "konsole" {
@@ -134,7 +136,8 @@ func TestApplyTerms_ClearsStalePriorData(t *testing.T) {
 
 	// And FTS should no longer match the stale term.
 	err := db.QueryRow(
-		`SELECT name FROM package_fts WHERE package_fts MATCH 'OldCategory'`).Scan(new(string))
+		`SELECT name FROM package_fts WHERE package_fts MATCH 'OldCategory'`,
+	).Scan(new(string))
 	if err != sql.ErrNoRows {
 		t.Errorf("stale category still matches in FTS: err=%v", err)
 	}
