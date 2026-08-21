@@ -46,9 +46,9 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := newsData{
-		Pagination: layout.Pagination{Total: total, Limit: defaultLimit, Offset: offset},
-		Items:      items,
-		Search:     search,
+		Total: total, Limit: defaultLimit, Offset: offset,
+		Items:  items,
+		Search: search,
 	}
 
 	page := layout.Page{

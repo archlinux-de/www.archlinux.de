@@ -89,7 +89,7 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := packagesData{
-		Pagination:    layout.Pagination{Total: total, Limit: defaultLimit, Offset: offset},
+		Total: total, Limit: defaultLimit, Offset: offset,
 		Packages:      pkgs,
 		Search:        search,
 		Repository:    repo,

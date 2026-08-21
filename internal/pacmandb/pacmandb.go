@@ -105,7 +105,7 @@ func parseDesc(data string) map[string][]string {
 	result := make(map[string][]string)
 	var key string
 
-	for _, line := range strings.Split(data, "\n") {
+	for line := range strings.SplitSeq(data, "\n") {
 		trimmed := strings.TrimSpace(line)
 		if trimmed == "" {
 			key = ""

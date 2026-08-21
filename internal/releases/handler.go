@@ -59,9 +59,9 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := releasesData{
-		Pagination: layout.Pagination{Total: total, Limit: defaultLimit, Offset: offset},
-		Releases:   rels,
-		Search:     search,
+		Total: total, Limit: defaultLimit, Offset: offset,
+		Releases: rels,
+		Search:   search,
 	}
 
 	page := layout.Page{

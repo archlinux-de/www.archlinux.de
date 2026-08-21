@@ -33,18 +33,12 @@ func (p Pagination) HasNext() bool     { return p.Offset+p.Limit < p.Total }
 func (p Pagination) From() int         { return p.Offset + 1 }
 
 func (p Pagination) To() int {
-	to := p.Offset + p.Limit
-	if to > p.Total {
-		to = p.Total
-	}
+	to := min(p.Offset+p.Limit, p.Total)
 	return to
 }
 
 func (p Pagination) PrevOffset() int {
-	o := p.Offset - p.Limit
-	if o < 0 {
-		o = 0
-	}
+	o := max(p.Offset-p.Limit, 0)
 	return o
 }
 

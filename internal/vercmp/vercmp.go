@@ -41,13 +41,8 @@ func parseEVR(evr string) (epoch, version, release string) {
 		evr = evr[i+1:]
 	}
 
-	// Find release: last '-' separates version from release
-	if idx := strings.LastIndex(evr, "-"); idx >= 0 {
-		version = evr[:idx]
-		release = evr[idx+1:]
-	} else {
-		version = evr
-	}
+	// Find release: last '-' separates version from release.
+	version, release, _ = strings.CutLast(evr, "-")
 
 	return epoch, version, release
 }

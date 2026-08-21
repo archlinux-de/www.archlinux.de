@@ -37,9 +37,9 @@ func (h *Handler) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := mirrorsData{
-		Pagination: layout.Pagination{Total: total, Limit: defaultLimit, Offset: offset},
-		Mirrors:    items,
-		Search:     search,
+		Total: total, Limit: defaultLimit, Offset: offset,
+		Mirrors: items,
+		Search:  search,
 	}
 
 	page := layout.Page{

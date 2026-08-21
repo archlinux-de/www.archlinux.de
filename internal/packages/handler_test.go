@@ -213,7 +213,7 @@ func TestHandlerIndex_NoIndexOnRepoFilter(t *testing.T) {
 }
 
 func TestPackagesData_Pagination(t *testing.T) {
-	d := packagesData{Pagination: layout.Pagination{Total: 100, Limit: 25, Offset: 0}}
+	d := packagesData{Total: 100, Limit: 25, Offset: 0}
 	if !d.HasNext() {
 		t.Error("expected HasNext")
 	}
@@ -227,7 +227,7 @@ func TestPackagesData_Pagination(t *testing.T) {
 		t.Errorf("expected To=25, got %d", d.To())
 	}
 
-	d2 := packagesData{Pagination: layout.Pagination{Total: 100, Limit: 25, Offset: 50}}
+	d2 := packagesData{Total: 100, Limit: 25, Offset: 50}
 	if !d2.HasPrevious() {
 		t.Error("expected HasPrevious")
 	}
@@ -238,7 +238,7 @@ func TestPackagesData_Pagination(t *testing.T) {
 		t.Errorf("expected NextOffset=75, got %d", d2.NextOffset())
 	}
 
-	d3 := packagesData{Pagination: layout.Pagination{Total: 10, Limit: 25, Offset: 0}}
+	d3 := packagesData{Total: 10, Limit: 25, Offset: 0}
 	if d3.HasNext() {
 		t.Error("expected no HasNext when total < limit")
 	}

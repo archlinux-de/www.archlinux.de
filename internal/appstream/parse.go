@@ -189,7 +189,7 @@ func dedupeWords(parts []string) string {
 	seen := make(map[string]struct{})
 	var b strings.Builder
 	for _, part := range parts {
-		for _, w := range strings.Fields(part) {
+		for w := range strings.FieldsSeq(part) {
 			key := strings.ToLower(w)
 			if _, ok := seen[key]; ok {
 				continue

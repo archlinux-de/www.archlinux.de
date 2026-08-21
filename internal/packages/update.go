@@ -51,9 +51,7 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 
 	var wg sync.WaitGroup
 	for i, repo := range repositories {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			f, err := fetchRepository(ctx, db, client, mirror, repo)
 			if err != nil {
 				mu.Lock()
@@ -64,7 +62,7 @@ func Update(ctx context.Context, db *sql.DB, mirror string) error {
 				return
 			}
 			fetched[i] = f
-		}()
+		})
 	}
 	wg.Wait()
 
