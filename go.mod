@@ -1,12 +1,12 @@
 module archded
 
-go 1.27.0
+go 1.27.1
 
 require (
 	github.com/a-h/templ v0.3.1020
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/microcosm-cc/bluemonday v1.0.27
-	modernc.org/sqlite v1.57.0
+	modernc.org/sqlite v1.58.0
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20260830191439-4932ad3515ea // indirect
+	github.com/google/pprof v0.0.0-20260906184651-6331bc6350fe // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/lib/pq v1.12.3 // indirect
@@ -35,7 +35,9 @@ require (
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/tools v0.49.0 // indirect
-	modernc.org/libc v1.75.6 // indirect
+	modernc.org/cc/v4 v4.29.5 // indirect
+	modernc.org/ccgo/v4 v4.35.1 // indirect
+	modernc.org/libc v1.75.7 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.12.1 // indirect
 )
