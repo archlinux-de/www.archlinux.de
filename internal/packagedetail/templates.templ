@@ -86,9 +86,10 @@ templ PackageDetailPage(pkg PackageDetail) {
 						</td>
 					</tr>
 					<tr>
-						<th>Bugs</th>
+						<th>Fehler &amp; Sicherheit</th>
 						<td>
-							<a rel="noopener" href={ templ.SafeURL(issueURL(pkg.Base)) }>Issue-Tracker</a>
+							<a rel="noopener" href={ templ.SafeURL(issueURL(pkg.Base)) }>Issue-Tracker</a>,
+							<a rel="noopener" href={ templ.SafeURL(securityURL(pkg.Name)) }>Security-Tracker</a>
 						</td>
 					</tr>
 					<tr>
@@ -180,6 +181,10 @@ func sourceURL(base string) string {
 
 func issueURL(base string) string {
 	return "https://gitlab.archlinux.org/archlinux/packaging/packages/" + base + "/-/issues"
+}
+
+func securityURL(name string) string {
+	return "https://security.archlinux.org/package/" + name
 }
 
 func constraintSymbol(code string) string {
